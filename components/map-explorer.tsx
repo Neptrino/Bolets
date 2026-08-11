@@ -44,6 +44,7 @@ export function MapExplorer({
         selectedCellId={selectedCell?.cellId}
         onCellSelect={selectCell}
         className="full-map"
+        fullscreenTarget="parent"
       />
       <div className="map-floating-card">
         <MapIcon size={17} />

@@ -1,5 +1,9 @@
 import type { SpatialBounds } from "@/src/lib/types";
 
+export function formatMapCoordinate(value: number) {
+  return value.toFixed(4);
+}
+
 const numberParam = (params: URLSearchParams, name: string) => {
   const value = params.get(name);
   return value?.trim() ? Number(value) : Number.NaN;

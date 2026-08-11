@@ -109,7 +109,8 @@ export async function getPotentialHabitatCells(
       Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
       apikey: process.env.SUPABASE_ANON_KEY
     },
-    cache: "no-store"
+    cache: "force-cache",
+    next: { revalidate: 3600 }
   });
   const [response, occurrenceEvidence] = await Promise.all([
     habitatRequest,

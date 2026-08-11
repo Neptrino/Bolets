@@ -25,9 +25,13 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(page.getByText(/mapa permanent d’hàbitat/i)).toBeVisible();
   await expect(page.getByText("FungaCAT/GBIF · generalitzat a 10 km")).toBeVisible();
   await expect(
-    page.getByText("Amb registres històrics propers"),
+    page.getByText("Ratllat lila · registres històrics"),
   ).toBeVisible();
+  await expect(page.getByText(/no més hàbitat/i)).toBeVisible();
   await expect(page.getByText(/no indica presència actual/i)).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Veure el mapa a pantalla completa" }),
+  ).toBeVisible();
   const habitatViewportBox = await page.locator(".region-map-viewport").first().boundingBox();
   const habitatLegendBox = await page.locator(".habitat-map-legend").boundingBox();
   expect(habitatViewportBox).not.toBeNull();
@@ -120,10 +124,36 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Mapa de compatibilitat" }),
   ).toBeVisible();
+  await expect(page.getByLabel("Espècie seleccionada")).toHaveCount(1);
+  await expect(page.locator(".species-switch-links")).toHaveCount(0);
+  await expect(
+    page.getByRole("group", { name: "Controls territorials del mapa" }),
+  ).toContainText("Àrea del mapa");
+  await expect(
+    page.getByLabel("Àrea de Catalunya seleccionada"),
+  ).toBeVisible();
   await expect(
     page.getByRole("region", { name: /Mapa topogràfic interactiu/ }),
   ).toBeVisible();
   await expect(page.getByRole("button", { name: "Apropar" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Veure el mapa a pantalla completa" }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Veure el mapa a pantalla completa" })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Sortir de pantalla completa" }),
+  ).toBeVisible();
+  const fullscreenMapBox = await page.locator(".map-stage").boundingBox();
+  expect(fullscreenMapBox?.width).toBeGreaterThanOrEqual(1279);
+  expect(fullscreenMapBox?.height).toBeGreaterThanOrEqual(719);
+  await page
+    .getByRole("button", { name: "Sortir de pantalla completa" })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Veure el mapa a pantalla completa" }),
+  ).toBeVisible();
   await expect(
     page.getByRole("button", {
       name: /Mostra la meva ubicació|Ubicació no disponible/,

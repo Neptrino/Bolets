@@ -3,7 +3,7 @@ import { ArrowUpRight, Info } from "lucide-react";
 import { MapExplorer } from "@/components/map-explorer";
 import { QuerySelect } from "@/components/ui/query-select";
 import { isRegionId, regionSelectItems } from "@/data/regions";
-import { getSpecies, speciesProfiles, speciesSelectItems } from "@/data/species";
+import { getSpecies, speciesSelectItems } from "@/data/species";
 import { getConditionSnapshot } from "@/src/lib/conditions";
 import { calculateSuitability } from "@/src/lib/scoring";
 import type { RegionId } from "@/src/lib/types";
@@ -25,10 +25,15 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
         <p>Base topogràfica de l’ICGC. Les cel·les de predicció no es publiquen fins que disposen de dades ambientals datades, amb procedència i incertesa.</p>
       </div>
       <div className="map-controls">
-        <label>Espècie<QuerySelect value={species.speciesId} items={speciesSelectItems} aria-label="Espècie seleccionada" /></label>
-        <div className="species-switch-links">{speciesProfiles.map((item) => <Link key={item.speciesId} href={`/map?species=${item.speciesId}&region=${region}`} scroll={false} className={item.speciesId === species.speciesId ? "active" : ""}>{item.identity.commonName}</Link>)}</div>
-        <label>Regió<QuerySelect value={region} items={regionSelectItems} parameter="region" variant="region" aria-label="Àrea de Catalunya seleccionada" /></label>
+        <label><span>Espècie</span><QuerySelect value={species.speciesId} items={speciesSelectItems} aria-label="Espècie seleccionada" /></label>
       </div>
+    </div>
+    <div className="page-width map-region-bar" role="group" aria-label="Controls territorials del mapa">
+      <div>
+        <p className="eyebrow">Àrea del mapa</p>
+        <p>Centra la lectura en una regió de Catalunya.</p>
+      </div>
+      <label><span>Regió</span><QuerySelect value={region} items={regionSelectItems} parameter="region" variant="region" aria-label="Àrea de Catalunya seleccionada" /></label>
     </div>
     <MapExplorer
       species={species}

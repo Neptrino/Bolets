@@ -29,13 +29,12 @@ describe("habitat map occurrence styling", () => {
     expect(isHabitatCellCorroborated(habitatCell, [nearbySupport])).toBe(false);
   });
 
-  it("uses a distinct hue without changing the coverage opacity", () => {
-    expect(habitatCellColour(0.36, false)).toBe("rgba(150, 63, 32, 0.346)");
-    expect(habitatCellColour(0.36, true)).toBe("rgba(69, 91, 59, 0.346)");
+  it("uses the blue habitat scale independently from historical evidence", () => {
+    expect(habitatCellColour(0.36)).toBe("rgba(33, 102, 172, 0.365)");
   });
 
   it("keeps sparse coarse-cell coverage visually subtle", () => {
-    expect(habitatCellColour(0.01, false)).toBe("rgba(150, 63, 32, 0.087)");
-    expect(habitatCellColour(1, false)).toBe("rgba(150, 63, 32, 0.82)");
+    expect(habitatCellColour(0.01)).toBe("rgba(33, 102, 172, 0.127)");
+    expect(habitatCellColour(1)).toBe("rgba(33, 102, 172, 0.8)");
   });
 });

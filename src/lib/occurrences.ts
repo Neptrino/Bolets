@@ -18,7 +18,8 @@ export async function getOccurrenceSupport(speciesId: string, bounds: SpatialBou
   try {
     const response = await fetch(`${process.env.SUPABASE_URL}/functions/v1/read-occurrence-support?${query}`, {
       headers: { Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`, apikey: process.env.SUPABASE_ANON_KEY! },
-      cache: "no-store"
+      cache: "force-cache",
+      next: { revalidate: 3600 }
     });
     if (!response.ok) return { available: false, cells: [] };
     const payload = occurrenceSupportResponseSchema.parse(await response.json());
