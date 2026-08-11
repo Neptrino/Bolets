@@ -1,0 +1,12 @@
+[
+  {"id":"pirineus","label":"Pirineus","centre":[1.35,42.55],"coordinates":[[0.1,42.45],[0.8,42.83],[1.75,42.92],[2.6,42.72],[2.72,42.38],[1.55,42.25],[0.55,42.25],[0.1,42.45]]},
+  {"id":"prepirineus","label":"Prepirineus","centre":[1.35,42.2],"coordinates":[[0.2,42.05],[0.55,42.25],[1.55,42.25],[2.72,42.38],[2.58,42.05],[1.65,41.95],[0.75,41.95],[0.2,42.05]]},
+  {"id":"emporda","label":"Empordà","centre":[3.0,42.1],"coordinates":[[2.58,42.05],[2.72,42.38],[3.18,42.42],[3.32,42.12],[3.13,41.92],[2.58,42.05]]},
+  {"id":"catalunya-central","label":"Catalunya Central","centre":[1.65,41.8],"coordinates":[[0.75,41.95],[1.65,41.95],[2.58,42.05],[2.4,41.62],[1.42,41.48],[0.72,41.63],[0.75,41.95]]},
+  {"id":"muntanyes-interiors","label":"Sistemes interiors","centre":[0.85,41.55],"coordinates":[[0.15,41.62],[0.72,41.63],[1.42,41.48],[1.24,41.17],[0.48,41.15],[0.15,41.62]]},
+  {"id":"montseny","label":"Montseny","centre":[2.38,41.78],"coordinates":[[2.18,41.9],[2.58,42.05],[2.67,41.76],[2.35,41.6],[2.18,41.9]]},
+  {"id":"serralades-costeres","label":"Serralades Costeres","centre":[2.55,41.75],"coordinates":[[2.35,41.6],[2.67,41.76],[3.13,41.92],[3.05,41.45],[2.52,41.23],[2.35,41.6]]},
+  {"id":"serralades-prelitorals","label":"Serralades Prelitorals","centre":[1.85,41.35],"coordinates":[[1.24,41.17],[1.42,41.48],[2.4,41.62],[2.52,41.23],[1.93,40.98],[1.24,41.17]]},
+  {"id":"ports","label":"Ports","centre":[0.32,40.8],"coordinates":[[0.05,41.1],[0.48,41.15],[1.24,41.17],[1.2,40.58],[0.42,40.48],[0.05,41.1]]},
+  {"id":"altres","label":"Altres àrees","centre":[1.9,41.6],"coordinates":[]}
+]

@@ -1,0 +1,73 @@
+"use client";
+
+import { Select } from "@base-ui/react/select";
+import { Check, ChevronDown } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+export type QuerySelectItem = { value: string; label: string };
+
+export function QuerySelect({
+  value,
+  items,
+  parameter = "species",
+  variant = "compact",
+  className,
+  "aria-label": ariaLabel = "Selecciona una opció"
+}: {
+  value: string;
+  items: QuerySelectItem[];
+  parameter?: string;
+  variant?: "region" | "compact" | "comparison";
+  className?: string;
+  "aria-label"?: string;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isRegion = variant === "region";
+  const prefix = isRegion ? "region" : "species";
+  const triggerClassName = [
+    `${prefix}-select-trigger`,
+    !isRegion && `species-select-trigger-${variant}`,
+    className
+  ].filter(Boolean).join(" ");
+
+  const selectValue = (nextValue: string | null) => {
+    if (!nextValue || nextValue === value) return;
+    const next = new URLSearchParams(searchParams.toString());
+    next.set(parameter, nextValue);
+    router.push(`${pathname}?${next}`, { scroll: isRegion });
+  };
+
+  return (
+    <Select.Root value={value} items={items} onValueChange={selectValue}>
+      <Select.Trigger className={triggerClassName} aria-label={ariaLabel}>
+        <Select.Value className={isRegion ? undefined : "species-select-value"} />
+        <Select.Icon className={isRegion ? undefined : "species-select-icon"}>
+          <ChevronDown size={variant === "comparison" ? 20 : 16} aria-hidden="true" />
+        </Select.Icon>
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Positioner
+          align={isRegion ? undefined : "start"}
+          alignItemWithTrigger={isRegion ? undefined : false}
+          sideOffset={isRegion ? 8 : 7}
+          className={`${prefix}-select-positioner`}
+        >
+          <Select.Popup className={`${prefix}-select-popup${isRegion ? "" : ` species-select-popup-${variant}`}`}>
+            <Select.List className={isRegion ? undefined : "species-select-list"}>
+              {items.map((item) => (
+                <Select.Item key={item.value} value={item.value} className={`${prefix}-select-item`}>
+                  <Select.ItemText className={isRegion ? undefined : "species-select-item-text"}>{item.label}</Select.ItemText>
+                  <Select.ItemIndicator className={isRegion ? undefined : "species-select-item-indicator"}>
+                    <Check size={15} strokeWidth={isRegion ? undefined : 2.4} aria-hidden="true" />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              ))}
+            </Select.List>
+          </Select.Popup>
+        </Select.Positioner>
+      </Select.Portal>
+    </Select.Root>
+  );
+}

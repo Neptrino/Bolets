@@ -1,0 +1,52 @@
+import { conditionSnapshotSchema } from "@/src/lib/schema";
+import type { ConditionSnapshot, RegionId } from "@/src/lib/types";
+
+const regions: RegionId[] = ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors", "altres"];
+const environmentalFields = [
+  "temperatureC", "temperatureMin24hC", "temperatureAvg24hC", "temperatureMax24hC", "temperatureMin7dC", "frostHours7d",
+  "relativeHumidity", "relativeHumidityMin24h", "relativeHumidityAvg24h", "relativeHumidityMax24h",
+  "soilMoisture", "soilMoistureMin24h", "soilMoistureAvg24h", "soilMoistureMax24h",
+  "rainfall7dMm", "windKmh", "windAvg24hKmh", "windMax24hKmh", "windGustMax24hKmh",
+  "altitudeM", "forestCompatibility", "soilCompatibility"
+];
+
+function unavailableSnapshot(regionId: RegionId): ConditionSnapshot {
+  return {
+    regionId,
+    observedAt: new Date(0).toISOString(),
+    source: ["Cap instantània ambiental publicada"],
+    confidence: "unknown",
+    stale: true,
+    unavailableFields: environmentalFields,
+    values: {}
+  };
+}
+
+export const localSnapshots = regions.map(unavailableSnapshot);
+
+function environmentFeedConfigured() {
+  return Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
+}
+
+export async function getConditionSnapshot(regionId: RegionId): Promise<ConditionSnapshot> {
+  const unavailable = unavailableSnapshot(regionId);
+  if (!environmentFeedConfigured()) return unavailable;
+
+  try {
+    const response = await fetch(`${process.env.SUPABASE_URL}/functions/v1/read-environment?region=${regionId}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+        apikey: process.env.SUPABASE_ANON_KEY!
+      },
+      cache: "no-store"
+    });
+    if (!response.ok) return unavailable;
+    return conditionSnapshotSchema.parse(await response.json());
+  } catch {
+    return unavailable;
+  }
+}
+
+export function normaliseSnapshot(input: unknown): ConditionSnapshot {
+  return conditionSnapshotSchema.parse(input);
+}
