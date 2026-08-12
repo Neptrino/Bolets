@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight, Info } from "lucide-react";
 import { MapExplorer } from "@/components/map-explorer";
 import { QuerySelect } from "@/components/ui/query-select";
-import { isRegionId, regionSelectItems } from "@/data/regions";
+import { isRegionId } from "@/data/regions";
 import { getSpecies, speciesSelectItems } from "@/data/species";
 import { getConditionSnapshot } from "@/src/lib/conditions";
 import { calculateSuitability } from "@/src/lib/scoring";
@@ -28,18 +28,12 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
         <label><span>Espècie</span><QuerySelect value={species.speciesId} items={speciesSelectItems} aria-label="Espècie seleccionada" /></label>
       </div>
     </div>
-    <div className="page-width map-region-bar" role="group" aria-label="Controls territorials del mapa">
-      <div>
-        <p className="eyebrow">Àrea del mapa</p>
-        <p>Centra la lectura en una regió de Catalunya.</p>
-      </div>
-      <label><span>Regió</span><QuerySelect value={region} items={regionSelectItems} parameter="region" variant="region" aria-label="Àrea de Catalunya seleccionada" /></label>
-    </div>
     <MapExplorer
       species={species}
       region={region}
       regionalSnapshot={snapshot}
       regionalResult={result}
+      speciesItems={speciesSelectItems}
       info={
         <aside key="map-info" className="map-reading-guide">
           <div className="map-reading-heading">

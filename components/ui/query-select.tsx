@@ -1,6 +1,6 @@
 "use client";
 
-import { Select } from "@base-ui/react/select";
+import { Select, type SelectPortalProps } from "@base-ui/react/select";
 import { Check, ChevronDown } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -12,6 +12,7 @@ export function QuerySelect({
   parameter = "species",
   variant = "compact",
   className,
+  portalContainer,
   "aria-label": ariaLabel = "Selecciona una opció"
 }: {
   value: string;
@@ -19,6 +20,7 @@ export function QuerySelect({
   parameter?: string;
   variant?: "region" | "compact" | "comparison";
   className?: string;
+  portalContainer?: SelectPortalProps["container"];
   "aria-label"?: string;
 }) {
   const router = useRouter();
@@ -47,7 +49,7 @@ export function QuerySelect({
           <ChevronDown size={variant === "comparison" ? 20 : 16} aria-hidden="true" />
         </Select.Icon>
       </Select.Trigger>
-      <Select.Portal>
+      <Select.Portal container={portalContainer}>
         <Select.Positioner
           align={isRegion ? undefined : "start"}
           alignItemWithTrigger={isRegion ? undefined : false}

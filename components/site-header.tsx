@@ -5,8 +5,7 @@ import brandMark from "@/app/icon.svg";
 
 const links = [
   { href: "/species", label: "Espècies" },
-  { href: "/compare", label: "Comparador" },
-  { href: "/map", label: "Mapa" }
+  { href: "/compare", label: "Comparador" }
 ];
 
 export function SiteHeader() {
@@ -22,7 +21,7 @@ export function SiteHeader() {
       <nav className="primary-nav" aria-label="Navegació principal">
         {links.map((link) => <Link key={link.href} href={link.href}>{link.label}</Link>)}
       </nav>
-      <Link href="/map" className="header-map-link"><Map size={15} /> Predicció</Link>
+      <Link href="/map" className="header-map-link"><Map size={15} /> Mapa de predicció</Link>
       <button className="menu-button" aria-label="Obre la navegació"><Menu size={20} /></button>
     </header>
   );

@@ -60,14 +60,14 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
           <p className="eyebrow">Evidència territorial</p>
           <h2>On podria créixer a Catalunya</h2>
           <div className="habitat-map-explainer">
-            <p><strong>És un mapa permanent d’hàbitat, no una predicció d’avui.</strong> Només mostra on coincideixen la coberta del sòl, l’altitud i el pH configurats per a l’espècie.</p>
+            <p><strong>És un mapa de compatibilitat ecològica, no una predicció d’avui.</strong> El blau indica on coincideixen la coberta del sòl, l’altitud i el pH configurats per a l’espècie; no confirma que hi hagi bolets.</p>
             <Link href={`/map?species=${species.speciesId}&region=${region}`} className="habitat-current-status">
               <span>Condicions d’avui · {regionLabels[region]}</span>
               <strong>{currentStatus}</strong>
               <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
           </div>
-          <RegionMap activeRegions={species.ecologicalConfig.regions} speciesId={species.speciesId} habitat className="species-map" />
+          <RegionMap activeRegions={species.ecologicalConfig.regions} selectedRegion={region} speciesId={species.speciesId} habitat className="species-map" />
           <div className="region-pill-row habitat-evidence-row">
             <span>Coberta del sòl ICGC</span>
             <span>{species.ecologicalConfig.habitat.altitude[0]}–{species.ecologicalConfig.habitat.altitude[1]} m</span>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Grid3X3, LoaderCircle } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
+import { Eye, EyeOff, Grid3X3, LoaderCircle } from "lucide-react";
 import {
   FullscreenControl,
   GeolocateControl,
@@ -77,6 +77,66 @@ type HabitatEvidenceState = {
   habitatCells: number;
   records: number;
 };
+type MapLayerControlProps = {
+  id: string;
+  label: string;
+  controlName: string;
+  opacityLabel: string;
+  variant: "prediction" | "compatibility" | "history";
+  visible: boolean;
+  opacity: number;
+  onVisibilityChange: () => void;
+  onOpacityChange: (opacity: number) => void;
+};
+
+function MapLayerControl({
+  id,
+  label,
+  controlName,
+  opacityLabel,
+  variant,
+  visible,
+  opacity,
+  onVisibilityChange,
+  onOpacityChange,
+}: MapLayerControlProps) {
+  const toggleLabel = `${visible ? "Amaga" : "Mostra"} ${controlName}`;
+
+  return (
+    <div className={`map-cell-visibility-layer map-cell-visibility-layer-${variant}`}>
+      <div className="map-cell-visibility-heading">
+        <i className="map-cell-visibility-swatch" aria-hidden />
+        <label htmlFor={id}>{label}</label>
+        <output htmlFor={id}>{visible ? `${opacity}%` : "No visible"}</output>
+        <button
+          type="button"
+          className="map-cell-visibility-toggle"
+          onClick={onVisibilityChange}
+          aria-pressed={visible}
+          aria-label={toggleLabel}
+          title={toggleLabel}
+        >
+          {visible ? (
+            <Eye size={16} aria-hidden />
+          ) : (
+            <EyeOff size={16} aria-hidden />
+          )}
+        </button>
+      </div>
+      <input
+        id={id}
+        type="range"
+        min="20"
+        max="100"
+        step="10"
+        value={opacity}
+        disabled={!visible}
+        onChange={(event) => onOpacityChange(Number(event.currentTarget.value))}
+        aria-label={opacityLabel}
+      />
+    </div>
+  );
+}
 
 function waitForRetry(signal: AbortSignal) {
   return new Promise<void>((resolve, reject) => {
@@ -245,13 +305,16 @@ export function RegionMap({
 }) {
   const node = useRef<HTMLDivElement>(null);
   const cellCanvas = useRef<HTMLCanvasElement>(null);
+  const historicalEvidenceCanvas = useRef<HTMLCanvasElement>(null);
   const map = useRef<MapLibreMap | null>(null);
+  const geolocateControl = useRef<GeolocateControl | null>(null);
   const initialSpeciesId = useRef(speciesId);
   const initialHabitat = useRef(habitat);
   const initialRegion = useRef(selectedRegion);
   const initialActiveRegions = useRef(activeRegions);
   const initialFullscreenTarget = useRef(fullscreenTarget);
   const previousRegion = useRef(selectedRegion);
+  const previousSpeciesId = useRef(speciesId);
   const request = useRef<AbortController | null>(null);
   const detailRequest = useRef<AbortController | null>(null);
   const activeRequestKey = useRef<string | null>(null);
@@ -261,6 +324,14 @@ export function RegionMap({
   const corroboratedHabitatCellIds = useRef(new Set<string>());
   const selectedCellIdRef = useRef<string | null>(null);
   const drawCellsRef = useRef<() => void>(() => undefined);
+  const cellOpacityId = useId();
+  const historicalEvidenceOpacityId = useId();
+  const [cellsVisible, setCellsVisible] = useState(true);
+  const [cellOpacity, setCellOpacity] = useState(100);
+  const [historicalEvidenceVisible, setHistoricalEvidenceVisible] =
+    useState(true);
+  const [historicalEvidenceOpacity, setHistoricalEvidenceOpacity] =
+    useState(100);
   const [cellState, setCellState] = useState<CellState>({
     status: "loading",
     published: 0,
@@ -324,24 +395,26 @@ export function RegionMap({
       ),
       "top-right",
     );
-    const geolocate = isPredictionMap
+    const geolocate = initialSpeciesId.current
       ? new GeolocateControl({
           positionOptions: {
-            enableHighAccuracy: true,
+            enableHighAccuracy: !initialHabitat.current,
             maximumAge: 300_000,
-            timeout: 8_000,
+            timeout: initialHabitat.current ? 3_000 : 8_000,
           },
-          fitBoundsOptions: { maxZoom: 14 },
+          fitBoundsOptions: { maxZoom: initialHabitat.current ? 11.2 : 14 },
           trackUserLocation: false,
           showAccuracyCircle: true,
           showUserLocation: true,
         })
       : undefined;
+    geolocateControl.current = geolocate ?? null;
     if (geolocate) localMap.addControl(geolocate, "top-right");
     let locationRetry: number | undefined;
     let locationAttempts = 0;
     const locateWhenReady = () => {
-      if (!geolocate || !window.navigator.geolocation) return;
+      if (!isPredictionMap || !geolocate || !window.navigator.geolocation)
+        return;
       const button = localMap
         .getContainer()
         .querySelector<HTMLButtonElement>(".maplibregl-ctrl-geolocate");
@@ -372,19 +445,23 @@ export function RegionMap({
       resizeObserver.disconnect();
       localMap.remove();
       map.current = null;
+      geolocateControl.current = null;
     };
   }, []);
 
   useEffect(() => {
     const localMap = map.current;
     const regionChanged = selectedRegion !== previousRegion.current;
+    const speciesChanged = speciesId !== previousSpeciesId.current;
     previousRegion.current = selectedRegion;
+    previousSpeciesId.current = speciesId;
     if (
       !localMap ||
       !initialSpeciesId.current ||
       initialHabitat.current ||
       !selectedRegion ||
-      !regionChanged
+      !regionChanged ||
+      speciesChanged
     )
       return;
 
@@ -401,7 +478,7 @@ export function RegionMap({
     return () => {
       localMap.off("load", focusRegion);
     };
-  }, [selectedRegion]);
+  }, [selectedRegion, speciesId]);
 
   useEffect(() => {
     selectedCellIdRef.current = selectedCellId ?? null;
@@ -413,13 +490,17 @@ export function RegionMap({
     if (!localMap || !speciesId || !habitat) return;
 
     let drawFrame: number | undefined;
+    let locationFallback: number | undefined;
     let historicalEvidencePattern: CanvasPattern | null = null;
+    let initialViewLoaded = false;
 
     const drawHabitat = () => {
       const canvas = cellCanvas.current;
-      if (!canvas) return;
+      const evidenceCanvas = historicalEvidenceCanvas.current;
+      if (!canvas || !evidenceCanvas) return;
       const context = prepareCanvas(canvas);
-      if (!context) return;
+      const evidenceContext = prepareCanvas(evidenceCanvas);
+      if (!context || !evidenceContext) return;
 
       withCataloniaLandClip(context, localMap, () => {
         for (const cell of habitatCellsById.current.values()) {
@@ -436,18 +517,28 @@ export function RegionMap({
             Math.max(width - gap * 2, 1),
             Math.max(height - gap * 2, 1),
           );
-          if (corroboratedHabitatCellIds.current.has(cell.cellId)) {
-            historicalEvidencePattern ??= createHistoricalEvidencePattern(context);
-            if (historicalEvidencePattern) {
-              context.fillStyle = historicalEvidencePattern;
-              context.fillRect(
-                topLeft.x + gap,
-                topLeft.y + gap,
-                Math.max(width - gap * 2, 1),
-                Math.max(height - gap * 2, 1),
-              );
-            }
-          }
+        }
+      });
+      withCataloniaLandClip(evidenceContext, localMap, () => {
+        historicalEvidencePattern ??=
+          createHistoricalEvidencePattern(evidenceContext);
+        if (!historicalEvidencePattern) return;
+
+        for (const cell of habitatCellsById.current.values()) {
+          if (!corroboratedHabitatCellIds.current.has(cell.cellId)) continue;
+          const [[west, south], [east, north]] = cell.cellBounds;
+          const topLeft = localMap.project([west, north]);
+          const bottomRight = localMap.project([east, south]);
+          const width = Math.max(bottomRight.x - topLeft.x, 1);
+          const height = Math.max(bottomRight.y - topLeft.y, 1);
+          const gap = Math.min(0.8, width * 0.08, height * 0.08);
+          evidenceContext.fillStyle = historicalEvidencePattern;
+          evidenceContext.fillRect(
+            topLeft.x + gap,
+            topLeft.y + gap,
+            Math.max(width - gap * 2, 1),
+            Math.max(height - gap * 2, 1),
+          );
         }
       });
     };
@@ -541,18 +632,72 @@ export function RegionMap({
       }
     };
 
-    fitCatalonia(localMap, false);
     localMap.on("move", scheduleDrawHabitat);
-    void loadHabitat();
-    localMap.on("moveend", loadHabitat);
+    const focusAndLoad = (centre?: [number, number], zoom?: number) => {
+      const firstLoad = !initialViewLoaded;
+      initialViewLoaded = true;
+      if (centre && zoom) localMap.jumpTo({ center: centre, zoom });
+      else if (selectedRegion)
+        localMap.jumpTo({ center: regionCentres[selectedRegion], zoom: 9.8 });
+      else fitCatalonia(localMap, false);
+
+      if (firstLoad) {
+        localMap.on("moveend", loadHabitat);
+        void loadHabitat();
+      }
+    };
+    const focusFallback = () => focusAndLoad();
+    const locator = geolocateControl.current;
+    const clearLocationListeners = () => {
+      if (!locator) return;
+      locator.off("geolocate", handleLocation);
+      locator.off("error", handleLocationUnavailable);
+      locator.off("outofmaxbounds", handleLocationUnavailable);
+    };
+    const handleLocation = (event: { coords: GeolocationCoordinates }) => {
+      clearLocationListeners();
+      if (locationFallback !== undefined)
+        window.clearTimeout(locationFallback);
+      const centre: [number, number] = [
+        event.coords.longitude,
+        event.coords.latitude,
+      ];
+      if (boundsContain(cataloniaBounds, centre[0], centre[1]))
+        focusAndLoad(centre, 11.2);
+      else if (!initialViewLoaded) focusFallback();
+    };
+    const handleLocationUnavailable = () => {
+      clearLocationListeners();
+      if (locationFallback !== undefined)
+        window.clearTimeout(locationFallback);
+      if (!initialViewLoaded) focusFallback();
+    };
+    const activate = () => {
+      if (!locator || !window.navigator.geolocation) {
+        focusFallback();
+        return;
+      }
+      locator.on("geolocate", handleLocation);
+      locator.on("error", handleLocationUnavailable);
+      locator.on("outofmaxbounds", handleLocationUnavailable);
+      locationFallback = window.setTimeout(focusFallback, 750);
+      locator.trigger();
+    };
+
+    if (localMap.loaded()) activate();
+    else localMap.once("load", activate);
     return () => {
       request.current?.abort();
+      clearLocationListeners();
+      if (locationFallback !== undefined)
+        window.clearTimeout(locationFallback);
       if (drawFrame !== undefined) window.cancelAnimationFrame(drawFrame);
+      localMap.off("load", activate);
       localMap.off("moveend", loadHabitat);
       localMap.off("move", scheduleDrawHabitat);
       drawCellsRef.current = () => undefined;
     };
-  }, [habitat, speciesId]);
+  }, [habitat, selectedRegion, speciesId]);
 
   useEffect(() => {
     const localMap = map.current;
@@ -571,13 +716,19 @@ export function RegionMap({
           const cellWidth = Math.max(bottomRight.x - topLeft.x, 1);
           const cellHeight = Math.max(bottomRight.y - topLeft.y, 1);
           const selected = cell.cellId === selectedCellIdRef.current;
-          context.fillStyle = scoreColour(cell.score);
-          context.fillRect(topLeft.x, topLeft.y, cellWidth, cellHeight);
+          if (cell.score !== 0) {
+            context.fillStyle = scoreColour(cell.score);
+            context.fillRect(topLeft.x, topLeft.y, cellWidth, cellHeight);
+          }
           context.strokeStyle = selected
             ? "#3b3b3b"
-            : "rgba(242, 235, 213, 0.78)";
+            : cell.score === 0
+              ? "rgba(92, 87, 78, 0.58)"
+              : "rgba(242, 235, 213, 0.78)";
           context.lineWidth = selected ? 2.5 : 0.65;
+          context.setLineDash(cell.score === 0 && !selected ? [3, 3] : []);
           context.strokeRect(topLeft.x, topLeft.y, cellWidth, cellHeight);
+          context.setLineDash([]);
         }
       });
     };
@@ -603,9 +754,7 @@ export function RegionMap({
           truncated: boolean;
         }>(`/api/predictions?${params}`, controller.signal);
         cellsById.current = new Map(
-          payload.cells
-            .filter((cell) => cell.score !== 0)
-            .map((cell) => [cell.cellId, cell]),
+          payload.cells.map((cell) => [cell.cellId, cell]),
         );
         completedRequestKey.current = requestKey;
         if (
@@ -734,29 +883,29 @@ export function RegionMap({
         : habitatEvidenceState.habitatCells
           ? `${habitatEvidenceState.habitatCells} sectors visibles coincideixen amb ${habitatEvidenceState.records} registres FungaCAT, generalitzats en ${habitatEvidenceState.cells} quadrícules de 10 km.`
           : habitatEvidenceState.cells
-            ? `Hi ha ${habitatEvidenceState.records} registres FungaCAT en aquesta vista, però no coincideixen amb l’hàbitat visible.`
+            ? `Hi ha ${habitatEvidenceState.records} registres FungaCAT en aquesta vista, però no coincideixen amb les zones compatibles visibles.`
             : "No hi ha registres FungaCAT en aquesta vista; això no demostra absència.";
   const statusCopy = habitat
     ? cellState.status === "ready"
       ? {
-          title: "Hàbitat potencial",
+          title: "Coberta del sòl, altitud i pH compatibles",
           detail: `${cellState.published} sectors de ${gridDimensions} contenen almenys una cel·la base de 250 m amb coberta del sòl, altitud i pH compatibles.${cellState.truncated ? " Apropa el mapa per carregar la resta." : cellState.gridSizeM > 250 ? " Apropa per veure la distribució exacta a 250 m." : " Estàs veient la graella base de 250 m."}`,
         }
       : cellState.status === "loading"
         ? {
-            title: "Calculant l’hàbitat potencial…",
+            title: "Comprovant coberta del sòl, altitud i pH…",
             detail: `Comprovant coberta del sòl, altitud i pH a ${gridDimensions}.`,
           }
         : cellState.status === "error"
           ? {
-              title: "No s’ha pogut carregar l’hàbitat",
+              title: "No s’han pogut carregar les zones compatibles",
               detail:
                 "La base topogràfica continua disponible; torna-ho a provar movent el mapa.",
             }
           : {
-              title: "Cap hàbitat compatible en aquesta vista",
+              title: "Cap zona compatible en aquesta vista",
               detail:
-                "No hi ha cel·les amb totes les evidències estàtiques requerides.",
+                "No hi ha cel·les on coincideixin la coberta del sòl, l’altitud i el pH requerits.",
             }
     : cellState.status === "ready"
       ? {
@@ -802,11 +951,28 @@ export function RegionMap({
     >
       <div className="region-map-viewport">
         <div ref={node} className="region-map-surface" />
-        <canvas ref={cellCanvas} className="region-map-cells" aria-hidden />
+        <canvas
+          ref={cellCanvas}
+          className="region-map-cells"
+          style={{ opacity: cellsVisible ? cellOpacity / 100 : 0 }}
+          aria-hidden
+        />
+        {habitat ? (
+          <canvas
+            ref={historicalEvidenceCanvas}
+            className="region-map-history"
+            style={{
+              opacity: historicalEvidenceVisible
+                ? historicalEvidenceOpacity / 100
+                : 0,
+            }}
+            aria-hidden
+          />
+        ) : null}
         {habitat && cellState.status === "loading" ? (
           <div className="habitat-map-loading" aria-hidden="true">
             <LoaderCircle size={16} />
-            <span>Carregant mapa i hàbitat…</span>
+            <span>Carregant mapa i zones compatibles…</span>
           </div>
         ) : null}
         {speciesId && !habitat ? (
@@ -816,6 +982,51 @@ export function RegionMap({
               <strong>{statusCopy.title}</strong>
               <span>{statusCopy.detail}</span>
             </div>
+          </div>
+        ) : null}
+        {speciesId ? (
+          <div
+            className="map-cell-visibility"
+            role="group"
+            aria-label={habitat ? "Capes del mapa" : "Visibilitat de les cel·les"}
+          >
+            {habitat ? (
+              <strong className="map-cell-visibility-title">Capes del mapa</strong>
+            ) : null}
+            <MapLayerControl
+              id={cellOpacityId}
+              label={habitat ? "Zones compatibles" : "Cel·les"}
+              controlName={
+                habitat ? "les zones compatibles" : "les cel·les del mapa"
+              }
+              opacityLabel={
+                habitat
+                  ? "Opacitat de les zones compatibles"
+                  : "Opacitat de les cel·les"
+              }
+              variant={habitat ? "compatibility" : "prediction"}
+              visible={cellsVisible}
+              opacity={cellOpacity}
+              onVisibilityChange={() =>
+                setCellsVisible((visible) => !visible)
+              }
+              onOpacityChange={setCellOpacity}
+            />
+            {habitat ? (
+              <MapLayerControl
+                id={historicalEvidenceOpacityId}
+                label="Registres històrics"
+                controlName="els registres històrics"
+                opacityLabel="Opacitat dels registres històrics"
+                variant="history"
+                visible={historicalEvidenceVisible}
+                opacity={historicalEvidenceOpacity}
+                onVisibilityChange={() =>
+                  setHistoricalEvidenceVisible((visible) => !visible)
+                }
+                onOpacityChange={setHistoricalEvidenceOpacity}
+              />
+            ) : null}
           </div>
         ) : null}
         <button
@@ -833,7 +1044,7 @@ export function RegionMap({
       {habitat ? (
         <aside
           className="habitat-map-legend"
-          aria-label="Com llegir el mapa d’hàbitat potencial"
+          aria-label="Com llegir les zones compatibles"
         >
           <div className="habitat-map-legend-heading">
             <Grid3X3 size={18} aria-hidden />
@@ -846,15 +1057,15 @@ export function RegionMap({
             <div className="habitat-map-legend-item">
               <i className="habitat-coverage-swatch" aria-hidden />
               <div>
-                <strong>Blau · hàbitat possible</strong>
-                <span>Més intensitat significa més cobertura compatible dins del sector.</span>
+                <strong>Blau · zones compatibles</strong>
+                <span>Més intensitat significa que una part més gran del sector compleix els tres criteris.</span>
               </div>
             </div>
             <div className="habitat-map-legend-item">
               <i className="habitat-history-swatch" aria-hidden />
               <div>
                 <strong>Ratllat lila · registres històrics</strong>
-                <span>La trama afegeix context històric, no més hàbitat. {habitatEvidenceCopy}</span>
+                <span>La trama afegeix context històric; no amplia les zones compatibles. {habitatEvidenceCopy}</span>
               </div>
             </div>
           </div>

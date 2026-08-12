@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 import { Map as MapIcon } from "lucide-react";
 import { ConditionComparison } from "@/components/condition-comparison";
 import { RegionMap } from "@/components/region-map";
+import { QuerySelect, type QuerySelectItem } from "@/components/ui/query-select";
 import { regionLabels } from "@/data/regions";
 import { getConditionPredictionStatus } from "@/src/lib/condition-presentation";
 import { formatGridDimensions } from "@/src/lib/map-grid";
@@ -15,16 +16,30 @@ export function MapExplorer({
   region,
   regionalSnapshot,
   regionalResult,
+  speciesItems,
   info
 }: {
   species: SpeciesProfile;
   region: RegionId;
   regionalSnapshot: ConditionSnapshot;
   regionalResult: SuitabilityResult;
+  speciesItems: QuerySelectItem[];
   info: ReactNode;
 }) {
-  const [selectedCell, setSelectedCell] = useState<PredictionCell>();
-  const selectCell = useCallback((cell?: PredictionCell) => setSelectedCell(cell), []);
+  const mapStage = useRef<HTMLDivElement>(null);
+  const [selection, setSelection] = useState<{
+    speciesId: string;
+    cell: PredictionCell;
+  }>();
+  const selectedCell = selection?.speciesId === species.speciesId
+    ? selection.cell
+    : undefined;
+  const selectCell = useCallback(
+    (cell?: PredictionCell) => setSelection(
+      cell ? { speciesId: species.speciesId, cell } : undefined,
+    ),
+    [species.speciesId],
+  );
   const snapshot: ConditionSnapshot = selectedCell ?? regionalSnapshot;
   const result = selectedCell ? calculateSuitability(species, snapshot) : regionalResult;
   const predictionStatus = getConditionPredictionStatus(snapshot.stale, result);
@@ -36,7 +51,7 @@ export function MapExplorer({
       : "selecciona una cel·la per calcular la puntuació";
 
   return <>
-    <div className="map-stage">
+    <div ref={mapStage} className="map-stage">
       <RegionMap
         activeRegions={species.ecologicalConfig.regions}
         selectedRegion={region}
@@ -46,6 +61,15 @@ export function MapExplorer({
         className="full-map"
         fullscreenTarget="parent"
       />
+      <label className="map-fullscreen-species-control">
+        <span>Espècie</span>
+        <QuerySelect
+          value={species.speciesId}
+          items={speciesItems}
+          portalContainer={mapStage}
+          aria-label="Canvia l’espècie del mapa en pantalla completa"
+        />
+      </label>
       <div className="map-floating-card">
         <MapIcon size={17} />
         <span>{selectedCell ? `Cel·la ${formatGridDimensions(selectedCell.gridSizeM)}` : regionLabels[region]}</span>
@@ -63,7 +87,7 @@ export function MapExplorer({
         cellGridSizeM={selectedCell?.gridSizeM}
         occurrenceEvidence={selectedCell?.occurrenceEvidence}
         occurrenceEvidenceStatus={selectedCell?.occurrenceEvidenceStatus}
-        onReset={selectedCell ? () => setSelectedCell(undefined) : undefined}
+        onReset={selectedCell ? () => setSelection(undefined) : undefined}
       />
       {info}
     </div>
