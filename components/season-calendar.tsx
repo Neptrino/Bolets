@@ -1,14 +1,15 @@
 import type { SpeciesProfile } from "@/src/lib/types";
-
-const monthLabels = ["Gen", "Feb", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Oct", "Nov", "Des"] as const;
-const monthKeys = ["gen", "feb", "mar", "abr", "mai", "jun", "jul", "ago", "set", "oct", "nov", "des"] as const;
+import { SEASON_MONTHS, SEASONAL_ACTIVITY_LABELS } from "@/src/lib/seasonality";
 
 export function SeasonCalendar({ species }: { species: SpeciesProfile }) {
   return (
     <div className="season-calendar" role="img" aria-label={`Calendari de temporada de ${species.identity.commonName}`}>
       <div className="season-calendar-label">Activitat potencial</div>
       <div className="season-grid">
-        {monthKeys.map((month, index) => <div key={month} className="season-month"><span>{monthLabels[index]}</span><i className={`season-level ${species.ecologicalConfig.seasonality[month]}`} title={species.ecologicalConfig.seasonality[month]} /></div>)}
+        {SEASON_MONTHS.map(({ key, shortLabel }) => {
+          const activity = species.ecologicalConfig.seasonality[key];
+          return <div key={key} className="season-month"><span>{shortLabel}</span><i className={`season-level ${activity}`} title={SEASONAL_ACTIVITY_LABELS[activity]} /></div>;
+        })}
       </div>
       <div className="season-legend"><span><i className="season-level possible" />possible</span><span><i className="season-level good" />bona</span><span><i className="season-level peak" />pic</span></div>
     </div>

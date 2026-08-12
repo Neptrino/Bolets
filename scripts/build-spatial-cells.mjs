@@ -5,6 +5,7 @@ import { once } from "node:events";
 import { fromFile } from "geotiff";
 import proj4 from "proj4";
 import sharp from "sharp";
+import { summarizeLandCoverCounts } from "./lib/land-cover.mjs";
 
 const GRID_M = 250;
 const WEATHER_GRID_M = 2500;
@@ -39,18 +40,6 @@ const bounds = [
 proj4.defs("EPSG:25831", "+proj=utm +zone=31 +ellps=GRS80 +units=m +no_defs +type=crs");
 const toWgs84 = proj4("EPSG:25831", "EPSG:4326");
 const regionDefinitions = JSON.parse(await readFile(new URL("../data/regions.json", import.meta.url), "utf8"));
-
-const landCoverClasses = new Map([
-  [221, { name: "Boscos densos d’aciculifolis", habitat: ["pinedes", "boscos de coníferes"] }],
-  [222, { name: "Boscos densos de caducifolis i planifolis", habitat: ["fagedes", "rouredes", "boscos de planifolis"] }],
-  [223, { name: "Boscos densos d’esclerofil·les i laurifolis", habitat: ["alzinars", "suredes", "boscos d’esclerofil·les"] }],
-  [224, { name: "Matollar", habitat: ["matollars", "clarianes", "vores de bosc"] }],
-  [225, { name: "Boscos clars d’aciculifolis", habitat: ["pinedes", "pinedes obertes", "boscos de coníferes"] }],
-  [226, { name: "Boscos clars de caducifolis i planifolis", habitat: ["fagedes", "rouredes", "boscos de planifolis"] }],
-  [227, { name: "Boscos clars d’esclerofil·les i laurifolis", habitat: ["alzinars", "suredes", "boscos d’esclerofil·les"] }],
-  [228, { name: "Prats i herbassars", habitat: ["prats", "clarianes", "vores de bosc"] }],
-  [229, { name: "Bosc de ribera", habitat: ["bosc de ribera", "boscos humits"] }]
-]);
 
 const rgbToCode = new Map([
   ["51,204,51", 221], ["102,255,51", 222], ["104,144,24", 223], ["150,125,95", 224],
@@ -194,10 +183,7 @@ function landCoverForCell(land, cellX, cellY) {
     }
   }
   const total = samplesPerCell * samplesPerCell;
-  const naturalSamples = [...counts.values()].reduce((sum, count) => sum + count, 0);
-  if (naturalSamples / total < 0.4) return undefined;
-  const [code, count] = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
-  return { code, share: count / total, naturalShare: naturalSamples / total, ...landCoverClasses.get(code) };
+  return summarizeLandCoverCounts(counts, total);
 }
 
 function weatherPoint(westUtm, southUtm) {
@@ -266,6 +252,7 @@ outer: for (let tileY = bounds[1]; tileY < bounds[3]; tileY += tileSizeM) {
           staticValues: {
             altitudeM: Math.round(altitude),
             forestTypes: landCover.habitat,
+            landCoverFractions: landCover.fractions,
             soilPh: Number((ph / 10).toFixed(1)),
             soilTexture: texture
           },

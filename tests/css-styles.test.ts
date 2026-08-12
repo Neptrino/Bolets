@@ -43,4 +43,13 @@ describe("shared styles", () => {
 
     expect(violations).toEqual([]);
   });
+
+  it("keeps the culinary dossier on shared palette tokens", () => {
+    const css = readFileSync(join(process.cwd(), "app", "globals.css"), "utf8");
+    const marker = "/* Culinary dossier:";
+    const culinaryStyles = css.slice(css.indexOf(marker));
+
+    expect(culinaryStyles).toContain(marker);
+    expect(culinaryStyles.match(/#[0-9a-f]{3,8}\b/gi) ?? []).toEqual([]);
+  });
 });

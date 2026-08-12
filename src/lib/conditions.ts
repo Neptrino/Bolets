@@ -3,10 +3,15 @@ import type { ConditionSnapshot, RegionId } from "@/src/lib/types";
 
 const regions: RegionId[] = ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors", "altres"];
 const environmentalFields = [
-  "temperatureC", "temperatureMin24hC", "temperatureAvg24hC", "temperatureMax24hC", "temperatureMin7dC", "frostHours7d",
+  "temperatureC", "temperatureMin24hC", "temperatureAvg24hC", "temperatureMax24hC",
+  "temperatureMin7dC", "frostHours7d",
+  "temperatureMin10dC", "temperatureAvg10dC", "temperatureMax10dC", "frostHours10d",
   "relativeHumidity", "relativeHumidityMin24h", "relativeHumidityAvg24h", "relativeHumidityMax24h",
   "soilMoisture", "soilMoistureMin24h", "soilMoistureAvg24h", "soilMoistureMax24h",
-  "rainfall7dMm", "windKmh", "windAvg24hKmh", "windMax24hKmh", "windGustMax24hKmh",
+  "soilMoistureMin7d", "soilMoistureAvg7d", "soilMoistureMax7d", "soilMoistureTrend7d",
+  "rainfall3dMm", "rainfall7dMm", "rainfallPrevious23dMm", "rainfall30dMm", "drySpellDays",
+  "evapotranspiration3dMm", "evapotranspiration7dMm", "evapotranspiration30dMm",
+  "windKmh", "windAvg24hKmh", "windMax24hKmh", "windGustMax24hKmh",
   "altitudeM", "forestCompatibility", "soilCompatibility"
 ];
 
@@ -38,7 +43,13 @@ export async function getConditionSnapshot(regionId: RegionId): Promise<Conditio
         Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
         apikey: process.env.SUPABASE_ANON_KEY!
       },
-      cache: "no-store"
+      // Regional snapshots are ingested on a much slower cadence than page
+      // requests. Reuse them briefly so every map render does not block on the
+      // same authenticated edge-function round trip. The snapshot's own
+      // observedAt/stale fields remain the authority for publication safety.
+      cache: "force-cache",
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(5_000)
     });
     if (!response.ok) return unavailable;
     return conditionSnapshotSchema.parse(await response.json());

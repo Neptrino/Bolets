@@ -46,6 +46,8 @@ type NormalizedOccurrence = {
 
 const PAGE_SIZE = 300;
 const MAX_SEARCH_RECORDS = 100_000;
+const DEFAULT_SPECIES_BATCH_SIZE = 7;
+const MAX_SPECIES_BATCH_SIZE = 14;
 const CATALONIA_BOUNDS = { west: 0.05, south: 40.48, east: 3.32, north: 42.92 };
 const FATAL_GBIF_ISSUES = new Set([
   "ZERO_COORDINATE",
@@ -242,8 +244,8 @@ Deno.serve(async (request) => {
 
   const body = await request.json().catch(() => ({})) as { trigger?: "cron" | "manual"; force?: boolean; maxSpecies?: number };
   const trigger = body.trigger === "manual" ? "manual" : "cron";
-  const requestedMax = Number.isInteger(body.maxSpecies) ? body.maxSpecies! : 14;
-  const maxSpecies = Math.min(Math.max(requestedMax, 1), 14);
+  const requestedMax = Number.isInteger(body.maxSpecies) ? body.maxSpecies! : DEFAULT_SPECIES_BATCH_SIZE;
+  const maxSpecies = Math.min(Math.max(requestedMax, 1), MAX_SPECIES_BATCH_SIZE);
   const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
   try {
@@ -258,6 +260,7 @@ Deno.serve(async (request) => {
       .select("dataset_key,species_id,scientific_name,last_record_count")
       .eq("enabled", true)
       .in("dataset_key", [...datasetByKey.keys()])
+      .order("last_attempted_at", { ascending: true, nullsFirst: true })
       .order("last_synced_at", { ascending: true, nullsFirst: true })
       .order("species_id", { ascending: true })
       .limit(maxSpecies);

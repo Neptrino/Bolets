@@ -30,7 +30,7 @@
 - Treat external environmental data as normalized, timestamped snapshots with provenance and uncertainty.
 - Do not expose exact sensitive ecological locations in public maps or interfaces.
 - Treat occurrence datasets as presence-only corroboration, never absence evidence or a direct suitability-score input. Generalize them to at least 10 km before storage, retain dataset DOI/licence/provenance, and deduplicate sources by their GBIF dataset key.
-- Build species-page potential-habitat maps from verified 250 m static cells using hard forest, altitude, and soil gates from the versioned species ecology; aggregate compatible-cell coverage for coarser zoom levels and keep this layer separate from current fruiting predictions.
+- Build species-page potential-habitat maps from verified 250 m static cells using hard forest and soil gates plus the shared altitude envelope from the versioned species ecology; aggregate compatible-cell coverage for coarser zoom levels and keep this layer separate from current fruiting predictions.
 
 ## Environmental pipeline conventions
 
@@ -38,7 +38,11 @@
 - Import 250 m static terrain, land-cover, and soil evidence only through the service-role importer with source and verification metadata.
 - Calculate suitability on the Next.js server with the same versioned species ecology used by profile pages.
 - Withhold a suitability score when required static evidence is unverified, dynamic inputs are stale, or model completeness is below the publication threshold.
-- Treat each species' version-controlled habitat altitude range as a hard ecological envelope; cells outside it score zero and must not be painted as compatible.
+- Treat each species' version-controlled habitat altitude range as its ecological core: score 100 through the interior, taper linearly to 75 during the 100 m inside either documented limit, and decline linearly to zero across the 100 m outer uncertainty margin. Cells at or beyond the margin's zero-score edge must not be painted as compatible.
+- Preserve sampled land-cover fractions in every imported 250 m cell and feed predictions the linear percentage of exact cover/altitude/pH-compatible coverage used by the habitat map. Zero compatible coverage and inactive seasonality score zero; do not infer coarse compatibility from a union of labels or promote a partial matching cover to 100%.
+- Weight distribution-map blue intensity by the shared altitude edge taper, but retain the raw exact compatible-cover percentage for the prediction habitat factor so altitude is not counted twice.
+- For coarse predictions, derive the altitude factor inside compatible habitat as `sum(coverage × altitude taper) / sum(coverage)` from canonical 250 m cells; never score the arithmetic mean elevation of a mixed parent cell. For every prediction cell, blend its score-band colour with the zero-score colour by the exact raw compatible-cover fraction so neither base nor zoomed-out cells overstate sparse habitat.
+- Preserve 3/7/30-day rain and ET₀, days 8–30 rain, dry-spell length, and 7-day shallow-soil moisture memory end to end; do not publish rainfall suitability from a 7-day accumulation alone.
 - Record provider state in `pipeline_sources` and every ingestion attempt in `ingestion_runs` so degraded and blocked sources remain visible.
 
 <!-- BEGIN:nextjs-agent-rules -->

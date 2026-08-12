@@ -1,0 +1,85 @@
+import { describe, expect, it } from "vitest";
+import { getSpecies } from "@/data/species";
+import {
+  areaProfiles,
+  areasBySlug,
+  getLocationPage,
+  getPlace,
+  locationPagePath,
+  placePath,
+  placeProfiles,
+  speciesLocationPages,
+} from "@/data/location-pages";
+
+describe("curated species-location pages", () => {
+  it("uses a stable area, place and species hierarchy", () => {
+    const paths = speciesLocationPages.map(locationPagePath);
+    expect(new Set(paths).size).toBe(paths.length);
+    expect(paths).toContain("/zones/ripolles/camprodon/ceps");
+    expect(paths).toContain("/zones/montseny/viladrau/ceps");
+    expect(paths).toContain("/zones/montseny/viladrau/rossinyols");
+    expect(paths).toContain("/zones/montseny/viladrau/camagrocs");
+    expect(paths).toContain("/zones/montseny/viladrau/ous-de-reig");
+    expect(paths).toContain("/zones/bergueda/rasos-de-peguera/fredolics");
+    expect(placePath(getPlace("ripolles", "camprodon")!)).toBe("/zones/ripolles/camprodon");
+    expect(paths.every((path) => /^\/zones\/[a-z-]+\/[a-z-]+\/[a-z-]+$/.test(path))).toBe(true);
+  });
+
+  it("publishes five distinct ecological guides for Viladrau", () => {
+    const viladrauPages = speciesLocationPages.filter(
+      (page) => page.areaSlug === "montseny" && page.placeSlug === "viladrau",
+    );
+    expect(viladrauPages).toHaveLength(5);
+    expect(new Set(viladrauPages.map((page) => page.speciesId)).size).toBe(5);
+  });
+
+  it("keeps generic rovelló demand attached to the accurate pinetell profile", () => {
+    const berguedaPinetellPages = speciesLocationPages.filter(
+      (page) => page.areaSlug === "bergueda" && page.speciesId === "lactarius-deliciosus",
+    );
+    expect(berguedaPinetellPages).toHaveLength(2);
+    for (const page of berguedaPinetellPages) {
+      expect(page.titlePhrase).toContain("Pinetells (rovellons)");
+      expect(page.searchName).toContain("rovellons");
+    }
+  });
+
+  it("publishes multiple guides for every curated place", () => {
+    for (const place of placeProfiles) {
+      const pages = speciesLocationPages.filter(
+        (page) => page.areaSlug === place.areaSlug && page.placeSlug === place.slug,
+      );
+      expect(pages.length, `${place.areaSlug}/${place.slug}`).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it("places every municipality or landscape inside a valid parent area", () => {
+    expect(areaProfiles.length).toBeGreaterThanOrEqual(4);
+    expect(placeProfiles.length).toBeGreaterThanOrEqual(8);
+    for (const place of placeProfiles) expect(areasBySlug[place.areaSlug], place.slug).toBeDefined();
+  });
+
+  it("only publishes combinations compatible with the shared regional ecology", () => {
+    for (const page of speciesLocationPages) {
+      const species = getSpecies(page.speciesId);
+      const area = areasBySlug[page.areaSlug];
+      const place = getPlace(page.areaSlug, page.placeSlug);
+      expect(species, page.speciesId).toBeDefined();
+      expect(place, page.placeSlug).toBeDefined();
+      expect(species!.ecologicalConfig.regions).toContain(area.regionId);
+      expect(getLocationPage(page.areaSlug, page.placeSlug, page.speciesSlug)).toBe(page);
+    }
+  });
+
+  it("requires substantive local copy rather than template-only doorway pages", () => {
+    for (const page of speciesLocationPages) {
+      const place = getPlace(page.areaSlug, page.placeSlug)!;
+      expect(page.introduction.length).toBeGreaterThan(150);
+      expect(page.habitatNote.length).toBeGreaterThan(150);
+      expect(page.seasonNote.length).toBeGreaterThan(120);
+      const distinctivePlaceTerm = place.name.toLocaleLowerCase("ca").split(" ").at(-1)!;
+      expect(page.titlePhrase.toLocaleLowerCase("ca")).toContain(distinctivePlaceTerm);
+      expect(place.source.url).toMatch(/^https:\/\//);
+    }
+  });
+});

@@ -1,6 +1,15 @@
 import { createAdminClient, finiteNumber, json } from "../_shared/pipeline.ts";
+import { mergeHabitatScoringValues } from "../_shared/habitat-scoring-values.ts";
+import { scoringValues } from "../_shared/scoring-values.ts";
 
-const supportedResolutions = new Set([250, 500, 1000, 2500, 5000, 10000]);
+const supportedResolutions = new Set([250, 1000, 2500, 5000, 10000]);
+const maximumRequestAreaDegrees = new Map([
+  [250, 0.05],
+  [1000, 0.5],
+  [2500, 2],
+  [5000, 6],
+  [10000, 12.5],
+]);
 
 function numberParam(searchParams: URLSearchParams, name: string) {
   const rawValue = searchParams.get(name);
@@ -19,6 +28,162 @@ function bbox(searchParams: URLSearchParams) {
   return { west: west!, south: south!, east: east!, north: north! };
 }
 
+type HabitatRequest = {
+  speciesId?: string;
+  profileKey?: string;
+  forestTerms: string[];
+  altitudeMin: number;
+  altitudeMax: number;
+  altitudeCoreMin?: number;
+  altitudeCoreMax?: number;
+  phMin?: number;
+  phMax?: number;
+  weightedAltitude: boolean;
+};
+
+function habitatRequest(searchParams: URLSearchParams): HabitatRequest | string {
+  const speciesId = searchParams.get("speciesId")?.trim();
+  const profileKey = searchParams.get("habitatProfileKey")?.trim();
+  const forestTerms = [...new Set(searchParams.getAll("forest").map((term) => term.trim().toLowerCase()).filter(Boolean))];
+  const altitudeMin = numberParam(searchParams, "altitudeMin");
+  const altitudeMax = numberParam(searchParams, "altitudeMax");
+  const altitudeCoreMin = numberParam(searchParams, "altitudeCoreMin");
+  const altitudeCoreMax = numberParam(searchParams, "altitudeCoreMax");
+  const phMin = numberParam(searchParams, "phMin");
+  const phMax = numberParam(searchParams, "phMax");
+  const validTerm = (term: string) => term.length >= 3 && term.length <= 80 && /^[\p{L}\p{N} .'-]+$/u.test(term);
+  if (!forestTerms.length || forestTerms.length > 24 || forestTerms.some((term) => !validTerm(term))) {
+    return "Invalid forest habitat terms";
+  }
+  if (altitudeMin === undefined || altitudeMax === undefined || altitudeMin < 0 || altitudeMin >= altitudeMax || altitudeMax > 4000) {
+    return "Invalid habitat altitude range";
+  }
+  if ((altitudeCoreMin === undefined) !== (altitudeCoreMax === undefined)) {
+    return "Invalid habitat altitude core";
+  }
+  const weightedAltitude = altitudeCoreMin !== undefined && altitudeCoreMax !== undefined;
+  if (weightedAltitude && (altitudeCoreMin < 0 || altitudeCoreMin >= altitudeCoreMax ||
+    altitudeCoreMax > 4000 || altitudeCoreMin < altitudeMin || altitudeCoreMax > altitudeMax)) {
+    return "Invalid habitat altitude core";
+  }
+  if ((phMin === undefined) !== (phMax === undefined) || (phMin !== undefined && (phMin < 0 || phMax! > 14 || phMin >= phMax!))) {
+    return "Invalid habitat soil pH range";
+  }
+  return {
+    speciesId, profileKey,
+    forestTerms, altitudeMin, altitudeMax, altitudeCoreMin, altitudeCoreMax,
+    phMin, phMax, weightedAltitude,
+  };
+}
+
+async function readHabitatRows(
+  supabase: ReturnType<typeof createAdminClient>,
+  bounds: NonNullable<ReturnType<typeof bbox>>,
+  resolution: number,
+  limit: number,
+  habitat: HabitatRequest,
+) {
+  let rpc = "read_potential_habitat_cells";
+  if (habitat.weightedAltitude) {
+    if (resolution === 250) {
+      rpc = "read_weighted_potential_habitat_cells";
+    } else {
+      rpc = "read_weighted_coarse_potential_habitat_cells";
+    }
+  }
+  const result = await supabase.rpc(rpc, {
+    p_west: bounds.west,
+    p_south: bounds.south,
+    p_east: bounds.east,
+    p_north: bounds.north,
+    p_grid_size_m: resolution,
+    p_forest_terms: habitat.forestTerms,
+    p_altitude_min: habitat.weightedAltitude ? habitat.altitudeCoreMin : habitat.altitudeMin,
+    p_altitude_max: habitat.weightedAltitude ? habitat.altitudeCoreMax : habitat.altitudeMax,
+    p_ph_min: habitat.phMin ?? null,
+    p_ph_max: habitat.phMax ?? null,
+    p_limit: limit,
+  });
+  return {
+    ...result,
+    complete: !result.error && (result.data?.length ?? 0) < limit,
+  };
+}
+
+async function readHabitatRowsForBounds(
+  supabase: ReturnType<typeof createAdminClient>,
+  bounds: NonNullable<ReturnType<typeof bbox>>,
+  resolution: number,
+  limit: number,
+  habitat: HabitatRequest,
+) {
+  if (resolution >= 1000 && habitat.speciesId && habitat.profileKey) {
+    const { data: complete, error: completionError } = await supabase.rpc(
+      "species_habitat_profile_complete",
+      { p_species_id: habitat.speciesId, p_profile_key: habitat.profileKey },
+    );
+    if (completionError) return { data: null, error: completionError, complete: false };
+    if (complete) {
+      const cached = await supabase.rpc("read_cached_species_habitat_cells", {
+        p_species_id: habitat.speciesId,
+        p_profile_key: habitat.profileKey,
+        p_west: bounds.west,
+        p_south: bounds.south,
+        p_east: bounds.east,
+        p_north: bounds.north,
+        p_grid_size_m: resolution,
+        p_limit: limit,
+      });
+      return {
+        ...cached,
+        complete: !cached.error && (cached.data?.length ?? 0) < limit,
+      };
+    }
+  }
+
+  const width = bounds.east - bounds.west;
+  const height = bounds.north - bounds.south;
+  const requestArea = width * height;
+  if (requestArea < 1) return readHabitatRows(supabase, bounds, resolution, limit, habitat);
+
+  // The free-plan database can time out when a single aggregation scans most
+  // of northern Catalonia. Partition only the database work; the returned
+  // cells still use the requested grid and exact 250 m evidence.
+  const tileCount = Math.min(Math.ceil(requestArea / 0.5), 10);
+  const splitLongitude = width >= height;
+  const tileResults = await Promise.all(Array.from({ length: tileCount }, (_, index) => {
+    const startRatio = index / tileCount;
+    const endRatio = (index + 1) / tileCount;
+    const tileBounds = splitLongitude
+      ? {
+          west: bounds.west + width * startRatio,
+          south: bounds.south,
+          east: bounds.west + width * endRatio,
+          north: bounds.north,
+        }
+      : {
+          west: bounds.west,
+          south: bounds.south + height * startRatio,
+          east: bounds.east,
+          north: bounds.south + height * endRatio,
+        };
+    return readHabitatRows(supabase, tileBounds, resolution, limit, habitat);
+  }));
+  const failed = tileResults.find((result) => result.error);
+  if (failed) return failed;
+
+  const rowsById = new Map<string, Record<string, unknown>>();
+  for (const result of tileResults) {
+    for (const row of result.data ?? []) rowsById.set(String(row.cell_id), row);
+  }
+  return {
+    ...tileResults[0],
+    data: [...rowsById.values()],
+    error: null,
+    complete: tileResults.every((result) => result.complete),
+  };
+}
+
 Deno.serve(async (request) => {
   if (request.method !== "GET") return json({ error: "Method not allowed" }, 405, { Allow: "GET" });
   const url = new URL(request.url);
@@ -30,53 +195,35 @@ Deno.serve(async (request) => {
   if (!Number.isInteger(resolution) || !supportedResolutions.has(resolution)) {
     return json({ error: "Invalid map resolution" }, 400);
   }
+  const requestArea = (bounds.east - bounds.west) * (bounds.north - bounds.south);
+  if (requestArea > maximumRequestAreaDegrees.get(resolution)!) {
+    return json({ error: "Bounding box is too large for this resolution" }, 400);
+  }
 
   try {
     const supabase = createAdminClient();
     if (url.searchParams.get("mode") === "habitat") {
-      const forestTerms = [...new Set(url.searchParams.getAll("forest").map((term) => term.trim().toLowerCase()).filter(Boolean))];
-      const altitudeMin = numberParam(url.searchParams, "altitudeMin");
-      const altitudeMax = numberParam(url.searchParams, "altitudeMax");
-      const phMin = numberParam(url.searchParams, "phMin");
-      const phMax = numberParam(url.searchParams, "phMax");
-      const validTerm = (term: string) => term.length >= 3 && term.length <= 80 && /^[\p{L}\p{N} .'-]+$/u.test(term);
-      if (!forestTerms.length || forestTerms.length > 24 || forestTerms.some((term) => !validTerm(term))) {
-        return json({ error: "Invalid forest habitat terms" }, 400);
-      }
-      if (altitudeMin === undefined || altitudeMax === undefined || altitudeMin < 0 || altitudeMin >= altitudeMax || altitudeMax > 4000) {
-        return json({ error: "Invalid habitat altitude range" }, 400);
-      }
-      if ((phMin === undefined) !== (phMax === undefined) || (phMin !== undefined && (phMin < 0 || phMax! > 14 || phMin >= phMax!))) {
-        return json({ error: "Invalid habitat soil pH range" }, 400);
-      }
-
-      const { data, error } = await supabase.rpc("read_potential_habitat_cells", {
-        p_west: bounds.west,
-        p_south: bounds.south,
-        p_east: bounds.east,
-        p_north: bounds.north,
-        p_grid_size_m: resolution,
-        p_forest_terms: forestTerms,
-        p_altitude_min: altitudeMin,
-        p_altitude_max: altitudeMax,
-        p_ph_min: phMin ?? null,
-        p_ph_max: phMax ?? null,
-        p_limit: limit
-      });
+      const habitat = habitatRequest(url.searchParams);
+      if (typeof habitat === "string") return json({ error: habitat }, 400);
+      const habitatResult = await readHabitatRowsForBounds(supabase, bounds, resolution, limit, habitat);
+      const { data, error } = habitatResult;
       if (error) throw error;
-      const cells = (data ?? []).map((row: Record<string, unknown>) => ({
+      const rows = data ?? [];
+      const cells = rows.slice(0, limit).map((row: Record<string, unknown>) => ({
         cellId: row.cell_id,
         regionId: row.region_id,
         gridSizeM: row.grid_size_m,
         bounds: [[row.west, row.south], [row.east, row.north]],
         coverage: row.coverage,
+        altitudeWeightedCoverage: row.altitude_weighted_coverage ?? row.coverage,
         eligibleCellCount: row.eligible_cell_count,
         sourceResolutionM: row.source_resolution_m,
         confidence: row.confidence,
         source: row.sources
       }));
-      return json({ cells, truncated: cells.length === limit, bounds, resolution }, 200, {
-        "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400"
+      const truncated = !habitatResult.complete || rows.length > limit;
+      return json({ cells, truncated, bounds, resolution }, 200, {
+        "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800"
       });
     }
 
@@ -93,23 +240,52 @@ Deno.serve(async (request) => {
       p_limit: limit,
       ...(resolution === 250 ? {} : { p_grid_size_m: resolution })
     };
-    const { data, error } = await supabase.rpc(rpc, rpcParams);
+    const includeHabitat = url.searchParams.get("includeHabitat") === "true";
+    const habitat = includeHabitat ? habitatRequest(url.searchParams) : null;
+    if (typeof habitat === "string") return json({ error: habitat }, 400);
+    const [environmentResult, habitatResult] = await Promise.all([
+      supabase.rpc(rpc, rpcParams),
+      habitat ? readHabitatRowsForBounds(supabase, bounds, resolution, limit, habitat) : Promise.resolve(null),
+    ]);
+    const { data, error } = environmentResult;
     if (error) throw error;
-    const cells = (data ?? []).map((row: Record<string, unknown>) => ({
-      cellId: row.cell_id,
-      regionId: row.region_id,
-      gridSizeM: row.grid_size_m,
-      bounds: [[row.west, row.south], [row.east, row.north]],
-      observedAt: row.observed_at,
-      source: row.sources,
-      sourceResolutionM: row.source_resolution_m,
-      confidence: row.confidence,
-      stale: row.stale,
-      unavailableFields: row.unavailable_fields,
-      values: row.values
-    }));
+    // Habitat is a required scoring input when requested. Never turn a failed
+    // habitat read into a successful response full of misleading null scores.
+    if (habitatResult?.error) throw habitatResult.error;
+    const habitatRows = habitatResult ? habitatResult.data ?? [] : null;
+    const habitatRowsByCellId = new Map(
+      (habitatRows ?? []).map((row: Record<string, unknown>) => [row.cell_id, row]),
+    );
+    const completeHabitatCoverage = habitatResult?.complete ?? false;
+    const scoreOnly = url.searchParams.get("view") === "score";
+    const cells = (data ?? []).map((row: Record<string, unknown>) => {
+      const baseValues = scoreOnly ? scoringValues(row.values) : row.values;
+      let values = baseValues && typeof baseValues === "object" && !Array.isArray(baseValues)
+        ? { ...(baseValues as Record<string, unknown>) }
+        : {};
+      if (includeHabitat) {
+        values = mergeHabitatScoringValues(
+          values,
+          habitatRowsByCellId.get(row.cell_id) as Record<string, unknown> | undefined,
+          completeHabitatCoverage,
+        );
+      }
+      return {
+        cellId: row.cell_id,
+        regionId: row.region_id,
+        gridSizeM: row.grid_size_m,
+        bounds: [[row.west, row.south], [row.east, row.north]],
+        observedAt: row.observed_at,
+        source: row.sources,
+        sourceResolutionM: row.source_resolution_m,
+        confidence: row.confidence,
+        stale: row.stale,
+        unavailableFields: row.unavailable_fields,
+        values,
+      };
+    });
     return json({ cells, truncated: cells.length === limit, bounds, resolution }, 200, {
-      "Cache-Control": "public, max-age=300, stale-while-revalidate=600"
+      "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=600"
     });
   } catch (error) {
     console.error("Unable to read spatial environment", error);

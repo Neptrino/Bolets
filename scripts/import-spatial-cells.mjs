@@ -1,10 +1,19 @@
 import { createReadStream } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { createInterface } from "node:readline";
+import { packLandCoverFractions } from "./lib/land-cover.mjs";
 
 const inputPath = process.argv.find((argument) => !argument.startsWith("--") && argument !== process.argv[0] && argument !== process.argv[1]);
 const dryRun = process.argv.includes("--dry-run");
-if (!inputPath) throw new Error("Usage: npm run spatial:import -- /absolute/path/cells.ndjson [--dry-run]");
+const coverOnly = process.argv.includes("--cover-only");
+const skipArgument = process.argv.find((argument) => argument.startsWith("--skip="));
+const limitArgument = process.argv.find((argument) => argument.startsWith("--limit="));
+const skip = Number(skipArgument?.split("=")[1] ?? 0);
+const inputLimit = Number(limitArgument?.split("=")[1] ?? Number.POSITIVE_INFINITY);
+if (!inputPath) throw new Error("Usage: npm run spatial:import -- /absolute/path/cells.ndjson [--dry-run] [--cover-only]");
+if (!Number.isInteger(skip) || skip < 0 || (!Number.isFinite(inputLimit) && inputLimit !== Number.POSITIVE_INFINITY) || inputLimit <= 0) {
+  throw new Error("--skip must be a non-negative integer and --limit must be positive");
+}
 
 function coordinateBounds(coordinates, bounds = [Infinity, Infinity, -Infinity, -Infinity]) {
   if (typeof coordinates?.[0] === "number" && typeof coordinates?.[1] === "number") {
@@ -82,28 +91,47 @@ async function uploadBatch() {
       "Content-Type": "application/json",
       ...(importToken ? { "x-spatial-import-token": importToken } : {})
     },
-    body: JSON.stringify({ cells: batch })
+    body: JSON.stringify(coverOnly ? { coverSamples: batch } : { cells: batch })
   });
   const result = await response.json();
   if (!response.ok) throw new Error(`Spatial import failed after ${imported} rows: ${result.error ?? response.status}`);
-  imported += result.imported;
-  verified += result.verified;
-  withheld += result.withheld;
-  console.log(`Imported ${imported} cells`);
+  if (coverOnly) {
+    imported += result.received;
+    verified += result.updated;
+    console.log(`Processed ${imported} cover samples; updated ${verified} existing cells`);
+  } else {
+    imported += result.imported;
+    verified += result.verified;
+    withheld += result.withheld;
+    console.log(`Imported ${imported} cells`);
+  }
   batch = [];
 }
 
 for await (const cell of readCells()) {
+  if (inputCells < skip) {
+    inputCells += 1;
+    continue;
+  }
+  if (inputCells >= skip + inputLimit) break;
   inputCells += 1;
   firstCellId ??= cell.cellId;
   if (dryRun) continue;
-  batch.push(cell);
-  if (batch.length === 1000) await uploadBatch();
+  if (coverOnly) {
+    const packed = packLandCoverFractions(cell.staticValues?.landCoverFractions);
+    if (!packed) throw new Error(`Invalid canonical land-cover samples for ${cell.cellId}`);
+    batch.push({ cellId: cell.cellId, packed });
+  } else {
+    batch.push(cell);
+  }
+  if (batch.length === (coverOnly ? 5000 : 1000)) await uploadBatch();
 }
 
 if (dryRun) {
   console.log(JSON.stringify({ validInput: true, cells: inputCells, firstCellId: firstCellId ?? null }, null, 2));
 } else {
   await uploadBatch();
-  console.log(JSON.stringify({ imported, verified, withheld }, null, 2));
+  console.log(JSON.stringify(coverOnly
+    ? { coverSamples: imported, updated: verified }
+    : { imported, verified, withheld }, null, 2));
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { Select, type SelectPortalProps } from "@base-ui/react/select";
-import { Check, ChevronDown } from "lucide-react";
+import { useTransition } from "react";
+import { Check, ChevronDown, LoaderCircle } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export type QuerySelectItem = { value: string; label: string };
@@ -18,7 +19,7 @@ export function QuerySelect({
   value: string;
   items: QuerySelectItem[];
   parameter?: string;
-  variant?: "region" | "compact" | "comparison";
+  variant?: "region" | "compact" | "comparison" | "map";
   className?: string;
   portalContainer?: SelectPortalProps["container"];
   "aria-label"?: string;
@@ -26,6 +27,7 @@ export function QuerySelect({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
   const isRegion = variant === "region";
   const prefix = isRegion ? "region" : "species";
   const triggerClassName = [
@@ -38,15 +40,21 @@ export function QuerySelect({
     if (!nextValue || nextValue === value) return;
     const next = new URLSearchParams(searchParams.toString());
     next.set(parameter, nextValue);
-    router.push(`${pathname}?${next}`, { scroll: isRegion });
+    startTransition(() => {
+      router.push(`${pathname}?${next}`, { scroll: false });
+    });
   };
 
   return (
-    <Select.Root value={value} items={items} onValueChange={selectValue}>
-      <Select.Trigger className={triggerClassName} aria-label={ariaLabel}>
+    <Select.Root value={value} items={items} onValueChange={selectValue} disabled={isPending}>
+      <Select.Trigger className={triggerClassName} aria-label={ariaLabel} aria-busy={isPending}>
         <Select.Value className={isRegion ? undefined : "species-select-value"} />
-        <Select.Icon className={isRegion ? undefined : "species-select-icon"}>
-          <ChevronDown size={variant === "comparison" ? 20 : 16} aria-hidden="true" />
+        <Select.Icon className={isRegion ? undefined : `species-select-icon${isPending ? " is-loading" : ""}`}>
+          {isPending ? (
+            <LoaderCircle size={variant === "comparison" || variant === "map" ? 20 : 16} aria-hidden="true" />
+          ) : (
+            <ChevronDown size={variant === "comparison" || variant === "map" ? 20 : 16} aria-hidden="true" />
+          )}
         </Select.Icon>
       </Select.Trigger>
       <Select.Portal container={portalContainer}>

@@ -1,4 +1,5 @@
 import { createAdminClient, finiteNumber, finishRun, json, requireServiceRole, startRun, verifyNamedToken } from "../_shared/pipeline.ts";
+import { packLandCoverFractions } from "../_shared/land-cover.ts";
 import { regionIds } from "../_shared/regions.ts";
 
 type CellInput = {
@@ -14,9 +15,24 @@ type CellInput = {
 };
 
 type WeatherPointInput = { pointId?: unknown; latitude?: unknown; longitude?: unknown; nativeResolutionM?: unknown; elevationM?: unknown };
+type CoverSampleInput = { cellId?: unknown; packed?: unknown };
 
 const confidenceValues = new Set(["high", "moderate", "limited", "unknown"]);
 const hasTextArray = (value: unknown) => Array.isArray(value) && value.some((item) => typeof item === "string" && item.trim());
+
+function normaliseCoverSample(input: CoverSampleInput) {
+  if (typeof input.cellId !== "string" || !/^[a-z0-9:_-]{3,120}$/i.test(input.cellId)) {
+    throw new Error("Invalid cover-sample cellId");
+  }
+  if (typeof input.packed !== "string" || !/^\d{1,14}$/.test(input.packed)) {
+    throw new Error(`Invalid packed cover samples for ${input.cellId}`);
+  }
+  const packed = BigInt(input.packed);
+  if (packed < 1n || packed > 35_184_372_088_831n) {
+    throw new Error(`Invalid packed cover samples for ${input.cellId}`);
+  }
+  return { cell_id: input.cellId, packed: input.packed };
+}
 
 function normaliseCell(input: CellInput) {
   if (typeof input.cellId !== "string" || !/^[a-z0-9:_-]{3,120}$/i.test(input.cellId)) throw new Error("Invalid cellId");
@@ -26,7 +42,10 @@ function normaliseCell(input: CellInput) {
   const coordinates = [west, south, east, north].map(finiteNumber);
   if (coordinates.some((value) => value === undefined)) throw new Error(`Non-numeric bounds for ${input.cellId}`);
   if (!(coordinates[0]! < coordinates[2]! && coordinates[1]! < coordinates[3]!)) throw new Error(`Inverted bounds for ${input.cellId}`);
-  const staticValues = input.staticValues && typeof input.staticValues === "object" && !Array.isArray(input.staticValues) ? input.staticValues as Record<string, unknown> : {};
+  const inputStaticValues = input.staticValues && typeof input.staticValues === "object" && !Array.isArray(input.staticValues) ? input.staticValues as Record<string, unknown> : {};
+  const coverFractions = packLandCoverFractions(inputStaticValues.landCoverFractions, input.cellId);
+  const staticValues = { ...inputStaticValues };
+  delete staticValues.landCoverFractions;
   const sources = Array.isArray(input.sources) ? input.sources.filter((source): source is string => typeof source === "string" && source.length > 0) : [];
   const sourceResolutionM = finiteNumber(input.sourceResolutionM);
   const confidence = typeof input.confidence === "string" && confidenceValues.has(input.confidence) ? input.confidence : "unknown";
@@ -58,6 +77,9 @@ function normaliseCell(input: CellInput) {
       east: coordinates[2],
       north: coordinates[3],
       static_values: staticValues,
+      habitat_cover_counts: coverFractions?.packed ?? null,
+      habitat_cover_codes: null,
+      habitat_cover_shares: null,
       static_sources: sources,
       source_resolution_m: Math.round(sourceResolutionM),
       confidence,
@@ -89,7 +111,16 @@ Deno.serve(async (request) => {
     }
     const contentLength = Number(request.headers.get("content-length") ?? 0);
     if (contentLength > 2_000_000) return json({ error: "Import payload is too large" }, 413);
-    const payload = await request.json() as { cells?: CellInput[] };
+    const payload = await request.json() as { cells?: CellInput[]; coverSamples?: CoverSampleInput[] };
+    if (Array.isArray(payload.coverSamples)) {
+      if (!payload.coverSamples.length || payload.coverSamples.length > 5000) {
+        return json({ error: "Provide between 1 and 5,000 cover samples" }, 400);
+      }
+      const coverSamples = payload.coverSamples.map(normaliseCoverSample);
+      const { data, error } = await supabase.rpc("backfill_spatial_habitat_cover_counts", { p_rows: coverSamples });
+      if (error) throw error;
+      return json({ received: coverSamples.length, updated: Number(data ?? 0) });
+    }
     if (!Array.isArray(payload.cells) || !payload.cells.length || payload.cells.length > 1000) return json({ error: "Provide between 1 and 1,000 cells" }, 400);
 
     const snapshotDate = new Date().toISOString().slice(0, 10);
@@ -97,16 +128,32 @@ Deno.serve(async (request) => {
     const normalized = payload.cells.map(normaliseCell);
     const rows = normalized.map((item) => item.cell);
     const weatherPoints = [...new Map(normalized.map((item) => [item.weatherPoint.point_id, item.weatherPoint])).values()];
-    const { error: weatherError } = await supabase.from("weather_grid_points").upsert(weatherPoints, { onConflict: "point_id" });
-    if (weatherError) throw weatherError;
-    const { error } = await supabase.from("spatial_cells").upsert(rows, { onConflict: "cell_id" });
+    const { data: writeResult, error } = await supabase.rpc("upsert_spatial_import_batch", {
+      p_cells: rows,
+      p_weather_points: weatherPoints
+    });
     if (error) throw error;
+    const writeCounts = writeResult && typeof writeResult === "object" && !Array.isArray(writeResult)
+      ? writeResult as Record<string, unknown>
+      : {};
+    const cellsWritten = finiteNumber(writeCounts.cellsWritten);
+    const weatherPointsWritten = finiteNumber(writeCounts.weatherPointsWritten);
+    if (cellsWritten === undefined || !Number.isInteger(cellsWritten) || cellsWritten < 0 || cellsWritten > rows.length ||
+      weatherPointsWritten === undefined || !Number.isInteger(weatherPointsWritten) ||
+      weatherPointsWritten < 0 || weatherPointsWritten > weatherPoints.length) {
+      throw new Error("Invalid spatial import write result");
+    }
     await supabase.from("pipeline_cursors").delete().eq("pipeline", "spatial-environment");
     const verified = rows.filter((row) => row.static_verified).length;
     await finishRun(supabase, runId, verified === rows.length ? "succeeded" : "partial", {
       rowsRead: rows.length,
-      rowsWritten: rows.length,
-      metadata: { verified, withheld: rows.length - verified }
+      rowsWritten: cellsWritten,
+      metadata: {
+        verified,
+        withheld: rows.length - verified,
+        unchanged: rows.length - cellsWritten,
+        weatherPointsWritten
+      }
     });
     return json({ runId, imported: rows.length, verified, withheld: rows.length - verified });
   } catch (error) {

@@ -32,6 +32,22 @@ Deno.serve(async (request) => {
 
   try {
     const supabase = createAdminClient();
+    const { data: syncedTaxa, error: taxonError } = await supabase
+      .from("occurrence_taxa")
+      .select("last_synced_at")
+      .eq("species_id", speciesId)
+      .eq("enabled", true)
+      .not("last_synced_at", "is", null)
+      .limit(1);
+    if (taxonError) throw taxonError;
+    if (!syncedTaxa?.length) {
+      return json(
+        { error: "Historical occurrence support has not been synchronized for this species" },
+        503,
+        { "Cache-Control": "no-store" },
+      );
+    }
+
     const { data, error } = await supabase.rpc("read_species_occurrence_support", {
       p_species_id: speciesId,
       p_west: bounds.west,

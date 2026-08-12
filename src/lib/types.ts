@@ -38,6 +38,9 @@ export type RegionId =
   | "muntanyes-interiors"
   | "altres";
 
+export type MapViewMode = "prediction" | "compatibility";
+export type SpeciesPredictionMode = "current" | "habitat_only";
+
 export interface SourceReference {
   id: string;
   title: string;
@@ -150,8 +153,32 @@ export interface ModelConfig {
   factors: ModelFactor[];
 }
 
+export interface CulinaryProfileBase {
+  rating: 0 | 1 | 2 | 3;
+  ratingLabel: string;
+  ratingRationale: string;
+  summary: string;
+  cautions: string[];
+  sources: SourceReference[];
+}
+
+export type CulinaryProfile =
+  | (CulinaryProfileBase & {
+      kind: "culinary";
+      flavour: string;
+      texture: string;
+      bestUses: string[];
+      preparation: string[];
+      preservation: string[];
+    })
+  | (CulinaryProfileBase & {
+      kind: "safety";
+    });
+
 export interface SpeciesProfile {
   speciesId: string;
+  predictionMode: SpeciesPredictionMode;
+  predictionCaveat?: string;
   identity: {
     commonName: string;
     alternateNames: string[];
@@ -166,6 +193,7 @@ export interface SpeciesProfile {
   morphology: Morphology;
   similarSpecies: SimilarSpecies[];
   safetyNotice: string;
+  culinaryProfile: CulinaryProfile;
   ecologicalConfig: EcologicalConfig;
   modelConfig: ModelConfig;
   idealConditions: string[];
@@ -197,6 +225,10 @@ export interface ConditionSnapshot {
     temperatureMax24hC?: number;
     temperatureMin7dC?: number;
     frostHours7d?: number;
+    temperatureMin10dC?: number;
+    temperatureAvg10dC?: number;
+    temperatureMax10dC?: number;
+    frostHours10d?: number;
     relativeHumidity?: number;
     relativeHumidityMin24h?: number;
     relativeHumidityAvg24h?: number;
@@ -205,13 +237,25 @@ export interface ConditionSnapshot {
     soilMoistureMin24h?: number;
     soilMoistureAvg24h?: number;
     soilMoistureMax24h?: number;
+    soilMoistureMin7d?: number;
+    soilMoistureAvg7d?: number;
+    soilMoistureMax7d?: number;
+    soilMoistureTrend7d?: number;
+    rainfall3dMm?: number;
     rainfall7dMm?: number;
+    rainfallPrevious23dMm?: number;
+    rainfall30dMm?: number;
+    drySpellDays?: number;
+    evapotranspiration3dMm?: number;
+    evapotranspiration7dMm?: number;
+    evapotranspiration30dMm?: number;
     windKmh?: number;
     windAvg24hKmh?: number;
     windMax24hKmh?: number;
     windGustKmh?: number;
     windGustMax24hKmh?: number;
     altitudeM?: number;
+    habitatAltitudeSuitability?: number;
     forestCompatibility?: number;
     soilCompatibility?: number;
     forestTypes?: string[];
@@ -239,7 +283,16 @@ export interface SuitabilityResult {
   missingFactors: ModelFactor["id"][];
 }
 
-export type SpatialGridSizeM = 250 | 500 | 1000 | 2500 | 5000 | 10000;
+export interface RegionalPredictionSummary {
+  regionId: RegionId;
+  gridSizeM: 10000;
+  scoredCellCount: number;
+  scoreRange: [number, number];
+  result: SuitabilityResult;
+  snapshot: ConditionSnapshot;
+}
+
+export type SpatialGridSizeM = 250 | 1000 | 2500 | 5000 | 10000;
 
 export interface SpatialBounds {
   west: number;
@@ -295,8 +348,10 @@ export interface PredictionCell {
 
 export type PredictionMapCell = Pick<
   PredictionCell,
-  "speciesId" | "cellId" | "regionId" | "gridSizeM" | "cellBounds" | "score" | "label"
->;
+  "cellId" | "gridSizeM" | "cellBounds" | "score"
+> & {
+  habitatCoverage: number | null;
+};
 
 export interface PotentialHabitatCell {
   speciesId: string;
@@ -305,11 +360,17 @@ export interface PotentialHabitatCell {
   gridSizeM: SpatialGridSizeM;
   cellBounds: CoordinateBounds;
   coverage: number;
+  altitudeWeightedCoverage: number;
   eligibleCellCount: number;
   sourceResolutionM: number;
   confidence: EvidenceConfidence;
   source: string[];
 }
+
+export type PotentialHabitatMapCell = Pick<
+  PotentialHabitatCell,
+  "cellId" | "cellBounds" | "coverage" | "altitudeWeightedCoverage"
+>;
 
 export interface OccurrenceSupportCell extends HistoricalOccurrenceEvidence {
   bounds: CoordinateBounds;

@@ -9,11 +9,13 @@ import { regionLabels } from "@/data/regions";
 import { getConditionPredictionStatus } from "@/src/lib/condition-presentation";
 import { formatGridDimensions } from "@/src/lib/map-grid";
 import { calculateSuitability } from "@/src/lib/scoring";
-import type { ConditionSnapshot, PredictionCell, RegionId, SpeciesProfile, SuitabilityResult } from "@/src/lib/types";
+import { getSuitabilityBand } from "@/src/lib/suitability-scale";
+import type { ConditionSnapshot, MapViewMode, PredictionCell, RegionId, SpeciesProfile, SuitabilityResult } from "@/src/lib/types";
 
 export function MapExplorer({
   species,
   region,
+  mode,
   regionalSnapshot,
   regionalResult,
   speciesItems,
@@ -21,6 +23,7 @@ export function MapExplorer({
 }: {
   species: SpeciesProfile;
   region: RegionId;
+  mode: MapViewMode;
   regionalSnapshot: ConditionSnapshot;
   regionalResult: SuitabilityResult;
   speciesItems: QuerySelectItem[];
@@ -31,7 +34,7 @@ export function MapExplorer({
     speciesId: string;
     cell: PredictionCell;
   }>();
-  const selectedCell = selection?.speciesId === species.speciesId
+  const selectedCell = mode === "prediction" && selection?.speciesId === species.speciesId
     ? selection.cell
     : undefined;
   const selectCell = useCallback(
@@ -44,6 +47,8 @@ export function MapExplorer({
   const result = selectedCell ? calculateSuitability(species, snapshot) : regionalResult;
   const predictionStatus = getConditionPredictionStatus(snapshot.stale, result);
   const hasPrediction = predictionStatus.kind === "available" && result.score !== null;
+  const resultBand = result.score === null ? undefined : getSuitabilityBand(result.score);
+  const selectedHabitatCoverage = selectedCell?.values.forestCompatibility;
   const unavailableCopy = predictionStatus.kind === "environment-unavailable"
     ? "sense dades ambientals verificades"
     : selectedCell
@@ -56,6 +61,8 @@ export function MapExplorer({
         activeRegions={species.ecologicalConfig.regions}
         selectedRegion={region}
         speciesId={species.speciesId}
+        mode={mode}
+        predictionAvailable={species.predictionMode === "current"}
         selectedCellId={selectedCell?.cellId}
         onCellSelect={selectCell}
         className="full-map"
@@ -70,25 +77,34 @@ export function MapExplorer({
           aria-label="Canvia l’espècie del mapa en pantalla completa"
         />
       </label>
-      <div className="map-floating-card">
-        <MapIcon size={17} />
-        <span>{selectedCell ? `Cel·la ${formatGridDimensions(selectedCell.gridSizeM)}` : regionLabels[region]}</span>
-        <strong>{hasPrediction ? `${result.score}/100` : "—"}</strong>
-        <p>{hasPrediction ? `${result.label} · ${selectedCell ? "lectura local" : "lectura regional"}` : unavailableCopy}</p>
-      </div>
+      {mode === "prediction" ? (
+        <div className="map-floating-card" aria-live="polite">
+          <div className="map-floating-card-label">
+            <MapIcon size={17} aria-hidden="true" />
+            <span>{selectedCell ? `Cel·la ${formatGridDimensions(selectedCell.gridSizeM)}` : regionLabels[region]}</span>
+            {hasPrediction && resultBand ? <i style={{ backgroundColor: resultBand.color }} aria-hidden="true" /> : null}
+          </div>
+          <strong>{hasPrediction ? <>{result.score}<small>/100</small></> : "—"}</strong>
+          <p>{hasPrediction
+            ? `${result.label} · ${selectedCell ? "lectura local" : "lectura regional"}${selectedHabitatCoverage === undefined ? "" : ` · ${Math.round(selectedHabitatCoverage)}% d’hàbitat compatible`}`
+            : unavailableCopy}</p>
+        </div>
+      ) : null}
     </div>
     <div className="page-width map-bottom">
-      <ConditionComparison
-        expanded
-        species={species}
-        snapshot={snapshot}
-        result={result}
-        cellId={selectedCell?.cellId}
-        cellGridSizeM={selectedCell?.gridSizeM}
-        occurrenceEvidence={selectedCell?.occurrenceEvidence}
-        occurrenceEvidenceStatus={selectedCell?.occurrenceEvidenceStatus}
-        onReset={selectedCell ? () => setSelection(undefined) : undefined}
-      />
+      {mode === "prediction" ? (
+        <ConditionComparison
+          expanded
+          species={species}
+          snapshot={snapshot}
+          result={result}
+          cellId={selectedCell?.cellId}
+          cellGridSizeM={selectedCell?.gridSizeM}
+          cellBounds={selectedCell?.cellBounds}
+          occurrenceEvidence={selectedCell?.occurrenceEvidence}
+          occurrenceEvidenceStatus={selectedCell?.occurrenceEvidenceStatus}
+        />
+      ) : null}
       {info}
     </div>
   </>;

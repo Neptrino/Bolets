@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getSpecies, speciesProfiles } from "@/data/species";
 import { assessPotentialHabitat, getPotentialHabitatCells, habitatForestTerms } from "@/src/lib/habitat";
+import { HABITAT_MODEL_VERSION } from "@/src/lib/model-versions";
 
 const boletusEdulis = getSpecies("boletus-edulis")!;
 
@@ -43,6 +44,23 @@ describe("potential habitat", () => {
 
     expect(result).toMatchObject({ eligible: false, complete: false });
     expect(result.gates.soilPh).toBe("unknown");
+  });
+
+  it("keeps altitude compatible inside the 100 m uncertainty margin", () => {
+    const species = getSpecies("amanita-caesarea")!;
+    const withinMargin = assessPotentialHabitat(species, {
+      forestTypes: ["alzinars"],
+      altitudeM: 1250,
+      soilPh: 5.5
+    });
+    const outsideMargin = assessPotentialHabitat(species, {
+      forestTypes: ["alzinars"],
+      altitudeM: 1300,
+      soilPh: 5.5
+    });
+
+    expect(withinMargin.gates.altitude).toBe("compatible");
+    expect(outsideMargin.gates.altitude).toBe("incompatible");
   });
 
   it("derives exact ICGC habitat labels from the versioned forest profile", () => {
@@ -108,6 +126,23 @@ describe("potential habitat", () => {
     const result = await getPotentialHabitatCells("boletus-edulis", { west: 1, south: 41, east: 2, north: 42 });
 
     expect(result.cells).toHaveLength(1);
+    expect(vi.mocked(fetch).mock.calls.some(([input]) => {
+      const url = new URL(String(input));
+      return url.searchParams.get("mode") === "habitat" &&
+        url.searchParams.get("modelVersion") === HABITAT_MODEL_VERSION &&
+        url.searchParams.get("altitudeMin") === "300" &&
+        url.searchParams.get("altitudeMax") === "2000" &&
+        url.searchParams.get("altitudeCoreMin") === "400" &&
+        url.searchParams.get("altitudeCoreMax") === "1900";
+    })).toBe(true);
+    const habitatCall = vi.mocked(fetch).mock.calls.find(([input]) =>
+      String(input).includes("read-spatial-environment"),
+    );
+    expect(habitatCall?.[1]).toMatchObject({
+      cache: "force-cache",
+      next: { revalidate: 86_400 },
+    });
+    expect(result.cells[0]).toMatchObject({ coverage: 0.62, altitudeWeightedCoverage: 0.62 });
     expect(result.occurrenceEvidence).toMatchObject({
       available: true,
       cells: [{ supportCellId: "epsg25831:10000:45:468", gridSizeM: 10000, recordCount: 8 }]

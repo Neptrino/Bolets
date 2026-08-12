@@ -1,6 +1,11 @@
-import type { CoordinateBounds, SpatialGridSizeM } from "@/src/lib/types";
+import type {
+  CoordinateBounds,
+  SpatialBounds,
+  SpatialGridSizeM,
+} from "@/src/lib/types";
 
-export const spatialGridSizes = [250, 500, 1000, 2500, 5000, 10000] as const satisfies readonly SpatialGridSizeM[];
+export const spatialGridSizes = [250, 1000, 2500, 5000, 10000] as const satisfies readonly SpatialGridSizeM[];
+export const maximumVisibleGridCells = 600;
 
 export function isSpatialGridSize(value: number): value is SpatialGridSizeM {
   return spatialGridSizes.some((size) => size === value);
@@ -8,11 +13,38 @@ export function isSpatialGridSize(value: number): value is SpatialGridSizeM {
 
 export function gridSizeForZoom(zoom: number): SpatialGridSizeM {
   if (zoom >= 14.2) return 250;
-  if (zoom >= 13.2) return 500;
   if (zoom >= 11.8) return 1000;
   if (zoom >= 9.4) return 2500;
   if (zoom >= 8.2) return 5000;
   return 10000;
+}
+
+/**
+ * Keeps a wide viewport from requesting thousands of cells just because its
+ * zoom level happens to cross a detail threshold. The zoom still defines the
+ * finest allowed grid; viewport size may only make it coarser.
+ */
+export function gridSizeForViewport(
+  zoom: number,
+  bounds: SpatialBounds,
+  cellBudget = maximumVisibleGridCells,
+): SpatialGridSizeM {
+  const zoomGridSize = gridSizeForZoom(zoom);
+  const centreLatitude = (bounds.south + bounds.north) / 2;
+  const metresPerLongitudeDegree = 111_320
+    * Math.max(Math.cos(centreLatitude * Math.PI / 180), 0.01);
+  const widthM = Math.max(bounds.east - bounds.west, 0) * metresPerLongitudeDegree;
+  const heightM = Math.max(bounds.north - bounds.south, 0) * 110_574;
+  const firstAllowedIndex = spatialGridSizes.indexOf(zoomGridSize);
+
+  for (let index = firstAllowedIndex; index < spatialGridSizes.length; index += 1) {
+    const sizeM = spatialGridSizes[index];
+    const estimatedCells = Math.ceil(widthM / sizeM) * Math.ceil(heightM / sizeM);
+    if (estimatedCells <= cellBudget || index === spatialGridSizes.length - 1)
+      return sizeM;
+  }
+
+  return spatialGridSizes.at(-1)!;
 }
 
 function formatDistance(sizeM: SpatialGridSizeM) {

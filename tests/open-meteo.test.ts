@@ -7,11 +7,14 @@ describe("Open-Meteo profiles", () => {
   it("keeps AROME atmospheric requests separate from coarse soil moisture", () => {
     const atmosphere = new URL("https://api.open-meteo.com/v1/meteofrance");
     configureOpenMeteoRequest(atmosphere, "atmosphere");
+    expect(atmosphere.searchParams.get("past_hours")).toBe("720");
     expect(atmosphere.searchParams.get("current")).toContain("temperature_2m");
     expect(atmosphere.searchParams.get("current")).not.toContain("soil_moisture_3_to_9cm");
+    expect(atmosphere.searchParams.get("hourly")).toContain("et0_fao_evapotranspiration");
 
     const soil = new URL("https://api.open-meteo.com/v1/forecast");
     configureOpenMeteoRequest(soil, "soil");
+    expect(soil.searchParams.get("past_hours")).toBe("168");
     expect(soil.searchParams.get("current")).toBe("soil_moisture_3_to_9cm");
     expect(soil.searchParams.get("hourly")).toBe("soil_moisture_3_to_9cm");
   });
@@ -51,13 +54,63 @@ describe("Open-Meteo profiles", () => {
       utc_offset_seconds: 7200,
       current: { time: times.at(-1), temperature_2m: 16, relative_humidity_2m: 74, wind_speed_10m: 8, wind_gusts_10m: 17 },
       hourly: {
-        time: Array.from({ length: 168 }, (_, index) => `2026-08-${(4 + Math.floor(index / 24)).toString().padStart(2, "0")}T${(index % 24).toString().padStart(2, "0")}:00`),
-        temperature_2m: Array(168).fill(14), relative_humidity_2m: Array(168).fill(76),
-        wind_speed_10m: Array(168).fill(7), wind_gusts_10m: Array(168).fill(16), precipitation: Array(168).fill(0.1)
+        time: Array.from({ length: 240 }, (_, index) => `2026-08-${(1 + Math.floor(index / 24)).toString().padStart(2, "0")}T${(index % 24).toString().padStart(2, "0")}:00`),
+        temperature_2m: Array(240).fill(14), relative_humidity_2m: Array(240).fill(76),
+        wind_speed_10m: Array(240).fill(7), wind_gusts_10m: Array(240).fill(16), precipitation: Array(240).fill(0.1)
       }
     };
 
     const normalized = normalizeOpenMeteo(atmosphere, atmosphere, "atmosphere");
+    expect(normalized.values.temperatureMin7dC).toBe(14);
+    expect(normalized.values.temperatureMin10dC).toBe(14);
+    expect(normalized.values.temperatureAvg10dC).toBe(14);
+    expect(normalized.values.temperatureMax10dC).toBe(14);
+    expect(normalized.unavailableFields).not.toContain("temperatureAvg10dC");
     expect(normalized.unavailableFields).not.toContain("soilMoisture");
+  });
+
+  it("normalizes recent rain, antecedent rain, dry-spell, ET0, and seven-day soil memory", () => {
+    const hourlyTimes = Array.from({ length: 720 }, (_, index) =>
+      new Date(Date.UTC(2026, 6, 1, index)).toISOString().slice(0, 16));
+    const atmosphere: OpenMeteoLocation = {
+      utc_offset_seconds: 7200,
+      current: {
+        time: hourlyTimes.at(-1),
+        temperature_2m: 16,
+        relative_humidity_2m: 74,
+        wind_speed_10m: 8,
+        wind_gusts_10m: 17,
+      },
+      hourly: {
+        time: hourlyTimes,
+        temperature_2m: Array(720).fill(14),
+        relative_humidity_2m: Array(720).fill(76),
+        wind_speed_10m: Array(720).fill(7),
+        wind_gusts_10m: Array(720).fill(16),
+        precipitation: [...Array(552).fill(0.1), ...Array(96).fill(0), ...Array(72).fill(0.2)],
+        et0_fao_evapotranspiration: Array(720).fill(0.1),
+      },
+    };
+    const soil: OpenMeteoLocation = {
+      current: { time: hourlyTimes.at(-1), soil_moisture_3_to_9cm: 0.26 },
+      hourly: {
+        time: hourlyTimes,
+        soil_moisture_3_to_9cm: [...Array(552).fill(0.18), ...Array(144).fill(0.2), ...Array(24).fill(0.26)],
+      },
+    };
+
+    const normalized = normalizeOpenMeteo(atmosphere, soil);
+    expect(normalized.values.rainfall3dMm).toBeCloseTo(14.4);
+    expect(normalized.values.rainfall7dMm).toBeCloseTo(14.4);
+    expect(normalized.values.rainfallPrevious23dMm).toBeCloseTo(55.2);
+    expect(normalized.values.rainfall30dMm).toBeCloseTo(69.6);
+    expect(normalized.values.drySpellDays).toBe(0);
+    expect(normalized.values.evapotranspiration7dMm).toBeCloseTo(16.8);
+    expect(normalized.values.evapotranspiration30dMm).toBeCloseTo(72);
+    expect(normalized.values.soilMoistureMin7d).toBeCloseTo(0.2);
+    expect(normalized.values.soilMoistureAvg7d).toBeCloseTo((144 * 0.2 + 24 * 0.26) / 168);
+    expect(normalized.values.soilMoistureTrend7d).toBeCloseTo(0.06);
+    expect(normalized.unavailableFields).not.toContain("rainfall30dMm");
+    expect(normalized.unavailableFields).not.toContain("soilMoistureTrend7d");
   });
 });

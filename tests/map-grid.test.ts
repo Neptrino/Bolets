@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { formatGridDimensions, gridSizeForZoom, isSpatialGridSize } from "@/src/lib/map-grid";
+import {
+  formatGridDimensions,
+  gridSizeForViewport,
+  gridSizeForZoom,
+  isSpatialGridSize,
+} from "@/src/lib/map-grid";
 
 describe("zoom-adaptive spatial grid", () => {
   it.each([
-    [14.2, 250], [14.1, 500], [13.2, 500], [13.1, 1000], [12.8, 1000],
+    [14.2, 250], [14.1, 1000], [13.2, 1000], [13.1, 1000], [12.8, 1000],
     [11.8, 1000], [11.7, 2500], [9, 5000], [6.2, 10000]
   ])("uses %i m cells at zoom %s", (zoom, expected) => {
     expect(gridSizeForZoom(zoom)).toBe(expected);
@@ -12,6 +17,36 @@ describe("zoom-adaptive spatial grid", () => {
   it("accepts only supported server resolutions", () => {
     expect(isSpatialGridSize(2500)).toBe(true);
     expect(isSpatialGridSize(750)).toBe(false);
+  });
+
+  it("coarsens a wide viewport to stay within the visible-cell budget", () => {
+    expect(gridSizeForViewport(9.6, {
+      west: 1.5,
+      south: 42,
+      east: 3,
+      north: 42.75,
+    })).toBe(5000);
+    expect(gridSizeForViewport(8.5, {
+      west: 0.05,
+      south: 40.48,
+      east: 3.32,
+      north: 42.92,
+    })).toBe(10000);
+  });
+
+  it("retains detailed cells for genuinely local viewports", () => {
+    expect(gridSizeForViewport(13, {
+      west: 2.15,
+      south: 42.2,
+      east: 2.25,
+      north: 42.28,
+    })).toBe(1000);
+    expect(gridSizeForViewport(14.5, {
+      west: 2.17,
+      south: 42.22,
+      east: 2.18,
+      north: 42.23,
+    })).toBe(250);
   });
 
   it("formats metric cell dimensions in Catalan", () => {
