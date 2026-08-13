@@ -24,6 +24,6 @@ These account-level actions are deliberately separate from the application relea
 
 Track this first keyword set:
 
-`bolets`, `bolets de catalunya`, `tipus de bolets`, `bolets comestibles`, `bolets verinosos`, `mapa bolets catalunya`, `bolets catalunya avui`, `on trobar bolets`, `on trobar bolets avui`, `temporada bolets catalunya`, `rovellons`, `on trobar rovellons`, `camagrocs`, `ceps bolets`, `fredolics`, `llenegues`, `rossinyols bolets`, `trompeta de la mort`, `ou de reig`, `múrgoles`, `bolets de primavera`, `quants dies després de ploure surten els bolets`.
+`prediccio bolets catalunya`, `predicció de bolets`, `bolets avui catalunya`, `mapa prediccio bolets`, `mapa bolets catalunya`, `bolets`, `bolets de catalunya`, `tipus de bolets`, `bolets comestibles`, `bolets verinosos`, `on trobar bolets`, `on trobar bolets avui`, `temporada bolets catalunya`, `rovellons`, `on trobar rovellons`, `camagrocs`, `ceps bolets`, `fredolics`, `llenegues`, `rossinyols bolets`, `trompeta de la mort`, `ou de reig`, `múrgoles`, `bolets de primavera`, `quants dies després de ploure surten els bolets`.
 
 Do not add GA4 during this sprint. Vercel Analytics and Speed Insights remain the only product analytics integrations.

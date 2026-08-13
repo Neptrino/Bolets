@@ -3,7 +3,7 @@ import type { MediaAsset, SpeciesProfile } from "@/src/lib/types";
 export const SITE_NAME = "Bolets Atles";
 export const SITE_URL = "https://bolets.app";
 export const DEFAULT_DESCRIPTION =
-  "Atles dels bolets de Catalunya amb fitxes d’identificació, hàbitats, temporades i mapes de compatibilitat ecològica.";
+  "Predicció de bolets a Catalunya: consulteu les condicions actuals per espècie i zona, el mapa de predicció i les fitxes d’hàbitat.";
 export const DEFAULT_SOCIAL_IMAGE = `${SITE_URL}/opengraph-image`;
 
 export function absoluteUrl(path = "/") {
