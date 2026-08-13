@@ -1,3 +1,41 @@
+-- The first habitat reader below uses the materialized level table. Define it
+-- here so a clean migration replay does not depend on a table that was only
+-- introduced by the later level-population migration.
+create table if not exists public.spatial_cell_levels (
+  cell_id text primary key,
+  region_id text not null check (region_id in (
+    'pirineus', 'prepirineus', 'catalunya-central', 'serralades-costeres',
+    'serralades-prelitorals', 'emporda', 'montseny', 'ports',
+    'muntanyes-interiors', 'altres'
+  )),
+  grid_size_m integer not null check (grid_size_m in (500, 1000, 2500, 5000, 10000)),
+  west double precision not null,
+  south double precision not null,
+  east double precision not null,
+  north double precision not null,
+  geom extensions.geometry(Polygon, 4326)
+    generated always as (extensions.st_makeenvelope(west, south, east, north, 4326)) stored,
+  static_values jsonb not null default '{}'::jsonb,
+  static_sources text[] not null default '{}',
+  source_resolution_m integer not null check (source_resolution_m > 0),
+  confidence text not null check (confidence in ('high', 'moderate', 'limited', 'unknown')),
+  weather_point_ids text[] not null,
+  soil_point_ids text[] not null,
+  base_cell_count integer not null check (base_cell_count > 0),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists spatial_cell_levels_geom_idx
+  on public.spatial_cell_levels using gist (geom);
+
+create index if not exists spatial_cell_levels_size_cell_idx
+  on public.spatial_cell_levels (grid_size_m, cell_id);
+
+alter table public.spatial_cell_levels enable row level security;
+revoke all on table public.spatial_cell_levels from anon, authenticated;
+grant select, insert, update, delete on table public.spatial_cell_levels to service_role;
+
 create index if not exists spatial_cells_forest_types_gin_idx
   on public.spatial_cells using gin ((static_values -> 'forestTypes'))
   where static_verified;
