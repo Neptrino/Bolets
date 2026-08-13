@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, Clock3, Database, Map, ShieldCheck } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
+import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { editorialArticleFields, environmentalSources } from "@/data/editorial";
 import { loadCurrentOverview } from "@/src/lib/current-overview";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL } from "@/src/lib/seo";
@@ -34,7 +35,7 @@ export default async function MushroomsTodayPage() {
   )];
 
   return (
-    <article className="seo-guide page-width current-overview-page">
+    <PageShell as="article">
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "Article",
@@ -45,11 +46,12 @@ export default async function MushroomsTodayPage() {
         publisher: { "@id": `${SITE_URL}/#organization` },
         ...editorialArticleFields("bolets-avui"),
       }} />
-      <header className="seo-guide-hero">
-        <p className="eyebrow"><Map size={15} /> Actualització cada cinc minuts</p>
-        <h1>Bolets avui<br /><i>a Catalunya.</i></h1>
-        <p>Una lectura prudent de sis combinacions representatives. La puntuació descriu condicions ambientals i hàbitat compatible: no confirma presència, no publica observacions i no garanteix trobar bolets.</p>
-      </header>
+      <PageHeader
+        eyebrow={<><Map size={15} /> Actualització cada cinc minuts</>}
+        title={<>Bolets avui<br /><PageTitleAccent>a Catalunya.</PageTitleAccent></>}
+        description="Una lectura prudent de sis combinacions representatives. La puntuació descriu condicions ambientals i hàbitat compatible: no confirma presència, no publica observacions i no garanteix trobar bolets."
+        layout="split"
+      />
 
       <aside className="current-overview-method">
         <ShieldCheck size={21} aria-hidden="true" />
@@ -85,6 +87,6 @@ export default async function MushroomsTodayPage() {
       )}
 
       <EditorialAttribution contentId="bolets-avui" sources={environmentalSources} />
-    </article>
+    </PageShell>
   );
 }

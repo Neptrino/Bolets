@@ -6,6 +6,7 @@
 - Follow best practices for accessibility, maintainability, performance, security, responsive behavior, and clear naming.
 - Keep changes focused and avoid unnecessary dependencies or unrelated refactors.
 - Preserve the single source of truth for species ecology and prediction-model configuration.
+- Build standard light content pages with `PageShell`, `PageHeader`, and `SectionHeader`; extend their narrow layout/tone variants instead of adding page-specific title, gutter, or vertical-spacing rules. Keep full-bleed home, species, map, method, and territorial heroes explicit when their composition is genuinely different.
 - Document important architectural decisions and update this file when project conventions change.
 
 ## Testing and verification

@@ -23,6 +23,13 @@
   --on-dark: #fff7e8;
   --on-dark-muted: #c7d0ba;
   --radius-pill: 999px;
+  --layout-max: 1180px;
+  --layout-gutter: 24px;
+  --content-page-space-start: 66px;
+  --content-page-space-end: 120px;
+  --content-page-title-size: clamp(51px, 6vw, 78px);
+  --content-page-title-leading: 0.94;
+  --content-page-title-tracking: -0.035em;
 }
 
 /* Rovellons territory hub: a species-first field dossier, never a spot map. */
@@ -611,14 +618,14 @@ h3 {
   letter-spacing: 0;
 }
 .page-width {
-  width: min(1180px, calc(100% - 48px));
+  width: min(var(--layout-max), calc(100% - (var(--layout-gutter) * 2)));
   margin: 0 auto;
 }
 .site-header {
   height: 76px;
   display: flex;
   align-items: center;
-  padding: 0 max(24px, calc((100vw - 1180px) / 2));
+  padding: 0 max(var(--layout-gutter), calc((100vw - var(--layout-max)) / 2));
   gap: 34px;
   border-bottom: 1px solid rgba(23, 35, 25, 0.09);
   position: relative;
@@ -682,9 +689,7 @@ h3 {
   color: var(--paper);
 }
 .site-footer-inner {
-  width: min(1180px, calc(100% - 48px));
   min-height: 132px;
-  margin: 0 auto;
   display: grid;
   grid-template-columns: minmax(170px, 0.7fr) minmax(330px, 1.45fr) minmax(300px, 1fr);
   align-items: center;
@@ -793,7 +798,7 @@ h3 {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 98px max(24px, calc((100vw - 1180px) / 2)) 80px;
+  padding: 98px max(var(--layout-gutter), calc((100vw - var(--layout-max)) / 2)) 80px;
   color: var(--paper);
   background: #17251b;
 }
@@ -864,7 +869,7 @@ h3 {
   position: absolute;
   z-index: 2;
   bottom: 24px;
-  left: max(24px, calc((100vw - 1180px) / 2));
+  left: max(var(--layout-gutter), calc((100vw - var(--layout-max)) / 2));
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1058,26 +1063,6 @@ h3 {
 }
 .home-map-callout p {
   max-width: 430px;
-  line-height: 1.7;
-}
-.species-index,
-.compare-page {
-  padding-top: 84px;
-  padding-bottom: 120px;
-}
-.page-intro {
-  max-width: 780px;
-  margin-bottom: 54px;
-}
-.page-intro h1 {
-  font-size: clamp(48px, 6vw, 82px);
-  line-height: 0.91;
-  margin: 0 0 20px;
-}
-.page-intro > p:last-child {
-  max-width: 530px;
-  color: #5f695d;
-  font-size: 16px;
   line-height: 1.7;
 }
 .directory-shell {
@@ -2083,7 +2068,6 @@ body {
 }
 .species-card p,
 .home-intro > p,
-.page-intro > p:last-child,
 .map-page-heading p:last-child {
   color: #615d56;
 }
@@ -3731,31 +3715,8 @@ body {
   }
 }
 
-.comparison-landing {
-  padding-top: 38px;
-  padding-bottom: 110px;
-}
-.comparison-landing-hero {
-  max-width: 950px;
-  padding: 58px 0 42px;
-}
-.comparison-landing-hero h1 {
-  margin: 0 0 22px;
-  font-size: clamp(52px, 7vw, 92px);
-  line-height: 0.92;
-  letter-spacing: -0.045em;
-}
-.comparison-landing-hero h1 i {
-  color: var(--clay);
-  font-family: Georgia, serif;
-  font-weight: 500;
-}
-.comparison-landing-hero > p:last-child {
-  max-width: 730px;
-  margin: 0;
-  color: var(--muted);
-  font-size: 17px;
-  line-height: 1.7;
+.comparison-page-back {
+  margin-bottom: 38px;
 }
 .comparison-answer {
   display: flex;
@@ -3877,12 +3838,6 @@ body {
 }
 
 @media (max-width: 760px) {
-  .comparison-landing-hero {
-    padding-top: 42px;
-  }
-  .comparison-landing-hero h1 {
-    font-size: clamp(45px, 14vw, 64px);
-  }
   .comparison-facts-table > header {
     display: none;
   }
@@ -3926,44 +3881,6 @@ body {
 }
 
 /* Search-intent guides: editorial index pages backed by the species catalogue. */
-.intent-page {
-  padding-top: 66px;
-  padding-bottom: 120px;
-}
-.intent-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
-  gap: clamp(38px, 7vw, 100px);
-  align-items: end;
-  padding-bottom: 46px;
-  border-bottom: 1px solid var(--line);
-}
-.intent-hero h1 {
-  max-width: 870px;
-  margin: 0;
-  font-size: clamp(50px, 6.2vw, 84px);
-  line-height: 0.92;
-  letter-spacing: -0.04em;
-}
-.intent-hero h1 i {
-  color: var(--forest-panel);
-  font-family: Georgia, serif;
-  font-weight: 600;
-}
-.intent-hero > p {
-  max-width: 470px;
-  margin: 0 0 5px;
-  color: var(--muted);
-  font-size: 16px;
-  line-height: 1.7;
-}
-.intent-hero-toxic .eyebrow,
-.intent-hero-toxic h1 i {
-  color: var(--danger-ink);
-}
-.intent-hero-season .eyebrow {
-  color: var(--gold);
-}
 .intent-safety-note,
 .intent-emergency-note {
   display: flex;
@@ -4000,25 +3917,6 @@ body {
   color: inherit;
   font-size: 14px;
   line-height: 1.55;
-}
-.intent-section-heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 25px;
-  align-items: end;
-  margin-bottom: 19px;
-}
-.intent-section-heading span {
-  color: var(--clay);
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-.intent-section-heading h2 {
-  margin: 5px 0 0;
-  font-size: clamp(29px, 3.4vw, 43px);
-  letter-spacing: -0.025em;
 }
 .intent-species-grid {
   padding-top: 22px;
@@ -4160,10 +4058,6 @@ body {
 }
 
 @media (max-width: 900px) {
-  .intent-hero {
-    grid-template-columns: 1fr;
-    gap: 25px;
-  }
   .species-topic-links {
     grid-template-columns: 1fr;
   }
@@ -4179,19 +4073,6 @@ body {
 }
 
 @media (max-width: 680px) {
-  .intent-page {
-    padding-top: 42px;
-    padding-bottom: 80px;
-  }
-  .intent-hero h1 {
-    font-size: clamp(43px, 13vw, 61px);
-  }
-  .intent-section-heading {
-    display: block;
-  }
-  .intent-section-heading .text-link {
-    margin-top: 13px;
-  }
   .season-now-panel {
     grid-template-columns: 1fr;
     padding: 23px;
@@ -4220,29 +4101,6 @@ body {
 }
 
 /* Curated location SEO pages */
-.location-index,
-.location-hub {
-  padding-top: 78px;
-  padding-bottom: 100px;
-}
-.location-index-header,
-.location-hub-header {
-  max-width: 780px;
-}
-.location-index-header h1,
-.location-hub-header h1 {
-  margin-bottom: 24px;
-  color: var(--forest-panel);
-  font-size: clamp(46px, 7vw, 82px);
-  line-height: 0.98;
-}
-.location-index-header > p:last-child,
-.location-hub-header > p:last-child {
-  max-width: 720px;
-  color: var(--muted);
-  font-size: 19px;
-  line-height: 1.7;
-}
 .location-place-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4284,23 +4142,6 @@ body {
 .location-safety-note strong { display: block; }
 .location-safety-note p { margin: 3px 0 0; }
 .location-back { color: var(--ink); }
-.location-hub-header { margin-top: 45px; }
-.location-guide-list { margin-top: 70px; }
-.location-guide-list > div:first-child { margin-bottom: 20px; }
-.location-guide-list h2 { color: var(--forest-panel); font-size: 34px; }
-.location-guide-row {
-  display: grid;
-  grid-template-columns: minmax(220px, 0.7fr) minmax(300px, 1.3fr) auto;
-  align-items: center;
-  gap: 28px;
-  padding: 25px 8px;
-  border-top: 1px solid var(--line);
-}
-.location-guide-row:last-child { border-bottom: 1px solid var(--line); }
-.location-guide-row span { color: var(--gold); font-size: 13px; font-style: italic; }
-.location-guide-row h3 { margin: 4px 0 0; color: var(--forest-panel); font-size: 24px; }
-.location-guide-row p { margin: 0; color: var(--muted); line-height: 1.6; }
-.location-guide-row:hover h3 { color: var(--clay); }
 .location-hub {
   padding: 0;
   background: linear-gradient(180deg, var(--surface-muted) 0, var(--paper) 100%);
@@ -4651,12 +4492,8 @@ body {
   .local-factor-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 680px) {
-  .location-index,
-  .location-hub { padding-top: 48px; }
   .location-place-grid,
   .local-species-summary { grid-template-columns: 1fr; }
-  .location-guide-row { grid-template-columns: 1fr auto; gap: 12px; }
-  .location-guide-row p { grid-column: 1 / -1; }
   .location-hub-hero-grid { gap: 32px; }
   .location-hub-copy { padding-top: 32px; }
   .location-hub-copy h1 { font-size: 52px; }
@@ -5229,16 +5066,8 @@ body {
   .home-map-callout {
     padding: 68px 0;
   }
-  .species-index,
-  .compare-page,
   .map-page {
     padding-top: 58px;
-  }
-  .page-intro {
-    margin-bottom: 35px;
-  }
-  .page-intro h1 {
-    font-size: 53px;
   }
   .directory-controls {
     display: grid;
@@ -6074,19 +5903,6 @@ body {
 
 /* Comparison refresh: use the same calm field-guide surfaces and control
    language as the species catalogue while keeping the A/B relationship clear. */
-.compare-page {
-  padding-top: 66px;
-}
-.compare-intro {
-  max-width: 850px;
-  margin-bottom: 48px;
-}
-.compare-intro h1 {
-  max-width: 800px;
-  font-size: clamp(51px, 6vw, 78px);
-  line-height: 0.94;
-  letter-spacing: -0.035em;
-}
 .compare-stage {
   grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
   padding: 0;
@@ -6491,12 +6307,6 @@ body {
 }
 
 @media (max-width: 520px) {
-  .compare-page {
-    padding-top: 45px;
-  }
-  .compare-intro h1 {
-    font-size: 48px;
-  }
   .compare-stage {
     width: 100%;
     margin-left: 0;
@@ -7409,7 +7219,7 @@ body {
 .method-scroll {
   position: absolute;
   bottom: 21px;
-  left: max(24px, calc((100vw - 1180px) / 2));
+  left: max(var(--layout-gutter), calc((100vw - var(--layout-max)) / 2));
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -8793,19 +8603,6 @@ body {
   stroke-width: 2.35;
 }
 
-.species-index {
-  padding-top: 66px;
-}
-.species-index .page-intro {
-  max-width: 850px;
-  margin-bottom: 48px;
-}
-.species-index .page-intro h1 {
-  max-width: 800px;
-  font-size: clamp(51px, 6vw, 78px);
-  line-height: 0.94;
-  letter-spacing: -0.035em;
-}
 .directory-shell {
   padding-top: 0;
   border-top: 0;
@@ -9912,12 +9709,6 @@ body {
 }
 
 @media (max-width: 580px) {
-  .species-index {
-    padding-top: 45px;
-  }
-  .species-index .page-intro h1 {
-    font-size: 48px;
-  }
   .species-grid {
     grid-template-columns: 1fr;
   }
@@ -10194,7 +9985,7 @@ body {
     linear-gradient(180deg, rgba(251, 247, 233, 0.18), transparent 420px);
 }
 .map-page-heading {
-  width: min(1380px, calc(100% - 48px));
+  width: min(1380px, calc(100% - (var(--layout-gutter) * 2)));
   grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr);
   gap: clamp(42px, 6vw, 88px);
   align-items: center;
@@ -10426,7 +10217,7 @@ body {
   border-radius: 9px;
 }
 .map-bottom {
-  width: min(1280px, calc(100% - 48px));
+  width: min(1280px, calc(100% - (var(--layout-gutter) * 2)));
   gap: 28px;
   margin-top: 34px;
 }

@@ -97,12 +97,6 @@
 .catalogue-habitat-count strong { color: var(--forest-panel, #304b3c); font-size: 1.25rem; line-height: 1; }
 .catalogue-habitat-count small { font-size: .72rem; font-weight: 750; }
 
-.seo-guide { padding-top: clamp(3rem, 7vw, 6.5rem); padding-bottom: 5rem; }
-.seo-guide-hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(18rem, .8fr); gap: clamp(2rem, 7vw, 6rem); align-items: end; padding-bottom: clamp(2.2rem, 6vw, 4.5rem); }
-.seo-guide-hero .eyebrow { grid-column: 1 / -1; margin-bottom: -1.4rem; }
-.seo-guide-hero h1 { margin: 0; font-size: clamp(3rem, 7vw, 6.4rem); line-height: .94; letter-spacing: -.055em; }
-.seo-guide-hero h1 i { color: #986034; font-weight: 450; }
-.seo-guide-hero > p:last-child { margin: 0; font-size: clamp(1.05rem, 1.7vw, 1.3rem); line-height: 1.65; color: #465148; }
 .seo-guide-grid,
 .rain-factor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 3rem 0; }
 .seo-guide-grid section,
@@ -195,11 +189,9 @@
   .catalogue-habitats ol,
   .current-overview-grid,
   .rain-factor-grid { grid-template-columns: 1fr; }
-  .seo-guide-hero,
   .seo-guide-grid,
   .spring-lookalikes,
   .rain-species-examples > article { grid-template-columns: 1fr; }
-  .seo-guide-hero .eyebrow { margin-bottom: -.5rem; }
   .rain-species-examples article > p,
   .rain-species-examples article > a { grid-column: 1; }
   .rain-species-examples dl { grid-template-columns: 1fr; }

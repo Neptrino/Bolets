@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, CloudRain, Droplets, ThermometerSun, Wind } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
+import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { coreEditorialSources, editorialArticleFields } from "@/data/editorial";
 import { getSpecies } from "@/data/species";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
@@ -30,7 +31,7 @@ const exampleSpecies = [
 
 export default function MushroomsAfterRainPage() {
   return (
-    <article className="seo-guide page-width rain-guide">
+    <PageShell as="article">
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "Article",
@@ -40,11 +41,12 @@ export default function MushroomsAfterRainPage() {
         publisher: { "@id": `${SITE_URL}/#organization` },
         ...editorialArticleFields("quan-surten-els-bolets-despres-de-ploure"),
       }} />
-      <header className="seo-guide-hero">
-        <p className="eyebrow"><CloudRain size={15} /> Pluja i fructificació</p>
-        <h1>Quan surten els bolets<br /><i>després de ploure?</i></h1>
-        <p><strong>No hi ha un nombre universal de dies.</strong> Un xàfec pot no ser suficient i dues espècies del mateix bosc poden respondre en moments diferents. El que importa és la història d’aigua i energia del sòl, no només la pluja d’ahir.</p>
-      </header>
+      <PageHeader
+        eyebrow={<><CloudRain size={15} /> Pluja i fructificació</>}
+        title={<>Quan surten els bolets<br /><PageTitleAccent>després de ploure?</PageTitleAccent></>}
+        description={<><strong>No hi ha un nombre universal de dies.</strong> Un xàfec pot no ser suficient i dues espècies del mateix bosc poden respondre en moments diferents. El que importa és la història d’aigua i energia del sòl, no només la pluja d’ahir.</>}
+        layout="split"
+      />
 
       <section className="rain-factor-grid" aria-label="Factors que modulen la resposta a la pluja">
         <article><Droplets size={22} /><h2>Humitat i acumulació</h2><p>La lectura combina pluja de 3, 7 i 30 dies, inclosos els dies 8–30, amb la memòria d’humitat superficial del sòl durant 7 dies.</p></article>
@@ -61,6 +63,6 @@ export default function MushroomsAfterRainPage() {
       </section>
 
       <EditorialAttribution contentId="quan-surten-els-bolets-despres-de-ploure" sources={[...coreEditorialSources, ...exampleSpecies.flatMap((species) => species!.references)]} />
-    </article>
+    </PageShell>
   );
 }

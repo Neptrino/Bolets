@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, CalendarDays, CircleAlert, Sprout } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
+import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { SeasonGuideSwitcher } from "@/components/season-guide-switcher";
 import { SpeciesCard } from "@/components/species-card";
 import { coreEditorialSources, editorialArticleFields, officialSafetySource } from "@/data/editorial";
@@ -43,7 +44,7 @@ const toxicLookalikes = [...new Map(springSpecies.flatMap((species) =>
 
 export default function SpringMushroomsPage() {
   return (
-    <article className="seo-guide page-width">
+    <PageShell as="article">
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "Article",
@@ -54,30 +55,27 @@ export default function SpringMushroomsPage() {
         ...editorialArticleFields("bolets-de-primavera"),
         mainEntity: { "@type": "ItemList", numberOfItems: springSpecies.length, itemListElement: springSpecies.map((species, index) => ({ "@type": "ListItem", position: index + 1, name: species.identity.commonName, url: absoluteUrl(speciesPath(species)) })) },
       }} />
-      <header className="seo-guide-hero">
-        <p className="eyebrow"><Sprout size={15} /> Calendari de març a juny</p>
-        <h1>Bolets<br /><i>de primavera.</i></h1>
-        <p>La selecció inclou totes les espècies del catàleg amb activitat possible o superior entre març i juny. La múrgola, el moixeró i el cama-sec encapçalen la guia, però el calendari real depèn d’altitud, pluja i temperatura.</p>
-      </header>
+      <PageHeader
+        eyebrow={<><Sprout size={15} /> Calendari de març a juny</>}
+        title={<>Bolets<br /><PageTitleAccent>de primavera.</PageTitleAccent></>}
+        description="La selecció inclou totes les espècies del catàleg amb activitat possible o superior entre març i juny. La múrgola, el moixeró i el cama-sec encapçalen la guia, però el calendari real depèn d’altitud, pluja i temperatura."
+        layout="split"
+      />
 
       <aside className="intent-safety-note spring-safety-note"><CircleAlert size={22} /><div><strong>La primavera també té confusions de risc.</strong><p>Identifica exemplars complets, revisa tots els trets i no decideixis el consum amb una fotografia. En cas d’ingestió sospitosa, truca al 061.</p></div></aside>
 
       {toxicLookalikes.length > 0 && <section className="spring-lookalikes"><div><p className="eyebrow">Mereixen una lectura separada</p><h2>Semblants tòxics presents al catàleg</h2></div><div>{toxicLookalikes.map((species) => <Link key={species.speciesId} href={speciesPath(species)}>{species.identity.commonName}<ArrowUpRight size={15} /></Link>)}</div></section>}
 
       <section aria-labelledby="spring-catalogue-title">
-        <div className="intent-section-heading">
-          <div>
-            <div className="seasonal-calendar-controls">
-              <span><CalendarDays size={14} /> Març–juny</span>
-              <SeasonGuideSwitcher current="primavera" />
-            </div>
-            <h2 id="spring-catalogue-title">{springSpecies.length} espècies del calendari</h2>
-          </div>
-          <Link href="/temporada" className="text-link">Veure tot l’any <ArrowUpRight size={16} /></Link>
-        </div>
+        <SectionHeader
+          meta={<div className="seasonal-calendar-controls"><span><CalendarDays size={14} /> Març–juny</span><SeasonGuideSwitcher current="primavera" /></div>}
+          title={`${springSpecies.length} espècies del calendari`}
+          titleId="spring-catalogue-title"
+          actions={<Link href="/temporada" className="text-link">Veure tot l’any <ArrowUpRight size={16} /></Link>}
+        />
         <div className="species-grid intent-species-grid">{springSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} />)}</div>
       </section>
       <EditorialAttribution contentId="bolets-de-primavera" sources={[officialSafetySource, ...coreEditorialSources, ...springSpecies.flatMap((species) => species.references)]} />
-    </article>
+    </PageShell>
   );
 }

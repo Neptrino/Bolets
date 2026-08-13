@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, MapPinned, Trees } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
+import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import {
   areaPath,
   areaProfiles,
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function ZonesPage() {
   return (
-    <div className="location-index page-width">
+    <PageShell>
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -44,11 +45,12 @@ export default function ZonesPage() {
           },
         }}
       />
-      <header className="location-index-header">
-        <p className="eyebrow"><MapPinned size={15} /> Lectures locals</p>
-        <h1>Bolets, territori<br />i temporada.</h1>
-        <p>Si busques on trobar bolets a Catalunya, comença pel territori i l’hàbitat: aquestes guies expliquen quines condicions necessita cada espècie, sense publicar punts de recol·lecció.</p>
-      </header>
+      <PageHeader
+        eyebrow={<><MapPinned size={15} /> Lectures locals</>}
+        title={<>Bolets, territori<br /><PageTitleAccent>i temporada.</PageTitleAccent></>}
+        description="Si busques on trobar bolets a Catalunya, comença pel territori i l’hàbitat: aquestes guies expliquen quines condicions necessita cada espècie, sense publicar punts de recol·lecció."
+        tone="forest"
+      />
       <Link href="/zones/rovellons" className="location-species-feature">
         <span><Trees size={18} /> Guia d’espècie i territori</span>
         <div><h2>On trobar rovellons a Catalunya</h2><p>Hàbitat, temporada, condicions actuals i diferències entre rovelló i pinetell.</p></div>
@@ -74,6 +76,6 @@ export default function ZonesPage() {
         <Trees size={22} />
         <div><strong>Hàbitat potencial, no una coordenada.</strong><p>Les guies descriuen compatibilitat ecològica agregada. No demostren presència actual ni substitueixen una identificació experta.</p></div>
       </aside>
-    </div>
+    </PageShell>
   );
 }

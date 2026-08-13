@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, BookOpenCheck, CircleAlert, Database, ShieldCheck } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
+import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { coreEditorialSources, editorialArticleFields, editorialTeam } from "@/data/editorial";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL } from "@/src/lib/seo";
 
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function EditorialTeamPage() {
   return (
-    <article className="seo-guide page-width">
+    <PageShell as="article">
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "Article",
@@ -30,11 +31,12 @@ export default function EditorialTeamPage() {
         publisher: { "@id": `${SITE_URL}/#organization` },
         ...editorialArticleFields("equip-editorial"),
       }} />
-      <header className="seo-guide-hero">
-        <p className="eyebrow"><BookOpenCheck size={15} /> Transparència editorial</p>
-        <h1>Equip editorial<br /><i>de Bolets Atles.</i></h1>
-        <p>{editorialTeam.name} és l’autoria organitzativa del contingut. Bolets Atles n’és l’editor i el responsable de publicació.</p>
-      </header>
+      <PageHeader
+        eyebrow={<><BookOpenCheck size={15} /> Transparència editorial</>}
+        title={<>Equip editorial<br /><PageTitleAccent>de Bolets Atles.</PageTitleAccent></>}
+        description={<>{editorialTeam.name} és l’autoria organitzativa del contingut. Bolets Atles n’és l’editor i el responsable de publicació.</>}
+        layout="split"
+      />
 
       <div className="seo-guide-grid">
         <section><Database size={22} /><h2>Com compilem la informació</h2><p>Les fitxes parteixen de bibliografia micològica, catàlegs de biodiversitat i fonts oficials. Els trets d’identificació es contrasten entre fonts; la configuració ecològica versionada alimenta alhora les fitxes i el model, de manera que no hi ha dues definicions independents.</p></section>
@@ -54,6 +56,6 @@ export default function EditorialTeamPage() {
       </section>
 
       <EditorialAttribution contentId="equip-editorial" sources={coreEditorialSources} />
-    </article>
+    </PageShell>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, ShieldAlert } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
+import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { SpeciesCard } from "@/components/species-card";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
@@ -27,7 +28,7 @@ export default function PoisonousMushroomsPage() {
   const currentMonth = monthInTimeZone();
 
   return (
-    <div className="intent-page page-width">
+    <PageShell>
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "Article",
@@ -47,27 +48,28 @@ export default function PoisonousMushroomsPage() {
           })),
         },
       }} />
-      <header className="intent-hero intent-hero-toxic">
-        <div>
-          <p className="eyebrow"><ShieldAlert size={15} /> Identificació i risc</p>
-          <h1>Bolets verinosos<br /><i>de Catalunya.</i></h1>
-        </div>
-        <p>Espècies tòxiques presents al nostre entorn, des de bolets que causen trastorns digestius fins a confusions potencialment mortals.</p>
-      </header>
+      <PageHeader
+        eyebrow={<><ShieldAlert size={15} /> Identificació i risc</>}
+        title={<>Bolets verinosos<br /><PageTitleAccent>de Catalunya.</PageTitleAccent></>}
+        description="Espècies tòxiques presents al nostre entorn, des de bolets que causen trastorns digestius fins a confusions potencialment mortals."
+        layout="split"
+        tone="danger"
+      />
 
       <aside className="intent-emergency-note">
         <ShieldAlert size={23} aria-hidden="true" />
         <div><strong>Davant una ingestió sospitosa, actua de seguida.</strong><p>Segueix la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a>, truca al 061 Salut Respon i conserva restes del bolet. No esperis que apareguin símptomes ni apliquis remeis casolans.</p></div>
       </aside>
 
-      <div className="intent-section-heading">
-        <div><span>{toxicSpecies.length} espècies</span><h2>Fitxes de bolets tòxics</h2></div>
-        <Link href="/bolets-comestibles" className="text-link">Veure bolets comestibles <ArrowUpRight size={16} /></Link>
-      </div>
+      <SectionHeader
+        meta={`${toxicSpecies.length} espècies`}
+        title="Fitxes de bolets tòxics"
+        actions={<Link href="/bolets-comestibles" className="text-link">Veure bolets comestibles <ArrowUpRight size={16} /></Link>}
+      />
       <div className="species-grid intent-species-grid">
         {toxicSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} currentMonth={currentMonth} />)}
       </div>
       <EditorialAttribution contentId="bolets-verinosos" sources={[officialSafetySource, ...toxicSpecies.flatMap((species) => species.references)]} />
-    </div>
+    </PageShell>
   );
 }

@@ -14,7 +14,7 @@ export function SiteFooter() {
 
   return (
     <footer className="site-footer">
-      <div className="site-footer-inner">
+      <div className="site-footer-inner page-width">
         <div className="site-footer-brand">
           <Link href="/" aria-label="Bolets Atles, inici">BOLETS·ATLES</Link>
           <span>CATALUNYA · {new Date().getFullYear()}</span>

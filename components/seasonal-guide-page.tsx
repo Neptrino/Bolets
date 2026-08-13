@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight, CalendarDays, CircleAlert, CloudRain, Leaf, Snowflake, Sun, Trees } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
+import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { SeasonGuideSwitcher } from "@/components/season-guide-switcher";
 import { SpeciesCard } from "@/components/species-card";
 import { coreEditorialSources, editorialArticleFields, officialSafetySource } from "@/data/editorial";
@@ -20,7 +21,7 @@ export function SeasonalGuidePage({ guide }: { guide: SeasonGuide }) {
   const SeasonIcon = seasonIcons[guide.id];
 
   return (
-    <article className="seo-guide page-width seasonal-guide-page">
+    <PageShell as="article">
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "Article",
@@ -41,11 +42,12 @@ export function SeasonalGuidePage({ guide }: { guide: SeasonGuide }) {
           })),
         },
       }} />
-      <header className="seo-guide-hero">
-        <p className="eyebrow"><SeasonIcon size={15} /> Calendari {guide.rangeSentence}</p>
-        <h1>Bolets<br /><i>{guide.heroAccent}</i></h1>
-        <p>{guide.intro} La guia inclou totes les espècies del catàleg amb activitat possible o superior durant aquests mesos.</p>
-      </header>
+      <PageHeader
+        eyebrow={<><SeasonIcon size={15} /> Calendari {guide.rangeSentence}</>}
+        title={<>Bolets<br /><PageTitleAccent>{guide.heroAccent}</PageTitleAccent></>}
+        description={<>{guide.intro} La guia inclou totes les espècies del catàleg amb activitat possible o superior durant aquests mesos.</>}
+        layout="split"
+      />
 
       <section className="seasonal-guide-notes" aria-label={`Com interpretar la temporada ${guide.id}`}>
         <article><CloudRain size={21} aria-hidden="true" /><div><h2>{guide.conditionTitle}</h2><p>{guide.conditionText}</p></div></article>
@@ -53,19 +55,15 @@ export function SeasonalGuidePage({ guide }: { guide: SeasonGuide }) {
       </section>
 
       <section aria-labelledby={`${guide.id}-catalogue-title`}>
-        <div className="intent-section-heading">
-          <div>
-            <div className="seasonal-calendar-controls">
-              <span><CalendarDays size={14} /> {guide.rangeLabel}</span>
-              <SeasonGuideSwitcher current={guide.id} />
-            </div>
-            <h2 id={`${guide.id}-catalogue-title`}>{species.length} espècies del calendari</h2>
-          </div>
-          <Link href="/temporada" className="text-link">Veure els mesos <ArrowUpRight size={16} /></Link>
-        </div>
+        <SectionHeader
+          meta={<div className="seasonal-calendar-controls"><span><CalendarDays size={14} /> {guide.rangeLabel}</span><SeasonGuideSwitcher current={guide.id} /></div>}
+          title={`${species.length} espècies del calendari`}
+          titleId={`${guide.id}-catalogue-title`}
+          actions={<Link href="/temporada" className="text-link">Veure els mesos <ArrowUpRight size={16} /></Link>}
+        />
         <div className="species-grid intent-species-grid">{species.map((item, index) => <SpeciesCard key={item.speciesId} species={item} index={index} currentMonth={guide.representativeMonth} />)}</div>
       </section>
       <EditorialAttribution contentId={guide.path.slice(1)} sources={[officialSafetySource, ...coreEditorialSources, ...species.flatMap((item) => item.references)]} />
-    </article>
+    </PageShell>
   );
 }

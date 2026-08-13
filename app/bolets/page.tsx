@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays, CookingPot, Leaf, ShieldAlert, Snowflake, Sprout, Sun, Trees } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
+import { PageHeader, PageShell } from "@/components/page-layout";
 import { SpeciesDirectory } from "@/components/species-directory";
 import { JsonLd } from "@/components/json-ld";
 import { coreEditorialSources } from "@/data/editorial";
@@ -54,13 +55,13 @@ export default function SpeciesIndexPage() {
   const largestHabitatCount = habitats[0]?.[1] ?? 1;
 
   return (
-    <section className="page-width species-index">
+    <PageShell as="section">
       <JsonLd data={{ "@context": "https://schema.org", "@type": "CollectionPage", name: "Tipus de bolets de Catalunya", url: `${SITE_URL}/bolets`, inLanguage: "ca", mainEntity: { "@type": "ItemList", numberOfItems: speciesAlphabetical.length, itemListElement: speciesAlphabetical.map((species, index) => ({ "@type": "ListItem", position: index + 1, name: `${species.identity.commonName} (${species.identity.scientificName})`, url: `${SITE_URL}${speciesPath(species)}` })) } }} />
-      <div className="page-intro">
-        <p className="eyebrow">Catàleg viu</p>
-        <h1>Tipus de bolets<br />de Catalunya.</h1>
-        <p>{speciesAlphabetical.length} fitxes per explorar noms comuns i científics, comestibilitat, hàbitat, temporada i espècies semblants. Les agrupacions es generen des de les mateixes dades ecològiques de cada fitxa.</p>
-      </div>
+      <PageHeader
+        eyebrow="Catàleg viu"
+        title={<>Tipus de bolets<br />de Catalunya.</>}
+        description={<>{speciesAlphabetical.length} fitxes per explorar noms comuns i científics, comestibilitat, hàbitat, temporada i espècies semblants. Les agrupacions es generen des de les mateixes dades ecològiques de cada fitxa.</>}
+      />
       <nav className="species-topic-links species-topic-links-primary" aria-label="Tipus i calendari de bolets">
         <Link href="/bolets-comestibles"><CookingPot size={18} /><span><strong>Bolets comestibles</strong><small>Espècies, confusions i condicions</small></span><ArrowUpRight size={16} /></Link>
         <Link href="/bolets-verinosos"><ShieldAlert size={18} /><span><strong>Bolets verinosos</strong><small>Identificació i riscos</small></span><ArrowUpRight size={16} /></Link>
@@ -100,6 +101,6 @@ export default function SpeciesIndexPage() {
       </section>
       <SpeciesDirectory species={speciesAlphabetical} currentMonth={monthInTimeZone()} />
       <EditorialAttribution contentId="bolets" sources={coreEditorialSources} />
-    </section>
+    </PageShell>
   );
 }

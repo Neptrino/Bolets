@@ -1,0 +1,145 @@
+.pageShell {
+  padding-top: var(--content-page-space-start);
+  padding-bottom: var(--content-page-space-end);
+}
+
+.pageHeader {
+  --page-title-accent: var(--clay);
+
+  margin-bottom: 48px;
+}
+
+.stacked {
+  max-width: 850px;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: clamp(38px, 7vw, 100px);
+  align-items: end;
+}
+
+.clay {
+  --page-title-accent: var(--clay);
+}
+
+.forest {
+  --page-title-accent: var(--forest-panel);
+}
+
+.danger {
+  --page-title-accent: var(--danger-ink);
+}
+
+.pageHeading {
+  min-width: 0;
+}
+
+.pageHeader .eyebrow {
+  color: var(--page-title-accent);
+}
+
+.pageTitle {
+  max-width: 800px;
+  margin: 0;
+  font-size: var(--content-page-title-size);
+  line-height: var(--content-page-title-leading);
+  letter-spacing: var(--content-page-title-tracking);
+  text-wrap: balance;
+}
+
+.pageTitleAccent {
+  color: var(--page-title-accent, var(--clay));
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.pageDescription {
+  max-width: 620px;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.split .pageDescription {
+  max-width: 470px;
+  margin: 0 0 5px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 25px;
+  align-items: end;
+  margin-bottom: 19px;
+}
+
+.sectionHeading {
+  min-width: 0;
+}
+
+.sectionMeta {
+  display: block;
+  color: var(--clay);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sectionTitle {
+  margin: 5px 0 0;
+  font-size: clamp(29px, 3.4vw, 43px);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.sectionDescription {
+  max-width: 620px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.sectionActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .split {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+}
+
+@media (max-width: 680px) {
+  .pageShell {
+    padding-top: 42px;
+    padding-bottom: 80px;
+  }
+
+  .pageTitle {
+    font-size: 48px;
+  }
+
+  .split .pageDescription {
+    margin-bottom: 0;
+  }
+
+  .sectionHeader {
+    display: grid;
+    align-items: start;
+    gap: 13px;
+  }
+
+  .sectionActions {
+    justify-content: flex-start;
+  }
+}

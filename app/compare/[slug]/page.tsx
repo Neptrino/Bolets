@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowRightLeft, ArrowUpRight, CircleAlert } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { EditorialAttribution } from "@/components/editorial-attribution";
+import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { comparisonPages, comparisonPagesBySlug } from "@/data/comparison-pages";
 import { getSpecies } from "@/data/species";
@@ -66,7 +67,7 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
   ];
 
   return (
-    <div className="comparison-landing page-width">
+    <PageShell>
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "Article",
@@ -81,12 +82,12 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
           { "@type": "Thing", name: right.identity.scientificName },
         ],
       }} />
-      <Link href="/compare" className="back-link">← Totes les comparacions</Link>
-      <header className="comparison-landing-hero">
-        <p className="eyebrow"><ArrowRightLeft size={15} /> Guia comparativa</p>
-        <h1>{left.identity.commonName} <i>vs</i> {right.identity.commonName.toLocaleLowerCase("ca")}</h1>
-        <p>{page.introduction}</p>
-      </header>
+      <Link href="/compare" className="text-link comparison-page-back">← Totes les comparacions</Link>
+      <PageHeader
+        eyebrow={<><ArrowRightLeft size={15} /> Guia comparativa</>}
+        title={<>{left.identity.commonName} <PageTitleAccent>vs</PageTitleAccent> {right.identity.commonName.toLocaleLowerCase("ca")}</>}
+        description={page.introduction}
+      />
 
       <div className="comparison-reference-images" aria-label="Fotografies de referència">
         {[{ species: left, image: leftImage }, { species: right, image: rightImage }].map((item) => (
@@ -122,6 +123,6 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
         <CircleAlert size={22} /><div><strong>No decideixis el consum amb una taula.</strong><p>La variació natural, l’edat i l’estat del bolet poden alterar-ne l’aspecte. Confirma qualsevol identificació amb una persona experta.</p></div>
       </aside>
       <EditorialAttribution contentId={`compare:${page.slug}`} sources={[officialSafetySource, ...left.references, ...right.references]} />
-    </div>
+    </PageShell>
   );
 }

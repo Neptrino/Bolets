@@ -12,6 +12,7 @@ import {
   Trees
 } from "lucide-react";
 import { CulinaryRating } from "@/components/culinary-rating";
+import { PageHeader, PageShell } from "@/components/page-layout";
 import { SeasonIndicator } from "@/components/season-indicator";
 import { QuerySelect } from "@/components/ui/query-select";
 import { speciesById, speciesSelectItems } from "@/data/species";
@@ -158,12 +159,12 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   const currentMonth = monthInTimeZone();
 
   return (
-    <section className="page-width compare-page">
-      <div className="page-intro compare-intro">
-        <p className="eyebrow">Lectura comparada</p>
-        <h1>Dos bolets,<br />dos paisatges.</h1>
-        <p>Compara condicions ecològiques estructurades. Les diferències vénen de les fitxes, no d’un text paral·lel.</p>
-      </div>
+    <PageShell as="section">
+      <PageHeader
+        eyebrow="Lectura comparada"
+        title={<>Dos bolets,<br />dos paisatges.</>}
+        description="Compara condicions ecològiques estructurades. Les diferències vénen de les fitxes, no d’un text paral·lel."
+      />
 
       <div className="compare-stage">
         <ComparisonProfileCard species={left} side="left" />
@@ -260,6 +261,6 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
         <div><p className="eyebrow">Comparacions publicades</p><h2 id="comparison-guides-title">Confusions freqüents</h2></div>
         <div>{comparisonPages.map((page) => <Link href={`/compare/${page.slug}`} key={page.slug}><span>{page.shortTitle}</span><ArrowUpRight size={16} /></Link>)}</div>
       </section>
-    </section>
+    </PageShell>
   );
 }
