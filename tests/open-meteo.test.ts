@@ -65,7 +65,9 @@ describe("Open-Meteo profiles", () => {
     expect(normalized.values.temperatureMin10dC).toBe(14);
     expect(normalized.values.temperatureAvg10dC).toBe(14);
     expect(normalized.values.temperatureMax10dC).toBe(14);
+    expect(normalized.values.relativeHumidityAvg7d).toBe(76);
     expect(normalized.unavailableFields).not.toContain("temperatureAvg10dC");
+    expect(normalized.unavailableFields).not.toContain("relativeHumidityAvg7d");
     expect(normalized.unavailableFields).not.toContain("soilMoisture");
   });
 
@@ -107,6 +109,7 @@ describe("Open-Meteo profiles", () => {
     expect(normalized.values.drySpellDays).toBe(0);
     expect(normalized.values.evapotranspiration7dMm).toBeCloseTo(16.8);
     expect(normalized.values.evapotranspiration30dMm).toBeCloseTo(72);
+    expect(normalized.values.relativeHumidityAvg7d).toBeCloseTo(76);
     expect(normalized.values.soilMoistureMin7d).toBeCloseTo(0.2);
     expect(normalized.values.soilMoistureAvg7d).toBeCloseTo((144 * 0.2 + 24 * 0.26) / 168);
     expect(normalized.values.soilMoistureTrend7d).toBeCloseTo(0.06);

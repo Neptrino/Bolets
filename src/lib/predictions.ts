@@ -6,7 +6,7 @@ import { getOccurrenceSupport } from "@/src/lib/occurrences";
 import { boundsCentre, boundsContain } from "@/src/lib/map-grid";
 import { PREDICTION_CACHE_VERSION, predictionModelVersion } from "@/src/lib/model-versions";
 import { missingRainfallFields } from "@/src/lib/rainfall";
-import { spatialEnvironmentResponseSchema } from "@/src/lib/schema";
+import { spatialEnvironmentHistorySchema, spatialEnvironmentResponseSchema } from "@/src/lib/schema";
 import { calculateSuitability, suitabilityLabel } from "@/src/lib/scoring";
 import type {
   ConditionSnapshot,
@@ -17,6 +17,7 @@ import type {
   OccurrenceEvidenceStatus,
   OccurrenceSupportCell,
   PredictionCell,
+  PredictionHistoryPoint,
   PredictionMapCell,
   RegionId,
   RegionalPredictionSummary,
@@ -25,6 +26,68 @@ import type {
   SpeciesProfile,
   SuitabilityResult,
 } from "@/src/lib/types";
+
+export async function getPredictionCellHistory(
+  speciesId: string,
+  cell: Pick<PredictionCell, "cellId" | "regionId" | "values">,
+): Promise<PredictionHistoryPoint[]> {
+  const species = getSpecies(speciesId);
+  if (!species) throw new Error("Unknown species");
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY)
+    throw new Error("Spatial environment service is not configured");
+
+  const query = new URLSearchParams({ mode: "history", cell: cell.cellId, days: "7" });
+  const response = await fetch(
+    `${process.env.SUPABASE_URL}/functions/v1/read-spatial-environment?${query}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+        apikey: process.env.SUPABASE_ANON_KEY,
+      },
+      cache: "force-cache",
+      next: { revalidate: 300 },
+    },
+  );
+  if (!response.ok) throw new Error(`Spatial environment history returned ${response.status}`);
+  const payload = spatialEnvironmentHistorySchema.parse(await response.json());
+  if (payload.cellId !== cell.cellId || payload.regionId !== cell.regionId)
+    throw new Error("Spatial environment history did not match the selected cell");
+
+  const habitatValues: ConditionSnapshot["values"] = {
+    altitudeM: cell.values.altitudeM,
+    habitatAltitudeSuitability: cell.values.habitatAltitudeSuitability,
+    forestCompatibility: cell.values.forestCompatibility,
+    soilCompatibility: cell.values.soilCompatibility,
+    forestTypes: cell.values.forestTypes,
+    treeSpecies: cell.values.treeSpecies,
+    soilPh: cell.values.soilPh,
+    soilTexture: cell.values.soilTexture,
+    soilSubstrate: cell.values.soilSubstrate,
+  };
+
+  return payload.snapshots.map((snapshot) => {
+    // Habitat is static at this model version. Dynamic values must come only
+    // from the historical snapshot so today's weather cannot fill an old gap.
+    const values = { ...habitatValues, ...snapshot.values };
+    const unavailableFields = [
+      ...new Set([...snapshot.unavailableFields, ...missingRainfallFields(values)]),
+    ];
+    return {
+      observedAt: snapshot.observedAt,
+      score: calculateSuitability(species, {
+        regionId: cell.regionId,
+        observedAt: snapshot.observedAt,
+        source: snapshot.source,
+        confidence: snapshot.confidence,
+        // Historical snapshots are intentionally old; their age must not make
+        // the historical score unavailable.
+        stale: false,
+        unavailableFields,
+        values,
+      }).score,
+    };
+  });
+}
 
 export function toPredictionMapCell(
   cell: Pick<PredictionCell, "cellId" | "regionId" | "gridSizeM" | "values"> & { bounds: CoordinateBounds },
@@ -208,6 +271,7 @@ function aggregateRegionalSnapshot(
     "temperatureAvg10dC",
     "relativeHumidity",
     "relativeHumidityAvg24h",
+    "relativeHumidityAvg7d",
     "soilMoisture",
     "soilMoistureAvg24h",
     "soilMoistureAvg7d",

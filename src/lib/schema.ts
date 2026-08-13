@@ -155,6 +155,7 @@ export const conditionSnapshotSchema = z.object({
     frostHours10d: z.number().int().min(0).optional(),
     relativeHumidity: z.number().min(0).max(100).optional(), relativeHumidityMin24h: z.number().min(0).max(100).optional(),
     relativeHumidityAvg24h: z.number().min(0).max(100).optional(), relativeHumidityMax24h: z.number().min(0).max(100).optional(),
+    relativeHumidityAvg7d: z.number().min(0).max(100).optional(),
     soilMoisture: z.number().min(0).max(1).optional(), soilMoistureMin24h: z.number().min(0).max(1).optional(),
     soilMoistureAvg24h: z.number().min(0).max(1).optional(), soilMoistureMax24h: z.number().min(0).max(1).optional(),
     soilMoistureMin7d: z.number().min(0).max(1).optional(), soilMoistureAvg7d: z.number().min(0).max(1).optional(),
@@ -188,6 +189,19 @@ export const spatialEnvironmentResponseSchema = z.object({
   })),
   truncated: z.boolean(),
   bounds: z.object({ west: z.number(), south: z.number(), east: z.number(), north: z.number() })
+});
+
+export const spatialEnvironmentHistorySchema = z.object({
+  cellId: z.string(),
+  regionId: region,
+  snapshots: z.array(z.object({
+    observedAt: z.string().datetime({ offset: true }),
+    source: z.array(z.string()),
+    sourceResolutionM: z.number().int().positive(),
+    confidence,
+    unavailableFields: z.array(z.string()),
+    values: conditionSnapshotSchema.shape.values,
+  })),
 });
 
 export const spatialHabitatResponseSchema = z.object({

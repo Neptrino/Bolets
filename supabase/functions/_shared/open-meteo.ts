@@ -63,6 +63,7 @@ const requiredAtmosphericFields = [
   "relativeHumidityMin24h",
   "relativeHumidityAvg24h",
   "relativeHumidityMax24h",
+  "relativeHumidityAvg7d",
   "rainfall3dMm",
   "rainfall7dMm",
   "rainfallPrevious23dMm",
@@ -173,6 +174,7 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
   const temperatures7d = numericWindow(location, "temperature_2m", 168, endIndex);
   const temperatures10d = numericWindow(location, "temperature_2m", 240, endIndex);
   const humidity24h = numericWindow(location, "relative_humidity_2m", 24, endIndex);
+  const humidity7d = numericWindow(location, "relative_humidity_2m", 168, endIndex);
   const soilMoisture24h = numericWindow(soilLocation, "soil_moisture_3_to_9cm", 24, soilEndIndex);
   const soilMoisturePrevious6d = numericWindow(soilLocation, "soil_moisture_3_to_9cm", 144, soilEndIndex - 24);
   const soilMoisture7d = numericWindow(soilLocation, "soil_moisture_3_to_9cm", 168, soilEndIndex);
@@ -186,6 +188,7 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
   const evapotranspiration30d = numericWindow(location, "et0_fao_evapotranspiration", 720, endIndex);
   const temperature = summary(temperatures24h, 24);
   const humidity = summary(humidity24h, 24);
+  const humidityWeek = summary(humidity7d, 168);
   const soilMoisture = summary(soilMoisture24h, 24);
   const previousSoilMoisture = summary(soilMoisturePrevious6d, 144);
   const soilMoistureWeek = summary(soilMoisture7d, 168);
@@ -215,6 +218,7 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
     relativeHumidityMin24h: humidity.min,
     relativeHumidityAvg24h: humidity.average,
     relativeHumidityMax24h: humidity.max,
+    relativeHumidityAvg7d: humidityWeek.average,
     soilMoisture: finiteNumber(soilLocation.current?.soil_moisture_3_to_9cm),
     soilMoistureMin24h: soilMoisture.min,
     soilMoistureAvg24h: soilMoisture.average,

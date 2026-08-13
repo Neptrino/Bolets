@@ -3257,10 +3257,12 @@ body {
   margin-top: 10px;
 }
 .condition-list article {
+  position: relative;
   display: flex;
   grid-column: span 2;
   min-height: 204px;
   padding: 19px;
+  overflow: hidden;
   flex-direction: column;
 }
 .condition-list article:nth-child(-n + 2) {
@@ -3308,12 +3310,13 @@ body {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
   /* Keep the stat grids on the same vertical rhythm: cards with two rows of
-     measurements should not pull their summaries above adjacent one-row cards. */
+  measurements should not pull their summaries above adjacent one-row cards. */
   margin: 0;
-  background: rgba(242, 235, 213, 0.13);
+  /* Leave an unfilled final grid slot visually part of the parent card. */
+  background: transparent;
 }
 .condition-stats div {
-  position: relative;
+  position: static;
   min-width: 0;
   padding: 10px 8px;
   background: rgba(34, 31, 29, 0.26);
@@ -3352,13 +3355,16 @@ body {
 .condition-stat-tooltip {
   position: absolute;
   z-index: 4;
-  bottom: calc(100% + 8px);
-  left: 0;
-  width: min(270px, calc(100vw - 48px));
+  right: auto;
+  bottom: 16px;
+  left: 16px;
+  width: min(280px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  overflow: auto;
   padding: 11px 12px;
   border: 1px solid rgba(242, 167, 102, 0.55);
   border-radius: 3px;
-  background: #302b28;
+  background: #49423e;
   box-shadow: 0 10px 24px rgba(15, 12, 10, 0.34);
   color: #f4eadc;
   font-size: 13px;
@@ -3379,6 +3385,20 @@ body {
   transform: translateY(0);
   visibility: visible;
 }
+.condition-stats > div:nth-child(3n + 2) .condition-stat-tooltip {
+  right: auto;
+  left: 50%;
+  transform: translate(-50%, 3px);
+}
+.condition-stats > div:nth-child(3n + 2) .condition-stat-help:hover + .condition-stat-tooltip,
+.condition-stats > div:nth-child(3n + 2) .condition-stat-help:focus + .condition-stat-tooltip,
+.condition-stats > div:nth-child(3n + 2) .condition-stat-help:focus-visible + .condition-stat-tooltip {
+  transform: translate(-50%, 0);
+}
+.condition-stats > div:nth-child(3n) .condition-stat-tooltip {
+  right: 16px;
+  left: auto;
+}
 .condition-stats dd {
   margin: 1px 0 0;
   color: #fff5e7;
@@ -3388,6 +3408,91 @@ body {
   line-height: 1.2;
   white-space: nowrap;
 }
+.cell-score-history {
+  margin: 1.25rem 0;
+  padding: 1.2rem 1.3rem;
+  border: 1px solid var(--line, #d9ddd4);
+  border-radius: 1rem;
+  background: var(--surface, #fff);
+}
+
+.cell-score-history > p {
+  margin: 0;
+  color: var(--ink-soft, #5f675d);
+}
+
+.cell-score-history-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cell-score-history-heading .eyebrow {
+  margin: 0 0 .15rem;
+}
+
+.cell-score-history-heading h4 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.cell-score-history-heading > span {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .84rem;
+  font-weight: 650;
+  text-align: right;
+}
+
+.cell-score-history-heading > span.improving { color: #28734e; }
+.cell-score-history-heading > span.worsening { color: #a24832; }
+.cell-score-history-heading > span.steady { color: var(--ink-soft, #5f675d); }
+
+.cell-score-history-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 1rem;
+  overflow: visible;
+}
+
+.cell-score-history-chart line {
+  stroke: var(--line, #d9ddd4);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+.cell-score-history-chart path {
+  fill: none;
+  stroke: #28734e;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cell-score-history-chart circle {
+  fill: #fff;
+  stroke: #28734e;
+  stroke-width: 2.5;
+}
+
+.cell-score-history-chart text {
+  fill: var(--ink-soft, #5f675d);
+  font-size: 12px;
+}
+
+.cell-score-history-note {
+  margin-top: .65rem !important;
+  font-size: .84rem;
+}
+
+@media (max-width: 560px) {
+  .cell-score-history-heading { flex-direction: column; }
+  .cell-score-history-heading > span { text-align: left; }
+}
+
 .cell-static-factors {
   margin-top: 10px;
   padding: 18px 19px 19px;
@@ -10226,19 +10331,6 @@ body {
   height: 44px;
   margin: -14px -14px -14px 0;
 }
-.condition-stats > div:nth-child(3n + 2) .condition-stat-tooltip {
-  left: 50%;
-  transform: translate(-50%, 3px);
-}
-.condition-stats > div:nth-child(3n + 2) .condition-stat-help:hover + .condition-stat-tooltip,
-.condition-stats > div:nth-child(3n + 2) .condition-stat-help:focus + .condition-stat-tooltip,
-.condition-stats > div:nth-child(3n + 2) .condition-stat-help:focus-visible + .condition-stat-tooltip {
-  transform: translate(-50%, 0);
-}
-.condition-stats > div:nth-child(3n) .condition-stat-tooltip {
-  right: 0;
-  left: auto;
-}
 
 @media (max-width: 900px) {
   .map-page-heading {
@@ -10416,7 +10508,7 @@ body {
   }
   .condition-stats > div:nth-child(n) .condition-stat-tooltip {
     right: auto;
-    left: 0;
+    left: 16px;
     transform: translateY(3px);
   }
   .condition-stats > div:nth-child(n) .condition-stat-help:hover + .condition-stat-tooltip,
@@ -10425,7 +10517,7 @@ body {
     transform: translateY(0);
   }
   .condition-stats > div:nth-child(even) .condition-stat-tooltip {
-    right: 0;
+    right: 16px;
     left: auto;
   }
 }

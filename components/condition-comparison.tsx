@@ -186,7 +186,7 @@ export function ConditionComparison({
     },
     {
       label: "Humitat del sòl",
-      period: "ara · 3–9 cm",
+      period: "ara · profunditat 3–9 cm",
       current: percentage(v.soilMoisture, true),
       context: `Perfil ideal: ${species.ecologicalConfig.climate.soilMoisture.toLowerCase()}`,
       stats: [
@@ -252,6 +252,12 @@ export function ConditionComparison({
           value: percentage(v.relativeHumidityMax24h),
           explanation:
             "Humitat relativa més alta estimada durant les últimes 24 h. Indica els períodes més favorables per mantenir la superfície humida, sovint de nit o a primera hora.",
+        },
+        {
+          label: "Mitj · 7 dies",
+          value: percentage(v.relativeHumidityAvg7d),
+          explanation:
+            "Humitat relativa mitjana estimada durant els últims set dies. Només penalitza la puntuació quan mostra una sequedat persistent pitjor que la de les últimes 24 hores.",
         },
       ],
       icon: Cloud,

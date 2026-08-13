@@ -363,10 +363,11 @@ export default function MethodPage() {
               </article>
 
               <article className="method-subscore">
-                <div className="method-subscore-title"><Gauge size={24} /><div><span>HR + E · ATMOSFERA I TEMPORADA</span><h4>Dues taules simples i explícites.</h4></div></div>
-                <Formula label="La humitat relativa puntua cent entre seixanta-cinc i noranta per cent; fora, resta dos punts per cada punt de distància a setanta-cinc.">
-                  HR = 100 si 65 ≤ h ≤ 90; fora: max(0, 100 − 2|h − 75|)
+                <div className="method-subscore-title"><Gauge size={24} /><div><span>HR + E · ATMOSFERA I TEMPORADA</span><h4>Resposta ràpida amb memòria limitada.</h4></div></div>
+                <Formula label="Cada finestra d'humitat relativa puntua cent entre seixanta-cinc i noranta per cent; fora, resta dos punts per cada punt de distància a setanta-cinc.">
+                  H(h) = 100 si 65 ≤ h ≤ 90; fora: max(0, 100 − 2|h − 75|)
                 </Formula>
+                <p>La base és <b>H(HR̄<sub>24 h</sub>)</b>. Si la mitjana de 7 dies és inferior al 65% i dona una resposta pitjor, HR = 0,75 H(HR̄<sub>24 h</sub>) + 0,25 H(HR̄<sub>7 d</sub>); en cap altre cas la finestra setmanal augmenta o redueix la puntuació. Sense aquesta finestra, conservem la base de 24 h.</p>
                 <div className="method-season-scale" aria-label="Puntuacions d'activitat estacional">
                   <span><i />Inactiva <b>0</b></span>
                   <span><i />Possible <b>35</b></span>
@@ -564,7 +565,7 @@ export default function MethodPage() {
                 <article className="method-source-card method-source-card-weather">
                   <div className="method-source-card-top"><CloudSun size={24} /><span>MÉTÉO-FRANCE · OPEN-METEO</span></div>
                   <h4>AROME France</h4>
-                  <p>Temperatura, humitat relativa, precipitació, vent i ET₀. Les sèries horàries alimenten les finestres de 24 h, 3/7/30 dies i els extrems de 10 dies.</p>
+                  <p>Temperatura, humitat relativa, precipitació, vent i ET₀. Les sèries horàries alimenten les finestres de 24 h, la memòria d’humitat relativa de 7 dies, les finestres hídriques de 3/7/30 dies i els extrems de temperatura de 10 dies.</p>
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>2,5 km · horari</dd></div>
                     <div><dt><RefreshCw size={14} /> Proveïdor</dt><dd>cada 3 h</dd></div>

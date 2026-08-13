@@ -233,6 +233,7 @@ export interface ConditionSnapshot {
     relativeHumidityMin24h?: number;
     relativeHumidityAvg24h?: number;
     relativeHumidityMax24h?: number;
+    relativeHumidityAvg7d?: number;
     soilMoisture?: number;
     soilMoistureMin24h?: number;
     soilMoistureAvg24h?: number;
@@ -344,6 +345,11 @@ export interface PredictionCell {
   factors: FactorContribution[];
   occurrenceEvidence: HistoricalOccurrenceEvidence | null;
   occurrenceEvidenceStatus: OccurrenceEvidenceStatus;
+}
+
+export interface PredictionHistoryPoint {
+  observedAt: string;
+  score: number | null;
 }
 
 export type PredictionMapCell = Pick<

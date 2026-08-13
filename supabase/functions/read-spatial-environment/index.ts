@@ -28,6 +28,68 @@ function bbox(searchParams: URLSearchParams) {
   return { west: west!, south: south!, east: east!, north: north! };
 }
 
+async function readCellHistory(
+  supabase: ReturnType<typeof createAdminClient>,
+  cellId: string,
+  days: number,
+) {
+  const { data: cell, error: cellError } = await supabase
+    .from("spatial_cells")
+    .select("cell_id,region_id,weather_point_id")
+    .eq("cell_id", cellId)
+    .eq("static_verified", true)
+    .maybeSingle();
+  if (cellError) throw cellError;
+  if (!cell?.weather_point_id) return null;
+
+  const { data: atmospherePoint, error: atmospherePointError } = await supabase
+    .from("weather_grid_points")
+    .select("soil_point_id")
+    .eq("point_id", cell.weather_point_id)
+    .maybeSingle();
+  if (atmospherePointError) throw atmospherePointError;
+
+  const atmosphereQuery = supabase
+    .from("weather_grid_snapshots")
+    .select("snapshot_date,observed_at,sources,source_resolution_m,confidence,unavailable_fields,values")
+    .eq("point_id", cell.weather_point_id)
+    .order("snapshot_date", { ascending: false })
+    .limit(days);
+  const soilQuery = atmospherePoint?.soil_point_id
+    ? supabase
+      .from("weather_grid_snapshots")
+      .select("snapshot_date,observed_at,sources,source_resolution_m,confidence,unavailable_fields,values")
+      .eq("point_id", atmospherePoint.soil_point_id)
+      .order("snapshot_date", { ascending: false })
+      .limit(days)
+    : Promise.resolve({ data: [], error: null });
+  const [{ data: atmosphereSnapshots, error: atmosphereError }, { data: soilSnapshots, error: soilError }] =
+    await Promise.all([atmosphereQuery, soilQuery]);
+  if (atmosphereError) throw atmosphereError;
+  if (soilError) throw soilError;
+  const soilByDate = new Map((soilSnapshots ?? []).map((snapshot) => [snapshot.snapshot_date, snapshot]));
+
+  return {
+    cellId: cell.cell_id,
+    regionId: cell.region_id,
+    snapshots: (atmosphereSnapshots ?? []).reverse().map((atmosphere) => {
+      const soil = soilByDate.get(atmosphere.snapshot_date);
+      return {
+        observedAt: soil && soil.observed_at > atmosphere.observed_at ? soil.observed_at : atmosphere.observed_at,
+        source: [...(soil?.sources ?? []), ...atmosphere.sources],
+        sourceResolutionM: Math.max(atmosphere.source_resolution_m, soil?.source_resolution_m ?? 0),
+        confidence: atmosphere.confidence === "limited" || soil?.confidence === "limited"
+          ? "limited"
+          : atmosphere.confidence === "unknown" || soil?.confidence === "unknown"
+            ? "unknown"
+            : atmosphere.confidence,
+        unavailableFields: [...atmosphere.unavailable_fields, ...(soil?.unavailable_fields ?? [])],
+        values: { ...(soil?.values ?? {}), ...atmosphere.values },
+      };
+    }),
+  };
+}
+
 type HabitatRequest = {
   speciesId?: string;
   profileKey?: string;
@@ -187,6 +249,22 @@ async function readHabitatRowsForBounds(
 Deno.serve(async (request) => {
   if (request.method !== "GET") return json({ error: "Method not allowed" }, 405, { Allow: "GET" });
   const url = new URL(request.url);
+  if (url.searchParams.get("mode") === "history") {
+    const cellId = url.searchParams.get("cell")?.trim();
+    const requestedDays = Number(url.searchParams.get("days") ?? 7);
+    const days = Number.isInteger(requestedDays) ? Math.min(Math.max(requestedDays, 1), 7) : 7;
+    if (!cellId || cellId.length > 160) return json({ error: "Invalid cell history request" }, 400);
+    try {
+      const history = await readCellHistory(createAdminClient(), cellId, days);
+      if (!history) return json({ error: "Cell history not found" }, 404);
+      return json(history, 200, {
+        "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
+      });
+    } catch (error) {
+      console.error("Unable to read spatial environment history", error);
+      return json({ error: "Unable to load spatial environment history" }, 500);
+    }
+  }
   const bounds = bbox(url.searchParams);
   if (!bounds) return json({ error: "Invalid or excessive bounding box" }, 400);
   const requestedLimit = Number(url.searchParams.get("limit") ?? 1000);

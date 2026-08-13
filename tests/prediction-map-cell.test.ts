@@ -51,6 +51,7 @@ describe("compact prediction map cells", () => {
       frostHours10d: 0,
       relativeHumidity: 52.25,
       relativeHumidityAvg24h: 48.7,
+      relativeHumidityAvg7d: 42.5,
       soilMoisture: 0.174,
       soilMoistureAvg24h: 0.18,
       soilMoistureMin7d: 0.174,
