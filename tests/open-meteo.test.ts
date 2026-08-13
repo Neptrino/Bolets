@@ -1,7 +1,40 @@
 import { describe, expect, it } from "vitest";
-import { configureOpenMeteoRequest, normalizeOpenMeteo, type OpenMeteoLocation } from "@/supabase/functions/_shared/open-meteo";
+import {
+  configureOpenMeteoForecastRequest,
+  configureOpenMeteoRequest,
+  normalizeOpenMeteo,
+  normalizeOpenMeteoForecast,
+  type OpenMeteoLocation,
+} from "@/supabase/functions/_shared/open-meteo";
 
 const times = Array.from({ length: 24 }, (_, index) => `2026-08-10T${index.toString().padStart(2, "0")}:00`);
+
+function forecastFixture(generatedAt = "2026-08-10T12:34:00Z") {
+  const base = Math.floor(Date.parse(generatedAt) / 3_600_000) * 3600;
+  const hourlyTimes = Array.from({ length: 840 }, (_, index) => base - 719 * 3600 + index * 3600);
+  const target = base + 24 * 3600;
+  const temperature = hourlyTimes.map((time) => time === target ? 17 : 14);
+  const atmosphere: OpenMeteoLocation = {
+    current: { temperature_2m: 99, relative_humidity_2m: 1 },
+    hourly: {
+      time: hourlyTimes,
+      temperature_2m: temperature,
+      relative_humidity_2m: Array(840).fill(76),
+      wind_speed_10m: Array(840).fill(7),
+      wind_gusts_10m: Array(840).fill(16),
+      precipitation: Array(840).fill(0.1),
+      et0_fao_evapotranspiration: Array(840).fill(0.05),
+    },
+  };
+  const soil: OpenMeteoLocation = {
+    current: { soil_moisture_3_to_9cm: 0.99 },
+    hourly: {
+      time: hourlyTimes,
+      soil_moisture_3_to_9cm: Array(840).fill(0.25),
+    },
+  };
+  return { atmosphere, soil, base, target, hourlyTimes };
+}
 
 describe("Open-Meteo profiles", () => {
   it("keeps AROME atmospheric requests separate from coarse soil moisture", () => {
@@ -17,6 +50,67 @@ describe("Open-Meteo profiles", () => {
     expect(soil.searchParams.get("past_hours")).toBe("168");
     expect(soil.searchParams.get("current")).toBe("soil_moisture_3_to_9cm");
     expect(soil.searchParams.get("hourly")).toBe("soil_moisture_3_to_9cm");
+  });
+
+  it("requests enough UTC-safe hourly data to reach the fifth projection", () => {
+    const atmosphere = new URL("https://api.open-meteo.com/v1/ecmwf");
+    configureOpenMeteoForecastRequest(atmosphere, "atmosphere");
+    expect(atmosphere.searchParams.get("past_hours")).toBe("720");
+    expect(atmosphere.searchParams.get("forecast_hours")).toBe("121");
+    expect(atmosphere.searchParams.get("timeformat")).toBe("unixtime");
+    expect(atmosphere.searchParams.get("models")).toBe("ecmwf_ifs");
+    expect(atmosphere.searchParams.get("hourly")).toContain("et0_fao_evapotranspiration");
+
+    const soil = new URL("https://api.open-meteo.com/v1/forecast");
+    configureOpenMeteoForecastRequest(soil, "soil");
+    expect(soil.searchParams.get("past_hours")).toBe("168");
+    expect(soil.searchParams.get("forecast_hours")).toBe("121");
+    expect(soil.searchParams.get("hourly")).toBe("soil_moisture_3_to_9cm");
+    expect(soil.searchParams.has("models")).toBe(false);
+  });
+
+  it("recalculates complete rolling inputs at each of five future target hours", () => {
+    const { atmosphere, soil, base } = forecastFixture();
+    const forecast = normalizeOpenMeteoForecast(atmosphere, soil, "2026-08-10T12:34:00Z");
+
+    expect(forecast.points.map((point) => point.horizonHours)).toEqual([24, 48, 72, 96, 120]);
+    expect(forecast.points.map((point) => Date.parse(point.validAt) / 1000)).toEqual(
+      [24, 48, 72, 96, 120].map((hours) => base + hours * 3600),
+    );
+    expect(forecast.points[0].values.temperatureC).toBe(17);
+    expect(forecast.points[0].values.temperatureC).not.toBe(99);
+    expect(forecast.points[0].values.soilMoisture).toBe(0.25);
+    expect(forecast.points[0].values.rainfall3dMm).toBeCloseTo(7.2);
+    expect(forecast.points[0].values.rainfall7dMm).toBeCloseTo(16.8);
+    expect(forecast.points[0].values.rainfall30dMm).toBeCloseTo(72);
+    expect(forecast.points[0].values.rainfallPrevious23dMm).toBeCloseTo(55.2);
+    expect(forecast.points[0].values.evapotranspiration30dMm).toBeCloseTo(36);
+    expect(forecast.points[0].values.drySpellDays).toBe(0);
+    expect(forecast.points[0].values.soilMoistureTrend7d).toBeCloseTo(0);
+    expect(forecast.points.every((point) => point.unavailableFields.length === 0)).toBe(true);
+  });
+
+  it("withholds fields whose future hourly series has a gap or duplicate", () => {
+    const { atmosphere, soil, target } = forecastFixture();
+    const hourly = atmosphere.hourly!;
+    (hourly.time as number[]).push(target);
+    (hourly.temperature_2m as number[]).push(17);
+
+    const forecast = normalizeOpenMeteoForecast(atmosphere, soil, "2026-08-10T12:34:00Z");
+
+    expect(forecast.points[0].values.temperatureC).toBeUndefined();
+    expect(forecast.points[0].values.temperatureAvg24hC).toBeUndefined();
+    expect(forecast.points[0].unavailableFields).toContain("temperatureC");
+    expect(forecast.points[0].unavailableFields).toContain("temperatureAvg10dC");
+  });
+
+  it("keeps exact hourly targets across a Europe/Madrid daylight-saving transition", () => {
+    const generatedAt = "2026-03-28T12:34:00Z";
+    const { atmosphere, soil, base } = forecastFixture(generatedAt);
+    const forecast = normalizeOpenMeteoForecast(atmosphere, soil, generatedAt);
+
+    expect(Date.parse(forecast.points[0].validAt) / 1000).toBe(base + 24 * 3600);
+    expect(Date.parse(forecast.points[4].validAt) / 1000).toBe(base + 120 * 3600);
   });
 
   it("merges high-resolution atmosphere with an independent soil snapshot", () => {

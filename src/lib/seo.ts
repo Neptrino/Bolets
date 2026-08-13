@@ -11,7 +11,7 @@ export function absoluteUrl(path = "/") {
 }
 
 export function speciesPath(species: SpeciesProfile) {
-  return `/species/${species.speciesId}`;
+  return `/bolets/${species.speciesId}`;
 }
 
 export function speciesDescription(species: SpeciesProfile) {

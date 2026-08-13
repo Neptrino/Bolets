@@ -11,6 +11,7 @@ supabase/.branches/
 .env.local
 .env*.local
 .vercel
+.DS_Store
 .env*
 !.env.example
 !.env.spatial.example

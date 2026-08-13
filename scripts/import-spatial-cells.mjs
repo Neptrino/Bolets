@@ -6,11 +6,16 @@ import { packLandCoverFractions } from "./lib/land-cover.mjs";
 const inputPath = process.argv.find((argument) => !argument.startsWith("--") && argument !== process.argv[0] && argument !== process.argv[1]);
 const dryRun = process.argv.includes("--dry-run");
 const coverOnly = process.argv.includes("--cover-only");
+const geologyOnly = process.argv.includes("--geology-only");
+const geologyUnitsOnly = process.argv.includes("--geology-units-only");
 const skipArgument = process.argv.find((argument) => argument.startsWith("--skip="));
 const limitArgument = process.argv.find((argument) => argument.startsWith("--limit="));
 const skip = Number(skipArgument?.split("=")[1] ?? 0);
 const inputLimit = Number(limitArgument?.split("=")[1] ?? Number.POSITIVE_INFINITY);
-if (!inputPath) throw new Error("Usage: npm run spatial:import -- /absolute/path/cells.ndjson [--dry-run] [--cover-only]");
+if (!inputPath) throw new Error("Usage: npm run spatial:import -- /absolute/path/input.ndjson [--dry-run] [--cover-only|--geology-only|--geology-units-only]");
+if ([coverOnly, geologyOnly, geologyUnitsOnly].filter(Boolean).length > 1) {
+  throw new Error("Choose only one specialized import mode");
+}
 if (!Number.isInteger(skip) || skip < 0 || (!Number.isFinite(inputLimit) && inputLimit !== Number.POSITIVE_INFINITY) || inputLimit <= 0) {
   throw new Error("--skip must be a non-negative integer and --limit must be positive");
 }
@@ -60,6 +65,11 @@ async function* readCells() {
     return;
   }
   const payload = JSON.parse(await readFile(inputPath, "utf8"));
+  if (geologyUnitsOnly) {
+    if (!Array.isArray(payload?.units)) throw new Error("Geology mapping input must contain a units array");
+    for (const unit of payload.units) yield unit;
+    return;
+  }
   if (payload?.type !== "FeatureCollection" || !Array.isArray(payload.features)) throw new Error("Input must be NDJSON or a GeoJSON FeatureCollection");
   for (let index = 0; index < payload.features.length; index += 1) yield geoJsonCell(payload.features[index], index);
 }
@@ -91,14 +101,23 @@ async function uploadBatch() {
       "Content-Type": "application/json",
       ...(importToken ? { "x-spatial-import-token": importToken } : {})
     },
-    body: JSON.stringify(coverOnly ? { coverSamples: batch } : { cells: batch })
+    body: JSON.stringify(
+      coverOnly
+        ? { coverSamples: batch }
+        : geologyOnly
+          ? { geologyEvidence: batch }
+          : geologyUnitsOnly
+            ? { geologyUnits: batch }
+            : { cells: batch },
+    )
   });
   const result = await response.json();
   if (!response.ok) throw new Error(`Spatial import failed after ${imported} rows: ${result.error ?? response.status}`);
-  if (coverOnly) {
+  if (coverOnly || geologyOnly || geologyUnitsOnly) {
     imported += result.received;
     verified += result.updated;
-    console.log(`Processed ${imported} cover samples; updated ${verified} existing cells`);
+    const label = coverOnly ? "cover samples" : geologyOnly ? "geology cells" : "geology units";
+    console.log(`Processed ${imported} ${label}; updated ${verified}`);
   } else {
     imported += result.imported;
     verified += result.verified;
@@ -121,17 +140,33 @@ for await (const cell of readCells()) {
     const packed = packLandCoverFractions(cell.staticValues?.landCoverFractions);
     if (!packed) throw new Error(`Invalid canonical land-cover samples for ${cell.cellId}`);
     batch.push({ cellId: cell.cellId, packed });
+  } else if (geologyOnly) {
+    const evidence = cell.geologyEvidence ?? cell;
+    batch.push(evidence);
+  } else if (geologyUnitsOnly) {
+    const unit = cell.unitId === undefined && cell.id !== undefined
+      ? { ...cell, unitId: cell.id }
+      : cell;
+    batch.push(unit);
   } else {
     batch.push(cell);
   }
-  if (batch.length === (coverOnly ? 5000 : 1000)) await uploadBatch();
+  if (batch.length === (coverOnly || geologyUnitsOnly ? 2000 : 1000)) await uploadBatch();
 }
 
 if (dryRun) {
   console.log(JSON.stringify({ validInput: true, cells: inputCells, firstCellId: firstCellId ?? null }, null, 2));
 } else {
   await uploadBatch();
-  console.log(JSON.stringify(coverOnly
-    ? { coverSamples: imported, updated: verified }
-    : { imported, verified, withheld }, null, 2));
+  console.log(JSON.stringify(
+    coverOnly
+      ? { coverSamples: imported, updated: verified }
+      : geologyOnly
+        ? { geologyCells: imported, updated: verified }
+        : geologyUnitsOnly
+          ? { geologyUnits: imported, updated: verified }
+          : { imported, verified, withheld },
+    null,
+    2,
+  ));
 }

@@ -3,9 +3,11 @@ import Link from "next/link";
 import { ArrowUpRight, CircleAlert, CookingPot } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { SpeciesCard } from "@/components/species-card";
+import { EditorialAttribution } from "@/components/editorial-attribution";
+import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { edibleSpecies } from "@/src/lib/species-collections";
 import { monthInTimeZone } from "@/src/lib/seasonality";
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
+import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
   title: "Bolets comestibles de Catalunya: guia d’espècies",
@@ -28,10 +30,12 @@ export default function EdibleMushroomsPage() {
     <div className="intent-page page-width">
       <JsonLd data={{
         "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        name: "Bolets comestibles de Catalunya",
+        "@type": "Article",
+        headline: "Bolets comestibles de Catalunya",
         url: absoluteUrl("/bolets-comestibles"),
         inLanguage: "ca",
+        publisher: { "@id": `${SITE_URL}/#organization` },
+        ...editorialArticleFields("bolets-comestibles"),
         mainEntity: {
           "@type": "ItemList",
           numberOfItems: edibleSpecies.length,
@@ -39,7 +43,7 @@ export default function EdibleMushroomsPage() {
             "@type": "ListItem",
             position: index + 1,
             name: species.identity.commonName,
-            url: absoluteUrl(`/species/${species.speciesId}`),
+            url: absoluteUrl(speciesPath(species)),
           })),
         },
       }} />
@@ -63,6 +67,7 @@ export default function EdibleMushroomsPage() {
       <div className="species-grid intent-species-grid">
         {edibleSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} currentMonth={currentMonth} />)}
       </div>
+      <EditorialAttribution contentId="bolets-comestibles" sources={[officialSafetySource, ...edibleSpecies.flatMap((species) => species.references)]} />
     </div>
   );
 }

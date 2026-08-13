@@ -17,7 +17,8 @@ import type {
   OccurrenceEvidenceStatus,
   OccurrenceSupportCell,
   PredictionCell,
-  PredictionHistoryPoint,
+  PredictionCellTimeline,
+  PredictionForecastPoint,
   PredictionMapCell,
   RegionId,
   RegionalPredictionSummary,
@@ -30,13 +31,18 @@ import type {
 export async function getPredictionCellHistory(
   speciesId: string,
   cell: Pick<PredictionCell, "cellId" | "regionId" | "values">,
-): Promise<PredictionHistoryPoint[]> {
+): Promise<PredictionCellTimeline> {
   const species = getSpecies(speciesId);
   if (!species) throw new Error("Unknown species");
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY)
     throw new Error("Spatial environment service is not configured");
 
-  const query = new URLSearchParams({ mode: "history", cell: cell.cellId, days: "7" });
+  const query = new URLSearchParams({
+    mode: "history",
+    cell: cell.cellId,
+    days: "7",
+    historyVersion: PREDICTION_CACHE_VERSION,
+  });
   const response = await fetch(
     `${process.env.SUPABASE_URL}/functions/v1/read-spatial-environment?${query}`,
     {
@@ -65,7 +71,7 @@ export async function getPredictionCellHistory(
     soilSubstrate: cell.values.soilSubstrate,
   };
 
-  return payload.snapshots.map((snapshot) => {
+  const observed = payload.snapshots.map((snapshot) => {
     // Habitat is static at this model version. Dynamic values must come only
     // from the historical snapshot so today's weather cannot fill an old gap.
     const values = { ...habitatValues, ...snapshot.values };
@@ -87,6 +93,52 @@ export async function getPredictionCellHistory(
       }).score,
     };
   });
+
+  const generatedAt = payload.forecast?.generatedAt;
+  const generatedAtMilliseconds = generatedAt ? Date.parse(generatedAt) : Number.NaN;
+  const forecastAgeMilliseconds = Date.now() - generatedAtMilliseconds;
+  const forecastFresh = Number.isFinite(generatedAtMilliseconds) &&
+    forecastAgeMilliseconds >= -15 * 60 * 1000 &&
+    forecastAgeMilliseconds <= 36 * 60 * 60 * 1000 &&
+    (payload.forecast?.snapshots.every((snapshot) => Date.parse(snapshot.validAt) > Date.now()) ?? false);
+  if (!payload.forecast || !forecastFresh) return { observed, forecast: null };
+
+  const horizonConfidence = (horizonDays: number) =>
+    horizonDays === 1 ? "high" : horizonDays <= 3 ? "moderate" : "limited";
+  const points = payload.forecast.snapshots.map((snapshot) => {
+    const values = { ...habitatValues, ...snapshot.values };
+    const unavailableFields = [
+      ...new Set([...snapshot.unavailableFields, ...missingRainfallFields(values)]),
+    ];
+    const horizonDays = (snapshot.horizonHours / 24) as PredictionForecastPoint["horizonDays"];
+    const score = snapshot.unavailableFields.length
+      ? null
+      : calculateSuitability(species, {
+        regionId: cell.regionId,
+        observedAt: snapshot.validAt,
+        source: snapshot.source,
+        confidence: snapshot.confidence,
+        stale: false,
+        unavailableFields,
+        values,
+      }).score;
+    return {
+      validAt: snapshot.validAt,
+      horizonDays,
+      horizonConfidence: horizonConfidence(horizonDays),
+      score,
+    } satisfies PredictionForecastPoint;
+  });
+
+  return {
+    observed,
+    forecast: {
+      generatedAt: payload.forecast.generatedAt,
+      source: [...new Set(payload.forecast.snapshots.flatMap((snapshot) => snapshot.source))],
+      sourceResolutionM: Math.max(...payload.forecast.snapshots.map((snapshot) => snapshot.sourceResolutionM)),
+      points,
+    },
+  };
 }
 
 export function toPredictionMapCell(

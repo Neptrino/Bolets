@@ -7,7 +7,7 @@ import { isRegionId } from "@/data/regions";
 import { getSpecies, speciesSelectItems } from "@/data/species";
 import { getConditionSnapshot } from "@/src/lib/conditions";
 import { calculateSuitability } from "@/src/lib/scoring";
-import { DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
+import { DEFAULT_SOCIAL_IMAGE, speciesPath } from "@/src/lib/seo";
 import type { MapViewMode, RegionId } from "@/src/lib/types";
 
 export const metadata: Metadata = {
@@ -93,9 +93,10 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
               <p>Selecciona una cel·la per veure’n el sòl, la coberta, l’altitud i les condicions actuals. El temps conserva la resolució real del proveïdor i pot ser compartit entre cel·les veïnes.</p>
             </>}
           </div>
-          <Link href={`/species/${species.speciesId}?region=${region}`} className="text-link">Llegir la fitxa de {species.identity.commonName} <ArrowUpRight size={17} /></Link>
+          <Link href={`${speciesPath(species)}?region=${region}`} className="text-link">Llegir la fitxa de {species.identity.commonName} <ArrowUpRight size={17} /></Link>
         </aside>
       }
     />
+    <nav className="map-page-guide-links page-width" aria-label="Guies relacionades amb les condicions actuals"><Link href="/bolets-avui">Resum de bolets avui <ArrowUpRight size={16} /></Link><Link href="/quan-surten-els-bolets-despres-de-ploure">Quan surten després de ploure <ArrowUpRight size={16} /></Link></nav>
   </section>;
 }

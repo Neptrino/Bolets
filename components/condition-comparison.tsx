@@ -17,6 +17,7 @@ import {
 import type {
   ConditionSnapshot,
   CoordinateBounds,
+  GeologicalSubstrateEvidence,
   HistoricalOccurrenceEvidence,
   ModelFactor,
   OccurrenceEvidenceStatus,
@@ -73,6 +74,17 @@ const uppercaseInitial = (value: string) =>
   value
     ? `${value.charAt(0).toLocaleUpperCase("ca-ES")}${value.slice(1)}`
     : value;
+
+const geologicalSubstrateLabels: Record<
+  GeologicalSubstrateEvidence["class"],
+  string
+> = {
+  silicic: "Silícic",
+  calcareous: "Calcari",
+  mixed: "Mixt",
+  unconsolidated: "Materials no consolidats",
+  unknown: "Substrat no determinat",
+};
 
 function readingTime(value: string) {
   const date = new Date(value);
@@ -140,6 +152,9 @@ export function ConditionComparison({
     : "No disponible en la lectura territorial";
   const [altitudeMin, altitudeMax] = species.ecologicalConfig.habitat.altitude;
   const preferredPhRange = species.ecologicalConfig.soil.phRange;
+  const unknownGeologyDescription = v.geologicalSubstrate?.class === "unknown"
+    ? v.geologicalSubstrate.dominantUnitDescription
+    : undefined;
   const selectedCellCoordinates = cellCoordinates(cellBounds);
   const resultBand = result.score === null ? undefined : getSuitabilityBand(result.score);
   const frostState =
@@ -565,9 +580,16 @@ export function ConditionComparison({
               <small>Preferida: {uppercaseInitial(species.ecologicalConfig.soil.texture)}</small>
             </div>
             <div>
-              <dt><Layers3 size={17} aria-hidden="true" />Substrat preferit</dt>
-              <dd>{uppercaseInitial(species.ecologicalConfig.soil.substrate)}</dd>
-              <small>{v.soilSubstrate ? `Cel·la: ${uppercaseInitial(v.soilSubstrate)}` : "La cel·la encara no té un substrat cartografiat"}</small>
+              <dt><Layers3 size={17} aria-hidden="true" />Substrat geològic</dt>
+              <dd
+                className={unknownGeologyDescription ? "geological-unit-description" : undefined}
+                title={unknownGeologyDescription}
+              >{v.geologicalSubstrate
+                ? unknownGeologyDescription
+                  ? unknownGeologyDescription
+                  : geologicalSubstrateLabels[v.geologicalSubstrate.class]
+                : "Sense cartografia geològica"}</dd>
+              <small>Preferència de l’espècie: {uppercaseInitial(species.ecologicalConfig.soil.substrate)}</small>
             </div>
             <div>
               <dt><Layers3 size={17} aria-hidden="true" />Drenatge preferit</dt>

@@ -1,0 +1,100 @@
+import type { SourceReference } from "@/src/lib/types";
+import { SITE_URL } from "@/src/lib/seo";
+
+export type EditorialReviewStatus = "editorial-only" | "expert-reviewed";
+
+export interface EditorialMetadata {
+  publishedAt: string;
+  updatedAt: string;
+  authorId: "editorial-team";
+  reviewStatus: EditorialReviewStatus;
+}
+
+export const EDITORIAL_LAUNCH_DATE = "2026-08-13";
+
+export const editorialTeam = {
+  id: "editorial-team" as const,
+  name: "Equip editorial de Bolets Atles",
+  url: `${SITE_URL}/equip-editorial`,
+};
+
+export const officialSafetySource: SourceReference = {
+  id: "acsa-bolets",
+  title: "Bolets: consells de seguretat alimentària",
+  publisher: "Agència Catalana de Seguretat Alimentària",
+  url: "https://acsa.gencat.cat/ca/detall/article/Bolets",
+  confidence: "high",
+};
+
+export const coreEditorialSources: SourceReference[] = [
+  officialSafetySource,
+  {
+    id: "fungacat",
+    title: "FungaCAT: catàleg de la diversitat fúngica de Catalunya",
+    publisher: "Banc de Dades de Biodiversitat de Catalunya",
+    url: "https://biodiver.bio.ub.es/biocat/homepage.html",
+    confidence: "high",
+  },
+  {
+    id: "icgc",
+    title: "Cartografia i geoinformació de Catalunya",
+    publisher: "Institut Cartogràfic i Geològic de Catalunya",
+    url: "https://www.icgc.cat/ca/Geoinformacio-i-mapes",
+    confidence: "high",
+  },
+];
+
+export const environmentalSources: SourceReference[] = [
+  {
+    id: "open-meteo",
+    title: "Weather Forecast API",
+    publisher: "Open-Meteo",
+    url: "https://open-meteo.com/en/docs",
+    confidence: "high",
+  },
+  {
+    id: "soilgrids",
+    title: "SoilGrids: global gridded soil information",
+    publisher: "ISRIC — World Soil Information",
+    url: "https://www.isric.org/explore/soilgrids",
+    confidence: "high",
+  },
+  coreEditorialSources[2],
+].filter((source): source is SourceReference => Boolean(source));
+
+const defaultMetadata: EditorialMetadata = {
+  publishedAt: EDITORIAL_LAUNCH_DATE,
+  updatedAt: EDITORIAL_LAUNCH_DATE,
+  authorId: editorialTeam.id,
+  reviewStatus: "editorial-only",
+};
+
+const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {};
+
+export function getEditorialMetadata(contentId: string): EditorialMetadata {
+  return { ...defaultMetadata, ...metadataOverrides[contentId] };
+}
+
+export function editorialArticleFields(contentId: string) {
+  const editorial = getEditorialMetadata(contentId);
+
+  return {
+    author: { "@id": `${SITE_URL}/#editorial-team` },
+    datePublished: editorial.publishedAt,
+    dateModified: editorial.updatedAt,
+  };
+}
+
+export const publicEditorialItems = [
+  "bolets",
+  "bolets-comestibles",
+  "bolets-verinosos",
+  "temporada",
+  "bolets-avui",
+  "bolets-de-primavera",
+  "bolets-d-estiu",
+  "bolets-de-tardor",
+  "bolets-d-hivern",
+  "quan-surten-els-bolets-despres-de-ploure",
+  "equip-editorial",
+] as const;

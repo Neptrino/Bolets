@@ -20,8 +20,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const points = await getPredictionCellHistory(parsed.data.speciesId, parsed.data);
-    return jsonResponse(request, { points }, {
+    const timeline = await getPredictionCellHistory(parsed.data.speciesId, parsed.data);
+    return jsonResponse(request, timeline, {
       headers: { "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=600" },
     });
   } catch (error) {

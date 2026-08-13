@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ArrowRight, Mountain, Trees } from "lucide-react";
 import { CulinaryRating } from "@/components/culinary-rating";
 import { SeasonIndicator } from "@/components/season-indicator";
+import { speciesPath } from "@/src/lib/seo";
 import type { Month, SpeciesProfile } from "@/src/lib/types";
 
 export function SpeciesCard({
@@ -19,7 +20,7 @@ export function SpeciesCard({
   const referenceImage = species.media.find((asset) => asset.identificationReference);
   return (
     <Link
-      href={`/species/${species.speciesId}`}
+      href={speciesPath(species)}
       className="species-card"
       aria-label={`Obre la fitxa de ${species.identity.commonName}`}
       style={{ "--tone-a": toneA ?? "#f28a2e", "--tone-b": toneB ?? "#9f4d24", animationDelay: `${index * 45}ms` } as React.CSSProperties}

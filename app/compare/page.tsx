@@ -16,6 +16,7 @@ import { SeasonIndicator } from "@/components/season-indicator";
 import { QuerySelect } from "@/components/ui/query-select";
 import { speciesById, speciesSelectItems } from "@/data/species";
 import { comparisonPages } from "@/data/comparison-pages";
+import { speciesPath } from "@/src/lib/seo";
 import { monthInTimeZone, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
 import type { Month, SpeciesProfile } from "@/src/lib/types";
@@ -142,7 +143,7 @@ function ComparisonProfileCard({
           <span><Mountain size={15} aria-hidden="true" /><small>Altitud</small><strong>{species.ecologicalConfig.habitat.altitude.join("–")} m</strong></span>
           <span><ThermometerSun size={15} aria-hidden="true" /><small>Temperatura</small><strong>{species.ecologicalConfig.climate.temperatureRange.join("–")} °C</strong></span>
         </div>
-        <Link className="compare-profile-link" href={`/species/${species.speciesId}`}>
+        <Link className="compare-profile-link" href={speciesPath(species)}>
           Obrir la fitxa completa <ArrowUpRight size={15} aria-hidden="true" />
         </Link>
       </div>

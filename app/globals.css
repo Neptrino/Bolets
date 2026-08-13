@@ -3450,47 +3450,133 @@ body {
 .cell-score-history-heading > span.worsening { color: #a24832; }
 .cell-score-history-heading > span.steady { color: var(--ink-soft, #5f675d); }
 
+.cell-score-history-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem 1rem;
+  margin-top: .9rem;
+  color: var(--ink-soft, #5f675d);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cell-score-history-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+.cell-score-history-legend i {
+  display: inline-block;
+  width: 1.6rem;
+  height: 0;
+  border-top: 3px solid #28734e;
+}
+
+.cell-score-history-legend i.projected {
+  border-top-color: #a85e31;
+  border-top-style: dashed;
+}
+
+.cell-score-history-legend i.boundary {
+  width: 0;
+  height: .9rem;
+  border-top: 0;
+  border-left: 1px dashed rgba(117, 91, 67, .65);
+}
+
 .cell-score-history-chart {
   display: block;
   width: 100%;
-  height: auto;
-  margin-top: 1rem;
-  overflow: visible;
+  min-height: 260px;
+  margin-top: .8rem;
+  padding: .45rem 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--line, #d9ddd4) 70%, transparent);
+  overflow: hidden;
 }
 
-.cell-score-history-chart line {
-  stroke: var(--line, #d9ddd4);
-  stroke-width: 1;
-  stroke-dasharray: 3 4;
+.cell-score-history-chart .uplot {
+  font-family: inherit;
+  color: #657064;
 }
 
-.cell-score-history-chart path {
-  fill: none;
-  stroke: #28734e;
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.forecast-confidence-list {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1px;
+  margin: .65rem 0 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, #a85e31 20%, var(--line, #d9ddd4));
+  border-radius: .65rem;
+  background: color-mix(in srgb, #a85e31 20%, var(--line, #d9ddd4));
+  list-style: none;
 }
 
-.cell-score-history-chart circle {
-  fill: #fff;
-  stroke: #28734e;
-  stroke-width: 2.5;
+.forecast-confidence-list li {
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+  gap: .35rem;
+  padding: .34rem .5rem;
+  background: color-mix(in srgb, #f6e5d7 40%, var(--surface, #fff));
 }
 
-.cell-score-history-chart text {
-  fill: var(--ink-soft, #5f675d);
+.forecast-confidence-list > li > span,
+.forecast-confidence-list > li > small {
+  color: var(--ink-soft, #5f675d);
   font-size: 12px;
+  line-height: 1.25;
 }
 
-.cell-score-history-note {
-  margin-top: .65rem !important;
-  font-size: .84rem;
+.forecast-confidence-list > li > span {
+  white-space: nowrap;
+}
+
+.forecast-confidence-list strong {
+  color: #75401f;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.forecast-confidence-list small {
+  min-width: 0;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.cell-score-history .cell-score-history-note,
+.cell-score-history .cell-score-forecast-unavailable {
+  margin-top: .75rem;
+  color: var(--ink-soft, #5f675d);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cell-score-history .cell-score-forecast-unavailable {
+  padding: .6rem .7rem;
+  border-left: 3px solid var(--line, #d9ddd4);
+  background: color-mix(in srgb, var(--line, #d9ddd4) 16%, transparent);
 }
 
 @media (max-width: 560px) {
   .cell-score-history-heading { flex-direction: column; }
   .cell-score-history-heading > span { text-align: left; }
+  .forecast-confidence-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .forecast-confidence-list li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .05rem .35rem;
+  }
+  .forecast-confidence-list small {
+    grid-column: 1 / -1;
+    margin-left: 0;
+  }
+  .forecast-confidence-list li:last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
 
 .cell-static-factors {
@@ -3546,6 +3632,13 @@ body {
   line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.cell-static-factor-list dd.geological-unit-description {
+  display: -webkit-box;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 .cell-static-factor-list small {
   display: block;
@@ -3974,19 +4067,33 @@ body {
   border-radius: 13px;
   background: rgba(255, 253, 247, 0.68);
 }
-.season-year > div {
+.season-year > a {
   display: grid;
   min-height: 82px;
   place-items: center;
   align-content: center;
   border-right: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease;
 }
-.season-year > div:last-child {
+.season-year > a:hover {
+  background: rgba(197, 84, 39, 0.09);
+}
+.season-year > a:focus-visible {
+  z-index: 1;
+  outline: 3px solid var(--apricot);
+  outline-offset: -3px;
+}
+.season-year > a:last-child {
   border-right: 0;
 }
-.season-year > div.is-current {
+.season-year > a.is-selected {
   background: var(--clay);
   color: var(--paper);
+}
+.season-year > a.is-selected:hover {
+  background: var(--clay);
 }
 .season-year span,
 .season-year small {
@@ -3999,7 +4106,7 @@ body {
 .season-year small {
   color: var(--muted);
 }
-.season-year .is-current small {
+.season-year .is-selected small {
   color: rgba(255, 255, 255, 0.76);
 }
 .season-explainer {
@@ -4017,10 +4124,10 @@ body {
   .season-year {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
-  .season-year > div:nth-child(6) {
+  .season-year > a:nth-child(6) {
     border-right: 0;
   }
-  .season-year > div:nth-child(-n + 6) {
+  .season-year > a:nth-child(-n + 6) {
     border-bottom: 1px solid var(--line);
   }
 }
@@ -4054,14 +4161,14 @@ body {
   .season-year {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .season-year > div:nth-child(n) {
+  .season-year > a:nth-child(n) {
     border-right: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
   }
-  .season-year > div:nth-child(3n) {
+  .season-year > a:nth-child(3n) {
     border-right: 0;
   }
-  .season-year > div:nth-last-child(-n + 3) {
+  .season-year > a:nth-last-child(-n + 3) {
     border-bottom: 0;
   }
 }

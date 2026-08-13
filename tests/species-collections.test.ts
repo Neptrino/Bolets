@@ -3,6 +3,8 @@ import sitemap from "@/app/sitemap";
 import { edibleSpecies, speciesInSeason, toxicSpecies } from "@/src/lib/species-collections";
 import { comparisonPages } from "@/data/comparison-pages";
 import { getSpecies } from "@/data/species";
+import { seasonMonthPath, SEASON_MONTHS } from "@/src/lib/seasonality";
+import { seasonGuides } from "@/src/lib/season-guides";
 
 describe("search-intent species collections", () => {
   it("only publishes edible statuses in the edible guide", () => {
@@ -32,11 +34,35 @@ describe("search-intent species collections", () => {
 
   it("includes all intent landing pages in the sitemap", () => {
     const urls = sitemap().map((entry) => entry.url);
+    expect(urls).toContain("https://bolets.app/bolets");
+    expect(urls).toContain("https://bolets.app/bolets-avui");
+    for (const guide of seasonGuides) {
+      expect(urls).toContain(`https://bolets.app${guide.path}`);
+    }
+    expect(urls).toContain("https://bolets.app/quan-surten-els-bolets-despres-de-ploure");
+    expect(urls).toContain("https://bolets.app/equip-editorial");
     expect(urls).toContain("https://bolets.app/bolets-comestibles");
     expect(urls).toContain("https://bolets.app/bolets-verinosos");
     expect(urls).toContain("https://bolets.app/temporada");
+    for (const { key } of SEASON_MONTHS) {
+      expect(urls).toContain(`https://bolets.app${seasonMonthPath(key)}`);
+    }
     expect(urls).toContain("https://bolets.app/zones/rovellons");
     expect(urls).toContain("https://bolets.app/compare/rovello-vs-pinetell");
+  });
+
+  it("publishes unique canonical catalogue URLs with truthful modification dates", () => {
+    const entries = sitemap();
+    const urls = entries.map((entry) => entry.url);
+    const now = Date.now();
+
+    expect(new Set(urls).size).toBe(urls.length);
+    expect(urls.some((url) => new URL(url).pathname.startsWith("/species"))).toBe(false);
+    expect(urls.filter((url) => new URL(url).pathname.startsWith("/bolets/")).length).toBeGreaterThan(0);
+    for (const entry of entries) {
+      expect(entry.lastModified).toBeDefined();
+      expect(new Date(entry.lastModified!).getTime()).toBeLessThanOrEqual(now);
+    }
   });
 
   it("keeps every curated comparison connected to two catalogue species", () => {
@@ -49,7 +75,10 @@ describe("search-intent species collections", () => {
       expect(getSpecies(page.rightSpeciesId), page.slug).toBeDefined();
       expect(page.introduction.length).toBeGreaterThan(100);
       expect(page.decisiveDifference.length).toBeGreaterThan(70);
+      expect(page.metaDescription.length).toBeGreaterThanOrEqual(100);
+      expect(page.metaDescription.length).toBeLessThanOrEqual(160);
     }
+    expect(new Set(comparisonPages.map((page) => page.metaDescription)).size).toBe(comparisonPages.length);
   });
 
   it("covers the strongest current comparison suggestions", () => {

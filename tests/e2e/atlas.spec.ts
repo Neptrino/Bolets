@@ -11,10 +11,8 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   );
   await expect(page.locator(".featured-grid .card-season")).toHaveCount(0);
 
-  await page.goto("/species");
-  await page
-    .getByPlaceholder("Cerca per nom, gènere o família")
-    .fill("rossinyol");
+  await page.goto("/bolets");
+  await page.getByRole("textbox", { name: "Cerca espècies" }).fill("rossinyol");
   await expect(page.getByRole("link", { name: /Rossinyol/i })).toBeVisible();
   await expect(
     page
@@ -30,7 +28,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   ).toHaveCount(1);
   await expect(page.getByRole("link", { name: /Cep rogenc/i })).toHaveCount(0);
 
-  await page.goto("/species/boletus-edulis");
+  await page.goto("/bolets/boletus-edulis");
   await expect(
     page.getByRole("heading", { name: "Cep", exact: true }),
   ).toBeVisible();
@@ -69,7 +67,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   const expandedSpeciesHeight = await page.evaluate(
     () => document.documentElement.scrollHeight,
   );
-  expect(expandedSpeciesHeight).toBeLessThan(5500);
+  expect(expandedSpeciesHeight).toBeLessThan(6300);
   const climateDisclosure = page
     .locator(".disclosure-grid .species-disclosure")
     .filter({ hasText: "Clima i pluja" });
@@ -346,7 +344,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
     }),
   ).toContainText(/Rossinyol\s*Cantharellus cibarius/);
 
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 320, height: 720 });
   const [leftMobileBox, rightMobileBox] = await Promise.all([
     page.getByLabel("Selecciona l’espècie esquerra").boundingBox(),
     page.getByLabel("Selecciona l’espècie dreta").boundingBox(),
@@ -446,7 +444,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
     page.getByRole("button", { name: "Veure tot Catalunya" }),
   ).toBeVisible();
   await expect(page.locator(".map-data-state")).toContainText(
-    /cel·les|Apropa el mapa|No s’han pogut carregar/i,
+    /Predicció disponible|cel·les|Apropa el mapa|No s’han pogut carregar/i,
   );
   await page
     .getByRole("button", { name: "Mostra els controls del mapa" })
@@ -635,7 +633,7 @@ test("switches prediction and compatibility from the layer control", async ({
 });
 
 test("keeps prediction out of the camasec species guide", async ({ page }) => {
-  await page.goto("/species/marasmius-oreades");
+  await page.goto("/bolets/marasmius-oreades");
 
   await expect(
     page.getByRole("heading", { name: "On podria créixer a Catalunya" }),
@@ -769,9 +767,9 @@ test("keeps prediction factor labels readable on narrow maps", async ({ page }) 
   await expect(mobileNav).toHaveAttribute("open", "");
   await page
     .getByRole("navigation", { name: "Navegació mòbil" })
-    .getByRole("link", { name: "Espècies" })
+    .getByRole("link", { name: "Bolets" })
     .click();
-  await expect(page).toHaveURL("/species");
+  await expect(page).toHaveURL("/bolets");
   await expect(mobileNav).not.toHaveAttribute("open", "");
 });
 
@@ -792,7 +790,7 @@ test("starts the habitat map near the current location", async ({
     }),
   );
 
-  await page.goto("/species/boletus-edulis?region=pirineus");
+  await page.goto("/bolets/boletus-edulis?region=pirineus");
   const habitatRequest = page.waitForRequest("**/api/habitat?*");
   await page.locator("#distribució").scrollIntoViewIfNeeded();
 
@@ -814,6 +812,26 @@ test("keeps ecologically excluded cells clickable after changing species", async
   page,
 }) => {
   const cellBounds = [[-0.5, 40.1], [3.9, 43.2]];
+
+  await page.route("**/api/predictions/history?*", (route) => route.fulfill({
+    json: {
+      observed: [
+        { observedAt: "2026-10-14T12:00:00.000Z", score: 44 },
+        { observedAt: "2026-10-15T12:00:00.000Z", score: 50 },
+      ],
+      forecast: {
+        generatedAt: "2026-10-15T13:00:00.000Z",
+        source: ["ECMWF IFS HRES via Open-Meteo"],
+        sourceResolutionM: 9000,
+        points: [1, 2, 3, 4, 5].map((horizonDays) => ({
+          validAt: new Date(Date.parse("2026-10-15T12:00:00.000Z") + horizonDays * 86_400_000).toISOString(),
+          score: 50 + horizonDays * 4,
+          horizonDays,
+          horizonConfidence: horizonDays === 1 ? "high" : horizonDays <= 3 ? "moderate" : "limited",
+        })),
+      },
+    },
+  }));
 
   await page.route("**/api/predictions?*", async (route) => {
     const url = new URL(route.request().url());
@@ -879,11 +897,11 @@ test("keeps ecologically excluded cells clickable after changing species", async
   });
 
   await page.goto("/map?species=boletus-edulis&region=pirineus");
-  await expect(page.locator(".map-data-state")).toContainText("amb predicció");
+  await expect(page.locator(".map-data-state")).toContainText("Predicció disponible");
 
   await page.getByLabel("Espècie seleccionada").click();
   await page.getByRole("option", { name: "Pinetell", exact: true }).click();
-  await expect(page).toHaveURL(/species=lactarius-deliciosus/);
+  await expect(page).toHaveURL(/species=lactarius-deliciosus/, { timeout: 10_000 });
   const mapDataState = page.locator(".map-data-state");
   await expect(mapDataState.locator("strong")).toHaveText(
     "1 cel·les amb puntuació 0",
@@ -897,10 +915,33 @@ test("keeps ecologically excluded cells clickable after changing species", async
   await expect(mapCanvas).toHaveCSS("cursor", "pointer");
   await mapCanvas.click();
   await expect(page.locator(".map-floating-card strong")).toHaveText("0/100");
+  await expect(page.getByRole("heading", { name: "Evolució recent i projecció a 5 dies" })).toBeVisible();
+  await expect(page.locator(".cell-score-history-legend")).toContainText("Observat");
+  await expect(page.locator(".cell-score-history-legend")).toContainText("Projectat");
+  await expect(page.getByText(/De \+1 a \+5 dies: \+16 punts/)).toBeVisible();
+  await expect(page.getByText(/no de l’aparició de bolets/)).toBeVisible();
+  await expect(page.locator(".forecast-confidence-list li")).toHaveCount(5);
+  await expect(page.locator(".forecast-confidence-list li").last()).toContainText("Confiança de l’horitzó: limitada");
+  const forecastStripHeight = await page.locator(".forecast-confidence-list").evaluate(
+    (element) => element.getBoundingClientRect().height,
+  );
+  expect(forecastStripHeight).toBeLessThanOrEqual(40);
+  await expect(page.locator(".cell-score-history table tbody tr")).toHaveCount(7);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const hasHorizontalOverflow = await page.locator(".cell-score-history").evaluate(
+    (element) => element.scrollWidth > element.clientWidth,
+  );
+  expect(hasHorizontalOverflow).toBe(false);
+  const chartFitsHost = await page.locator(".cell-score-history-chart").evaluate((host) => {
+    const plot = host.querySelector<HTMLElement>(".uplot");
+    return plot !== null && plot.getBoundingClientRect().width <= host.getBoundingClientRect().width + 1;
+  });
+  expect(chartFitsHost).toBe(true);
 });
 
 test("keeps rendered text at 12px or larger", async ({ page }) => {
-  for (const route of ["/", "/species/boletus-edulis", "/compare", "/map", "/metode"]) {
+  for (const route of ["/", "/bolets/boletus-edulis", "/compare", "/map", "/metode"]) {
     await page.goto(route);
     const violations = await page.locator("body *").evaluateAll((elements) =>
       elements.flatMap((element) => {

@@ -376,6 +376,25 @@ describe("suitability scoring", () => {
     expect(result.score).toBe(0);
   });
 
+  it("scores seasonality using the Europe/Madrid month at a UTC boundary", () => {
+    const result = calculateSuitability(getSpecies("boletus-edulis")!, normaliseSnapshot({
+      ...localSnapshots[0],
+      // This is 1 September at midnight in Catalonia.
+      observedAt: "2026-08-31T22:00:00.000Z",
+      stale: false,
+      values: {
+        temperatureAvg10dC: 14,
+        relativeHumidityAvg24h: 75,
+        soilMoistureAvg24h: 0.3,
+        altitudeM: 1000,
+        forestCompatibility: 100,
+        soilCompatibility: 100,
+      },
+    }));
+
+    expect(result.contributions.find((factor) => factor.id === "seasonality")?.score).toBe(85);
+  });
+
   it("caps suitability when current heat and dryness conflict with fruiting", () => {
     const species = getSpecies("boletus-edulis")!;
     const result = calculateSuitability(species, normaliseSnapshot({

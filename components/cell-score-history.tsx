@@ -1,13 +1,22 @@
 "use client";
 
-import { TrendingDown, TrendingUp } from "lucide-react";
-import { useEffect, useId, useState } from "react";
-import type { PredictionCell, PredictionHistoryPoint } from "@/src/lib/types";
+import { Minus, TrendingDown, TrendingUp } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
+import uPlot from "uplot";
+import "uplot/dist/uPlot.min.css";
+import { PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
+import type {
+  ForecastHorizonConfidence,
+  PredictionCell,
+  PredictionCellTimeline,
+  PredictionForecastPoint,
+  PredictionHistoryPoint,
+} from "@/src/lib/types";
 
 type State =
   | { kind: "loading" }
-  | { kind: "ready"; points: PredictionHistoryPoint[] }
-  | { kind: "unavailable" };
+  | { kind: "ready"; timeline: PredictionCellTimeline }
+  | { kind: "unavailable"; reason?: string };
 
 function dayLabel(value: string) {
   return new Intl.DateTimeFormat("ca-ES", {
@@ -17,21 +26,87 @@ function dayLabel(value: string) {
   }).format(new Date(value));
 }
 
-function scoreLine(points: PredictionHistoryPoint[]) {
-  const available = points
-    .map((point, index) => ({ ...point, index }))
-    .filter((point): point is PredictionHistoryPoint & { index: number; score: number } => point.score !== null);
-  if (!available.length) return { path: "", dots: [] as Array<{ x: number; y: number; score: number }> };
-  const width = 320;
-  const height = 112;
-  const x = (index: number) => points.length === 1 ? width / 2 : (index / (points.length - 1)) * width;
-  const y = (score: number) => height - (score / 100) * height;
-  const dots = available.map((point) => ({ x: x(point.index), y: y(point.score), score: point.score }));
-  return { path: dots.map((dot, index) => `${index ? "L" : "M"}${dot.x} ${dot.y}`).join(" "), dots };
+const chartDayFormatter = new Intl.DateTimeFormat("ca-ES", {
+  day: "numeric",
+  month: "short",
+  timeZone: "Europe/Madrid",
+});
+
+function chartDayLabel(timestamp: number) {
+  return chartDayFormatter.format(new Date(timestamp * 1000));
+}
+
+function scoreChartPlugin(boundaryTimestamp?: number): uPlot.Plugin {
+  return {
+    hooks: {
+      draw: (chart) => {
+        const ratio = uPlot.pxRatio;
+        const context = chart.ctx;
+        context.save();
+        context.font = `${12 * ratio}px ui-sans-serif, system-ui, sans-serif`;
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+
+        if (boundaryTimestamp !== undefined) {
+          const boundaryX = chart.valToPos(boundaryTimestamp, "x", true);
+          context.strokeStyle = "rgba(117, 91, 67, 0.42)";
+          context.lineWidth = ratio;
+          context.setLineDash([4 * ratio, 5 * ratio]);
+          context.beginPath();
+          context.moveTo(boundaryX, chart.bbox.top);
+          context.lineTo(boundaryX, chart.bbox.top + chart.bbox.height);
+          context.stroke();
+          context.setLineDash([]);
+        }
+
+        const narrow = chart.width < 520;
+        [1, 2].forEach((seriesIndex) => {
+          const seriesValues = Array.from(chart.data[seriesIndex] as ArrayLike<number | null | undefined>);
+          const availableIndices = seriesValues
+            .flatMap((score, index) => score === null || score === undefined ? [] : [index]);
+          seriesValues.forEach((score, index) => {
+            if (score === null || score === undefined) return;
+            if (seriesIndex === 2 && boundaryTimestamp === chart.data[0][index]) return;
+            if (narrow && index !== availableIndices.at(-1)) return;
+            const x = chart.valToPos(chart.data[0][index], "x", true);
+            const pointY = chart.valToPos(score, "y", true);
+            const label = `${score}`;
+            const width = context.measureText(label).width + 14 * ratio;
+            const height = 20 * ratio;
+            const y = pointY - 18 * ratio < chart.bbox.top
+              ? pointY + 18 * ratio
+              : pointY - 18 * ratio;
+
+            context.fillStyle = "rgba(255, 250, 240, 0.96)";
+            context.strokeStyle = seriesIndex === 1
+              ? "rgba(40, 115, 78, 0.24)"
+              : "rgba(154, 85, 40, 0.30)";
+            context.lineWidth = ratio;
+            context.beginPath();
+            context.roundRect(x - width / 2, y - height / 2, width, height, 6 * ratio);
+            context.fill();
+            context.stroke();
+            context.fillStyle = seriesIndex === 1 ? "#245f43" : "#8a4a26";
+            context.fillText(label, x, y + 0.5 * ratio);
+          });
+        });
+        context.restore();
+      },
+    },
+  };
+}
+
+function confidenceLabel(confidence: ForecastHorizonConfidence) {
+  return { high: "alta", moderate: "moderada", limited: "limitada" }[confidence];
+}
+
+function scoreLabel(score: number | null) {
+  return score === null ? "Sense dades" : `${score}/100`;
 }
 
 export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell: PredictionCell }) {
   const [state, setState] = useState<State>({ kind: "loading" });
+  const chartRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const requestBody = JSON.stringify({
     speciesId,
@@ -41,67 +116,228 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
   });
 
   useEffect(() => {
+    if (cell.gridSizeM !== 250) return;
     const controller = new AbortController();
-    fetch("/api/predictions/history", {
+    fetch(`/api/predictions/history?v=${encodeURIComponent(PREDICTION_CACHE_VERSION)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: requestBody,
       signal: controller.signal,
     })
       .then(async (response) => {
-        if (!response.ok) throw new Error("Prediction history unavailable");
-        return response.json() as Promise<{ points: PredictionHistoryPoint[] }>;
+        if (!response.ok) throw new Error(`Prediction history unavailable (${response.status})`);
+        return response.json() as Promise<PredictionCellTimeline>;
       })
-      .then(({ points }) => {
-        if (!controller.signal.aborted) setState({ kind: "ready", points });
+      .then((timeline) => {
+        if (!controller.signal.aborted) setState({ kind: "ready", timeline });
       })
-      .catch(() => {
-        if (!controller.signal.aborted) setState({ kind: "unavailable" });
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) setState({
+          kind: "unavailable",
+          reason: error instanceof Error ? error.message : undefined,
+        });
       });
     return () => controller.abort();
-  }, [requestBody]);
+  }, [cell.gridSizeM, requestBody]);
+
+  useEffect(() => {
+    if (state.kind !== "ready" || !chartRef.current) return;
+    const host = chartRef.current;
+    const { observed, forecast } = state.timeline;
+    const timestamps = [
+      ...observed.map((point) => new Date(point.observedAt).getTime() / 1000),
+      ...(forecast?.points.map((point) => new Date(point.validAt).getTime() / 1000) ?? []),
+    ];
+    if (!timestamps.length) return;
+    const observedScores = [
+      ...observed.map((point) => point.score),
+      ...Array(forecast?.points.length ?? 0).fill(null),
+    ];
+    const projectedScores: Array<number | null> = Array(timestamps.length).fill(null);
+    const lastObservedIndex = observed.length - 1;
+    forecast?.points.forEach((point, index) => {
+      projectedScores[observed.length + index] = point.score;
+    });
+    const boundaryTimestamp = forecast && lastObservedIndex >= 0
+      ? timestamps[lastObservedIndex]
+      : undefined;
+    const chart = new uPlot({
+      width: Math.max(host.clientWidth, 1),
+      height: 260,
+      padding: [18, 14, 0, 4],
+      plugins: [scoreChartPlugin(boundaryTimestamp)],
+      series: [
+        {},
+        {
+          label: "Observat",
+          stroke: "#28734e",
+          width: 3,
+          points: {
+            show: true,
+            size: 10,
+            fill: "#fffaf0",
+            stroke: "#28734e",
+            width: 3,
+          },
+        },
+        {
+          label: "Projectat",
+          stroke: "#a85e31",
+          width: 3,
+          dash: [8, 6],
+          points: {
+            show: true,
+            size: 10,
+            fill: "#fffaf0",
+            stroke: "#a85e31",
+            width: 3,
+          },
+        },
+      ],
+      scales: {
+        x: {
+          time: true,
+          range: (_chart, minimum, maximum) => [minimum - 6 * 3600, maximum + 6 * 3600],
+        },
+        y: { range: [0, 100] },
+      },
+      axes: [
+        {
+          stroke: "#7b8179",
+          font: "600 12px ui-sans-serif, system-ui, sans-serif",
+          size: 34,
+          gap: 9,
+          splits: (currentChart) => currentChart.width < 520
+            ? timestamps.filter((_timestamp, index) =>
+              index === lastObservedIndex || index === timestamps.length - 1 || index % 2 === 0)
+            : timestamps,
+          values: (_chart, values) => values.map(chartDayLabel),
+          grid: { stroke: "rgba(105, 112, 99, 0.10)", width: 1 },
+          ticks: { show: false },
+          border: { show: false },
+        },
+        {
+          stroke: "#7b8179",
+          font: "600 12px ui-sans-serif, system-ui, sans-serif",
+          size: 40,
+          gap: 8,
+          splits: [0, 25, 50, 75, 100],
+          values: (_chart, values) => values.map(String),
+          grid: { stroke: "rgba(105, 112, 99, 0.12)", width: 1 },
+          ticks: { show: false },
+          border: { show: false },
+        },
+      ],
+      legend: { show: false },
+      cursor: { show: false },
+    }, [timestamps, observedScores, projectedScores], host);
+    const observer = new ResizeObserver(() => chart.setSize({ width: Math.max(host.clientWidth, 1), height: 260 }));
+    observer.observe(host);
+    return () => { observer.disconnect(); chart.destroy(); };
+  }, [state]);
+
+  if (cell.gridSizeM !== 250) {
+    return <section className="cell-score-history"><p>Apropa el mapa fins a la graella de 250 m per veure l’evolució exacta d’aquesta cel·la.</p></section>;
+  }
 
   if (state.kind === "loading") {
-    return <section className="cell-score-history" aria-busy="true"><p>Carregant l’evolució de la puntuació…</p></section>;
+    return <section className="cell-score-history" aria-busy="true"><p>Carregant l’evolució i la projecció…</p></section>;
   }
   if (state.kind === "unavailable") {
-    return <section className="cell-score-history"><p>No hi ha prou historial verificat per mostrar l’evolució d’aquesta cel·la.</p></section>;
+    return <section className="cell-score-history"><p>No s’ha pogut carregar l’evolució d’aquesta cel·la{state.reason ? ` (${state.reason}).` : "."}</p></section>;
   }
 
-  const available = state.points.filter((point): point is PredictionHistoryPoint & { score: number } => point.score !== null);
-  if (!available.length) {
-    return <section className="cell-score-history"><p>No hi ha puntuacions publicables en l’historial recent d’aquesta cel·la.</p></section>;
+  const { observed, forecast } = state.timeline;
+  const observedAvailable = observed.filter((point): point is PredictionHistoryPoint & { score: number } => point.score !== null);
+  const projectedAvailable = forecast?.points.filter(
+    (point): point is PredictionForecastPoint & { score: number } => point.score !== null,
+  ) ?? [];
+  if (!observedAvailable.length && !projectedAvailable.length) {
+    return <section className="cell-score-history"><p>No hi ha puntuacions publicables en l’evolució recent ni en la projecció d’aquesta cel·la.</p></section>;
   }
-  const { path, dots } = scoreLine(state.points);
-  const first = available[0];
-  const last = available.at(-1)!;
-  const change = last.score - first.score;
-  const TrendIcon = change >= 0 ? TrendingUp : TrendingDown;
-  const changeLabel = change === 0
-    ? "Sense canvis des de la primera lectura disponible"
-    : `${change > 0 ? "+" : ""}${change} punts des de ${dayLabel(first.observedAt)}`;
+  const latestObserved = observedAvailable.at(-1);
+  const latestProjected = projectedAvailable.at(-1);
+  const firstProjected = projectedAvailable[0];
+  const firstObserved = observedAvailable[0];
+  const projectionChange = firstProjected && latestProjected && firstProjected !== latestProjected
+    ? latestProjected.score - firstProjected.score
+    : undefined;
+  const observedChange = firstObserved && latestObserved
+    ? latestObserved.score - firstObserved.score
+    : undefined;
+  const change = projectionChange ?? observedChange ?? 0;
+  const TrendIcon = change > 0 ? TrendingUp : change < 0 ? TrendingDown : Minus;
+  const changeLabel = firstProjected && latestProjected
+    ? projectionChange === undefined
+      ? `Projecció disponible a +${latestProjected.horizonDays} dies`
+      : projectionChange === 0
+        ? `De +${firstProjected.horizonDays} a +${latestProjected.horizonDays} dies: sense canvis`
+        : `De +${firstProjected.horizonDays} a +${latestProjected.horizonDays} dies: ${projectionChange > 0 ? "+" : ""}${projectionChange} punts`
+    : observedChange === 0
+      ? "Sense canvis en l’historial disponible"
+      : `${observedChange! > 0 ? "+" : ""}${observedChange} punts des de ${dayLabel(firstObserved!.observedAt)}`;
+  const title = observed.length && forecast
+    ? "Evolució recent i projecció a 5 dies"
+    : forecast
+      ? "Projecció ambiental a 5 dies"
+      : "Evolució recent";
 
   return (
     <section className="cell-score-history" aria-labelledby={titleId}>
       <div className="cell-score-history-heading">
         <div>
-          <p className="eyebrow">Evolució local</p>
-          <h4 id={titleId}>Puntuació dels últims 7 dies</h4>
+          <p className="eyebrow">Idoneïtat ambiental local</p>
+          <h4 id={titleId}>{title}</h4>
         </div>
         <span className={change > 0 ? "improving" : change < 0 ? "worsening" : "steady"}>
           <TrendIcon size={16} aria-hidden="true" /> {changeLabel}
         </span>
       </div>
-      <svg className="cell-score-history-chart" viewBox="0 0 320 140" role="img" aria-label={`Evolució de ${available.length} puntuacions: ${changeLabel}`}>
-        <line x1="0" x2="320" y1="0" y2="0" />
-        <line x1="0" x2="320" y1="56" y2="56" />
-        <line x1="0" x2="320" y1="112" y2="112" />
-        <path d={path} />
-        {dots.map((dot, index) => <circle key={index} cx={dot.x} cy={dot.y} r="3.5"><title>{dot.score}/100</title></circle>)}
-        <text x="0" y="132">{dayLabel(state.points[0]?.observedAt ?? first.observedAt)}</text>
-        <text x="320" y="132" textAnchor="end">{dayLabel(state.points.at(-1)?.observedAt ?? last.observedAt)}</text>
-      </svg>
-      <p className="cell-score-history-note">Cada punt recalcula el model actual amb les dades ambientals verificades d’aquell dia.</p>
+      <div className="cell-score-history-legend" aria-hidden="true">
+        {observed.length ? <span><i className="observed" />Observat</span> : null}
+        {forecast ? <>
+          <span><i className="projected" />Projectat</span>
+          {observed.length ? <span><i className="boundary" />Inici de la projecció</span> : null}
+        </> : null}
+      </div>
+      <div ref={chartRef} className="cell-score-history-chart" aria-hidden="true" />
+      {forecast ? (
+        <ol className="forecast-confidence-list" role="list" aria-label="Projecció diària i confiança de l’horitzó">
+          {forecast.points.map((point) => (
+            <li key={point.validAt}>
+              <span>+{point.horizonDays} {point.horizonDays === 1 ? "dia" : "dies"}</span>
+              <strong>{scoreLabel(point.score)}</strong>
+              <small>
+                <span className="visually-hidden">Confiança de l’horitzó: </span>
+                {confidenceLabel(point.horizonConfidence)}
+              </small>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className="cell-score-forecast-unavailable">La projecció meteorològica encara no està disponible; es manté l’historial observat.</p>
+      )}
+      <p className="cell-score-history-note">
+        {forecast
+          ? `És una projecció de les condicions ambientals, no de l’aparició de bolets. La incertesa augmenta amb l’horitzó. Generada el ${dayLabel(forecast.generatedAt)} amb dades a ${Math.round(forecast.sourceResolutionM / 1000)} km.`
+          : "Cada punt observat recalcula el model actual amb les dades ambientals verificades d’aquell dia."}
+      </p>
+      <table className="visually-hidden">
+        <caption>Dades de l’evolució observada i la projecció ambiental</caption>
+        <thead><tr><th scope="col">Data</th><th scope="col">Tipus</th><th scope="col">Puntuació</th><th scope="col">Confiança de l’horitzó</th></tr></thead>
+        <tbody>
+          {observed.map((point) => (
+            <tr key={`observed:${point.observedAt}`}>
+              <td>{dayLabel(point.observedAt)}</td><td>Observada</td><td>{scoreLabel(point.score)}</td><td>No aplicable</td>
+            </tr>
+          ))}
+          {forecast?.points.map((point) => (
+            <tr key={`projected:${point.validAt}`}>
+              <td>{dayLabel(point.validAt)}</td><td>Projectada</td><td>{scoreLabel(point.score)}</td><td>{confidenceLabel(point.horizonConfidence)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </section>
   );
 }

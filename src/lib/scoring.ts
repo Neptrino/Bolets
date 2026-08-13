@@ -2,6 +2,7 @@ import type { ConditionSnapshot, FactorContribution, SpeciesProfile, Suitability
 import { altitudeSuitabilityScore } from "@/src/lib/altitude";
 import { predictionModelVersion } from "@/src/lib/model-versions";
 import { rainfallSuitability } from "@/src/lib/rainfall";
+import { monthInTimeZone } from "@/src/lib/seasonality";
 
 function rangeScore(value: number | undefined, range: [number, number]) {
   if (value === undefined) return null;
@@ -60,12 +61,10 @@ function temperatureScore(species: SpeciesProfile, values: ConditionSnapshot["va
   return score;
 }
 
-const monthIds = ["gen", "feb", "mar", "abr", "mai", "jun", "jul", "ago", "set", "oct", "nov", "des"] as const;
-
 function seasonalityScore(species: SpeciesProfile, observedAt: string) {
   const date = new Date(observedAt);
   if (Number.isNaN(date.getTime())) return null;
-  const activity = species.ecologicalConfig.seasonality[monthIds[date.getUTCMonth()]];
+  const activity = species.ecologicalConfig.seasonality[monthInTimeZone(date)];
   return { inactive: 0, possible: 35, moderate: 65, good: 85, peak: 100 }[activity];
 }
 

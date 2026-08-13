@@ -1,5 +1,12 @@
 import { createAdminClient, finiteNumber, finishRun, json, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
-import { configureOpenMeteoRequest, fetchOpenMeteoLocations, normalizeOpenMeteo, type OpenMeteoLocation } from "../_shared/open-meteo.ts";
+import {
+  configureOpenMeteoForecastRequest,
+  configureOpenMeteoRequest,
+  fetchOpenMeteoLocations,
+  normalizeOpenMeteo,
+  normalizeOpenMeteoForecast,
+  type OpenMeteoLocation,
+} from "../_shared/open-meteo.ts";
 
 type SoilPoint = {
   point_id: string;
@@ -12,7 +19,75 @@ type SoilPoint = {
 const BATCH_SIZE = 50;
 const PROVIDER_BATCH_SIZE = 50;
 const COMPLETE_CURSOR = "__complete__";
-const CURSOR_PIPELINE = "spatial-soil";
+const SOIL_CURSOR_PIPELINE = "spatial-soil";
+const FORECAST_CURSOR_PIPELINE = "spatial-forecast";
+
+type Settled<T> = { data: T; error?: undefined } | { data?: undefined; error: string };
+
+async function settle<T>(promise: Promise<T>): Promise<Settled<T>> {
+  try {
+    return { data: await promise };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Unknown error" };
+  }
+}
+
+async function recordForecastSourceState(
+  supabase: ReturnType<typeof createAdminClient>,
+  sourceId: string,
+  error: string | undefined,
+  checkedAt: string,
+  successDetail: string,
+  runId: string | undefined,
+) {
+  const { error: sourceError } = await supabase.from("pipeline_sources").update({
+    status: error ? "degraded" : "active",
+    status_detail: error
+      ? `Five-day forecast fetch failed: ${error.slice(0, 300)}`
+      : successDetail,
+    checked_at: checkedAt,
+    updated_at: checkedAt,
+  }).eq("source_id", sourceId);
+  if (sourceError) {
+    console.error("Unable to update forecast provider state", {
+      runId,
+      sourceId,
+      message: sourceError.message,
+    });
+  }
+}
+
+async function readPointBatch(
+  supabase: ReturnType<typeof createAdminClient>,
+  lastPointId: string | null,
+) {
+  let query = supabase
+    .from("weather_grid_points")
+    .select("point_id,requested_lat,requested_lon,requested_elevation_m,native_resolution_m")
+    .eq("model", "best_match")
+    .order("point_id")
+    .limit(BATCH_SIZE);
+  if (lastPointId) query = query.gt("point_id", lastPointId);
+  const { data, error } = await query;
+  if (error) throw error;
+  return (data ?? []) as SoilPoint[];
+}
+
+async function saveCursor(
+  supabase: ReturnType<typeof createAdminClient>,
+  pipeline: string,
+  snapshotDate: string,
+  lastCellId: string,
+  updatedAt: string,
+) {
+  const { error } = await supabase.from("pipeline_cursors").upsert({
+    pipeline,
+    snapshot_date: snapshotDate,
+    last_cell_id: lastCellId,
+    updated_at: updatedAt,
+  });
+  if (error) throw error;
+}
 
 async function fetchSoil(points: SoilPoint[]) {
   const results: OpenMeteoLocation[] = [];
@@ -31,6 +106,27 @@ async function fetchSoil(points: SoilPoint[]) {
   return results;
 }
 
+async function fetchForecast(points: SoilPoint[], profile: "atmosphere" | "soil") {
+  const results: OpenMeteoLocation[] = [];
+  for (let start = 0; start < points.length; start += PROVIDER_BATCH_SIZE) {
+    const batch = points.slice(start, start + PROVIDER_BATCH_SIZE);
+    const url = new URL(profile === "atmosphere"
+      ? "https://api.open-meteo.com/v1/ecmwf"
+      : "https://api.open-meteo.com/v1/forecast");
+    url.searchParams.set("latitude", batch.map((point) => point.requested_lat).join(","));
+    url.searchParams.set("longitude", batch.map((point) => point.requested_lon).join(","));
+    if (batch.every((point) => point.requested_elevation_m !== null)) {
+      url.searchParams.set("elevation", batch.map((point) => point.requested_elevation_m).join(","));
+    }
+    configureOpenMeteoForecastRequest(url, profile);
+    results.push(...await fetchOpenMeteoLocations(url, `${profile} forecast`));
+  }
+  if (results.length !== points.length) {
+    throw new Error(`Open-Meteo returned ${results.length} of ${points.length} ${profile} forecast locations`);
+  }
+  return results;
+}
+
 Deno.serve(async (request) => {
   let runId: string | undefined;
   try {
@@ -39,55 +135,315 @@ Deno.serve(async (request) => {
     if (!await verifyIngestionRequest(request, supabase)) return json({ error: "Unauthorized ingestion request" }, 401);
     const today = new Date().toISOString().slice(0, 10);
     const body = await request.json().catch(() => ({})) as { trigger?: "cron" | "manual" };
-    const { data: cursor, error: cursorError } = await supabase.from("pipeline_cursors").select("snapshot_date,last_cell_id").eq("pipeline", CURSOR_PIPELINE).maybeSingle();
+    const { data: cursors, error: cursorError } = await supabase
+      .from("pipeline_cursors")
+      .select("pipeline,snapshot_date,last_cell_id")
+      .in("pipeline", [SOIL_CURSOR_PIPELINE, FORECAST_CURSOR_PIPELINE]);
     if (cursorError) throw cursorError;
-    const lastPointId = cursor?.snapshot_date === today ? cursor.last_cell_id as string | null : null;
-    if (lastPointId === COMPLETE_CURSOR) return json({ refreshed: 0, complete: true, snapshotDate: today });
-
-    runId = await startRun(supabase, "spatial-soil", body.trigger === "manual" ? "manual" : "cron", today, { batchSize: BATCH_SIZE });
-    let query = supabase.from("weather_grid_points").select("point_id,requested_lat,requested_lon,requested_elevation_m,native_resolution_m").eq("model", "best_match").order("point_id").limit(BATCH_SIZE);
-    if (lastPointId) query = query.gt("point_id", lastPointId);
-    const { data, error: pointError } = await query;
-    if (pointError) throw pointError;
-    const points = (data ?? []) as SoilPoint[];
-    if (!points.length) {
-      await supabase.from("pipeline_cursors").upsert({ pipeline: CURSOR_PIPELINE, snapshot_date: today, last_cell_id: COMPLETE_CURSOR, updated_at: new Date().toISOString() });
-      await finishRun(supabase, runId, "skipped", { metadata: { reason: lastPointId ? "Daily soil refresh completed" : "No soil grid points" } });
-      return json({ runId, refreshed: 0, complete: true, snapshotDate: today });
+    const lastPointId = (pipeline: string) => {
+      const cursor = (cursors ?? []).find((candidate) => candidate.pipeline === pipeline);
+      return cursor?.snapshot_date === today ? cursor.last_cell_id as string | null : null;
+    };
+    const soilLastPointId = lastPointId(SOIL_CURSOR_PIPELINE);
+    const forecastLastPointId = lastPointId(FORECAST_CURSOR_PIPELINE);
+    const soilAlreadyComplete = soilLastPointId === COMPLETE_CURSOR;
+    const forecastAlreadyComplete = forecastLastPointId === COMPLETE_CURSOR;
+    if (soilAlreadyComplete && forecastAlreadyComplete) {
+      return json({ refreshed: 0, forecasted: 0, complete: true, snapshotDate: today });
     }
 
-    const weather = await fetchSoil(points);
+    runId = await startRun(
+      supabase,
+      "spatial-soil",
+      body.trigger === "manual" ? "manual" : "cron",
+      today,
+      { batchSize: BATCH_SIZE, forecastCursor: FORECAST_CURSOR_PIPELINE },
+    );
+    const sharedPointBatch = !soilAlreadyComplete && !forecastAlreadyComplete &&
+        soilLastPointId === forecastLastPointId
+      ? readPointBatch(supabase, soilLastPointId)
+      : undefined;
+    const [soilPoints, forecastPoints] = await Promise.all([
+      soilAlreadyComplete
+        ? Promise.resolve([] as SoilPoint[])
+        : sharedPointBatch ?? readPointBatch(supabase, soilLastPointId),
+      forecastAlreadyComplete
+        ? Promise.resolve([] as SoilPoint[])
+        : sharedPointBatch ?? readPointBatch(supabase, forecastLastPointId),
+    ]);
+    const cursorUpdatedAt = new Date().toISOString();
+    let soilErrorMessage: string | undefined;
+    let forecastErrorMessage: string | undefined;
+    if (!soilAlreadyComplete && !soilPoints.length) {
+      const result = await settle(saveCursor(
+        supabase,
+        SOIL_CURSOR_PIPELINE,
+        today,
+        COMPLETE_CURSOR,
+        cursorUpdatedAt,
+      ));
+      soilErrorMessage = result.error;
+    }
+    if (!forecastAlreadyComplete && !forecastPoints.length) {
+      const result = await settle(saveCursor(
+        supabase,
+        FORECAST_CURSOR_PIPELINE,
+        today,
+        COMPLETE_CURSOR,
+        cursorUpdatedAt,
+      ));
+      forecastErrorMessage = result.error;
+    }
+    if (!soilPoints.length && !forecastPoints.length) {
+      const cursorError = soilErrorMessage ?? forecastErrorMessage;
+      await finishRun(supabase, runId, cursorError ? "partial" : "skipped", {
+        errorMessage: cursorError,
+        metadata: { reason: "Daily soil and forecast refresh completed" },
+      });
+      return json({
+        runId,
+        refreshed: 0,
+        forecasted: 0,
+        complete: !cursorError,
+        snapshotDate: today,
+      });
+    }
+
+    const forecastGeneratedAt = new Date().toISOString();
+    const [currentSoil, forecastAtmosphere, forecastSoil] = await Promise.all([
+      soilPoints.length
+        ? settle(fetchSoil(soilPoints))
+        : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
+      forecastPoints.length
+        ? settle(fetchForecast(forecastPoints, "atmosphere"))
+        : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
+      forecastPoints.length
+        ? settle(fetchForecast(forecastPoints, "soil"))
+        : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
+    ]);
+    soilErrorMessage ??= currentSoil.error;
+    const atmosphericForecastError = forecastAtmosphere.error;
+    const soilForecastError = forecastSoil.error;
+    forecastErrorMessage ??= [atmosphericForecastError, soilForecastError]
+      .filter((message): message is string => Boolean(message))
+      .join("; ") || undefined;
+
     const observedAt = new Date().toISOString();
-    const rows = points.map((point, index) => {
-      const location = weather[index];
-      const normalized = normalizeOpenMeteo(location, location, "soil");
-      return {
-        point_id: point.point_id,
-        snapshot_date: today,
-        observed_at: observedAt,
-        sources: ["Open-Meteo soil moisture"],
-        source_resolution_m: point.native_resolution_m,
-        confidence: normalized.unavailableFields.length ? "limited" : "moderate",
-        stale: false,
-        unavailable_fields: normalized.unavailableFields,
-        values: {
-          ...normalized.values,
+    if (forecastPoints.length) {
+      await Promise.all([
+        recordForecastSourceState(
+          supabase,
+          "ecmwf-ifs-hres-forecast",
+          atmosphericForecastError,
+          observedAt,
+          "Full-resolution IFS HRES atmospheric forecast fetched at 9 km for the five-day projected suitability trend.",
+          runId,
+        ),
+        recordForecastSourceState(
+          supabase,
+          "open-meteo-soil-forecast",
+          soilForecastError,
+          observedAt,
+          "Hourly 3–9 cm soil-moisture forecast fetched at 9 km for the five-day projected suitability trend.",
+          runId,
+        ),
+      ]);
+    }
+
+    let rows: Array<Record<string, unknown>> = [];
+    const currentSoilLocations = currentSoil.data;
+    if (currentSoilLocations) {
+      try {
+        rows = soilPoints.map((point, index) => {
+          const location = currentSoilLocations[index];
+          const normalized = normalizeOpenMeteo(location, location, "soil");
+          return {
+            point_id: point.point_id,
+            snapshot_date: today,
+            observed_at: observedAt,
+            sources: ["Open-Meteo soil moisture"],
+            source_resolution_m: point.native_resolution_m,
+            confidence: normalized.unavailableFields.length ? "limited" : "moderate",
+            stale: false,
+            unavailable_fields: normalized.unavailableFields,
+            values: {
+              ...normalized.values,
+              soilMoistureResolutionM: 9000,
+              soilGridLatitude: finiteNumber(location.latitude),
+              soilGridLongitude: finiteNumber(location.longitude),
+            },
+            run_id: runId,
+          };
+        });
+      } catch (error) {
+        soilErrorMessage = error instanceof Error ? error.message : "Unable to normalize current soil data";
+        rows = [];
+      }
+    }
+
+    let forecastRows: Array<Record<string, unknown>> = [];
+    const atmosphericForecastLocations = forecastAtmosphere.data;
+    const soilForecastLocations = forecastSoil.data;
+    if (atmosphericForecastLocations && soilForecastLocations) {
+      try {
+        forecastRows = forecastPoints.flatMap((point, index) => {
+          const atmosphereLocation = atmosphericForecastLocations[index];
+          const soilLocation = soilForecastLocations[index];
+          const normalized = normalizeOpenMeteoForecast(
+            atmosphereLocation,
+            soilLocation,
+            forecastGeneratedAt,
+          );
+          return normalized.points.map((forecast) => ({
+            point_id: point.point_id,
+            snapshot_date: today,
+            generated_at: forecastGeneratedAt,
+            valid_at: forecast.validAt,
+            horizon_hours: forecast.horizonHours,
+            sources: ["ECMWF IFS HRES via Open-Meteo", "Open-Meteo soil-moisture forecast"],
+            source_resolution_m: 9000,
+            confidence: forecast.unavailableFields.length ? "limited" : "moderate",
+            unavailable_fields: forecast.unavailableFields,
+            values: {
+              ...forecast.values,
+              weatherModel: "ECMWF IFS HRES forecast",
+              atmosphericResolutionM: 9000,
+              soilMoistureResolutionM: 9000,
+              weatherGridLatitude: finiteNumber(atmosphereLocation.latitude),
+              weatherGridLongitude: finiteNumber(atmosphereLocation.longitude),
+              weatherElevationM: finiteNumber(atmosphereLocation.elevation),
+              soilGridLatitude: finiteNumber(soilLocation.latitude),
+              soilGridLongitude: finiteNumber(soilLocation.longitude),
+            },
+            run_id: runId,
+          }));
+        });
+        const expectedRows = forecastPoints.length * 5;
+        if (forecastRows.length !== expectedRows) {
+          forecastErrorMessage = `Forecast normalization returned ${forecastRows.length} of ${expectedRows} expected rows`;
+        }
+      } catch (error) {
+        forecastErrorMessage = error instanceof Error ? error.message : "Unable to normalize forecast data";
+        forecastRows = [];
+      }
+    }
+
+    let storedSoilRows = 0;
+    let storedForecastRows = 0;
+    await Promise.all([
+      (async () => {
+        if (!rows.length) return;
+        try {
+          const { error } = await supabase
+            .from("weather_grid_snapshots")
+            .upsert(rows, { onConflict: "point_id,snapshot_date" });
+          if (error) throw error;
+          await saveCursor(
+            supabase,
+            SOIL_CURSOR_PIPELINE,
+            today,
+            soilPoints.at(-1)!.point_id,
+            observedAt,
+          );
+          storedSoilRows = rows.length;
+        } catch (error) {
+          soilErrorMessage = error instanceof Error ? error.message : "Unable to store current soil data";
+          console.error("Unable to store current spatial soil batch", {
+            runId,
+            message: soilErrorMessage,
+          });
+        }
+      })(),
+      (async () => {
+        if (!forecastRows.length) return;
+        try {
+          const { error } = await supabase
+            .from("weather_grid_forecasts")
+            .upsert(forecastRows, { onConflict: "point_id,snapshot_date,horizon_hours" });
+          if (error) throw error;
+          storedForecastRows = forecastRows.length;
+          const completeForecastRows = forecastRows.every((row) =>
+            Array.isArray(row.unavailable_fields) && row.unavailable_fields.length === 0
+          );
+          if (!forecastErrorMessage && completeForecastRows) {
+            await saveCursor(
+              supabase,
+              FORECAST_CURSOR_PIPELINE,
+              today,
+              forecastPoints.at(-1)!.point_id,
+              observedAt,
+            );
+          }
+        } catch (error) {
+          forecastErrorMessage = error instanceof Error ? error.message : "Unable to store spatial forecasts";
+          console.error("Unable to store spatial forecast batch", {
+            runId,
+            message: forecastErrorMessage,
+          });
+        }
+      })(),
+    ]);
+
+    if (soilErrorMessage) {
+      console.error("Current spatial soil stream will retry independently", {
+        runId,
+        message: soilErrorMessage,
+      });
+    }
+    if (forecastErrorMessage) {
+      console.error("Spatial forecast stream will retry independently", {
+        runId,
+        message: forecastErrorMessage,
+      });
+    }
+
+    const forecastHasUnavailableFields = forecastRows.some((row) =>
+      Array.isArray(row.unavailable_fields) && row.unavailable_fields.length > 0
+    );
+    const forecastBatchSucceeded = forecastPoints.length > 0 &&
+      !forecastErrorMessage && !forecastHasUnavailableFields &&
+      storedForecastRows === forecastPoints.length * 5;
+    const forecastIncomplete = forecastPoints.length > 0 && !forecastBatchSucceeded;
+    await finishRun(
+      supabase,
+      runId,
+      Boolean(soilErrorMessage) || rows.some((row) =>
+        Array.isArray(row.unavailable_fields) && row.unavailable_fields.length > 0
+      ) ||
+          forecastIncomplete || forecastHasUnavailableFields
+        ? "partial"
+        : "succeeded",
+      {
+        rowsRead: soilPoints.length + forecastPoints.length,
+        rowsWritten: storedSoilRows + storedForecastRows,
+        metadata: {
+          firstPointId: soilPoints[0]?.point_id,
+          lastPointId: soilPoints.at(-1)?.point_id,
           soilMoistureResolutionM: 9000,
-          soilGridLatitude: finiteNumber(location.latitude),
-          soilGridLongitude: finiteNumber(location.longitude)
+          forecastModel: "ecmwf_ifs_hres",
+          forecastResolutionM: 9000,
+          firstForecastPointId: forecastPoints[0]?.point_id,
+          lastForecastPointId: forecastPoints.at(-1)?.point_id,
+          forecastRows: storedForecastRows,
+          forecastError: forecastErrorMessage,
+          atmosphericForecastError,
+          soilForecastError,
+          soilError: soilErrorMessage,
         },
-        run_id: runId
-      };
+      },
+    );
+    const soilComplete = soilAlreadyComplete ||
+      (!soilErrorMessage && soilPoints.length < BATCH_SIZE);
+    const forecastComplete = forecastAlreadyComplete ||
+      (!forecastIncomplete && forecastPoints.length < BATCH_SIZE);
+    return json({
+      runId,
+      refreshed: storedSoilRows,
+      forecasted: storedForecastRows,
+      forecastAvailable: forecastPoints.length === 0 || forecastBatchSucceeded,
+      complete: soilComplete && forecastComplete,
+      snapshotDate: today,
     });
-    const { error } = await supabase.from("weather_grid_snapshots").upsert(rows, { onConflict: "point_id,snapshot_date" });
-    if (error) throw error;
-    await supabase.from("pipeline_cursors").upsert({ pipeline: CURSOR_PIPELINE, snapshot_date: today, last_cell_id: points.at(-1)?.point_id, updated_at: observedAt });
-    await finishRun(supabase, runId, rows.some((row) => row.unavailable_fields.length) ? "partial" : "succeeded", {
-      rowsRead: points.length,
-      rowsWritten: rows.length,
-      metadata: { firstPointId: points[0].point_id, lastPointId: points.at(-1)?.point_id, soilMoistureResolutionM: 9000 }
-    });
-    return json({ runId, refreshed: rows.length, complete: rows.length < BATCH_SIZE, snapshotDate: today });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Spatial soil refresh failed", { runId, message });

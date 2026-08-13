@@ -9,6 +9,8 @@ export type OpenMeteoLocation = {
 
 export type RequestProfile = "complete" | "atmosphere" | "soil";
 
+export const FORECAST_HORIZON_HOURS = [24, 48, 72, 96, 120] as const;
+
 const finiteNumber = (value: unknown) => typeof value === "number" && Number.isFinite(value) ? value : undefined;
 
 const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -105,6 +107,25 @@ export function configureOpenMeteoRequest(url: URL, profile: RequestProfile = "c
   url.searchParams.set("current", currentVariables.join(","));
   url.searchParams.set("hourly", hourlyVariables.join(","));
   url.searchParams.set("timezone", "Europe/Madrid");
+}
+
+export function configureOpenMeteoForecastRequest(url: URL, profile: "atmosphere" | "soil") {
+  const hourlyVariables = profile === "atmosphere"
+    ? atmosphericHourlyVariables
+    : soilVariables;
+  url.searchParams.set("past_hours", profile === "soil" ? "168" : "720");
+  // Open-Meteo includes the base hour in this count. 121 samples therefore
+  // reach the exact +120 h target used by the fifth daily projection.
+  url.searchParams.set("forecast_hours", "121");
+  url.searchParams.set("hourly", hourlyVariables.join(","));
+  if (profile === "atmosphere") {
+    // The ECMWF endpoint otherwise defaults to its coarser 0.25-degree model.
+    // Pin the full-resolution IFS HRES feed so the stored 9 km provenance is exact.
+    url.searchParams.set("models", "ecmwf_ifs");
+  }
+  url.searchParams.set("timezone", "Europe/Madrid");
+  // Epoch timestamps keep atmosphere and soil aligned across DST changes.
+  url.searchParams.set("timeformat", "unixtime");
 }
 
 function validTime(location: OpenMeteoLocation) {
@@ -253,4 +274,177 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
       ...(profile === "atmosphere" ? [] : requiredSoilFields)
     ].filter((field) => values[field] === undefined)
   };
+}
+
+type HourlySeries = Map<number, number>;
+
+function epochSecond(value: unknown) {
+  if (typeof value === "number" && Number.isInteger(value)) return value;
+  if (typeof value !== "string" || !/(?:Z|[+-]\d{2}:?\d{2})$/.test(value)) return undefined;
+  const milliseconds = Date.parse(value);
+  return Number.isFinite(milliseconds) ? Math.floor(milliseconds / 1000) : undefined;
+}
+
+function hourlySeries(location: OpenMeteoLocation, key: string): HourlySeries {
+  const times = Array.isArray(location.hourly?.time) ? location.hourly.time : [];
+  const source = Array.isArray(location.hourly?.[key]) ? location.hourly[key] as unknown[] : [];
+  const values = new Map<number, number>();
+  const seenTimes = new Set<number>();
+  const duplicates = new Set<number>();
+  for (let index = 0; index < Math.min(times.length, source.length); index += 1) {
+    const time = epochSecond(times[index]);
+    if (time === undefined) continue;
+    if (seenTimes.has(time)) duplicates.add(time);
+    seenTimes.add(time);
+    const value = finiteNumber(source[index]);
+    if (value === undefined) continue;
+    values.set(time, value);
+  }
+  for (const time of duplicates) values.delete(time);
+  return values;
+}
+
+function completeWindow(series: HourlySeries, target: number, hours: number) {
+  const values: number[] = [];
+  for (let time = target - (hours - 1) * 3600; time <= target; time += 3600) {
+    const value = series.get(time);
+    if (value === undefined) return undefined;
+    values.push(value);
+  }
+  return values;
+}
+
+function completeSummary(series: HourlySeries, target: number, hours: number) {
+  const values = completeWindow(series, target, hours);
+  if (!values) return {};
+  return {
+    min: Math.min(...values),
+    average: values.reduce((total, value) => total + value, 0) / values.length,
+    max: Math.max(...values),
+    values,
+  };
+}
+
+function completeSum(series: HourlySeries, target: number, hours: number) {
+  const values = completeWindow(series, target, hours);
+  return values?.reduce((total, value) => total + value, 0);
+}
+
+function projectedDrySpellDays(series: HourlySeries, target: number) {
+  const values = completeWindow(series, target, 720);
+  if (!values) return undefined;
+  return drySpellDays(values);
+}
+
+function projectedSoilTrend(series: HourlySeries, target: number) {
+  const recent = completeWindow(series, target, 24);
+  const previous = completeWindow(series, target - 24 * 3600, 144);
+  if (!recent || !previous) return undefined;
+  const average = (values: number[]) => values.reduce((total, value) => total + value, 0) / values.length;
+  return average(recent) - average(previous);
+}
+
+export type OpenMeteoForecastPoint = {
+  validAt: string;
+  horizonHours: typeof FORECAST_HORIZON_HOURS[number];
+  unavailableFields: string[];
+  values: Record<string, number | string | undefined>;
+};
+
+/**
+ * Builds daily future snapshots from one forecast issuance. Every rolling
+ * value is recalculated at its future valid hour. Missing or duplicated hours
+ * make the affected field unavailable instead of silently shortening a window.
+ */
+export function normalizeOpenMeteoForecast(
+  atmosphere: OpenMeteoLocation,
+  soil: OpenMeteoLocation,
+  generatedAt: string,
+) {
+  const temperature = hourlySeries(atmosphere, "temperature_2m");
+  const humidity = hourlySeries(atmosphere, "relative_humidity_2m");
+  const wind = hourlySeries(atmosphere, "wind_speed_10m");
+  const gusts = hourlySeries(atmosphere, "wind_gusts_10m");
+  const precipitation = hourlySeries(atmosphere, "precipitation");
+  const evapotranspiration = hourlySeries(atmosphere, "et0_fao_evapotranspiration");
+  const soilMoisture = hourlySeries(soil, "soil_moisture_3_to_9cm");
+  const requiredSeries = [temperature, humidity, wind, gusts, precipitation, evapotranspiration, soilMoisture];
+  const generatedAtSeconds = Math.floor(Date.parse(generatedAt) / 3_600_000) * 3600;
+  let baseHour: number | undefined;
+  for (let candidate = generatedAtSeconds; candidate >= generatedAtSeconds - 6 * 3600; candidate -= 3600) {
+    if (requiredSeries.every((series) => series.has(candidate))) {
+      baseHour = candidate;
+      break;
+    }
+  }
+  if (baseHour === undefined) return { generatedAt, points: [] as OpenMeteoForecastPoint[] };
+
+  const points = FORECAST_HORIZON_HOURS.map((horizonHours) => {
+    const target = baseHour! + horizonHours * 3600;
+    const temperature24h = completeSummary(temperature, target, 24);
+    const temperature7d = completeSummary(temperature, target, 168);
+    const temperature10d = completeSummary(temperature, target, 240);
+    const humidity24h = completeSummary(humidity, target, 24);
+    const humidity7d = completeSummary(humidity, target, 168);
+    const soil24h = completeSummary(soilMoisture, target, 24);
+    const soil7d = completeSummary(soilMoisture, target, 168);
+    const wind24h = completeSummary(wind, target, 24);
+    const gust24h = completeSummary(gusts, target, 24);
+    const rainfall3dMm = completeSum(precipitation, target, 72);
+    const rainfall7dMm = completeSum(precipitation, target, 168);
+    const rainfall30dMm = completeSum(precipitation, target, 720);
+    const evapotranspiration3dMm = completeSum(evapotranspiration, target, 72);
+    const evapotranspiration7dMm = completeSum(evapotranspiration, target, 168);
+    const evapotranspiration30dMm = completeSum(evapotranspiration, target, 720);
+    const values = {
+      weatherObservedAt: new Date(target * 1000).toISOString(),
+      temperatureC: temperature.get(target),
+      temperatureMin24hC: temperature24h.min,
+      temperatureAvg24hC: temperature24h.average,
+      temperatureMax24hC: temperature24h.max,
+      temperatureMin7dC: temperature7d.min,
+      frostHours7d: temperature7d.values?.filter((value) => value <= 0).length,
+      temperatureMin10dC: temperature10d.min,
+      temperatureAvg10dC: temperature10d.average,
+      temperatureMax10dC: temperature10d.max,
+      frostHours10d: temperature10d.values?.filter((value) => value <= 0).length,
+      relativeHumidity: humidity.get(target),
+      relativeHumidityMin24h: humidity24h.min,
+      relativeHumidityAvg24h: humidity24h.average,
+      relativeHumidityMax24h: humidity24h.max,
+      relativeHumidityAvg7d: humidity7d.average,
+      soilMoisture: soilMoisture.get(target),
+      soilMoistureMin24h: soil24h.min,
+      soilMoistureAvg24h: soil24h.average,
+      soilMoistureMax24h: soil24h.max,
+      soilMoistureMin7d: soil7d.min,
+      soilMoistureAvg7d: soil7d.average,
+      soilMoistureMax7d: soil7d.max,
+      soilMoistureTrend7d: projectedSoilTrend(soilMoisture, target),
+      rainfall3dMm,
+      rainfall7dMm,
+      rainfallPrevious23dMm: rainfall30dMm !== undefined && rainfall7dMm !== undefined
+        ? Math.max(0, rainfall30dMm - rainfall7dMm)
+        : undefined,
+      rainfall30dMm,
+      drySpellDays: projectedDrySpellDays(precipitation, target),
+      evapotranspiration3dMm,
+      evapotranspiration7dMm,
+      evapotranspiration30dMm,
+      windKmh: wind.get(target),
+      windAvg24hKmh: wind24h.average,
+      windMax24hKmh: wind24h.max,
+      windGustKmh: gusts.get(target),
+      windGustMax24hKmh: gust24h.max,
+    };
+    return {
+      validAt: values.weatherObservedAt,
+      horizonHours,
+      unavailableFields: [...requiredAtmosphericFields, ...requiredSoilFields]
+        .filter((field) => values[field] === undefined),
+      values,
+    } satisfies OpenMeteoForecastPoint;
+  });
+
+  return { generatedAt, points };
 }

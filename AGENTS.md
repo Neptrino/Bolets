@@ -36,6 +36,7 @@
 
 - Ingest regional and cell weather through authenticated Supabase Edge Functions; never call providers directly from the browser.
 - Import 250 m static terrain, land-cover, and soil evidence only through the service-role importer with source and verification metadata.
+- Treat ICGC 1:50,000 geological units as display-only contextual evidence: store their mapped coverage and provenance separately from soil scoring inputs, never interpret map scale as metre resolution, and aggregate coarse geology area-weightedly from canonical 250 m cells.
 - Calculate suitability on the Next.js server with the same versioned species ecology used by profile pages.
 - Withhold a suitability score when required static evidence is unverified, dynamic inputs are stale, or model completeness is below the publication threshold.
 - Treat each species' version-controlled habitat altitude range as its ecological core: score 100 through the interior, taper linearly to 75 during the 100 m inside either documented limit, and decline linearly to zero across the 100 m outer uncertainty margin. Cells at or beyond the margin's zero-score edge must not be painted as compatible.

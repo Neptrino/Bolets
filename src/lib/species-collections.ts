@@ -25,14 +25,19 @@ export const toxicSpecies = speciesAlphabetical.filter((species) =>
   toxicStatuses.has(species.identity.edibility),
 );
 
-export function speciesInSeason(month: Month) {
+export function speciesAcrossMonths(months: readonly Month[]) {
   return speciesAlphabetical
-    .filter((species) => species.ecologicalConfig.seasonality[month] !== "inactive")
+    .filter((species) => months.some((month) => species.ecologicalConfig.seasonality[month] !== "inactive"))
     .sort((left, right) => {
-      const activityDifference =
-        activityRank[right.ecologicalConfig.seasonality[month]] -
-        activityRank[left.ecologicalConfig.seasonality[month]];
+      const highestActivity = (species: typeof left) => Math.max(
+        ...months.map((month) => activityRank[species.ecologicalConfig.seasonality[month]]),
+      );
+      const activityDifference = highestActivity(right) - highestActivity(left);
 
       return activityDifference || left.identity.commonName.localeCompare(right.identity.commonName, "ca");
     });
+}
+
+export function speciesInSeason(month: Month) {
+  return speciesAcrossMonths([month]);
 }

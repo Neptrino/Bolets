@@ -49,6 +49,31 @@ export interface SourceReference {
   confidence: EvidenceConfidence;
 }
 
+export type GeologicalSubstrateClass =
+  | "silicic"
+  | "calcareous"
+  | "mixed"
+  | "unconsolidated"
+  | "unknown";
+
+/**
+ * Display-only geological context derived from the ICGC 1:50,000 map.
+ *
+ * This is deliberately separate from the legacy `soilSubstrate` scoring input:
+ * a geological unit is contextual evidence, not a measured soil property.
+ */
+export interface GeologicalSubstrateEvidence {
+  class: GeologicalSubstrateClass;
+  dominantCoverage: number;
+  mappedCoverage: number;
+  sourceId: "icgc-geology-50k-v3";
+  mapScaleDenominator: 50000;
+  dominantUnitCode?: string;
+  dominantUnitDescription?: string;
+  dominantUnitCoverage?: number;
+  aggregationBaseM?: 250;
+}
+
 export interface MediaAsset {
   id: string;
   imageUrl?: string;
@@ -264,6 +289,7 @@ export interface ConditionSnapshot {
     soilPh?: number;
     soilTexture?: string;
     soilSubstrate?: string;
+    geologicalSubstrate?: GeologicalSubstrateEvidence;
   };
 }
 
@@ -350,6 +376,26 @@ export interface PredictionCell {
 export interface PredictionHistoryPoint {
   observedAt: string;
   score: number | null;
+}
+
+export type ForecastHorizonConfidence = "high" | "moderate" | "limited";
+export type ForecastHorizonDays = 1 | 2 | 3 | 4 | 5;
+
+export interface PredictionForecastPoint {
+  validAt: string;
+  score: number | null;
+  horizonDays: ForecastHorizonDays;
+  horizonConfidence: ForecastHorizonConfidence;
+}
+
+export interface PredictionCellTimeline {
+  observed: PredictionHistoryPoint[];
+  forecast: {
+    generatedAt: string;
+    source: string[];
+    sourceResolutionM: number;
+    points: PredictionForecastPoint[];
+  } | null;
 }
 
 export type PredictionMapCell = Pick<

@@ -255,7 +255,7 @@ export default function MethodPage() {
                   A<sub>g</sub> = <span className="method-inline-fraction"><span>I<sub>g</sub></span><span>C<sub>g</sub></span></span>
                 </Formula>
                 <p>En predicció, el color de la puntuació es barreja amb el color d’exclusió segons <b>C<sub>g</sub></b>. Una clapa petita compatible no tenyeix tot el sector com si fos uniforme.</p>
-                <small>Resolucions de visualització: 250 m, 500 m, 1 km, 2,5 km, 5 km i 10 km.</small>
+                <small>Resolucions de visualització: 250 m, 1 km, 2,5 km, 5 km i 10 km.</small>
               </div>
             </div>
 
@@ -455,7 +455,7 @@ export default function MethodPage() {
               <Map size={25} />
               <div>
                 <h3>Resolució de pantalla ≠ resolució de la font</h3>
-                <p>La cel·la visible pot ser de 250 m a 10 km, però sempre conserva la resolució real del relleu, la coberta, el sòl i el proveïdor meteorològic. Les condicions agregades preserven també mínimes, màximes, vent i hores de gelada.</p>
+                <p>La cel·la visible pot ser de 250 m a 10 km, però sempre conserva la resolució real del relleu, la coberta, el sòl i el proveïdor meteorològic. La geologia conserva per separat l’escala cartogràfica 1:50.000, que no equival a una resolució de 50 m. Les condicions agregades preserven també mínimes, màximes, vent i hores de gelada.</p>
               </div>
             </aside>
           </div>
@@ -475,7 +475,7 @@ export default function MethodPage() {
                 <p className="eyebrow"><Database size={15} /> Traçabilitat de principi a fi</p>
                 <h2>D’on surten<br />les dades.</h2>
               </div>
-              <p>Cada valor publicat conserva la font, la data i la resolució d’origen. Les capes estàtiques es preparen fora de línia; les condicions ambientals s’ingereixen al servidor i mai es demanen directament des del navegador.</p>
+              <p>Cada valor publicat conserva la font, la data i la resolució o escala d’origen. Les capes estàtiques es preparen fora de línia; les condicions ambientals s’ingereixen al servidor i mai es demanen directament des del navegador.</p>
             </header>
 
             <div className="method-source-lanes" aria-label="Flux de les fonts cap als dos models">
@@ -535,6 +535,19 @@ export default function MethodPage() {
                     <div><dt>Llicència</dt><dd>CC BY 4.0</dd></div>
                   </dl>
                   <a href="https://docs.isric.org/globaldata/soilgrids/index.html" target="_blank" rel="noreferrer">Documentació oficial <ExternalLink size={14} /></a>
+                </article>
+
+                <article className="method-source-card">
+                  <div className="method-source-card-top"><Layers3 size={24} /><span>ICGC · v3r0</span></div>
+                  <h4>Mapa geològic de Catalunya</h4>
+                  <p>Unitats geològiques a escala 1:50.000. Estimem la cobertura dins de cada cel·la canònica de 250 m amb una malla de mostreig de 50 m i agreguem els nivells més grossos per àrea. És evidència contextual: no entra a cap puntuació.</p>
+                  <dl>
+                    <div><dt><Ruler size={14} /> Origen</dt><dd>escala 1:50.000</dd></div>
+                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>rebuild estàtic</dd></div>
+                    <div><dt>Ús</dt><dd>context geològic · pes 0</dd></div>
+                    <div><dt>Llicència</dt><dd>CC BY 4.0</dd></div>
+                  </dl>
+                  <a href="https://www.icgc.cat/ca/Geoinformacio-i-mapes/Dades-i-productes/Geoinformacio-geologica-i-geofisica/Cartografia-geologica/Mapa-geologic-150000" target="_blank" rel="noreferrer">Fitxa oficial <ExternalLink size={14} /></a>
                 </article>
 
                 <article className="method-source-card method-source-card-mask">
@@ -619,7 +632,7 @@ export default function MethodPage() {
               <ShieldCheck size={25} />
               <div>
                 <h3>Una font no hereta la resolució de la cel·la</h3>
-                <p>Una predicció pintada a 250 m pot compartir el mateix punt atmosfèric de 2,5 km i la mateixa humitat del sòl de 9 km amb moltes cel·les veïnes. Guardem aquestes resolucions per separat i exposem camps absents, antiguitat, confiança i versió del model.</p>
+                <p>Una predicció pintada a 250 m pot compartir el mateix punt atmosfèric de 2,5 km i la mateixa humitat del sòl de 9 km amb moltes cel·les veïnes. Guardem resolucions i escales cartogràfiques per separat i exposem camps absents, antiguitat, confiança i versió del model.</p>
               </div>
             </aside>
           </div>
