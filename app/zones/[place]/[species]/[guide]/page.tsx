@@ -84,7 +84,7 @@ export default async function SpeciesLocationPage({ params }: Props) {
                 autoGeolocate={false}
                 compactLegend
                 initialCentre={location.mapCentre}
-                initialZoom={10.8}
+                initialZoom={12}
                 selectedRegion={area.regionId}
                 speciesId={species.speciesId}
               />

@@ -792,6 +792,8 @@ export default async function SpeciesPage({
               </div>
               <LazyHabitatMap
                 activeRegions={species.ecologicalConfig.regions}
+                autoGeolocate={!isRegionId(query.region)}
+                compactLegend
                 selectedRegion={region}
                 speciesId={species.speciesId}
               />

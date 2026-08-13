@@ -497,6 +497,17 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   );
 });
 
+test("shows every featured seasonal species on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const featuredCards = page.locator(".featured-grid .species-card");
+  await expect(featuredCards).toHaveCount(3);
+  expect(await featuredCards.evaluateAll((cards) =>
+    cards.every((card) => getComputedStyle(card).display !== "none"),
+  )).toBe(true);
+});
+
 test("keeps the map reading guide balanced across modes and viewports", async ({
   page,
 }) => {
@@ -784,7 +795,7 @@ test("keeps prediction factor labels readable on narrow maps", async ({ page }) 
   await expect(mobileNav).not.toHaveAttribute("open", "");
 });
 
-test("starts the habitat map near the current location", async ({
+test("starts a zone habitat map at its selected zone", async ({
   context,
   page,
 }) => {
@@ -810,13 +821,49 @@ test("starts the habitat map near the current location", async ({
   const south = Number(requestUrl.searchParams.get("south"));
   const east = Number(requestUrl.searchParams.get("east"));
   const north = Number(requestUrl.searchParams.get("north"));
-  expect(west).toBeLessThan(currentLocation.longitude);
-  expect(east).toBeGreaterThan(currentLocation.longitude);
-  expect(south).toBeLessThan(currentLocation.latitude);
-  expect(north).toBeGreaterThan(currentLocation.latitude);
-  expect(east - west).toBeLessThan(1);
-  expect(north - south).toBeLessThan(1);
-  expect(requestUrl.searchParams.get("resolution")).toBe("2500");
+  expect(west).toBeLessThanOrEqual(0.1);
+  expect(east).toBeGreaterThanOrEqual(2.72);
+  expect(south).toBeLessThanOrEqual(42.25);
+  expect(north).toBeGreaterThanOrEqual(42.92);
+  expect(requestUrl.searchParams.get("resolution")).toBe("10000");
+  const locationRequest = page.waitForRequest((request) => {
+    if (!request.url().includes("/api/habitat?")) return false;
+    const url = new URL(request.url());
+    return Number(url.searchParams.get("west")) < currentLocation.longitude &&
+      Number(url.searchParams.get("east")) > currentLocation.longitude &&
+      Number(url.searchParams.get("south")) < currentLocation.latitude &&
+      Number(url.searchParams.get("north")) > currentLocation.latitude;
+  });
+  await page.locator(".maplibregl-ctrl-geolocate").click();
+  await locationRequest;
+});
+
+test("starts a local guide habitat map at its local area", async ({ page }) => {
+  await page.route("**/api/habitat?*", (route) =>
+    route.fulfill({
+      json: {
+        cells: [],
+        truncated: false,
+        occurrenceEvidence: { available: true, cells: [] },
+      },
+    }),
+  );
+
+  await page.goto("/zones/ripolles/les-lloses/ceps");
+  const habitatRequest = page.waitForRequest("**/api/habitat?*");
+  await page.getByRole("heading", { name: /On podria créixer a les Lloses/i }).scrollIntoViewIfNeeded();
+
+  const requestUrl = new URL((await habitatRequest).url());
+  const west = Number(requestUrl.searchParams.get("west"));
+  const south = Number(requestUrl.searchParams.get("south"));
+  const east = Number(requestUrl.searchParams.get("east"));
+  const north = Number(requestUrl.searchParams.get("north"));
+  expect(west).toBeLessThan(2.1167);
+  expect(east).toBeGreaterThan(2.1167);
+  expect(south).toBeLessThan(42.1506);
+  expect(north).toBeGreaterThan(42.1506);
+  expect(east - west).toBeLessThan(0.5);
+  expect(north - south).toBeLessThan(0.5);
 });
 
 test("keeps ecologically excluded cells clickable after changing species", async ({

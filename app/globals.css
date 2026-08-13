@@ -80,7 +80,7 @@
 }
 .rovellons-hero h1 i {
   color: var(--apricot);
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
   font-weight: 500;
 }
 .rovellons-hero-grid > div > p:last-child {
@@ -176,7 +176,7 @@
 }
 .rovellons-now-heading > span {
   color: var(--apricot);
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
   font-size: 28px;
   font-style: italic;
 }
@@ -366,7 +366,7 @@
 }
 .rovellons-signals article > span {
   color: var(--clay);
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
   font-size: 22px;
   font-style: italic;
 }
@@ -687,7 +687,7 @@
 .guides-summary dd {
   margin: 0;
   color: var(--forest-panel);
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
   font-size: 30px;
   font-weight: 700;
   line-height: 1;
@@ -1285,7 +1285,7 @@ h3 {
   border-radius: 50%;
 }
 .species-card-illustration span {
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
   font-size: 76px;
   line-height: 1;
   opacity: 0.22;
@@ -1300,7 +1300,7 @@ h3 {
   line-height: 0.96;
 }
 .species-card em {
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
   font-size: 13px;
 }
 .species-card p {
@@ -1455,8 +1455,8 @@ h3 {
   position: relative;
   z-index: 2;
   font:
-    16px Georgia,
-    serif;
+    16px var(--font-nunito-sans),
+    sans-serif;
   margin: 130px 0 3px;
 }
 .specimen-panel > span {
@@ -1522,8 +1522,8 @@ h3 {
 }
 .similar-list em {
   font:
-    13px Georgia,
-    serif;
+    13px var(--font-nunito-sans),
+    sans-serif;
 }
 .similar-list h3 {
   margin: 2px 0;
@@ -1541,8 +1541,8 @@ h3 {
 .region-pill-row span {
   border: 1px solid var(--line);
   font:
-    12px Georgia,
-    serif;
+    12px var(--font-nunito-sans),
+    sans-serif;
 }
 .season-calendar-label {
   color: #627156;
@@ -1779,8 +1779,8 @@ h3 {
 }
 .suitability-score strong {
   font:
-    43px/0.9 Georgia,
-    serif;
+    43px/0.9 var(--font-nunito-sans),
+    sans-serif;
 }
 .suitability-score span {
   color: #d6deca;
@@ -1814,8 +1814,8 @@ h3 {
 .condition-list strong {
   color: white;
   font:
-    18px Georgia,
-    serif;
+    18px var(--font-nunito-sans),
+    sans-serif;
 }
 .condition-list p {
   min-height: 28px;
@@ -2208,6 +2208,18 @@ body {
 }
 .map-data-state span {
   color: #dfd2bd;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.map-resolution-state {
+  top: 16px;
+  left: 16px;
+  padding: 10px 12px;
+}
+.map-resolution-state > svg {
+  color: var(--apricot);
+}
+.map-resolution-state strong {
   font-size: 12px;
   line-height: 1.35;
 }
@@ -2632,6 +2644,29 @@ body {
   font-size: 12px;
   font-weight: 700;
   line-height: 1.45;
+}
+.habitat-map-legend-compact {
+  display: block;
+  padding: 10px 13px;
+}
+.habitat-map-legend-compact .habitat-map-legend-items {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0;
+  border: 0;
+}
+.habitat-map-legend-compact .habitat-map-legend-item {
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+}
+.habitat-map-legend-compact .habitat-map-legend-item + .habitat-map-legend-item {
+  padding-left: 12px;
+}
+.habitat-map-legend-compact .habitat-map-legend-item > i {
+  width: 22px;
+  height: 15px;
+  margin: 0;
 }
 .habitat-evidence-row span {
   border: 1px solid rgba(89, 53, 37, 0.14);
@@ -3716,7 +3751,7 @@ body {
   padding-right: 24px;
   border-right: 1px solid rgba(255, 255, 255, 0.18);
   color: var(--apricot);
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
   font-size: 33px;
   font-style: italic;
 }
@@ -4785,9 +4820,6 @@ body {
   .species-grid {
     grid-template-columns: 1fr;
   }
-  .featured-grid .species-card:not(:first-child) {
-    display: none;
-  }
   .home-map-callout {
     padding: 68px 0;
   }
@@ -5175,7 +5207,7 @@ body {
 }
 .compare-profile-body > em {
   color: var(--gold);
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
   font-size: 14px;
 }
 .compare-profile-body > p {
@@ -5704,7 +5736,7 @@ body {
 }
 .compare-matrix-species em {
   color: #6f6258;
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
   font-size: 12px;
   line-height: 1.35;
 }
@@ -5972,32 +6004,39 @@ body {
 .compact-species-page .distribution-section .region-map-habitat .region-map-viewport {
   height: 560px;
 }
-.compact-species-page .distribution-section .habitat-map-legend {
+.compact-species-page .distribution-section .habitat-map-legend,
+.local-species-page .region-map-habitat .habitat-map-legend {
   grid-template-columns: minmax(230px, 0.85fr) minmax(0, 1.65fr);
   gap: 8px 14px;
   padding: 11px 13px;
 }
-.compact-species-page .distribution-section .habitat-map-legend-heading {
+.compact-species-page .distribution-section .habitat-map-legend-heading,
+.local-species-page .region-map-habitat .habitat-map-legend-heading {
   padding-right: 14px;
   border-right: 1px solid rgba(89, 53, 37, 0.14);
 }
-.compact-species-page .distribution-section .habitat-map-legend-items {
+.compact-species-page .distribution-section .habitat-map-legend-items,
+.local-species-page .region-map-habitat .habitat-map-legend-items {
   gap: 10px;
   padding-top: 0;
   border-top: 0;
 }
-.compact-species-page .distribution-section .habitat-map-legend-item {
+.compact-species-page .distribution-section .habitat-map-legend-item,
+.local-species-page .region-map-habitat .habitat-map-legend-item {
   grid-template-columns: 22px minmax(0, 1fr);
   gap: 7px;
 }
-.compact-species-page .distribution-section .habitat-map-legend-item + .habitat-map-legend-item {
+.compact-species-page .distribution-section .habitat-map-legend-item + .habitat-map-legend-item,
+.local-species-page .region-map-habitat .habitat-map-legend-item + .habitat-map-legend-item {
   padding-left: 10px;
 }
-.compact-species-page .distribution-section .habitat-map-legend-item > i {
+.compact-species-page .distribution-section .habitat-map-legend-item > i,
+.local-species-page .region-map-habitat .habitat-map-legend-item > i {
   width: 22px;
   height: 15px;
 }
-.compact-species-page .distribution-section .habitat-map-legend-note {
+.compact-species-page .distribution-section .habitat-map-legend-note,
+.local-species-page .region-map-habitat .habitat-map-legend-note {
   grid-column: 1 / -1;
   padding-top: 7px;
 }
@@ -6013,10 +6052,12 @@ body {
   .lookalikes-subsection .similar-list {
     grid-template-columns: 1fr;
   }
-  .compact-species-page .distribution-section .habitat-map-legend {
+  .compact-species-page .distribution-section .habitat-map-legend,
+  .local-species-page .region-map-habitat .habitat-map-legend {
     grid-template-columns: 1fr;
   }
-  .compact-species-page .distribution-section .habitat-map-legend-heading {
+  .compact-species-page .distribution-section .habitat-map-legend-heading,
+  .local-species-page .region-map-habitat .habitat-map-legend-heading {
     padding-right: 0;
     padding-bottom: 8px;
     border-right: 0;
@@ -6084,7 +6125,7 @@ body {
 }
 .method-hero-copy h1 i {
   color: var(--apricot);
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
   font-weight: 400;
 }
 .method-hero-copy > p:not(.eyebrow) {
@@ -6143,7 +6184,7 @@ body {
 }
 .method-equation-score {
   color: var(--apricot);
-  font: italic 76px/1 Georgia, serif;
+  font: italic 76px/1 var(--font-nunito-sans), sans-serif;
 }
 .method-equation-fraction,
 .method-inline-fraction {
@@ -6152,7 +6193,7 @@ body {
   vertical-align: middle;
 }
 .method-equation-fraction {
-  font: 31px/1.3 Georgia, serif;
+  font: 31px/1.3 var(--font-nunito-sans), sans-serif;
 }
 .method-equation-fraction > span,
 .method-inline-fraction > span {
@@ -6181,7 +6222,7 @@ body {
 }
 .method-equation-legend b {
   color: var(--paper);
-  font: 18px Georgia, serif;
+  font: 18px var(--font-nunito-sans), sans-serif;
 }
 .method-equation-stamp {
   display: flex;
@@ -6268,7 +6309,7 @@ body {
   top: 23px;
   right: 28px;
   color: rgba(89, 53, 37, 0.13);
-  font: 72px/1 Georgia, serif;
+  font: 72px/1 var(--font-nunito-sans), sans-serif;
 }
 .method-dual-track h3 {
   margin: 0 0 11px;
@@ -6330,7 +6371,7 @@ body {
   color: var(--gold);
 }
 .method-chapter-index span {
-  font: 43px/1 Georgia, serif;
+  font: 43px/1 var(--font-nunito-sans), sans-serif;
 }
 .method-chapter-index div {
   width: 1px;
@@ -6389,7 +6430,7 @@ body {
   top: 22px;
   right: 23px;
   color: rgba(33, 102, 172, 0.4);
-  font: 22px Georgia, serif;
+  font: 22px var(--font-nunito-sans), sans-serif;
 }
 .method-gates article > svg {
   margin-bottom: 53px;
@@ -6435,7 +6476,7 @@ body {
   flex-wrap: wrap;
   gap: 7px;
   margin: 20px 0;
-  font: 25px/1.5 Georgia, serif;
+  font: 25px/1.5 var(--font-nunito-sans), sans-serif;
   letter-spacing: -0.015em;
 }
 .method-formula-card p {
@@ -6568,7 +6609,7 @@ body {
   padding: 7px 10px;
   color: var(--method-blue);
   border: 1px solid rgba(33, 102, 172, 0.34);
-  font: 17px Georgia, serif;
+  font: 17px var(--font-nunito-sans), sans-serif;
   white-space: nowrap;
 }
 .method-score-equation {
@@ -6624,11 +6665,11 @@ body {
   place-items: center;
   color: var(--paper);
   background: var(--gold);
-  font: 16px Georgia, serif;
+  font: 16px var(--font-nunito-sans), sans-serif;
 }
 .method-factor-topline strong {
   color: var(--gold);
-  font: 24px Georgia, serif;
+  font: 24px var(--font-nunito-sans), sans-serif;
 }
 .method-factor-grid h3 {
   min-height: 40px;
@@ -6770,7 +6811,7 @@ body {
 .method-season-scale span:nth-child(4) i { background: var(--pumpkin); }
 .method-season-scale span:nth-child(5) i { background: #963f20; }
 .method-season-scale b {
-  font: 18px Georgia, serif;
+  font: 18px var(--font-nunito-sans), sans-serif;
 }
 .method-band-dark .eyebrow {
   color: var(--apricot);
@@ -6884,7 +6925,7 @@ body {
 }
 .method-label-ranges b {
   display: block;
-  font: 17px Georgia, serif;
+  font: 17px var(--font-nunito-sans), sans-serif;
 }
 .method-resolution-note {
   grid-template-columns: auto 1fr;
@@ -6953,7 +6994,7 @@ body {
 }
 .method-source-group-heading > span {
   color: rgba(89, 53, 37, 0.25);
-  font: 42px/1 Georgia, serif;
+  font: 42px/1 var(--font-nunito-sans), sans-serif;
 }
 .method-source-group-heading .eyebrow {
   margin-bottom: 3px;
@@ -7753,7 +7794,7 @@ body {
 }
 .species-card em {
   color: #7e746b;
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
   font-size: 14px;
 }
 .species-card .species-card-description {
@@ -7929,7 +7970,7 @@ body {
 .compact-species-page .species-hero em {
   display: block;
   color: #8a583d;
-  font: 18px Georgia, serif;
+  font: 18px var(--font-nunito-sans), sans-serif;
 }
 .species-alternate-names {
   max-width: 510px;
@@ -9347,7 +9388,7 @@ body {
 }
 .map-species-picker small i {
   color: var(--bark);
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
 }
 
 .map-stage {

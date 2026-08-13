@@ -77,6 +77,9 @@
 }
 
 @media (max-width: 640px) {
+  /* Keep the transition from the system overview to its guide links compact. */
+  .home-intro { padding-bottom: 2rem; }
+  .home-search-guides { margin-top: 0; }
   .home-today-feature { grid-template-columns: 1fr; gap: 1.15rem; min-height: 0; margin-top: -1.8rem; padding: 1.35rem; }
   .home-today-kicker,
   .home-today-facts,
@@ -126,7 +129,7 @@
 .catalogue-habitats header > p:last-child { max-width: 22rem; margin: 0; color: #5d665c; font-size: .9rem; line-height: 1.55; }
 .catalogue-habitats ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2.25rem; margin: 0; padding: 0; list-style: none; }
 .catalogue-habitats li { display: grid; grid-template-columns: 1.8rem minmax(0, 1fr) auto; gap: .75rem; align-items: center; min-height: 4.35rem; border-top: 1px solid rgba(47, 65, 42, .14); }
-.catalogue-habitat-rank { color: #a66a46; font-family: Georgia, serif; font-size: .76rem; font-style: italic; }
+.catalogue-habitat-rank { color: #a66a46; font-family: var(--font-nunito-sans), sans-serif; font-size: .76rem; font-style: italic; }
 .catalogue-habitat-name { display: grid; min-width: 0; gap: .48rem; font-size: .98rem; font-weight: 800; line-height: 1.25; }
 .catalogue-habitat-name i { position: relative; display: block; width: 100%; height: 2px; overflow: hidden; background: rgba(47, 65, 42, .1); }
 .catalogue-habitat-name i::after { position: absolute; inset: 0 auto 0 0; width: var(--habitat-strength); background: #657451; content: ""; }
@@ -190,7 +193,7 @@
 .current-overview-card:hover { background: rgba(255, 252, 244, .58); }
 .current-overview-card.is-insufficient,
 .current-overview-card.is-unavailable { color: #686c66; }
-.current-row-rank { color: #a95027; font-family: Georgia, serif; font-size: 1.35rem; font-style: italic; }
+.current-row-rank { color: #a95027; font-family: var(--font-nunito-sans), sans-serif; font-size: 1.35rem; font-style: italic; }
 .current-overview-card.is-insufficient .current-row-rank,
 .current-overview-card.is-unavailable .current-row-rank { color: #8c8f89; }
 .current-overview-card-heading h3 { margin: 0; color: #283d2e; font-size: 1.14rem; }

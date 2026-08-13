@@ -51,7 +51,7 @@
 
 .pageTitleAccent {
   color: var(--page-title-accent, var(--clay));
-  font-family: Georgia, serif;
+  font-family: var(--font-nunito-sans), sans-serif;
   font-style: italic;
   font-weight: 600;
 }

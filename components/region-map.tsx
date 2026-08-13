@@ -18,9 +18,14 @@ import {
   type MapMouseEvent,
   type StyleSpecification,
 } from "maplibre-gl";
+import { HabitatMapLegend } from "@/components/habitat-map-legend";
 import { MapModeControl } from "@/components/map-mode-control";
 import { cataloniaLandRings } from "@/data/catalonia-land";
-import { cataloniaRegionsGeoJson, regionCentres } from "@/data/regions";
+import {
+  cataloniaRegionsGeoJson,
+  regionBounds,
+  regionCentres,
+} from "@/data/regions";
 import {
   habitatCellColour,
   habitatCellIntensity,
@@ -180,6 +185,21 @@ const fitCatalonia = (map: MapLibreMap, animate = true) => {
     padding: { top: 54, right: 54, bottom: 54, left: 54 },
     duration: animate ? 650 : 0,
   });
+};
+
+const fitRegion = (map: MapLibreMap, region: RegionId, animate = true) => {
+  const bounds = regionBounds[region];
+  map.fitBounds(
+    [
+      [bounds.west, bounds.south],
+      [bounds.east, bounds.north],
+    ],
+    {
+      padding: { top: 54, right: 54, bottom: 54, left: 54 },
+      duration: animate ? 650 : 0,
+      maxZoom: 11.5,
+    },
+  );
 };
 
 type CellState = {
@@ -505,7 +525,7 @@ export function RegionMap({
         initialMapCentre.current
           ? (initialMapZoom.current ?? 10.8)
           : isPredictionMap && initialRegion.current
-            ? 12.8
+            ? 9.8
             : 6.2,
       attributionControl: { compact: true },
       maplibreLogo: false,
@@ -538,7 +558,7 @@ export function RegionMap({
       ),
       "top-right",
     );
-    const geolocate = initialSpeciesId.current && initialAutoGeolocate.current
+    const geolocate = initialSpeciesId.current
       ? new GeolocateControl({
           positionOptions: {
             enableHighAccuracy: !initialHabitat.current,
@@ -558,8 +578,9 @@ export function RegionMap({
     if (geolocate) localMap.addControl(geolocate, "top-right");
     localMap.once("load", () => {
       localMap.resize();
-      if (!isPredictionMap && !initialMapCentre.current)
-        fitCatalonia(localMap, false);
+      if (isPredictionMap && initialRegion.current)
+        fitRegion(localMap, initialRegion.current, false);
+      else if (!initialMapCentre.current) fitCatalonia(localMap, false);
       drawCellsRef.current();
     });
 
@@ -593,12 +614,7 @@ export function RegionMap({
     )
       return;
 
-    const focusRegion = () =>
-      localMap.easeTo({
-        center: regionCentres[selectedRegion],
-        zoom: 12.8,
-        duration: 650,
-      });
+    const focusRegion = () => fitRegion(localMap, selectedRegion);
 
     if (localMap.loaded()) focusRegion();
     else localMap.once("load", focusRegion);
@@ -832,8 +848,7 @@ export function RegionMap({
       const firstLoad = !initialViewLoaded;
       initialViewLoaded = true;
       if (centre && zoom) localMap.jumpTo({ center: centre, zoom });
-      else if (selectedRegion)
-        localMap.jumpTo({ center: regionCentres[selectedRegion], zoom: 9.8 });
+      else if (selectedRegion) fitRegion(localMap, selectedRegion, false);
       else fitCatalonia(localMap, false);
 
       if (firstLoad) {
@@ -874,11 +889,15 @@ export function RegionMap({
         void loadHabitat();
         return;
       }
-      if (!initialAutoGeolocate.current && initialMapCentre.current) {
+      if (initialMapCentre.current) {
         focusAndLoad(
           initialMapCentre.current,
           initialMapZoom.current ?? 10.8,
         );
+        return;
+      }
+      if (!initialAutoGeolocate.current) {
+        focusFallback();
         return;
       }
       if (!locator || !window.navigator.geolocation) {
@@ -1130,6 +1149,7 @@ export function RegionMap({
       if (
         locator &&
         window.navigator.geolocation &&
+        initialAutoGeolocate.current &&
         !initialGeolocationTriggered.current
       ) {
         initialGeolocationTriggered.current = true;
@@ -1320,6 +1340,14 @@ export function RegionMap({
             </div>
           </div>
         ) : null}
+        {habitat && compactLegend && cellState.status === "ready" ? (
+          <div className="map-data-state map-resolution-state" aria-live="polite">
+            <Grid3X3 size={18} aria-hidden />
+            <div>
+              <strong>Resolució actual: {gridDimensions}</strong>
+            </div>
+          </div>
+        ) : null}
         {speciesId ? (
           <div
             className={`map-cell-visibility${layerControlsExpanded ? "" : " is-collapsed"}`}
@@ -1459,45 +1487,12 @@ export function RegionMap({
         </button>
       </div>
       {habitat ? (
-        <aside
-          className="habitat-map-legend"
-          aria-label="Com llegir les zones compatibles"
-        >
-          <div className="habitat-map-legend-heading">
-            <Grid3X3 size={18} aria-hidden />
-            <div aria-live="polite">
-              <strong>{statusCopy.title}</strong>
-              <span>{statusCopy.detail}</span>
-            </div>
-          </div>
-          <div className="habitat-map-legend-items">
-            <div className="habitat-map-legend-item">
-              <i className="habitat-coverage-swatch" aria-hidden />
-              <div>
-                <strong>Blau · zones compatibles</strong>
-                <span>Més intensitat indica més cobertura; els límits d’altitud tenen una transició suau.</span>
-              </div>
-            </div>
-            <div className="habitat-map-legend-item">
-              <i className="habitat-history-swatch" aria-hidden />
-              <div>
-                <strong>
-                  {compactLegend
-                    ? "Ratllat lila · registres"
-                    : "Ratllat lila · registres històrics"}
-                </strong>
-                <span>
-                  {compactLegend
-                    ? "Registres històrics generalitzats a 10 km; no amplien l’hàbitat compatible."
-                    : <>Context històric; no amplia les zones compatibles. {habitatEvidenceCopy}</>}
-                </span>
-              </div>
-            </div>
-          </div>
-          <p className="habitat-map-legend-note">
-            Aquest mapa no indica presència actual ni si les condicions de fructificació són bones avui.
-          </p>
-        </aside>
+        <HabitatMapLegend
+          compact={compactLegend}
+          detail={statusCopy.detail}
+          historicalEvidenceDetail={habitatEvidenceCopy}
+          title={statusCopy.title}
+        />
       ) : null}
     </div>
   );

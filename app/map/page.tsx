@@ -67,6 +67,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
     <MapExplorer
       species={species}
       region={region}
+      autoGeolocate={!isRegionId(query.region)}
       mode={mode}
       regionalSnapshot={snapshot}
       regionalResult={result}

@@ -16,6 +16,7 @@ import type { ConditionSnapshot, MapViewMode, PredictionCell, RegionId, SpeciesP
 export function MapExplorer({
   species,
   region,
+  autoGeolocate,
   mode,
   regionalSnapshot,
   regionalResult,
@@ -24,6 +25,7 @@ export function MapExplorer({
 }: {
   species: SpeciesProfile;
   region: RegionId;
+  autoGeolocate: boolean;
   mode: MapViewMode;
   regionalSnapshot: ConditionSnapshot;
   regionalResult: SuitabilityResult;
@@ -60,6 +62,7 @@ export function MapExplorer({
     <div ref={mapStage} className="map-stage">
       <RegionMap
         activeRegions={species.ecologicalConfig.regions}
+        autoGeolocate={autoGeolocate}
         selectedRegion={region}
         speciesId={species.speciesId}
         mode={mode}
