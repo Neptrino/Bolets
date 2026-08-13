@@ -26,6 +26,8 @@
 
 - Keep species knowledge profiles in version-controlled, validated data files.
 - Ensure the prediction engine consumes the same ecological configuration used by species pages.
+- When an accepted profile name differs from a provider-indexed synonym, keep the accepted name in the catalogue and map the provider query name explicitly at the ingestion boundary.
+- Keep `/zones` as the broad prediction-region directory and `/guies` as the curated local-guide hub. Existing local-guide detail URLs remain under `/zones/...` until an explicit redirect-backed URL migration is planned.
 - Clip ecological and prediction grids to the version-controlled ICGC Catalonia land boundary before rendering.
 - Keep Supabase access server-side and protect database boundaries appropriately.
 - Treat external environmental data as normalized, timestamped snapshots with provenance and uncertainty.

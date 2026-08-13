@@ -9,4 +9,4 @@ export function predictionModelVersion(ecologyVersion: string) {
 // habitat coverage, or map scoring contract changes. It versions both the
 // browser-facing request and the server-to-Supabase cache key.
 export const PREDICTION_CACHE_VERSION =
-  `prediction-map-v14-${HABITAT_MODEL_VERSION}`;
+  `prediction-map-v15-${HABITAT_MODEL_VERSION}`;

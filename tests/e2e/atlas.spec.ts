@@ -9,6 +9,17 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(page.locator('header a[href="/map"]')).toHaveText(
     "Mapa de predicció",
   );
+  await expect(page.locator(".primary-nav > a")).toHaveText([
+    "Bolets",
+    "Zones",
+    "Guies",
+    "Comparador",
+    "Mètode",
+    "Avui",
+  ]);
+  await expect(
+    page.locator(".hero").getByRole("link", { name: "Mapa de predicció" }),
+  ).toHaveAttribute("href", "/map");
   await expect(page.locator(".featured-grid .card-season")).toHaveCount(0);
 
   await page.goto("/bolets");
@@ -767,7 +778,7 @@ test("keeps prediction factor labels readable on narrow maps", async ({ page }) 
   await expect(mobileNav).toHaveAttribute("open", "");
   await page
     .getByRole("navigation", { name: "Navegació mòbil" })
-    .getByRole("link", { name: "Bolets" })
+    .getByRole("link", { name: "Bolets", exact: true })
     .click();
   await expect(page).toHaveURL("/bolets");
   await expect(mobileNav).not.toHaveAttribute("open", "");
@@ -841,7 +852,7 @@ test("keeps ecologically excluded cells clickable after changing species", async
       speciesId,
       cellId: "excluded-test-cell",
       regionId: "pirineus",
-      gridSizeM: 250,
+      gridSizeM: 2500,
       cellBounds,
       score: excluded ? 0 : 60,
       habitatCoverage: excluded ? 0 : 0.25,

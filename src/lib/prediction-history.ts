@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { conditionSnapshotSchema } from "@/src/lib/schema";
+import { conditionSnapshotSchema, spatialGridSizeSchema } from "@/src/lib/schema";
 
 export const predictionCellHistoryRequestSchema = z.object({
   speciesId: z.string().regex(/^[a-z0-9-]+$/),
   cellId: z.string().min(1).max(160),
+  gridSizeM: spatialGridSizeSchema,
   regionId: z.enum(["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors", "altres"]),
   values: z.string().max(16_384).transform((value, context) => {
     try {

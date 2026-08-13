@@ -25,7 +25,7 @@ const region = z.enum([
   "muntanyes-interiors",
   "altres"
 ]);
-const spatialGridSize = z.union([
+export const spatialGridSizeSchema = z.union([
   z.literal(250), z.literal(1000), z.literal(2500), z.literal(5000), z.literal(10000)
 ]);
 const localMediaPath = z
@@ -234,7 +234,7 @@ export const spatialEnvironmentResponseSchema = z.object({
   cells: z.array(z.object({
     cellId: z.string(),
     regionId: region,
-    gridSizeM: spatialGridSize,
+    gridSizeM: spatialGridSizeSchema,
     bounds: z.tuple([z.tuple([z.number(), z.number()]), z.tuple([z.number(), z.number()])]),
     observedAt: z.string().datetime({ offset: true }),
     source: z.array(z.string()),
@@ -279,7 +279,7 @@ export const spatialHabitatResponseSchema = z.object({
   cells: z.array(z.object({
     cellId: z.string(),
     regionId: region,
-    gridSizeM: spatialGridSize,
+    gridSizeM: spatialGridSizeSchema,
     bounds: z.tuple([z.tuple([z.number(), z.number()]), z.tuple([z.number(), z.number()])]),
     coverage: z.number().min(0).max(1),
     altitudeWeightedCoverage: z.number().min(0).max(1).optional(),
@@ -290,7 +290,7 @@ export const spatialHabitatResponseSchema = z.object({
   })),
   truncated: z.boolean(),
   bounds: z.object({ west: z.number(), south: z.number(), east: z.number(), north: z.number() }),
-  resolution: spatialGridSize
+  resolution: spatialGridSizeSchema
 });
 
 export const occurrenceSupportResponseSchema = z.object({

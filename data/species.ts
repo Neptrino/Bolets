@@ -9,7 +9,10 @@ const safetyNotice =
 const references = [
   { id: "fungacat", title: "FungaCAT — Banc de dades dels fongs de Catalunya", publisher: "Universitat de Barcelona / GBIF España", url: "https://ipt.gbif.es/resource?r=fungacat", confidence: "moderate" as const },
   { id: "gbif", title: "GBIF — Occurrence search", publisher: "Global Biodiversity Information Facility", url: "https://www.gbif.org/occurrence/search", confidence: "moderate" as const },
-  { id: "gencat", title: "Bolets comestibles i seguretat", publisher: "Generalitat de Catalunya", url: "https://tramits.gencat.cat/en/actualitat/reportatges/temporada-de-bolets/bolets/bolets-comestibles/index.html", confidence: "moderate" as const }
+  { id: "gencat-edible", title: "Bolets comestibles", publisher: "Generalitat de Catalunya", url: "https://tramits.gencat.cat/ca/actualitat/reportatges/temporada-de-bolets/bolets/bolets-comestibles/", confidence: "moderate" as const },
+  { id: "gencat-toxic", title: "Bolets tòxics", publisher: "Generalitat de Catalunya", url: "https://tramits.gencat.cat/ca/actualitat/reportatges/temporada-de-bolets/bolets/bolets-toxics/", confidence: "moderate" as const },
+  { id: "scm-toxic", title: "Bolets tòxics de Catalunya", publisher: "Societat Catalana de Micologia", url: "https://www.micocat.org/UNCINULA09/micologia09/Toxicologia/BoletsToxics_v07.pdf", confidence: "moderate" as const },
+  { id: "species-fungorum", title: "Species Fungorum — Names and synonymy", publisher: "Royal Botanic Gardens, Kew", url: "https://www.speciesfungorum.org/names/names.asp", confidence: "moderate" as const }
 ];
 
 const months: Month[] = ["gen", "feb", "mar", "abr", "mai", "jun", "jul", "ago", "set", "oct", "nov", "des"];
@@ -57,6 +60,283 @@ speciesProfiles.push(
     similarSpecies: [{ scientificName: "Cantharellus cibarius", commonName: "Rossinyol", mainDifferences: "El rossinyol té plecs gruixuts i irregulars, no làmines fines, i creix al sòl.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda.", warning: true }, { scientificName: "Lactarius deliciosus", commonName: "Pinetell", mainDifferences: "El pinetell té làtex taronja i barret amb cercles concèntrics, no creix en feixos sobre fusta.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda.", warning: true }],
     ecologicalConfig: { habitat: { forestTypes: ["Alzinars, suredes i boscos mediterranis"], treeAssociations: ["Olea europaea", "Quercus ilex", "Quercus suber"], hosts: ["Olea", "Quercus"], soilPreference: "Neutre a bàsic", substrate: "Fusta enterrada o soca", moisture: "Moderada", altitude: [0, 900], slope: "Variable", aspect: "Solell i fondalades", shade: "Mitjana", landscapePosition: "Arrels, soques i fusta enterrada" }, soil: { texture: "Variable", reaction: "Neutra a alcalina", phRange: [6, 8.5], substrate: "Lignícola", organicMatter: "Alta localment", drainage: "Variable", waterRetention: "Mitjana", depth: "Superficial", humus: "Restes llenyoses", evidence: "limited" }, climate: { temperatureRange: [14, 25], nightPreference: "Suau", relativeHumidity: "Moderada", soilMoisture: "Mitjana", rainfall: "Pluges de tardor", drought: "Desfavorable", heat: "Desfavorable si asseca la fusta", frost: "Atura la fructificació", wind: "Dessecant", snow: "No rellevant" }, rainfall: { preferredAccumulation: "Humitat de tardor", fruitingDelay: "Dies a setmanes", priorMoisture: "Important", temperatureAfterRain: "Suau", interruption: "Sequera", uncertainty: "La fructificació depèn de la fusta hoste." }, seasonality: season({ set: "possible", oct: "good", nov: "peak", des: "moderate" }), regions: ["serralades-costeres", "serralades-prelitorals", "emporda", "ports", "muntanyes-interiors"] },
     idealConditions: ["Feixos taronja sobre soques o arrels d’olivera i planifolis", "Làmines fines i separables: no confondre amb plecs de rossinyol", "Pot causar vòmits i diarrea intensos"]
+  })
+);
+
+// Seasonal and commercially relevant gaps follow the safety-first catalogue.
+speciesProfiles.push(
+  profile({
+    speciesId: "hygrophorus-marzuolus",
+    identity: {
+      commonName: "Marçot",
+      alternateNames: ["bolet de neu", "llenega de primavera"],
+      scientificName: "Hygrophorus marzuolus",
+      family: "Hygrophoraceae",
+      genus: "Hygrophorus",
+      edibility: "edible",
+      identificationDifficulty: "Alta",
+      typicalSize: "Barret de 4–12 cm",
+      shortDescription: "Higròfor robust de final d’hivern, sovint mig enterrat sota pins, avets, faigs o roures de muntanya."
+    },
+    morphology: {
+      cap: "Convex i després estès o irregular, blanquinós de jove i progressivament gris pissarra, llis i una mica viscós amb humitat.",
+      hymenium: "Làmines blanques, gruixudes, espaiades, ceroses i d’adnates a decurrents.",
+      stem: "Curt, gruixut, blanc a grisenc, ple i sense anell ni volva.",
+      flesh: "Blanca, compacta i immutable.",
+      colour: "Blanc, gris perla i gris pissarra.",
+      smell: "Feble i agradable.",
+      texture: "Carnosa, ferma i cerosa a les làmines.",
+      typicalAppearance: "Bolet robust grisenc que emergeix entre la fullaraca o prop de clapes de neu en boscos frescos.",
+      keyFeatures: ["Fructificació hivernal o primaveral", "Làmines ceroses espaiades", "Barret gris pissarra", "Absència d’anell i volva"],
+      variation: "Pot restar gairebé enterrat i els exemplars joves són molt pàl·lids; cal veure la base sencera abans de descartar una amanita."
+    },
+    similarSpecies: [
+      { scientificName: "Hygrophorus agathosmus", commonName: "Llenega olorosa", mainDifferences: "Fa una olor marcada d’ametlla amarga i fructifica sobretot a la tardor sota coníferes.", edibility: "edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura." },
+      { scientificName: "Entoloma hirtipes", commonName: "Entoloma de peu fibrós", mainDifferences: "És més esvelt, amb làmines que es tornen rosades i esporada rosa; no té làmines ceroses.", edibility: "toxic", toxicity: "Pot causar una intoxicació gastrointestinal.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Boscos de coníferes", "Pinedes", "Fagedes"], treeAssociations: ["Pinus sylvestris", "Pinus uncinata", "Abies alba", "Fagus sylvatica", "Quercus"], hosts: ["Pinus", "Abies", "Fagus", "Quercus"], soilPreference: "Àcid a alcalí", substrate: "Silícic o calcari", moisture: "Fresca a humida", altitude: [500, 2200], slope: "Variable", aspect: "Obaga", shade: "Mitjana a alta", landscapePosition: "Boscos montans i subalpins, sovint sota fullaraca o neu recent" },
+      soil: { texture: "Franca a pedregosa", reaction: "Àcida a alcalina", phRange: [4.5, 8], substrate: "Silícic o calcari", organicMatter: "Moderada a alta", drainage: "Bo", waterRetention: "Mitjana a alta", depth: "Mitjana", humus: "Mull forestal", evidence: "limited" },
+      climate: { temperatureRange: [2, 12], nightPreference: "Freda", relativeHumidity: "Alta", soilMoisture: "Alta", rainfall: "Humitat hivernal i desglaç", drought: "Molt desfavorable", heat: "Molt desfavorable", frost: "Tolera fred moderat, però no sòl glaçat persistent", wind: "Dessecant", snow: "El desglaç pot precedir la fructificació" },
+      rainfall: { preferredAccumulation: "Sòl humit per pluges hivernals o desglaç", fruitingDelay: "Variable, lligat a l’escalfament progressiu del sòl", priorMoisture: "Molt important", temperatureAfterRain: "Freda a fresca", interruption: "Sòl glaçat, sequera o escalfament ràpid", uncertainty: "Espècie local i difícil de detectar perquè sovint resta enterrada." },
+      seasonality: season({ gen: "possible", feb: "good", mar: "peak", abr: "good", mai: "moderate", jun: "possible" }),
+      regions: ["pirineus", "prepirineus", "montseny", "muntanyes-interiors"]
+    },
+    idealConditions: ["Boscos frescos de muntanya", "2–12 °C amb sòl humit", "Final d’hivern i primavera segons l’altitud", "Extreure la base sencera per identificar-lo"]
+  }),
+  profile({
+    speciesId: "tricholoma-portentosum",
+    identity: {
+      commonName: "Fredolic gros",
+      alternateNames: ["fredolic llenegat", "caputxina"],
+      scientificName: "Tricholoma portentosum",
+      family: "Tricholomataceae",
+      genus: "Tricholoma",
+      edibility: "edible",
+      identificationDifficulty: "Alta",
+      typicalSize: "Barret de 5–12 cm",
+      shortDescription: "Tricoloma gris de pinedes fredes, amb barret fibril·lós i tons grocs al peu i a les làmines."
+    },
+    morphology: {
+      cap: "Convex i després estès, gris plom a gris bru, viscós amb humitat i recorregut per fibres radials fosques.",
+      hymenium: "Làmines escotades, blanques i sovint amb reflexos grocs en madurar.",
+      stem: "Cilíndric, blanc amb tons grocs, sobretot cap a la base, ple i sense anell.",
+      flesh: "Blanca, groguenca sota la cutícula i immutable.",
+      colour: "Gris, blanc i groc pàl·lid.",
+      smell: "Farinosa i suau.",
+      texture: "Carnosa, llisa i una mica viscosa al barret humit.",
+      typicalAppearance: "Fredolic robust de barret gris ratllat radialment i zones groguenques sota pins.",
+      keyFeatures: ["Fibres radials fosques", "Tons grocs al peu", "Làmines escotades", "Barret viscós amb humitat"],
+      variation: "Els tons grocs poden ser febles i el barret s’aclareix quan s’asseca; els Tricholoma grisos exigeixen una comparació completa."
+    },
+    similarSpecies: [
+      { scientificName: "Tricholoma pardinum", commonName: "Fredolic metzinós", mainDifferences: "És més massís i presenta escates tigrades, no simples fibres radials, normalment sense els tons grocs característics.", edibility: "toxic", toxicity: "Provoca una intoxicació gastrointestinal intensa.", warning: true },
+      { scientificName: "Tricholoma virgatum", commonName: "Tricoloma virgós", mainDifferences: "Té un umbó punxegut, gust molt acre i manca dels tons grocs del fredolic gros.", edibility: "inedible", toxicity: "No és comestible pel gust acre i pot causar molèsties." }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Pinedes", "Boscos de coníferes", "Fagedes", "Rouredes"], treeAssociations: ["Pinus sylvestris", "Pinus uncinata", "Abies alba"], hosts: ["Pinus", "Abies"], soilPreference: "Àcid a neutre", substrate: "Silícic o descarbonatat", moisture: "Fresca", altitude: [500, 2200], slope: "Variable", aspect: "Fresca a obaga", shade: "Mitjana", landscapePosition: "Pinedes montanes i subalpines, sovint entre molsa i virosta" },
+      soil: { texture: "Franca a francoarenosa", reaction: "Àcida a neutra", phRange: [4.5, 7], substrate: "Silícic o descarbonatat", organicMatter: "Moderada", drainage: "Bo", waterRetention: "Mitjana", depth: "Variable", humus: "Mull de coníferes", evidence: "limited" },
+      climate: { temperatureRange: [3, 14], nightPreference: "Freda", relativeHumidity: "Alta", soilMoisture: "Mitjana a alta", rainfall: "Pluges de tardor i inici d’hivern", drought: "Molt desfavorable", heat: "Molt desfavorable", frost: "Pot persistir fins a les primeres gelades", wind: "Dessecant", snow: "Tanca la temporada" },
+      rainfall: { preferredAccumulation: "Humitat regular al sòl de pineda", fruitingDelay: "Dies a setmanes després de pluges", priorMoisture: "Important", temperatureAfterRain: "Freda a fresca", interruption: "Sequera, calor o neu persistent", uncertainty: "Els Tricholoma grisos poden requerir revisió microscòpica i la producció varia molt entre anys." },
+      seasonality: season({ set: "possible", oct: "good", nov: "peak", des: "good", gen: "possible" }),
+      regions: ["pirineus", "prepirineus", "montseny", "muntanyes-interiors"]
+    },
+    idealConditions: ["Pinedes fredes de muntanya", "3–14 °C amb sòl humit", "Tardor avançada fins a les primeres nevades", "Descartar exemplars escatosos o sense tons grocs"]
+  }),
+  profile({
+    speciesId: "russula-virescens",
+    identity: {
+      commonName: "Llora verda",
+      alternateNames: ["cualbra verda", "puagra verda"],
+      scientificName: "Russula virescens",
+      family: "Russulaceae",
+      genus: "Russula",
+      edibility: "excellent_edible",
+      identificationDifficulty: "Alta",
+      typicalSize: "Barret de 5–15 cm",
+      shortDescription: "Russula robusta de barret verd esquerdat en mosaic, apreciada però perillosa de collir sense descartar amanites verdes."
+    },
+    morphology: {
+      cap: "Hemisfèric i després aplanat o deprimit, verd grisenc, amb la cutícula esquerdada en plaques o mosaic.",
+      hymenium: "Làmines blanques a crema pàl·lid, denses i fràgils; esporada blanquinosa.",
+      stem: "Blanc, cilíndric, compacte de jove, sense anell ni volva.",
+      flesh: "Blanca, gruixuda i trencadissa com el guix.",
+      colour: "Verd grisenc, blanc i crema.",
+      smell: "Suau i poc distintiva.",
+      texture: "Granulosa i molt fràgil al trencament.",
+      typicalAppearance: "Russula robusta amb un mosaic verd característic sobre el barret i totes les parts inferiors blanques.",
+      keyFeatures: ["Barret verd en mosaic", "Carn trencadissa", "Absència d’anell", "Absència de volva"],
+      variation: "El mosaic pot ser poc visible en exemplars molt joves o molls; la base sempre s’ha de desenterrar sencera."
+    },
+    similarSpecies: [
+      { scientificName: "Amanita phalloides", commonName: "Farinera borda", mainDifferences: "Té carn fibrosa, anell i una volva basal en sac; pot compartir colors verdosos.", edibility: "dangerously_toxic", toxicity: "Mortal per amatoxines.", warning: true },
+      { scientificName: "Russula heterophylla", commonName: "Llora de làmines forcades", mainDifferences: "El barret és verd llis o només finament clivellat i les làmines solen ser més forcades.", edibility: "edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura." }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Rouredes", "fagedes", "castanyedes i alzinars frescos"], treeAssociations: ["Quercus pubescens", "Quercus ilex", "Fagus sylvatica", "Castanea sativa"], hosts: ["Quercus", "Fagus", "Castanea"], soilPreference: "Àcid a neutre", substrate: "Silícic o descarbonatat", moisture: "Fresca", altitude: [100, 1500], slope: "Variable", aspect: "Temperada a fresca", shade: "Mitjana", landscapePosition: "Boscos madurs de planifolis i clarianes protegides" },
+      soil: { texture: "Franca a francoarenosa", reaction: "Àcida a neutra", phRange: [4.5, 7], substrate: "Silícic o descarbonatat", organicMatter: "Moderada", drainage: "Bo", waterRetention: "Mitjana", depth: "Mitjana", humus: "Mull de planifolis", evidence: "limited" },
+      climate: { temperatureRange: [13, 23], nightPreference: "Suau a fresca", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana", rainfall: "Tempestes d’estiu i pluges de principi de tardor", drought: "Desfavorable", heat: "Tolera calidesa amb sòl humit", frost: "Atura la fructificació", wind: "Dessecant", snow: "No rellevant" },
+      rainfall: { preferredAccumulation: "Pluja efectiva amb sòl forestal rehidratat", fruitingDelay: "Dies a setmanes", priorMoisture: "Important", temperatureAfterRain: "Temperada", interruption: "Sequera, vent sec o fred", uncertainty: "La producció estival depèn de tempestes locals i el mosaic del barret no sempre és visible." },
+      seasonality: season({ jun: "possible", jul: "moderate", ago: "good", set: "peak", oct: "moderate" }),
+      regions: ["prepirineus", "catalunya-central", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Planifolis sobre sòls àcids a neutres", "13–23 °C després de pluges", "Barret verd esquerdat i carn trencadissa", "Comprovar sempre que no hi ha anell ni volva"]
+  }),
+  profile({
+    speciesId: "cyclocybe-cylindracea",
+    identity: {
+      commonName: "Pollancró",
+      alternateNames: ["bolet de pollancre", "gírgola de pollancre"],
+      scientificName: "Cyclocybe cylindracea",
+      family: "Hemipholiotaceae",
+      genus: "Cyclocybe",
+      edibility: "excellent_edible",
+      identificationDifficulty: "Alta",
+      typicalSize: "Barret de 4–15 cm",
+      shortDescription: "Bolet lignícola que forma flotes denses sobre pollancres, salzes i altres planifolis, també conegut com Agrocybe aegerita."
+    },
+    morphology: {
+      cap: "Hemisfèric i després convex a estès, bru fosc de jove, aclarint-se a crema des del marge i sovint clivellat.",
+      hymenium: "Làmines adnates, primer pàl·lides i després tabac o brunes per l’esporada.",
+      stem: "Blanc a ocraci, fibrós, sovint corbat i amb un anell membranós persistent.",
+      flesh: "Blanca, gruixuda al barret i fibrosa al peu.",
+      colour: "Bru castany, crema, blanc i tabac.",
+      smell: "Fúngica, agradable i una mica vinosa.",
+      texture: "Carnosa al barret i fibrosa al peu.",
+      typicalAppearance: "Flotes compactes de barrets bruns i crema amb anell sobre troncs o arrels de planifolis.",
+      keyFeatures: ["Creixement en flotes", "Anell membranós", "Esporada bruna", "Fusta de pollancre o salze"],
+      variation: "El barret s’aclareix molt amb l’edat i la fusta hoste pot ser enterrada, de manera que pot semblar que creix al sòl."
+    },
+    similarSpecies: [
+      { scientificName: "Galerina marginata", commonName: "Galerina metzinosa", mainDifferences: "Sol ser més petita i rovellada, amb peu fibril·lós i olor farinosa; pot créixer sobre la mateixa fusta.", edibility: "dangerously_toxic", toxicity: "Mortal per amatoxines.", warning: true },
+      { scientificName: "Hypholoma fasciculare", commonName: "Bolet de pi bord", mainDifferences: "Té tons groc sofre, làmines verdoses i gust molt amarg, generalment sense un anell membranós.", edibility: "toxic", toxicity: "Pot provocar una intoxicació gastrointestinal.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Bosc de ribera", "Boscos humits", "Boscos de planifolis"], treeAssociations: ["Populus", "Salix", "Ulmus", "Acer", "Sambucus"], hosts: ["Populus", "Salix", "Ulmus", "Acer", "Sambucus"], soilPreference: "No determinant; depèn de la fusta hoste", substrate: "Fusta viva, morta o arrels enterrades de planifolis", moisture: "Fresca", altitude: [0, 1400], slope: "Pla a suau", aspect: "Variable", shade: "Baixa a mitjana", landscapePosition: "Troncs, soques i arrels de boscos de ribera, plantacions i parcs" },
+      soil: { texture: "Variable", reaction: "Àcida a alcalina", phRange: [5, 8.5], substrate: "Lignícola", organicMatter: "Alta localment", drainage: "Variable", waterRetention: "Mitjana", depth: "No determinant", humus: "Restes llenyoses", evidence: "limited" },
+      climate: { temperatureRange: [10, 23], nightPreference: "Fresca a suau", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana", rainfall: "Pluges de primavera i tardor o humitat de ribera", drought: "Desfavorable", heat: "Tolera calidesa si la fusta reté humitat", frost: "Atura la fructificació", wind: "Dessecant", snow: "No rellevant" },
+      rainfall: { preferredAccumulation: "Rehidratació de la fusta després de pluja o crescudes", fruitingDelay: "Dies a setmanes", priorMoisture: "Important", temperatureAfterRain: "Suau", interruption: "Assecament de la fusta o gelada", uncertainty: "La coberta forestal no representa bé soques, arbres urbans ni fusta enterrada; la predicció és orientativa." },
+      seasonality: season({ mar: "possible", abr: "moderate", mai: "good", jun: "moderate", set: "possible", oct: "peak", nov: "good", des: "possible" }),
+      regions: ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Soques i arrels de pollancre o salze", "10–23 °C després de pluja", "Primavera i tardor", "No collir flotes brunes sense comprovar anell, esporada i substrat"]
+  }),
+  profile({
+    speciesId: "coprinus-comatus",
+    identity: {
+      commonName: "Bolet de tinta",
+      alternateNames: ["pixacà barbut", "coprí pelut"],
+      scientificName: "Coprinus comatus",
+      family: "Agaricaceae",
+      genus: "Coprinus",
+      edibility: "edible",
+      identificationDifficulty: "Mitjana",
+      typicalSize: "Barret de 4–15 cm d’alt",
+      shortDescription: "Bolet blanc i pelut de prats i sòls remoguts, comestible només molt jove abans que les làmines comencin a ennegrir-se."
+    },
+    morphology: {
+      cap: "Cilíndric o ovoide, blanc, cobert d’escates aixecades, amb el centre ocraci; s’obre i es liqua des del marge.",
+      hymenium: "Làmines lliures, primer blanques, després rosades i finalment negres i deliqüescents.",
+      stem: "Alt, blanc, buit, fràgil i amb un anell mòbil o fugaç.",
+      flesh: "Blanca i prima, ennegrint-se ràpidament amb la maduresa.",
+      colour: "Blanc, crema, rosa i negre tinta.",
+      smell: "Suau de jove, desagradable en descompondre’s.",
+      texture: "Tendra de jove i líquida en madurar.",
+      typicalAppearance: "Barret blanc, alt i escatós com una metxa, sovint en grups a prats, parcs i marges.",
+      keyFeatures: ["Barret cilíndric i pelut", "Deliqüescència negra", "Làmines blanques a negres", "Sòls herbosos o remoguts"],
+      variation: "El canvi de blanc a negre pot passar en poques hores; no s’han d’aprofitar exemplars amb làmines rosades o negres."
+    },
+    similarSpecies: [
+      { scientificName: "Coprinopsis atramentaria", commonName: "Bolet de tinta gris", mainDifferences: "Té barret gris i llis o finament fibril·lós, sense les grans escates blanques del bolet de tinta.", edibility: "edible_with_conditions", toxicity: "Pot causar una reacció intensa si es combina amb alcohol.", warning: true },
+      { scientificName: "Chlorophyllum brunneum", commonName: "Apagallums tòxic", mainDifferences: "Té un barret ample amb escates brunes, anell gruixut i no es liqua en tinta negra.", edibility: "toxic", toxicity: "Pot provocar una intoxicació gastrointestinal.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Prats", "gespes", "vores de camí", "horts i sòls remoguts"], treeAssociations: [], hosts: [], soilPreference: "Neutre a alcalí, ric en nutrients", substrate: "Sòl herbós o remogut amb matèria orgànica", moisture: "Mitjana després de pluja", altitude: [0, 2000], slope: "Pla a suau", aspect: "Variable", shade: "Baixa", landscapePosition: "Prats, parcs, cunetes, horts i terrenys alterats" },
+      soil: { texture: "Franca a francoargilosa", reaction: "Neutra a alcalina", phRange: [6, 8.5], substrate: "Sòl ric en nutrients", organicMatter: "Moderada a alta", drainage: "Bo", waterRetention: "Mitjana", depth: "Variable", humus: "Herbaci o antropitzat", evidence: "limited" },
+      climate: { temperatureRange: [7, 20], nightPreference: "Fresca", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana", rainfall: "Episodis de primavera i tardor", drought: "Interromp la fructificació", heat: "Desfavorable si és seca", frost: "Desfavorable", wind: "Dessecant", snow: "No rellevant" },
+      rainfall: { preferredAccumulation: "Pluja que humitegi l’horitzó superficial", fruitingDelay: "Pocs dies a una setmana", priorMoisture: "Moderadament important", temperatureAfterRain: "Fresca a suau", interruption: "Sequera, sol intens o gelada", uncertainty: "El reg, els sòls remoguts i la gestió urbana generen fructificacions que el mapa no pot anticipar bé." },
+      seasonality: season({ mar: "possible", abr: "moderate", mai: "good", jun: "moderate", set: "possible", oct: "peak", nov: "good", des: "possible" }),
+      regions: ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Prats i sòls remoguts després de pluja", "7–20 °C", "Collir només exemplars joves de làmines completament blanques", "Consumir ràpidament després d’una identificació segura"]
+  }),
+  profile({
+    speciesId: "suillus-granulatus",
+    identity: {
+      commonName: "Molleric granellut",
+      alternateNames: ["molleric", "moixí", "pinetell", "cabreta"],
+      scientificName: "Suillus granulatus",
+      family: "Suillaceae",
+      genus: "Suillus",
+      edibility: "edible_with_conditions",
+      identificationDifficulty: "Mitjana",
+      typicalSize: "Barret de 4–12 cm",
+      shortDescription: "Molleric de pineda amb barret viscós, porus grocs que exsuden gotes i peu granellut sense anell."
+    },
+    morphology: {
+      cap: "Hemisfèric i després convex a estès, bru groguenc a castany, molt viscós amb humitat i de cutícula separable.",
+      hymenium: "Tubs i porus grocs, petits, que sovint exsuden gotes blanquinoses o lletoses quan és jove.",
+      stem: "Groc pàl·lid, cilíndric, sense anell i cobert de petits grànuls glandulars cap a la part alta.",
+      flesh: "Groc pàl·lid, tova i generalment immutable.",
+      colour: "Bru mel, groc i crema.",
+      smell: "Suau i resinosa.",
+      texture: "Viscosa al barret i esponjosa amb l’edat.",
+      typicalAppearance: "Molleric groc i bru sota pins, sense anell i amb gotetes als porus de jove.",
+      keyFeatures: ["Absència d’anell", "Gotes als porus", "Grànuls al peu", "Associació exclusiva amb pins"],
+      variation: "Les gotes desapareixen en temps sec o amb l’edat i els porus s’enfosqueixen; la cutícula pot retenir restes i irritants digestius."
+    },
+    similarSpecies: [
+      { scientificName: "Suillus luteus", commonName: "Molleric", mainDifferences: "Té un anell membranós ben desenvolupat al peu i barret habitualment més fosc.", edibility: "edible_with_conditions", toxicity: "Pot causar molèsties digestives si no es pela o se’n menja massa." },
+      { scientificName: "Suillus collinitus", commonName: "Molleric rosat", mainDifferences: "Sovint mostra fibres radials al barret i miceli rosat visible a la base del peu.", edibility: "edible_with_conditions", toxicity: "Pot causar molèsties digestives en persones sensibles." }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Pinedes", "Pinedes obertes", "Boscos de coníferes"], treeAssociations: ["Pinus halepensis", "Pinus pinea", "Pinus nigra", "Pinus sylvestris"], hosts: ["Pinus"], soilPreference: "Àcid a alcalí", substrate: "Variable, sovint sòls pobres o remoguts", moisture: "Fresca després de pluja", altitude: [0, 2100], slope: "Variable", aspect: "Variable", shade: "Baixa a mitjana", landscapePosition: "Pinedes obertes, vores i plantacions, especialment amb pins joves" },
+      soil: { texture: "Arenosa a franca", reaction: "Àcida a alcalina", phRange: [4.5, 8.5], substrate: "Silícic o calcari", organicMatter: "Baixa a moderada", drainage: "Bo", waterRetention: "Baixa a mitjana", depth: "Variable", humus: "Mull de pineda", evidence: "limited" },
+      climate: { temperatureRange: [9, 22], nightPreference: "Fresca a suau", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana", rainfall: "Pluges de primavera i tardor", drought: "Desfavorable", heat: "Tolera calidesa si el sòl resta humit", frost: "Atura la fructificació", wind: "Dessecant", snow: "No rellevant" },
+      rainfall: { preferredAccumulation: "Pluja efectiva sobre sòl de pineda", fruitingDelay: "Pocs dies a setmanes", priorMoisture: "Important", temperatureAfterRain: "Fresca a temperada", interruption: "Sequera, vent sec o gelada", uncertainty: "La fructificació és oportunista i les repoblacions joves no sempre queden ben representades a la coberta forestal." },
+      seasonality: season({ abr: "possible", mai: "moderate", jun: "possible", set: "moderate", oct: "peak", nov: "good", des: "possible" }),
+      regions: ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Pinedes joves i obertes", "9–22 °C després de pluja", "Pelar la cutícula i retirar els porus tous", "Consum moderat i sempre ben cuinat"]
+  }),
+  profile({
+    speciesId: "pleurotus-eryngii",
+    identity: {
+      commonName: "Gírgola de panical",
+      alternateNames: ["gírgola de card", "gírgola de camp", "gírgola d’arena"],
+      scientificName: "Pleurotus eryngii",
+      family: "Pleurotaceae",
+      genus: "Pleurotus",
+      edibility: "excellent_edible",
+      identificationDifficulty: "Alta",
+      typicalSize: "Barret de 4–12 cm",
+      shortDescription: "Gírgola robusta de prats secs i calcaris, vinculada a arrels mortes de panical i altres umbel·líferes."
+    },
+    morphology: {
+      cap: "Convex i després estès o lleugerament deprimit, bru grisenc a castany, llis i amb marge inicialment involut.",
+      hymenium: "Làmines blanques a crema, molt decurrents i sovint ramificades prop del peu.",
+      stem: "Blanc, ple, robust, central o excèntric, sense anell, eixamplant-se cap a la base.",
+      flesh: "Blanca, gruixuda, ferma i immutable.",
+      colour: "Bru grisenc, crema i blanc.",
+      smell: "Suau, fúngica i agradable.",
+      texture: "Molt carnosa i elàstica.",
+      typicalAppearance: "Gírgola baixa i robusta de barret bru, al peu de tiges seques de panical en espais oberts.",
+      keyFeatures: ["Làmines molt decurrents", "Peu robust sense anell", "Prats oberts", "Associació amb arrels de panical"],
+      variation: "El peu pot ser lateral o gairebé central i l’arrel hoste pot quedar enterrada; sense el substrat no és una identificació segura."
+    },
+    similarSpecies: [
+      { scientificName: "Pleurotus ostreatus", commonName: "Gírgola", mainDifferences: "Creix en flotes sobre fusta de planifolis i sol tenir peu lateral molt curt.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura." },
+      { scientificName: "Omphalotus olearius", commonName: "Bolet d’olivera", mainDifferences: "És taronja, creix en feixos sobre fusta o arrels llenyoses i té làmines fines també taronges.", edibility: "toxic", toxicity: "Pot causar vòmits i diarrea intensos.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Prats", "Pastures", "Gespes", "Matollars"], treeAssociations: [], hosts: ["Eryngium campestre"], soilPreference: "Neutre a alcalí", substrate: "Arrels mortes de panical", moisture: "Baixa a mitjana després de pluja", altitude: [0, 1600], slope: "Pla a moderat", aspect: "Solell", shade: "Baixa", landscapePosition: "Prats i pastures oberts sobre sòls calcaris" },
+      soil: { texture: "Franca a pedregosa", reaction: "Neutra a alcalina", phRange: [6.5, 8.5], substrate: "Calcari o ric en bases", organicMatter: "Baixa a moderada", drainage: "Bo", waterRetention: "Baixa a mitjana", depth: "Variable", humus: "Herbaci", evidence: "limited" },
+      climate: { temperatureRange: [9, 20], nightPreference: "Fresca a suau", relativeHumidity: "Moderada", soilMoisture: "Mitjana després de pluja", rainfall: "Episodis de primavera i tardor", drought: "Atura la fructificació", heat: "Tolera ambients oberts però no sequera persistent", frost: "Desfavorable", wind: "Dessecant", snow: "No rellevant" },
+      rainfall: { preferredAccumulation: "Pluja suficient per rehidratar les arrels mortes", fruitingDelay: "Dies a setmanes", priorMoisture: "Moderadament important", temperatureAfterRain: "Suau", interruption: "Vent sec, sequera o gelada", uncertainty: "La distribució del panical i altres hostes herbàcies no forma part de la coberta forestal; la predicció és especialment orientativa." },
+      seasonality: season({ mar: "possible", abr: "moderate", mai: "good", set: "possible", oct: "peak", nov: "good", des: "possible" }),
+      regions: ["prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Prats calcaris amb panical", "9–20 °C després de pluges", "Primavera i tardor", "Confirmar l’hoste herbaci i descartar bolets taronja sobre fusta"]
   })
 );
 
@@ -181,16 +461,16 @@ speciesProfiles.push(
     identity: { commonName: "Pinetell", alternateNames: ["rovelló"], scientificName: "Lactarius deliciosus", family: "Russulaceae", genus: "Lactarius", edibility: "excellent_edible", identificationDifficulty: "Baixa a mitjana", typicalSize: "Barret de 4–15 cm", shortDescription: "Lactari taronja de làmines decurrents i làtex color pastanaga, associat als pins." },
     morphology: { cap: "Ataronjat, amb cercles concèntrics, sovint deprimit al centre.", hymenium: "Làmines ataronjades, decurrents, amb taques verdes per pressió.", stem: "Cilíndric, ataronjat, sovint amb clotets.", flesh: "Taronja pàl·lid; exsuda làtex taronja.", colour: "Taronja viu amb verds a la maduresa.", smell: "Afruitat suau.", texture: "Ferm de jove, fràgil amb l’edat.", typicalAppearance: "Bolet taronja de pineda amb làtex color pastanaga.", keyFeatures: ["Làtex taronja", "Cercles al barret", "Verdeja en tocar-lo"], variation: "La humitat i l’edat accentuen les taques verdes i la fragilitat." },
     similarSpecies: [{ scientificName: "Lactarius sanguifluus", commonName: "Rovelló", mainDifferences: "Làtex vermell vinós i tons més apagats.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda." }, { scientificName: "Lactarius torminosus", commonName: "Lleterola de cama rosada", mainDifferences: "Barret rosat i pelut, làtex blanc; pot causar trastorns digestius.", edibility: "not_recommended", toxicity: "Pot ser irritant gastrointestinal.", warning: true }],
-    ecologicalConfig: { habitat: { forestTypes: ["Pinedes", "pinedes mixtes"], treeAssociations: ["Pinus pinea", "Pinus nigra", "Pinus sylvestris", "Pinus halepensis"], hosts: ["Pinus"], soilPreference: "Variable, sovint silícic", substrate: "Terres de pineda", moisture: "Fresca", altitude: [0, 1800], slope: "Variable", aspect: "Totes, preferentment amb certa humitat", shade: "Mitjana", landscapePosition: "Clariana o marge de pineda" }, soil: { texture: "Arenosa a franca", reaction: "Àcida a neutra", phRange: [5, 7.2], substrate: "Silícic o mixt", organicMatter: "Baixa a moderada", drainage: "Bona", waterRetention: "Mitjana", depth: "Variable", humus: "Mull de pinassa", evidence: "moderate" }, climate: { temperatureRange: [10, 20], nightPreference: "Fresca", relativeHumidity: "Moderada", soilMoisture: "Mitjana a alta", rainfall: "Pluges de tardor", drought: "Desfavorable", heat: "Desfavorable", frost: "Atura el creixement", wind: "Vent sec desfavorable", snow: "No rellevant" }, rainfall: { preferredAccumulation: "Episodis de pluja que mantinguin la pinassa humida", fruitingDelay: "Sovint dins les setmanes posteriors", priorMoisture: "Important", temperatureAfterRain: "Suau", interruption: "Sequera sobtada o vent persistent", uncertainty: "La resposta depèn del tipus de pineda." }, seasonality: season({ set: "good", oct: "peak", nov: "good", des: "possible" }), regions: ["prepirineus", "catalunya-central", "serralades-prelitorals", "emporda", "ports"] },
+    ecologicalConfig: { habitat: { forestTypes: ["Pinedes", "pinedes mixtes"], treeAssociations: ["Pinus pinea", "Pinus nigra", "Pinus sylvestris", "Pinus halepensis"], hosts: ["Pinus"], soilPreference: "Variable, sovint silícic", substrate: "Terres de pineda", moisture: "Fresca", altitude: [0, 1800], slope: "Variable", aspect: "Totes, preferentment amb certa humitat", shade: "Mitjana", landscapePosition: "Clariana o marge de pineda" }, soil: { texture: "Arenosa a franca", reaction: "Àcida a neutra", phRange: [5, 7.2], substrate: "Silícic o mixt", organicMatter: "Baixa a moderada", drainage: "Bona", waterRetention: "Mitjana", depth: "Variable", humus: "Mull de pinassa", evidence: "moderate" }, climate: { temperatureRange: [10, 20], nightPreference: "Fresca", relativeHumidity: "Moderada", soilMoisture: "Mitjana a alta", rainfall: "Pluges de tardor", drought: "Desfavorable", heat: "Desfavorable", frost: "Atura el creixement", wind: "Vent sec desfavorable", snow: "No rellevant" }, rainfall: { preferredAccumulation: "Episodis de pluja que mantinguin la pinassa humida", fruitingDelay: "Sovint dins les setmanes posteriors", priorMoisture: "Important", temperatureAfterRain: "Suau", interruption: "Sequera sobtada o vent persistent", uncertainty: "La resposta depèn del tipus de pineda." }, seasonality: season({ set: "good", oct: "peak", nov: "good", des: "possible" }), regions: ["pirineus", "prepirineus", "catalunya-central", "serralades-prelitorals", "emporda", "ports"] },
     idealConditions: ["Pinedes amb pinassa humida", "10–20 °C", "Pluja recent i bon drenatge", "Coloració verda no implica toxicitat"]
   }),
   profile({
     speciesId: "lactarius-sanguifluus",
-    identity: { commonName: "Rovelló", alternateNames: ["esclata-sang", "rovelló de sang", "rovelló de solell", "sanguinenc", "rovelló vinós"], scientificName: "Lactarius sanguifluus", family: "Russulaceae", genus: "Lactarius", edibility: "excellent_edible", identificationDifficulty: "Mitjana", typicalSize: "Barret de 4–12 cm", shortDescription: "Lactari de tons vinós-verdosos que segrega làtex vermell fosc sota pinedes mediterrànies." },
+    identity: { commonName: "Rovelló", alternateNames: ["esclata-sang", "rovelló de sang", "rovelló de solell", "sanguinenc", "rovelló vinós"], scientificName: "Lactarius sanguifluus", family: "Russulaceae", genus: "Lactarius", edibility: "excellent_edible", identificationDifficulty: "Mitjana", typicalSize: "Barret de 4–12 cm", shortDescription: "Lactari de tons vinós-verdosos que segrega làtex vermell fosc sota pinedes mediterrànies i montanes calcàries." },
     morphology: { cap: "Ataronjat apagat a gris vinós, amb zones concèntriques.", hymenium: "Làmines decurrents, que poden virar a vinós.", stem: "Curt, del color del barret o més clar.", flesh: "Segrega làtex vermell vinós.", colour: "Taronja apagat, vi i verd grisós.", smell: "Suau.", texture: "Ferm però fràgil amb l’edat.", typicalAppearance: "Lactari mediterrani menys taronja que el rovelló comú.", keyFeatures: ["Làtex vermell vinós", "Tons grisos o verdosos", "Associació amb pins"], variation: "Els colors s’enfosqueixen ràpidament per pressió o maduresa." },
     similarSpecies: [{ scientificName: "Lactarius deliciosus", commonName: "Pinetell", mainDifferences: "Làtex més taronja i barret generalment més viu.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda." }, { scientificName: "Lactarius semisanguifluus", commonName: "Rovelló semisanguinenc", mainDifferences: "Làtex inicialment taronja que es torna més vermellós.", edibility: "edible", toxicity: "Sense toxicitat coneguda." }],
-    ecologicalConfig: { habitat: { forestTypes: ["Pinedes mediterrànies", "pinedes de pi blanc"], treeAssociations: ["Pinus halepensis", "Pinus pinea", "Pinus nigra"], hosts: ["Pinus"], soilPreference: "Sovint calcari o neutre", substrate: "Pineda mediterrània", moisture: "Mitjana", altitude: [0, 1200], slope: "Variable", aspect: "Solells temperats", shade: "Baixa a mitjana", landscapePosition: "Pinedes obertes" }, soil: { texture: "Arenosa a franca", reaction: "Neutra a alcalina", phRange: [6.5, 8], substrate: "Sovint calcari", organicMatter: "Baixa a moderada", drainage: "Bona", waterRetention: "Baixa a mitjana", depth: "Variable", humus: "Pinassa escassa a moderada", evidence: "limited" }, climate: { temperatureRange: [12, 21], nightPreference: "Suau", relativeHumidity: "Moderada", soilMoisture: "Mitjana", rainfall: "Pluges de tardor", drought: "Desfavorable", heat: "Tolera una mica més de calor", frost: "Desfavorable", wind: "Secant", snow: "No rellevant" }, rainfall: { preferredAccumulation: "Pluja de tardor seguida de temps fresc i poc ventós, perquè el sòl conservi la humitat", fruitingDelay: "Variable", priorMoisture: "Important", temperatureAfterRain: "Temperada", interruption: "Vent sec i calor", uncertainty: "Informació ecològica amb variació local." }, seasonality: season({ set: "moderate", oct: "peak", nov: "good", des: "possible" }), regions: ["serralades-costeres", "serralades-prelitorals", "ports", "emporda"] },
-    idealConditions: ["Pinedes mediterrànies i sòls sovint calcaris", "Temperatures de tardor suaus", "Pluja efectiva i sòl amb humitat mitjana", "Làtex vinós: tret d’identificació principal"]
+    ecologicalConfig: { habitat: { forestTypes: ["Pinedes de pi blanc, pinassa o pi roig", "pinedes mediterrànies", "pinedes montanes calcàries"], treeAssociations: ["Pinus halepensis", "Pinus pinea", "Pinus nigra", "Pinus sylvestris"], hosts: ["Pinus"], soilPreference: "Sovint calcari o neutre", substrate: "Pineda mediterrània o montana calcària", moisture: "Mitjana", altitude: [0, 1200], slope: "Variable", aspect: "Solells temperats", shade: "Baixa a mitjana", landscapePosition: "Pinedes obertes" }, soil: { texture: "Arenosa a franca", reaction: "Neutra a alcalina", phRange: [6.5, 8], substrate: "Sovint calcari", organicMatter: "Baixa a moderada", drainage: "Bona", waterRetention: "Baixa a mitjana", depth: "Variable", humus: "Pinassa escassa a moderada", evidence: "limited" }, climate: { temperatureRange: [12, 21], nightPreference: "Suau", relativeHumidity: "Moderada", soilMoisture: "Mitjana", rainfall: "Pluges de tardor", drought: "Desfavorable", heat: "Tolera una mica més de calor", frost: "Desfavorable", wind: "Secant", snow: "No rellevant" }, rainfall: { preferredAccumulation: "Pluja de tardor seguida de temps fresc i poc ventós, perquè el sòl conservi la humitat", fruitingDelay: "Variable", priorMoisture: "Important", temperatureAfterRain: "Temperada", interruption: "Vent sec i calor", uncertainty: "Informació ecològica amb variació local." }, seasonality: season({ set: "moderate", oct: "peak", nov: "good", des: "possible" }), regions: ["pirineus", "serralades-costeres", "serralades-prelitorals", "ports", "emporda"] },
+    idealConditions: ["Pinedes mediterrànies o montanes calcàries", "Temperatures de tardor suaus", "Pluja efectiva i sòl amb humitat mitjana", "Làtex vinós: tret d’identificació principal"]
   }),
   profile({
     speciesId: "cantharellus-cibarius",
@@ -590,6 +870,474 @@ speciesProfiles.push(
       regions: ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
     },
     idealConditions: ["Boscos de planifolis humits després de pluges", "8–19 °C durant la tardor", "La cocció o l’assecat no n’elimina les amatoxines", "Qualsevol ingestió sospitosa és una emergència: 061 Salut Respon"]
+  }),
+  profile({
+    speciesId: "lepiota-brunneoincarnata",
+    identity: {
+      commonName: "Palometa metzinosa",
+      alternateNames: ["lepiota bru-encarnada", "lepiota mortal"],
+      scientificName: "Lepiota brunneoincarnata",
+      family: "Agaricaceae",
+      genus: "Lepiota",
+      edibility: "dangerously_toxic",
+      identificationDifficulty: "Molt alta",
+      typicalSize: "Barret de 2–5 cm",
+      shortDescription: "Lepiota petita de barret crema amb escates bru vinós, potencialment mortal per les amatoxines."
+    },
+    morphology: {
+      cap: "Cònic o hemisfèric de jove i després convex a estès, amb un disc bru vinós i escates concèntriques sobre fons crema o rosat.",
+      hymenium: "Làmines lliures, denses i blanques o crema; esporada blanca.",
+      stem: "Prim i pàl·lid per sobre d’un anell fràgil; per sota presenta fibres o escates brunes sobre un fons rosat o vinós.",
+      flesh: "Blanca, sovint rosada o vinosa a la base del peu, sense un canvi de color diagnòstic segur.",
+      colour: "Crema, bru castany, rosat i vinós.",
+      smell: "Feble, de vegades afruitada o desagradable; no és un criteri segur.",
+      texture: "Prima i fràgil.",
+      typicalAppearance: "Petit para-sol escatós de tons bruns i rosats en gespes, parcs o clarianes.",
+      keyFeatures: ["Mida petita", "Escates bru vinós", "Làmines blanques lliures", "Anell fugaç"],
+      variation: "L’anell pot desaparèixer i la pluja pot rentar les escates; cap exemplar petit s’ha de validar com a apagallums."
+    },
+    similarSpecies: [
+      { scientificName: "Macrolepiota procera", commonName: "Apagallums", mainDifferences: "És molt més gran, té un peu llarg amb dibuix de pell de serp i un anell doble i mòbil.", edibility: "edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura.", warning: true },
+      { scientificName: "Lepiota cristata", commonName: "Lepiota pudent", mainDifferences: "També és petita i rebutjable; separar Lepiota similars pot requerir microscòpia.", edibility: "toxic", toxicity: "Pot provocar trastorns gastrointestinals i no s’ha de consumir.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Prats", "Vores de camí", "Clarianes", "Vores de bosc"], treeAssociations: [], hosts: [], soilPreference: "Àcid a alcalí, sovint alterat", substrate: "Sòl herbós o nu ric en restes orgàniques", moisture: "Mitjana després de pluja", altitude: [0, 700], slope: "Pla a suau", aspect: "Variable", shade: "Baixa a mitjana", landscapePosition: "Parcs, jardins, camins i clarianes mediterrànies" },
+      soil: { texture: "Franca a arenosa", reaction: "Àcida a alcalina", phRange: [5.5, 8], substrate: "Sòl herbós, sorrenc o remogut", organicMatter: "Moderada", drainage: "Bo", waterRetention: "Baixa a mitjana", depth: "Superficial", humus: "Herbaci o ruderal", evidence: "limited" },
+      climate: { temperatureRange: [12, 23], nightPreference: "Suau", relativeHumidity: "Moderada", soilMoisture: "Mitjana", rainfall: "Pluges de final d’estiu i tardor", drought: "Desfavorable", heat: "La calor seca n’interromp la fructificació", frost: "Desfavorable", wind: "Dessecant", snow: "No rellevant" },
+      rainfall: { preferredAccumulation: "Rehidratació del sòl superficial després d’un període sec", fruitingDelay: "Pocs dies a setmanes amb temperatures suaus", priorMoisture: "Moderadament important", temperatureAfterRain: "Suau", interruption: "Sequera, vent sec o gelada", uncertainty: "Els regs i els sòls urbans alteren la fenologia i no queden ben representats al model territorial." },
+      seasonality: season({ ago: "possible", set: "good", oct: "peak", nov: "good", des: "possible" }),
+      regions: ["catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Gespes i clarianes després de pluja", "12–23 °C sense sequera", "No consumir cap Lepiota petita", "Els símptomes tardans poden indicar una intoxicació mortal"]
+  }),
+  profile({
+    speciesId: "galerina-marginata",
+    identity: {
+      commonName: "Galerina metzinosa",
+      alternateNames: ["cama-sec bord", "galerina marginada"],
+      scientificName: "Galerina marginata",
+      family: "Galerinaceae",
+      genus: "Galerina",
+      edibility: "dangerously_toxic",
+      identificationDifficulty: "Molt alta",
+      typicalSize: "Barret d’1–6 cm",
+      shortDescription: "Bolet petit de tons mel que creix sobre fusta morta i pot causar una intoxicació mortal per amatoxines."
+    },
+    morphology: {
+      cap: "Hemisfèric a convex i després estès, higròfan, de mel o ocre bru quan és humit i més pàl·lid en assecar-se.",
+      hymenium: "Làmines adnates a lleugerament decurrents, primer ocres i després bru rovell per l’esporada.",
+      stem: "Prim, fibril·lós, amb una zona anular o un anell membranós fugaç; més fosc cap a la base.",
+      flesh: "Prima, ocre pàl·lida a bruna.",
+      colour: "Mel, ocre, bru i rovell.",
+      smell: "Farinosa o feble; variable i no diagnòstica.",
+      texture: "Fràgil i fibrosa al peu.",
+      typicalAppearance: "Petits bolets bruns, solitaris o en grups, directament sobre troncs, soques o restes llenyoses.",
+      keyFeatures: ["Creixement sobre fusta", "Esporada rovellada", "Barret higròfan", "Anell sovint fugaç"],
+      variation: "El color canvia molt amb la humitat i l’anell pot perdre’s; la separació de bolets petits de fusta requereix experiència."
+    },
+    similarSpecies: [
+      { scientificName: "Kuehneromyces mutabilis", commonName: "Bolet de soca", mainDifferences: "Forma flotes més denses i presenta escates fosques per sota de l’anell; la separació exigeix revisar tots els exemplars.", edibility: "edible", toxicity: "Una confusió amb Galerina marginata pot ser mortal.", warning: true },
+      { scientificName: "Cyclocybe cylindracea", commonName: "Pollancró", mainDifferences: "És més robust, de barret més carnós i habitualment associat a pollancres o altres planifolis.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Boscos de coníferes", "Boscos de planifolis", "Boscos humits"], treeAssociations: ["Pinus", "Fagus", "Quercus", "Betula"], hosts: [], soilPreference: "No determinant; depèn de la fusta", substrate: "Fusta morta de coníferes i planifolis", moisture: "Alta a la fusta", altitude: [100, 2100], slope: "Variable", aspect: "Fresca a obaga", shade: "Mitjana a alta", landscapePosition: "Soques, troncs caiguts i fusta enterrada en boscos humits" },
+      soil: { texture: "No determinant", reaction: "Àcida a neutra", phRange: [4, 7.5], substrate: "Fusta en descomposició", organicMatter: "Fusta morta", drainage: "No aplicable directament", waterRetention: "Alta dins la fusta", depth: "No aplicable", humus: "Restes llenyoses", evidence: "limited" },
+      climate: { temperatureRange: [5, 17], nightPreference: "Freda a fresca", relativeHumidity: "Alta", soilMoisture: "La humitat de la fusta és determinant", rainfall: "Períodes humits prolongats", drought: "Molt desfavorable", heat: "Desfavorable", frost: "Tolera fred lleu", wind: "Molt dessecant", snow: "Pot aparèixer abans o després de la neu" },
+      rainfall: { preferredAccumulation: "Rehidratació sostinguda de troncs i soques", fruitingDelay: "Variable després de pluges repetides", priorMoisture: "Molt important", temperatureAfterRain: "Fresca", interruption: "Dessecació de la fusta, calor o gelada persistent", uncertainty: "La cartografia no observa la fusta morta; el bosc compatible és només un indicador indirecte." },
+      seasonality: season({ gen: "possible", feb: "possible", mar: "possible", abr: "moderate", mai: "moderate", jun: "possible", jul: "possible", ago: "moderate", set: "good", oct: "peak", nov: "good", des: "moderate" }),
+      regions: ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Fusta morta persistentment humida", "5–17 °C en boscos protegits", "No consumir bolets petits de fusta sense confirmació experta", "Les amatoxines resisteixen la cocció"]
+  }),
+  profile({
+    speciesId: "cortinarius-orellanus",
+    identity: {
+      commonName: "Cortinari metzinós",
+      alternateNames: ["bolet de mantellina", "cortinari color d’orellana"],
+      scientificName: "Cortinarius orellanus",
+      family: "Cortinariaceae",
+      genus: "Cortinarius",
+      edibility: "dangerously_toxic",
+      identificationDifficulty: "Molt alta",
+      typicalSize: "Barret de 3–9 cm",
+      shortDescription: "Cortinari bru ataronjat amb orellanina, capaç de provocar insuficiència renal dies després de la ingestió."
+    },
+    morphology: {
+      cap: "Convex i després estès, sec, finament fibril·lós o escatós, de color ocre ataronjat a bru rogenc.",
+      hymenium: "Làmines separades, primer ocre ataronjades i després rovellades; esporada bru rovell.",
+      stem: "Cilíndric o lleugerament afuat, groc ocraci a rogenc, amb restes fines de cortina però sense anell veritable.",
+      flesh: "Groguenca a rogenca, immutable.",
+      colour: "Ocre, taronja, bru rogenc i rovell.",
+      smell: "Feble, de rave o terrosa.",
+      texture: "Seca, fibrosa i compacta.",
+      typicalAppearance: "Cortinari mitjà i sec de tons ataronjats uniformes sota planifolis.",
+      keyFeatures: ["Barret sec bru ataronjat", "Làmines rovellades", "Restes de cortina", "Toxicitat renal tardana"],
+      variation: "Els tons varien amb l’edat i la sequedat; només la combinació de trets i, sovint, la microscòpia permet separar cortinaris."
+    },
+    similarSpecies: [
+      { scientificName: "Cortinarius rubellus", commonName: "Cortinari mortal", mainDifferences: "Sol tenir el barret més cònic i viu en boscos àcids de muntanya; també és mortal.", edibility: "dangerously_toxic", toxicity: "Conté orellanina i pot causar insuficiència renal.", warning: true },
+      { scientificName: "Chroogomphus rutilus", commonName: "Cama de perdiu", mainDifferences: "Té làmines gruixudes i decurrents, barret sovint viscós i associació estricta amb pins.", edibility: "edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Rouredes", "Fagedes", "Alzinars", "Boscos de coníferes"], treeAssociations: ["Quercus pubescens", "Quercus ilex", "Fagus sylvatica", "Castanea sativa"], hosts: ["Quercus", "Fagus", "Castanea"], soilPreference: "Àcid", substrate: "Silícic o descarbonatat", moisture: "Fresca", altitude: [400, 1900], slope: "Variable", aspect: "Vessants frescos", shade: "Mitjana", landscapePosition: "Interior i vores de boscos madurs" },
+      soil: { texture: "Franca a arenosa", reaction: "Àcida", phRange: [4, 6.5], substrate: "Silícic o descarbonatat", organicMatter: "Moderada", drainage: "Bo", waterRetention: "Mitjana", depth: "Mitjana", humus: "Mull de planifolis", evidence: "limited" },
+      climate: { temperatureRange: [8, 18], nightPreference: "Fresca", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana a alta", rainfall: "Pluges d’estiu tardà i tardor", drought: "Desfavorable", heat: "Desfavorable", frost: "Atura la fructificació", wind: "Dessecant", snow: "Fora del període principal" },
+      rainfall: { preferredAccumulation: "Humitat sostinguda al sòl de planifolis", fruitingDelay: "Dies a setmanes després de pluges efectives", priorMoisture: "Important", temperatureAfterRain: "Fresca a suau", interruption: "Sequera, vent sec o gelada", uncertainty: "És poc freqüent i difícil de separar d’altres Cortinarius només amb trets macroscòpics." },
+      seasonality: season({ jul: "possible", ago: "moderate", set: "good", oct: "peak", nov: "good" }),
+      regions: ["pirineus", "prepirineus", "catalunya-central", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Boscos de planifolis amb sòl fresc", "8–18 °C després de pluges", "No consumir cap cortinari", "Els símptomes renals poden aparèixer entre dos i quinze dies després"]
+  }),
+  profile({
+    speciesId: "gyromitra-esculenta",
+    identity: {
+      commonName: "Bolet de greix",
+      alternateNames: ["múrgola borda", "falsa múrgola", "giromitra"],
+      scientificName: "Gyromitra esculenta",
+      family: "Discinaceae",
+      genus: "Gyromitra",
+      edibility: "dangerously_toxic",
+      identificationDifficulty: "Alta",
+      typicalSize: "Carpòfor de 4–12 cm d’alçada",
+      shortDescription: "Falsa múrgola primaveral de barret cerebriforme, tòxica i potencialment mortal per la giromitrina."
+    },
+    morphology: {
+      cap: "Irregular, plegat i lobulat com un cervell, de bru castany a rogenc fosc, unit al peu en diversos punts.",
+      hymenium: "Recobreix la superfície externa dels plecs; no presenta alvèols regulars.",
+      stem: "Curt, blanc a crema, solcat i irregular, amb cambres internes.",
+      flesh: "Prima, fràgil i cerosa; l’interior forma plecs i cambres, no un buit continu.",
+      colour: "Bru rogenc, castany i crema.",
+      smell: "Suau o fúngica.",
+      texture: "Fràgil, cerosa i lobulada.",
+      typicalAppearance: "Massa bruna amb aspecte de cervell sobre un peu pàl·lid en sòls remoguts de pineda.",
+      keyFeatures: ["Barret cerebriforme", "Interior amb cambres", "Fructificació primaveral", "Absència d’alvèols regulars"],
+      variation: "La forma és molt irregular i els exemplars clars poden recordar una múrgola; cal tallar-los longitudinalment per observar l’interior."
+    },
+    similarSpecies: [
+      { scientificName: "Morchella esculenta", commonName: "Múrgola", mainDifferences: "Té un barret alveolat com una bresca i tot el carpòfor és buit en secció longitudinal.", edibility: "edible_with_conditions", toxicity: "Tòxica crua o poc cuita; requereix cocció completa.", warning: true },
+      { scientificName: "Verpa bohemica", commonName: "Verpa", mainDifferences: "El barret campanulat només s’uneix al peu per l’àpex i l’interior conté material cotonós en exemplars joves.", edibility: "not_recommended", toxicity: "No recomanada per risc de confusió i possibles trastorns.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Boscos de coníferes", "Pinedes", "Clarianes"], treeAssociations: ["Pinus sylvestris", "Pinus uncinata", "Picea abies"], hosts: [], soilPreference: "Àcid i sorrenc", substrate: "Sòl remogut, restes llenyoses i vores de pista", moisture: "Fresca després del desglaç", altitude: [300, 2000], slope: "Pla a moderat", aspect: "Fresca", shade: "Baixa a mitjana", landscapePosition: "Clarianes, pistes forestals, cremats antics i sòls alterats de coníferes" },
+      soil: { texture: "Arenosa a francoarenosa", reaction: "Àcida", phRange: [4, 6.5], substrate: "Silícic, sorrenc o amb fusta degradada", organicMatter: "Baixa a moderada", drainage: "Bo", waterRetention: "Baixa a mitjana", depth: "Variable", humus: "Prim o alterat", evidence: "limited" },
+      climate: { temperatureRange: [3, 15], nightPreference: "Freda", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana", rainfall: "Desglaç i pluges de primavera", drought: "Desfavorable", heat: "Molt desfavorable", frost: "Tolera fred lleu", wind: "Dessecant", snow: "El desglaç marca l’inici de temporada" },
+      rainfall: { preferredAccumulation: "Humitat de desglaç o pluges regulars sobre sòl drenat", fruitingDelay: "Variable durant l’escalfament primaveral", priorMoisture: "Important", temperatureAfterRain: "Freda a fresca", interruption: "Calor, sequera o assecat ràpid del sòl", uncertainty: "Les pertorbacions del sòl i les restes llenyoses no queden plenament representades a la cartografia." },
+      seasonality: season({ mar: "moderate", abr: "good", mai: "peak", jun: "possible" }),
+      regions: ["pirineus", "prepirineus", "montseny", "muntanyes-interiors"]
+    },
+    idealConditions: ["Pinedes fredes i sòls sorrencs alterats", "3–15 °C durant el desglaç", "No consumir-la sota cap tractament domèstic", "Tall longitudinal per distingir-la d’una múrgola"]
+  }),
+  profile({
+    speciesId: "amanita-pantherina",
+    identity: {
+      commonName: "Pixacà",
+      alternateNames: ["pigat", "pigat bord", "reig bru", "amanita pantera"],
+      scientificName: "Amanita pantherina",
+      family: "Amanitaceae",
+      genus: "Amanita",
+      edibility: "dangerously_toxic",
+      identificationDifficulty: "Alta",
+      typicalSize: "Barret de 5–12 cm",
+      shortDescription: "Amanita bruna amb berrugues blanques i base bulbosa, responsable d’una síndrome neurològica greu."
+    },
+    morphology: {
+      cap: "Hemisfèric i després estès, bru grisenc a bru fosc, amb marge estriat i berrugues blanques separades.",
+      hymenium: "Làmines lliures, blanques i denses; esporada blanca.",
+      stem: "Blanc, amb anell membranós llis i base bulbosa envoltada per dos o més ribets de volva.",
+      flesh: "Blanca i immutable.",
+      colour: "Bru, gris, blanc i crema.",
+      smell: "Feble, de vegades terrosa.",
+      texture: "Carnosa però fràgil amb l’edat.",
+      typicalAppearance: "Amanita bruna esquitxada de blanc, amb marge estriat i una base bulbosa escalonada.",
+      keyFeatures: ["Barret bru amb berrugues blanques", "Marge estriat", "Anell blanc", "Volva en ribets sobre el bulb"],
+      variation: "La pluja pot eliminar les berrugues i aclarir el barret; cal desenterrar sencera la base per veure la volva."
+    },
+    similarSpecies: [
+      { scientificName: "Amanita muscaria", commonName: "Reig bord", mainDifferences: "El barret és habitualment vermell o taronja i la base presenta restes de volva menys regulars.", edibility: "toxic", toxicity: "Provoca una síndrome neurològica.", warning: true },
+      { scientificName: "Amanita rubescens", commonName: "Cua de cavall", mainDifferences: "La carn i les ferides s’enrogeixen, les berrugues són grisoses i la base no presenta els ribets nets del pixacà.", edibility: "edible_with_conditions", toxicity: "Tòxica crua; una confusió amb A. pantherina és perillosa.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Rouredes", "Alzinars", "Suredes", "Fagedes", "Boscos de coníferes"], treeAssociations: ["Quercus", "Fagus sylvatica", "Pinus"], hosts: ["Quercus", "Fagus", "Pinus"], soilPreference: "Àcid a alcalí", substrate: "Variable", moisture: "Fresca", altitude: [100, 1800], slope: "Variable", aspect: "Variable", shade: "Mitjana", landscapePosition: "Interior i vores de boscos de planifolis o mixtos" },
+      soil: { texture: "Franca a francoargilosa", reaction: "Àcida a alcalina", phRange: [4.5, 8.5], substrate: "Silícic o calcari", organicMatter: "Moderada", drainage: "Bo", waterRetention: "Mitjana", depth: "Mitjana", humus: "Mull", evidence: "limited" },
+      climate: { temperatureRange: [9, 20], nightPreference: "Fresca", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana", rainfall: "Primavera plujosa i tardor", drought: "Desfavorable", heat: "La calor seca és desfavorable", frost: "Atura la fructificació", wind: "Dessecant", snow: "No rellevant" },
+      rainfall: { preferredAccumulation: "Humitat sostinguda del sòl forestal", fruitingDelay: "Dies a setmanes després de pluja", priorMoisture: "Important", temperatureAfterRain: "Fresca a suau", interruption: "Sequera, calor o gelada", uncertainty: "L’amplitud d’hàbitat i la variació del barret fan que el mapa no pugui resoldre la identificació local." },
+      seasonality: season({ jul: "possible", ago: "moderate", set: "good", oct: "peak", nov: "good" }),
+      regions: ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Boscos frescos sobre sòls forestals variats", "9–20 °C després de pluja", "No consumir cap Amanita bruna", "La pluja pot esborrar les berrugues blanques"]
+  }),
+  profile({
+    speciesId: "amanita-virosa",
+    identity: {
+      commonName: "Farinera pudent",
+      alternateNames: [],
+      scientificName: "Amanita virosa",
+      family: "Amanitaceae",
+      genus: "Amanita",
+      edibility: "dangerously_toxic",
+      identificationDifficulty: "Molt alta",
+      typicalSize: "Barret de 4–10 cm",
+      shortDescription: "Amanita completament blanca de boscos frescos, potencialment mortal per les amatoxines."
+    },
+    morphology: {
+      cap: "Cònic a campanulat i finalment convex, blanc, llis o sedós, sovint irregular i amb el centre lleument crema.",
+      hymenium: "Làmines lliures, blanques i denses; esporada blanca.",
+      stem: "Blanc, fibril·lós o flocós, amb anell membranós fràgil i base bulbosa dins una volva blanca en sac.",
+      flesh: "Blanca i immutable.",
+      colour: "Blanc pur a crema pàl·lid.",
+      smell: "Feble de jove i desagradable o dolcenca en madurar.",
+      texture: "Carnosa al barret i fibrosa al peu.",
+      typicalAppearance: "Amanita esvelta i completament blanca, de barret sovint cònic, amb anell i volva.",
+      keyFeatures: ["Color blanc integral", "Barret cònic", "Anell", "Volva blanca en sac"],
+      variation: "L’anell es pot trencar i la volva pot quedar enterrada; els exemplars vells poden groguejar lleument."
+    },
+    similarSpecies: [
+      { scientificName: "Hygrophorus eburneus", commonName: "Llenega blanca", mainDifferences: "Té làmines ceroses i decurrents, superfície molt viscosa i no presenta anell ni volva.", edibility: "edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura.", warning: true },
+      { scientificName: "Agaricus campestris", commonName: "Camperol", mainDifferences: "Les làmines passen del rosa al bru xocolata i la base del peu no té volva.", edibility: "edible", toxicity: "Una confusió amb una amanita blanca pot ser mortal.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Fagedes", "Boscos de coníferes", "Boscos humits"], treeAssociations: ["Fagus sylvatica", "Abies alba", "Betula pendula", "Picea abies", "Pinus sylvestris"], hosts: ["Fagus", "Abies", "Betula", "Picea", "Pinus"], soilPreference: "Àcid", substrate: "Silícic o descarbonatat", moisture: "Alta i persistent", altitude: [600, 2000], slope: "Variable", aspect: "Obaga", shade: "Mitjana a alta", landscapePosition: "Boscos frescos i humits de muntanya" },
+      soil: { texture: "Franca a arenosa", reaction: "Àcida", phRange: [4, 6.5], substrate: "Silícic o descarbonatat", organicMatter: "Moderada a alta", drainage: "Bo", waterRetention: "Alta", depth: "Mitjana", humus: "Mull àcid", evidence: "limited" },
+      climate: { temperatureRange: [6, 16], nightPreference: "Freda", relativeHumidity: "Alta", soilMoisture: "Alta", rainfall: "Pluges d’estiu i tardor", drought: "Molt desfavorable", heat: "Molt desfavorable", frost: "Atura la fructificació", wind: "Molt dessecant", snow: "Fora del període principal" },
+      rainfall: { preferredAccumulation: "Humitat persistent del sòl de muntanya", fruitingDelay: "Dies a setmanes després de pluges regulars", priorMoisture: "Molt important", temperatureAfterRain: "Freda a fresca", interruption: "Sequera, calor, vent sec o gelada", uncertainty: "És poc freqüent i la delimitació respecte d’altres amanites blanques pot requerir microscòpia." },
+      seasonality: season({ jul: "possible", ago: "good", set: "peak", oct: "good", nov: "possible" }),
+      regions: ["pirineus", "prepirineus", "montseny", "muntanyes-interiors"]
+    },
+    idealConditions: ["Boscos àcids, freds i humits", "6–16 °C a final d’estiu", "No consumir cap bolet blanc amb anell o volva", "Qualsevol ingestió sospitosa requereix atenció immediata"]
+  }),
+  profile({
+    speciesId: "amanita-verna",
+    identity: {
+      commonName: "Cogomassa",
+      alternateNames: ["farinera vernal", "farinera blanca de primavera"],
+      scientificName: "Amanita verna",
+      family: "Amanitaceae",
+      genus: "Amanita",
+      edibility: "dangerously_toxic",
+      identificationDifficulty: "Molt alta",
+      typicalSize: "Barret de 4–10 cm",
+      shortDescription: "Amanita blanca i termòfila de primavera, mortal per les amatoxines i difícil de separar d’espècies pròximes."
+    },
+    morphology: {
+      cap: "Hemisfèric i després convex a estès, blanc, llis, sovint lluent amb humitat i sense marge estriat.",
+      hymenium: "Làmines lliures, blanques i denses; esporada blanca.",
+      stem: "Blanc, cilíndric, amb anell membranós i una base bulbosa dins una volva blanca ampla.",
+      flesh: "Blanca i immutable.",
+      colour: "Blanc pur, de vegades crema al centre.",
+      smell: "Feble de jove, més desagradable en madurar.",
+      texture: "Carnosa i llisa.",
+      typicalAppearance: "Amanita blanca de barret arrodonit, anell i volva en boscos mediterranis durant la primavera.",
+      keyFeatures: ["Color blanc", "Làmines lliures", "Anell", "Volva en sac"],
+      variation: "L’anell es pot perdre, la volva pot quedar enterrada i la separació d’altres amanites blanques requereix prudència taxonòmica."
+    },
+    similarSpecies: [
+      { scientificName: "Agaricus campestris", commonName: "Camperol", mainDifferences: "Té làmines roses que es tornen brunes i mai presenta una volva basal.", edibility: "edible", toxicity: "Una confusió amb Amanita verna pot ser mortal.", warning: true },
+      { scientificName: "Amanita caesarea", commonName: "Ou de reig", mainDifferences: "Quan s’obre mostra barret taronja, làmines, peu i anell grocs; no s’ha d’identificar tancada.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Alzinars", "Rouredes", "Pinedes", "Boscos de planifolis"], treeAssociations: ["Quercus ilex", "Quercus pubescens", "Quercus faginea", "Castanea sativa", "Pinus"], hosts: ["Quercus", "Castanea", "Pinus"], soilPreference: "Àcid a alcalí, sovint calcari", substrate: "Variable, sovint ric en bases", moisture: "Fresca després de pluges de primavera", altitude: [100, 1200], slope: "Variable", aspect: "Temperada", shade: "Baixa a mitjana", landscapePosition: "Boscos mediterranis oberts i vores de planifolis" },
+      soil: { texture: "Franca a francoargilosa", reaction: "Àcida a alcalina", phRange: [5.5, 8.3], substrate: "Silícic o calcari", organicMatter: "Moderada", drainage: "Bo", waterRetention: "Mitjana", depth: "Mitjana", humus: "Mull de planifolis", evidence: "limited" },
+      climate: { temperatureRange: [12, 22], nightPreference: "Suau", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana", rainfall: "Pluges de primavera i episodis suaus de tardor", drought: "Desfavorable", heat: "Tolera calidesa sense sequera", frost: "Molt desfavorable", wind: "Dessecant", snow: "No rellevant" },
+      rainfall: { preferredAccumulation: "Pluges efectives sobre un sòl temperat", fruitingDelay: "Dies a setmanes després d’episodis plujosos", priorMoisture: "Important", temperatureAfterRain: "Suau a temperada", interruption: "Sequera, vent sec o fred", uncertainty: "Forma part d’un grup taxonòmic difícil i la seva presència exacta a Catalunya necessita confirmació experta." },
+      seasonality: season({ abr: "good", mai: "peak", jun: "good" }),
+      regions: ["catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Boscos mediterranis, sovint calcaris però amb incertesa edàfica", "12–22 °C durant la primavera", "No collir amanites blanques", "La cocció no destrueix les amatoxines"]
+  }),
+  profile({
+    speciesId: "tricholoma-pardinum",
+    identity: {
+      commonName: "Fredolic metzinós",
+      alternateNames: ["fredolic bord", "tricoloma tigrat"],
+      scientificName: "Tricholoma pardinum",
+      family: "Tricholomataceae",
+      genus: "Tricholoma",
+      edibility: "toxic",
+      identificationDifficulty: "Alta",
+      typicalSize: "Barret de 5–20 cm",
+      shortDescription: "Tricoloma robust de barret gris tigrat, tòxic i especialment perillós per la semblança amb els fredolics."
+    },
+    morphology: {
+      cap: "Hemisfèric i després convex a estès, gris platejat, cobert d’escates radials més fosques i contrastades.",
+      hymenium: "Làmines escotades, blanques a gris pàl·lid, sovint amb gotes clares al marge en exemplars joves.",
+      stem: "Blanc o grisenc, robust, ple i sense anell, de vegades ocraci a la base.",
+      flesh: "Blanca, gruixuda i immutable.",
+      colour: "Gris platejat, gris fosc i blanc.",
+      smell: "Farinosa, agradable o poc marcada.",
+      texture: "Compacta i carnosa.",
+      typicalAppearance: "Fredolic molt gros i massís, amb un dibuix d’escates tigrades sobre el barret.",
+      keyFeatures: ["Mida robusta", "Escates tigrades", "Làmines escotades", "Absència d’anell"],
+      variation: "Les escates poden ser menys contrastades amb pluja i els exemplars joves poden semblar fredolics comestibles."
+    },
+    similarSpecies: [
+      { scientificName: "Tricholoma terreum", commonName: "Fredolic", mainDifferences: "És més petit, fràgil i de carn prima, amb escates o fibres molt més fines.", edibility: "edible_with_conditions", toxicity: "Consum ocasional i moderat després d’una identificació segura.", warning: true },
+      { scientificName: "Tricholoma portentosum", commonName: "Fredolic gros", mainDifferences: "Presenta fibres radials, no escates tigrades, i tons grocs al peu i sovint a les làmines.", edibility: "edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Boscos de coníferes", "Fagedes"], treeAssociations: ["Abies alba", "Fagus sylvatica", "Pinus sylvestris", "Picea abies"], hosts: ["Abies", "Fagus", "Pinus", "Picea"], soilPreference: "Neutre a alcalí", substrate: "Calcari o ric en bases", moisture: "Fresca a humida", altitude: [900, 2000], slope: "Variable", aspect: "Obaga", shade: "Mitjana a alta", landscapePosition: "Boscos montans i subalpins sobre sòls calcaris" },
+      soil: { texture: "Franca a pedregosa", reaction: "Neutra a alcalina", phRange: [6, 8.2], substrate: "Calcari o ric en bases", organicMatter: "Moderada", drainage: "Bo", waterRetention: "Mitjana a alta", depth: "Variable", humus: "Mull de muntanya", evidence: "limited" },
+      climate: { temperatureRange: [5, 15], nightPreference: "Freda", relativeHumidity: "Alta", soilMoisture: "Mitjana a alta", rainfall: "Pluges d’estiu tardà i tardor", drought: "Molt desfavorable", heat: "Molt desfavorable", frost: "Les primeres gelades en limiten l’activitat", wind: "Dessecant", snow: "Marca el final de temporada" },
+      rainfall: { preferredAccumulation: "Humitat sostinguda del sòl de muntanya", fruitingDelay: "Dies a setmanes després de pluges", priorMoisture: "Important", temperatureAfterRain: "Freda a fresca", interruption: "Sequera, calor o gelada persistent", uncertainty: "La distribució és local i els Tricholoma grisos formen un grup difícil d’identificar." },
+      seasonality: season({ ago: "possible", set: "peak", oct: "good", nov: "possible" }),
+      regions: ["pirineus", "prepirineus", "montseny", "muntanyes-interiors"]
+    },
+    idealConditions: ["Boscos calcaris de muntanya", "5–15 °C amb humitat sostinguda", "Comparar mida, escates i tons grocs", "Pot provocar vòmits i diarrea intensos"]
+  }),
+  profile({
+    speciesId: "entoloma-sinuatum",
+    identity: {
+      commonName: "Carner bord",
+      alternateNames: ["escarlet bord", "fals carlet", "fals moixernó"],
+      scientificName: "Entoloma sinuatum",
+      family: "Entolomataceae",
+      genus: "Entoloma",
+      edibility: "toxic",
+      identificationDifficulty: "Molt alta",
+      typicalSize: "Barret de 6–20 cm",
+      shortDescription: "Entoloma gros de làmines groguenques que es tornen rosades, responsable d’intoxicacions gastrointestinals greus."
+    },
+    morphology: {
+      cap: "Hemisfèric i després convex a irregularment estès, crema, ivori o gris ocraci, llis i sovint amb marge ondulat.",
+      hymenium: "Làmines escotades o sinuades, primer groc crema i després salmó rosat per l’esporada.",
+      stem: "Blanc, robust, ple, sense anell ni volva, sovint engruixit a la base.",
+      flesh: "Blanca, gruixuda i immutable.",
+      colour: "Ivori, crema, gris ocraci, groc pàl·lid i rosa salmó.",
+      smell: "Farinosa, de cogombre o desagradable en exemplars vells.",
+      texture: "Compacta i carnosa.",
+      typicalAppearance: "Bolet pàl·lid, gros i robust de planifolis, amb làmines que adquireixen color rosa.",
+      keyFeatures: ["Mida gran", "Làmines grogues a rosades", "Esporada rosa", "Peu robust sense anell"],
+      variation: "Els exemplars joves encara no mostren el rosa de les espores i poden recordar diversos comestibles pàl·lids."
+    },
+    similarSpecies: [
+      { scientificName: "Hygrophorus russula", commonName: "Carlet", mainDifferences: "Té taques vinós-rosades, làmines ceroses decurrents i carn que es taca; l’esporada és blanca.", edibility: "edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura.", warning: true },
+      { scientificName: "Calocybe gambosa", commonName: "Moixeró", mainDifferences: "Fructifica principalment a la primavera, té làmines blanques molt denses i esporada blanca.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Rouredes", "fagedes", "alzinars i boscos mixtos de planifolis"], treeAssociations: ["Quercus pubescens", "Quercus ilex", "Fagus sylvatica", "Castanea sativa"], hosts: ["Quercus", "Fagus", "Castanea"], soilPreference: "Neutre a alcalí", substrate: "Calcari o ric en bases", moisture: "Fresca", altitude: [100, 1600], slope: "Variable", aspect: "Fresca", shade: "Mitjana", landscapePosition: "Clarianes, vores i interior de boscos de planifolis" },
+      soil: { texture: "Franca a francoargilosa", reaction: "Neutra a alcalina", phRange: [6, 8.5], substrate: "Calcari o ric en bases", organicMatter: "Moderada", drainage: "Bo", waterRetention: "Mitjana", depth: "Mitjana", humus: "Mull de planifolis", evidence: "limited" },
+      climate: { temperatureRange: [9, 19], nightPreference: "Fresca", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana", rainfall: "Pluges d’estiu tardà i tardor", drought: "Desfavorable", heat: "Desfavorable si és seca", frost: "Atura la fructificació", wind: "Dessecant", snow: "No rellevant" },
+      rainfall: { preferredAccumulation: "Humitat sostinguda al sòl de planifolis", fruitingDelay: "Dies a setmanes després de pluges", priorMoisture: "Important", temperatureAfterRain: "Fresca a suau", interruption: "Sequera, vent sec o gelada", uncertainty: "L’esporada i els trets microscòpics poden ser necessaris per separar Entoloma similars." },
+      seasonality: season({ jul: "possible", ago: "moderate", set: "good", oct: "peak", nov: "good" }),
+      regions: ["prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Planifolis sobre sòls calcaris", "9–19 °C després de pluja", "Làmines que maduren cap al rosa", "No consumir bolets pàl·lids basant-se només en l’olor"]
+  }),
+  profile({
+    speciesId: "inocybe-erubescens",
+    identity: {
+      commonName: "Inocibe de Patouillard",
+      alternateNames: ["barret de bruixa", "inocibe rogenc"],
+      scientificName: "Inosperma erubescens",
+      family: "Inocybaceae",
+      genus: "Inosperma",
+      edibility: "dangerously_toxic",
+      identificationDifficulty: "Molt alta",
+      typicalSize: "Barret de 3–9 cm",
+      shortDescription: "Inocibe primaveral pàl·lid que s’enrogeix i conté prou muscarina per provocar una intoxicació greu."
+    },
+    morphology: {
+      cap: "Cònic a campanulat i després estès amb umbó, blanc crema de jove, fibril·lós i esquerdat radialment, després ocre i rogenc.",
+      hymenium: "Làmines adnates, primer blanquinoses i després gris ocre a brunes; es poden tacar de vermell.",
+      stem: "Blanc, ferm i fibril·lós, sense anell, sovint engruixit a la base i enrogint amb l’edat o el fregament.",
+      flesh: "Blanca i progressivament rogenca, sobretot a les ferides.",
+      colour: "Blanc, crema, ocre, bru i vermell maó.",
+      smell: "Fruitat, espermàtic o feble; variable.",
+      texture: "Fibrosa i compacta.",
+      typicalAppearance: "Bolet pàl·lid i fibril·lós que adquireix taques vermelloses en boscos i vores calcàries.",
+      keyFeatures: ["Barret fibril·lós", "Enrogiment progressiu", "Absència d’anell", "Làmines que s’enfosqueixen"],
+      variation: "Els exemplars joves poden ser completament blancs i l’enrogiment triga a aparèixer; l’olor no és fiable."
+    },
+    similarSpecies: [
+      { scientificName: "Calocybe gambosa", commonName: "Moixeró", mainDifferences: "Té barret carnós no fibril·lós, làmines blanques molt denses i no s’enrogeix amb l’edat.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura.", warning: true },
+      { scientificName: "Agaricus campestris", commonName: "Camperol", mainDifferences: "Les làmines són roses de jove i bru xocolata en madurar, amb un anell fi al peu.", edibility: "edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Boscos de planifolis", "Rouredes", "Fagedes", "Vores de bosc"], treeAssociations: ["Fagus sylvatica", "Quercus pubescens", "Quercus ilex", "Tilia"], hosts: ["Fagus", "Quercus", "Tilia"], soilPreference: "Neutre a alcalí", substrate: "Calcari o ric en bases", moisture: "Fresca", altitude: [300, 1600], slope: "Variable", aspect: "Variable", shade: "Baixa a mitjana", landscapePosition: "Vores, camins i sòls remoguts sota planifolis" },
+      soil: { texture: "Franca a francoargilosa", reaction: "Neutra a alcalina", phRange: [6.5, 8.5], substrate: "Calcari o ric en bases", organicMatter: "Moderada", drainage: "Bo", waterRetention: "Mitjana", depth: "Mitjana", humus: "Mull o sòl de parc", evidence: "limited" },
+      climate: { temperatureRange: [10, 21], nightPreference: "Fresca a suau", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana", rainfall: "Pluges de primavera i principi d’estiu", drought: "Desfavorable", heat: "La calor seca és desfavorable", frost: "Molt desfavorable", wind: "Dessecant", snow: "No rellevant" },
+      rainfall: { preferredAccumulation: "Pluges primaverals que mantinguin fresc el sòl", fruitingDelay: "Dies a setmanes amb temperatures suaus", priorMoisture: "Important", temperatureAfterRain: "Suau", interruption: "Sequera, calor o vent sec", uncertainty: "La cartografia urbana i els sòls remoguts són incomplets; la identificació d’Inosperma sol requerir microscòpia." },
+      seasonality: season({ abr: "possible", mai: "peak", jun: "good", jul: "possible", oct: "possible" }),
+      regions: ["prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Planifolis i parcs sobre sòls calcaris", "10–21 °C a la primavera", "No consumir Inosperma", "L’enrogiment pot aparèixer tard"]
+  }),
+  profile({
+    speciesId: "clitocybe-rivulosa",
+    identity: {
+      commonName: "Candeleta de vorada",
+      alternateNames: ["clitocibe blanquinosa", "candeleta de prat"],
+      scientificName: "Collybia rivulosa",
+      family: "Clitocybaceae",
+      genus: "Collybia",
+      edibility: "dangerously_toxic",
+      identificationDifficulty: "Molt alta",
+      typicalSize: "Barret d’1–6 cm",
+      shortDescription: "Bolet blanc de prats amb làmines decurrents, tòxic per muscarina i fàcil de barrejar amb cama-secs."
+    },
+    morphology: {
+      cap: "Convex i després aplanat o deprimit, blanc a crema, amb una pruïna superficial que es clivella en cercles o zones concèntriques.",
+      hymenium: "Làmines blanques o crema, nombroses, estretes i lleugerament decurrents.",
+      stem: "Prim, blanc, fibril·lós, sense anell i menys tenaç que el del cama-sec.",
+      flesh: "Blanca, prima i flexible.",
+      colour: "Blanc, crema i ocre molt pàl·lid.",
+      smell: "Farinosa o poc definida.",
+      texture: "Prima i flexible, amb peu relativament fràgil.",
+      typicalAppearance: "Petits embuts blanquinosos en arcs o rotllanes entre l’herba.",
+      keyFeatures: ["Barret blanquinós zonat", "Làmines denses i decurrents", "Peu sense anell", "Creixement en prats"],
+      variation: "La pluja pot eliminar la pruïna i revelar tons crema o rosats; una rotllana no identifica l’espècie."
+    },
+    similarSpecies: [
+      { scientificName: "Marasmius oreades", commonName: "Camasec", mainDifferences: "Té làmines molt espaiades, un peu tenaç que es doblega abans de trencar-se i barret ocre higròfan.", edibility: "edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura.", warning: true },
+      { scientificName: "Clitocybe dealbata", commonName: "Clitocibe emblanquinada", mainDifferences: "És extremadament semblant i sovint tractada dins el mateix grup; també conté muscarina.", edibility: "dangerously_toxic", toxicity: "Pot provocar una intoxicació colinèrgica greu.", warning: true }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Prats", "Pastures", "Vores de camí", "Clarianes"], treeAssociations: [], hosts: [], soilPreference: "Àcid a alcalí", substrate: "Herba i restes vegetals", moisture: "Mitjana després de pluja", altitude: [0, 1900], slope: "Pla a suau", aspect: "Variable", shade: "Baixa", landscapePosition: "Espais herbosos oberts, sovint en arcs o rotllanes" },
+      soil: { texture: "Franca a francoarenosa", reaction: "Àcida a alcalina", phRange: [5, 8.5], substrate: "Prat, pastura o gespa", organicMatter: "Moderada", drainage: "Bo", waterRetention: "Baixa a mitjana", depth: "Variable", humus: "Herbaci", evidence: "limited" },
+      climate: { temperatureRange: [8, 21], nightPreference: "Fresca a suau", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana", rainfall: "Episodis de primavera i tardor", drought: "Interromp la fructificació", heat: "La calor seca és desfavorable", frost: "Desfavorable", wind: "Dessecant", snow: "No rellevant" },
+      rainfall: { preferredAccumulation: "Rehidratació regular de l’horitzó superficial del prat", fruitingDelay: "Pocs dies a setmanes després de pluja", priorMoisture: "Moderadament important", temperatureAfterRain: "Fresca a suau", interruption: "Sol intens, vent sec, sequera o gelada", uncertainty: "El reg i la gestió de les gespes poden crear fructificacions fora del patró climàtic natural." },
+      seasonality: season({ abr: "possible", mai: "moderate", jun: "possible", jul: "possible", ago: "possible", set: "good", oct: "peak", nov: "good", des: "possible" }),
+      regions: ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
+    },
+    idealConditions: ["Prats i gespes humits després de pluja", "8–21 °C", "Revisar tots els cama-secs d’una collita", "La muscarina no s’elimina amb la cocció"]
+  }),
+  profile({
+    speciesId: "paxillus-involutus",
+    identity: {
+      commonName: "Paxil·le tòxic",
+      alternateNames: ["paxil·le involut", "paxil·le de marge cargolat"],
+      scientificName: "Paxillus involutus",
+      family: "Paxillaceae",
+      genus: "Paxillus",
+      edibility: "dangerously_toxic",
+      identificationDifficulty: "Alta",
+      typicalSize: "Barret de 5–25 cm",
+      shortDescription: "Bolet bru de marge fortament cargolat que pot desencadenar una hemòlisi immunitària greu, fins i tot després de consums previs."
+    },
+    morphology: {
+      cap: "Convex i després deprimit o en embut, bru ocraci a oliva, vellutat de jove, amb el marge gruixut i molt involut.",
+      hymenium: "Làmines groc ocraci, decurrents, ramificades i fàcilment separables; s’enfosqueixen fortament al tacte.",
+      stem: "Curt, cilíndric o afuat, ocre i tacant-se de bru, sense anell.",
+      flesh: "Groguenca, tova i enfosquint-se al tall o a la pressió.",
+      colour: "Ocre, oliva, bru i groc brut.",
+      smell: "Fúngica o lleugerament àcida.",
+      texture: "Carnosa de jove i flonja amb l’edat.",
+      typicalAppearance: "Bolet bru deprimit de làmines decurrents que es taquen, sota bedolls, pins o altres arbres.",
+      keyFeatures: ["Marge fortament involut", "Làmines decurrents separables", "Enfosquiment al tacte", "Absència de làtex"],
+      variation: "El marge es desplega amb l’edat i els exemplars secs poden perdre el tacte vellutat; la toxicitat no depèn de l’aspecte."
+    },
+    similarSpecies: [
+      { scientificName: "Lactarius deliciosus", commonName: "Pinetell", mainDifferences: "Té color taronja, cercles concèntrics i segrega làtex color pastanaga quan es tallen les làmines.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda quan la identificació és segura.", warning: true },
+      { scientificName: "Tapinella atrotomentosa", commonName: "Paxil·le vellutat", mainDifferences: "Creix sobre fusta de coníferes i presenta un peu lateral gruixut cobert de vellut fosc.", edibility: "inedible", toxicity: "No recomanat per la duresa i l’amargor." }
+    ],
+    ecologicalConfig: {
+      habitat: { forestTypes: ["Boscos de planifolis", "Boscos de coníferes", "Boscos humits"], treeAssociations: ["Betula pendula", "Pinus sylvestris", "Fagus sylvatica", "Quercus"], hosts: ["Betula", "Pinus", "Fagus", "Quercus"], soilPreference: "Àcid a neutre", substrate: "Silícic, humífer o torbós", moisture: "Fresca a humida", altitude: [100, 2100], slope: "Variable", aspect: "Fresca", shade: "Mitjana", landscapePosition: "Boscos, vores, torberes i sòls alterats sota arbres hoste" },
+      soil: { texture: "Arenosa a franca o torbosa", reaction: "Àcida a neutra", phRange: [3.5, 7], substrate: "Silícic, humífer o torbós", organicMatter: "Moderada a alta", drainage: "Variable", waterRetention: "Mitjana a alta", depth: "Variable", humus: "Mull àcid o torba", evidence: "limited" },
+      climate: { temperatureRange: [7, 18], nightPreference: "Fresca", relativeHumidity: "Alta", soilMoisture: "Mitjana a alta", rainfall: "Pluges regulars d’estiu i tardor", drought: "Molt desfavorable", heat: "Desfavorable", frost: "Atura la fructificació", wind: "Dessecant", snow: "Fora del pic" },
+      rainfall: { preferredAccumulation: "Humitat sostinguda del sòl forestal", fruitingDelay: "Dies a setmanes després de pluges regulars", priorMoisture: "Molt important", temperatureAfterRain: "Fresca", interruption: "Sequera, calor o gelada", uncertainty: "L’espècie ocupa hàbitats amplis i alterats; el mapa no informa de la sensibilització immunitària individual." },
+      seasonality: season({ jun: "possible", jul: "moderate", ago: "good", set: "good", oct: "peak", nov: "moderate" }),
+      regions: ["pirineus", "prepirineus", "catalunya-central", "serralades-prelitorals", "emporda", "montseny", "muntanyes-interiors"]
+    },
+    idealConditions: ["Boscos àcids i humits", "7–18 °C amb pluges regulars", "No consumir encara que s’hagi menjat abans", "La reacció hemolítica pot ser sobtada i greu"]
   })
 );
 
@@ -612,9 +1360,23 @@ export function getFeaturedSeasonalSpecies(date = new Date(), limit = 3) {
 }
 
 export const speciesById = Object.fromEntries(speciesProfiles.map((item) => [item.speciesId, item]));
-const speciesByScientificName = new Map(
-  speciesProfiles.map((item) => [item.identity.scientificName.toLocaleLowerCase("la"), item]),
-);
+const scientificNameAliases: Record<string, string> = {
+  "Agrocybe aegerita": "cyclocybe-cylindracea",
+  "Agrocybe cylindracea": "cyclocybe-cylindracea",
+  "Cantharellus lutescens": "craterellus-lutescens",
+  "Clitocybe rivulosa": "clitocybe-rivulosa",
+  "Entoloma lividum": "entoloma-sinuatum",
+  "Galerina unicolor": "galerina-marginata",
+  "Inocybe erubescens": "inocybe-erubescens",
+  "Inocybe patouillardii": "inocybe-erubescens",
+};
+const speciesByScientificName = new Map<string, SpeciesProfile>([
+  ...speciesProfiles.map((item) => [item.identity.scientificName.toLocaleLowerCase("la"), item] as const),
+  ...Object.entries(scientificNameAliases).flatMap(([scientificName, speciesId]) => {
+    const item = speciesById[speciesId];
+    return item ? [[scientificName.toLocaleLowerCase("la"), item] as const] : [];
+  }),
+]);
 const catalanSpeciesCollator = new Intl.Collator("ca", { sensitivity: "base" });
 export const speciesAlphabetical = [...speciesProfiles].sort((left, right) =>
   catalanSpeciesCollator.compare(left.identity.commonName, right.identity.commonName)

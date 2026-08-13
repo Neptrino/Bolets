@@ -21,6 +21,12 @@ describe("curated species-location pages", () => {
     expect(paths).toContain("/zones/montseny/viladrau/camagrocs");
     expect(paths).toContain("/zones/montseny/viladrau/ous-de-reig");
     expect(paths).toContain("/zones/bergueda/rasos-de-peguera/fredolics");
+    expect(paths).toContain("/zones/ports/horta-de-sant-joan/rovellons");
+    expect(paths).toContain("/zones/ports/horta-de-sant-joan/pinetells");
+    expect(paths).toContain("/zones/ripolles/camprodon/rovellons");
+    expect(paths).toContain("/zones/ripolles/camprodon/pinetells");
+    expect(paths).toContain("/zones/cerdanya/bellver-de-cerdanya/rovellons");
+    expect(paths).toContain("/zones/cerdanya/bellver-de-cerdanya/pinetells");
     expect(placePath(getPlace("ripolles", "camprodon")!)).toBe("/zones/ripolles/camprodon");
     expect(paths.every((path) => /^\/zones\/[a-z-]+\/[a-z-]+\/[a-z-]+$/.test(path))).toBe(true);
   });
@@ -41,6 +47,17 @@ describe("curated species-location pages", () => {
     for (const page of berguedaPinetellPages) {
       expect(page.titlePhrase).toContain("Pinetells (rovellons)");
       expect(page.searchName).toContain("rovellons");
+    }
+  });
+
+  it("publishes a local guide for the true rovelló profile", () => {
+    for (const [areaSlug, placeSlug] of [
+      ["ports", "horta-de-sant-joan"],
+      ["ripolles", "camprodon"],
+      ["cerdanya", "bellver-de-cerdanya"],
+    ] as const) {
+      const rovelloPage = getLocationPage(areaSlug, placeSlug, "rovellons");
+      expect(rovelloPage?.speciesId, `${areaSlug}/${placeSlug}`).toBe("lactarius-sanguifluus");
     }
   });
 

@@ -36,7 +36,7 @@ describe("prediction score history", () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       void input;
       return Response.json({
-        cellId: "epsg25831:250:1:1",
+        cellId: "epsg25831:2500:1:1",
         regionId: "pirineus",
         snapshots: [{
           observedAt: "2026-10-10T12:00:00Z",
@@ -57,7 +57,8 @@ describe("prediction score history", () => {
       soilCompatibility: 100,
     };
     const timeline = await getPredictionCellHistory("boletus-edulis", {
-      cellId: "epsg25831:250:1:1",
+      cellId: "epsg25831:2500:1:1",
+      gridSizeM: 2500,
       regionId: "pirineus",
       values: {
         ...habitatValues,
@@ -82,6 +83,7 @@ describe("prediction score history", () => {
     expect(timeline.observed[0].score).toBeGreaterThan(50);
     const historyUrl = new URL(String(fetchMock.mock.calls[0]?.[0]));
     expect(historyUrl.searchParams.get("historyVersion")).toBe(PREDICTION_CACHE_VERSION);
+    expect(historyUrl.searchParams.get("resolution")).toBe("2500");
   });
 
   it("keeps five future scores separate from observations and tapers horizon confidence", async () => {
@@ -130,6 +132,7 @@ describe("prediction score history", () => {
 
     const timeline = await getPredictionCellHistory("boletus-edulis", {
       cellId: "epsg25831:250:1:1",
+      gridSizeM: 250,
       regionId: "pirineus",
       values: {
         altitudeM: 1200,
@@ -170,6 +173,7 @@ describe("prediction score history", () => {
     })));
     const incomplete = await getPredictionCellHistory("boletus-edulis", {
       cellId: "epsg25831:250:1:1",
+      gridSizeM: 250,
       regionId: "pirineus",
       values: {
         altitudeM: 1200,
@@ -205,6 +209,7 @@ describe("prediction score history", () => {
 
     const timeline = await getPredictionCellHistory("boletus-edulis", {
       cellId: "epsg25831:250:1:1",
+      gridSizeM: 250,
       regionId: "pirineus",
       values: { altitudeM: 1200, forestCompatibility: 100, soilCompatibility: 100 },
     });
@@ -235,6 +240,7 @@ describe("prediction score history", () => {
 
     const timeline = await getPredictionCellHistory("boletus-edulis", {
       cellId: "epsg25831:250:1:1",
+      gridSizeM: 250,
       regionId: "pirineus",
       values: { altitudeM: 1200, forestCompatibility: 100, soilCompatibility: 100 },
     });

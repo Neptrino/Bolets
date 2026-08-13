@@ -3,13 +3,14 @@
 import { useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
 import { SpeciesCard } from "@/components/species-card";
-import type { Month, SpeciesProfile } from "@/src/lib/types";
+import type { SpeciesCardProfile } from "@/src/lib/species-card-profile";
+import type { Month } from "@/src/lib/types";
 
 export function SpeciesDirectory({
   species,
   currentMonth,
 }: {
-  species: SpeciesProfile[];
+  species: SpeciesCardProfile[];
   currentMonth: Month;
 }) {
   const [query, setQuery] = useState("");

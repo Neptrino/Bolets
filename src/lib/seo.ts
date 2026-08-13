@@ -10,7 +10,7 @@ export function absoluteUrl(path = "/") {
   return new URL(path, SITE_URL).toString();
 }
 
-export function speciesPath(species: SpeciesProfile) {
+export function speciesPath(species: Pick<SpeciesProfile, "speciesId">) {
   return `/bolets/${species.speciesId}`;
 }
 

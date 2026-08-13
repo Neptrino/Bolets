@@ -632,7 +632,7 @@ export default function MethodPage() {
               <ShieldCheck size={25} />
               <div>
                 <h3>Una font no hereta la resolució de la cel·la</h3>
-                <p>Una predicció pintada a 250 m pot compartir el mateix punt atmosfèric de 2,5 km i la mateixa humitat del sòl de 9 km amb moltes cel·les veïnes. Guardem resolucions i escales cartogràfiques per separat i exposem camps absents, antiguitat, confiança i versió del model.</p>
+                <p>Una predicció pintada a 250 m pot compartir el mateix punt atmosfèric de 2,5 km i la mateixa humitat del sòl de 9 km amb moltes cel·les veïnes. Guardem resolucions i escales cartogràfiques per separat i exposem camps absents, antiguitat i confiança.</p>
               </div>
             </aside>
           </div>

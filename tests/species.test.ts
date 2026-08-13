@@ -16,16 +16,15 @@ describe("species profiles", () => {
 
     expect(august).toHaveLength(3);
     expect(august.map((species) => species.speciesId)).toEqual([
+      "russula-virescens",
       "boletus-reticulatus",
       "amanita-caesarea",
-      "boletus-pinophilus",
     ]);
     expect(august.every((species) => species.ecologicalConfig.seasonality.ago !== "inactive")).toBe(true);
   });
 
   it("validates every catalogue profile", () => {
-    expect(speciesProfiles).toHaveLength(33);
-    expect(speciesProfiles.length).toBeLessThanOrEqual(33);
+    expect(speciesProfiles).toHaveLength(52);
     expect(() => speciesProfiles.forEach((profile) => speciesProfileSchema.parse(profile))).not.toThrow();
   });
 
@@ -51,7 +50,26 @@ describe("species profiles", () => {
       "tylopilus-felleus",
       "amanita-muscaria",
       "cortinarius-rubellus",
-      "omphalotus-olearius"
+      "omphalotus-olearius",
+      "hygrophorus-marzuolus",
+      "tricholoma-portentosum",
+      "russula-virescens",
+      "cyclocybe-cylindracea",
+      "coprinus-comatus",
+      "suillus-granulatus",
+      "pleurotus-eryngii",
+      "lepiota-brunneoincarnata",
+      "galerina-marginata",
+      "cortinarius-orellanus",
+      "gyromitra-esculenta",
+      "amanita-pantherina",
+      "amanita-virosa",
+      "amanita-verna",
+      "tricholoma-pardinum",
+      "entoloma-sinuatum",
+      "inocybe-erubescens",
+      "clitocybe-rivulosa",
+      "paxillus-involutus",
     ]));
   });
 
@@ -66,8 +84,14 @@ describe("species profiles", () => {
   });
 
   it("keeps the two commonly confused Lactarius names distinct", () => {
-    expect(speciesProfiles.find((profile) => profile.speciesId === "lactarius-deliciosus")?.identity.commonName).toBe("Pinetell");
-    expect(speciesProfiles.find((profile) => profile.speciesId === "lactarius-sanguifluus")?.identity.commonName).toBe("Rovelló");
+    const pinetell = speciesProfiles.find((profile) => profile.speciesId === "lactarius-deliciosus")!;
+    const rovello = speciesProfiles.find((profile) => profile.speciesId === "lactarius-sanguifluus")!;
+
+    expect(pinetell.identity.commonName).toBe("Pinetell");
+    expect(rovello.identity.commonName).toBe("Rovelló");
+    expect(pinetell.ecologicalConfig.regions).toContain("pirineus");
+    expect(rovello.ecologicalConfig.regions).toContain("pirineus");
+    expect(rovello.ecologicalConfig.habitat.treeAssociations).toContain("Pinus sylvestris");
   });
 
   it("keeps alternate names limited to Catalan vernacular names", () => {
@@ -87,6 +111,12 @@ describe("species profiles", () => {
     );
     expect(getSpeciesByScientificName("  boletus EDULIS ")?.speciesId).toBe(
       "boletus-edulis",
+    );
+    expect(getSpeciesByScientificName("Inocybe erubescens")?.speciesId).toBe(
+      "inocybe-erubescens",
+    );
+    expect(getSpeciesByScientificName("Clitocybe rivulosa")?.speciesId).toBe(
+      "clitocybe-rivulosa",
     );
     expect(getSpeciesByScientificName("Species not in catalogue")).toBeUndefined();
   });

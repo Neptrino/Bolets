@@ -7,7 +7,7 @@ export function CulinaryRating({
   status,
   compact = false,
 }: {
-  profile: CulinaryProfile;
+  profile: Pick<CulinaryProfile, "kind" | "rating" | "ratingLabel">;
   status: EdibilityStatus;
   compact?: boolean;
 }) {

@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const routeGroups = {
-  stacked: ["/bolets", "/compare", "/compare/rovello-vs-pinetell", "/zones"],
+  stacked: ["/bolets", "/compare", "/compare/rovello-vs-pinetell", "/zones", "/guies"],
   split: [
     "/bolets-comestibles",
     "/bolets-verinosos",
@@ -19,6 +19,7 @@ const routeGroups = {
 
 const viewports = [
   { name: "desktop", width: 1280, height: 900 },
+  { name: "tablet", width: 800, height: 900 },
   { name: "mobile", width: 390, height: 844 },
 ] as const;
 

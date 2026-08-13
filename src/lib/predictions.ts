@@ -30,7 +30,7 @@ import type {
 
 export async function getPredictionCellHistory(
   speciesId: string,
-  cell: Pick<PredictionCell, "cellId" | "regionId" | "values">,
+  cell: Pick<PredictionCell, "cellId" | "gridSizeM" | "regionId" | "values">,
 ): Promise<PredictionCellTimeline> {
   const species = getSpecies(speciesId);
   if (!species) throw new Error("Unknown species");
@@ -40,6 +40,7 @@ export async function getPredictionCellHistory(
   const query = new URLSearchParams({
     mode: "history",
     cell: cell.cellId,
+    resolution: String(cell.gridSizeM),
     days: "7",
     historyVersion: PREDICTION_CACHE_VERSION,
   });
@@ -195,6 +196,7 @@ export async function getPredictionCells(
   gridSizeM: SpatialGridSizeM = 250,
   compact = false,
   includeOccurrence = !compact,
+  scoreOnly = compact,
 ) {
   const species = getSpecies(speciesId);
   if (!species) throw new Error("Unknown species");
@@ -219,10 +221,10 @@ export async function getPredictionCells(
     query.set("phMin", String(phRange[0]));
     query.set("phMax", String(phRange[1]));
   }
-  if (compact) {
+  if (scoreOnly) {
     query.set("view", "score");
-    // Keep optimized map responses cacheable, but bypass older cached payloads
-    // whenever their field contract changes.
+    // Keep optimized scoring responses cacheable, but bypass older cached
+    // payloads whenever their field contract changes.
     query.set("viewVersion", PREDICTION_CACHE_VERSION);
   }
   const environmentRequest = fetch(`${process.env.SUPABASE_URL}/functions/v1/read-spatial-environment?${query}`, {
@@ -483,7 +485,11 @@ export async function getRegionalPredictionSummary(
     10000,
     false,
     false,
+    true,
   );
+  if (result.truncated) {
+    throw new Error(`Regional prediction response was truncated for ${speciesId} in ${regionId}`);
+  }
   return summariseRegionalPredictions(
     species,
     regionId,

@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { speciesProfiles } from "@/data/species";
 
 function latestHabitatReaderMigration() {
   const migrationDirectory = join(process.cwd(), "supabase", "migrations");
@@ -129,5 +130,27 @@ describe("potential habitat database reader", () => {
     expect(source).toContain("profile.complete");
     expect(source).toContain("build_coarse_species_habitat_cache");
     expect(source).not.toContain("(250, 1)");
+  });
+
+  it("keeps enough bounded coarse-cache slots for the expanded catalogue", () => {
+    const source = readFileSync(
+      join(
+        process.cwd(),
+        "supabase",
+        "migrations",
+        "20260813140000_expand_coarse_habitat_profile_capacity.sql",
+      ),
+      "utf8",
+    );
+    const profileCapacity = Number(
+      source.match(/profile_count > (\d+)/)?.[1],
+    );
+
+    expect(source).toContain("check (slot between 1 and 64)");
+    expect(source).toContain(
+      "create or replace function public.build_coarse_species_habitat_cache",
+    );
+    expect(profileCapacity).toBe(64);
+    expect(profileCapacity).toBeGreaterThanOrEqual(speciesProfiles.length);
   });
 });

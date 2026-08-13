@@ -4,14 +4,15 @@ import { ArrowRight, Mountain, Trees } from "lucide-react";
 import { CulinaryRating } from "@/components/culinary-rating";
 import { SeasonIndicator } from "@/components/season-indicator";
 import { speciesPath } from "@/src/lib/seo";
-import type { Month, SpeciesProfile } from "@/src/lib/types";
+import type { SpeciesCardProfile } from "@/src/lib/species-card-profile";
+import type { Month } from "@/src/lib/types";
 
 export function SpeciesCard({
   species,
   index = 0,
   currentMonth,
 }: {
-  species: SpeciesProfile;
+  species: SpeciesCardProfile;
   index?: number;
   currentMonth?: Month;
 }) {

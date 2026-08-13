@@ -70,8 +70,31 @@ describe("potential habitat", () => {
   });
 
   it("derives land-cover gates for every configured species", () => {
+    const supportedTerms = new Set([
+      "pinedes",
+      "boscos de coniferes",
+      "fagedes",
+      "rouredes",
+      "boscos de planifolis",
+      "alzinars",
+      "suredes",
+      "boscos d esclerofil les",
+      "matollars",
+      "clarianes",
+      "vores de bosc",
+      "pinedes obertes",
+      "prats",
+      "pastures",
+      "gespes",
+      "vores de cami",
+      "bosc de ribera",
+      "boscos humits",
+    ]);
+
     for (const species of speciesProfiles) {
-      expect(habitatForestTerms(species), species.speciesId).not.toHaveLength(0);
+      const terms = habitatForestTerms(species);
+      expect(terms, species.speciesId).not.toHaveLength(0);
+      expect(terms.some((term) => supportedTerms.has(term)), species.speciesId).toBe(true);
     }
   });
 

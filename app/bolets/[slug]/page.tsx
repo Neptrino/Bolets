@@ -55,6 +55,7 @@ import {
   speciesImage,
   speciesPath,
 } from "@/src/lib/seo";
+import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
 import type { Month, RegionId, SeasonalActivity } from "@/src/lib/types";
 
 const sections = ["Identificació", "Cuina", "Ecologia", "Distribució"];
@@ -168,7 +169,7 @@ export default async function SpeciesPage({
   const canonicalUrl = `${SITE_URL}${speciesPath(species)}`;
   const image = speciesImage(species);
   const localGuides = locationPagesForSpecies(species.speciesId);
-  const isRovelloProfile = ["lactarius-sanguifluus", "lactarius-deliciosus"].includes(species.speciesId);
+  const territoryGuide = territoryGuideForSpecies(species.speciesId);
 
   return (
     <section className="species-page compact-species-page">
@@ -307,17 +308,17 @@ export default async function SpeciesPage({
         </div>
       </div>
 
-      {(isRovelloProfile || localGuides.length > 0) && (
+      {(territoryGuide || localGuides.length > 0) && (
         <section className="page-width species-local-guides" aria-labelledby="local-guides-title">
           <div>
             <p className="eyebrow"><MapPinned size={15} /> Guies territorials</p>
             <h2 id="local-guides-title">Aquesta espècie, llegida des del lloc.</h2>
           </div>
           <div className="species-local-guide-links">
-            {isRovelloProfile && (
-              <Link href="/zones/rovellons" className="species-territory-hub-link">
+            {territoryGuide && (
+              <Link href={territoryGuide.path} className="species-territory-hub-link">
                 <span>Guia de Catalunya</span>
-                <strong>On trobar rovellons: zones i temporada</strong>
+                <strong>{territoryGuide.profileLinkTitle}</strong>
                 <ArrowUpRight size={17} />
               </Link>
             )}

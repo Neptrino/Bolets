@@ -74,13 +74,15 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
       </section>
 
       <nav className="season-year" aria-label="Calendari anual de la temporada de bolets">
+        {/* Next 16 retains the overview canonical during a soft navigation to
+            the dynamic month page. A document navigation keeps one canonical. */}
         {SEASON_MONTHS.map((item) => {
           const count = speciesInSeason(item.key).length;
           const isSelected = item.key === month;
           const isCurrentMonth = item.key === currentMonth;
           const speciesLabel = count === 1 ? "espècie" : "espècies";
           return (
-            <Link
+            <a
               aria-current={isSelected ? (overview ? "date" : "page") : undefined}
               aria-label={`Temporada de bolets ${monthWithPreposition(item.key)}: ${count} ${speciesLabel}${isCurrentMonth ? ", mes actual" : ""}`}
               className={isSelected ? "is-selected" : undefined}
@@ -90,7 +92,7 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
               <span>{item.shortLabel}</span>
               <strong>{count}</strong>
               <small>{speciesLabel}</small>
-            </Link>
+            </a>
           );
         })}
       </nav>

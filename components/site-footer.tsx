@@ -25,6 +25,8 @@ export function SiteFooter() {
         </p>
         <nav className="site-footer-links" aria-label="Guies i informació editorial">
           <Link href="/bolets-avui">Bolets avui</Link>
+          <Link href="/zones">Zones</Link>
+          <Link href="/guies">Guies locals</Link>
           <CurrentSeasonGuideLink guides={seasonalFooterGuides} initialMonth={initialMonth} />
           <Link href="/quan-surten-els-bolets-despres-de-ploure">Després de ploure</Link>
           <Link href="/equip-editorial">Equip editorial</Link>

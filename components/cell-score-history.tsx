@@ -111,12 +111,12 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
   const requestBody = JSON.stringify({
     speciesId,
     cellId: cell.cellId,
+    gridSizeM: cell.gridSizeM,
     regionId: cell.regionId,
     values: cell.values,
   });
 
   useEffect(() => {
-    if (cell.gridSizeM !== 250) return;
     const controller = new AbortController();
     fetch(`/api/predictions/history?v=${encodeURIComponent(PREDICTION_CACHE_VERSION)}`, {
       method: "POST",
@@ -235,10 +235,6 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     observer.observe(host);
     return () => { observer.disconnect(); chart.destroy(); };
   }, [state]);
-
-  if (cell.gridSizeM !== 250) {
-    return <section className="cell-score-history"><p>Apropa el mapa fins a la graella de 250 m per veure l’evolució exacta d’aquesta cel·la.</p></section>;
-  }
 
   if (state.kind === "loading") {
     return <section className="cell-score-history" aria-busy="true"><p>Carregant l’evolució i la projecció…</p></section>;

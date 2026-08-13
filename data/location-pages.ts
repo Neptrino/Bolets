@@ -86,6 +86,17 @@ export const areaProfiles: AreaProfile[] = [
     landscape: "L’orientació est-oest de la vall crea contrastos entre solells, obagues i boscos de muntanya. Bellver permet llegir la transició entre el fons de vall i els vessants del Cadí-Moixeró.",
     source: { title: "Visit Pirineus — Cerdanya", url: "https://visitpirineus.com/en/destinations/cerdanya" },
   },
+  {
+    slug: "ports",
+    name: "Ports",
+    nameWithArticle: "els Ports",
+    prepositionalName: "als Ports",
+    typeLabel: "massís",
+    regionId: "ports",
+    description: "Massís mediterrani de relleu calcari i fort gradient altitudinal, amb pinedes de pi blanc, pinassa i pi roig entre barrancs, cingles i sectors forestals.",
+    landscape: "El canvi de cota separa les pinedes mediterrànies de les formacions montanes. A l’entorn d’Horta de Sant Joan, el tipus de pi, la reacció del sòl i la persistència de la humitat permeten distingir l’hàbitat del rovelló del del pinetell.",
+    source: { title: "Parc Natural dels Ports — ambients", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/ports/el-parc/patrimoni-natural-i-cultural/ambients/" },
+  },
 ];
 
 export const placeProfiles: PlaceProfile[] = [
@@ -143,6 +154,12 @@ export const placeProfiles: PlaceProfile[] = [
     landscape: "Les pinedes montanes i els boscos de coníferes poden encaixar amb els ceps de pi, especialment en orientacions fresques i sòls àcids que mantenen humitat.",
     source: { title: "Visit Pirineus — Cerdanya", url: "https://visitpirineus.com/en/destinations/cerdanya" },
   },
+  {
+    areaSlug: "ports", slug: "horta-de-sant-joan", name: "Horta de Sant Joan", nameWithArticle: "Horta de Sant Joan", prepositionalName: "a Horta de Sant Joan", typeLabel: "municipi",
+    description: "Municipi de la Terra Alta als peus dels Ports, amb accés a un paisatge de pinedes mediterrànies, pinasses, cingleres calcàries i un gradient de cota molt marcat.",
+    landscape: "Les pinedes de pi blanc de les cotes baixes i les de pinassa dels sectors més alts ofereixen contextos diferents per als lactaris. El substrat i la humitat efectiva són imprescindibles per separar compatibilitat ecològica de simple presència de pins.",
+    source: { title: "Parc Natural dels Ports — Horta de Sant Joan", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/ports/gaudeix-del-parc/guia-de-visita/pobles/" },
+  },
 ];
 
 export const speciesLocationPages: SpeciesLocationPage[] = [
@@ -157,6 +174,18 @@ export const speciesLocationPages: SpeciesLocationPage[] = [
     introduction: "Les fagedes, rouredes i pinedes humides de l’entorn de Camprodon poden coincidir amb l’ecologia del rossinyol. La guia descriu hàbitat potencial i no confirma presència ni fructificació actual.",
     habitatNote: "Els vessants frescos i les obagues amb sòl àcid, humus ben format i humitat sostinguda són els ambients més compatibles. El drenatge ha d’evitar l’entollament sense deixar assecar la capa superficial.",
     seasonNote: "La finestra general va de final d’estiu a novembre, amb un pic habitual a l’octubre. Les pluges regulars i les nits fresques afavoreixen la resposta; la calor o el vent sec la poden interrompre.",
+  },
+  {
+    areaSlug: "ripolles", placeSlug: "camprodon", speciesSlug: "rovellons", speciesId: "lactarius-sanguifluus", searchName: "rovellons", titlePhrase: "Rovellons a Camprodon",
+    introduction: "Els boscos de l’entorn de Camprodon poden contenir pinedes compatibles amb el rovelló vinós, sobretot als sectors montans més temperats. Aquesta lectura ecològica no confirma presència ni assenyala cap indret de recol·lecció.",
+    habitatNote: "El rovelló necessita pins i encaixa millor en pinedes obertes sobre sòls neutres o calcaris, ben drenats i amb humitat moderada. La cota i el substrat limiten molt més l’hàbitat potencial que la simple presència de bosc.",
+    seasonNote: "La tardor concentra la finestra principal, amb més potencial a l’octubre i novembre. Cal pluja efectiva seguida de temperatures suaus; el fred de muntanya, el vent sec o una nova sequera poden escurçar la resposta.",
+  },
+  {
+    areaSlug: "ripolles", placeSlug: "camprodon", speciesSlug: "pinetells", speciesId: "lactarius-deliciosus", searchName: "pinetells i rovellons", titlePhrase: "Pinetells (rovellons) a Camprodon",
+    introduction: "A Camprodon, el nom popular rovelló també pot designar el pinetell de làtex taronja. Les pinedes montanes poden oferir hàbitat compatible, però aquesta guia no confirma exemplars ni revela localitzacions sensibles.",
+    habitatNote: "El pinetell s’associa als pins i prefereix pinassa humida sobre sòls d’àcids a neutres, frescos i ben drenats. Les obagues i els marges protegits poden conservar millor l’aigua, sempre que no quedin entollats.",
+    seasonNote: "La finestra general va de setembre a novembre i acostuma a culminar a l’octubre. La pinassa ha de mantenir humitat durant dies; el vent, la sequera sobtada o les primeres gelades poden aturar el desenvolupament.",
   },
   {
     areaSlug: "ripolles", placeSlug: "setcases", speciesSlug: "ceps-de-pi", speciesId: "boletus-pinophilus", searchName: "ceps de pi", titlePhrase: "Ceps de pi a Setcases",
@@ -289,6 +318,30 @@ export const speciesLocationPages: SpeciesLocationPage[] = [
     introduction: "Els vessants forestals de Bellver de Cerdanya poden coincidir amb l’ecologia del cep en pinedes, fagedes o boscos mixtos. La pàgina descriu potencial i no assenyala punts de presència.",
     habitatNote: "Els sectors frescos amb sòl àcid o descarbonatat, humitat sostinguda i bon drenatge són els més compatibles. A la Cerdanya, el contrast entre obaga, solell i cota modifica ràpidament les condicions.",
     seasonNote: "El potencial principal s’estén de final d’estiu a novembre, habitualment amb màxim a l’octubre. El vent de la vall i les gelades primerenques poden interrompre la resposta malgrat la pluja recent.",
+  },
+  {
+    areaSlug: "cerdanya", placeSlug: "bellver-de-cerdanya", speciesSlug: "rovellons", speciesId: "lactarius-sanguifluus", searchName: "rovellons", titlePhrase: "Rovellons a Bellver de Cerdanya",
+    introduction: "Les pinedes dels vessants baixos i mitjans de Bellver de Cerdanya poden coincidir amb l’ecologia del rovelló vinós quan el substrat també és compatible. La guia descriu potencial i no confirma presència actual.",
+    habitatNote: "El rovelló encaixa millor sota pins en sectors temperats, ben drenats i de sòl neutre o calcari. A la Cerdanya, el contrast entre cota, solell i obaga fa que una pineda aparentment semblant pugui oferir condicions molt diferents.",
+    seasonNote: "La tardor és la finestra principal, sobretot a l’octubre i novembre abans de les gelades persistents. La pluja ha d’humitejar realment el sòl; el vent de la vall i el fred sobtat poden interrompre la resposta.",
+  },
+  {
+    areaSlug: "cerdanya", placeSlug: "bellver-de-cerdanya", speciesSlug: "pinetells", speciesId: "lactarius-deliciosus", searchName: "pinetells i rovellons", titlePhrase: "Pinetells (rovellons) a Bellver de Cerdanya",
+    introduction: "A Bellver de Cerdanya, una part de les cerques populars de rovellons correspon al pinetell de làtex taronja. Les pinedes montanes poden ser compatibles, però la guia no garanteix presència ni assenyala punts sensibles.",
+    habitatNote: "El pinetell necessita pins, pinassa humida i sòls d’àcids a neutres amb bon drenatge. Els vessants forestals més frescos poden conservar la humitat, mentre que el solell, el vent i un substrat massa alcalí en redueixen la compatibilitat.",
+    seasonNote: "El potencial se sol concentrar de setembre a novembre, amb un màxim general a l’octubre. La cota pot avançar o retardar la fructificació i les primeres gelades poden tancar la finestra encara que hagi plogut.",
+  },
+  {
+    areaSlug: "ports", placeSlug: "horta-de-sant-joan", speciesSlug: "rovellons", speciesId: "lactarius-sanguifluus", searchName: "rovellons", titlePhrase: "Rovellons a Horta de Sant Joan",
+    introduction: "Les pinedes mediterrànies de l’entorn d’Horta de Sant Joan poden coincidir amb l’ecologia del rovelló vinós. Aquesta guia descriu hàbitat potencial agregat: no confirma presència actual ni assenyala cap punt de recol·lecció.",
+    habitatNote: "El rovelló s’associa als pins i encaixa millor en pinedes mediterrànies sobre sòls neutres o calcaris, ben drenats i amb humitat moderada. Als Ports, la cota, l’orientació i el tipus de pineda poden canviar aquesta compatibilitat en poca distància.",
+    seasonNote: "La tardor concentra la finestra principal, especialment entre octubre i novembre. Cal una pluja efectiva que humitegi el sòl seguida de temperatures suaus; el vent sec, la calor persistent o una nova sequera poden aturar la resposta.",
+  },
+  {
+    areaSlug: "ports", placeSlug: "horta-de-sant-joan", speciesSlug: "pinetells", speciesId: "lactarius-deliciosus", searchName: "pinetells", titlePhrase: "Pinetells a Horta de Sant Joan",
+    introduction: "El mosaic de pinedes que envolta Horta de Sant Joan també pot contenir sectors compatibles amb el pinetell, que popularment sovint s’inclou sota el nom de rovelló. La guia no garanteix presència ni revela localitzacions sensibles.",
+    habitatNote: "El pinetell necessita pins, pinassa humida, bon drenatge i sòls d’àcids a neutres. En un massís calcari, la presència d’una pineda no basta: només els sectors on el sòl i la humitat encaixen amb aquest perfil són potencialment compatibles.",
+    seasonNote: "La finestra general va de setembre a novembre i acostuma a culminar a l’octubre. Les pluges han de mantenir la pinassa humida durant dies; el vent, una represa de la sequera o una baixada brusca de temperatura poden interrompre el desenvolupament.",
   },
 ];
 

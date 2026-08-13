@@ -1,7 +1,18 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const predictionMocks = vi.hoisted(() => ({
+  getPredictionCells: vi.fn(),
+}));
+
+vi.mock("@/src/lib/predictions", () => predictionMocks);
+
 import { GET } from "@/app/api/predictions/route";
 
 describe("prediction API bounds", () => {
+  beforeEach(() => {
+    predictionMocks.getPredictionCells.mockReset();
+  });
+
   it("rejects requests with a missing coordinate", async () => {
     const response = await GET(new Request("http://localhost/api/predictions?species=boletus-edulis&south=40.48&east=3.32&north=42.92"));
 
@@ -20,5 +31,28 @@ describe("prediction API bounds", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({ error: "Invalid map resolution" });
+  });
+
+  it("does not expose internal model versions", async () => {
+    predictionMocks.getPredictionCells.mockResolvedValue({
+      cells: [{
+        cellId: "epsg25831:5000:90:936",
+        score: 72,
+        modelVersion: "internal-model-version",
+      }],
+      truncated: false,
+    });
+
+    const response = await GET(new Request(
+      "http://localhost/api/predictions?species=boletus-edulis&west=1&south=41&east=1.1&north=41.1&resolution=5000",
+    ));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.cells[0]).toMatchObject({
+      cellId: "epsg25831:5000:90:936",
+      score: 72,
+    });
+    expect(body.cells[0]).not.toHaveProperty("modelVersion");
   });
 });

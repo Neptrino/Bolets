@@ -7,6 +7,7 @@ import { isSpatialGridSize } from "@/src/lib/map-grid";
 import { mapBoundsFitResolution, parseMapQuery } from "@/src/lib/map-query";
 import { toPotentialHabitatMapCell } from "@/src/lib/habitat-map";
 import { jsonResponse } from "@/src/lib/json-response";
+import { withoutInternalModelVersion } from "@/src/lib/public-response";
 
 export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
@@ -47,7 +48,7 @@ export async function GET(request: Request) {
           cells: result.cells.map(toPotentialHabitatMapCell),
         }
       : result;
-    return jsonResponse(request, response, {
+    return jsonResponse(request, withoutInternalModelVersion(response), {
       headers: {
         "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
       }
