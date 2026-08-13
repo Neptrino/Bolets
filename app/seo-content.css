@@ -178,12 +178,15 @@
 .species-official-safety p { margin: 0; font-size: .93rem; line-height: 1.45; }
 .species-official-safety a { color: inherit; font-weight: 800; }
 
-@media (max-width: 640px) {
+@media (max-width: 760px) {
   .editorial-summary,
   .editorial-meta { grid-template-columns: 1fr; }
   .editorial-meta div { padding: .55rem 0 0; border-top: 1px solid rgba(55, 56, 52, .13); border-left: 0; }
   .editorial-sources { grid-template-columns: 1fr; }
   .editorial-sources > span { padding-top: 0; }
+}
+
+@media (max-width: 640px) {
   .species-official-safety { grid-template-columns: 1fr; gap: .55rem; }
   .home-search-guides,
   .catalogue-habitats ol,
