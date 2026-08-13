@@ -35,6 +35,62 @@ const localMediaPath = z
     "Expected a root-relative WebP media path",
   );
 
+export const geologicalSubstrateEvidenceSchema = z.object({
+  class: z.enum([
+    "silicic",
+    "calcareous",
+    "mixed",
+    "unconsolidated",
+    "unknown",
+  ]),
+  dominantCoverage: z.number().min(0).max(1),
+  mappedCoverage: z.number().min(0).max(1),
+  sourceId: z.literal("icgc-geology-50k-v3"),
+  mapScaleDenominator: z.literal(50000),
+  dominantUnitCode: z.string().trim().min(1).max(40).optional(),
+  dominantUnitDescription: z.string().trim().min(1).max(1000).optional(),
+  dominantUnitCoverage: z.number().min(0).max(1).optional(),
+  aggregationBaseM: z.literal(250).optional(),
+}).superRefine((evidence, context) => {
+  if (evidence.dominantCoverage > evidence.mappedCoverage) {
+    context.addIssue({
+      code: "custom",
+      path: ["dominantCoverage"],
+      message: "Dominant coverage cannot exceed mapped coverage",
+    });
+  }
+
+  if (evidence.dominantUnitCoverage !== undefined &&
+      evidence.dominantUnitCoverage > evidence.mappedCoverage) {
+    context.addIssue({
+      code: "custom",
+      path: ["dominantUnitCoverage"],
+      message: "Dominant unit coverage cannot exceed mapped coverage",
+    });
+  }
+
+  if ((evidence.dominantUnitCode === undefined) !==
+      (evidence.dominantUnitCoverage === undefined)) {
+    context.addIssue({
+      code: "custom",
+      path: evidence.dominantUnitCode === undefined
+        ? ["dominantUnitCode"]
+        : ["dominantUnitCoverage"],
+      message: "Dominant unit code and coverage must be provided together",
+    });
+  }
+
+  if (evidence.dominantUnitDescription !== undefined &&
+      (evidence.dominantUnitCode === undefined ||
+        evidence.dominantUnitCoverage === undefined)) {
+    context.addIssue({
+      code: "custom",
+      path: ["dominantUnitDescription"],
+      message: "Dominant unit description requires unit code and coverage",
+    });
+  }
+});
+
 const sourceReference = z.object({
   id: z.string(),
   title: z.string(),
@@ -155,6 +211,7 @@ export const conditionSnapshotSchema = z.object({
     frostHours10d: z.number().int().min(0).optional(),
     relativeHumidity: z.number().min(0).max(100).optional(), relativeHumidityMin24h: z.number().min(0).max(100).optional(),
     relativeHumidityAvg24h: z.number().min(0).max(100).optional(), relativeHumidityMax24h: z.number().min(0).max(100).optional(),
+    relativeHumidityAvg7d: z.number().min(0).max(100).optional(),
     soilMoisture: z.number().min(0).max(1).optional(), soilMoistureMin24h: z.number().min(0).max(1).optional(),
     soilMoistureAvg24h: z.number().min(0).max(1).optional(), soilMoistureMax24h: z.number().min(0).max(1).optional(),
     soilMoistureMin7d: z.number().min(0).max(1).optional(), soilMoistureAvg7d: z.number().min(0).max(1).optional(),
@@ -168,7 +225,8 @@ export const conditionSnapshotSchema = z.object({
     habitatAltitudeSuitability: z.number().min(0).max(100).optional(),
     forestCompatibility: z.number().min(0).max(100).optional(), soilCompatibility: z.number().min(0).max(100).optional(),
     forestTypes: z.array(z.string()).optional(), treeSpecies: z.array(z.string()).optional(), soilPh: z.number().min(0).max(14).optional(),
-    soilTexture: z.string().optional(), soilSubstrate: z.string().optional()
+    soilTexture: z.string().optional(), soilSubstrate: z.string().optional(),
+    geologicalSubstrate: geologicalSubstrateEvidenceSchema.optional()
   })
 });
 
@@ -188,6 +246,33 @@ export const spatialEnvironmentResponseSchema = z.object({
   })),
   truncated: z.boolean(),
   bounds: z.object({ west: z.number(), south: z.number(), east: z.number(), north: z.number() })
+});
+
+export const spatialEnvironmentHistorySchema = z.object({
+  cellId: z.string(),
+  regionId: region,
+  forecast: z.object({
+    generatedAt: z.string().datetime({ offset: true }),
+    snapshots: z.array(z.object({
+      validAt: z.string().datetime({ offset: true }),
+      horizonHours: z.union([
+        z.literal(24), z.literal(48), z.literal(72), z.literal(96), z.literal(120),
+      ]),
+      source: z.array(z.string()),
+      sourceResolutionM: z.number().int().positive(),
+      confidence,
+      unavailableFields: z.array(z.string()),
+      values: conditionSnapshotSchema.shape.values,
+    })).length(5),
+  }).nullable().optional(),
+  snapshots: z.array(z.object({
+    observedAt: z.string().datetime({ offset: true }),
+    source: z.array(z.string()),
+    sourceResolutionM: z.number().int().positive(),
+    confidence,
+    unavailableFields: z.array(z.string()),
+    values: conditionSnapshotSchema.shape.values,
+  })),
 });
 
 export const spatialHabitatResponseSchema = z.object({

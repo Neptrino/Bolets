@@ -6,7 +6,7 @@ const environmentalFields = [
   "temperatureC", "temperatureMin24hC", "temperatureAvg24hC", "temperatureMax24hC",
   "temperatureMin7dC", "frostHours7d",
   "temperatureMin10dC", "temperatureAvg10dC", "temperatureMax10dC", "frostHours10d",
-  "relativeHumidity", "relativeHumidityMin24h", "relativeHumidityAvg24h", "relativeHumidityMax24h",
+  "relativeHumidity", "relativeHumidityMin24h", "relativeHumidityAvg24h", "relativeHumidityMax24h", "relativeHumidityAvg7d",
   "soilMoisture", "soilMoistureMin24h", "soilMoistureAvg24h", "soilMoistureMax24h",
   "soilMoistureMin7d", "soilMoistureAvg7d", "soilMoistureMax7d", "soilMoistureTrend7d",
   "rainfall3dMm", "rainfall7dMm", "rainfallPrevious23dMm", "rainfall30dMm", "drySpellDays",

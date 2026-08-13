@@ -3257,10 +3257,12 @@ body {
   margin-top: 10px;
 }
 .condition-list article {
+  position: relative;
   display: flex;
   grid-column: span 2;
   min-height: 204px;
   padding: 19px;
+  overflow: hidden;
   flex-direction: column;
 }
 .condition-list article:nth-child(-n + 2) {
@@ -3308,12 +3310,13 @@ body {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
   /* Keep the stat grids on the same vertical rhythm: cards with two rows of
-     measurements should not pull their summaries above adjacent one-row cards. */
+  measurements should not pull their summaries above adjacent one-row cards. */
   margin: 0;
-  background: rgba(242, 235, 213, 0.13);
+  /* Leave an unfilled final grid slot visually part of the parent card. */
+  background: transparent;
 }
 .condition-stats div {
-  position: relative;
+  position: static;
   min-width: 0;
   padding: 10px 8px;
   background: rgba(34, 31, 29, 0.26);
@@ -3352,13 +3355,16 @@ body {
 .condition-stat-tooltip {
   position: absolute;
   z-index: 4;
-  bottom: calc(100% + 8px);
-  left: 0;
-  width: min(270px, calc(100vw - 48px));
+  right: auto;
+  bottom: 16px;
+  left: 16px;
+  width: min(280px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  overflow: auto;
   padding: 11px 12px;
   border: 1px solid rgba(242, 167, 102, 0.55);
   border-radius: 3px;
-  background: #302b28;
+  background: #49423e;
   box-shadow: 0 10px 24px rgba(15, 12, 10, 0.34);
   color: #f4eadc;
   font-size: 13px;
@@ -3379,6 +3385,20 @@ body {
   transform: translateY(0);
   visibility: visible;
 }
+.condition-stats > div:nth-child(3n + 2) .condition-stat-tooltip {
+  right: auto;
+  left: 50%;
+  transform: translate(-50%, 3px);
+}
+.condition-stats > div:nth-child(3n + 2) .condition-stat-help:hover + .condition-stat-tooltip,
+.condition-stats > div:nth-child(3n + 2) .condition-stat-help:focus + .condition-stat-tooltip,
+.condition-stats > div:nth-child(3n + 2) .condition-stat-help:focus-visible + .condition-stat-tooltip {
+  transform: translate(-50%, 0);
+}
+.condition-stats > div:nth-child(3n) .condition-stat-tooltip {
+  right: 16px;
+  left: auto;
+}
 .condition-stats dd {
   margin: 1px 0 0;
   color: #fff5e7;
@@ -3388,6 +3408,177 @@ body {
   line-height: 1.2;
   white-space: nowrap;
 }
+.cell-score-history {
+  margin: 1.25rem 0;
+  padding: 1.2rem 1.3rem;
+  border: 1px solid var(--line, #d9ddd4);
+  border-radius: 1rem;
+  background: var(--surface, #fff);
+}
+
+.cell-score-history > p {
+  margin: 0;
+  color: var(--ink-soft, #5f675d);
+}
+
+.cell-score-history-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cell-score-history-heading .eyebrow {
+  margin: 0 0 .15rem;
+}
+
+.cell-score-history-heading h4 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.cell-score-history-heading > span {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .84rem;
+  font-weight: 650;
+  text-align: right;
+}
+
+.cell-score-history-heading > span.improving { color: #28734e; }
+.cell-score-history-heading > span.worsening { color: #a24832; }
+.cell-score-history-heading > span.steady { color: var(--ink-soft, #5f675d); }
+
+.cell-score-history-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem 1rem;
+  margin-top: .9rem;
+  color: var(--ink-soft, #5f675d);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cell-score-history-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+.cell-score-history-legend i {
+  display: inline-block;
+  width: 1.6rem;
+  height: 0;
+  border-top: 3px solid #28734e;
+}
+
+.cell-score-history-legend i.projected {
+  border-top-color: #a85e31;
+  border-top-style: dashed;
+}
+
+.cell-score-history-legend i.boundary {
+  width: 0;
+  height: .9rem;
+  border-top: 0;
+  border-left: 1px dashed rgba(117, 91, 67, .65);
+}
+
+.cell-score-history-chart {
+  display: block;
+  width: 100%;
+  min-height: 260px;
+  margin-top: .8rem;
+  padding: .45rem 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--line, #d9ddd4) 70%, transparent);
+  overflow: hidden;
+}
+
+.cell-score-history-chart .uplot {
+  font-family: inherit;
+  color: #657064;
+}
+
+.forecast-confidence-list {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1px;
+  margin: .65rem 0 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, #a85e31 20%, var(--line, #d9ddd4));
+  border-radius: .65rem;
+  background: color-mix(in srgb, #a85e31 20%, var(--line, #d9ddd4));
+  list-style: none;
+}
+
+.forecast-confidence-list li {
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+  gap: .35rem;
+  padding: .34rem .5rem;
+  background: color-mix(in srgb, #f6e5d7 40%, var(--surface, #fff));
+}
+
+.forecast-confidence-list > li > span,
+.forecast-confidence-list > li > small {
+  color: var(--ink-soft, #5f675d);
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.forecast-confidence-list > li > span {
+  white-space: nowrap;
+}
+
+.forecast-confidence-list strong {
+  color: #75401f;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.forecast-confidence-list small {
+  min-width: 0;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.cell-score-history .cell-score-history-note,
+.cell-score-history .cell-score-forecast-unavailable {
+  margin-top: .75rem;
+  color: var(--ink-soft, #5f675d);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cell-score-history .cell-score-forecast-unavailable {
+  padding: .6rem .7rem;
+  border-left: 3px solid var(--line, #d9ddd4);
+  background: color-mix(in srgb, var(--line, #d9ddd4) 16%, transparent);
+}
+
+@media (max-width: 560px) {
+  .cell-score-history-heading { flex-direction: column; }
+  .cell-score-history-heading > span { text-align: left; }
+  .forecast-confidence-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .forecast-confidence-list li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .05rem .35rem;
+  }
+  .forecast-confidence-list small {
+    grid-column: 1 / -1;
+    margin-left: 0;
+  }
+  .forecast-confidence-list li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+
 .cell-static-factors {
   margin-top: 10px;
   padding: 18px 19px 19px;
@@ -3441,6 +3632,13 @@ body {
   line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.cell-static-factor-list dd.geological-unit-description {
+  display: -webkit-box;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 .cell-static-factor-list small {
   display: block;
@@ -3869,19 +4067,33 @@ body {
   border-radius: 13px;
   background: rgba(255, 253, 247, 0.68);
 }
-.season-year > div {
+.season-year > a {
   display: grid;
   min-height: 82px;
   place-items: center;
   align-content: center;
   border-right: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease;
 }
-.season-year > div:last-child {
+.season-year > a:hover {
+  background: rgba(197, 84, 39, 0.09);
+}
+.season-year > a:focus-visible {
+  z-index: 1;
+  outline: 3px solid var(--apricot);
+  outline-offset: -3px;
+}
+.season-year > a:last-child {
   border-right: 0;
 }
-.season-year > div.is-current {
+.season-year > a.is-selected {
   background: var(--clay);
   color: var(--paper);
+}
+.season-year > a.is-selected:hover {
+  background: var(--clay);
 }
 .season-year span,
 .season-year small {
@@ -3894,7 +4106,7 @@ body {
 .season-year small {
   color: var(--muted);
 }
-.season-year .is-current small {
+.season-year .is-selected small {
   color: rgba(255, 255, 255, 0.76);
 }
 .season-explainer {
@@ -3912,10 +4124,10 @@ body {
   .season-year {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
-  .season-year > div:nth-child(6) {
+  .season-year > a:nth-child(6) {
     border-right: 0;
   }
-  .season-year > div:nth-child(-n + 6) {
+  .season-year > a:nth-child(-n + 6) {
     border-bottom: 1px solid var(--line);
   }
 }
@@ -3949,14 +4161,14 @@ body {
   .season-year {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .season-year > div:nth-child(n) {
+  .season-year > a:nth-child(n) {
     border-right: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
   }
-  .season-year > div:nth-child(3n) {
+  .season-year > a:nth-child(3n) {
     border-right: 0;
   }
-  .season-year > div:nth-last-child(-n + 3) {
+  .season-year > a:nth-last-child(-n + 3) {
     border-bottom: 0;
   }
 }
@@ -10226,19 +10438,6 @@ body {
   height: 44px;
   margin: -14px -14px -14px 0;
 }
-.condition-stats > div:nth-child(3n + 2) .condition-stat-tooltip {
-  left: 50%;
-  transform: translate(-50%, 3px);
-}
-.condition-stats > div:nth-child(3n + 2) .condition-stat-help:hover + .condition-stat-tooltip,
-.condition-stats > div:nth-child(3n + 2) .condition-stat-help:focus + .condition-stat-tooltip,
-.condition-stats > div:nth-child(3n + 2) .condition-stat-help:focus-visible + .condition-stat-tooltip {
-  transform: translate(-50%, 0);
-}
-.condition-stats > div:nth-child(3n) .condition-stat-tooltip {
-  right: 0;
-  left: auto;
-}
 
 @media (max-width: 900px) {
   .map-page-heading {
@@ -10416,7 +10615,7 @@ body {
   }
   .condition-stats > div:nth-child(n) .condition-stat-tooltip {
     right: auto;
-    left: 0;
+    left: 16px;
     transform: translateY(3px);
   }
   .condition-stats > div:nth-child(n) .condition-stat-help:hover + .condition-stat-tooltip,
@@ -10425,7 +10624,7 @@ body {
     transform: translateY(0);
   }
   .condition-stats > div:nth-child(even) .condition-stat-tooltip {
-    right: 0;
+    right: 16px;
     left: auto;
   }
 }

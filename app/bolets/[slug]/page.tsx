@@ -31,6 +31,7 @@ import {
   Wind,
 } from "lucide-react";
 import { CulinaryRating } from "@/components/culinary-rating";
+import { EditorialAttribution } from "@/components/editorial-attribution";
 import { EdibilityBadge } from "@/components/edibility-badge";
 import { JsonLd } from "@/components/json-ld";
 import { LazyHabitatMap } from "@/components/lazy-habitat-map";
@@ -41,6 +42,7 @@ import {
   getSpeciesByScientificName,
   speciesProfiles,
 } from "@/data/species";
+import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { isRegionId, regionLabels } from "@/data/regions";
 import {
   locationPagePath,
@@ -184,6 +186,7 @@ export default async function SpeciesPage({
               image,
               isPartOf: { "@id": `${SITE_URL}/#website` },
               publisher: { "@id": `${SITE_URL}/#organization` },
+              ...editorialArticleFields(`species:${species.speciesId}`),
               about: {
                 "@type": "Taxon",
                 name: species.identity.scientificName,
@@ -212,8 +215,8 @@ export default async function SpeciesPage({
                 {
                   "@type": "ListItem",
                   position: 2,
-                  name: "Espècies",
-                  item: `${SITE_URL}/species`,
+                  name: "Bolets",
+                  item: `${SITE_URL}/bolets`,
                 },
                 {
                   "@type": "ListItem",
@@ -228,9 +231,9 @@ export default async function SpeciesPage({
       />
       <div className="species-hero">
         <div className="page-width">
-          <Link href="/species" className="back-link">
+          <Link href="/bolets" className="back-link">
             <ArrowLeft size={15} />
-            Totes les espècies
+            Tots els bolets
           </Link>
           <div className="species-hero-grid">
             <div className="species-hero-copy">
@@ -444,7 +447,7 @@ export default async function SpeciesPage({
                     return (
                       <Link
                         key={item.scientificName}
-                        href={`/species/${relatedSpecies.speciesId}`}
+                        href={speciesPath(relatedSpecies)}
                         className="similar-card-link"
                         aria-label={`Veure la fitxa de ${item.commonName}`}
                       >
@@ -577,6 +580,16 @@ export default async function SpeciesPage({
                   </ul>
                 </div>
               </div>
+
+              {(species.culinaryProfile.kind === "safety" || hasToxicLookalike) && (
+                <aside className="species-official-safety">
+                  <div className="species-official-safety-title">
+                    <ShieldAlert size={18} aria-hidden="true" />
+                    <strong>Identificació i urgències</strong>
+                  </div>
+                  <p>No consumiu aquest bolet sense una identificació experta. Davant una ingestió sospitosa, consulteu la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a> i truqueu al <a href="tel:061">061 Salut Respon</a>.</p>
+                </aside>
+              )}
 
             </div>
           </section>
@@ -815,6 +828,10 @@ export default async function SpeciesPage({
               </div>
             </div>
           </section>
+          <EditorialAttribution
+            contentId={`species:${species.speciesId}`}
+            sources={[...species.references, officialSafetySource]}
+          />
         </div>
       </div>
     </section>

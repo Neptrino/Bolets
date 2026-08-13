@@ -1,4 +1,5 @@
 import { createAdminClient, finiteNumber, json } from "../_shared/pipeline.ts";
+import { geologicalSubstrateEvidence } from "../_shared/geology.ts";
 import { mergeHabitatScoringValues } from "../_shared/habitat-scoring-values.ts";
 import { scoringValues } from "../_shared/scoring-values.ts";
 
@@ -26,6 +27,122 @@ function bbox(searchParams: URLSearchParams) {
   if (!(west! < east! && south! < north!)) return null;
   if (east! - west! > 4 || north! - south! > 3) return null;
   return { west: west!, south: south!, east: east!, north: north! };
+}
+
+async function readCellForecast(
+  supabase: ReturnType<typeof createAdminClient>,
+  pointId: string,
+) {
+  const expectedHorizons = [24, 48, 72, 96, 120];
+  const { data: candidates, error } = await supabase
+    .from("weather_grid_forecasts")
+    .select("snapshot_date,generated_at,valid_at,horizon_hours,sources,source_resolution_m,confidence,unavailable_fields,values")
+    .eq("point_id", pointId)
+    .order("snapshot_date", { ascending: false })
+    .order("generated_at", { ascending: false })
+    .order("horizon_hours", { ascending: true })
+    .limit(15);
+  if (error) throw error;
+  type ForecastRow = NonNullable<typeof candidates>[number];
+  const groups = new Map<string, ForecastRow[]>();
+  for (const candidate of candidates ?? []) {
+    const key = `${candidate.snapshot_date}:${candidate.generated_at}`;
+    groups.set(key, [...(groups.get(key) ?? []), candidate]);
+  }
+  const rows = [...groups.values()].find((group) =>
+    group.length === expectedHorizons.length &&
+    expectedHorizons.every((horizon) => group.some((row) => row.horizon_hours === horizon)) &&
+    group.every((row) => row.unavailable_fields.length === 0)
+  );
+  if (!rows) return null;
+  rows.sort((left, right) => left.horizon_hours - right.horizon_hours);
+  return {
+    generatedAt: rows[0].generated_at,
+    snapshots: rows.map((row) => ({
+      validAt: row.valid_at,
+      horizonHours: row.horizon_hours,
+      source: row.sources,
+      sourceResolutionM: row.source_resolution_m,
+      confidence: row.confidence,
+      unavailableFields: row.unavailable_fields,
+      values: row.values,
+    })),
+  };
+}
+
+async function readCellHistory(
+  supabase: ReturnType<typeof createAdminClient>,
+  cellId: string,
+  days: number,
+) {
+  const { data: cell, error: cellError } = await supabase
+    .from("spatial_cells")
+    .select("cell_id,region_id,weather_point_id")
+    .eq("cell_id", cellId)
+    .eq("static_verified", true)
+    .maybeSingle();
+  if (cellError) throw cellError;
+  if (!cell?.weather_point_id) return null;
+
+  const { data: atmospherePoint, error: atmospherePointError } = await supabase
+    .from("weather_grid_points")
+    .select("soil_point_id")
+    .eq("point_id", cell.weather_point_id)
+    .maybeSingle();
+  if (atmospherePointError) throw atmospherePointError;
+
+  const atmosphereQuery = supabase
+    .from("weather_grid_snapshots")
+    .select("snapshot_date,observed_at,sources,source_resolution_m,confidence,unavailable_fields,values")
+    .eq("point_id", cell.weather_point_id)
+    .order("snapshot_date", { ascending: false })
+    .limit(days);
+  const soilQuery = atmospherePoint?.soil_point_id
+    ? supabase
+      .from("weather_grid_snapshots")
+      .select("snapshot_date,observed_at,sources,source_resolution_m,confidence,unavailable_fields,values")
+      .eq("point_id", atmospherePoint.soil_point_id)
+      .order("snapshot_date", { ascending: false })
+      .limit(days)
+    : Promise.resolve({ data: [], error: null });
+  const forecastQuery = atmospherePoint?.soil_point_id
+    ? readCellForecast(supabase, atmospherePoint.soil_point_id).catch((error: unknown) => {
+      console.error("Unable to read spatial forecast; returning observed history only", {
+        pointId: atmospherePoint.soil_point_id,
+        message: error instanceof Error ? error.message : "Unknown forecast read error",
+      });
+      return null;
+    })
+    : Promise.resolve(null);
+  const [
+    { data: atmosphereSnapshots, error: atmosphereError },
+    { data: soilSnapshots, error: soilError },
+    forecast,
+  ] = await Promise.all([atmosphereQuery, soilQuery, forecastQuery]);
+  if (atmosphereError) throw atmosphereError;
+  if (soilError) throw soilError;
+  const soilByDate = new Map((soilSnapshots ?? []).map((snapshot) => [snapshot.snapshot_date, snapshot]));
+
+  return {
+    cellId: cell.cell_id,
+    regionId: cell.region_id,
+    forecast,
+    snapshots: (atmosphereSnapshots ?? []).reverse().map((atmosphere) => {
+      const soil = soilByDate.get(atmosphere.snapshot_date);
+      return {
+        observedAt: soil && soil.observed_at > atmosphere.observed_at ? soil.observed_at : atmosphere.observed_at,
+        source: [...(soil?.sources ?? []), ...atmosphere.sources],
+        sourceResolutionM: Math.max(atmosphere.source_resolution_m, soil?.source_resolution_m ?? 0),
+        confidence: atmosphere.confidence === "limited" || soil?.confidence === "limited"
+          ? "limited"
+          : atmosphere.confidence === "unknown" || soil?.confidence === "unknown"
+            ? "unknown"
+            : atmosphere.confidence,
+        unavailableFields: [...atmosphere.unavailable_fields, ...(soil?.unavailable_fields ?? [])],
+        values: { ...(soil?.values ?? {}), ...atmosphere.values },
+      };
+    }),
+  };
 }
 
 type HabitatRequest = {
@@ -187,6 +304,22 @@ async function readHabitatRowsForBounds(
 Deno.serve(async (request) => {
   if (request.method !== "GET") return json({ error: "Method not allowed" }, 405, { Allow: "GET" });
   const url = new URL(request.url);
+  if (url.searchParams.get("mode") === "history") {
+    const cellId = url.searchParams.get("cell")?.trim();
+    const requestedDays = Number(url.searchParams.get("days") ?? 7);
+    const days = Number.isInteger(requestedDays) ? Math.min(Math.max(requestedDays, 1), 7) : 7;
+    if (!cellId || cellId.length > 160) return json({ error: "Invalid cell history request" }, 400);
+    try {
+      const history = await readCellHistory(createAdminClient(), cellId, days);
+      if (!history) return json({ error: "Cell history not found" }, 404);
+      return json(history, 200, {
+        "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
+      });
+    } catch (error) {
+      console.error("Unable to read spatial environment history", error);
+      return json({ error: "Unable to load spatial environment history" }, 500);
+    }
+  }
   const bounds = bbox(url.searchParams);
   if (!bounds) return json({ error: "Invalid or excessive bounding box" }, 400);
   const requestedLimit = Number(url.searchParams.get("limit") ?? 1000);
@@ -258,11 +391,30 @@ Deno.serve(async (request) => {
     );
     const completeHabitatCoverage = habitatResult?.complete ?? false;
     const scoreOnly = url.searchParams.get("view") === "score";
-    const cells = (data ?? []).map((row: Record<string, unknown>) => {
+    const environmentRows = (data ?? []) as Record<string, unknown>[];
+    const geologyResult = scoreOnly || !environmentRows.length
+      ? null
+      : await supabase.rpc("read_spatial_geology_evidence", {
+          p_cell_ids: environmentRows.map((row) => String(row.cell_id)),
+          p_grid_size_m: resolution,
+        });
+    if (geologyResult?.error) throw geologyResult.error;
+    const geologyByCellId = new Map(
+      ((geologyResult?.data ?? []) as Record<string, unknown>[])
+        .map((row) => [String(row.cell_id), row]),
+    );
+    const cells = environmentRows.map((row) => {
       const baseValues = scoreOnly ? scoringValues(row.values) : row.values;
       let values = baseValues && typeof baseValues === "object" && !Array.isArray(baseValues)
         ? { ...(baseValues as Record<string, unknown>) }
         : {};
+      if (!scoreOnly) {
+        const geology = geologicalSubstrateEvidence(
+          geologyByCellId.get(String(row.cell_id)),
+          resolution,
+        );
+        if (geology) values.geologicalSubstrate = geology;
+      }
       if (includeHabitat) {
         values = mergeHabitatScoringValues(
           values,

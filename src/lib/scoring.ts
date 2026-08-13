@@ -2,6 +2,7 @@ import type { ConditionSnapshot, FactorContribution, SpeciesProfile, Suitability
 import { altitudeSuitabilityScore } from "@/src/lib/altitude";
 import { predictionModelVersion } from "@/src/lib/model-versions";
 import { rainfallSuitability } from "@/src/lib/rainfall";
+import { monthInTimeZone } from "@/src/lib/seasonality";
 
 function rangeScore(value: number | undefined, range: [number, number]) {
   if (value === undefined) return null;
@@ -24,10 +25,22 @@ function moistureScore(value: number | undefined, preference: string) {
   return Math.max(0, Math.min(100, Math.round(score * 100) / 100));
 }
 
-function humidityScore(value: number | undefined) {
+function humidityWindowScore(value: number | undefined) {
   if (value === undefined) return null;
   if (value >= 65 && value <= 90) return 100;
   return Math.max(0, Math.round(100 - Math.abs(value - 75) * 2));
+}
+
+function humidityScore(shortTermValue: number | undefined, sevenDayValue: number | undefined) {
+  const shortTermScore = humidityWindowScore(shortTermValue);
+  if (shortTermScore === null) return null;
+  if (sevenDayValue === undefined || sevenDayValue >= 65) return shortTermScore;
+  const persistenceScore = humidityWindowScore(sevenDayValue);
+  if (persistenceScore === null || persistenceScore >= shortTermScore) return shortTermScore;
+
+  // The latest 24 hours remain the main signal. A persistently drier week can
+  // apply a limited penalty, but an older humid spell must not hide new stress.
+  return Math.round(shortTermScore * 0.75 + persistenceScore * 0.25);
 }
 
 function temperatureScore(species: SpeciesProfile, values: ConditionSnapshot["values"]) {
@@ -48,12 +61,10 @@ function temperatureScore(species: SpeciesProfile, values: ConditionSnapshot["va
   return score;
 }
 
-const monthIds = ["gen", "feb", "mar", "abr", "mai", "jun", "jul", "ago", "set", "oct", "nov", "des"] as const;
-
 function seasonalityScore(species: SpeciesProfile, observedAt: string) {
   const date = new Date(observedAt);
   if (Number.isNaN(date.getTime())) return null;
-  const activity = species.ecologicalConfig.seasonality[monthIds[date.getUTCMonth()]];
+  const activity = species.ecologicalConfig.seasonality[monthInTimeZone(date)];
   return { inactive: 0, possible: 35, moderate: 65, good: 85, peak: 100 }[activity];
 }
 
@@ -152,7 +163,10 @@ export function calculateSuitability(species: SpeciesProfile, snapshot: Conditio
       case "temperature": return temperatureScore(species, values);
       case "altitude": return values.habitatAltitudeSuitability ??
         altitudeScore(values.altitudeM, species.ecologicalConfig.habitat.altitude);
-      case "humidity": return humidityScore(values.relativeHumidityAvg24h ?? values.relativeHumidity);
+      case "humidity": return humidityScore(
+        values.relativeHumidityAvg24h ?? values.relativeHumidity,
+        values.relativeHumidityAvg7d,
+      );
       case "seasonality": return seasonalityScore(species, snapshot.observedAt);
     }
   };

@@ -3,9 +3,11 @@ import Link from "next/link";
 import { ArrowUpRight, ShieldAlert } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { SpeciesCard } from "@/components/species-card";
+import { EditorialAttribution } from "@/components/editorial-attribution";
+import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { toxicSpecies } from "@/src/lib/species-collections";
 import { monthInTimeZone } from "@/src/lib/seasonality";
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
+import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
   title: "Bolets verinosos de Catalunya: identificació i riscos",
@@ -28,10 +30,12 @@ export default function PoisonousMushroomsPage() {
     <div className="intent-page page-width">
       <JsonLd data={{
         "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        name: "Bolets verinosos de Catalunya",
+        "@type": "Article",
+        headline: "Bolets verinosos de Catalunya",
         url: absoluteUrl("/bolets-verinosos"),
         inLanguage: "ca",
+        publisher: { "@id": `${SITE_URL}/#organization` },
+        ...editorialArticleFields("bolets-verinosos"),
         mainEntity: {
           "@type": "ItemList",
           numberOfItems: toxicSpecies.length,
@@ -39,7 +43,7 @@ export default function PoisonousMushroomsPage() {
             "@type": "ListItem",
             position: index + 1,
             name: species.identity.commonName,
-            url: absoluteUrl(`/species/${species.speciesId}`),
+            url: absoluteUrl(speciesPath(species)),
           })),
         },
       }} />
@@ -53,7 +57,7 @@ export default function PoisonousMushroomsPage() {
 
       <aside className="intent-emergency-note">
         <ShieldAlert size={23} aria-hidden="true" />
-        <div><strong>Davant una ingestió sospitosa, actua de seguida.</strong><p>Truca al 061 Salut Respon i conserva restes del bolet. No esperis que apareguin símptomes ni apliquis remeis casolans.</p></div>
+        <div><strong>Davant una ingestió sospitosa, actua de seguida.</strong><p>Segueix la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a>, truca al 061 Salut Respon i conserva restes del bolet. No esperis que apareguin símptomes ni apliquis remeis casolans.</p></div>
       </aside>
 
       <div className="intent-section-heading">
@@ -63,6 +67,7 @@ export default function PoisonousMushroomsPage() {
       <div className="species-grid intent-species-grid">
         {toxicSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} currentMonth={currentMonth} />)}
       </div>
+      <EditorialAttribution contentId="bolets-verinosos" sources={[officialSafetySource, ...toxicSpecies.flatMap((species) => species.references)]} />
     </div>
   );
 }

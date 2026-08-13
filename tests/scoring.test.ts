@@ -376,6 +376,25 @@ describe("suitability scoring", () => {
     expect(result.score).toBe(0);
   });
 
+  it("scores seasonality using the Europe/Madrid month at a UTC boundary", () => {
+    const result = calculateSuitability(getSpecies("boletus-edulis")!, normaliseSnapshot({
+      ...localSnapshots[0],
+      // This is 1 September at midnight in Catalonia.
+      observedAt: "2026-08-31T22:00:00.000Z",
+      stale: false,
+      values: {
+        temperatureAvg10dC: 14,
+        relativeHumidityAvg24h: 75,
+        soilMoistureAvg24h: 0.3,
+        altitudeM: 1000,
+        forestCompatibility: 100,
+        soilCompatibility: 100,
+      },
+    }));
+
+    expect(result.contributions.find((factor) => factor.id === "seasonality")?.score).toBe(85);
+  });
+
   it("caps suitability when current heat and dryness conflict with fruiting", () => {
     const species = getSpecies("boletus-edulis")!;
     const result = calculateSuitability(species, normaliseSnapshot({
@@ -416,6 +435,48 @@ describe("suitability scoring", () => {
 
     expect(result.contributions.find((factor) => factor.id === "humidity")?.score).toBe(40);
     expect(result.score).toBe(53);
+  });
+
+  it("applies a limited persistence penalty after a dry seven-day humidity window", () => {
+    const species = getSpecies("boletus-edulis")!;
+    const result = calculateSuitability(species, normaliseSnapshot({
+      ...localSnapshots[0],
+      observedAt: "2026-10-11T12:00:00.000Z",
+      stale: false,
+      values: {
+        temperatureAvg24hC: 14,
+        relativeHumidityAvg24h: 75,
+        relativeHumidityAvg7d: 45,
+        soilMoistureAvg24h: 0.32,
+        rainfall7dMm: 25,
+        altitudeM: 1200,
+        forestCompatibility: 95,
+        soilCompatibility: 95,
+      },
+    }));
+
+    expect(result.contributions.find((factor) => factor.id === "humidity")?.score).toBe(85);
+  });
+
+  it("does not let an older humid week mask a dry latest day", () => {
+    const species = getSpecies("boletus-edulis")!;
+    const result = calculateSuitability(species, normaliseSnapshot({
+      ...localSnapshots[0],
+      observedAt: "2026-10-11T12:00:00.000Z",
+      stale: false,
+      values: {
+        temperatureAvg24hC: 14,
+        relativeHumidityAvg24h: 45,
+        relativeHumidityAvg7d: 75,
+        soilMoistureAvg24h: 0.32,
+        rainfall7dMm: 25,
+        altitudeM: 1200,
+        forestCompatibility: 95,
+        soilCompatibility: 95,
+      },
+    }));
+
+    expect(result.contributions.find((factor) => factor.id === "humidity")?.score).toBe(40);
   });
 
   it("can fall below 35 as two current stressors become severe", () => {

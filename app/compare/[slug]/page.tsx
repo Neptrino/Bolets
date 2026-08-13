@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRightLeft, ArrowUpRight, CircleAlert } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
+import { EditorialAttribution } from "@/components/editorial-attribution";
+import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { comparisonPages, comparisonPagesBySlug } from "@/data/comparison-pages";
 import { getSpecies } from "@/data/species";
 import { getEdibilityPresentation } from "@/src/lib/edibility-presentation";
 import { SEASON_MONTHS } from "@/src/lib/seasonality";
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
+import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 import type { SpeciesProfile } from "@/src/lib/types";
 
 export function generateStaticParams() {
@@ -21,13 +24,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   return {
     title: page.title,
-    description: `${page.introduction} ${page.decisiveDifference}`,
+    description: page.metaDescription,
     keywords: page.searchTerms,
     alternates: { canonical: `/compare/${page.slug}` },
     openGraph: {
       url: `/compare/${page.slug}`,
       title: page.title,
-      description: page.decisiveDifference,
+      description: page.metaDescription,
       images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
     },
   };
@@ -48,6 +51,8 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
   const left = getSpecies(page.leftSpeciesId);
   const right = getSpecies(page.rightSpeciesId);
   if (!left || !right) notFound();
+  const leftImage = left.media.find((asset) => asset.identificationReference) ?? left.media[0];
+  const rightImage = right.media.find((asset) => asset.identificationReference) ?? right.media[0];
 
   const rows = [
     ["Nom científic", left.identity.scientificName, right.identity.scientificName],
@@ -64,11 +69,13 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
     <div className="comparison-landing page-width">
       <JsonLd data={{
         "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: page.shortTitle,
+        "@type": "Article",
+        headline: page.title,
         url: absoluteUrl(`/compare/${page.slug}`),
         inLanguage: "ca",
-        description: page.introduction,
+        description: page.metaDescription,
+        publisher: { "@id": `${SITE_URL}/#organization` },
+        ...editorialArticleFields(`compare:${page.slug}`),
         about: [
           { "@type": "Thing", name: left.identity.scientificName },
           { "@type": "Thing", name: right.identity.scientificName },
@@ -80,6 +87,17 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
         <h1>{left.identity.commonName} <i>vs</i> {right.identity.commonName.toLocaleLowerCase("ca")}</h1>
         <p>{page.introduction}</p>
       </header>
+
+      <div className="comparison-reference-images" aria-label="Fotografies de referència">
+        {[{ species: left, image: leftImage }, { species: right, image: rightImage }].map((item) => (
+          <figure key={item.species.speciesId}>
+            <div className="comparison-reference-frame">
+              {item.image ? <Image src={item.image.localPath ?? item.image.imageUrl ?? item.image.sourceUrl} alt={item.image.alt} fill sizes="(max-width: 700px) calc(100vw - 48px), 50vw" /> : <span>Sense fotografia de referència verificada</span>}
+            </div>
+            <figcaption><strong>{item.species.identity.commonName}</strong><em>{item.species.identity.scientificName}</em>{item.image && <a href={item.image.sourceUrl} target="_blank" rel="noreferrer">{item.image.attribution}</a>}</figcaption>
+          </figure>
+        ))}
+      </div>
 
       <aside className="comparison-answer">
         <CircleAlert size={22} aria-hidden="true" />
@@ -95,14 +113,15 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
       </section>
 
       <div className="comparison-actions">
-        <Link href={`/species/${left.speciesId}`} className="text-link">Fitxa de {left.identity.commonName} <ArrowUpRight size={16} /></Link>
+        <Link href={speciesPath(left)} className="text-link">Fitxa de {left.identity.commonName} <ArrowUpRight size={16} /></Link>
         <Link href={`/compare?left=${left.speciesId}&right=${right.speciesId}`} className="button moss-button">Obrir el comparador complet <ArrowRightLeft size={16} /></Link>
-        <Link href={`/species/${right.speciesId}`} className="text-link">Fitxa de {right.identity.commonName} <ArrowUpRight size={16} /></Link>
+        <Link href={speciesPath(right)} className="text-link">Fitxa de {right.identity.commonName} <ArrowUpRight size={16} /></Link>
       </div>
 
       <aside className="intent-emergency-note comparison-warning">
         <CircleAlert size={22} /><div><strong>No decideixis el consum amb una taula.</strong><p>La variació natural, l’edat i l’estat del bolet poden alterar-ne l’aspecte. Confirma qualsevol identificació amb una persona experta.</p></div>
       </aside>
+      <EditorialAttribution contentId={`compare:${page.slug}`} sources={[officialSafetySource, ...left.references, ...right.references]} />
     </div>
   );
 }

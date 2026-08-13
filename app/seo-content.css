@@ -1,0 +1,225 @@
+.editorial-panel {
+  display: grid;
+  gap: .85rem;
+  margin: 2.5rem 0 0;
+  padding: 1rem 1.15rem;
+  border: 1px solid rgba(72, 70, 64, .18);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--paper, #f2ebd5) 84%, var(--stone, #96958e));
+  color: var(--ink, #243027);
+}
+
+.editorial-summary { display: grid; grid-template-columns: minmax(15rem, .85fr) minmax(0, 1.15fr); align-items: center; gap: 1.25rem; }
+.editorial-panel-heading { display: flex; align-items: center; gap: .65rem; min-width: 0; }
+.editorial-panel-heading svg { flex: 0 0 auto; color: #526248; }
+.editorial-panel-heading span,
+.editorial-sources > span { display: block; font-size: .75rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.editorial-panel-heading strong { display: block; margin-top: .08rem; line-height: 1.25; }
+.editorial-panel-heading a { color: inherit; text-underline-offset: .2em; }
+.editorial-meta { display: grid; grid-template-columns: minmax(8.5rem, .65fr) minmax(15rem, 1.35fr); gap: 1rem; margin: 0; }
+.editorial-meta div { display: grid; gap: .12rem; padding-left: 1rem; border-left: 1px solid rgba(55, 56, 52, .14); }
+.editorial-meta dt { font-size: .75rem; font-weight: 800; color: #526248; text-transform: uppercase; letter-spacing: .06em; }
+.editorial-meta dd { margin: 0; font-size: .9rem; line-height: 1.35; }
+.editorial-sources { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: .55rem 1rem; padding-top: .75rem; border-top: 1px solid rgba(55, 56, 52, .13); }
+.editorial-sources > span { padding-top: .35rem; white-space: nowrap; }
+.editorial-sources ul { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+.editorial-sources li { display: contents; }
+.editorial-sources a { display: inline-flex; align-items: center; gap: .3rem; padding: .3rem .5rem; border: 1px solid rgba(55, 56, 52, .16); border-radius: 6px; background: rgba(255, 255, 255, .3); color: var(--moss-dark, #263b27); font-size: .8rem; font-weight: 750; line-height: 1.25; text-decoration: none; }
+.editorial-sources a:hover { border-color: rgba(55, 56, 52, .3); background: rgba(255, 255, 255, .52); }
+
+.site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem 1rem; }
+.site-footer-links a { color: inherit; text-underline-offset: .2em; }
+
+.home-search-guides,
+.species-topic-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .85rem;
+}
+
+.home-search-guides { margin-top: 2rem; margin-bottom: 2rem; }
+.home-search-guides a {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: .8rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(47, 65, 42, .18);
+  border-radius: 15px;
+  background: #f6f1e7;
+  color: #263b27;
+  text-decoration: none;
+}
+.home-search-guides span { display: grid; gap: .14rem; }
+.home-search-guides small { color: #5c665b; line-height: 1.35; }
+
+.species-topic-links-primary { margin-bottom: 2rem; }
+.species-season-navigation { margin: 0 0 3.25rem; }
+.species-season-navigation > header { display: flex; justify-content: space-between; gap: 2rem; align-items: end; margin-bottom: 1rem; }
+.species-season-navigation > header h2 { max-width: 35rem; margin: .35rem 0 0; font-size: clamp(1.5rem, 2.8vw, 2.25rem); line-height: 1.08; letter-spacing: -.025em; }
+.species-season-navigation > header > p { max-width: 22rem; margin: 0; color: #5d665c; font-size: .9rem; line-height: 1.5; }
+.species-topic-links-seasons { grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; }
+.species-topic-links-seasons > a { min-height: 92px; }
+
+.seasonal-calendar-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; margin-bottom: .45rem; }
+.seasonal-calendar-controls > span { display: inline-flex; align-items: center; gap: .38rem; white-space: nowrap; }
+.season-guide-switcher { display: grid; grid-template-columns: repeat(4, minmax(4.8rem, 1fr)); overflow: hidden; border: 1px solid rgba(47, 65, 42, .2); border-radius: 9px; background: rgba(255, 253, 247, .54); }
+.season-guide-switcher a { padding: .4rem .62rem; border-right: 1px solid rgba(47, 65, 42, .14); color: #586257; font-size: .7rem; font-weight: 850; line-height: 1.2; text-align: center; text-decoration: none; text-transform: capitalize; transition: background-color 160ms ease, color 160ms ease; }
+.season-guide-switcher a:last-child { border-right: 0; }
+.season-guide-switcher a:hover { background: rgba(47, 65, 42, .07); }
+.season-guide-switcher a:focus-visible { position: relative; z-index: 1; outline: 2px solid #a95831; outline-offset: -3px; }
+.season-guide-switcher a.is-current { background: var(--forest-panel, #304b3c); color: #fff8ea; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08); }
+.seasonal-guide-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 2rem 0 3.2rem; }
+.seasonal-guide-notes article { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .8rem; padding: 1.2rem; border-top: 2px solid #657451; background: color-mix(in srgb, var(--paper, #f2ebd5) 83%, #d9ddd2); }
+.seasonal-guide-notes svg { color: #a95831; }
+.seasonal-guide-notes h2 { margin: 0 0 .35rem; font-size: 1.05rem; }
+.seasonal-guide-notes p { margin: 0; color: #596359; font-size: .9rem; line-height: 1.55; }
+
+.catalogue-habitats {
+  display: grid;
+  grid-template-columns: minmax(16rem, .7fr) minmax(0, 1.3fr);
+  gap: clamp(2rem, 6vw, 5.5rem);
+  align-items: start;
+  margin: 3.25rem 0 3.75rem;
+  padding: 2rem 0;
+  border-top: 1px solid rgba(47, 65, 42, .22);
+  border-bottom: 1px solid rgba(47, 65, 42, .22);
+  color: var(--ink, #243027);
+}
+.catalogue-habitats header { max-width: 24rem; }
+.catalogue-habitats .eyebrow { color: var(--clay, #b7552b); }
+.catalogue-habitats h2 { margin: .6rem 0 .7rem; font-size: clamp(1.65rem, 3vw, 2.45rem); line-height: 1.08; letter-spacing: -.025em; }
+.catalogue-habitats header > p:last-child { max-width: 22rem; margin: 0; color: #5d665c; font-size: .9rem; line-height: 1.55; }
+.catalogue-habitats ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2.25rem; margin: 0; padding: 0; list-style: none; }
+.catalogue-habitats li { display: grid; grid-template-columns: 1.8rem minmax(0, 1fr) auto; gap: .75rem; align-items: center; min-height: 4.35rem; border-top: 1px solid rgba(47, 65, 42, .14); }
+.catalogue-habitat-rank { color: #a66a46; font-family: Georgia, serif; font-size: .76rem; font-style: italic; }
+.catalogue-habitat-name { display: grid; min-width: 0; gap: .48rem; font-size: .98rem; font-weight: 800; line-height: 1.25; }
+.catalogue-habitat-name i { position: relative; display: block; width: 100%; height: 2px; overflow: hidden; background: rgba(47, 65, 42, .1); }
+.catalogue-habitat-name i::after { position: absolute; inset: 0 auto 0 0; width: var(--habitat-strength); background: #657451; content: ""; }
+.catalogue-habitat-count { display: flex; align-items: baseline; gap: .28rem; color: #5d665c; white-space: nowrap; }
+.catalogue-habitat-count strong { color: var(--forest-panel, #304b3c); font-size: 1.25rem; line-height: 1; }
+.catalogue-habitat-count small { font-size: .72rem; font-weight: 750; }
+
+.seo-guide { padding-top: clamp(3rem, 7vw, 6.5rem); padding-bottom: 5rem; }
+.seo-guide-hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(18rem, .8fr); gap: clamp(2rem, 7vw, 6rem); align-items: end; padding-bottom: clamp(2.2rem, 6vw, 4.5rem); }
+.seo-guide-hero .eyebrow { grid-column: 1 / -1; margin-bottom: -1.4rem; }
+.seo-guide-hero h1 { margin: 0; font-size: clamp(3rem, 7vw, 6.4rem); line-height: .94; letter-spacing: -.055em; }
+.seo-guide-hero h1 i { color: #986034; font-weight: 450; }
+.seo-guide-hero > p:last-child { margin: 0; font-size: clamp(1.05rem, 1.7vw, 1.3rem); line-height: 1.65; color: #465148; }
+.seo-guide-grid,
+.rain-factor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 3rem 0; }
+.seo-guide-grid section,
+.rain-factor-grid article { padding: 1.4rem; border-radius: 16px; background: #f4efe5; }
+.seo-guide-grid h2,
+.rain-factor-grid h2 { margin: .8rem 0 .5rem; font-size: 1.3rem; }
+.seo-guide-grid p,
+.rain-factor-grid p { margin: 0; line-height: 1.65; color: #4e594f; }
+.seo-guide-section { max-width: 52rem; margin: 3.2rem 0; }
+.seo-guide-section h2 { margin: 0 0 .65rem; font-size: clamp(1.8rem, 3vw, 2.7rem); }
+.seo-guide-section > p { line-height: 1.7; }
+.seo-guide-section > p:not(.eyebrow) { margin: 0 0 1.25rem; }
+
+.current-overview-method { display: flex; gap: .8rem; align-items: flex-start; margin: 2rem 0; padding: 1rem 1.2rem; border-left: 4px solid #61704d; background: #eef0e6; }
+.current-overview-method p { margin: 0; line-height: 1.6; }
+.current-overview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.current-overview-card { display: flex; flex-direction: column; gap: 1rem; min-height: 25rem; padding: 1.25rem; border: 1px solid rgba(47, 65, 42, .2); border-radius: 18px; background: #f8f4eb; }
+.current-overview-card-heading span { font-size: .72rem; font-weight: 850; text-transform: uppercase; letter-spacing: .08em; color: #65705f; }
+.current-overview-card h2 { margin: .2rem 0 0; font-size: 1.4rem; }
+.current-score { display: flex; align-items: center; gap: .7rem; }
+.current-score > strong { font-size: 3.5rem; line-height: 1; color: #33482e; }
+.current-score span { color: #586257; line-height: 1.35; }
+.current-overview-card dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; margin: 0; }
+.current-overview-card dl div { display: grid; gap: .15rem; }
+.current-overview-card dt { color: #667064; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; }
+.current-overview-card dd { margin: 0; font-weight: 750; overflow-wrap: anywhere; }
+.current-observed { display: flex; align-items: flex-start; gap: .4rem; margin: 0; color: #596359; font-size: .83rem; line-height: 1.45; }
+.current-overview-provenance { display: flex; align-items: flex-start; gap: .45rem; margin: 1rem 0 0; color: #596359; font-size: .83rem; line-height: 1.5; }
+.current-overview-provenance svg { flex: 0 0 auto; margin-top: .2rem; }
+.current-overview-provenance p { margin: 0; }
+.current-unavailable { margin: auto 0; }
+.current-unavailable strong { font-size: 1.25rem; }
+.current-unavailable p { line-height: 1.55; color: #5b645a; }
+.current-overview-card > .text-link { margin-top: auto; }
+
+.spring-safety-note { margin-bottom: 1rem; }
+.spring-lookalikes { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; margin: 0 0 2.5rem; padding: 1.15rem 1.25rem; border: 1px solid rgba(72, 70, 64, .18); border-left: 3px solid #657451; border-radius: 13px; background: color-mix(in srgb, var(--paper, #f2ebd5) 82%, var(--stone, #96958e)); color: var(--ink, #243027); }
+.spring-lookalikes .eyebrow { color: #a34f2b; }
+.spring-lookalikes h2 { margin: .3rem 0 0; font-size: 1.08rem; }
+.spring-lookalikes > div:last-child { display: flex; flex-wrap: wrap; gap: .55rem; }
+.spring-lookalikes a { display: inline-flex; align-items: center; gap: .35rem; padding: .5rem .7rem; border: 1px solid rgba(47, 65, 42, .24); border-radius: 999px; background: rgba(255, 253, 247, .48); color: #30452f; font-weight: 750; text-decoration: none; }
+.spring-lookalikes a:hover { border-color: rgba(47, 65, 42, .42); background: rgba(255, 253, 247, .78); }
+.spring-lookalikes a:focus-visible { outline: 3px solid #c8794d; outline-offset: 2px; }
+.season-related-links { display: flex; flex-wrap: wrap; gap: .65rem 1.2rem; }
+.map-page-guide-links { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .7rem 1.2rem; margin-top: 1rem; }
+.map-page-guide-links a { display: inline-flex; align-items: center; gap: .3rem; color: #31472e; font-weight: 800; }
+
+.rain-factor-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.rain-species-examples { margin-top: 3.5rem; }
+.rain-species-examples > div:first-child { margin-bottom: 1.2rem; }
+.rain-species-examples > article { display: grid; grid-template-columns: minmax(9rem, .65fr) minmax(0, 2fr); gap: 1rem 2rem; padding: 1.25rem 0; border-top: 1px solid rgba(47, 65, 42, .2); }
+.rain-species-examples article > div:first-child { display: grid; align-content: start; gap: .2rem; }
+.rain-species-examples article > div span { font-size: 1.2rem; font-weight: 800; }
+.rain-species-examples article > div em { color: #626b60; }
+.rain-species-examples dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; margin: 0; }
+.rain-species-examples dl div { display: grid; align-content: start; gap: .2rem; }
+.rain-species-examples dt { font-size: .75rem; font-weight: 850; color: #65705f; text-transform: uppercase; letter-spacing: .06em; }
+.rain-species-examples dd { margin: 0; line-height: 1.5; }
+.rain-species-examples article > p { grid-column: 2; margin: 0; padding: .75rem; border-radius: 10px; background: #f3eee4; color: #596258; line-height: 1.55; }
+.rain-species-examples article > a { grid-column: 2; justify-self: start; }
+
+.comparison-reference-images { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 2rem 0; }
+.comparison-reference-images figure { margin: 0; overflow: hidden; border-radius: 17px; background: #eee8dc; }
+.comparison-reference-frame { position: relative; display: grid; place-items: center; min-height: clamp(15rem, 32vw, 25rem); color: #5c665b; }
+.comparison-reference-frame img { object-fit: cover; }
+.comparison-reference-images figcaption { display: grid; gap: .12rem; padding: .85rem 1rem; }
+.comparison-reference-images figcaption em,
+.comparison-reference-images figcaption a { font-size: .8rem; color: #5c665b; }
+.comparison-reference-images figcaption a { margin-top: .25rem; }
+
+.species-card-genus,
+.species-card-facts dt { color: #526248; }
+.species-card-heading em { color: #595f58; }
+
+.species-official-safety { display: grid; grid-template-columns: minmax(12rem, .42fr) minmax(0, 1.58fr); gap: 1rem; align-items: center; margin-top: 1rem; padding: .75rem .9rem; border: 1px solid rgba(184, 92, 72, .48); border-left: 3px solid #b85c48; border-radius: 9px; background: rgba(255, 246, 241, .72); color: #50261e; }
+.species-official-safety-title { display: flex; align-items: center; gap: .55rem; }
+.species-official-safety-title svg { flex: 0 0 auto; width: 18px; height: 18px; color: #a34f3e; }
+.species-official-safety-title strong { line-height: 1.25; }
+.species-official-safety p { margin: 0; font-size: .93rem; line-height: 1.45; }
+.species-official-safety a { color: inherit; font-weight: 800; }
+
+@media (max-width: 640px) {
+  .editorial-summary,
+  .editorial-meta { grid-template-columns: 1fr; }
+  .editorial-meta div { padding: .55rem 0 0; border-top: 1px solid rgba(55, 56, 52, .13); border-left: 0; }
+  .editorial-sources { grid-template-columns: 1fr; }
+  .editorial-sources > span { padding-top: 0; }
+  .species-official-safety { grid-template-columns: 1fr; gap: .55rem; }
+  .home-search-guides,
+  .catalogue-habitats ol,
+  .current-overview-grid,
+  .rain-factor-grid { grid-template-columns: 1fr; }
+  .seo-guide-hero,
+  .seo-guide-grid,
+  .spring-lookalikes,
+  .rain-species-examples > article { grid-template-columns: 1fr; }
+  .seo-guide-hero .eyebrow { margin-bottom: -.5rem; }
+  .rain-species-examples article > p,
+  .rain-species-examples article > a { grid-column: 1; }
+  .rain-species-examples dl { grid-template-columns: 1fr; }
+  .catalogue-habitats { grid-template-columns: 1fr; gap: 1.4rem; padding: 1.5rem 0; }
+  .catalogue-habitats header { max-width: 32rem; }
+  .catalogue-habitats ol { grid-template-columns: 1fr; }
+  .species-season-navigation > header { display: block; }
+  .species-season-navigation > header > p { margin-top: .6rem; }
+  .species-topic-links-primary,
+  .species-topic-links-seasons,
+  .seasonal-guide-notes { grid-template-columns: 1fr; }
+  .seasonal-calendar-controls { display: grid; gap: .65rem; }
+  .season-guide-switcher { width: 100%; border-radius: 9px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .season-guide-switcher a:nth-child(2) { border-right: 0; }
+  .season-guide-switcher a:nth-child(-n + 2) { border-bottom: 1px solid rgba(47, 65, 42, .14); }
+}
+
+@media (min-width: 641px) and (max-width: 980px) {
+  .species-topic-links-seasons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

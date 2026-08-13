@@ -12,8 +12,8 @@ describe("SEO helpers", () => {
   const species = speciesProfiles[0];
 
   it("builds canonical absolute URLs without duplicate slashes", () => {
-    expect(absoluteUrl("/species")).toBe("https://bolets.app/species");
-    expect(speciesPath(species)).toBe(`/species/${species.speciesId}`);
+    expect(absoluteUrl("/bolets")).toBe("https://bolets.app/bolets");
+    expect(speciesPath(species)).toBe(`/bolets/${species.speciesId}`);
   });
 
   it("builds a descriptive species snippet", () => {

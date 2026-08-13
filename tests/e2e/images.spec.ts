@@ -9,14 +9,14 @@ const responsiveImages = [
   },
   {
     name: "species card",
-    path: "/species",
+    path: "/bolets",
     selector: ".species-card-photo",
     sizes:
       "(max-width: 580px) calc(100vw - 48px), (max-width: 1000px) calc(50vw - 37px), (max-width: 1228px) calc(33.333vw - 33px), 377px",
   },
   {
     name: "species hero",
-    path: "/species/boletus-edulis",
+    path: "/bolets/boletus-edulis",
     selector: ".specimen-photo",
     sizes:
       "(max-width: 760px) calc(100vw - 48px), (max-width: 1000px) calc(55vw - 45px), (max-width: 1228px) calc(55vw - 61px), 615px",
@@ -62,7 +62,7 @@ for (const image of responsiveImages) {
 }
 
 test("preloads only the primary above-the-fold hero image", async ({ page }) => {
-  await page.goto("/species/boletus-edulis");
+  await page.goto("/bolets/boletus-edulis");
 
   const photos = page.locator(".specimen-photo");
   await expect(photos).toHaveCount(1);
@@ -81,7 +81,7 @@ test("preloads only the primary above-the-fold hero image", async ({ page }) => 
 });
 
 test("species gallery changes slides and opens a larger view", async ({ page }) => {
-  await page.goto("/species/lactarius-deliciosus");
+  await page.goto("/bolets/lactarius-deliciosus");
 
   const mainImage = page.locator(".species-gallery-stage .specimen-photo");
   const initialSource = await mainImage.getAttribute("src");

@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/json-ld";
 import { SeasonCalendar } from "@/components/season-calendar";
 import { getSpecies } from "@/data/species";
 import { areasBySlug, displaySearchName, getLocationPage, getPlace, locationPagePath, placePath, speciesLocationPages } from "@/data/location-pages";
-import { absoluteUrl, SITE_URL, speciesDescription, speciesImage } from "@/src/lib/seo";
+import { absoluteUrl, SITE_URL, speciesDescription, speciesImage, speciesPath } from "@/src/lib/seo";
 import { SEASON_MONTHS } from "@/src/lib/seasonality";
 
 type Props = { params: Promise<{ place: string; species: string; guide: string }> };
@@ -80,7 +80,7 @@ export default async function SpeciesLocationPage({ params }: Props) {
           <aside className="local-species-aside">
             <div className="local-map-cta"><Map size={22} /><p className="eyebrow light">Condicions actuals</p><h2>Consulta la lectura regional</h2><p>El mapa combina hàbitat compatible i dades ambientals disponibles per a l’àmbit de {location.name}. No assenyala llocs on hi hagi bolets.</p><Link href={`/map?species=${species.speciesId}&region=${area.regionId}`} className="button light-button">Obrir el mapa <ArrowUpRight size={17} /></Link></div>
             <div className="local-safety-card"><ShieldAlert size={20} /><div><strong>No és una guia de recol·lecció</strong><p>No publiquem coordenades ni presències exactes. No consumiu cap bolet sense una identificació experta.</p></div></div>
-            <Link href={`/species/${species.speciesId}`} className="local-profile-link"><span>Fitxa completa</span><strong>{species.identity.commonName}</strong><small>{speciesDescription(species)}</small><ArrowUpRight size={18} /></Link>
+            <Link href={speciesPath(species)} className="local-profile-link"><span>Fitxa completa</span><strong>{species.identity.commonName}</strong><small>{speciesDescription(species)}</small><ArrowUpRight size={18} /></Link>
           </aside>
         </div>
       </div>

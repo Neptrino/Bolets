@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState, type ReactNode } from "react";
 import { Map as MapIcon } from "lucide-react";
 import { ConditionComparison } from "@/components/condition-comparison";
+import { CellScoreHistory } from "@/components/cell-score-history";
 import { RegionMap } from "@/components/region-map";
 import { QuerySelect, type QuerySelectItem } from "@/components/ui/query-select";
 import { regionLabels } from "@/data/regions";
@@ -93,17 +94,20 @@ export function MapExplorer({
     </div>
     <div className="page-width map-bottom">
       {mode === "prediction" ? (
-        <ConditionComparison
-          expanded
-          species={species}
-          snapshot={snapshot}
-          result={result}
-          cellId={selectedCell?.cellId}
-          cellGridSizeM={selectedCell?.gridSizeM}
-          cellBounds={selectedCell?.cellBounds}
-          occurrenceEvidence={selectedCell?.occurrenceEvidence}
-          occurrenceEvidenceStatus={selectedCell?.occurrenceEvidenceStatus}
-        />
+        <>
+          <ConditionComparison
+            expanded
+            species={species}
+            snapshot={snapshot}
+            result={result}
+            cellId={selectedCell?.cellId}
+            cellGridSizeM={selectedCell?.gridSizeM}
+            cellBounds={selectedCell?.cellBounds}
+            occurrenceEvidence={selectedCell?.occurrenceEvidence}
+            occurrenceEvidenceStatus={selectedCell?.occurrenceEvidenceStatus}
+          />
+          {selectedCell ? <CellScoreHistory key={`${species.speciesId}:${selectedCell.cellId}`} speciesId={species.speciesId} cell={selectedCell} /> : null}
+        </>
       ) : null}
       {info}
     </div>

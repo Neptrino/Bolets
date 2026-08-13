@@ -16,12 +16,32 @@ type CellInput = {
 
 type WeatherPointInput = { pointId?: unknown; latitude?: unknown; longitude?: unknown; nativeResolutionM?: unknown; elevationM?: unknown };
 type CoverSampleInput = { cellId?: unknown; packed?: unknown };
+type GeologyUnitInput = {
+  unitId?: unknown;
+  code?: unknown;
+  description?: unknown;
+  class?: unknown;
+  substrateClass?: unknown;
+  classificationVersion?: unknown;
+};
+type GeologyEvidenceInput = {
+  cellId?: unknown;
+  classCoveragesPacked?: unknown;
+  mappedCoveragePercent?: unknown;
+  dominantUnitId?: unknown;
+  dominantUnitCoveragePercent?: unknown;
+};
 
 const confidenceValues = new Set(["high", "moderate", "limited", "unknown"]);
+const geologyClasses = new Set(["silicic", "calcareous", "mixed", "unconsolidated", "unknown"]);
 const hasTextArray = (value: unknown) => Array.isArray(value) && value.some((item) => typeof item === "string" && item.trim());
 
+function validCellId(value: unknown): value is string {
+  return typeof value === "string" && /^[a-z0-9:_-]{3,120}$/i.test(value);
+}
+
 function normaliseCoverSample(input: CoverSampleInput) {
-  if (typeof input.cellId !== "string" || !/^[a-z0-9:_-]{3,120}$/i.test(input.cellId)) {
+  if (!validCellId(input.cellId)) {
     throw new Error("Invalid cover-sample cellId");
   }
   if (typeof input.packed !== "string" || !/^\d{1,14}$/.test(input.packed)) {
@@ -32,6 +52,68 @@ function normaliseCoverSample(input: CoverSampleInput) {
     throw new Error(`Invalid packed cover samples for ${input.cellId}`);
   }
   return { cell_id: input.cellId, packed: input.packed };
+}
+
+function normaliseGeologyUnit(input: GeologyUnitInput) {
+  if (!Number.isInteger(input.unitId) || Number(input.unitId) < 1 || Number(input.unitId) > 2047) {
+    throw new Error("Invalid geology unit ID");
+  }
+  const code = typeof input.code === "string" ? input.code.trim() : "";
+  const description = typeof input.description === "string" ? input.description.trim() : "";
+  if (!code || code.length > 64) throw new Error(`Invalid geology unit code for ${input.unitId}`);
+  if (!description || description.length > 1000) throw new Error(`Invalid geology unit description for ${code}`);
+  const substrateClass = input.class ?? input.substrateClass;
+  if (typeof substrateClass !== "string" || !geologyClasses.has(substrateClass)) {
+    throw new Error(`Invalid geology class for ${code}`);
+  }
+  if (input.classificationVersion !== undefined && input.classificationVersion !== 1) {
+    throw new Error(`Unsupported geology classification version for ${code}`);
+  }
+  return {
+    unitId: Number(input.unitId),
+    code,
+    description,
+    class: substrateClass,
+    classificationVersion: 1,
+  };
+}
+
+function normaliseGeologyEvidence(input: GeologyEvidenceInput) {
+  if (!validCellId(input.cellId)) throw new Error("Invalid geology-evidence cellId");
+  if (!Number.isInteger(input.classCoveragesPacked) || Number(input.classCoveragesPacked) < 0 ||
+      Number(input.classCoveragesPacked) > 268_435_455) {
+    throw new Error(`Invalid packed geology coverage for ${input.cellId}`);
+  }
+  const packed = Number(input.classCoveragesPacked);
+  const lanes = [0, 7, 14, 21].map((shift) => (packed >> shift) & 127);
+  if (lanes.some((coverage) => coverage > 100)) {
+    throw new Error(`Invalid geology coverage lane for ${input.cellId}`);
+  }
+  if (!Number.isInteger(input.mappedCoveragePercent) || Number(input.mappedCoveragePercent) < 1 ||
+      Number(input.mappedCoveragePercent) > 100 ||
+      lanes.reduce((total, coverage) => total + coverage, 0) > Number(input.mappedCoveragePercent)) {
+    throw new Error(`Invalid mapped geology coverage for ${input.cellId}`);
+  }
+  const hasUnitId = input.dominantUnitId !== undefined && input.dominantUnitId !== null;
+  const hasUnitCoverage = input.dominantUnitCoveragePercent !== undefined && input.dominantUnitCoveragePercent !== null;
+  if (hasUnitId !== hasUnitCoverage) throw new Error(`Incomplete dominant geology unit for ${input.cellId}`);
+  if (hasUnitId && (!Number.isInteger(input.dominantUnitId) || Number(input.dominantUnitId) < 1 ||
+      Number(input.dominantUnitId) > 2047 || !Number.isInteger(input.dominantUnitCoveragePercent) ||
+      Number(input.dominantUnitCoveragePercent) < 1 ||
+      Number(input.dominantUnitCoveragePercent) > Number(input.mappedCoveragePercent))) {
+    throw new Error(`Invalid dominant geology unit for ${input.cellId}`);
+  }
+  return {
+    cellId: input.cellId,
+    classCoveragesPacked: packed,
+    mappedCoveragePercent: Number(input.mappedCoveragePercent),
+    ...(hasUnitId
+      ? {
+          dominantUnitId: Number(input.dominantUnitId),
+          dominantUnitCoveragePercent: Number(input.dominantUnitCoveragePercent),
+        }
+      : {}),
+  };
 }
 
 function normaliseCell(input: CellInput) {
@@ -52,7 +134,7 @@ function normaliseCell(input: CellInput) {
   if (!sourceResolutionM || sourceResolutionM < 1) throw new Error(`Invalid source resolution for ${input.cellId}`);
   const terrainReady = finiteNumber(staticValues.altitudeM) !== undefined;
   const forestReady = hasTextArray(staticValues.forestTypes) || hasTextArray(staticValues.treeSpecies);
-  const soilReady = finiteNumber(staticValues.soilPh) !== undefined || typeof staticValues.soilTexture === "string" || typeof staticValues.soilSubstrate === "string";
+  const soilReady = finiteNumber(staticValues.soilPh) !== undefined || typeof staticValues.soilTexture === "string";
   const staticVerified = terrainReady && forestReady && soilReady && sources.length >= 2 && confidence !== "unknown";
   const weatherInput = input.weatherPoint && typeof input.weatherPoint === "object" && !Array.isArray(input.weatherPoint)
     ? input.weatherPoint as WeatherPointInput
@@ -111,7 +193,56 @@ Deno.serve(async (request) => {
     }
     const contentLength = Number(request.headers.get("content-length") ?? 0);
     if (contentLength > 2_000_000) return json({ error: "Import payload is too large" }, 413);
-    const payload = await request.json() as { cells?: CellInput[]; coverSamples?: CoverSampleInput[] };
+    const payload = await request.json() as {
+      cells?: CellInput[];
+      coverSamples?: CoverSampleInput[];
+      geologyUnits?: GeologyUnitInput[];
+      geologyEvidence?: GeologyEvidenceInput[];
+      refreshGeologyLevel?: unknown;
+    };
+    if (Array.isArray(payload.geologyUnits)) {
+      if (!payload.geologyUnits.length || payload.geologyUnits.length > 2000) {
+        return json({ error: "Provide between 1 and 2,000 geology units" }, 400);
+      }
+      const units = payload.geologyUnits.map(normaliseGeologyUnit);
+      const { data, error } = await supabase.rpc("upsert_geology_units", { p_rows: units });
+      if (error) throw error;
+      return json({ received: units.length, updated: Number(data ?? 0) });
+    }
+    if (Array.isArray(payload.geologyEvidence)) {
+      if (!payload.geologyEvidence.length || payload.geologyEvidence.length > 1000) {
+        return json({ error: "Provide between 1 and 1,000 geology evidence rows" }, 400);
+      }
+      const rows = payload.geologyEvidence.map(normaliseGeologyEvidence);
+      const snapshotDate = new Date().toISOString().slice(0, 10);
+      runId = await startRun(supabase, "spatial-static-import", "import", snapshotDate, {
+        dataset: "icgc-geology-50k-v3",
+        requestedCells: rows.length,
+      });
+      const { data, error } = await supabase.rpc("backfill_spatial_geology_evidence", { p_rows: rows });
+      if (error) throw error;
+      const updated = Number(data ?? 0);
+      if (!Number.isInteger(updated) || updated < 0 || updated > rows.length) {
+        throw new Error("Invalid geology backfill write result");
+      }
+      await finishRun(supabase, runId, "succeeded", {
+        rowsRead: rows.length,
+        rowsWritten: updated,
+        metadata: { unchanged: rows.length - updated, dataset: "icgc-geology-50k-v3" },
+      });
+      return json({ runId, received: rows.length, updated });
+    }
+    if (payload.refreshGeologyLevel !== undefined) {
+      const gridSizeM = finiteNumber(payload.refreshGeologyLevel);
+      if (!gridSizeM || ![1000, 2500, 5000, 10000].includes(gridSizeM)) {
+        return json({ error: "Unsupported geology aggregation level" }, 400);
+      }
+      const { data, error } = await supabase.rpc("refresh_spatial_geology_level", {
+        p_grid_size_m: gridSizeM,
+      });
+      if (error) throw error;
+      return json({ gridSizeM, updated: Number(data ?? 0) });
+    }
     if (Array.isArray(payload.coverSamples)) {
       if (!payload.coverSamples.length || payload.coverSamples.length > 5000) {
         return json({ error: "Provide between 1 and 5,000 cover samples" }, 400);

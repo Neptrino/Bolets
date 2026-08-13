@@ -9,13 +9,13 @@ Supabase stores normalized environmental evidence and exposes it only through se
 | `refresh-environment` | Daily at 05:15 UTC | Refreshes Open-Meteo conditions for the 10 ecological macro-regions. |
 | `import-spatial-cells` | Trusted offline/CI worker | Validates and upserts reviewed 250 m terrain, land-cover, and soil evidence. |
 | `refresh-spatial-environment` | Every 2 minutes | Refreshes the shared 2.5 km AROME atmosphere grid once per day, in resumable batches. |
-| `refresh-spatial-soil` | Every 5 minutes until complete | Refreshes the independent 9 km soil-moisture grid once per day in rate-limited batches. |
+| `refresh-spatial-soil` | Every 5 minutes until complete | Refreshes the independent 9 km soil-moisture grid and its separate five-day environmental forecast once per day in rate-limited batches. Independent cursors let a transient forecast failure retry without blocking current soil ingestion. |
 | `refresh-spatial-level-conditions` | Daily at 01:10 UTC | Materializes current conditions for the 2.5, 5, and 10 km display levels after provider-grid ingestion. |
 | `refresh-species-occurrences` | Four monthly batches from 03:15 UTC on day 1 | Refreshes whitelisted FungaCAT records through GBIF, applies quality gates, and stores only 10 km support cells. |
 | `read-environment` | Next.js server request | Returns the latest regional snapshot. |
 | `read-spatial-environment` | Next.js server request | Returns verified cells in a bounded local map view. |
 | `read-occurrence-support` | Next.js server request | Returns privacy-safe historical record counts and provenance for one species in a bounded view. |
-| retention job | Daily at 06:30 UTC | Retains 45 days of regional weather, today plus yesterday for grid weather, 48 hours of completed `pg_cron` history, and 90 days of ingestion runs. |
+| retention job | Daily at 06:30 UTC | Retains 45 days of regional weather, a bounded week of observed grid weather, three issue dates of five-day forecasts, 48 hours of completed `pg_cron` history, and 90 days of ingestion runs. |
 
 Every write run is audited in `ingestion_runs`. `pipeline_sources` records source health, `pipeline_cursors` makes large refreshes resumable, and all application tables have RLS enabled without browser table grants.
 
@@ -24,13 +24,15 @@ Every write run is audited in `ingestion_runs`. `pipeline_sources` records sourc
 - Display grid: 250 × 250 m in EPSG:25831.
 - Elevation: ICGC terrain WCS at 5/15 m, sampled once per model cell.
 - Land cover: ICGC Cobertes del sòl 2024 at 1 m native resolution, sampled every 50 m within each cell.
-- Soil: ISRIC SoilGrids WCS at 250 m for pH, clay, sand, and silt.
+- Soil: ISRIC SoilGrids WCS at 250 m for pH, clay, sand, and silt. These inputs support pH and texture evidence, but do not identify geological substrate; species substrate remains ecological reference data unless a separately verified substrate source is imported.
+- Geological context: ICGC Mapa geològic de Catalunya 1:50.000 v3r0, sampled across each canonical 250 m cell and stored in compact side tables with mapped/class/unit coverage. It is display-only evidence, is area-weighted from 250 m at coarse zooms, and never enters soil readiness, habitat gates, or suitability scoring.
 - Potential habitat: every recognized ICGC cover fraction sampled within each 250 m cell is retained. The database sums only the fractions compatible with the selected species, then preserves both raw cover/altitude/pH-compatible coverage and an altitude-weighted distribution intensity using the versioned 75–100 edge taper. Predictions consume the raw percentage and their separate altitude factor; the distribution map consumes the weighted intensity.
 - Atmosphere: Météo-France AROME through Open-Meteo at 2.5 km native resolution, sampled on aligned 2.5 km model tiles and statistically adjusted to each tile's median terrain elevation. Temperature, air humidity, precipitation, reference evapotranspiration (ET₀) and wind use this model.
 - Soil moisture: Open-Meteo's available land model at 9 km. It is retained as a separate, explicitly coarser factor and never labelled as 2.5 km data. The normalized snapshot retains the 24-hour summary plus the 7-day minimum, mean, maximum and recent-versus-prior-six-day trend.
-- Time windows: the snapshot keeps the latest model estimate; trailing 24-hour temperature, air-humidity, soil-moisture and wind summaries; the trailing 24-hour maximum gust; rain and ET₀ totals for 3, 7 and 30 days; rain from days 8–30; the consecutive dry-spell length using 1 mm per rolling 24 hours as the reset threshold; and trailing 10-day minimum/mean/maximum temperature plus frost-hour count. Temperature suitability uses the 10-day mean and extremes. Rainfall suitability combines all of the hydrological windows with 7-day soil moisture and the species' versioned prior-moisture dependency. All windows use `Europe/Madrid` local time.
+- Five-day projection: ECMWF IFS HRES atmosphere and the existing Open-Meteo 3–9 cm soil-moisture layer, both represented at 9 km. Forecast data is normalized at the shared 9 km points and stored in `weather_grid_forecasts`, never in the latest-observation table. Every +1…+5-day target recalculates all rolling model windows without using future hours beyond that target. Incomplete hourly series remain unavailable rather than being shortened silently. ECMWF atmosphere and generic soil-forecast health are recorded separately, and forecast ingestion advances on its own cursor so current-soil failures cannot suppress a successful projection batch.
+- Time windows: the snapshot keeps the latest model estimate; trailing 24-hour temperature, air-humidity, soil-moisture and wind summaries; a trailing 7-day air-humidity mean; the trailing 24-hour maximum gust; rain and ET₀ totals for 3, 7 and 30 days; rain from days 8–30; the consecutive dry-spell length using 1 mm per rolling 24 hours as the reset threshold; and trailing 10-day minimum/mean/maximum temperature plus frost-hour count. Air-humidity suitability uses the 24-hour mean as its base and lets a drier 7-day mean below 65% apply a limited 25% persistence penalty. Temperature suitability uses the 10-day mean and extremes. Rainfall suitability combines all of the hydrological windows with 7-day soil moisture and the species' versioned prior-moisture dependency. All windows use `Europe/Madrid` local time.
 
-Weather is normalized in `weather_grid_points` and `weather_grid_snapshots`. Many 250 m terrain cells reference the same 2.5 km atmospheric point; weather is never presented as if it had 250 m precision. Atmospheric and soil-moisture resolutions are preserved independently in snapshot metadata. Species ecology and model weights remain version-controlled in the application and are the single source of truth for scoring.
+Weather is normalized in `weather_grid_points` and `weather_grid_snapshots`; projections use the separate `weather_grid_forecasts` table with explicit issue time, valid time, and horizon. Many 250 m terrain cells reference the same 2.5 km atmospheric point, and many atmospheric points share one 9 km soil/forecast point; weather is never presented as if it had 250 m precision. Atmospheric and soil-moisture resolutions are preserved independently in snapshot metadata. Species ecology and model weights remain version-controlled in the application and are the single source of truth for both current and projected scoring.
 
 ## Historical occurrence evidence
 
@@ -71,9 +73,28 @@ npm run spatial:build -- --bbox=430000,4670000,450000,4690000 --limit=5000
 npm run spatial:build -- --landcover-sample=50 --tile-size=40000
 ```
 
+Build and import the separate ICGC geology snapshot against the exact live
+canonical-cell set (the builder fails closed if a cell is missing or unmapped):
+
+```bash
+npm run spatial:export-cell-ids -- --output=/tmp/bolets-spatial-cell-ids.ndjson
+npm run spatial:build-geology -- --cells=/tmp/bolets-spatial-cell-ids.ndjson --output=/tmp/bolets-spatial-geology.ndjson
+npm run spatial:import -- data/geology/icgc-geology-50k-units.json --geology-units-only
+npm run spatial:import -- /tmp/bolets-spatial-geology.ndjson --geology-only
+```
+
+After the exact import, refresh the 1, 2.5, 5 and 10 km geology levels with the
+service-only `refresh_spatial_geology_level` database RPC from a maintenance
+client. This country-wide aggregation is intentionally kept outside a
+request-bound Edge Function. Re-run `spatial:update-geology-mapping` only when
+adopting a new pinned ICGC dataset, then review every changed unit
+classification before importing it.
+
 ## Publication rules
 
 A cell is published only when terrain, land cover, and soil evidence are present, at least two authoritative sources are named, a current weather grid point is available, and completeness passes the scoring threshold. Scores use trailing 24-hour means and are capped during severe heat/dryness, after a recent frost, and outside the species season. The response includes source resolution, provenance, confidence, unavailable fields, timestamp, factor contributions, and `modelVersion`.
+
+Selected 250 m cells can also expose a five-day projected suitability timeline. Forecasts use only static habitat evidence from the cell plus the future-valid dynamic snapshot, expire 36 hours after issuance, and retain null scores when any required future window is incomplete. Horizon confidence is high at +1 day, moderate at +2/+3, and limited at +4/+5; it communicates increasing lead-time uncertainty rather than a calibrated probability of mushroom appearance. Habitat-only species remain excluded.
 
 The map uses a compact zoom pyramid: exact 250 m cells locally, then prebuilt 1 km, 2.5 km, 5 km, and 10 km display cells as the view widens. The four coarse levels also carry compact, versioned per-species arrays of exact compatible-cover fractions, built with `npm run spatial:precompute-habitat`; interactive reads therefore never rescan the country-wide 250 m table. Run that command after deploying any species addition, removal, reordering, or ecological gate change so every catalogue profile has a complete cache entry. The cache supports up to 32 profiles; the current catalogue uses 27. The former 500 m level duplicated more than 100,000 rows for a narrow zoom band; 1 km cells remain active through that band, and the exact 250 m reader starts only at the original close-zoom threshold. Current conditions for the three coarsest levels are refreshed once per day so zooming never performs country-scale weather aggregation during an interactive request. Display resolution remains separate from provider resolution in every response.
 
@@ -88,9 +109,10 @@ The map uses a compact zoom pyramid: exact 250 m cells locally, then prebuilt 1 
 - map bounds are expanded to stable resolution-aware buckets so small pans reuse the same Next.js/CDN response;
 - fine-grid requests have resolution-aware area ceilings, preventing an anonymous country-wide 250 m/1 km request from consuming the database statement budget;
 - map-only prediction requests ask the Edge Function for scoring fields only, while cell-detail requests retain the complete evidence payload.
+- exact and coarse ICGC geology use narrow side tables (about 28 MiB at current cardinality), avoiding a rewrite and bloat of the 213 MiB canonical-cell heap;
 - prediction inputs merge current environment and exact static habitat coverage inside one Edge request, then use the same five-minute server cache as the public prediction response; cache-aligned repeat views avoid both database reads.
 
-The production application on 2026-08-12 measured 537 MB before compaction and 381 MB afterwards. `spatial_cell_levels` fell from 168 MB to 37 MB, with no loss of the canonical 343,166 exact 250 m cells. A full-Catalonia precomputed environment read fell from about 8.3 seconds to 15–44 ms. After bounding exact habitat aggregation to the visible coarse-cell extent, a representative 1 km habitat database read takes about 96 ms and the complete warm Edge response about 0.52–0.53 seconds; cache-aligned repeats return from the Next.js server cache in roughly 7–11 ms.
+The production application on 2026-08-12 measured 537 MB before compaction and 381 MB afterwards. `spatial_cell_levels` fell from 168 MB to 37 MB, with no loss of the canonical 343,166 exact 250 m cells. The 2026-08-13 geology rollout added about 28 MiB, bringing the database to about 409 MiB. A full-Catalonia precomputed environment read fell from about 8.3 seconds to 15–44 ms. After bounding exact habitat aggregation to the visible coarse-cell extent, a representative 1 km habitat database read takes about 96 ms and the complete warm Edge response about 0.52–0.53 seconds; cache-aligned repeats return from the Next.js server cache in roughly 7–11 ms.
 
 After applying the migration to an existing populated database, run the following once during a quiet maintenance window. The command takes an exclusive lock while rewriting each table, but it is what returns deleted-row space to the Supabase quota rather than merely making it reusable inside PostgreSQL:
 

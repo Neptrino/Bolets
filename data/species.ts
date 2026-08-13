@@ -77,12 +77,12 @@ function model(version = "ecologia-v1.9") {
     version,
     factors: [
       { id: "forest" as const, label: "Cobertura d’hàbitat compatible", weight: 0.19, explanation: "Percentatge de cel·les base de 250 m on coincideixen la coberta, l’altitud i el pH configurats." },
-      { id: "soil" as const, label: "Condicions del sòl", weight: 0.14, explanation: "Reacció, substrat i drenatge compatibles." },
+      { id: "soil" as const, label: "Condicions del sòl", weight: 0.14, explanation: "pH i textura del sòl compatibles; la geologia ICGC es mostra només com a context." },
       { id: "rainfall" as const, label: "Pluja i memòria hídrica", weight: 0.16, explanation: "Resposta contínua a la pluja de 3 i 7 dies, balanç pluja–evapotranspiració dels dies 8–30, ratxa seca i humitat del sòl de 7 dies, ponderada per la dependència de cada espècie de la humitat prèvia." },
       { id: "soilMoisture" as const, label: "Humitat del sòl", weight: 0.16, explanation: "Resposta contínua i lineal segons la distància al nivell d’humitat preferit per l’espècie." },
       { id: "temperature" as const, label: "Temperatura", weight: 0.13, explanation: "Mitjana dels darrers 10 dies, amb interrupcions per calor o fred extrems del mateix període." },
       { id: "altitude" as const, label: "Altitud", weight: 0.06, explanation: "Resposta amb altiplà central: 100 a l’interior, descens lineal durant els 100 m previs als límits documentats fins a 75, i descens a zero dins el marge exterior de 100 m." },
-      { id: "humidity" as const, label: "Humitat relativa", weight: 0.04, explanation: "Condicions atmosfèriques favorables a la fructificació." },
+      { id: "humidity" as const, label: "Humitat relativa", weight: 0.04, explanation: "Mitjana de 24 hores amb una penalització limitada quan la mitjana de 7 dies mostra sequedat persistent." },
       { id: "seasonality" as const, label: "Moment de temporada", weight: 0.12, explanation: "Activitat estacional documentada per a l’espècie." }
     ]
   };

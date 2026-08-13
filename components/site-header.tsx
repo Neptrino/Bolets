@@ -8,7 +8,7 @@ import { Map, Menu, X } from "lucide-react";
 import brandMark from "@/app/icon.svg";
 
 const links = [
-  { href: "/species", label: "Espècies" },
+  { href: "/bolets", label: "Bolets" },
   { href: "/zones", label: "Zones" },
   { href: "/compare", label: "Comparador" },
   { href: "/metode", label: "Mètode" }
