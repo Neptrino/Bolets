@@ -12,6 +12,11 @@ import {
 } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { SpeciesCard } from "@/components/species-card";
+import {
+  areaProfiles,
+  locationPagePath,
+  speciesLocationPages,
+} from "@/data/location-pages";
 import { getSpecies } from "@/data/species";
 import {
   monthInTimeZone,
@@ -53,6 +58,12 @@ const territoryReadings: Array<{
   description: string;
 }> = [
   {
+    name: "Pirineus: Ripollès i Cerdanya",
+    region: "pirineus",
+    speciesId: "lactarius-sanguifluus",
+    description: "Pinedes dels estatges baixos i montans on el rovelló pot encaixar si la cota, el substrat neutre o calcari i la humitat de tardor són compatibles.",
+  },
+  {
     name: "Prepirineu i Berguedà",
     region: "prepirineus",
     speciesId: "lactarius-deliciosus",
@@ -87,7 +98,7 @@ const territoryReadings: Array<{
 const faqs = [
   {
     question: "On es poden trobar rovellons a Catalunya?",
-    answer: "En termes ecològics, cal buscar pinedes compatibles amb l’espècie, pinassa que conservi humitat i sòls amb bon drenatge. El Prepirineu, Catalunya Central, l’Empordà, les serralades prelitorals i els Ports contenen paisatges potencialment compatibles, però això no confirma presència en cap punt concret.",
+    answer: "En termes ecològics, cal buscar pinedes compatibles amb l’espècie, pinassa que conservi humitat i sòls amb bon drenatge. Els Pirineus, el Prepirineu, Catalunya Central, l’Empordà, les serralades prelitorals i els Ports contenen paisatges potencialment compatibles, però això no confirma presència en cap punt concret.",
   },
   {
     question: "Quan comença la temporada de rovellons?",
@@ -114,16 +125,19 @@ function peakMonths(species: SpeciesProfile) {
     .join(" i ");
 }
 
+const lactariusSpeciesIds = new Set([
+  "lactarius-deliciosus",
+  "lactarius-sanguifluus",
+]);
+const publishedGuides = speciesLocationPages.filter((page) =>
+  lactariusSpeciesIds.has(page.speciesId),
+);
+
 export default function RovellonsTerritoryPage() {
   const rovello = getSpecies("lactarius-sanguifluus")!;
   const pinetell = getSpecies("lactarius-deliciosus")!;
   const currentMonth = monthInTimeZone();
   const currentMonthLabel = SEASON_MONTHS.find(({ key }) => key === currentMonth)!.label;
-  const publishedGuides = [
-    { label: "Rovellons a Castellar de n’Hug", href: "/zones/bergueda/castellar-de-nhug/rovellons" },
-    { label: "Rovellons als Rasos de Peguera", href: "/zones/bergueda/rasos-de-peguera/rovellons" },
-  ];
-
   return (
     <div className="rovellons-hub">
       <JsonLd data={{
@@ -153,7 +167,7 @@ export default function RovellonsTerritoryPage() {
             "@type": "BreadcrumbList",
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Inici", item: absoluteUrl() },
-              { "@type": "ListItem", position: 2, name: "Zones", item: absoluteUrl("/zones") },
+              { "@type": "ListItem", position: 2, name: "Guies", item: absoluteUrl("/guies") },
               { "@type": "ListItem", position: 3, name: "Rovellons", item: absoluteUrl("/zones/rovellons") },
             ],
           },
@@ -162,7 +176,7 @@ export default function RovellonsTerritoryPage() {
 
       <header className="rovellons-hero">
         <div className="page-width rovellons-hero-inner">
-          <Link href="/zones" className="back-link">← Totes les zones</Link>
+          <Link href="/guies" className="back-link">← Totes les guies</Link>
           <div className="rovellons-hero-grid">
             <div>
               <p className="eyebrow light"><MapPinned size={15} /> Guia territorial</p>
@@ -187,7 +201,7 @@ export default function RovellonsTerritoryPage() {
           </div>
           <div>
             <p>A Catalunya, la cerca <em>rovellons</em> sovint barreja el rovelló vinós i el pinetell. Tots dos viuen associats als pins, però no tenen exactament el mateix làtex, sòl preferit ni distribució ecològica.</p>
-            <Link href="/compare/rovello-vs-pinetell" className="text-link">Veure rovelló vs pinetell <ArrowUpRight size={16} /></Link>
+            <Link href="/compare/rovello-vs-pinetell" className="text-link">Veure rovelló vs. pinetell <ArrowUpRight size={16} /></Link>
           </div>
         </section>
 
@@ -244,13 +258,16 @@ export default function RovellonsTerritoryPage() {
 
         <section className="rovellons-published" aria-labelledby="rovellons-published-title">
           <div>
-            <p className="eyebrow">Guies verificades</p>
-            <h2 id="rovellons-published-title">Berguedà, amb més detall.</h2>
-            <p>Només publiquem una guia local quan hi ha prou context territorial i ecològic per aportar una lectura pròpia.</p>
+            <p className="eyebrow">Guies locals publicades</p>
+            <h2 id="rovellons-published-title">Del Pirineu als Ports, amb més detall.</h2>
+            <p>Ripollès, Cerdanya, Berguedà i els Ports tenen lectures pròpies per al rovelló, el pinetell o tots dos, sempre sense publicar punts de recol·lecció.</p>
           </div>
-          <div>
-            <Link href="/zones/bergueda" className="rovellons-area-link"><span>Comarca</span><strong>Bolets al Berguedà</strong><ArrowUpRight size={17} /></Link>
-            {publishedGuides.map((guide) => <Link href={guide.href} key={guide.href}><span>Guia local</span><strong>{guide.label}</strong><ArrowUpRight size={17} /></Link>)}
+          <div data-rovello-local-guides>
+            {publishedGuides.map((guide) => {
+              const area = areaProfiles.find((profile) => profile.slug === guide.areaSlug);
+              const path = locationPagePath(guide);
+              return <Link href={path} key={path}><span>{area?.name ?? "Guia local"}</span><strong>{guide.titlePhrase}</strong><ArrowUpRight size={17} /></Link>;
+            })}
           </div>
         </section>
 
@@ -271,7 +288,7 @@ export default function RovellonsTerritoryPage() {
 
         <aside className="rovellons-safety">
           <ShieldAlert size={23} aria-hidden="true" />
-          <div><strong>No és una guia de recol·lecció ni d’identificació.</strong><p>No consumeixis cap bolet basant-te en el mapa, aquesta pàgina o una fotografia. Confirma sempre l’espècie amb una persona experta.</p></div>
+          <div><strong>No és una guia de recol·lecció ni d’identificació.</strong><p>No consumiu cap bolet basant-vos en el mapa, aquesta pàgina o una fotografia. Confirmeu sempre l’espècie amb una persona experta.</p></div>
         </aside>
       </div>
     </div>

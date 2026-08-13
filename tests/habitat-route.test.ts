@@ -59,7 +59,8 @@ describe("habitat API bounds", () => {
     expect(response.status).toBe(200);
     expect(habitatMocks.getPotentialHabitatCoverage).toHaveBeenCalledOnce();
     expect(habitatMocks.getPotentialHabitatCells).not.toHaveBeenCalled();
-    await expect(response.json()).resolves.toMatchObject({
+    const body = await response.json();
+    expect(body).toMatchObject({
       cells: [{
         cellId: "epsg25831:5000:90:936",
         coverage: 0.62,
@@ -67,5 +68,6 @@ describe("habitat API bounds", () => {
       }],
       truncated: false,
     });
+    expect(body).not.toHaveProperty("modelVersion");
   });
 });

@@ -55,7 +55,7 @@ export default async function AreaPage({ params }: Props) {
       <header className="location-hub-hero">
         <div className="page-width location-hub-hero-grid">
           <div className="location-hub-copy">
-            <Link href="/zones" className="back-link location-back"><ArrowLeft size={15} /> Totes les zones</Link>
+            <Link href="/guies" className="back-link location-back"><ArrowLeft size={15} /> Totes les guies</Link>
             <p className="eyebrow light"><MapPinned size={15} /> {area.typeLabel} · lectura territorial</p>
             <h1>Bolets<br /><i>{area.prepositionalName}.</i></h1>
             <p>{area.description} {area.landscape}</p>

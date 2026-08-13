@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getPredictionCells } from "@/src/lib/predictions";
+import { getPredictionCells, getRegionalPredictionSummary } from "@/src/lib/predictions";
 import { PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
 import type { PredictionCell } from "@/src/lib/types";
 
 const bounds = { west: 1, south: 41, east: 2, north: 42 };
 const cellId = "epsg25831:5000:90:936";
 
-function stubSpatialFeeds(coverage?: number | "unavailable") {
+function stubSpatialFeeds(coverage?: number | "unavailable", truncated = false) {
   vi.stubEnv("SUPABASE_URL", "https://example.supabase.co");
   vi.stubEnv("SUPABASE_ANON_KEY", "test-anon-key");
   vi.stubGlobal("fetch", vi.fn(async (input: string | URL | Request) => {
@@ -62,7 +62,7 @@ function stubSpatialFeeds(coverage?: number | "unavailable") {
           soilTexture: "franca"
         }
       }],
-      truncated: false,
+      truncated,
       bounds
     });
   }));
@@ -107,6 +107,20 @@ describe("prediction habitat coverage", () => {
     expect(url.searchParams.get("predictionVersion")).toBe(PREDICTION_CACHE_VERSION);
     expect(url.searchParams.get("viewVersion")).toBe(PREDICTION_CACHE_VERSION);
     expect(result.cells[0]).toMatchObject({ habitatCoverage: 0.375 });
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("uses the score-only payload and rejects truncated regional reads", async () => {
+    stubSpatialFeeds(0.375, true);
+
+    await expect(
+      getRegionalPredictionSummary("marasmius-oreades", "catalunya-central"),
+    ).rejects.toThrow("Regional prediction response was truncated");
+
+    const environmentRequest = vi.mocked(fetch).mock.calls[0];
+    const url = new URL(String(environmentRequest?.[0]));
+    expect(url.searchParams.get("view")).toBe("score");
+    expect(url.searchParams.get("viewVersion")).toBe(PREDICTION_CACHE_VERSION);
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 

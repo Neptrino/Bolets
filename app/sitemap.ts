@@ -12,6 +12,7 @@ import { speciesProfiles } from "@/data/species";
 import { seasonMonthPath, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { seasonGuides } from "@/src/lib/season-guides";
 import { absoluteUrl, speciesImage, speciesPath } from "@/src/lib/seo";
+import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 
 const lastModified = new Date(`${EDITORIAL_LAUNCH_DATE}T00:00:00+02:00`);
 
@@ -38,7 +39,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: absoluteUrl("/metode"), lastModified },
     { url: absoluteUrl("/equip-editorial"), lastModified },
     { url: absoluteUrl("/zones"), lastModified },
-    { url: absoluteUrl("/zones/rovellons"), lastModified },
+    { url: absoluteUrl("/guies"), lastModified },
+    ...speciesTerritoryGuides.map((guide) => ({
+      url: absoluteUrl(guide.path),
+      lastModified,
+    })),
     ...areaProfiles.map((area) => ({
       url: absoluteUrl(`/zones/${area.slug}`),
       lastModified,

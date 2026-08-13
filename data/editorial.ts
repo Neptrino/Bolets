@@ -96,5 +96,6 @@ export const publicEditorialItems = [
   "bolets-de-tardor",
   "bolets-d-hivern",
   "quan-surten-els-bolets-despres-de-ploure",
+  "zones-ceps",
   "equip-editorial",
 ] as const;

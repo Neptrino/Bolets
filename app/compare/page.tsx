@@ -7,6 +7,7 @@ import {
   CalendarDays,
   CloudRain,
   Mountain,
+  ShieldAlert,
   Sprout,
   ThermometerSun,
   Trees
@@ -16,26 +17,27 @@ import { PageHeader, PageShell } from "@/components/page-layout";
 import { SeasonIndicator } from "@/components/season-indicator";
 import { QuerySelect } from "@/components/ui/query-select";
 import { speciesById, speciesSelectItems } from "@/data/species";
-import { comparisonPages } from "@/data/comparison-pages";
+import { comparisonPages, type ComparisonPage } from "@/data/comparison-pages";
+import { getEdibilityPresentation } from "@/src/lib/edibility-presentation";
 import { speciesPath } from "@/src/lib/seo";
 import { monthInTimeZone, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
-import type { Month, SpeciesProfile } from "@/src/lib/types";
+import type { EdibilityStatus, Month, SpeciesProfile } from "@/src/lib/types";
 
 export const metadata: Metadata = {
   title: "Comparador de bolets",
-  description: "Compara dues espècies de bolets de Catalunya: identificació, hàbitat, altitud, temporada, clima i comestibilitat.",
+  description: "Compareu dues espècies de bolets de Catalunya: identificació, hàbitat, altitud, temporada, clima i comestibilitat.",
   alternates: { canonical: "/compare" },
   openGraph: {
     url: "/compare",
     title: "Comparador de bolets",
-    description: "Compara identificació, hàbitat, temporada i comestibilitat de dues espècies.",
+    description: "Compareu la identificació, l’hàbitat, la temporada i la comestibilitat de dues espècies.",
     images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Comparador de bolets",
-    description: "Compara identificació, hàbitat, temporada i comestibilitat de dues espècies.",
+    description: "Compareu la identificació, l’hàbitat, la temporada i la comestibilitat de dues espècies.",
     images: [DEFAULT_SOCIAL_IMAGE],
   },
 };
@@ -62,6 +64,31 @@ const comparisonRows = (left: SpeciesProfile, right: SpeciesProfile) => [
   { label: "Temperatura", icon: ThermometerSun, left: `${left.ecologicalConfig.climate.temperatureRange.join("–")} °C`, right: `${right.ecologicalConfig.climate.temperatureRange.join("–")} °C` },
   { label: "Pluja", icon: CloudRain, left: left.ecologicalConfig.rainfall.preferredAccumulation, right: right.ecologicalConfig.rainfall.preferredAccumulation }
 ];
+
+const edibleComparisonStatuses = new Set<EdibilityStatus>([
+  "excellent_edible",
+  "edible",
+  "edible_with_conditions",
+]);
+
+const avoidComparisonStatuses = new Set<EdibilityStatus>([
+  "not_recommended",
+  "inedible",
+  "toxic",
+  "dangerously_toxic",
+]);
+
+function getComparisonRiskStatus(page: ComparisonPage) {
+  const species = [speciesById[page.leftSpeciesId], speciesById[page.rightSpeciesId]];
+  const hasEdibleSpecies = species.some((profile) => (
+    profile && edibleComparisonStatuses.has(profile.identity.edibility)
+  ));
+  const avoidSpecies = species.find((profile) => (
+    profile && avoidComparisonStatuses.has(profile.identity.edibility)
+  ));
+
+  return hasEdibleSpecies && avoidSpecies ? avoidSpecies.identity.edibility : null;
+}
 
 function ComparisonSeason({
   species,
@@ -102,7 +129,7 @@ function ComparisonProfileCard({
           parameter={side}
           items={speciesSelectItems}
           variant="comparison"
-          aria-label={`Selecciona l’espècie ${side === "left" ? "esquerra" : "dreta"}`}
+          aria-label={`Seleccioneu l’espècie ${side === "left" ? "esquerra" : "dreta"}`}
         />
       </div>
       <div className={`compare-profile-visual${imageSource ? " has-image" : ""}`}>
@@ -157,13 +184,20 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   const left = pick(query.left, "boletus-edulis");
   const right = pick(query.right, "lactarius-deliciosus");
   const currentMonth = monthInTimeZone();
+  const riskComparisons = comparisonPages.flatMap((page) => {
+    const status = getComparisonRiskStatus(page);
+    return status ? [{ page, status }] : [];
+  });
+  const identificationComparisons = comparisonPages.filter((page) => (
+    getComparisonRiskStatus(page) === null
+  ));
 
   return (
     <PageShell as="section">
       <PageHeader
         eyebrow="Lectura comparada"
         title={<>Dos bolets,<br />dos paisatges.</>}
-        description="Compara condicions ecològiques estructurades. Les diferències vénen de les fitxes, no d’un text paral·lel."
+        description="Compareu condicions ecològiques estructurades. Les diferències venen de les fitxes, no d’un text paral·lel."
       />
 
       <div className="compare-stage">
@@ -258,8 +292,34 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
         </div>
       </section>
       <section className="comparison-guides" aria-labelledby="comparison-guides-title">
-        <div><p className="eyebrow">Comparacions publicades</p><h2 id="comparison-guides-title">Confusions freqüents</h2></div>
-        <div>{comparisonPages.map((page) => <Link href={`/compare/${page.slug}`} key={page.slug}><span>{page.shortTitle}</span><ArrowUpRight size={16} /></Link>)}</div>
+        <div className="comparison-guides-intro">
+          <p className="eyebrow">Comparacions publicades</p>
+          <h2 id="comparison-guides-title">Confusions freqüents</h2>
+          <p>Comenceu per les parelles que poden acabar al mateix cistell i amplieu després la identificació entre espècies properes.</p>
+        </div>
+        <div className="comparison-guide-groups">
+          <div className="comparison-guide-list comparison-guide-list-risk">
+            <h3><ShieldAlert size={17} aria-hidden="true" /> Comestibles i dobles de risc</h3>
+            {riskComparisons.map(({ page, status }) => (
+              <Link href={`/compare/${page.slug}`} key={page.slug}>
+                <span>{page.shortTitle}</span>
+                <small className={`comparison-risk-label ${status}`}>
+                  {getEdibilityPresentation(status).label}
+                </small>
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </Link>
+            ))}
+          </div>
+          <div className="comparison-guide-list">
+            <h3>Altres comparacions d’identificació</h3>
+            {identificationComparisons.map((page) => (
+              <Link href={`/compare/${page.slug}`} key={page.slug}>
+                <span>{page.shortTitle}</span>
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </Link>
+            ))}
+          </div>
+        </div>
       </section>
     </PageShell>
   );

@@ -62,7 +62,7 @@ export default function SpringMushroomsPage() {
         layout="split"
       />
 
-      <aside className="intent-safety-note spring-safety-note"><CircleAlert size={22} /><div><strong>La primavera també té confusions de risc.</strong><p>Identifica exemplars complets, revisa tots els trets i no decideixis el consum amb una fotografia. En cas d’ingestió sospitosa, truca al 061.</p></div></aside>
+      <aside className="intent-safety-note spring-safety-note"><CircleAlert size={22} /><div><strong>La primavera també té confusions de risc.</strong><p>Identifiqueu exemplars complets, reviseu tots els trets i no decidiu el consum amb una fotografia. En cas d’ingestió sospitosa, truqueu al 061.</p></div></aside>
 
       {toxicLookalikes.length > 0 && <section className="spring-lookalikes"><div><p className="eyebrow">Mereixen una lectura separada</p><h2>Semblants tòxics presents al catàleg</h2></div><div>{toxicLookalikes.map((species) => <Link key={species.speciesId} href={speciesPath(species)}>{species.identity.commonName}<ArrowUpRight size={15} /></Link>)}</div></section>}
 

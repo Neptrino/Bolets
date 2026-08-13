@@ -4,6 +4,7 @@ import { altitudeHabitatEnvelope } from "@/src/lib/altitude";
 import { habitatForestTerms, habitatProfileKey } from "@/src/lib/habitat";
 import { getOccurrenceSupport } from "@/src/lib/occurrences";
 import { boundsCentre, boundsContain } from "@/src/lib/map-grid";
+import { correctForecastValues, FORECAST_CORRECTION_METHOD } from "@/src/lib/forecast-correction";
 import { PREDICTION_CACHE_VERSION, predictionModelVersion } from "@/src/lib/model-versions";
 import { missingRainfallFields } from "@/src/lib/rainfall";
 import { spatialEnvironmentHistorySchema, spatialEnvironmentResponseSchema } from "@/src/lib/schema";
@@ -28,9 +29,11 @@ import type {
   SuitabilityResult,
 } from "@/src/lib/types";
 
+const MAX_FORECAST_ANCHOR_GAP_MS = 8 * 60 * 60 * 1000;
+
 export async function getPredictionCellHistory(
   speciesId: string,
-  cell: Pick<PredictionCell, "cellId" | "regionId" | "values">,
+  cell: Pick<PredictionCell, "cellId" | "gridSizeM" | "regionId" | "values">,
 ): Promise<PredictionCellTimeline> {
   const species = getSpecies(speciesId);
   if (!species) throw new Error("Unknown species");
@@ -40,6 +43,7 @@ export async function getPredictionCellHistory(
   const query = new URLSearchParams({
     mode: "history",
     cell: cell.cellId,
+    resolution: String(cell.gridSizeM),
     days: "7",
     historyVersion: PREDICTION_CACHE_VERSION,
   });
@@ -71,16 +75,14 @@ export async function getPredictionCellHistory(
     soilSubstrate: cell.values.soilSubstrate,
   };
 
-  const observed = payload.snapshots.map((snapshot) => {
+  const observedSnapshots = payload.snapshots.map((snapshot) => {
     // Habitat is static at this model version. Dynamic values must come only
     // from the historical snapshot so today's weather cannot fill an old gap.
     const values = { ...habitatValues, ...snapshot.values };
     const unavailableFields = [
       ...new Set([...snapshot.unavailableFields, ...missingRainfallFields(values)]),
     ];
-    return {
-      observedAt: snapshot.observedAt,
-      score: calculateSuitability(species, {
+    const conditionSnapshot: ConditionSnapshot = {
         regionId: cell.regionId,
         observedAt: snapshot.observedAt,
         source: snapshot.source,
@@ -90,28 +92,106 @@ export async function getPredictionCellHistory(
         stale: false,
         unavailableFields,
         values,
-      }).score,
+    };
+    return {
+      conditionSnapshot,
+      point: {
+        observedAt: snapshot.observedAt,
+        score: calculateSuitability(species, conditionSnapshot).score,
+      },
     };
   });
+  const observed = observedSnapshots.map(({ point }) => point);
 
   const generatedAt = payload.forecast?.generatedAt;
   const generatedAtMilliseconds = generatedAt ? Date.parse(generatedAt) : Number.NaN;
-  const forecastAgeMilliseconds = Date.now() - generatedAtMilliseconds;
+  const nowMilliseconds = Date.now();
+  const forecastAgeMilliseconds = nowMilliseconds - generatedAtMilliseconds;
+  const forecastSnapshots = [...(payload.forecast?.snapshots ?? [])]
+    .sort((left, right) => left.horizonHours - right.horizonHours);
+  const futureForecastSnapshots = forecastSnapshots.filter((snapshot) =>
+    Date.parse(snapshot.validAt) > nowMilliseconds
+  );
   const forecastFresh = Number.isFinite(generatedAtMilliseconds) &&
     forecastAgeMilliseconds >= -15 * 60 * 1000 &&
     forecastAgeMilliseconds <= 36 * 60 * 60 * 1000 &&
-    (payload.forecast?.snapshots.every((snapshot) => Date.parse(snapshot.validAt) > Date.now()) ?? false);
-  if (!payload.forecast || !forecastFresh) return { observed, forecast: null };
+    futureForecastSnapshots.length > 0;
+  const baseline = payload.forecast?.baseline;
+  if (!payload.forecast || !baseline || !forecastFresh || baseline.unavailableFields.length) {
+    return { observed, forecast: null };
+  }
+  const baselinePointCount = baseline.pointCount;
+  if (baselinePointCount === undefined || forecastSnapshots.some((snapshot) =>
+    snapshot.pointCount === undefined
+  )) {
+    // During a migration-first rollout the old Edge reader may still return
+    // five absolute targets. Preserve observed history, but never guess the
+    // aggregation semantics needed to calibrate those targets.
+    return { observed, forecast: null };
+  }
 
-  const horizonConfidence = (horizonDays: number) =>
-    horizonDays === 1 ? "high" : horizonDays <= 3 ? "moderate" : "limited";
-  const points = payload.forecast.snapshots.map((snapshot) => {
-    const values = { ...habitatValues, ...snapshot.values };
+  // The calibration anchor must remain server-authoritative. Request values
+  // provide static habitat context only; accepting browser-supplied dynamic
+  // weather here would let stale or forged state redefine the forecast seam.
+  const currentSnapshot = observedSnapshots.at(-1)?.conditionSnapshot;
+  if (!currentSnapshot) return { observed, forecast: null };
+  const currentValues = currentSnapshot.values;
+  const currentObservedAt = currentSnapshot.observedAt;
+  const currentScore = calculateSuitability(species, currentSnapshot).score;
+  if (currentScore === null) return { observed, forecast: null };
+  const anchor = { observedAt: currentObservedAt, score: currentScore };
+  observed[observed.length - 1] = anchor;
+
+  const currentWeatherAt = Date.parse(currentValues.weatherObservedAt ?? currentObservedAt);
+  const baselineAt = Date.parse(baseline.validAt);
+  const anchorGapMilliseconds = Math.abs(baselineAt - currentWeatherAt);
+  if (!Number.isFinite(anchorGapMilliseconds) || anchorGapMilliseconds > MAX_FORECAST_ANCHOR_GAP_MS) {
+    return { observed, forecast: null };
+  }
+
+  const horizonConfidence = (
+    horizonDays: number,
+    sourceConfidences: EvidenceConfidence[],
+  ): PredictionForecastPoint["horizonConfidence"] => {
+    const horizon = horizonDays === 1 ? "high" : horizonDays <= 3 ? "moderate" : "limited";
+    const order: PredictionForecastPoint["horizonConfidence"][] = ["limited", "moderate", "high"];
+    const sourceIndex = Math.min(...sourceConfidences.map((confidence) =>
+      confidence === "high" || confidence === "moderate" ? order.indexOf(confidence) : 0
+    ));
+    return order[Math.min(order.indexOf(horizon), sourceIndex)];
+  };
+  const baselineDrySpellDays = baseline.values.drySpellDays;
+  const currentDrySpellDays = currentValues.drySpellDays;
+  if (baselineDrySpellDays === undefined || currentDrySpellDays === undefined) {
+    return { observed, forecast: null };
+  }
+  let correctionState = {
+    modelDrySpellDays: baselineDrySpellDays,
+    correctedDrySpellDays: currentDrySpellDays,
+  };
+  // Advance through every model horizon, including a just-expired target, so
+  // path-dependent events such as a rain reset still influence later points.
+  // Only future-valid targets are exposed to the chart below.
+  const correctedPoints = forecastSnapshots.map((snapshot) => {
+    const correction = correctForecastValues(
+      currentValues,
+      baseline.values,
+      snapshot.values,
+      correctionState,
+      { aggregatePointCount: Math.max(baselinePointCount, snapshot.pointCount!) },
+    );
+    correctionState = correction.state;
+    const values = { ...habitatValues, ...correction.values };
     const unavailableFields = [
-      ...new Set([...snapshot.unavailableFields, ...missingRainfallFields(values)]),
+      ...new Set([
+        ...baseline.unavailableFields,
+        ...snapshot.unavailableFields,
+        ...correction.unavailableFields,
+        ...missingRainfallFields(values),
+      ]),
     ];
     const horizonDays = (snapshot.horizonHours / 24) as PredictionForecastPoint["horizonDays"];
-    const score = snapshot.unavailableFields.length
+    const score = unavailableFields.length
       ? null
       : calculateSuitability(species, {
         regionId: cell.regionId,
@@ -125,17 +205,30 @@ export async function getPredictionCellHistory(
     return {
       validAt: snapshot.validAt,
       horizonDays,
-      horizonConfidence: horizonConfidence(horizonDays),
+      horizonConfidence: horizonConfidence(
+        horizonDays,
+        [currentSnapshot.confidence, baseline.confidence, snapshot.confidence],
+      ),
       score,
     } satisfies PredictionForecastPoint;
   });
+  const points = correctedPoints.filter((point) => Date.parse(point.validAt) > nowMilliseconds);
 
   return {
     observed,
     forecast: {
       generatedAt: payload.forecast.generatedAt,
-      source: [...new Set(payload.forecast.snapshots.flatMap((snapshot) => snapshot.source))],
-      sourceResolutionM: Math.max(...payload.forecast.snapshots.map((snapshot) => snapshot.sourceResolutionM)),
+      source: [...new Set([
+        ...baseline.source,
+        ...futureForecastSnapshots.flatMap((snapshot) => snapshot.source),
+      ])],
+      sourceResolutionM: Math.max(
+        baseline.sourceResolutionM,
+        ...futureForecastSnapshots.map((snapshot) => snapshot.sourceResolutionM),
+      ),
+      anchor,
+      calibratedAt: baseline.validAt,
+      correctionMethod: FORECAST_CORRECTION_METHOD,
       points,
     },
   };
@@ -195,6 +288,7 @@ export async function getPredictionCells(
   gridSizeM: SpatialGridSizeM = 250,
   compact = false,
   includeOccurrence = !compact,
+  scoreOnly = compact,
 ) {
   const species = getSpecies(speciesId);
   if (!species) throw new Error("Unknown species");
@@ -219,10 +313,10 @@ export async function getPredictionCells(
     query.set("phMin", String(phRange[0]));
     query.set("phMax", String(phRange[1]));
   }
-  if (compact) {
+  if (scoreOnly) {
     query.set("view", "score");
-    // Keep optimized map responses cacheable, but bypass older cached payloads
-    // whenever their field contract changes.
+    // Keep optimized scoring responses cacheable, but bypass older cached
+    // payloads whenever their field contract changes.
     query.set("viewVersion", PREDICTION_CACHE_VERSION);
   }
   const environmentRequest = fetch(`${process.env.SUPABASE_URL}/functions/v1/read-spatial-environment?${query}`, {
@@ -483,7 +577,11 @@ export async function getRegionalPredictionSummary(
     10000,
     false,
     false,
+    true,
   );
+  if (result.truncated) {
+    throw new Error(`Regional prediction response was truncated for ${speciesId} in ${regionId}`);
+  }
   return summariseRegionalPredictions(
     species,
     regionId,

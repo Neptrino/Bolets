@@ -102,7 +102,7 @@ function AltitudeCurve() {
           <text x="653" y="209" textAnchor="middle">màx + 100 m</text>
         </g>
       </svg>
-      <p>Els 100 m interiors de cada extrem fan la transició de 75 a 100. En rangs més estrets de 200 m, les dues transicions es troben al punt mig.</p>
+      <p>Els 100 m interiors de cada extrem fan la transició de 75 a 100. En rangs més estrets que 200 m, les dues transicions es troben al punt mitjà.</p>
     </figure>
   );
 }
@@ -155,7 +155,7 @@ export default function MethodPage() {
             </div>
           </div>
         </div>
-        <a href="#principi" className="method-scroll"><ArrowDown size={16} /> Comença pel principi</a>
+        <a href="#principi" className="method-scroll"><ArrowDown size={16} /> Comenceu pel principi</a>
       </section>
 
       <section id="principi" className="page-width method-principle" aria-labelledby="principle-title">
@@ -215,7 +215,7 @@ export default function MethodPage() {
                 <span>03</span>
                 <Sprout size={23} />
                 <h3>pH del sòl</h3>
-                <p>Quan l’espècie té un rang de pH documentat, la cel·la n’ha d’estar dins. Sense evidència verificada, no es publica.</p>
+                <p>Quan l’espècie té un rang de pH documentat, el pH de la cel·la ha de quedar dins d’aquest rang. Sense evidència verificada, no es publica.</p>
               </article>
             </div>
 
@@ -263,7 +263,7 @@ export default function MethodPage() {
               <Database size={24} />
               <div>
                 <h3>I les observacions històriques?</h3>
-                <p>Els registres de FungaCAT/GBIF només corroboren presència passada en quadrícules generalitzades d’almenys 10 km. No entren a cap fórmula, no amplien l’hàbitat i l’absència de registres mai compta com a absència de l’espècie.</p>
+                <p>Els registres de FungaCAT/GBIF només corroboren presència passada en quadrícules generalitzades d’almenys 10 km. No entren en cap fórmula, no amplien l’hàbitat i l’absència de registres mai compta com a absència de l’espècie.</p>
               </div>
               <strong>pes = 0</strong>
             </aside>
@@ -320,7 +320,7 @@ export default function MethodPage() {
 
             <div className="method-subscore-grid">
               <article className="method-subscore method-subscore-rain">
-                <div className="method-subscore-title"><CloudRain size={24} /><div><span>P · PLUJA I MEMÒRIA HÍDRICA</span><h4>Un pols recent, corregit pel que recorda el sòl.</h4></div></div>
+                <div className="method-subscore-title"><CloudRain size={24} /><div><span>P · PLUJA I MEMÒRIA HÍDRICA</span><h4>Un pols recent, corregit per la memòria del sòl.</h4></div></div>
                 <div className="method-rain-steps">
                   <div>
                     <b>1 · Pluja efectiva recent</b>
@@ -359,12 +359,12 @@ export default function MethodPage() {
                 <Formula label="Dins del rang de temperatura la resposta és cent; fora, perd punts segons la distància dividida per l'amplada del rang.">
                   T = 100 dins [T<sub>mín</sub>, T<sub>màx</sub>]; fora: max(0, 100 − distància / amplada × 100)
                 </Formula>
-                <p>La referència és la mitjana de 10 dies. Una mínima ≤ 0 °C limita el factor a 10, o 35 si la fitxa documenta tolerància. Una màxima ≥ 3 °C o ≥ 6 °C sobre l’ideal el limita a 50 o 25.</p>
+                <p>La referència és la mitjana de 10 dies. Una temperatura mínima ≤ 0 °C limita el factor a 10, o a 35 si la fitxa documenta tolerància. Una temperatura màxima situada ≥ 3 °C o ≥ 6 °C per sobre de l’ideal el limita a 50 o 25.</p>
               </article>
 
               <article className="method-subscore">
                 <div className="method-subscore-title"><Gauge size={24} /><div><span>HR + E · ATMOSFERA I TEMPORADA</span><h4>Resposta ràpida amb memòria limitada.</h4></div></div>
-                <Formula label="Cada finestra d'humitat relativa puntua cent entre seixanta-cinc i noranta per cent; fora, resta dos punts per cada punt de distància a setanta-cinc.">
+                <Formula label="Cada finestra d'humitat relativa puntua 100 entre el 65 % i el 90 %; fora d’aquest interval, resta 2 punts per cada punt de distància respecte del 75 %.">
                   H(h) = 100 si 65 ≤ h ≤ 90; fora: max(0, 100 − 2|h − 75|)
                 </Formula>
                 <p>La base és <b>H(HR̄<sub>24 h</sub>)</b>. Si la mitjana de 7 dies és inferior al 65% i dona una resposta pitjor, HR = 0,75 H(HR̄<sub>24 h</sub>) + 0,25 H(HR̄<sub>7 d</sub>); en cap altre cas la finestra setmanal augmenta o redueix la puntuació. Sense aquesta finestra, conservem la base de 24 h.</p>
@@ -439,7 +439,7 @@ export default function MethodPage() {
             <div className="method-label-scale" aria-label="Etiquetes finals segons puntuació">
               <div className="method-label-scale-heading">
                 <span>ETIQUETA FINAL</span>
-                <small>després de zeroes i límits</small>
+                <small>després dels valors zero i dels límits</small>
               </div>
               <div className="method-label-ranges">
                 {suitabilityScale.map((band, index) => (
@@ -504,7 +504,7 @@ export default function MethodPage() {
                   <p>WCS del MDT de Catalunya. Mostregem una altitud per cel·la i la fem servir a la porta d’hàbitat i a la resposta A(h).</p>
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>5 / 15 m</dd></div>
-                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>rebuild estàtic</dd></div>
+                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>reconstrucció estàtica</dd></div>
                     <div><dt>Ús</dt><dd>distribució + predicció</dd></div>
                     <div><dt>Llicència</dt><dd>CC BY 4.0</dd></div>
                   </dl>
@@ -517,7 +517,7 @@ export default function MethodPage() {
                   <p>Raster de 41 classes. El mostregem cada 50 m i retenim totes les fraccions reconegudes, no només la coberta dominant.</p>
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>1 m</dd></div>
-                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>rebuild estàtic</dd></div>
+                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>reconstrucció estàtica</dd></div>
                     <div><dt>Ús</dt><dd>cobertura compatible</dd></div>
                     <div><dt>Llicència</dt><dd>CC BY 4.0</dd></div>
                   </dl>
@@ -530,7 +530,7 @@ export default function MethodPage() {
                   <p>pH, argila, sorra i llim. El pH actua com a porta ecològica; les fraccions granulomètriques descriuen la textura.</p>
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>250 m</dd></div>
-                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>rebuild estàtic</dd></div>
+                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>reconstrucció estàtica</dd></div>
                     <div><dt>Ús</dt><dd>hàbitat + factor sòl</dd></div>
                     <div><dt>Llicència</dt><dd>CC BY 4.0</dd></div>
                   </dl>
@@ -540,10 +540,10 @@ export default function MethodPage() {
                 <article className="method-source-card">
                   <div className="method-source-card-top"><Layers3 size={24} /><span>ICGC · v3r0</span></div>
                   <h4>Mapa geològic de Catalunya</h4>
-                  <p>Unitats geològiques a escala 1:50.000. Estimem la cobertura dins de cada cel·la canònica de 250 m amb una malla de mostreig de 50 m i agreguem els nivells més grossos per àrea. És evidència contextual: no entra a cap puntuació.</p>
+                  <p>Unitats geològiques a escala 1:50.000. Estimem la cobertura dins de cada cel·la canònica de 250 m amb una malla de mostreig de 50 m i agreguem els nivells més grossos per àrea. És evidència contextual: no entra en cap puntuació.</p>
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>escala 1:50.000</dd></div>
-                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>rebuild estàtic</dd></div>
+                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>reconstrucció estàtica</dd></div>
                     <div><dt>Ús</dt><dd>context geològic · pes 0</dd></div>
                     <div><dt>Llicència</dt><dd>CC BY 4.0</dd></div>
                   </dl>
@@ -632,7 +632,7 @@ export default function MethodPage() {
               <ShieldCheck size={25} />
               <div>
                 <h3>Una font no hereta la resolució de la cel·la</h3>
-                <p>Una predicció pintada a 250 m pot compartir el mateix punt atmosfèric de 2,5 km i la mateixa humitat del sòl de 9 km amb moltes cel·les veïnes. Guardem resolucions i escales cartogràfiques per separat i exposem camps absents, antiguitat, confiança i versió del model.</p>
+                <p>Una predicció pintada a 250 m pot compartir el mateix punt atmosfèric de 2,5 km i la mateixa humitat del sòl de 9 km amb moltes cel·les veïnes. Guardem resolucions i escales cartogràfiques per separat i exposem camps absents, antiguitat i confiança.</p>
               </div>
             </aside>
           </div>
@@ -643,11 +643,11 @@ export default function MethodPage() {
         <div className="page-width">
           <div>
             <p className="eyebrow">Del mètode al territori</p>
-            <h2>Ara llegeix el mapa<br />amb uns altres ulls.</h2>
+            <h2>Ara llegiu el mapa<br />amb uns altres ulls.</h2>
           </div>
           <div>
-            <p>Selecciona una espècie i una cel·la per veure la puntuació, els factors disponibles, la procedència i la incertesa que hi ha al darrere.</p>
-            <Link href="/map" className="button">Obre el mapa de predicció <ArrowUpRight size={17} /></Link>
+            <p>Seleccioneu una espècie i una cel·la per veure la puntuació, els factors disponibles, la procedència i la incertesa que hi ha al darrere.</p>
+            <Link href="/map" className="button">Obriu el mapa de predicció <ArrowUpRight size={17} /></Link>
           </div>
         </div>
       </section>

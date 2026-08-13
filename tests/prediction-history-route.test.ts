@@ -14,7 +14,8 @@ function request(speciesId = "boletus-edulis") {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       speciesId,
-      cellId: "epsg25831:250:1:1",
+      cellId: "epsg25831:2500:1:1",
+      gridSizeM: 2500,
       regionId: "pirineus",
       values: { altitudeM: 1200, forestCompatibility: 100, soilCompatibility: 100 },
     }),
@@ -31,6 +32,9 @@ describe("prediction history and forecast route", () => {
       observed: [{ observedAt: "2026-10-10T12:00:00Z", score: 64 }],
       forecast: {
         generatedAt: "2026-10-10T13:00:00Z",
+        calibratedAt: "2026-10-10T12:00:00Z",
+        correctionMethod: "observed-anomaly-v1" as const,
+        anchor: { observedAt: "2026-10-10T12:00:00Z", score: 64 },
         source: ["ECMWF IFS HRES via Open-Meteo"],
         sourceResolutionM: 9000,
         points: [1, 2, 3, 4, 5].map((horizonDays) => ({
@@ -49,6 +53,10 @@ describe("prediction history and forecast route", () => {
     expect(response.headers.get("cache-control")).toBe("public, max-age=60, s-maxage=300, stale-while-revalidate=600");
     await expect(response.json()).resolves.toEqual(timeline);
     expect(timeline.forecast.points).toHaveLength(5);
+    expect(getPredictionCellHistory).toHaveBeenCalledWith("boletus-edulis", expect.objectContaining({
+      cellId: "epsg25831:2500:1:1",
+      gridSizeM: 2500,
+    }));
   });
 
   it("keeps history available when the forecast is unavailable", async () => {

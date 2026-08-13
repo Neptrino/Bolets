@@ -3,13 +3,14 @@
 import { useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
 import { SpeciesCard } from "@/components/species-card";
-import type { Month, SpeciesProfile } from "@/src/lib/types";
+import type { SpeciesCardProfile } from "@/src/lib/species-card-profile";
+import type { Month } from "@/src/lib/types";
 
 export function SpeciesDirectory({
   species,
   currentMonth,
 }: {
-  species: SpeciesProfile[];
+  species: SpeciesCardProfile[];
   currentMonth: Month;
 }) {
   const [query, setQuery] = useState("");
@@ -29,7 +30,7 @@ export function SpeciesDirectory({
           <span className="visually-hidden">Cerca espècies</span>
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cerca per nom català, gènere o família" />
           {query && (
-            <button type="button" onClick={() => setQuery("")} aria-label="Neteja la cerca">
+            <button type="button" onClick={() => setQuery("")} aria-label="Netegeu la cerca">
               <X size={16} aria-hidden="true" />
             </button>
           )}

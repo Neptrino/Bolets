@@ -1,10 +1,15 @@
 import { describe, expect, it } from "vitest";
 import sitemap from "@/app/sitemap";
 import { edibleSpecies, speciesInSeason, toxicSpecies } from "@/src/lib/species-collections";
-import { comparisonPages } from "@/data/comparison-pages";
-import { getSpecies } from "@/data/species";
+import {
+  comparisonPages,
+  comparisonPagesForSpecies,
+} from "@/data/comparison-pages";
+import { getSpecies, speciesProfiles } from "@/data/species";
 import { seasonMonthPath, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { seasonGuides } from "@/src/lib/season-guides";
+import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
+import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 
 describe("search-intent species collections", () => {
   it("only publishes edible statuses in the edible guide", () => {
@@ -32,6 +37,14 @@ describe("search-intent species collections", () => {
     expect(octoberSpecies[0]?.ecologicalConfig.seasonality.oct).toBe("peak");
   });
 
+  it("keeps the client catalogue payload compact", () => {
+    const compactProfiles = speciesProfiles.map(toSpeciesCardProfile);
+    expect(compactProfiles).toHaveLength(speciesProfiles.length);
+    expect(JSON.stringify(compactProfiles).length).toBeLessThan(
+      JSON.stringify(speciesProfiles).length / 3,
+    );
+  });
+
   it("includes all intent landing pages in the sitemap", () => {
     const urls = sitemap().map((entry) => entry.url);
     expect(urls).toContain("https://bolets.app/bolets");
@@ -47,7 +60,11 @@ describe("search-intent species collections", () => {
     for (const { key } of SEASON_MONTHS) {
       expect(urls).toContain(`https://bolets.app${seasonMonthPath(key)}`);
     }
-    expect(urls).toContain("https://bolets.app/zones/rovellons");
+    expect(urls).toContain("https://bolets.app/zones");
+    expect(urls).toContain("https://bolets.app/guies");
+    for (const guide of speciesTerritoryGuides) {
+      expect(urls).toContain(`https://bolets.app${guide.path}`);
+    }
     expect(urls).toContain("https://bolets.app/compare/rovello-vs-pinetell");
   });
 
@@ -58,7 +75,13 @@ describe("search-intent species collections", () => {
 
     expect(new Set(urls).size).toBe(urls.length);
     expect(urls.some((url) => new URL(url).pathname.startsWith("/species"))).toBe(false);
-    expect(urls.filter((url) => new URL(url).pathname.startsWith("/bolets/")).length).toBeGreaterThan(0);
+    for (const species of speciesProfiles) {
+      const entriesForSpecies = entries.filter(
+        (entry) => entry.url === `https://bolets.app/bolets/${species.speciesId}`,
+      );
+      expect(entriesForSpecies, species.speciesId).toHaveLength(1);
+      expect(entriesForSpecies[0]?.images, species.speciesId).toHaveLength(1);
+    }
     for (const entry of entries) {
       expect(entry.lastModified).toBeDefined();
       expect(new Date(entry.lastModified!).getTime()).toBeLessThanOrEqual(now);
@@ -66,7 +89,7 @@ describe("search-intent species collections", () => {
   });
 
   it("keeps every curated comparison connected to two catalogue species", () => {
-    expect(comparisonPages.length).toBeGreaterThanOrEqual(13);
+    expect(comparisonPages.length).toBeGreaterThanOrEqual(18);
     expect(new Set(comparisonPages.map((page) => page.slug)).size).toBe(comparisonPages.length);
     const unorderedPairs = comparisonPages.map((page) => [page.leftSpeciesId, page.rightSpeciesId].sort().join(":"));
     expect(new Set(unorderedPairs).size).toBe(unorderedPairs.length);
@@ -83,8 +106,27 @@ describe("search-intent species collections", () => {
 
   it("covers the strongest current comparison suggestions", () => {
     const slugs = comparisonPages.map((page) => page.slug);
-    expect(slugs).toContain("rovello-vs-pinetell");
-    expect(slugs).toContain("rossinyol-vs-camagroc");
-    expect(slugs).toContain("ou-de-reig-vs-reig-bord");
+    expect(slugs).toEqual(expect.arrayContaining([
+      "rovello-vs-pinetell",
+      "rossinyol-vs-camagroc",
+      "ou-de-reig-vs-reig-bord",
+      "cep-vs-mataparent",
+      "fredolic-vs-fredolic-metzinos",
+      "camasec-vs-candeleta-vorada",
+      "moixero-vs-inocibe-patouillard",
+      "murgola-vs-bolet-greix",
+      "carlet-vs-carner-bord",
+    ]));
+  });
+
+  it("connects published comparisons back to both species profiles", () => {
+    for (const page of comparisonPages) {
+      expect(comparisonPagesForSpecies(page.leftSpeciesId)).toContain(page);
+      expect(comparisonPagesForSpecies(page.rightSpeciesId)).toContain(page);
+    }
+
+    expect(
+      comparisonPagesForSpecies("boletus-edulis").map((page) => page.slug),
+    ).toContain("cep-vs-mataparent");
   });
 });

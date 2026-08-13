@@ -40,15 +40,23 @@ type ConditionStat = {
   value: string;
   explanation?: string;
 };
+type ConditionContext =
+  | {
+      scoreLabel?: string;
+      scoreValue?: string;
+      targetLabel: string;
+      targetValue: string;
+    }
+  | { note: string };
 
 const factorChartNames: Record<ModelFactor["id"], string> = {
   forest: "Hàbitat",
   soil: "Sòl",
   rainfall: "Pluja recent",
-  soilMoisture: "Humitat sòl",
+  soilMoisture: "Humitat del sòl",
   temperature: "Temperatura",
   altitude: "Altitud",
-  humidity: "Humitat aire",
+  humidity: "Humitat de l’aire",
   seasonality: "Temporada",
 };
 
@@ -75,17 +83,6 @@ const uppercaseInitial = (value: string) =>
     ? `${value.charAt(0).toLocaleUpperCase("ca-ES")}${value.slice(1)}`
     : value;
 
-const geologicalSubstrateLabels: Record<
-  GeologicalSubstrateEvidence["class"],
-  string
-> = {
-  silicic: "Silícic",
-  calcareous: "Calcari",
-  mixed: "Mixt",
-  unconsolidated: "Materials no consolidats",
-  unknown: "Substrat no determinat",
-};
-
 function readingTime(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "hora desconeguda";
@@ -97,6 +94,17 @@ function readingTime(value: string) {
     timeZone: "Europe/Madrid",
   }).format(date);
 }
+
+const geologicalSubstrateLabels: Record<
+  GeologicalSubstrateEvidence["class"],
+  string
+> = {
+  silicic: "Silícic",
+  calcareous: "Calcari",
+  mixed: "Mixt",
+  unconsolidated: "Materials no consolidats",
+  unknown: "Substrat no determinat",
+};
 
 function cellCoordinates(bounds: CoordinateBounds | undefined) {
   if (!bounds) return undefined;
@@ -130,6 +138,7 @@ export function ConditionComparison({
   expanded?: boolean;
 }) {
   const v = snapshot.values;
+  const weatherUpdatedAt = snapshot.stale ? "no disponible" : readingTime(snapshot.observedAt);
   const predictionStatus = getConditionPredictionStatus(snapshot.stale, result);
   const atmosphericResolution = v.atmosphericResolutionM
     ? `${(v.atmosphericResolutionM / 1000).toLocaleString("ca-ES")} km`
@@ -164,34 +173,38 @@ export function ConditionComparison({
         ? "warning"
         : "clear";
   const frostWindowDays = v.frostHours10d !== undefined ? 10 : 7;
+  const frostMinimum = temperature(v.temperatureMin10dC ?? v.temperatureMin7dC);
   const data: Array<{
     label: string;
     period: string;
     current: string;
-    context: string;
+    context: ConditionContext;
     stats: ConditionStat[];
     icon: typeof ThermometerSun;
   }> = [
     {
       label: "Temperatura",
-      period: "ara",
+      period: "darrera lectura",
       current: temperature(v.temperatureC),
-      context: `Puntuació sobre 10 dies · finestra ideal: ${species.ecologicalConfig.climate.temperatureRange[0]}–${species.ecologicalConfig.climate.temperatureRange[1]} °C`,
+      context: {
+        targetLabel: "Finestra ideal",
+        targetValue: `${species.ecologicalConfig.climate.temperatureRange[0]}–${species.ecologicalConfig.climate.temperatureRange[1]} °C`,
+      },
       stats: [
         {
-          label: "Mín · 10 dies",
+          label: "Mín. · 10 dies",
           value: temperature(v.temperatureMin10dC),
           explanation:
             "Temperatura més baixa estimada durant els últims 10 dies. Un episodi de fred o gelada pot frenar la fructificació encara que la mitjana sigui adequada.",
         },
         {
-          label: "Mitj · 10 dies",
+          label: "Mitj. · 10 dies",
           value: temperature(v.temperatureAvg10dC),
           explanation:
             "Temperatura mitjana estimada durant els últims 10 dies. Mostra si el període recent s’acosta al rang tèrmic favorable per a l’espècie.",
         },
         {
-          label: "Màx · 10 dies",
+          label: "Màx. · 10 dies",
           value: temperature(v.temperatureMax10dC),
           explanation:
             "Temperatura més alta estimada durant els últims 10 dies. Valors elevats poden accelerar l’assecament del sòl i reduir les condicions favorables.",
@@ -201,36 +214,39 @@ export function ConditionComparison({
     },
     {
       label: "Humitat del sòl",
-      period: "ara · profunditat 3–9 cm",
+      period: "darrera lectura · profunditat 3–9 cm",
       current: percentage(v.soilMoisture, true),
-      context: `Perfil ideal: ${species.ecologicalConfig.climate.soilMoisture.toLowerCase()}`,
+      context: {
+        targetLabel: "Perfil ideal",
+        targetValue: species.ecologicalConfig.climate.soilMoisture.toLowerCase(),
+      },
       stats: [
         {
-          label: "Mín · 24 h",
+          label: "Mín. · 24 h",
           value: percentage(v.soilMoistureMin24h, true),
           explanation:
             "Humitat més baixa estimada a 3–9 cm de profunditat durant les últimes 24 h. Indica el moment més sec del dia, que pot limitar l’activitat si és massa baix.",
         },
         {
-          label: "Mitj · 24 h",
+          label: "Mitj. · 24 h",
           value: percentage(v.soilMoistureAvg24h, true),
           explanation:
             "Humitat mitjana estimada a 3–9 cm durant les últimes 24 h. És una referència de l’aigua disponible a la capa superficial del sòl.",
         },
         {
-          label: "Màx · 24 h",
+          label: "Màx. · 24 h",
           value: percentage(v.soilMoistureMax24h, true),
           explanation:
             "Humitat més alta estimada a 3–9 cm durant les últimes 24 h. Pot reflectir la resposta del sòl a la pluja, la rosada o una menor evaporació.",
         },
         {
-          label: "Mín · 7 dies",
+          label: "Mín. · 7 dies",
           value: percentage(v.soilMoistureMin7d, true),
           explanation:
             "Humitat més baixa estimada a 3–9 cm durant la darrera setmana. Ajuda a detectar si hi ha hagut una fase seca recent, encara que ara el sòl sembli humit.",
         },
         {
-          label: "Mitj · 7 dies",
+          label: "Mitj. · 7 dies",
           value: percentage(v.soilMoistureAvg7d, true),
           explanation:
             "Humitat mitjana estimada a 3–9 cm durant la darrera setmana. Resumeix la disponibilitat d’aigua recent, no només la lectura actual.",
@@ -246,33 +262,36 @@ export function ConditionComparison({
     },
     {
       label: "Humitat de l’aire",
-      period: "ara",
+      period: "darrera lectura",
       current: percentage(v.relativeHumidity),
-      context: `Perfil ideal: ${species.ecologicalConfig.climate.relativeHumidity.toLowerCase()}`,
+      context: {
+        targetLabel: "Perfil ideal",
+        targetValue: species.ecologicalConfig.climate.relativeHumidity.toLowerCase(),
+      },
       stats: [
         {
-          label: "Mín · 24 h",
+          label: "Mín. · 24 h",
           value: percentage(v.relativeHumidityMin24h),
           explanation:
             "Humitat relativa més baixa estimada durant les últimes 24 h. Els mínims baixos afavoreixen l’evaporació i poden assecar la superfície.",
         },
         {
-          label: "Mitj · 24 h",
+          label: "Mitj. · 24 h",
           value: percentage(v.relativeHumidityAvg24h),
           explanation:
             "Humitat relativa mitjana estimada durant les últimes 24 h. Una humitat ambiental alta redueix la pèrdua d’aigua i afavoreix un microclima més humit.",
         },
         {
-          label: "Màx · 24 h",
+          label: "Màx. · 24 h",
           value: percentage(v.relativeHumidityMax24h),
           explanation:
             "Humitat relativa més alta estimada durant les últimes 24 h. Indica els períodes més favorables per mantenir la superfície humida, sovint de nit o a primera hora.",
         },
         {
-          label: "Mitj · 7 dies",
+          label: "Mitj. · 7 dies",
           value: percentage(v.relativeHumidityAvg7d),
           explanation:
-            "Humitat relativa mitjana estimada durant els últims set dies. Només penalitza la puntuació quan mostra una sequedat persistent pitjor que la de les últimes 24 hores.",
+            "Humitat relativa mitjana estimada durant els últims set dies. Només penalitza la puntuació quan mostra una sequedat persistent i més intensa que la de les últimes 24 hores.",
         },
       ],
       icon: Cloud,
@@ -281,8 +300,16 @@ export function ConditionComparison({
       label: "Pluja acumulada",
       period: "últimes 168 h",
       current: millimetres(v.rainfall7dMm),
-      context: `Balanç continu amb evapotranspiració, ratxa seca i humitat del sòl · ${lowercaseInitial(species.ecologicalConfig.rainfall.priorMoisture)}`,
+      context: {
+        note: `Balanç continu amb evapotranspiració, ratxa seca i humitat del sòl · ${lowercaseInitial(species.ecologicalConfig.rainfall.priorMoisture)}`,
+      },
       stats: [
+        {
+          label: "Pluja · 24 h",
+          value: millimetres(v.rainfall24hMm),
+          explanation:
+            "Precipitació acumulada durant les últimes 24 h. Mostra si hi ha hagut un pols de pluja molt recent que pugui començar a rehidratar la capa superficial del sòl.",
+        },
         {
           label: "Pluja · 3 dies",
           value: millimetres(v.rainfall3dMm),
@@ -318,18 +345,18 @@ export function ConditionComparison({
     },
     {
       label: "Vent",
-      period: "ara",
+      period: "darrera lectura",
       current: speed(v.windKmh),
-      context: species.ecologicalConfig.climate.wind,
+      context: { note: species.ecologicalConfig.climate.wind },
       stats: [
         {
-          label: "Mitj · 24 h",
+          label: "Mitj. · 24 h",
           value: speed(v.windAvg24hKmh),
           explanation:
             "Velocitat mitjana del vent durant les últimes 24 h. El vent constant augmenta la pèrdua d’aigua de la vegetació i de la capa superficial del sòl.",
         },
         {
-          label: "Màx · 24 h",
+          label: "Màx. · 24 h",
           value: speed(v.windMax24hKmh),
           explanation:
             "Velocitat màxima sostinguda estimada durant les últimes 24 h. Episodis de vent intens poden assecar ràpidament ambients exposats.",
@@ -344,11 +371,6 @@ export function ConditionComparison({
       icon: Wind,
     },
   ];
-  const sourceTime = v.weatherObservedAt
-    ? readingTime(v.weatherObservedAt)
-    : snapshot.stale
-      ? "no disponible"
-      : readingTime(snapshot.observedAt);
   return (
     <div
       className={`conditions-panel${expanded ? " conditions-panel-expanded" : ""}`}
@@ -361,6 +383,10 @@ export function ConditionComparison({
               : regionalSummary
                 ? `Resum regional · ${regionalSummary.scoredCellCount} quadrícules de ${formatGridDimensions(regionalSummary.gridSizeM)}`
                 : "Lectura territorial"}
+          </p>
+          <p className="condition-last-updated">
+            <Clock3 size={13} aria-hidden="true" />
+            Dades meteorològiques actualitzades: {weatherUpdatedAt}
           </p>
           <h3>
             Condicions actuals · {selectedCellCoordinates ?? regionLabels[snapshot.regionId]}
@@ -428,7 +454,7 @@ export function ConditionComparison({
                       ? ` · ${occurrenceEvidence.observedYearMin}`
                       : ` · ${occurrenceEvidence.observedYearMin}–${occurrenceEvidence.observedYearMax}`
                     : ""}
-                  . És corroboració històrica; no modifica la puntuació
+                  . És una corroboració històrica; no modifica la puntuació
                   ambiental actual.
                 </span>
                 <small>
@@ -484,14 +510,6 @@ export function ConditionComparison({
           </div>
         </div>
       ) : null}
-      <p className="condition-window-note">
-        <Clock3 size={15} />
-        <span>
-          <strong>Lectura del model: {sourceTime}.</strong> «Ara» és la darrera
-          estimació; mín/mitj/màx resumeixen les últimes 24 h i la pluja, les
-          últimes 168 h. No són mesures d’una estació.
-        </span>
-      </p>
       <div className="condition-list">
         {data.map((item) => {
           const Icon = item.icon;
@@ -503,7 +521,24 @@ export function ConditionComparison({
                 <small>{item.period}</small>
               </div>
               <strong className="condition-current">{item.current}</strong>
-              <p className="condition-context">{item.context}</p>
+              {"note" in item.context ? (
+                <p className="condition-context condition-context-note">
+                  {item.context.note}
+                </p>
+              ) : (
+                <dl className="condition-context condition-context-readings">
+                  {item.context.scoreLabel && item.context.scoreValue ? (
+                    <div>
+                      <dt>{item.context.scoreLabel}</dt>
+                      <dd>{item.context.scoreValue}</dd>
+                    </div>
+                  ) : null}
+                  <div>
+                    <dt>{item.context.targetLabel}</dt>
+                    <dd>{item.context.targetValue}</dd>
+                  </div>
+                </dl>
+              )}
               {item.stats.length > 0 && (
                 <dl className="condition-stats">
                   {item.stats.map((stat, statIndex) => (
@@ -537,13 +572,15 @@ export function ConditionComparison({
               )}
               {item.label === "Temperatura" ? (
                 <div className={`condition-frost-inline ${frostState}`}>
-                  <Snowflake size={15} />
-                  <span>
+                  <span className="condition-frost-icon" aria-hidden="true">
+                    <Snowflake size={15} />
+                  </span>
+                  <span className="condition-frost-copy">
                     {frostState === "warning"
-                      ? `Gelada detectada · mínima ${temperature(v.temperatureMin10dC ?? v.temperatureMin7dC)}`
+                      ? <><strong>Gelada detectada</strong><span>Mínima {frostMinimum}</span></>
                       : frostState === "clear"
-                        ? `Sense gelada en ${frostWindowDays} dies · mínima ${temperature(v.temperatureMin10dC ?? v.temperatureMin7dC)}`
-                        : "Historial de gelada no disponible"}
+                        ? <><strong>Sense gelada</strong><span>en {frostWindowDays} dies · mínima {frostMinimum}</span></>
+                        : <strong>Historial de gelada no disponible</strong>}
                   </span>
                 </div>
               ) : null}

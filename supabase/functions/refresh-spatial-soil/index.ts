@@ -1,4 +1,4 @@
-import { createAdminClient, finiteNumber, finishRun, json, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
+import { createAdminClient, finiteNumber, finishRun, json, refreshSpatialLevelConditionsAfterIngestion, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
 import {
   configureOpenMeteoForecastRequest,
   configureOpenMeteoRequest,
@@ -20,7 +20,7 @@ const BATCH_SIZE = 50;
 const PROVIDER_BATCH_SIZE = 50;
 const COMPLETE_CURSOR = "__complete__";
 const SOIL_CURSOR_PIPELINE = "spatial-soil";
-const FORECAST_CURSOR_PIPELINE = "spatial-forecast";
+const FORECAST_CURSOR_PIPELINE = "spatial-forecast-v2";
 
 type Settled<T> = { data: T; error?: undefined } | { data?: undefined; error: string };
 
@@ -89,6 +89,21 @@ async function saveCursor(
   if (error) throw error;
 }
 
+async function forecastIssueGeneratedAt(
+  supabase: ReturnType<typeof createAdminClient>,
+  snapshotDate: string,
+) {
+  const { data, error } = await supabase.rpc("allocate_weather_forecast_issue", {
+    p_snapshot_date: snapshotDate,
+    p_generated_at: new Date().toISOString(),
+  });
+  if (error) throw error;
+  // All resumable batches for one date normalize against one base time. This
+  // also lets coarse cells combine provider points that cross batch boundaries.
+  if (typeof data !== "string") throw new Error("Forecast issue allocation returned no timestamp");
+  return data;
+}
+
 async function fetchSoil(points: SoilPoint[]) {
   const results: OpenMeteoLocation[] = [];
   for (let start = 0; start < points.length; start += PROVIDER_BATCH_SIZE) {
@@ -149,7 +164,8 @@ Deno.serve(async (request) => {
     const soilAlreadyComplete = soilLastPointId === COMPLETE_CURSOR;
     const forecastAlreadyComplete = forecastLastPointId === COMPLETE_CURSOR;
     if (soilAlreadyComplete && forecastAlreadyComplete) {
-      return json({ refreshed: 0, forecasted: 0, complete: true, snapshotDate: today });
+      const conditionsRefreshed = await refreshSpatialLevelConditionsAfterIngestion(supabase, today);
+      return json({ refreshed: 0, forecasted: 0, complete: true, conditionsRefreshed, snapshotDate: today });
     }
 
     runId = await startRun(
@@ -200,16 +216,22 @@ Deno.serve(async (request) => {
         errorMessage: cursorError,
         metadata: { reason: "Daily soil and forecast refresh completed" },
       });
+      const conditionsRefreshed = soilErrorMessage
+        ? false
+        : await refreshSpatialLevelConditionsAfterIngestion(supabase, today);
       return json({
         runId,
         refreshed: 0,
         forecasted: 0,
         complete: !cursorError,
+        conditionsRefreshed,
         snapshotDate: today,
       });
     }
 
-    const forecastGeneratedAt = new Date().toISOString();
+    const forecastGeneratedAt = forecastPoints.length
+      ? await forecastIssueGeneratedAt(supabase, today)
+      : new Date().toISOString();
     const [currentSoil, forecastAtmosphere, forecastSoil] = await Promise.all([
       soilPoints.length
         ? settle(fetchSoil(soilPoints))
@@ -294,7 +316,10 @@ Deno.serve(async (request) => {
             soilLocation,
             forecastGeneratedAt,
           );
-          return normalized.points.map((forecast) => ({
+          const forecasts = normalized.baseline
+            ? [normalized.baseline, ...normalized.points]
+            : [];
+          return forecasts.map((forecast) => ({
             point_id: point.point_id,
             snapshot_date: today,
             generated_at: forecastGeneratedAt,
@@ -318,7 +343,7 @@ Deno.serve(async (request) => {
             run_id: runId,
           }));
         });
-        const expectedRows = forecastPoints.length * 5;
+        const expectedRows = forecastPoints.length * 6;
         if (forecastRows.length !== expectedRows) {
           forecastErrorMessage = `Forecast normalization returned ${forecastRows.length} of ${expectedRows} expected rows`;
         }
@@ -402,7 +427,7 @@ Deno.serve(async (request) => {
     );
     const forecastBatchSucceeded = forecastPoints.length > 0 &&
       !forecastErrorMessage && !forecastHasUnavailableFields &&
-      storedForecastRows === forecastPoints.length * 5;
+      storedForecastRows === forecastPoints.length * 6;
     const forecastIncomplete = forecastPoints.length > 0 && !forecastBatchSucceeded;
     await finishRun(
       supabase,
@@ -436,12 +461,23 @@ Deno.serve(async (request) => {
       (!soilErrorMessage && soilPoints.length < BATCH_SIZE);
     const forecastComplete = forecastAlreadyComplete ||
       (!forecastIncomplete && forecastPoints.length < BATCH_SIZE);
+    if (soilComplete && !soilAlreadyComplete) {
+      await saveCursor(supabase, SOIL_CURSOR_PIPELINE, today, COMPLETE_CURSOR, observedAt);
+    }
+    if (forecastComplete && !forecastAlreadyComplete) {
+      await saveCursor(supabase, FORECAST_CURSOR_PIPELINE, today, COMPLETE_CURSOR, observedAt);
+    }
+    const complete = soilComplete && forecastComplete;
+    const conditionsRefreshed = soilComplete
+      ? await refreshSpatialLevelConditionsAfterIngestion(supabase, today)
+      : false;
     return json({
       runId,
       refreshed: storedSoilRows,
       forecasted: storedForecastRows,
       forecastAvailable: forecastPoints.length === 0 || forecastBatchSucceeded,
-      complete: soilComplete && forecastComplete,
+      complete,
+      conditionsRefreshed,
       snapshotDate: today,
     });
   } catch (error) {

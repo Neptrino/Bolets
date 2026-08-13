@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, CalendarDays, Map, MapPinned, Mountain, ShieldAlert, Sprout, Trees } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, CalendarDays, MapPinned, Mountain, ShieldAlert, Sprout, Trees } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
+import { LazyHabitatMap } from "@/components/lazy-habitat-map";
 import { SeasonCalendar } from "@/components/season-calendar";
 import { getSpecies } from "@/data/species";
 import { areasBySlug, displaySearchName, getLocationPage, getPlace, locationPagePath, placePath, speciesLocationPages } from "@/data/location-pages";
@@ -49,7 +50,7 @@ export default async function SpeciesLocationPage({ params }: Props) {
 
   return (
     <article className="local-species-page">
-      <JsonLd data={{ "@context": "https://schema.org", "@graph": [{ "@type": "Article", "@id": `${url}#article`, headline: page.titlePhrase, description: page.introduction, url, inLanguage: "ca", image, isPartOf: { "@id": `${SITE_URL}/#website` }, publisher: { "@id": `${SITE_URL}/#organization` }, about: [{ "@type": "Taxon", name: species.identity.scientificName, alternateName: [species.identity.commonName, ...species.identity.alternateNames], taxonRank: "species" }, { "@type": "Place", name: location.name, containedInPlace: { "@type": "Place", name: area.name } }] }, { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL }, { "@type": "ListItem", position: 2, name: "Zones", item: absoluteUrl("/zones") }, { "@type": "ListItem", position: 3, name: area.name, item: absoluteUrl(`/zones/${area.slug}`) }, { "@type": "ListItem", position: 4, name: location.name, item: absoluteUrl(placePath(location)) }, { "@type": "ListItem", position: 5, name: displaySearchName(page.searchName), item: url }] }] }} />
+      <JsonLd data={{ "@context": "https://schema.org", "@graph": [{ "@type": "Article", "@id": `${url}#article`, headline: page.titlePhrase, description: page.introduction, url, inLanguage: "ca", image, isPartOf: { "@id": `${SITE_URL}/#website` }, publisher: { "@id": `${SITE_URL}/#organization` }, about: [{ "@type": "Taxon", name: species.identity.scientificName, alternateName: [species.identity.commonName, ...species.identity.alternateNames], taxonRank: "species" }, { "@type": "Place", name: location.name, containedInPlace: { "@type": "Place", name: area.name } }] }, { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL }, { "@type": "ListItem", position: 2, name: "Guies", item: absoluteUrl("/guies") }, { "@type": "ListItem", position: 3, name: area.name, item: absoluteUrl(`/zones/${area.slug}`) }, { "@type": "ListItem", position: 4, name: location.name, item: absoluteUrl(placePath(location)) }, { "@type": "ListItem", position: 5, name: displaySearchName(page.searchName), item: url }] }] }} />
       <header className="local-species-hero">
         <div className="page-width local-species-hero-grid">
           <div>
@@ -74,11 +75,24 @@ export default async function SpeciesLocationPage({ params }: Props) {
               <article><Sprout size={20} /><h3>Sòl</h3><p>{habitat.soilPreference}. {soil.texture}, amb pH {soil.phRange ? `${soil.phRange[0]}–${soil.phRange[1]}` : "variable"} i drenatge {soil.drainage.toLocaleLowerCase("ca")}.</p></article>
               <article><Mountain size={20} /><h3>Relleu</h3><p>{habitat.altitude[0]}–{habitat.altitude[1]} m, {habitat.aspect.toLocaleLowerCase("ca")}; {habitat.landscapePosition.toLocaleLowerCase("ca")}.</p></article>
             </div></section>
+            <section>
+              <p className="eyebrow">Mapa de l’espècie</p>
+              <h2>On podria créixer {location.prepositionalName}</h2>
+              <p>El mapa de compatibilitat ecològica de {species.identity.commonName} mostra on coincideixen la coberta del sòl, l’altitud i el pH adequats per a l’espècie. No és una predicció de fructificació ni confirma que hi hagi bolets.</p>
+              <LazyHabitatMap
+                activeRegions={species.ecologicalConfig.regions}
+                autoGeolocate={false}
+                compactLegend
+                initialCentre={location.mapCentre}
+                initialZoom={10.8}
+                selectedRegion={area.regionId}
+                speciesId={species.speciesId}
+              />
+            </section>
             <section><p className="eyebrow">Calendari ecològic</p><h2>Quan és temporada</h2><p>{page.seasonNote}</p><SeasonCalendar species={species} /></section>
             <p className="location-territorial-source">Font territorial: <Link href={location.source.url} target="_blank" rel="noreferrer">{location.source.title} <ArrowUpRight size={13} /></Link></p>
           </div>
           <aside className="local-species-aside">
-            <div className="local-map-cta"><Map size={22} /><p className="eyebrow light">Condicions actuals</p><h2>Consulta la lectura regional</h2><p>El mapa combina hàbitat compatible i dades ambientals disponibles per a l’àmbit de {location.name}. No assenyala llocs on hi hagi bolets.</p><Link href={`/map?species=${species.speciesId}&region=${area.regionId}`} className="button light-button">Obrir el mapa <ArrowUpRight size={17} /></Link></div>
             <div className="local-safety-card"><ShieldAlert size={20} /><div><strong>No és una guia de recol·lecció</strong><p>No publiquem coordenades ni presències exactes. No consumiu cap bolet sense una identificació experta.</p></div></div>
             <Link href={speciesPath(species)} className="local-profile-link"><span>Fitxa completa</span><strong>{species.identity.commonName}</strong><small>{speciesDescription(species)}</small><ArrowUpRight size={18} /></Link>
           </aside>

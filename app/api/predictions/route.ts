@@ -3,6 +3,7 @@ import { isSpatialGridSize } from "@/src/lib/map-grid";
 import { mapBoundsFitResolution, parseMapQuery } from "@/src/lib/map-query";
 import { getPredictionCells } from "@/src/lib/predictions";
 import { jsonResponse } from "@/src/lib/json-response";
+import { withoutInternalModelVersion } from "@/src/lib/public-response";
 
 export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
@@ -38,13 +39,17 @@ export async function GET(request: Request) {
     const headers = {
       "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
     };
+    const publicResult = {
+      ...result,
+      cells: result.cells.map((cell) => withoutInternalModelVersion(cell)),
+    };
     if (requestedCellId) {
-      const cell = result.cells.find((candidate) => candidate.cellId === requestedCellId);
+      const cell = publicResult.cells.find((candidate) => candidate.cellId === requestedCellId);
       return cell
         ? jsonResponse(request, { cell }, { headers })
         : Response.json({ error: "Prediction cell not found" }, { status: 404 });
     }
-    return jsonResponse(request, result, { headers });
+    return jsonResponse(request, publicResult, { headers });
   } catch (error) {
     console.error("Unable to calculate prediction cells", error);
     return Response.json({ error: "Prediction cells are temporarily unavailable" }, { status: 503 });

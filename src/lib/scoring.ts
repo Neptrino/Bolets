@@ -121,9 +121,22 @@ function soilScore(species: SpeciesProfile, values: ConditionSnapshot["values"])
 }
 
 function currentStressCeiling(contributions: FactorContribution[]) {
-  const severities = contributions
-    .filter((factor) => ["rainfall", "temperature", "soilMoisture", "humidity"].includes(factor.id))
-    .flatMap((factor) => factor.score !== null && factor.score < 45 ? [(45 - factor.score) / 45] : [])
+  const stressFamilies: FactorContribution["id"][][] = [
+    // Rainfall readiness already contains the seven-day soil-moisture mean,
+    // floor, and trend. Treating it as independent from soil moisture here
+    // would apply the strong second-stressor penalty to the same hydrology.
+    ["rainfall", "soilMoisture"],
+    ["temperature"],
+    ["humidity"],
+  ];
+  const severities = stressFamilies
+    .flatMap((family) => {
+      const lowestScore = contributions
+        .filter((factor) => family.includes(factor.id) && factor.score !== null)
+        .reduce<number | null>((lowest, factor) =>
+          lowest === null ? factor.score : Math.min(lowest, factor.score!), null);
+      return lowestScore !== null && lowestScore < 45 ? [(45 - lowestScore) / 45] : [];
+    })
     .sort((left, right) => right - left);
 
   if (!severities.length) return null;

@@ -2,13 +2,14 @@ import {
   SEASON_MONTHS,
   SEASONAL_ACTIVITY_LABELS,
 } from "@/src/lib/seasonality";
-import type { Month, SpeciesProfile } from "@/src/lib/types";
+import type { SpeciesCardProfile } from "@/src/lib/species-card-profile";
+import type { Month } from "@/src/lib/types";
 
 export function SeasonIndicator({
   species,
   currentMonth,
 }: {
-  species: SpeciesProfile;
+  species: SpeciesCardProfile;
   currentMonth: Month;
 }) {
   return (

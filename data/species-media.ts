@@ -118,7 +118,7 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
       attribution: "D J Kelly",
       license: "Domini públic",
       identificationReference: true,
-      alt: "Exemplars clars de Hydnum repandum al terra del bosc."
+      alt: "Exemplars clars de Hydnum repandum sobre el sòl del bosc."
     }
   ],
   "macrolepiota-procera": [
@@ -262,7 +262,7 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
       attribution: "Böhringer Friedrich; retall d’Ak ccm",
       license: "CC BY-SA 2.5",
       identificationReference: true,
-      alt: "Fructificació coral·liforme groc daurat de Ramaria aurea al terra del bosc."
+      alt: "Fructificació coral·liforme de color groc daurat de Ramaria aurea sobre el sòl del bosc."
     }
   ],
   "agaricus-campestris": [
@@ -395,6 +395,234 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
       license: "Domini públic",
       identificationReference: true,
       alt: "Feix taronja de bolet d’olivera amb làmines decurrents."
+    }
+  ],
+  "lepiota-brunneoincarnata": [
+    {
+      id: "wikimedia-lepiota-brunneoincarnata",
+      localPath: "/media/wikimedia/lepiota-brunneoincarnata.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/14/2015-10-11_Lepiota_brunneoincarnata_Chodat_%26_C._Mart%C3%ADn_564314.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:2015-10-11_Lepiota_brunneoincarnata_Chodat_%26_C._Mart%C3%ADn_564314.jpg",
+      attribution: "Murselin Guney (Beyrek)",
+      license: "CC BY-SA 3.0",
+      identificationReference: true,
+      alt: "Grup de petites lepiotes amb barrets bru-rosats esquamosos i un exemplar girat que mostra les làmines blanques."
+    }
+  ],
+  "galerina-marginata": [
+    {
+      id: "wikimedia-galerina-marginata",
+      localPath: "/media/wikimedia/galerina-marginata.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/bb/Galerina_marginata_Point_Reyes.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Galerina_marginata_Point_Reyes.jpg",
+      attribution: "Alan Rockefeller",
+      license: "CC BY-SA 4.0",
+      identificationReference: true,
+      alt: "Grup de Galerina marginata sobre fusta, amb barrets mel i peus anellats; exemplars seccionats al davant."
+    }
+  ],
+  "cortinarius-orellanus": [
+    {
+      id: "wikimedia-cortinarius-orellanus",
+      localPath: "/media/wikimedia/cortinarius-orellanus.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1c/2013-10-16_Cortinarius_orellanus_1a.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:2013-10-16_Cortinarius_orellanus_1a.jpg",
+      attribution: "Andreas Kunze",
+      license: "CC BY-SA 3.0",
+      identificationReference: true,
+      alt: "Cortinarius orellanus al bosc, amb barret sec ataronjat i peu groguenc sense anell."
+    }
+  ],
+  "gyromitra-esculenta": [
+    {
+      id: "wikimedia-gyromitra-esculenta",
+      localPath: "/media/wikimedia/gyromitra-esculenta.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/d/df/Lukas_Large_-_Gyromitra_esculenta_%2853590247585%29.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Lukas_Large_-_Gyromitra_esculenta_(53590247585).jpg",
+      attribution: "Lukas Large",
+      license: "CC BY-SA 2.0",
+      identificationReference: true,
+      alt: "Gyromitra esculenta amb barret bru fosc fortament lobulat i plegat sobre un peu pàl·lid."
+    }
+  ],
+  "amanita-pantherina": [
+    {
+      id: "wikimedia-amanita-pantherina",
+      localPath: "/media/wikimedia/amanita-pantherina.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/f/fd/Amanita_pantherina_342115529.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Amanita_pantherina_342115529.jpg",
+      attribution: "Matej Frančeškin",
+      license: "CC BY 4.0",
+      identificationReference: true,
+      alt: "Amanita pantherina madura amb barret bru cobert de berrugues blanques i anell al peu."
+    }
+  ],
+  "amanita-virosa": [
+    {
+      id: "wikimedia-amanita-virosa",
+      localPath: "/media/wikimedia/amanita-virosa.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Fatra_2023_P187_Velka_Fatra_Amanita_virosa.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Fatra_2023_P187_Velka_Fatra_Amanita_virosa.jpg",
+      attribution: "Fallaner",
+      license: "CC BY 4.0",
+      identificationReference: true,
+      alt: "Amanita virosa blanca al bosc, amb barret cònic irregular i peu llarg anellat."
+    }
+  ],
+  "amanita-verna": [
+    {
+      id: "wikimedia-amanita-verna",
+      localPath: "/media/wikimedia/amanita-verna.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/c/ca/Amanita_verna_%28destroying_angel_mushroom%29.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Amanita_verna_(destroying_angel_mushroom).jpg",
+      attribution: "James St. John",
+      license: "CC BY 2.0",
+      identificationReference: true,
+      alt: "Dos estadis d’Amanita verna amb barrets blancs llisos, anell i base volvada."
+    }
+  ],
+  "tricholoma-pardinum": [
+    {
+      id: "wikimedia-tricholoma-pardinum",
+      localPath: "/media/wikimedia/tricholoma-pardinum.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7f/2012-03-28_Tricholoma_pardinum_Qu%C3%A9l_208648.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:2012-03-28_Tricholoma_pardinum_Qu%C3%A9l_208648.jpg",
+      attribution: "David Rust (incredulis)",
+      license: "CC BY-SA 3.0",
+      identificationReference: true,
+      alt: "Grup de Tricholoma pardinum amb barrets grisos coberts d’escates fosques concèntriques."
+    }
+  ],
+  "entoloma-sinuatum": [
+    {
+      id: "wikimedia-entoloma-sinuatum",
+      localPath: "/media/wikimedia/entoloma-sinuatum.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/0e/Entoloma_sinuatum_573398400.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Entoloma_sinuatum_573398400.jpg",
+      attribution: "Matej Frančeškin",
+      license: "CC BY 4.0",
+      identificationReference: true,
+      alt: "Entoloma sinuatum madur amb barret crema ondulat i peu blanc robust."
+    }
+  ],
+  "inocybe-erubescens": [
+    {
+      id: "wikimedia-inocybe-erubescens",
+      localPath: "/media/wikimedia/inocybe-erubescens.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/a/aa/Inosperma_erubescens.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Inosperma_erubescens.jpg",
+      attribution: "The Brook",
+      license: "CC BY-SA 4.0",
+      identificationReference: true,
+      alt: "Inosperma erubescens amb barret fibril·lós ocre i taques vermelloses al peu i al marge."
+    }
+  ],
+  "clitocybe-rivulosa": [
+    {
+      id: "wikimedia-clitocybe-rivulosa",
+      localPath: "/media/wikimedia/clitocybe-rivulosa.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1d/2016-09-14_Clitocybe_rivulosa_%28Pers.%29_P._Kumm_688616.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:2016-09-14_Clitocybe_rivulosa_(Pers.)_P._Kumm_688616.jpg",
+      attribution: "Igor (Igor_Yevdokimov)",
+      license: "CC BY-SA 3.0",
+      identificationReference: true,
+      alt: "Clitocybe rivulosa a la gespa amb barrets blancs deprimits i cercles ocracis."
+    }
+  ],
+  "paxillus-involutus": [
+    {
+      id: "wikimedia-paxillus-involutus",
+      localPath: "/media/wikimedia/paxillus-involutus.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4e/2021-11-14_Paxillus_involutus_%28Flickr_51690952401%29.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:2021-11-14_Paxillus_involutus_(Flickr_51690952401).jpg",
+      attribution: "Lutz Blohm",
+      license: "CC BY-SA 2.0",
+      identificationReference: true,
+      alt: "Paxillus involutus al bosc amb barret bru deprimit i marge fortament enrotllat."
+    }
+  ],
+  "hygrophorus-marzuolus": [
+    {
+      id: "wikimedia-hygrophorus-marzuolus",
+      localPath: "/media/wikimedia/hygrophorus-marzuolus.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Hygrophorus_marzuolus_485550068.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Hygrophorus_marzuolus_485550068.jpg",
+      attribution: "Matej Frančeškin",
+      license: "CC BY 4.0",
+      identificationReference: true,
+      alt: "Hygrophorus marzuolus emergint de la fullaraca amb barret gris fosc irregular."
+    }
+  ],
+  "tricholoma-portentosum": [
+    {
+      id: "wikimedia-tricholoma-portentosum",
+      localPath: "/media/wikimedia/tricholoma-portentosum.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/05/Tricholoma_portentosum_a1_%282%29.JPG",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Tricholoma_portentosum_a1_(2).JPG",
+      attribution: "Jerzy Opioła",
+      license: "CC BY-SA 4.0",
+      identificationReference: true,
+      alt: "Tricholoma portentosum amb barret gris fosc fibril·lós, peu clar i reflexos grocs."
+    }
+  ],
+  "russula-virescens": [
+    {
+      id: "wikimedia-russula-virescens",
+      localPath: "/media/wikimedia/russula-virescens.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/9/9f/Lukas_Large_-_Russula_virescens_%2853128945610%29.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Lukas_Large_-_Russula_virescens_(53128945610).jpg",
+      attribution: "Lukas Large",
+      license: "CC BY-SA 2.0",
+      identificationReference: true,
+      alt: "Russula virescens madura amb mosaic d’esquerdes verdoses característic al barret."
+    }
+  ],
+  "cyclocybe-cylindracea": [
+    {
+      id: "wikimedia-cyclocybe-cylindracea",
+      localPath: "/media/wikimedia/cyclocybe-cylindracea.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Poplar_Fieldcap_%28Cyclocybe_cylindracea%29_%2835207347644%29.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Poplar_Fieldcap_(Cyclocybe_cylindracea)_(35207347644).jpg",
+      attribution: "gailhampshire",
+      license: "CC BY 2.0",
+      identificationReference: true,
+      alt: "Feix de Cyclocybe cylindracea sobre fusta de pollancre, amb barrets bruns i peus anellats."
+    }
+  ],
+  "coprinus-comatus": [
+    {
+      id: "wikimedia-coprinus-comatus",
+      localPath: "/media/wikimedia/coprinus-comatus.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/30/Coprinus_comatus_%2849264153071%29.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Coprinus_comatus_(49264153071).jpg",
+      attribution: "Lukas from London, England",
+      license: "CC BY-SA 2.0",
+      identificationReference: true,
+      alt: "Coprinus comatus madur amb barret blanc escamós i marge inferior començant a ennegrir-se."
+    }
+  ],
+  "suillus-granulatus": [
+    {
+      id: "wikimedia-suillus-granulatus",
+      localPath: "/media/wikimedia/suillus-granulatus.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/6/6c/2017-08-09_Suillus_granulatus_%28L.%29_Roussel_776585.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:2017-08-09_Suillus_granulatus_(L.)_Roussel_776585.jpg",
+      attribution: "weed lady (Sylvia)",
+      license: "CC BY-SA 3.0",
+      identificationReference: true,
+      alt: "Diversos Suillus granulatus amb barrets viscosos color canyella en una pineda."
+    }
+  ],
+  "pleurotus-eryngii": [
+    {
+      id: "wikimedia-pleurotus-eryngii",
+      localPath: "/media/wikimedia/pleurotus-eryngii.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1c/Pleurotus_eryngii_-_Do%C4%9Fal_Ortam%C4%B1nda_%C3%87a%C5%9F%C4%B1r_Mantar%C4%B1.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Pleurotus_eryngii_-_Do%C4%9Fal_Ortam%C4%B1nda_%C3%87a%C5%9F%C4%B1r_Mantar%C4%B1.jpg",
+      attribution: "Ferit BAYCUMAN",
+      license: "CC BY-SA 4.0",
+      identificationReference: true,
+      alt: "Pleurotus eryngii silvestre al costat de la planta hoste, amb barret bru i peu blanc gruixut."
     }
   ]
 };

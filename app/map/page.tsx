@@ -48,7 +48,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
         <p><span className="visually-hidden">Mapa de bolets de Catalunya. </span>{species.predictionMode === "habitat_only"
           ? species.predictionCaveat
           : isCompatibility
-          ? "Explora on la coberta del sòl, l’altitud i el pH encaixen amb l’espècie. No és una predicció de fructificació."
+          ? "Exploreu on la coberta del sòl, l’altitud i el pH encaixen amb l’espècie. No és una predicció de fructificació."
           : "Combina l’hàbitat compatible amb les condicions ambientals actuals i només mostra resultats quan les dades són prou completes."}</p>
       </div>
       <div className="map-controls">
@@ -90,7 +90,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
             </> : <>
               <p>La cartografia mostra el relleu i els elements topogràfics. Una cel·la mai representa una observació de bolets ni una garantia de presència.</p>
               <p>El color combina la puntuació actual amb la proporció exacta d’hàbitat compatible: una cobertura baixa acosta la cel·la al vermell encara que la puntuació sigui positiva. En graelles agregades, l’altitud es resumeix només dins d’aquest hàbitat, no amb la cota mitjana de tot el sector.</p>
-              <p>Selecciona una cel·la per veure’n el sòl, la coberta, l’altitud i les condicions actuals. El temps conserva la resolució real del proveïdor i pot ser compartit entre cel·les veïnes.</p>
+              <p>Seleccioneu una cel·la per veure’n el sòl, la coberta, l’altitud i les condicions actuals. El temps conserva la resolució real del proveïdor i pot ser compartit entre cel·les veïnes.</p>
             </>}
           </div>
           <Link href={`${speciesPath(species)}?region=${region}`} className="text-link">Llegir la fitxa de {species.identity.commonName} <ArrowUpRight size={17} /></Link>

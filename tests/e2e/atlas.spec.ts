@@ -9,6 +9,17 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(page.locator('header a[href="/map"]')).toHaveText(
     "Mapa de predicció",
   );
+  await expect(page.locator(".primary-nav > a")).toHaveText([
+    "Bolets",
+    "Zones",
+    "Guies",
+    "Comparador",
+    "Mètode",
+    "Avui",
+  ]);
+  await expect(
+    page.locator(".hero").getByRole("link", { name: "Mapa de predicció" }),
+  ).toHaveAttribute("href", "/map");
   await expect(page.locator(".featured-grid .card-season")).toHaveCount(0);
 
   await page.goto("/bolets");
@@ -767,7 +778,7 @@ test("keeps prediction factor labels readable on narrow maps", async ({ page }) 
   await expect(mobileNav).toHaveAttribute("open", "");
   await page
     .getByRole("navigation", { name: "Navegació mòbil" })
-    .getByRole("link", { name: "Bolets" })
+    .getByRole("link", { name: "Bolets", exact: true })
     .click();
   await expect(page).toHaveURL("/bolets");
   await expect(mobileNav).not.toHaveAttribute("open", "");
@@ -821,6 +832,9 @@ test("keeps ecologically excluded cells clickable after changing species", async
       ],
       forecast: {
         generatedAt: "2026-10-15T13:00:00.000Z",
+        calibratedAt: "2026-10-15T12:00:00.000Z",
+        correctionMethod: "observed-anomaly-v1",
+        anchor: { observedAt: "2026-10-15T12:00:00.000Z", score: 50 },
         source: ["ECMWF IFS HRES via Open-Meteo"],
         sourceResolutionM: 9000,
         points: [1, 2, 3, 4, 5].map((horizonDays) => ({
@@ -841,7 +855,7 @@ test("keeps ecologically excluded cells clickable after changing species", async
       speciesId,
       cellId: "excluded-test-cell",
       regionId: "pirineus",
-      gridSizeM: 250,
+      gridSizeM: 2500,
       cellBounds,
       score: excluded ? 0 : 60,
       habitatCoverage: excluded ? 0 : 0.25,
@@ -918,10 +932,10 @@ test("keeps ecologically excluded cells clickable after changing species", async
   await expect(page.getByRole("heading", { name: "Evolució recent i projecció a 5 dies" })).toBeVisible();
   await expect(page.locator(".cell-score-history-legend")).toContainText("Observat");
   await expect(page.locator(".cell-score-history-legend")).toContainText("Projectat");
-  await expect(page.getByText(/De \+1 a \+5 dies: \+16 punts/)).toBeVisible();
-  await expect(page.getByText(/no de l’aparició de bolets/)).toBeVisible();
+  await expect(page.getByText(/D’ara a \+5 dies: \+20 punts/)).toBeVisible();
+  await expect(page.getByText(/No és una predicció de l’aparició de bolets/)).toBeVisible();
   await expect(page.locator(".forecast-confidence-list li")).toHaveCount(5);
-  await expect(page.locator(".forecast-confidence-list li").last()).toContainText("Confiança de l’horitzó: limitada");
+  await expect(page.locator(".forecast-confidence-list li").last()).toContainText("Confiança de la projecció: limitada");
   const forecastStripHeight = await page.locator(".forecast-confidence-list").evaluate(
     (element) => element.getBoundingClientRect().height,
   );

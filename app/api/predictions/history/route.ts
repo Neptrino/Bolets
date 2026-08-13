@@ -8,6 +8,7 @@ export async function POST(request: Request) {
   const parsed = predictionCellHistoryRequestSchema.safeParse({
     speciesId: body?.speciesId,
     cellId: body?.cellId,
+    gridSizeM: body?.gridSizeM,
     regionId: body?.regionId,
     values: JSON.stringify(body?.values),
   });

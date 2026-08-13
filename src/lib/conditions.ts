@@ -9,7 +9,7 @@ const environmentalFields = [
   "relativeHumidity", "relativeHumidityMin24h", "relativeHumidityAvg24h", "relativeHumidityMax24h", "relativeHumidityAvg7d",
   "soilMoisture", "soilMoistureMin24h", "soilMoistureAvg24h", "soilMoistureMax24h",
   "soilMoistureMin7d", "soilMoistureAvg7d", "soilMoistureMax7d", "soilMoistureTrend7d",
-  "rainfall3dMm", "rainfall7dMm", "rainfallPrevious23dMm", "rainfall30dMm", "drySpellDays",
+  "rainfall24hMm", "rainfall3dMm", "rainfall7dMm", "rainfallPrevious23dMm", "rainfall30dMm", "drySpellDays",
   "evapotranspiration3dMm", "evapotranspiration7dMm", "evapotranspiration30dMm",
   "windKmh", "windAvg24hKmh", "windMax24hKmh", "windGustMax24hKmh",
   "altitudeM", "forestCompatibility", "soilCompatibility"

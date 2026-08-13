@@ -58,7 +58,7 @@ export default function PoisonousMushroomsPage() {
 
       <aside className="intent-emergency-note">
         <ShieldAlert size={23} aria-hidden="true" />
-        <div><strong>Davant una ingestió sospitosa, actua de seguida.</strong><p>Segueix la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a>, truca al 061 Salut Respon i conserva restes del bolet. No esperis que apareguin símptomes ni apliquis remeis casolans.</p></div>
+        <div><strong>Davant una ingestió sospitosa, actueu de seguida.</strong><p>Seguiu la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a>, truqueu al 061 Salut Respon i conserveu restes del bolet. No espereu que apareguin símptomes ni apliqueu remeis casolans.</p></div>
       </aside>
 
       <SectionHeader

@@ -4,14 +4,15 @@ import { ArrowRight, Mountain, Trees } from "lucide-react";
 import { CulinaryRating } from "@/components/culinary-rating";
 import { SeasonIndicator } from "@/components/season-indicator";
 import { speciesPath } from "@/src/lib/seo";
-import type { Month, SpeciesProfile } from "@/src/lib/types";
+import type { SpeciesCardProfile } from "@/src/lib/species-card-profile";
+import type { Month } from "@/src/lib/types";
 
 export function SpeciesCard({
   species,
   index = 0,
   currentMonth,
 }: {
-  species: SpeciesProfile;
+  species: SpeciesCardProfile;
   index?: number;
   currentMonth?: Month;
 }) {
@@ -22,7 +23,7 @@ export function SpeciesCard({
     <Link
       href={speciesPath(species)}
       className="species-card"
-      aria-label={`Obre la fitxa de ${species.identity.commonName}`}
+      aria-label={`Obriu la fitxa de ${species.identity.commonName}`}
       style={{ "--tone-a": toneA ?? "#f28a2e", "--tone-b": toneB ?? "#9f4d24", animationDelay: `${index * 45}ms` } as React.CSSProperties}
     >
       <div className={`species-card-illustration${referenceImage ? " has-photo" : ""}`}>

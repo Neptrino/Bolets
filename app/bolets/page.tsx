@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, CookingPot, Leaf, ShieldAlert, Snowflake, Sprout, Sun, Trees } from "lucide-react";
+import { ArrowUpRight, CalendarDays, CookingPot, Leaf, ShieldAlert, Snowflake, Sprout, Sun } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { PageHeader, PageShell } from "@/components/page-layout";
 import { SpeciesDirectory } from "@/components/species-directory";
@@ -10,11 +9,12 @@ import { coreEditorialSources } from "@/data/editorial";
 import { speciesAlphabetical } from "@/data/species";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { seasonGuides, speciesForSeasonGuide, type SeasonGuideId } from "@/src/lib/season-guides";
+import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
   title: "Tipus de bolets de Catalunya: guia d’espècies",
-  description: `Descobreix ${speciesAlphabetical.length} tipus de bolets de Catalunya per comestibilitat, temporada i hàbitat, amb fitxes d’identificació i confusions.`,
+  description: `Descobriu ${speciesAlphabetical.length} tipus de bolets de Catalunya per comestibilitat, temporada i hàbitat, amb fitxes d’identificació i confusions.`,
   alternates: { canonical: "/bolets" },
   openGraph: {
     url: "/bolets",
@@ -31,10 +31,6 @@ export const metadata: Metadata = {
 };
 export const revalidate = 3600;
 
-function habitatDisplayName(habitat: string) {
-  return habitat.charAt(0).toLocaleUpperCase("ca") + habitat.slice(1);
-}
-
 const seasonIcons = {
   primavera: Sprout,
   estiu: Sun,
@@ -43,17 +39,6 @@ const seasonIcons = {
 } satisfies Record<SeasonGuideId, typeof Sprout>;
 
 export default function SpeciesIndexPage() {
-  const habitatCounts = new Map<string, number>();
-  for (const species of speciesAlphabetical) {
-    for (const habitat of species.ecologicalConfig.habitat.forestTypes) {
-      habitatCounts.set(habitat, (habitatCounts.get(habitat) ?? 0) + 1);
-    }
-  }
-  const habitats = [...habitatCounts.entries()]
-    .sort((left, right) => right[1] - left[1])
-    .slice(0, 6);
-  const largestHabitatCount = habitats[0]?.[1] ?? 1;
-
   return (
     <PageShell as="section">
       <JsonLd data={{ "@context": "https://schema.org", "@type": "CollectionPage", name: "Tipus de bolets de Catalunya", url: `${SITE_URL}/bolets`, inLanguage: "ca", mainEntity: { "@type": "ItemList", numberOfItems: speciesAlphabetical.length, itemListElement: speciesAlphabetical.map((species, index) => ({ "@type": "ListItem", position: index + 1, name: `${species.identity.commonName} (${species.identity.scientificName})`, url: `${SITE_URL}${speciesPath(species)}` })) } }} />
@@ -77,29 +62,7 @@ export default function SpeciesIndexPage() {
           })}
         </nav>
       </section>
-      <section className="catalogue-habitats" aria-labelledby="catalogue-habitats-title">
-        <header>
-          <p className="eyebrow"><Trees size={15} /> Hàbitats</p>
-          <h2 id="catalogue-habitats-title">On creixen els bolets del catàleg</h2>
-          <p>Els ambients més representats a les fitxes. Una mateixa espècie pot aparèixer en més d’un hàbitat.</p>
-        </header>
-        <ol>
-          {habitats.map(([habitat, count], index) => (
-            <li
-              key={habitat}
-              style={{ "--habitat-strength": `${Math.round((count / largestHabitatCount) * 100)}%` } as CSSProperties}
-            >
-              <span className="catalogue-habitat-rank" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              <span className="catalogue-habitat-name">
-                <span>{habitatDisplayName(habitat)}</span>
-                <i aria-hidden="true" />
-              </span>
-              <span className="catalogue-habitat-count"><strong>{count}</strong><small>espècies</small></span>
-            </li>
-          ))}
-        </ol>
-      </section>
-      <SpeciesDirectory species={speciesAlphabetical} currentMonth={monthInTimeZone()} />
+      <SpeciesDirectory species={speciesAlphabetical.map(toSpeciesCardProfile)} currentMonth={monthInTimeZone()} />
       <EditorialAttribution contentId="bolets" sources={coreEditorialSources} />
     </PageShell>
   );

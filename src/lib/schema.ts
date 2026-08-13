@@ -25,7 +25,7 @@ const region = z.enum([
   "muntanyes-interiors",
   "altres"
 ]);
-const spatialGridSize = z.union([
+export const spatialGridSizeSchema = z.union([
   z.literal(250), z.literal(1000), z.literal(2500), z.literal(5000), z.literal(10000)
 ]);
 const localMediaPath = z
@@ -216,7 +216,7 @@ export const conditionSnapshotSchema = z.object({
     soilMoistureAvg24h: z.number().min(0).max(1).optional(), soilMoistureMax24h: z.number().min(0).max(1).optional(),
     soilMoistureMin7d: z.number().min(0).max(1).optional(), soilMoistureAvg7d: z.number().min(0).max(1).optional(),
     soilMoistureMax7d: z.number().min(0).max(1).optional(), soilMoistureTrend7d: z.number().min(-1).max(1).optional(),
-    rainfall3dMm: z.number().min(0).optional(), rainfall7dMm: z.number().min(0).optional(), rainfallPrevious23dMm: z.number().min(0).optional(),
+    rainfall24hMm: z.number().min(0).optional(), rainfall3dMm: z.number().min(0).optional(), rainfall7dMm: z.number().min(0).optional(), rainfallPrevious23dMm: z.number().min(0).optional(),
     rainfall30dMm: z.number().min(0).optional(), drySpellDays: z.number().min(0).max(30).optional(),
     evapotranspiration3dMm: z.number().min(0).optional(), evapotranspiration7dMm: z.number().min(0).optional(),
     evapotranspiration30dMm: z.number().min(0).optional(), windKmh: z.number().min(0).optional(), windAvg24hKmh: z.number().min(0).optional(),
@@ -234,7 +234,7 @@ export const spatialEnvironmentResponseSchema = z.object({
   cells: z.array(z.object({
     cellId: z.string(),
     regionId: region,
-    gridSizeM: spatialGridSize,
+    gridSizeM: spatialGridSizeSchema,
     bounds: z.tuple([z.tuple([z.number(), z.number()]), z.tuple([z.number(), z.number()])]),
     observedAt: z.string().datetime({ offset: true }),
     source: z.array(z.string()),
@@ -253,11 +253,24 @@ export const spatialEnvironmentHistorySchema = z.object({
   regionId: region,
   forecast: z.object({
     generatedAt: z.string().datetime({ offset: true }),
+    baseline: z.object({
+      validAt: z.string().datetime({ offset: true }),
+      horizonHours: z.literal(0),
+      // Optional only for deployment skew with the legacy five-row reader.
+      // A calibrated forecast is withheld unless every count is present.
+      pointCount: z.number().int().positive().optional(),
+      source: z.array(z.string()),
+      sourceResolutionM: z.number().int().positive(),
+      confidence,
+      unavailableFields: z.array(z.string()),
+      values: conditionSnapshotSchema.shape.values,
+    }).optional(),
     snapshots: z.array(z.object({
       validAt: z.string().datetime({ offset: true }),
       horizonHours: z.union([
         z.literal(24), z.literal(48), z.literal(72), z.literal(96), z.literal(120),
       ]),
+      pointCount: z.number().int().positive().optional(),
       source: z.array(z.string()),
       sourceResolutionM: z.number().int().positive(),
       confidence,
@@ -279,7 +292,7 @@ export const spatialHabitatResponseSchema = z.object({
   cells: z.array(z.object({
     cellId: z.string(),
     regionId: region,
-    gridSizeM: spatialGridSize,
+    gridSizeM: spatialGridSizeSchema,
     bounds: z.tuple([z.tuple([z.number(), z.number()]), z.tuple([z.number(), z.number()])]),
     coverage: z.number().min(0).max(1),
     altitudeWeightedCoverage: z.number().min(0).max(1).optional(),
@@ -290,7 +303,7 @@ export const spatialHabitatResponseSchema = z.object({
   })),
   truncated: z.boolean(),
   bounds: z.object({ west: z.number(), south: z.number(), east: z.number(), north: z.number() }),
-  resolution: spatialGridSize
+  resolution: spatialGridSizeSchema
 });
 
 export const occurrenceSupportResponseSchema = z.object({

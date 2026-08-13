@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
+  ArrowRightLeft,
   ArrowUpRight,
   BookOpen,
   CalendarDays,
@@ -37,6 +38,7 @@ import { JsonLd } from "@/components/json-ld";
 import { LazyHabitatMap } from "@/components/lazy-habitat-map";
 import { SeasonCalendar } from "@/components/season-calendar";
 import { SpeciesGallery } from "@/components/species-gallery";
+import { comparisonPagesForSpecies } from "@/data/comparison-pages";
 import {
   getSpecies,
   getSpeciesByScientificName,
@@ -55,6 +57,7 @@ import {
   speciesImage,
   speciesPath,
 } from "@/src/lib/seo";
+import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
 import type { Month, RegionId, SeasonalActivity } from "@/src/lib/types";
 
 const sections = ["Identificació", "Cuina", "Ecologia", "Distribució"];
@@ -168,7 +171,8 @@ export default async function SpeciesPage({
   const canonicalUrl = `${SITE_URL}${speciesPath(species)}`;
   const image = speciesImage(species);
   const localGuides = locationPagesForSpecies(species.speciesId);
-  const isRovelloProfile = ["lactarius-sanguifluus", "lactarius-deliciosus"].includes(species.speciesId);
+  const territoryGuide = territoryGuideForSpecies(species.speciesId);
+  const speciesComparisons = comparisonPagesForSpecies(species.speciesId);
 
   return (
     <section className="species-page compact-species-page">
@@ -307,31 +311,6 @@ export default async function SpeciesPage({
         </div>
       </div>
 
-      {(isRovelloProfile || localGuides.length > 0) && (
-        <section className="page-width species-local-guides" aria-labelledby="local-guides-title">
-          <div>
-            <p className="eyebrow"><MapPinned size={15} /> Guies territorials</p>
-            <h2 id="local-guides-title">Aquesta espècie, llegida des del lloc.</h2>
-          </div>
-          <div className="species-local-guide-links">
-            {isRovelloProfile && (
-              <Link href="/zones/rovellons" className="species-territory-hub-link">
-                <span>Guia de Catalunya</span>
-                <strong>On trobar rovellons: zones i temporada</strong>
-                <ArrowUpRight size={17} />
-              </Link>
-            )}
-            {localGuides.map((guide) => (
-              <Link href={locationPagePath(guide)} key={`${guide.placeSlug}-${guide.speciesSlug}`}>
-                <span>{getPlace(guide.areaSlug, guide.placeSlug)?.typeLabel}</span>
-                <strong>{guide.titlePhrase}</strong>
-                <ArrowUpRight size={17} />
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
       <div className="page-width species-content">
         <aside className="species-aside" aria-label="Contingut de la fitxa">
           <p>CONTINGUT</p>
@@ -409,7 +388,7 @@ export default async function SpeciesPage({
                       Atenció: hi ha confusions possibles amb espècies tòxiques.
                     </strong>
                     <span>
-                      Verifica tots els trets abans de consumir-ne cap exemplar.
+                      Verifiqueu tots els trets abans de consumir-ne cap exemplar.
                     </span>
                   </div>
                 )}
@@ -418,41 +397,44 @@ export default async function SpeciesPage({
                     const relatedSpecies = getSpeciesByScientificName(
                       item.scientificName,
                     );
-                    const cardContent = (
-                      <>
-                        <div>
-                          <em>{item.scientificName}</em>
-                          <h3>{item.commonName}</h3>
-                        </div>
-                        <p>{item.mainDifferences}</p>
-                        <EdibilityBadge status={item.edibility} compact />
-                        {relatedSpecies && (
-                          <ArrowUpRight
-                            className="similar-link-indicator"
-                            size={17}
-                            aria-hidden="true"
-                          />
-                        )}
-                      </>
-                    );
-
-                    if (!relatedSpecies) {
-                      return (
-                        <article key={item.scientificName}>
-                          {cardContent}
-                        </article>
-                      );
-                    }
+                    const comparison = relatedSpecies
+                      ? speciesComparisons.find((page) => (
+                          page.leftSpeciesId === relatedSpecies.speciesId
+                          || page.rightSpeciesId === relatedSpecies.speciesId
+                        ))
+                      : undefined;
 
                     return (
-                      <Link
-                        key={item.scientificName}
-                        href={speciesPath(relatedSpecies)}
-                        className="similar-card-link"
-                        aria-label={`Veure la fitxa de ${item.commonName}`}
-                      >
-                        <article>{cardContent}</article>
-                      </Link>
+                      <article key={item.scientificName}>
+                        <div>
+                          <em>{item.scientificName}</em>
+                          <h3>
+                            {relatedSpecies ? (
+                              <Link
+                                href={speciesPath(relatedSpecies)}
+                                className="similar-profile-link"
+                              >
+                                {item.commonName}
+                                <ArrowUpRight size={17} aria-hidden="true" />
+                              </Link>
+                            ) : item.commonName}
+                          </h3>
+                        </div>
+                        <p>{item.mainDifferences}</p>
+                        <div className="similar-card-footer">
+                          <EdibilityBadge status={item.edibility} compact />
+                          {comparison && (
+                            <Link
+                              href={`/compare/${comparison.slug}`}
+                              className="similar-comparison-link"
+                              aria-label={`Comparar ${species.identity.commonName} i ${item.commonName}`}
+                            >
+                              <ArrowRightLeft size={15} aria-hidden="true" />
+                              Comparar
+                            </Link>
+                          )}
+                        </div>
+                      </article>
                     );
                   })}
                 </div>
@@ -826,6 +808,45 @@ export default async function SpeciesPage({
                 <span>Cel·les exactes de 250 m</span>
                 <span>FungaCAT/GBIF · generalitzat a 10 km</span>
               </div>
+              {(territoryGuide || localGuides.length > 0) && (
+                <section
+                  className="species-local-guides"
+                  aria-labelledby="local-guides-title"
+                >
+                  <header className="species-local-guides-heading">
+                    <p className="eyebrow">
+                      <MapPinned size={14} aria-hidden="true" /> Guies territorials
+                    </p>
+                    <h3 id="local-guides-title">
+                      Aquesta espècie, llegida des del lloc.
+                    </h3>
+                  </header>
+                  <div className="species-local-guide-links">
+                    {territoryGuide && (
+                      <Link
+                        href={territoryGuide.path}
+                        className="species-territory-hub-link"
+                      >
+                        <span>Guia de Catalunya</span>
+                        <strong>{territoryGuide.profileLinkTitle}</strong>
+                        <ArrowUpRight size={15} aria-hidden="true" />
+                      </Link>
+                    )}
+                    {localGuides.map((guide) => (
+                      <Link
+                        href={locationPagePath(guide)}
+                        key={`${guide.placeSlug}-${guide.speciesSlug}`}
+                      >
+                        <span>
+                          {getPlace(guide.areaSlug, guide.placeSlug)?.typeLabel}
+                        </span>
+                        <strong>{guide.titlePhrase}</strong>
+                        <ArrowUpRight size={15} aria-hidden="true" />
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
             </div>
           </section>
           <EditorialAttribution
