@@ -85,7 +85,7 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
       <Link href="/compare" className="text-link comparison-page-back">← Totes les comparacions</Link>
       <PageHeader
         eyebrow={<><ArrowRightLeft size={15} /> Guia comparativa</>}
-        title={<>{left.identity.commonName} <PageTitleAccent>vs</PageTitleAccent> {right.identity.commonName.toLocaleLowerCase("ca")}</>}
+        title={<>{left.identity.commonName} <PageTitleAccent>vs.</PageTitleAccent> {right.identity.commonName.toLocaleLowerCase("ca")}</>}
         description={page.introduction}
       />
 
@@ -120,7 +120,7 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
       </div>
 
       <aside className="intent-emergency-note comparison-warning">
-        <CircleAlert size={22} /><div><strong>No decideixis el consum amb una taula.</strong><p>La variació natural, l’edat i l’estat del bolet poden alterar-ne l’aspecte. Confirma qualsevol identificació amb una persona experta.</p></div>
+        <CircleAlert size={22} /><div><strong>No decidiu el consum amb una taula.</strong><p>La variació natural, l’edat i l’estat del bolet poden alterar-ne l’aspecte. Confirmeu qualsevol identificació amb una persona experta.</p></div>
       </aside>
       <EditorialAttribution contentId={`compare:${page.slug}`} sources={[officialSafetySource, ...left.references, ...right.references]} />
     </PageShell>

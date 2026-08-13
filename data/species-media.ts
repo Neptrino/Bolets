@@ -118,7 +118,7 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
       attribution: "D J Kelly",
       license: "Domini públic",
       identificationReference: true,
-      alt: "Exemplars clars de Hydnum repandum al terra del bosc."
+      alt: "Exemplars clars de Hydnum repandum sobre el sòl del bosc."
     }
   ],
   "macrolepiota-procera": [
@@ -262,7 +262,7 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
       attribution: "Böhringer Friedrich; retall d’Ak ccm",
       license: "CC BY-SA 2.5",
       identificationReference: true,
-      alt: "Fructificació coral·liforme groc daurat de Ramaria aurea al terra del bosc."
+      alt: "Fructificació coral·liforme de color groc daurat de Ramaria aurea sobre el sòl del bosc."
     }
   ],
   "agaricus-campestris": [

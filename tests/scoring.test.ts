@@ -501,6 +501,42 @@ describe("suitability scoring", () => {
     expect(result.score).toBe(12);
   });
 
+  it("counts rainfall and soil moisture as one hydric stress family", () => {
+    const species = getSpecies("boletus-edulis")!;
+    const result = calculateSuitability(species, normaliseSnapshot({
+      ...localSnapshots[0],
+      observedAt: "2026-10-11T12:00:00.000Z",
+      stale: false,
+      values: {
+        temperatureMin10dC: 8,
+        temperatureAvg10dC: 14,
+        temperatureMax10dC: 18,
+        frostHours10d: 0,
+        relativeHumidityAvg24h: 75,
+        soilMoistureAvg24h: 0.14,
+        rainfall3dMm: 0,
+        rainfall7dMm: 0,
+        rainfallPrevious23dMm: 0,
+        rainfall30dMm: 0,
+        drySpellDays: 30,
+        evapotranspiration3dMm: 8,
+        evapotranspiration7dMm: 20,
+        evapotranspiration30dMm: 95,
+        soilMoistureMin7d: 0.06,
+        soilMoistureAvg7d: 0.08,
+        soilMoistureMax7d: 0.1,
+        soilMoistureTrend7d: -0.02,
+        altitudeM: 1200,
+        forestCompatibility: 100,
+        soilCompatibility: 100,
+      },
+    }));
+
+    expect(result.contributions.find((factor) => factor.id === "rainfall")?.score).toBe(0);
+    expect(result.contributions.find((factor) => factor.id === "soilMoisture")?.score).toBe(10);
+    expect(result.score).toBe(35);
+  });
+
   it("uses the 24-hour mean instead of a misleading single temperature reading", () => {
     const species = getSpecies("boletus-edulis")!;
     const result = calculateSuitability(species, normaliseSnapshot({

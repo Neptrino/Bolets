@@ -19,6 +19,7 @@ const averageFields = [
   "relativeHumidity",
   "relativeHumidityAvg24h",
   "relativeHumidityAvg7d",
+  "rainfall24hMm",
   "rainfall3dMm",
   "rainfall7dMm",
   "rainfallPrevious23dMm",

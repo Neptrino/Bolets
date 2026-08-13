@@ -32,6 +32,9 @@ describe("prediction history and forecast route", () => {
       observed: [{ observedAt: "2026-10-10T12:00:00Z", score: 64 }],
       forecast: {
         generatedAt: "2026-10-10T13:00:00Z",
+        calibratedAt: "2026-10-10T12:00:00Z",
+        correctionMethod: "observed-anomaly-v1" as const,
+        anchor: { observedAt: "2026-10-10T12:00:00Z", score: 64 },
         source: ["ECMWF IFS HRES via Open-Meteo"],
         sourceResolutionM: 9000,
         points: [1, 2, 3, 4, 5].map((horizonDays) => ({

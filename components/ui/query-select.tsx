@@ -14,7 +14,7 @@ export function QuerySelect({
   variant = "compact",
   className,
   portalContainer,
-  "aria-label": ariaLabel = "Selecciona una opció"
+  "aria-label": ariaLabel = "Seleccioneu una opció"
 }: {
   value: string;
   items: QuerySelectItem[];

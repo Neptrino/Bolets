@@ -154,12 +154,17 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       ...Array(forecast?.points.length ?? 0).fill(null),
     ];
     const projectedScores: Array<number | null> = Array(timestamps.length).fill(null);
-    const lastObservedIndex = observed.length - 1;
+    const anchorObservedIndex = forecast
+      ? observed.findIndex((point) => Date.parse(point.observedAt) === Date.parse(forecast.anchor.observedAt))
+      : -1;
+    if (forecast && anchorObservedIndex >= 0) {
+      projectedScores[anchorObservedIndex] = forecast.anchor.score;
+    }
     forecast?.points.forEach((point, index) => {
       projectedScores[observed.length + index] = point.score;
     });
-    const boundaryTimestamp = forecast && lastObservedIndex >= 0
-      ? timestamps[lastObservedIndex]
+    const boundaryTimestamp = forecast && anchorObservedIndex >= 0
+      ? timestamps[anchorObservedIndex]
       : undefined;
     const chart = new uPlot({
       width: Math.max(host.clientWidth, 1),
@@ -209,7 +214,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
           gap: 9,
           splits: (currentChart) => currentChart.width < 520
             ? timestamps.filter((_timestamp, index) =>
-              index === lastObservedIndex || index === timestamps.length - 1 || index % 2 === 0)
+              index === anchorObservedIndex || index === timestamps.length - 1 || index % 2 === 0)
             : timestamps,
           values: (_chart, values) => values.map(chartDayLabel),
           grid: { stroke: "rgba(105, 112, 99, 0.10)", width: 1 },
@@ -253,22 +258,19 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
   }
   const latestObserved = observedAvailable.at(-1);
   const latestProjected = projectedAvailable.at(-1);
-  const firstProjected = projectedAvailable[0];
   const firstObserved = observedAvailable[0];
-  const projectionChange = firstProjected && latestProjected && firstProjected !== latestProjected
-    ? latestProjected.score - firstProjected.score
+  const projectionChange = forecast && latestProjected
+    ? latestProjected.score - forecast.anchor.score
     : undefined;
   const observedChange = firstObserved && latestObserved
     ? latestObserved.score - firstObserved.score
     : undefined;
   const change = projectionChange ?? observedChange ?? 0;
   const TrendIcon = change > 0 ? TrendingUp : change < 0 ? TrendingDown : Minus;
-  const changeLabel = firstProjected && latestProjected
-    ? projectionChange === undefined
-      ? `Projecció disponible a +${latestProjected.horizonDays} dies`
-      : projectionChange === 0
-        ? `De +${firstProjected.horizonDays} a +${latestProjected.horizonDays} dies: sense canvis`
-        : `De +${firstProjected.horizonDays} a +${latestProjected.horizonDays} dies: ${projectionChange > 0 ? "+" : ""}${projectionChange} punts`
+  const changeLabel = forecast && latestProjected
+    ? projectionChange === 0
+      ? `D’ara a +${latestProjected.horizonDays} dies: sense canvis`
+      : `D’ara a +${latestProjected.horizonDays} dies: ${projectionChange! > 0 ? "+" : ""}${projectionChange} punts`
     : observedChange === 0
       ? "Sense canvis en l’historial disponible"
       : `${observedChange! > 0 ? "+" : ""}${observedChange} punts des de ${dayLabel(firstObserved!.observedAt)}`;
@@ -292,19 +294,19 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       <div className="cell-score-history-legend" aria-hidden="true">
         {observed.length ? <span><i className="observed" />Observat</span> : null}
         {forecast ? <>
-          <span><i className="projected" />Projectat</span>
+          <span><i className="projected" />Projectat des d’ara</span>
           {observed.length ? <span><i className="boundary" />Inici de la projecció</span> : null}
         </> : null}
       </div>
       <div ref={chartRef} className="cell-score-history-chart" aria-hidden="true" />
       {forecast ? (
-        <ol className="forecast-confidence-list" role="list" aria-label="Projecció diària i confiança de l’horitzó">
+        <ol className="forecast-confidence-list" role="list" aria-label="Projecció diària i confiança de la projecció">
           {forecast.points.map((point) => (
             <li key={point.validAt}>
               <span>+{point.horizonDays} {point.horizonDays === 1 ? "dia" : "dies"}</span>
               <strong>{scoreLabel(point.score)}</strong>
               <small>
-                <span className="visually-hidden">Confiança de l’horitzó: </span>
+                <span className="visually-hidden">Confiança de la projecció: </span>
                 {confidenceLabel(point.horizonConfidence)}
               </small>
             </li>
@@ -315,12 +317,12 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       )}
       <p className="cell-score-history-note">
         {forecast
-          ? `És una projecció de les condicions ambientals, no de l’aparició de bolets. La incertesa augmenta amb l’horitzó. Generada el ${dayLabel(forecast.generatedAt)} amb dades a ${Math.round(forecast.sourceResolutionM / 1000)} km.`
+          ? `La projecció parteix de les condicions observades actuals i hi aplica els canvis d’una mateixa emissió de previsió: ECMWF per a l’atmosfera i Open-Meteo per al sòl. No és una predicció de l’aparició de bolets. La incertesa augmenta amb l’horitzó. Generada el ${dayLabel(forecast.generatedAt)} amb dades a ${Math.round(forecast.sourceResolutionM / 1000)} km.`
           : "Cada punt observat recalcula el model actual amb les dades ambientals verificades d’aquell dia."}
       </p>
       <table className="visually-hidden">
         <caption>Dades de l’evolució observada i la projecció ambiental</caption>
-        <thead><tr><th scope="col">Data</th><th scope="col">Tipus</th><th scope="col">Puntuació</th><th scope="col">Confiança de l’horitzó</th></tr></thead>
+        <thead><tr><th scope="col">Data</th><th scope="col">Tipus</th><th scope="col">Puntuació</th><th scope="col">Confiança de la projecció</th></tr></thead>
         <tbody>
           {observed.map((point) => (
             <tr key={`observed:${point.observedAt}`}>

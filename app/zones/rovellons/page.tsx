@@ -201,7 +201,7 @@ export default function RovellonsTerritoryPage() {
           </div>
           <div>
             <p>A Catalunya, la cerca <em>rovellons</em> sovint barreja el rovelló vinós i el pinetell. Tots dos viuen associats als pins, però no tenen exactament el mateix làtex, sòl preferit ni distribució ecològica.</p>
-            <Link href="/compare/rovello-vs-pinetell" className="text-link">Veure rovelló vs pinetell <ArrowUpRight size={16} /></Link>
+            <Link href="/compare/rovello-vs-pinetell" className="text-link">Veure rovelló vs. pinetell <ArrowUpRight size={16} /></Link>
           </div>
         </section>
 
@@ -288,7 +288,7 @@ export default function RovellonsTerritoryPage() {
 
         <aside className="rovellons-safety">
           <ShieldAlert size={23} aria-hidden="true" />
-          <div><strong>No és una guia de recol·lecció ni d’identificació.</strong><p>No consumeixis cap bolet basant-te en el mapa, aquesta pàgina o una fotografia. Confirma sempre l’espècie amb una persona experta.</p></div>
+          <div><strong>No és una guia de recol·lecció ni d’identificació.</strong><p>No consumiu cap bolet basant-vos en el mapa, aquesta pàgina o una fotografia. Confirmeu sempre l’espècie amb una persona experta.</p></div>
         </aside>
       </div>
     </div>

@@ -73,6 +73,9 @@ describe("Open-Meteo profiles", () => {
     const { atmosphere, soil, base } = forecastFixture();
     const forecast = normalizeOpenMeteoForecast(atmosphere, soil, "2026-08-10T12:34:00Z");
 
+    expect(forecast.baseline?.horizonHours).toBe(0);
+    expect(Date.parse(forecast.baseline!.validAt) / 1000).toBe(base);
+    expect(forecast.baseline?.unavailableFields).toEqual([]);
     expect(forecast.points.map((point) => point.horizonHours)).toEqual([24, 48, 72, 96, 120]);
     expect(forecast.points.map((point) => Date.parse(point.validAt) / 1000)).toEqual(
       [24, 48, 72, 96, 120].map((hours) => base + hours * 3600),
@@ -80,6 +83,7 @@ describe("Open-Meteo profiles", () => {
     expect(forecast.points[0].values.temperatureC).toBe(17);
     expect(forecast.points[0].values.temperatureC).not.toBe(99);
     expect(forecast.points[0].values.soilMoisture).toBe(0.25);
+    expect(forecast.points[0].values.rainfall24hMm).toBeCloseTo(2.4);
     expect(forecast.points[0].values.rainfall3dMm).toBeCloseTo(7.2);
     expect(forecast.points[0].values.rainfall7dMm).toBeCloseTo(16.8);
     expect(forecast.points[0].values.rainfall30dMm).toBeCloseTo(72);
@@ -196,6 +200,7 @@ describe("Open-Meteo profiles", () => {
     };
 
     const normalized = normalizeOpenMeteo(atmosphere, soil);
+    expect(normalized.values.rainfall24hMm).toBeCloseTo(4.8);
     expect(normalized.values.rainfall3dMm).toBeCloseTo(14.4);
     expect(normalized.values.rainfall7dMm).toBeCloseTo(14.4);
     expect(normalized.values.rainfallPrevious23dMm).toBeCloseTo(55.2);

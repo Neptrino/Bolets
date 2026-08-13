@@ -13,7 +13,13 @@ const HabitatRegionMap = dynamic(
   },
 );
 
-function HabitatMapPlaceholder({ loading = false }: { loading?: boolean }) {
+function HabitatMapPlaceholder({
+  compactLegend = false,
+  loading = false,
+}: {
+  compactLegend?: boolean;
+  loading?: boolean;
+}) {
   return (
     <div
       className="region-map region-map-habitat species-map"
@@ -50,7 +56,7 @@ function HabitatMapPlaceholder({ loading = false }: { loading?: boolean }) {
             <strong>Coberta del sòl, altitud i pH compatibles</strong>
             <span>
               —— sectors de 2,5 km × 2,5 km amb alguna cel·la base compatible.
-              Apropa per veure la graella de 250 m.
+              Apropeu-vos per veure la graella de 250 m.
             </span>
           </div>
         </div>
@@ -60,18 +66,23 @@ function HabitatMapPlaceholder({ loading = false }: { loading?: boolean }) {
             <div>
               <strong>Blau · zones compatibles</strong>
               <span>
-                Més intensitat indica més cobertura; els límits d’altitud es
-                suavitzen.
+                Més intensitat indica més cobertura; els límits d’altitud tenen
+                una transició suau.
               </span>
             </div>
           </div>
           <div className="habitat-map-legend-item">
             <i className="habitat-history-swatch" aria-hidden />
             <div>
-              <strong>Ratllat lila · registres històrics</strong>
+              <strong>
+                {compactLegend
+                  ? "Ratllat lila · registres"
+                  : "Ratllat lila · registres històrics"}
+              </strong>
               <span>
-                Context històric; no amplia les zones compatibles. —— registres
-                en — quadrícules de 10 km; —— sectors coincideixen.
+                {compactLegend
+                  ? "Registres històrics generalitzats a 10 km; no amplien l’hàbitat compatible."
+                  : "Context històric; no amplia les zones compatibles. —— registres en — quadrícules de 10 km; —— sectors coincideixen."}
               </span>
             </div>
           </div>
@@ -87,10 +98,18 @@ function HabitatMapPlaceholder({ loading = false }: { loading?: boolean }) {
 
 export function LazyHabitatMap({
   activeRegions,
+  autoGeolocate = true,
+  compactLegend = false,
+  initialCentre,
+  initialZoom,
   selectedRegion,
   speciesId,
 }: {
   activeRegions: RegionId[];
+  autoGeolocate?: boolean;
+  compactLegend?: boolean;
+  initialCentre?: [number, number];
+  initialZoom?: number;
   selectedRegion: RegionId;
   speciesId: string;
 }) {
@@ -127,13 +146,17 @@ export function LazyHabitatMap({
       {isNearViewport ? (
         <HabitatRegionMap
           activeRegions={activeRegions}
+          autoGeolocate={autoGeolocate}
+          compactLegend={compactLegend}
+          initialCentre={initialCentre}
+          initialZoom={initialZoom}
           selectedRegion={selectedRegion}
           speciesId={speciesId}
           habitat
           className="species-map"
         />
       ) : (
-        <HabitatMapPlaceholder />
+        <HabitatMapPlaceholder compactLegend={compactLegend} />
       )}
     </div>
   );

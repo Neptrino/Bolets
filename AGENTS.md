@@ -47,6 +47,7 @@
 - Weight distribution-map blue intensity by the shared altitude edge taper, but retain the raw exact compatible-cover percentage for the prediction habitat factor so altitude is not counted twice.
 - For coarse predictions, derive the altitude factor inside compatible habitat as `sum(coverage × altitude taper) / sum(coverage)` from canonical 250 m cells; never score the arithmetic mean elevation of a mixed parent cell. For every prediction cell, blend its score-band colour with the zero-score colour by the exact raw compatible-cover fraction so neither base nor zoomed-out cells overstate sparse habitat.
 - Preserve 3/7/30-day rain and ET₀, days 8–30 rain, dry-spell length, and 7-day shallow-soil moisture memory end to end; do not publish rainfall suitability from a 7-day accumulation alone.
+- Persist a horizon-zero snapshot with every forecast issuance. Project future conditions by applying that issuance's aggregate anomalies to the latest server-verified publishable observation, then recompute dependent windows and the shared scorer; never present an absolute cross-provider score as a continuous day-over-day change. Withhold the projection when its baseline is missing, incomplete, or more than 8 hours from the observation.
 - Record provider state in `pipeline_sources` and every ingestion attempt in `ingestion_runs` so degraded and blocked sources remain visible.
 
 <!-- BEGIN:nextjs-agent-rules -->

@@ -73,7 +73,13 @@ describe("curated species-location pages", () => {
   it("places every municipality or landscape inside a valid parent area", () => {
     expect(areaProfiles.length).toBeGreaterThanOrEqual(4);
     expect(placeProfiles.length).toBeGreaterThanOrEqual(8);
-    for (const place of placeProfiles) expect(areasBySlug[place.areaSlug], place.slug).toBeDefined();
+    for (const place of placeProfiles) {
+      expect(areasBySlug[place.areaSlug], place.slug).toBeDefined();
+      expect(place.mapCentre[0], `${place.slug} longitude`).toBeGreaterThanOrEqual(0.05);
+      expect(place.mapCentre[0], `${place.slug} longitude`).toBeLessThanOrEqual(3.32);
+      expect(place.mapCentre[1], `${place.slug} latitude`).toBeGreaterThanOrEqual(40.48);
+      expect(place.mapCentre[1], `${place.slug} latitude`).toBeLessThanOrEqual(42.92);
+    }
   });
 
   it("only publishes combinations compatible with the shared regional ecology", () => {

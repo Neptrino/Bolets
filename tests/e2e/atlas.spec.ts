@@ -832,6 +832,9 @@ test("keeps ecologically excluded cells clickable after changing species", async
       ],
       forecast: {
         generatedAt: "2026-10-15T13:00:00.000Z",
+        calibratedAt: "2026-10-15T12:00:00.000Z",
+        correctionMethod: "observed-anomaly-v1",
+        anchor: { observedAt: "2026-10-15T12:00:00.000Z", score: 50 },
         source: ["ECMWF IFS HRES via Open-Meteo"],
         sourceResolutionM: 9000,
         points: [1, 2, 3, 4, 5].map((horizonDays) => ({
@@ -929,10 +932,10 @@ test("keeps ecologically excluded cells clickable after changing species", async
   await expect(page.getByRole("heading", { name: "Evolució recent i projecció a 5 dies" })).toBeVisible();
   await expect(page.locator(".cell-score-history-legend")).toContainText("Observat");
   await expect(page.locator(".cell-score-history-legend")).toContainText("Projectat");
-  await expect(page.getByText(/De \+1 a \+5 dies: \+16 punts/)).toBeVisible();
-  await expect(page.getByText(/no de l’aparició de bolets/)).toBeVisible();
+  await expect(page.getByText(/D’ara a \+5 dies: \+20 punts/)).toBeVisible();
+  await expect(page.getByText(/No és una predicció de l’aparició de bolets/)).toBeVisible();
   await expect(page.locator(".forecast-confidence-list li")).toHaveCount(5);
-  await expect(page.locator(".forecast-confidence-list li").last()).toContainText("Confiança de l’horitzó: limitada");
+  await expect(page.locator(".forecast-confidence-list li").last()).toContainText("Confiança de la projecció: limitada");
   const forecastStripHeight = await page.locator(".forecast-confidence-list").evaluate(
     (element) => element.getBoundingClientRect().height,
   );

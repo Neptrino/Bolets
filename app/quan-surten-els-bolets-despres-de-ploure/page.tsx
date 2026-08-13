@@ -10,7 +10,7 @@ import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/
 
 export const metadata: Metadata = {
   title: "Quan surten els bolets després de ploure? Factors i espècies",
-  description: "No hi ha un nombre universal de dies. Compara la resposta a la pluja de rovelló, pinetell, cep, camagroc, múrgola i cama-sec.",
+  description: "No hi ha un nombre universal de dies. Compareu la resposta a la pluja de rovelló, pinetell, cep, camagroc, múrgola i cama-sec.",
   alternates: { canonical: "/quan-surten-els-bolets-despres-de-ploure" },
   openGraph: {
     url: "/quan-surten-els-bolets-despres-de-ploure",
@@ -51,7 +51,7 @@ export default function MushroomsAfterRainPage() {
       <section className="rain-factor-grid" aria-label="Factors que modulen la resposta a la pluja">
         <article><Droplets size={22} /><h2>Humitat i acumulació</h2><p>La lectura combina pluja de 3, 7 i 30 dies, inclosos els dies 8–30, amb la memòria d’humitat superficial del sòl durant 7 dies.</p></article>
         <article><ThermometerSun size={22} /><h2>Demanda atmosfèrica</h2><p>L’ET₀ de 3, 7 i 30 dies ajuda a estimar quanta aigua pot haver tornat a l’atmosfera. La temperatura després de ploure pot accelerar o frenar el procés.</p></article>
-        <article><Wind size={22} /><h2>Sequera i vent</h2><p>La durada del període sec i el vent poden dessecar fullaraca, pinassa i carpòfors. Per això dos episodis amb els mateixos mil·límetres poden acabar diferent.</p></article>
+        <article><Wind size={22} /><h2>Sequera i vent</h2><p>La durada del període sec i el vent poden dessecar fullaraca, pinassa i carpòfors. Per això dos episodis amb els mateixos mil·límetres poden tenir resultats diferents.</p></article>
       </section>
 
       <section className="rain-species-examples" aria-labelledby="rain-species-title">

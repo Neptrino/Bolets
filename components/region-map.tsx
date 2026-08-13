@@ -373,6 +373,10 @@ function distributionCentre(activeRegions: RegionId[]): [number, number] {
 
 export function RegionMap({
   activeRegions = [],
+  autoGeolocate = true,
+  compactLegend = false,
+  initialCentre,
+  initialZoom,
   selectedRegion,
   speciesId,
   habitat = false,
@@ -384,6 +388,10 @@ export function RegionMap({
   onCellSelect,
 }: {
   activeRegions?: RegionId[];
+  autoGeolocate?: boolean;
+  compactLegend?: boolean;
+  initialCentre?: [number, number];
+  initialZoom?: number;
   selectedRegion?: RegionId;
   speciesId?: string;
   habitat?: boolean;
@@ -402,6 +410,9 @@ export function RegionMap({
   const geolocateControl = useRef<GeolocateControl | null>(null);
   const initialSpeciesId = useRef(speciesId);
   const initialHabitat = useRef(habitat);
+  const initialAutoGeolocate = useRef(autoGeolocate);
+  const initialMapCentre = useRef(initialCentre);
+  const initialMapZoom = useRef(initialZoom);
   const initialRegion = useRef(selectedRegion);
   const initialActiveRegions = useRef(activeRegions);
   const initialFullscreenTarget = useRef(fullscreenTarget);
@@ -485,10 +496,17 @@ export function RegionMap({
       container: node.current,
       style: basemapStyle(initialBasemapId),
       center:
-        isPredictionMap && initialRegion.current
+        initialMapCentre.current
+          ? initialMapCentre.current
+          : isPredictionMap && initialRegion.current
           ? regionCentres[initialRegion.current]
           : distributionCentre(initialActiveRegions.current),
-      zoom: isPredictionMap && initialRegion.current ? 12.8 : 6.2,
+      zoom:
+        initialMapCentre.current
+          ? (initialMapZoom.current ?? 10.8)
+          : isPredictionMap && initialRegion.current
+            ? 12.8
+            : 6.2,
       attributionControl: { compact: true },
       maplibreLogo: false,
       maxBounds: [
@@ -520,7 +538,7 @@ export function RegionMap({
       ),
       "top-right",
     );
-    const geolocate = initialSpeciesId.current
+    const geolocate = initialSpeciesId.current && initialAutoGeolocate.current
       ? new GeolocateControl({
           positionOptions: {
             enableHighAccuracy: !initialHabitat.current,
@@ -540,7 +558,8 @@ export function RegionMap({
     if (geolocate) localMap.addControl(geolocate, "top-right");
     localMap.once("load", () => {
       localMap.resize();
-      if (!isPredictionMap) fitCatalonia(localMap, false);
+      if (!isPredictionMap && !initialMapCentre.current)
+        fitCatalonia(localMap, false);
       drawCellsRef.current();
     });
 
@@ -853,6 +872,13 @@ export function RegionMap({
         initialViewLoaded = true;
         localMap.on("moveend", loadHabitat);
         void loadHabitat();
+        return;
+      }
+      if (!initialAutoGeolocate.current && initialMapCentre.current) {
+        focusAndLoad(
+          initialMapCentre.current,
+          initialMapZoom.current ?? 10.8,
+        );
         return;
       }
       if (!locator || !window.navigator.geolocation) {
@@ -1170,7 +1196,7 @@ export function RegionMap({
     habitatEvidenceState.available === null
       ? "Carregant registres…"
       : habitatEvidenceState.available === false
-        ? "Registres FungaCAT no disponibles."
+        ? "Registres de FungaCAT no disponibles."
         : habitatEvidenceState.habitatCells
           ? `${habitatEvidenceState.records} registres en ${habitatEvidenceState.cells} quadrícules de 10 km; ${habitatEvidenceState.habitatCells} sectors coincideixen.`
           : habitatEvidenceState.cells
@@ -1181,9 +1207,9 @@ export function RegionMap({
       ? {
           title: "Coberta del sòl, altitud i pH compatibles",
           detail: cellState.truncated
-            ? `Resolució actual: ${gridDimensions}. Apropa per carregar la resta.`
+            ? `Resolució actual: ${gridDimensions}. Apropeu-vos per carregar la resta.`
             : cellState.gridSizeM > 250
-              ? `Resolució actual: ${gridDimensions}. Apropa per veure la graella de 250 m.`
+              ? `Resolució actual: ${gridDimensions}. Apropeu-vos per veure la graella de 250 m.`
               : `Resolució actual: ${gridDimensions}.`,
         }
       : cellState.status === "loading"
@@ -1449,14 +1475,22 @@ export function RegionMap({
               <i className="habitat-coverage-swatch" aria-hidden />
               <div>
                 <strong>Blau · zones compatibles</strong>
-                <span>Més intensitat indica més cobertura; els límits d’altitud es suavitzen.</span>
+                <span>Més intensitat indica més cobertura; els límits d’altitud tenen una transició suau.</span>
               </div>
             </div>
             <div className="habitat-map-legend-item">
               <i className="habitat-history-swatch" aria-hidden />
               <div>
-                <strong>Ratllat lila · registres històrics</strong>
-                <span>Context històric; no amplia les zones compatibles. {habitatEvidenceCopy}</span>
+                <strong>
+                  {compactLegend
+                    ? "Ratllat lila · registres"
+                    : "Ratllat lila · registres històrics"}
+                </strong>
+                <span>
+                  {compactLegend
+                    ? "Registres històrics generalitzats a 10 km; no amplien l’hàbitat compatible."
+                    : <>Context històric; no amplia les zones compatibles. {habitatEvidenceCopy}</>}
+                </span>
               </div>
             </div>
           </div>

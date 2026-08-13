@@ -10,6 +10,8 @@ export type OpenMeteoLocation = {
 export type RequestProfile = "complete" | "atmosphere" | "soil";
 
 export const FORECAST_HORIZON_HOURS = [24, 48, 72, 96, 120] as const;
+export const FORECAST_BASELINE_HOURS = 0 as const;
+const FORECAST_OUTPUT_HOURS = [FORECAST_BASELINE_HOURS, ...FORECAST_HORIZON_HOURS] as const;
 
 const finiteNumber = (value: unknown) => typeof value === "number" && Number.isFinite(value) ? value : undefined;
 
@@ -66,6 +68,7 @@ const requiredAtmosphericFields = [
   "relativeHumidityAvg24h",
   "relativeHumidityMax24h",
   "relativeHumidityAvg7d",
+  "rainfall24hMm",
   "rainfall3dMm",
   "rainfall7dMm",
   "rainfallPrevious23dMm",
@@ -201,6 +204,7 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
   const soilMoisture7d = numericWindow(soilLocation, "soil_moisture_3_to_9cm", 168, soilEndIndex);
   const wind24h = numericWindow(location, "wind_speed_10m", 24, endIndex);
   const gusts24h = numericWindow(location, "wind_gusts_10m", 24, endIndex);
+  const precipitation24h = numericWindow(location, "precipitation", 24, endIndex);
   const precipitation3d = numericWindow(location, "precipitation", 72, endIndex);
   const precipitation7d = numericWindow(location, "precipitation", 168, endIndex);
   const precipitation30d = numericWindow(location, "precipitation", 720, endIndex);
@@ -219,6 +223,7 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
   const temperature10d = summary(temperatures10d, 240);
   const hasSevenDays = temperature7d.average !== undefined;
   const hasTenDays = temperature10d.average !== undefined;
+  const rainfall24hMm = sum(precipitation24h, 24);
   const rainfall3dMm = sum(precipitation3d, 72);
   const rainfall7dMm = sum(precipitation7d, 168);
   const rainfall30dMm = sum(precipitation30d, 720);
@@ -250,6 +255,7 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
     soilMoistureTrend7d: soilMoisture.average !== undefined && previousSoilMoisture.average !== undefined
       ? soilMoisture.average - previousSoilMoisture.average
       : undefined,
+    rainfall24hMm,
     rainfall3dMm,
     rainfall7dMm,
     rainfallPrevious23dMm: rainfall30dMm !== undefined && rainfall7dMm !== undefined
@@ -346,7 +352,7 @@ function projectedSoilTrend(series: HourlySeries, target: number) {
 
 export type OpenMeteoForecastPoint = {
   validAt: string;
-  horizonHours: typeof FORECAST_HORIZON_HOURS[number];
+  horizonHours: typeof FORECAST_OUTPUT_HOURS[number];
   unavailableFields: string[];
   values: Record<string, number | string | undefined>;
 };
@@ -377,9 +383,15 @@ export function normalizeOpenMeteoForecast(
       break;
     }
   }
-  if (baseHour === undefined) return { generatedAt, points: [] as OpenMeteoForecastPoint[] };
+  if (baseHour === undefined) {
+    return {
+      generatedAt,
+      baseline: undefined,
+      points: [] as OpenMeteoForecastPoint[],
+    };
+  }
 
-  const points = FORECAST_HORIZON_HOURS.map((horizonHours) => {
+  const output = FORECAST_OUTPUT_HOURS.map((horizonHours) => {
     const target = baseHour! + horizonHours * 3600;
     const temperature24h = completeSummary(temperature, target, 24);
     const temperature7d = completeSummary(temperature, target, 168);
@@ -390,6 +402,7 @@ export function normalizeOpenMeteoForecast(
     const soil7d = completeSummary(soilMoisture, target, 168);
     const wind24h = completeSummary(wind, target, 24);
     const gust24h = completeSummary(gusts, target, 24);
+    const rainfall24hMm = completeSum(precipitation, target, 24);
     const rainfall3dMm = completeSum(precipitation, target, 72);
     const rainfall7dMm = completeSum(precipitation, target, 168);
     const rainfall30dMm = completeSum(precipitation, target, 720);
@@ -421,6 +434,7 @@ export function normalizeOpenMeteoForecast(
       soilMoistureAvg7d: soil7d.average,
       soilMoistureMax7d: soil7d.max,
       soilMoistureTrend7d: projectedSoilTrend(soilMoisture, target),
+      rainfall24hMm,
       rainfall3dMm,
       rainfall7dMm,
       rainfallPrevious23dMm: rainfall30dMm !== undefined && rainfall7dMm !== undefined
@@ -446,5 +460,6 @@ export function normalizeOpenMeteoForecast(
     } satisfies OpenMeteoForecastPoint;
   });
 
-  return { generatedAt, points };
+  const [baseline, ...points] = output;
+  return { generatedAt, baseline, points };
 }

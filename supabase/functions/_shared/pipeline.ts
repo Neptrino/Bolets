@@ -86,6 +86,29 @@ export async function finishRun(
   if (error) console.error("Unable to finish ingestion run", { runId, error: error.message });
 }
 
+/**
+ * Rebuild coarse conditions once the two observed spatial streams are both
+ * complete. The database function makes this idempotent, so every final batch
+ * can safely make the request without creating another full rebuild.
+ */
+export async function refreshSpatialLevelConditionsAfterIngestion(
+  supabase: ReturnType<typeof createAdminClient>,
+  snapshotDate: string,
+) {
+  const { data, error } = await supabase.rpc(
+    "refresh_spatial_level_conditions_after_ingestion",
+    { p_snapshot_date: snapshotDate },
+  );
+  if (error) {
+    console.error("Unable to refresh coarse spatial conditions after ingestion", {
+      snapshotDate,
+      message: error.message,
+    });
+    return false;
+  }
+  return data === true;
+}
+
 export function json(data: unknown, status = 200, headers: HeadersInit = {}) {
   return Response.json(data, {
     status,

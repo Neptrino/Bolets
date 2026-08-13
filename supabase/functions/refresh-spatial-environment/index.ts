@@ -1,4 +1,4 @@
-import { createAdminClient, finiteNumber, finishRun, json, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
+import { createAdminClient, finiteNumber, finishRun, json, refreshSpatialLevelConditionsAfterIngestion, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
 import { configureOpenMeteoRequest, fetchOpenMeteoLocations, normalizeOpenMeteo, type OpenMeteoLocation, type RequestProfile } from "../_shared/open-meteo.ts";
 
 type WeatherPoint = {
@@ -47,7 +47,8 @@ Deno.serve(async (request) => {
     if (cursorError) throw cursorError;
     const lastCellId = cursor?.snapshot_date === today ? cursor.last_cell_id as string | null : null;
     if (lastCellId === COMPLETE_CURSOR) {
-      return json({ refreshed: 0, complete: true, snapshotDate: today });
+      const conditionsRefreshed = await refreshSpatialLevelConditionsAfterIngestion(supabase, today);
+      return json({ refreshed: 0, complete: true, conditionsRefreshed, snapshotDate: today });
     }
 
     runId = await startRun(supabase, "spatial-atmosphere", body.trigger === "manual" ? "manual" : "cron", today, { batchSize: BATCH_SIZE, model: "arome_france" });
@@ -60,7 +61,8 @@ Deno.serve(async (request) => {
     if (!points.length) {
       await supabase.from("pipeline_cursors").upsert({ pipeline: CURSOR_PIPELINE, snapshot_date: today, last_cell_id: COMPLETE_CURSOR, updated_at: new Date().toISOString() });
       await finishRun(supabase, runId, "skipped", { metadata: { reason: lastCellId ? "Daily spatial refresh completed" : "No weather grid points" } });
-      return json({ runId, refreshed: 0, complete: true, snapshotDate: today });
+      const conditionsRefreshed = await refreshSpatialLevelConditionsAfterIngestion(supabase, today);
+      return json({ runId, refreshed: 0, complete: true, conditionsRefreshed, snapshotDate: today });
     }
 
     const weather = await fetchWeather(points, "atmosphere");
@@ -93,10 +95,11 @@ Deno.serve(async (request) => {
 
     const { error } = await supabase.from("weather_grid_snapshots").upsert(rows, { onConflict: "point_id,snapshot_date" });
     if (error) throw error;
+    const complete = points.length < BATCH_SIZE;
     await supabase.from("pipeline_cursors").upsert({
       pipeline: CURSOR_PIPELINE,
       snapshot_date: today,
-      last_cell_id: points.at(-1)?.point_id,
+      last_cell_id: complete ? COMPLETE_CURSOR : points.at(-1)?.point_id,
       updated_at: observedAt
     });
     await finishRun(supabase, runId, rows.some((row) => row.unavailable_fields.length) ? "partial" : "succeeded", {
@@ -104,7 +107,10 @@ Deno.serve(async (request) => {
       rowsWritten: rows.length,
       metadata: { firstPointId: points[0].point_id, lastPointId: points.at(-1)?.point_id, atmosphericModel: "arome_france", atmosphericResolutionM: 2500, soilMoistureResolutionM: 9000 }
     });
-    return json({ runId, refreshed: rows.length, complete: rows.length < BATCH_SIZE, snapshotDate: today });
+    const conditionsRefreshed = complete
+      ? await refreshSpatialLevelConditionsAfterIngestion(supabase, today)
+      : false;
+    return json({ runId, refreshed: rows.length, complete, conditionsRefreshed, snapshotDate: today });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Spatial environmental refresh failed", { runId, message });

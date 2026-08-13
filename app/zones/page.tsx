@@ -22,7 +22,7 @@ function habitatDisplayName(habitat: string) {
 export const metadata: Metadata = {
   title: "Zones de bolets de Catalunya: 9 regions",
   description:
-    "Explora les nou regions generals de predicció de bolets de Catalunya, amb espècies destacades i accés directe al mapa de cada zona.",
+    "Exploreu les nou regions generals de predicció de bolets de Catalunya, amb espècies destacades i accés directe al mapa de cada zona.",
   alternates: { canonical: "/zones" },
   openGraph: {
     url: "/zones",
@@ -74,7 +74,7 @@ export default function ZonesPage() {
       />
       <Link href="/bolets-avui" className="location-species-feature location-current-feature">
         <span><Gauge size={18} /> Predicció territorial</span>
-        <div><h2>Quines són les millors combinacions avui?</h2><p>Compara el top 10 entre les candidates estacionals més rellevants de cada zona, sense revelar punts sensibles.</p></div>
+        <div><h2>Quines són les millors combinacions avui?</h2><p>Compareu el top 10 entre les candidates estacionals més rellevants de cada zona, sense revelar punts sensibles.</p></div>
         <strong>Comparar 9 zones <ArrowUpRight size={17} /></strong>
       </Link>
       <section className="prediction-zone-directory" aria-labelledby="prediction-zone-directory-title">
@@ -82,7 +82,7 @@ export default function ZonesPage() {
           meta="9 regions generals"
           title="Zones de predicció"
           titleId="prediction-zone-directory-title"
-          description="Són les mateixes zones que fem servir al mapa i a la lectura d’avui. A cada una hi destaquem cinc perfils comestibles coneguts i indiquem quants perfils actuals hi són compatibles."
+          description="Són les mateixes zones que fem servir al mapa i a la lectura d’avui. En cadascuna hi destaquem cinc perfils comestibles coneguts i indiquem quants perfils actuals hi són compatibles."
         />
         <ol className="prediction-zone-grid" data-prediction-zone-list>
           {predictionZones.map((zone, index) => {
@@ -124,7 +124,7 @@ export default function ZonesPage() {
         <header>
           <p className="eyebrow"><Trees size={15} /> Hàbitats</p>
           <h2 id="zone-habitats-title">Els boscos darrere de les zones</h2>
-          <p>Els ambients més representats a les fitxes. Cada zona combina diversos hàbitats i una mateixa espècie pot aparèixer en més d’un.</p>
+          <p>Els ambients més representats a les fitxes. Cada zona combina diversos hàbitats i una mateixa espècie pot aparèixer en més d’un hàbitat.</p>
         </header>
         <ol>
           {habitats.map(([habitat, count], index) => (

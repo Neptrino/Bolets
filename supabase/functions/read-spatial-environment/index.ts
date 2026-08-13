@@ -38,7 +38,7 @@ async function readCellForecast(
   pointIds: string[],
 ) {
   if (!pointIds.length) return null;
-  const expectedHorizons = [24, 48, 72, 96, 120];
+  const expectedHorizons = [0, 24, 48, 72, 96, 120];
   const { data: candidates, error } = await supabase
     .from("weather_grid_forecasts")
     .select("point_id,snapshot_date,generated_at,valid_at,horizon_hours,sources,source_resolution_m,confidence,unavailable_fields,values")
@@ -46,7 +46,9 @@ async function readCellForecast(
     .order("snapshot_date", { ascending: false })
     .order("generated_at", { ascending: false })
     .order("horizon_hours", { ascending: true })
-    .limit(15 * pointIds.length);
+    // Retention keeps three issues and every issue now has six horizons.
+    // Keep enough rows to fall back when either newer issue is incomplete.
+    .limit(18 * pointIds.length);
   if (error) throw error;
   type ForecastRow = NonNullable<typeof candidates>[number];
   const groups = new Map<string, ForecastRow[]>();
@@ -61,28 +63,31 @@ async function readCellForecast(
     group.every((row) => row.unavailable_fields.length === 0)
   );
   if (!rows) return null;
+  const aggregateHorizon = (horizonHours: number) => {
+    const horizonRows = rows.filter((row) => row.horizon_hours === horizonHours);
+    const aggregate = aggregateEnvironmentRows(horizonRows.map((row) => ({
+      observed_at: row.valid_at,
+      sources: row.sources,
+      source_resolution_m: row.source_resolution_m,
+      confidence: row.confidence,
+      unavailable_fields: row.unavailable_fields,
+      values: row.values,
+    })));
+    return {
+      validAt: aggregate.observedAt,
+      horizonHours,
+      pointCount: horizonRows.length,
+      source: aggregate.source,
+      sourceResolutionM: aggregate.sourceResolutionM,
+      confidence: aggregate.confidence,
+      unavailableFields: aggregate.unavailableFields,
+      values: aggregate.values,
+    };
+  };
   return {
     generatedAt: rows[0].generated_at,
-    snapshots: expectedHorizons.map((horizonHours) => {
-      const horizonRows = rows.filter((row) => row.horizon_hours === horizonHours);
-      const aggregate = aggregateEnvironmentRows(horizonRows.map((row) => ({
-        observed_at: row.valid_at,
-        sources: row.sources,
-        source_resolution_m: row.source_resolution_m,
-        confidence: row.confidence,
-        unavailable_fields: row.unavailable_fields,
-        values: row.values,
-      })));
-      return {
-        validAt: aggregate.observedAt,
-        horizonHours,
-        source: aggregate.source,
-        sourceResolutionM: aggregate.sourceResolutionM,
-        confidence: aggregate.confidence,
-        unavailableFields: aggregate.unavailableFields,
-        values: aggregate.values,
-      };
-    }),
+    baseline: aggregateHorizon(0),
+    snapshots: expectedHorizons.slice(1).map(aggregateHorizon),
   };
 }
 
@@ -94,7 +99,7 @@ async function readHistoryCellSupport(
   if (resolution === 250) {
     const { data: cell, error: cellError } = await supabase
       .from("spatial_cells")
-      .select("cell_id,region_id,weather_point_id")
+      .select("cell_id,region_id,weather_point_id,confidence")
       .eq("cell_id", cellId)
       .eq("static_verified", true)
       .maybeSingle();
@@ -112,12 +117,13 @@ async function readHistoryCellSupport(
       regionId: cell.region_id,
       weatherPointIds: [cell.weather_point_id],
       soilPointIds: atmospherePoint?.soil_point_id ? [atmospherePoint.soil_point_id] : [],
+      staticConfidence: cell.confidence,
     };
   }
 
   const { data: cell, error } = await supabase
     .from("spatial_cell_levels")
-    .select("cell_id,region_id,weather_point_ids,soil_point_ids")
+    .select("cell_id,region_id,weather_point_ids,soil_point_ids,confidence,condition_observed_at,condition_snapshot_date")
     .eq("cell_id", cellId)
     .eq("grid_size_m", resolution)
     .maybeSingle();
@@ -128,7 +134,17 @@ async function readHistoryCellSupport(
     regionId: cell.region_id,
     weatherPointIds: cell.weather_point_ids,
     soilPointIds: cell.soil_point_ids ?? [],
+    staticConfidence: cell.confidence,
+    publishedObservedAt: cell.condition_observed_at,
+    publishedSnapshotDate: cell.condition_snapshot_date,
   };
+}
+
+function minimumConfidence(...confidences: Array<EnvironmentSnapshotRow["confidence"] | null | undefined>) {
+  const order: EnvironmentSnapshotRow["confidence"][] = ["unknown", "limited", "moderate", "high"];
+  return confidences.reduce<EnvironmentSnapshotRow["confidence"]>((lowest, confidence) =>
+    confidence && order.indexOf(confidence) < order.indexOf(lowest) ? confidence : lowest,
+  "high");
 }
 
 async function readPointHistory(
@@ -179,6 +195,7 @@ async function readCellHistory(
   const soilByDate = groupHistoryRows(soilSnapshots);
   const completeAtmosphereDates = [...atmosphereByDate]
     .filter(([, rows]) => new Set(rows.map((row) => row.point_id)).size === cell.weatherPointIds.length)
+    .filter(([snapshotDate]) => !cell.publishedSnapshotDate || snapshotDate <= cell.publishedSnapshotDate)
     .sort(([left], [right]) => left.localeCompare(right))
     .slice(-days);
 
@@ -199,7 +216,7 @@ async function readCellHistory(
         observedAt: aggregate.observedAt,
         source: aggregate.source,
         sourceResolutionM: aggregate.sourceResolutionM,
-        confidence: aggregate.confidence,
+        confidence: minimumConfidence(aggregate.confidence, cell.staticConfidence),
         unavailableFields: aggregate.unavailableFields,
         values: aggregate.values,
       };

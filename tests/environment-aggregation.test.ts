@@ -26,6 +26,7 @@ describe("coarse environment history aggregation", () => {
           temperatureMax10dC: 16,
           frostHours10d: 0,
           relativeHumidityAvg24h: 70,
+          rainfall24hMm: 4,
           soilMoistureAvg7d: 0.2,
           weatherModel: "AROME",
         },
@@ -42,6 +43,7 @@ describe("coarse environment history aggregation", () => {
           temperatureMax10dC: 31,
           frostHours10d: 3,
           relativeHumidityAvg24h: 90,
+          rainfall24hMm: 8,
           soilMoistureAvg7d: 0.4,
           weatherModel: "AROME",
         },
@@ -54,6 +56,7 @@ describe("coarse environment history aggregation", () => {
       temperatureMax10dC: 31,
       frostHours10d: 3,
       relativeHumidityAvg24h: 80,
+      rainfall24hMm: 6,
       weatherModel: "AROME",
     });
     expect(aggregate.values.soilMoistureAvg7d).toBeCloseTo(0.3);

@@ -21,7 +21,7 @@ import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 export const metadata: Metadata = {
   title: "Guies locals de bolets per territori",
   description:
-    "Explora guies locals de bolets per comarca, massís, indret i espècie, amb hàbitat, temporada i fonts territorials, sense publicar punts sensibles.",
+    "Exploreu guies locals de bolets per comarca, massís, indret i espècie, amb hàbitat, temporada i fonts territorials, sense publicar punts sensibles.",
   alternates: { canonical: "/guies" },
   openGraph: {
     url: "/guies",
@@ -77,7 +77,7 @@ export default function GuidesPage() {
 
       <Link href="/zones" className="location-species-feature location-current-feature guides-zones-feature">
         <span><MapPinned size={18} /> Directori territorial</span>
-        <div><h2>Comença per les nou zones generals</h2><p>Compara regions, perfils compatibles i condicions actuals abans de baixar al detall local.</p></div>
+        <div><h2>Comenceu per les nou zones generals</h2><p>Compareu regions, perfils compatibles i condicions actuals abans de baixar al detall local.</p></div>
         <strong>Veure les zones <ArrowUpRight size={17} /></strong>
       </Link>
 

@@ -79,16 +79,16 @@ const publishedGuides = speciesLocationPages.filter((page) =>
 );
 
 const comparisonLinks = [
-  { href: "/compare/cep-vs-cep-estiu", label: "Cep vs cep d’estiu" },
-  { href: "/compare/cep-vs-cep-negre", label: "Cep vs cep negre" },
-  { href: "/compare/cep-vs-cep-rogenc", label: "Cep vs cep rogenc" },
+  { href: "/compare/cep-vs-cep-estiu", label: "Cep vs. cep d’estiu" },
+  { href: "/compare/cep-vs-cep-negre", label: "Cep vs. cep negre" },
+  { href: "/compare/cep-vs-cep-rogenc", label: "Cep vs. cep rogenc" },
 ] as const;
 
 const faqs = [
   {
     question: "Quins bolets agrupem com a ceps en aquesta guia?",
     answer:
-      "Aquesta guia agrupa quatre perfils del catàleg: cep (Boletus edulis), cep rogenc (Boletus pinophilus), cep negre (Boletus aereus) i cep d’estiu (Boletus reticulatus). Comparteixen alguns trets, però canvien d’arbres associats, cota i calendari.",
+      "Aquesta guia agrupa quatre perfils del catàleg: cep (Boletus edulis), cep rogenc (Boletus pinophilus), cep negre (Boletus aereus) i cep d’estiu (Boletus reticulatus). Comparteixen alguns trets, però difereixen pel que fa als arbres associats, la cota i el calendari.",
   },
   {
     question: "Quan comença la temporada de ceps?",
@@ -113,7 +113,7 @@ const faqs = [
   {
     question: "Com es diferencia un cep del mataparent?",
     answer:
-      "El mataparent desenvolupa porus rosats i un reticle bru fosc; és incomestible pel gust molt amarg. No tastis mai un exemplar dubtós per identificar-lo: compara tots els trets i consulta una persona experta.",
+      "El mataparent desenvolupa porus rosats i un reticle bru fosc; és incomestible pel gust molt amarg. No tasteu mai un exemplar dubtós per identificar-lo: compareu tots els trets i consulteu una persona experta.",
   },
   {
     question: "El mapa confirma que hi ha ceps en un lloc?",
@@ -207,9 +207,9 @@ export default function CepsTerritoryPage() {
                 <i>a Catalunya.</i>
               </h1>
               <p>
-                Una sola paraula amaga quatre perfils ecològics: canvien els
-                arbres, la cota i el calendari, però sempre calen hàbitat
-                compatible i humitat sostinguda.
+                Una sola paraula amaga quatre perfils ecològics: els arbres, la
+                cota i el calendari canvien, però sempre cal que hi hagi un
+                hàbitat compatible i humitat sostinguda.
               </p>
             </div>
             <aside>
@@ -242,7 +242,7 @@ export default function CepsTerritoryPage() {
             <p>
               Els quatre perfils tenen porus en lloc de làmines, reticle al peu
               i carn blanca immutable, però cap d’aquests trets per separat
-              n’assegura la identificació. Compara la morfologia completa,
+              n’assegura la identificació. Compareu la morfologia completa,
               l’arbre hoste i la temporada.
             </p>
             <div className="ceps-comparison-links" aria-label="Comparacions entre ceps">
@@ -454,7 +454,7 @@ export default function CepsTerritoryPage() {
               <h3>Mataparent</h3>
               <p>
                 Té porus que es tornen rosats i un reticle bru fosc. És
-                incomestible pel gust amarg; no el tastis per confirmar-ne la
+                incomestible pel gust amarg; no el tasteu per confirmar-ne la
                 identitat.
               </p>
               <Link href="/compare/cep-vs-mataparent" className="text-link">
@@ -498,7 +498,7 @@ export default function CepsTerritoryPage() {
           <div>
             <strong>No és una guia d’identificació per al consum.</strong>
             <p>
-              No consumeixis cap bolet basant-te en el mapa, aquesta pàgina o
+              No consumiu cap bolet basant-vos en el mapa, aquesta pàgina o
               una fotografia. L’ACSA recomana menjar només els bolets que es
               puguin identificar sense cap dubte; consulta la seva{" "}
               <a

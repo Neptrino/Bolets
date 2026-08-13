@@ -27,7 +27,7 @@ export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Bolets avui: millors zones i condicions",
-  description: "Descobreix les deu millors combinacions prioritàries d’espècie i zona a Catalunya, comparades amb dades vigents de pluja, temperatura i hàbitat.",
+  description: "Descobriu les deu millors combinacions prioritàries d’espècie i zona a Catalunya, comparades amb dades vigents de pluja, temperatura i hàbitat.",
   alternates: { canonical: "/bolets-avui" },
   openGraph: {
     url: "/bolets-avui",

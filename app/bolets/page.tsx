@@ -14,7 +14,7 @@ import { DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
   title: "Tipus de bolets de Catalunya: guia d’espècies",
-  description: `Descobreix ${speciesAlphabetical.length} tipus de bolets de Catalunya per comestibilitat, temporada i hàbitat, amb fitxes d’identificació i confusions.`,
+  description: `Descobriu ${speciesAlphabetical.length} tipus de bolets de Catalunya per comestibilitat, temporada i hàbitat, amb fitxes d’identificació i confusions.`,
   alternates: { canonical: "/bolets" },
   openGraph: {
     url: "/bolets",

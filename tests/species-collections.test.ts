@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import sitemap from "@/app/sitemap";
 import { edibleSpecies, speciesInSeason, toxicSpecies } from "@/src/lib/species-collections";
-import { comparisonPages } from "@/data/comparison-pages";
+import {
+  comparisonPages,
+  comparisonPagesForSpecies,
+} from "@/data/comparison-pages";
 import { getSpecies, speciesProfiles } from "@/data/species";
 import { seasonMonthPath, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { seasonGuides } from "@/src/lib/season-guides";
@@ -86,7 +89,7 @@ describe("search-intent species collections", () => {
   });
 
   it("keeps every curated comparison connected to two catalogue species", () => {
-    expect(comparisonPages.length).toBeGreaterThanOrEqual(13);
+    expect(comparisonPages.length).toBeGreaterThanOrEqual(18);
     expect(new Set(comparisonPages.map((page) => page.slug)).size).toBe(comparisonPages.length);
     const unorderedPairs = comparisonPages.map((page) => [page.leftSpeciesId, page.rightSpeciesId].sort().join(":"));
     expect(new Set(unorderedPairs).size).toBe(unorderedPairs.length);
@@ -103,8 +106,27 @@ describe("search-intent species collections", () => {
 
   it("covers the strongest current comparison suggestions", () => {
     const slugs = comparisonPages.map((page) => page.slug);
-    expect(slugs).toContain("rovello-vs-pinetell");
-    expect(slugs).toContain("rossinyol-vs-camagroc");
-    expect(slugs).toContain("ou-de-reig-vs-reig-bord");
+    expect(slugs).toEqual(expect.arrayContaining([
+      "rovello-vs-pinetell",
+      "rossinyol-vs-camagroc",
+      "ou-de-reig-vs-reig-bord",
+      "cep-vs-mataparent",
+      "fredolic-vs-fredolic-metzinos",
+      "camasec-vs-candeleta-vorada",
+      "moixero-vs-inocibe-patouillard",
+      "murgola-vs-bolet-greix",
+      "carlet-vs-carner-bord",
+    ]));
+  });
+
+  it("connects published comparisons back to both species profiles", () => {
+    for (const page of comparisonPages) {
+      expect(comparisonPagesForSpecies(page.leftSpeciesId)).toContain(page);
+      expect(comparisonPagesForSpecies(page.rightSpeciesId)).toContain(page);
+    }
+
+    expect(
+      comparisonPagesForSpecies("boletus-edulis").map((page) => page.slug),
+    ).toContain("cep-vs-mataparent");
   });
 });

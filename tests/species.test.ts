@@ -121,6 +121,19 @@ describe("species profiles", () => {
     expect(getSpeciesByScientificName("Species not in catalogue")).toBeUndefined();
   });
 
+  it("lists matagent as a hazardous cep lookalike", () => {
+    const cep = speciesProfiles.find((profile) => profile.speciesId === "boletus-edulis")!;
+    const matagent = cep.similarSpecies.find((item) => (
+      item.scientificName === "Rubroboletus satanas"
+    ));
+
+    expect(matagent).toMatchObject({
+      commonName: "Matagent",
+      edibility: "dangerously_toxic",
+      warning: true,
+    });
+  });
+
   it("keeps peu de rata attached to Ramaria rather than Hydnum", () => {
     const ramaria = speciesProfiles.find((profile) => profile.speciesId === "ramaria-aurea")!;
     const hydnum = speciesProfiles.find((profile) => profile.speciesId === "hydnum-repandum")!;

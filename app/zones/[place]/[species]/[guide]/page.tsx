@@ -77,10 +77,14 @@ export default async function SpeciesLocationPage({ params }: Props) {
             </div></section>
             <section>
               <p className="eyebrow">Mapa de l’espècie</p>
-              <h2>On podria créixer a Catalunya</h2>
+              <h2>On podria créixer {location.prepositionalName}</h2>
               <p>El mapa de compatibilitat ecològica de {species.identity.commonName} mostra on coincideixen la coberta del sòl, l’altitud i el pH adequats per a l’espècie. No és una predicció de fructificació ni confirma que hi hagi bolets.</p>
               <LazyHabitatMap
                 activeRegions={species.ecologicalConfig.regions}
+                autoGeolocate={false}
+                compactLegend
+                initialCentre={location.mapCentre}
+                initialZoom={10.8}
                 selectedRegion={area.regionId}
                 speciesId={species.speciesId}
               />

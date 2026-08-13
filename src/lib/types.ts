@@ -267,6 +267,7 @@ export interface ConditionSnapshot {
     soilMoistureAvg7d?: number;
     soilMoistureMax7d?: number;
     soilMoistureTrend7d?: number;
+    rainfall24hMm?: number;
     rainfall3dMm?: number;
     rainfall7dMm?: number;
     rainfallPrevious23dMm?: number;
@@ -394,6 +395,9 @@ export interface PredictionCellTimeline {
     generatedAt: string;
     source: string[];
     sourceResolutionM: number;
+    anchor: PredictionHistoryPoint & { score: number };
+    calibratedAt: string;
+    correctionMethod: "observed-anomaly-v1";
     points: PredictionForecastPoint[];
   } | null;
 }

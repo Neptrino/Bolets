@@ -6,6 +6,10 @@ const migration = readFileSync(
   join(process.cwd(), "supabase", "migrations", "20260813103000_store_spatial_forecasts.sql"),
   "utf8",
 );
+const anchorMigration = readFileSync(
+  join(process.cwd(), "supabase", "migrations", "20260813153000_anchor_spatial_forecasts.sql"),
+  "utf8",
+);
 const currentReader = readFileSync(
   join(process.cwd(), "supabase", "functions", "read-spatial-environment", "index.ts"),
   "utf8",
@@ -23,6 +27,31 @@ describe("spatial forecast storage", () => {
     expect(migration).not.toMatch(/insert into public\.weather_grid_snapshots[\s\S]*valid_at/);
   });
 
+  it("stores a same-issuance horizon-zero baseline for anomaly correction", () => {
+    expect(anchorMigration).toContain("horizon_hours in (0, 24, 48, 72, 96, 120)");
+    expect(anchorMigration).toContain("horizon_hours = 0 and valid_at <= generated_at");
+    expect(anchorMigration).toContain("create table public.weather_forecast_issues");
+    expect(anchorMigration).toContain("allocate_weather_forecast_issue");
+    expect(anchorMigration).toContain("on conflict (snapshot_date) do nothing");
+    expect(anchorMigration).toContain("alter table public.weather_forecast_issues enable row level security");
+    expect(anchorMigration).toContain(
+      "revoke all on table public.weather_forecast_issues from public, anon, authenticated, service_role",
+    );
+    expect(anchorMigration).toContain(
+      "grant select, insert on table public.weather_forecast_issues to service_role",
+    );
+    expect(anchorMigration).toContain("'spatial-forecast-v2'");
+    expect(anchorMigration).toContain("delete from public.weather_grid_forecasts where snapshot_date = current_date");
+    expect(anchorMigration).toContain("('spatial-forecast', current_date, '__complete__', now())");
+    expect(anchorMigration).toContain("('spatial-forecast-v2', current_date, '__complete__', now())");
+    expect(anchorMigration).not.toContain("delete from public.pipeline_cursors where pipeline = 'spatial-forecast-v2'");
+    expect(refreshPipeline).toContain(
+      "cursor?.snapshot_date === today ? cursor.last_cell_id as string | null : null",
+    );
+    expect(refreshPipeline).toContain("forecastPoints.length * 6");
+    expect(currentReader).toContain("baseline: aggregateHorizon(0)");
+  });
+
   it("keeps forecast rows private, indexed, and bounded by retention", () => {
     expect(migration).toContain("weather_grid_forecasts_point_date_idx");
     expect(migration).toContain("alter table public.weather_grid_forecasts enable row level security");
@@ -34,17 +63,23 @@ describe("spatial forecast storage", () => {
   });
 
   it("reads one complete issue rather than mixing partial forecast dates", () => {
-    expect(currentReader).toContain("const expectedHorizons = [24, 48, 72, 96, 120]");
+    expect(currentReader).toContain("const expectedHorizons = [0, 24, 48, 72, 96, 120]");
     expect(currentReader).toContain("candidate.snapshot_date}:${candidate.generated_at}");
     expect(currentReader).toContain("group.length === expectedHorizons.length");
     expect(currentReader).toContain("group.every((row) => row.unavailable_fields.length === 0)");
+    expect(currentReader).toContain(".limit(18 * pointIds.length)");
     expect(currentReader).toContain("atmospherePoint.soil_point_id");
+    expect(currentReader).toContain("condition_observed_at,condition_snapshot_date");
+    expect(currentReader).toContain("snapshotDate <= cell.publishedSnapshotDate");
+    expect(currentReader).toContain("minimumConfidence(aggregate.confidence, cell.staticConfidence)");
     expect(currentReader).toContain("returning observed history only");
   });
 
   it("retries forecast batches independently from current soil ingestion", () => {
     expect(migration).toContain("pipeline = 'spatial-forecast'");
-    expect(refreshPipeline).toContain('const FORECAST_CURSOR_PIPELINE = "spatial-forecast"');
+    expect(refreshPipeline).toContain('const FORECAST_CURSOR_PIPELINE = "spatial-forecast-v2"');
+    expect(refreshPipeline).toContain("forecastIssueGeneratedAt(supabase, today)");
+    expect(refreshPipeline).toContain('supabase.rpc("allocate_weather_forecast_issue"');
     expect(refreshPipeline).toContain("const forecastBatchSucceeded");
     expect(refreshPipeline).toContain("if (!forecastErrorMessage && completeForecastRows)");
     expect(refreshPipeline).toContain("SOIL_CURSOR_PIPELINE");
