@@ -27,9 +27,6 @@
 .editorial-sources a { display: inline-flex; align-items: center; gap: .3rem; padding: .3rem .5rem; border: 1px solid rgba(55, 56, 52, .16); border-radius: 6px; background: rgba(255, 255, 255, .3); color: var(--moss-dark, #263b27); font-size: .8rem; font-weight: 750; line-height: 1.25; text-decoration: none; }
 .editorial-sources a:hover { border-color: rgba(55, 56, 52, .3); background: rgba(255, 255, 255, .52); }
 
-.site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem 1rem; }
-.site-footer-links a { color: inherit; text-underline-offset: .2em; }
-
 .home-search-guides,
 .species-topic-links {
   display: grid;

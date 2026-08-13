@@ -1,11 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowDown, ArrowUpRight, CloudRain, Map, Sparkles, Sprout } from "lucide-react";
+import { ArrowDown, ArrowUpRight, CloudRain, Leaf, Map, Snowflake, Sparkles, Sun, Trees } from "lucide-react";
 import { SpeciesCard } from "@/components/species-card";
 import { getFeaturedSeasonalSpecies, speciesProfiles } from "@/data/species";
 import homeHero from "@/public/media/generated/home-hero-boletus-v2.webp";
 import { DEFAULT_DESCRIPTION } from "@/src/lib/seo";
+import { seasonGuideForMonth, type SeasonGuideId } from "@/src/lib/season-guides";
+import { monthInTimeZone } from "@/src/lib/seasonality";
+
+const seasonGuideIcons = {
+  primavera: Leaf,
+  estiu: Sun,
+  tardor: Trees,
+  hivern: Snowflake,
+} satisfies Record<SeasonGuideId, typeof Leaf>;
 
 export const revalidate = 86400;
 export const metadata: Metadata = {
@@ -15,6 +24,8 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   const featuredSpecies = getFeaturedSeasonalSpecies();
+  const currentSeasonGuide = seasonGuideForMonth(monthInTimeZone());
+  const CurrentSeasonIcon = seasonGuideIcons[currentSeasonGuide.id];
   return (
     <>
       <section className="hero">
@@ -34,7 +45,7 @@ export default function HomePage() {
       <section className="home-intro page-width"><div><p className="eyebrow">El sistema</p><h2>Una mateixa ecologia,<br />dues maneres de llegir-la.</h2></div><p>Les fitxes expliquen el món que necessita cada espècie. El perfil de predicció fa servir aquesta mateixa configuració per comparar-la amb les condicions territorials.</p></section>
       <nav className="home-search-guides page-width" aria-label="Guies destacades">
         <Link href="/bolets-avui"><Map size={19} /><span><strong>Bolets avui</strong><small>Condicions regionals disponibles</small></span><ArrowUpRight size={16} /></Link>
-        <Link href="/bolets-de-primavera"><Sprout size={19} /><span><strong>Bolets de primavera</strong><small>Espècies actives de març a juny</small></span><ArrowUpRight size={16} /></Link>
+        <Link href={currentSeasonGuide.path}><CurrentSeasonIcon size={19} /><span><strong>{currentSeasonGuide.cardTitle}</strong><small>Espècies actives {currentSeasonGuide.rangeSentence}</small></span><ArrowUpRight size={16} /></Link>
         <Link href="/quan-surten-els-bolets-despres-de-ploure"><CloudRain size={19} /><span><strong>Després de ploure</strong><small>Com interpretar la resposta de cada espècie</small></span><ArrowUpRight size={16} /></Link>
       </nav>
       <section className="home-cards page-width"><div className="section-topline"><div><p className="eyebrow">Comença aquí</p><h2>Espècies de temporada</h2></div><Link href="/bolets" className="text-link">Veure les {speciesProfiles.length} fitxes <ArrowUpRight size={16} /></Link></div><div className="species-grid featured-grid">{featuredSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} />)}</div></section>

@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { seasonGuideForMonth } from "@/src/lib/season-guides";
+import { monthInTimeZone } from "@/src/lib/seasonality";
 
 test("permanently redirects legacy catalogue URLs and preserves query parameters", async ({ request }) => {
   const catalogue = await request.get("/species?region=pirineus", { maxRedirects: 0 });
@@ -59,6 +61,14 @@ test("the catalogue separates monthly and seasonal navigation", async ({ page })
   await expect(seasons.getByRole("link", { name: /Bolets d’estiu/ })).toHaveAttribute("href", "/bolets-d-estiu");
   await expect(seasons.getByRole("link", { name: /Bolets de tardor/ })).toHaveAttribute("href", "/bolets-de-tardor");
   await expect(seasons.getByRole("link", { name: /Bolets d’hivern/ })).toHaveAttribute("href", "/bolets-d-hivern");
+});
+
+test("the footer links to the current Catalonia season", async ({ page }) => {
+  const currentGuide = seasonGuideForMonth(monthInTimeZone());
+  await page.goto("/temporada");
+
+  const footer = page.getByRole("contentinfo");
+  await expect(footer.getByRole("link", { name: currentGuide.cardTitle })).toHaveAttribute("href", currentGuide.path);
 });
 
 test("internal navigation exposes no legacy catalogue link", async ({ page }) => {

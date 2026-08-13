@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Nunito_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import "./seo-content.css";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { JsonLd } from "@/components/json-ld";
 import {
   DEFAULT_DESCRIPTION,
@@ -75,5 +75,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="ca" className={nunitoSans.variable} data-scroll-behavior="smooth"><body><JsonLd data={{ "@context": "https://schema.org", "@graph": [{ "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: SITE_URL, name: SITE_NAME, description: DEFAULT_DESCRIPTION, inLanguage: "ca" }, { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon.svg` }, { "@type": "Organization", "@id": `${SITE_URL}/#editorial-team`, name: "Equip editorial de Bolets Atles", url: `${SITE_URL}/equip-editorial`, parentOrganization: { "@id": `${SITE_URL}/#organization` } }] }} /><SiteHeader /><main>{children}</main><footer className="site-footer"><span>BOLETS·ATLES</span><p>Informació educativa. No identifiqueu ni consumiu bolets només amb aquesta aplicació.</p><nav className="site-footer-links" aria-label="Guies i informació editorial"><Link href="/bolets-avui">Bolets avui</Link><Link href="/bolets-de-primavera">Bolets de primavera</Link><Link href="/quan-surten-els-bolets-despres-de-ploure">Després de ploure</Link><Link href="/equip-editorial">Equip editorial</Link></nav><span>CATALUNYA · {new Date().getFullYear()}</span></footer><Analytics /><SpeedInsights /></body></html>;
+  return <html lang="ca" className={nunitoSans.variable} data-scroll-behavior="smooth"><body><JsonLd data={{ "@context": "https://schema.org", "@graph": [{ "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: SITE_URL, name: SITE_NAME, description: DEFAULT_DESCRIPTION, inLanguage: "ca" }, { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon.svg` }, { "@type": "Organization", "@id": `${SITE_URL}/#editorial-team`, name: "Equip editorial de Bolets Atles", url: `${SITE_URL}/equip-editorial`, parentOrganization: { "@id": `${SITE_URL}/#organization` } }] }} /><SiteHeader /><main>{children}</main><SiteFooter /><Analytics /><SpeedInsights /></body></html>;
 }
