@@ -39,14 +39,7 @@ type ConditionStat = {
   value: string;
   explanation?: string;
 };
-type ConditionContext =
-  | {
-      scoreLabel?: string;
-      scoreValue?: string;
-      targetLabel: string;
-      targetValue: string;
-    }
-  | { note: string };
+type ConditionContext = { note: string };
 
 const componentChartNames: Record<ModelComponentId, string> = {
   habitatCoverage: "Coberta",
@@ -212,7 +205,7 @@ export function ConditionComparison({
       case "altitude":
         return `${score} Indica com encaixa l’altitud de l’hàbitat compatible amb el rang de l’espècie. 100 correspon al rang central; baixa gradualment als marges i arriba a 0 fora del marge ecològic.`;
       case "phenology":
-        return `${score} Situa la data dins el calendari de fructificació de l’espècie. 100 és el pic estacional, 25 una fase només possible i 0 una temporada inactiva. Multiplica directament les condicions.`;
+        return `${score} Situa el dia i l’hora exactes dins el calendari de fructificació de l’espècie, en hora local. Interpola suaument entre els valors del centre de cada mes: l’1 d’agost encara combina juliol i agost, el 15 correspon a l’ancoratge d’agost i el 31 ja transita cap al setembre. 100 és el pic estacional, 25 una fase només possible i 0 una temporada inactiva. Multiplica directament les condicions.`;
       case "water":
         return supportedModel
           ? `${score} Resumeix la humitat del sòl de 7 dies, la pluja, els dies plujosos i l’ET₀ de ${supportedModel.water.rainfallWindowDays} dies, més la sequedat atmosfèrica i la ratxa seca. 100 és la resposta hídrica òptima del model. En el càlcul s’aplica amb l’exponent ${supportedModel.water.waterExponent.toLocaleString("ca-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`
@@ -286,12 +279,11 @@ export function ConditionComparison({
       label: "Temperatura",
       period: "darrera lectura",
       current: temperature(v.temperatureC),
-      context: supportedModel
-        ? {
-            targetLabel: `Resposta no lineal · ${temperatureWindowDays} dies`,
-            targetValue: `Òptim inicial: ${supportedModel.temperature.optimumC} °C`,
-          }
-        : { note: "Sense model hidrotermal de curt termini per a aquesta espècie" },
+      context: {
+        note: supportedModel
+          ? `La lectura actual és context. El model compara la temperatura mitjana de ${temperatureWindowDays} dies amb l’òptim inicial de l’espècie (${supportedModel.temperature.optimumC} °C); les gelades i la calor extrema s’apliquen per separat.`
+          : "Sense model hidrotermal de curt termini per a aquesta espècie",
+      },
       stats: [
         {
           label: `Mitj · ${temperatureWindowDays ?? "—"} dies`,
@@ -527,34 +519,35 @@ export function ConditionComparison({
         </p>
       )}
       <div className="condition-list">
-        {data.map((item) => {
+        {data.map((item, itemIndex) => {
           const Icon = item.icon;
+          const contextTooltipId = `condition-card-context-${itemIndex}`;
           return (
-            <article key={item.label}>
+            <article
+              key={item.label}
+              className="condition-card-with-note"
+            >
               <div className="condition-card-heading">
                 <Icon size={18} />
-                <span>{item.label}</span>
-                <small>{item.period}</small>
+                <span className="condition-card-label">{item.label}</span>
+                <button
+                  type="button"
+                  className="condition-card-help"
+                  aria-label={`Informació de ${item.label}`}
+                  aria-describedby={contextTooltipId}
+                >
+                  <CircleHelp aria-hidden="true" size={14} />
+                </button>
+                <span
+                  className="condition-card-tooltip"
+                  id={contextTooltipId}
+                  role="tooltip"
+                >
+                  <strong>Període: {item.period}</strong>
+                  <span>{item.context.note}</span>
+                </span>
               </div>
               <strong className="condition-current">{item.current}</strong>
-              {"note" in item.context ? (
-                <p className="condition-context condition-context-note">
-                  {item.context.note}
-                </p>
-              ) : (
-                <dl className="condition-context condition-context-readings">
-                  {item.context.scoreLabel && item.context.scoreValue ? (
-                    <div>
-                      <dt>{item.context.scoreLabel}</dt>
-                      <dd>{item.context.scoreValue}</dd>
-                    </div>
-                  ) : null}
-                  <div>
-                    <dt>{item.context.targetLabel}</dt>
-                    <dd>{item.context.targetValue}</dd>
-                  </div>
-                </dl>
-              )}
               {item.stats.length > 0 && (
                 <dl className="condition-stats">
                   {item.stats.map((stat, statIndex) => (
@@ -613,24 +606,27 @@ export function ConditionComparison({
             <div>
               <dt><Mountain size={17} aria-hidden="true" />Altitud</dt>
               <dd>{v.altitudeM === undefined ? "No verificada" : `${Math.round(v.altitudeM)} m`}</dd>
-              <small>{v.habitatAltitudeSuitability === undefined
-                ? `Ideal: ${altitudeMin}–${altitudeMax} m`
-                : `Idoneïtat d’altitud dins l’hàbitat: ${Math.round(v.habitatAltitudeSuitability)}%`}</small>
+              <small>
+                Preferència: {altitudeMin}–{altitudeMax} m
+                {v.habitatAltitudeSuitability === undefined
+                  ? ""
+                  : ` · Ajust de la cel·la: ${Math.round(v.habitatAltitudeSuitability)}%`}
+              </small>
             </div>
             <div>
               <dt><Trees size={17} aria-hidden="true" />Coberta compatible</dt>
               <dd>{v.habitatCoveragePercent === undefined ? "No verificada" : `${Math.round(v.habitatCoveragePercent)}%`}</dd>
-              <small>Part de la cel·la amb coberta forestal compatible</small>
+              <small>Part de la cel·la que coincideix amb la coberta preferida</small>
             </div>
             <div>
               <dt><Layers3 size={17} aria-hidden="true" />pH del sòl</dt>
               <dd>{v.soilPh === undefined ? "No verificat" : v.soilPh.toFixed(1)}</dd>
-              <small>{preferredPhRange ? `Ideal: pH ${preferredPhRange[0]}–${preferredPhRange[1]}` : `Preferència: ${species.ecologicalConfig.soil.reaction}`}</small>
+              <small>{preferredPhRange ? `Preferència: pH ${preferredPhRange[0]}–${preferredPhRange[1]}` : `Preferència: ${species.ecologicalConfig.soil.reaction}`}</small>
             </div>
             <div>
               <dt><Layers3 size={17} aria-hidden="true" />Textura del sòl</dt>
               <dd>{v.soilTexture ? uppercaseInitial(v.soilTexture) : "No verificada"}</dd>
-              <small>Preferida: {uppercaseInitial(species.ecologicalConfig.soil.texture)}</small>
+              <small>Preferència: {uppercaseInitial(species.ecologicalConfig.soil.texture)}</small>
             </div>
             <div>
               <dt><Layers3 size={17} aria-hidden="true" />Substrat geològic</dt>
@@ -642,12 +638,12 @@ export function ConditionComparison({
                   ? unknownGeologyDescription
                   : geologicalSubstrateLabels[v.geologicalSubstrate.class]
                 : "Sense cartografia geològica"}</dd>
-              <small>Preferència de l’espècie: {uppercaseInitial(species.ecologicalConfig.soil.substrate)}</small>
+              <small>Context no puntuat · afinitat descrita: {uppercaseInitial(species.ecologicalConfig.soil.substrate)}</small>
             </div>
             <div>
-              <dt><Layers3 size={17} aria-hidden="true" />Drenatge preferit</dt>
+              <dt><Layers3 size={17} aria-hidden="true" />Drenatge de l’espècie</dt>
               <dd>{uppercaseInitial(species.ecologicalConfig.soil.drainage)}</dd>
-              <small>Característica ecològica de l’espècie</small>
+              <small>Preferència ecològica · sense dada de drenatge de la cel·la</small>
             </div>
           </dl>
         </section>

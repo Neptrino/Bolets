@@ -350,7 +350,7 @@ export default function MethodPage() {
                   u′ = (1 − cos(πu)) / 2<br />
                   P = (1 − u′)p<sub>mes</sub> + u′p<sub>mes següent</sub>
                 </Formula>
-                <p>Els dotze ancoratges provenen directament del calendari ecològic únic de l’espècie: inactiu = 0, possible = 0,25, moderat = 0,50, bo = 0,80 i pic = 1. Corresponen al centre de cada mes i es llegeixen en hora d’Europa/Madrid. Fora de la finestra biològica, <b>P = 0</b> i, per tant, <b>F = 0</b>.</p>
+                <p>Els dotze ancoratges provenen directament del calendari ecològic únic de l’espècie: inactiu = 0, possible = 0,25, moderat = 0,50, bo = 0,80 i pic = 1. Corresponen al centre de cada mes i es llegeixen amb el dia i l’hora exactes d’Europa/Madrid. Per exemple, l’1 d’agost encara combina juliol i agost, el 15 coincideix amb l’ancoratge d’agost i el 31 ja transita cap al setembre. Fora de la finestra biològica, <b>P = 0</b> i, per tant, <b>F = 0</b>.</p>
               </article>
 
               <article className="method-subscore">
@@ -451,6 +451,16 @@ export default function MethodPage() {
                 ))}
               </div>
             </div>
+
+            <aside className="method-resolution-note">
+              <RefreshCw size={25} />
+              <div>
+                <h3>Com es calcula la projecció a cinc dies</h3>
+                <p>Cada punt de +1 a +5 dies torna a executar el mateix model amb la seva data futura. Per tant, la fenologia <b>P</b> avança dia a dia; les finestres d’aigua, temperatura i extrems també canvien a mesura que entren hores noves i s’esvaeixen les antigues. L’hàbitat efectiu <b>H</b> es manté perquè descriu el territori, no el temps.</p>
+                <p>Les finestres atmosfèriques conserven l’historial verificat d’AROME fins a l’inici de la projecció i hi enllacen només les hores futures d’ECMWF. La humitat superficial del sòl projectada prové d’Open-Meteo. El servidor ancora aquests canvis a l’última observació publicable i retira tota la projecció si falta una finestra necessària o si l’inici no queda prou alineat.</p>
+                <p>És una projecció dels mateixos índexs ambientals ordinals, no una predicció de l’aparició de bolets. La incertesa meteorològica augmenta amb l’horitzó.</p>
+              </div>
+            </aside>
 
             <aside className="method-resolution-note">
               <Map size={25} />
@@ -601,6 +611,19 @@ export default function MethodPage() {
                     <div><dt>Unitat</dt><dd>m³/m³</dd></div>
                   </dl>
                   <a href="https://open-meteo.com/en/docs" target="_blank" rel="noreferrer">Documentació de variables <ExternalLink size={14} /></a>
+                </article>
+
+                <article className="method-source-card method-source-card-weather">
+                  <div className="method-source-card-top"><CloudSun size={24} /><span>ECMWF · OPEN-METEO</span></div>
+                  <h4>IFS HRES per a la projecció</h4>
+                  <p>Hores atmosfèriques futures de temperatura, humitat, precipitació, vent i ET₀. S’enllacen després del punt inicial amb l’historial d’AROME per reconstruir completes les finestres de cada horitzó de +1 a +5 dies.</p>
+                  <dl>
+                    <div><dt><Ruler size={14} /> Origen</dt><dd>9 km · horari</dd></div>
+                    <div><dt><RefreshCw size={14} /> Emissions</dt><dd>cada 6 h</dd></div>
+                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>cicle diari o realineació</dd></div>
+                    <div><dt>Ús</dt><dd>projecció de W · T · E</dd></div>
+                  </dl>
+                  <a href="https://open-meteo.com/en/docs/ecmwf-api" target="_blank" rel="noreferrer">Documentació del model <ExternalLink size={14} /></a>
                 </article>
               </div>
             </div>

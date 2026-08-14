@@ -215,6 +215,19 @@ describe("smooth phenology", () => {
     expect(before).toBeLessThan(0.8);
   });
 
+  it("distinguishes early and late dates within the same month", () => {
+    const anchors = [
+      0, 0, 0, 0, 0, 0, 0.2, 0.8, 1, 0, 0, 0,
+    ] as const;
+    const earlyAugust = phenologySuitability("2026-08-01T10:00:00.000Z", anchors)!;
+    const midAugust = phenologySuitability("2026-08-15T10:00:00.000Z", anchors)!;
+    const lateAugust = phenologySuitability("2026-08-31T10:00:00.000Z", anchors)!;
+
+    expect(earlyAugust).toBeLessThan(midAugust);
+    expect(midAugust).toBeCloseTo(0.8);
+    expect(lateAugust).toBeGreaterThan(midAugust);
+  });
+
   it("rejects an invalid observation timestamp", () => {
     expect(phenologySuitability("not-a-date", supportedSpecies().modelConfig.phenology.monthlyAnchors))
       .toBeNull();

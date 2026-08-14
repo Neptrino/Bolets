@@ -1059,13 +1059,9 @@ test("keeps ecologically excluded cells clickable after changing species", async
   await expect(page.locator(".cell-score-history-legend")).toContainText("Calculat");
   await expect(page.locator(".cell-score-history-legend")).toContainText("Projectat");
   await expect(page.getByText(/D’ara a \+5 dies: \+20 punts/)).toBeVisible();
+  await page.getByRole("button", { name: "Com es calcula aquesta projecció" }).focus();
   await expect(page.getByText(/No és una predicció de l’aparició de bolets/)).toBeVisible();
-  await expect(page.locator(".forecast-confidence-list li")).toHaveCount(5);
-  await expect(page.locator(".forecast-confidence-list li").last()).toContainText("confiança meteo limitada");
-  const forecastStripHeight = await page.locator(".forecast-confidence-list").evaluate(
-    (element) => element.getBoundingClientRect().height,
-  );
-  expect(forecastStripHeight).toBeLessThanOrEqual(40);
+  await expect(page.locator(".forecast-confidence-list")).toHaveCount(0);
   await expect(page.locator(".cell-score-history table tbody tr")).toHaveCount(7);
 
   await page.setViewportSize({ width: 390, height: 844 });

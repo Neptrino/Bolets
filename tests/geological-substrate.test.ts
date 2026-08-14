@@ -150,7 +150,7 @@ describe("geological substrate evidence", () => {
 
     expect(html).toContain("Substrat geològic");
     expect(html).toContain("Silícic");
-    expect(html).toContain("Preferència de l’espècie:");
+    expect(html).toContain("Context no puntuat · afinitat descrita:");
     expect(html).not.toContain("ICGC");
     expect(html).not.toContain("1:50.000");
     expect(html).not.toContain("unitat Ggd");

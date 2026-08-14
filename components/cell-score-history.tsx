@@ -1,6 +1,6 @@
 "use client";
 
-import { Minus, TrendingDown, TrendingUp } from "lucide-react";
+import { CircleHelp, Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
@@ -108,6 +108,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
   const [state, setState] = useState<State>({ kind: "loading" });
   const chartRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
+  const informationId = useId();
   const requestBody = JSON.stringify({
     speciesId,
     cellId: cell.cellId,
@@ -286,13 +287,33 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     : forecast
       ? "Projecció ambiental a 5 dies"
       : "Evolució recent";
+  const information = forecast
+    ? `La projecció conserva l’historial atmosfèric observat d’AROME fins a l’inici i hi enllaça les hores futures d’ECMWF; la humitat del sòl prové d’Open-Meteo. Així, la pluja, la calor i el fred recents desapareixen gradualment de cada finestra del model. No és una predicció de l’aparició de bolets. La incertesa augmenta amb l’horitzó. Generada el ${dayLabel(forecast.generatedAt)} amb dades a ${Math.round(forecast.sourceResolutionM / 1000)} km.`
+    : "Cada punt calculat aplica el mateix model a les dades ambientals verificades d’aquell dia.";
 
   return (
     <section className="cell-score-history" aria-labelledby={titleId}>
       <div className="cell-score-history-heading">
         <div>
           <p className="eyebrow">Puntuació de la cel·la</p>
-          <h4 id={titleId}>{title}</h4>
+          <div className="cell-score-history-title-row">
+            <h4 id={titleId}>{title}</h4>
+            <button
+              type="button"
+              className="cell-score-history-help"
+              aria-label="Com es calcula aquesta projecció"
+              aria-describedby={informationId}
+            >
+              <CircleHelp aria-hidden="true" size={16} />
+            </button>
+            <span
+              className="cell-score-history-tooltip"
+              id={informationId}
+              role="tooltip"
+            >
+              {information}
+            </span>
+          </div>
         </div>
         <span className={change > 0 ? "improving" : change < 0 ? "worsening" : "steady"}>
           <TrendIcon size={16} aria-hidden="true" /> {changeLabel}
@@ -306,32 +327,9 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
         </> : null}
       </div>
       <div ref={chartRef} className="cell-score-history-chart" aria-hidden="true" />
-      {forecast ? (
-        <ol className="forecast-confidence-list" role="list" aria-label="Projecció diària i confiança de la projecció">
-          {forecast.points.map((point) => (
-            <li
-              key={point.validAt}
-              aria-label={`D’aquí a ${point.horizonDays} ${point.horizonDays === 1 ? "dia" : "dies"}: puntuació ${scoreLabel(point.opportunityIndex)}, condicions per fructificar ${scoreLabel(point.fruitingConditionsScore)}, confiança meteorològica ${confidenceLabel(point.horizonConfidence)}`}
-            >
-              <span>+{point.horizonDays} {point.horizonDays === 1 ? "dia" : "dies"}</span>
-              <strong>Puntuació · {scoreLabel(point.opportunityIndex)}</strong>
-              <small>
-                Condicions · {scoreLabel(point.fruitingConditionsScore)} ·{" "}
-                <span className="visually-hidden">Confiança meteorològica de l’horitzó: </span>
-                confiança meteo {confidenceLabel(point.horizonConfidence)}
-              </small>
-            </li>
-          ))}
-        </ol>
-      ) : (
+      {!forecast ? (
         <p className="cell-score-forecast-unavailable">La projecció meteorològica encara no està disponible; es manté l’historial observat.</p>
-      )}
-      <p className="cell-score-history-note">
-        {forecast
-          ? `La projecció conserva l’historial atmosfèric observat d’AROME fins a l’inici i hi enllaça les hores futures d’ECMWF; la humitat del sòl prové d’Open-Meteo. Així, la pluja, la calor i el fred recents desapareixen gradualment de cada finestra del model. No és una predicció de l’aparició de bolets. La incertesa augmenta amb l’horitzó. Generada el ${dayLabel(forecast.generatedAt)} amb dades a ${Math.round(forecast.sourceResolutionM / 1000)} km.`
-          : "Cada punt calculat aplica el mateix model a les dades ambientals verificades d’aquell dia."}
-        {` Versió: ${state.timeline.modelVersion}.`}
-      </p>
+      ) : null}
       <table className="visually-hidden">
         <caption>Dades de l’evolució calculada i la projecció ambiental</caption>
         <thead><tr><th scope="col">Data</th><th scope="col">Tipus</th><th scope="col">Puntuació de la cel·la</th><th scope="col">Condicions per fructificar dins l’hàbitat</th><th scope="col">Confiança meteorològica de l’horitzó</th></tr></thead>
