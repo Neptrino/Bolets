@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
+import { isLocalFavourablePreview, loadDailyShareCard, loadFavourableDailySharePreviewCard } from "@/src/lib/daily-share-cards";
 
 export const runtime = "nodejs";
 
@@ -42,9 +42,10 @@ function VerifiedMark() {
   );
 }
 
-export async function GET(_request: Request, context: { params: Promise<{ slug: string }> }) {
+export async function GET(request: Request, context: { params: Promise<{ slug: string }> }) {
   const { slug } = await context.params;
-  const card = await loadDailyShareCard(slug);
+  const isPreview = isLocalFavourablePreview(new URL(request.url).searchParams.get("preview") ?? undefined);
+  const card = isPreview ? await loadFavourableDailySharePreviewCard(slug) : await loadDailyShareCard(slug);
 
   if (!card) return new Response("Not found", { status: 404 });
   const hasNoFavourableConditions = card.readings.length > 0 && card.readings.every((reading) => reading.score === 0);
@@ -86,7 +87,7 @@ export async function GET(_request: Request, context: { params: Promise<{ slug: 
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 34, padding: "0 13px", border: "1px solid rgba(242,167,102,0.45)", borderRadius: 999, background: "rgba(20,40,29,0.42)", color: "#f2a766", fontSize: 15, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-            <VerifiedMark /> Dades vigents
+            <VerifiedMark /> {isPreview ? "Dades simulades" : "Dades vigents"}
           </div>
         </div>
         <div style={{ display: "flex", position: "relative", flexDirection: "column", marginTop: 34, maxWidth: "73%" }}>

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarDays, Download, MapPinned, Share2, ShieldCheck } from "lucide-react";
+import { CalendarDays, Download, FlaskConical, MapPinned, Share2, ShieldCheck } from "lucide-react";
 import { DailyShareActions } from "@/components/daily-share-actions";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
-import { dailyShareImagePath, loadDailyShareCards } from "@/src/lib/daily-share-cards";
+import { createFavourableDailySharePreviewCards, dailyShareImagePath, isLocalFavourablePreview, loadDailyShareCards } from "@/src/lib/daily-share-cards";
 import { absoluteUrl } from "@/src/lib/seo";
 
 export const revalidate = 300;
@@ -16,8 +16,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function ShareDailyConditionsPage() {
-  const cards = await loadDailyShareCards();
+export default async function ShareDailyConditionsPage({ searchParams }: { searchParams: Promise<{ preview?: string }> }) {
+  const query = await searchParams;
+  const isPreview = isLocalFavourablePreview(query.preview);
+  const cards = isPreview ? createFavourableDailySharePreviewCards() : await loadDailyShareCards();
+  const previewQuery = isPreview ? "?preview=favorable" : "";
 
   return (
     <PageShell className="daily-share-page">
@@ -34,6 +37,8 @@ export default async function ShareDailyConditionsPage() {
         <p><strong>Una targeta no és un mapa de recol·lecció.</strong> Només mostrem resultats publicables: les dades incompletes, antigues o sense verificar es mantenen com a no disponibles.</p>
       </aside>
 
+      {isPreview ? <aside className="daily-share-preview-notice"><FlaskConical size={19} aria-hidden="true" /><p><strong>Previsualització local.</strong> Aquestes condicions són simulades per revisar el disseny. Les accions de compartir estan desactivades.</p></aside> : null}
+
       <section className="daily-share-grid" aria-labelledby="daily-share-grid-title">
         <header className="daily-share-grid-heading">
           <div><p className="eyebrow"><CalendarDays size={15} /> S’actualitza amb les dades vigents</p><h2 id="daily-share-grid-title">Catalunya i 9 zones</h2></div>
@@ -41,7 +46,7 @@ export default async function ShareDailyConditionsPage() {
         </header>
         <ol>
           {cards.map((card) => {
-            const imagePath = dailyShareImagePath(card.slug);
+            const imagePath = `${dailyShareImagePath(card.slug)}${previewQuery}`;
             return (
               <li className={card.slug === "catalunya" ? "is-catalunya" : undefined} key={card.slug}>
                 <div className="daily-share-preview">
@@ -51,7 +56,7 @@ export default async function ShareDailyConditionsPage() {
                   <div><span>{card.slug === "catalunya" ? "Visió general" : "Zona de predicció"}</span><h3>{card.title}</h3></div>
                   <Link href={card.mapPath}><MapPinned size={16} /> Veure lectura</Link>
                 </div>
-                <DailyShareActions imagePath={imagePath} shareText={card.shareText} shareUrl={absoluteUrl(card.mapPath)} title={card.title} />
+                <DailyShareActions disabled={isPreview} imagePath={imagePath} shareText={card.shareText} shareUrl={absoluteUrl(card.mapPath)} title={card.title} />
               </li>
             );
           })}

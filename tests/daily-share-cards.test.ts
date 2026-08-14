@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createDailyShareCards } from "@/src/lib/daily-share-cards";
+import { createDailyShareCards, createFavourableDailySharePreviewCards } from "@/src/lib/daily-share-cards";
 import type { CurrentOverviewItem } from "@/src/lib/current-overview";
 
 const publishable = {
@@ -41,5 +41,15 @@ describe("daily share cards", () => {
 
     expect(cards.find((card) => card.slug === "catalunya")?.shareText).toContain("no hi ha condicions favorables publicables a Catalunya");
     expect(cards.find((card) => card.slug === "pirineus")?.shareText).toContain("no hi ha condicions favorables publicables en aquesta zona");
+  });
+
+  it("keeps favourable visual fixtures explicitly local and simulated", () => {
+    const cards = createFavourableDailySharePreviewCards();
+
+    expect(cards).toHaveLength(10);
+    expect(cards.every((card) => card.isPreview && card.readings.every((reading) => reading.score > 0))).toBe(true);
+    expect(cards.every((card) => card.readings.length === 3)).toBe(true);
+    expect(cards[0]?.eyebrow).toContain("Dades simulades");
+    expect(cards[0]?.shareText).toContain("PREVISUALITZACIÓ LOCAL");
   });
 });

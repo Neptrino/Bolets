@@ -25,6 +25,7 @@ export interface DailyShareCard {
   readings: DailyShareReading[];
   mapPath: string;
   shareText: string;
+  isPreview?: boolean;
 }
 
 const cardDate = new Intl.DateTimeFormat("ca-ES", {
@@ -70,12 +71,12 @@ function globalShareText(readings: DailyShareReading[], observedAt: string | nul
   return `${heading}\n\n${highlights}\n\nLectura territorial: no confirma presència ni assenyala punts de recol·lecció.\nhttps://bolets.app${mapPath}`;
 }
 
-function regionalShareText(title: string, reading: DailyShareReading | null, observedAt: string | null, mapPath: string) {
+function regionalShareText(title: string, readings: DailyShareReading[], observedAt: string | null, mapPath: string) {
   const heading = `Condicions de bolets avui: ${title} · ${observedAt ? cardDate.format(new Date(observedAt)) : "dades pendents"}`;
-  const highlight = reading?.score === 0
+  const highlight = readings.length > 0 && readings.every((reading) => reading.score === 0)
     ? "Avui no hi ha condicions favorables publicables en aquesta zona."
-    : reading
-    ? `La lectura publicada més favorable és ${reading.speciesName}: ${reading.score}/100 (${reading.label}).`
+    : readings.length > 0
+    ? readings.map((reading) => `${reading.speciesName}: ${reading.score}/100 (${reading.label}).`).join("\n")
     : "Avui no hi ha una lectura territorial publicable per aquesta zona.";
 
   return `${heading}\n\n${highlight}\n\nLectura territorial: no confirma presència ni assenyala punts de recol·lecció.\nhttps://bolets.app${mapPath}`;
@@ -116,21 +117,22 @@ export function createDailyShareCards(items: CurrentOverviewItem[]): DailyShareC
   const regionalCards = regionSelectItems
     .filter((region): region is { value: Exclude<RegionId, "altres">; label: string } => region.value !== "altres")
     .map(({ value: regionId, label }) => {
-      const reading = rankCurrentOverviewItems(items.filter((item) => item.regionId === regionId))
+      const readings = rankCurrentOverviewItems(items.filter((item) => item.regionId === regionId))
         .map(availableReading)
-        .find((candidate): candidate is DailyShareReading => candidate !== null) ?? null;
+        .filter((candidate): candidate is DailyShareReading => candidate !== null)
+        .slice(0, 3);
 
-      const mapPath = reading ? `/map?species=${reading.speciesId}&region=${regionId}` : "/map";
+      const mapPath = readings[0] ? `/map?species=${readings[0].speciesId}&region=${regionId}` : "/map";
 
       return {
         slug: regionId,
         title: label,
         eyebrow: observationLabel(observedAt),
         observedAt,
-        available: reading !== null,
-        readings: reading ? [reading] : [],
+        available: readings.length > 0,
+        readings,
         mapPath,
-        shareText: regionalShareText(label, reading, observedAt, mapPath),
+        shareText: regionalShareText(label, readings, observedAt, mapPath),
       } satisfies DailyShareCard;
     });
 
@@ -144,6 +146,78 @@ export async function loadDailyShareCards() {
 export async function loadDailyShareCard(slug: string) {
   const cards = await loadDailyShareCards();
   return cards.find((card) => card.slug === slug) ?? null;
+}
+
+const favourablePreviewSpecies = [
+  { speciesId: "boletus-pinophilus", speciesName: "Cep roig" },
+  { speciesId: "boletus-edulis", speciesName: "Cep" },
+  { speciesId: "cantharellus-cibarius", speciesName: "Rossinyol" },
+];
+
+const favourablePreviewRegions: Array<{ regionName: string; score: number }> = [
+  { regionName: "Pirineus", score: 91 }, { regionName: "Prepirineus", score: 84 }, { regionName: "Empordà", score: 78 },
+  { regionName: "Catalunya Central", score: 86 }, { regionName: "Sistemes interiors", score: 73 }, { regionName: "Montseny", score: 88 },
+  { regionName: "Serralades Costeres", score: 76 }, { regionName: "Serralades Prelitorals", score: 82 }, { regionName: "Ports", score: 80 },
+];
+
+const favourablePreviewReadings: DailyShareReading[] = favourablePreviewRegions.flatMap(({ regionName, score }) => favourablePreviewSpecies.map((species, index) => ({
+  regionName,
+  speciesId: species.speciesId,
+  speciesName: species.speciesName,
+  score: score - index * 6,
+  label: score - index * 6 >= 75 ? "molt favorable" : "favorable",
+})));
+
+const favourablePreviewEyebrow = "Dades simulades · només en local";
+const favourablePreviewNotice = "PREVISUALITZACIÓ LOCAL — dades simulades; no publicar.";
+
+/**
+ * Visual fixture for developing the share-card layout. It is never selected
+ * outside `next dev`, and is deliberately labelled as simulated throughout.
+ */
+export function createFavourableDailySharePreviewCards(): DailyShareCard[] {
+  const globalMapPath = "/bolets-avui";
+  const globalReadings = [...favourablePreviewReadings].sort((left, right) => right.score - left.score).slice(0, 3);
+  const catalunya: DailyShareCard = {
+    slug: "catalunya",
+    title: "Catalunya",
+    eyebrow: favourablePreviewEyebrow,
+    observedAt: null,
+    available: true,
+    readings: globalReadings,
+    mapPath: globalMapPath,
+    shareText: `${favourablePreviewNotice}\n\nCondicions favorables de demostració a Catalunya.`,
+    isPreview: true,
+  };
+
+  const regionalCards = regionSelectItems
+    .filter((region): region is { value: Exclude<RegionId, "altres">; label: string } => region.value !== "altres")
+    .map(({ value: regionId, label }) => {
+      const readings = favourablePreviewReadings.filter((candidate) => candidate.regionName === label);
+      const mapPath = `/map?species=${readings[0]!.speciesId}&region=${regionId}`;
+
+      return {
+        slug: regionId,
+        title: label,
+        eyebrow: favourablePreviewEyebrow,
+        observedAt: null,
+        available: true,
+        readings,
+        mapPath,
+        shareText: `${favourablePreviewNotice}\n\nCondicions favorables de demostració a ${label}.`,
+        isPreview: true,
+      } satisfies DailyShareCard;
+    });
+
+  return [catalunya, ...regionalCards];
+}
+
+export function isLocalFavourablePreview(value: string | undefined) {
+  return process.env.NODE_ENV === "development" && value === "favorable";
+}
+
+export async function loadFavourableDailySharePreviewCard(slug: string) {
+  return createFavourableDailySharePreviewCards().find((card) => card.slug === slug) ?? null;
 }
 
 export function dailyShareImagePath(slug: DailyShareSlug) {

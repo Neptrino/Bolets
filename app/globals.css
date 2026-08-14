@@ -58,6 +58,10 @@
 .daily-share-intro svg { flex: 0 0 auto; color: var(--clay); }
 .daily-share-intro p { max-width: 860px; margin: 0; color: var(--muted); line-height: 1.65; }
 .daily-share-intro strong { color: var(--ink); }
+.daily-share-preview-notice { display: flex; gap: 12px; align-items: flex-start; margin: -45px 0 48px; padding: 16px 20px; border: 1px dashed var(--clay); border-radius: 14px; background: #fff4df; }
+.daily-share-preview-notice svg { flex: 0 0 auto; color: var(--clay); }
+.daily-share-preview-notice p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.daily-share-preview-notice strong { color: var(--ink); }
 .daily-share-grid { margin-bottom: 118px; }
 .daily-share-grid-heading {
   display: grid;
@@ -105,6 +109,10 @@
 .daily-share-actions button:first-child { border-color: var(--forest-panel); background: var(--forest-panel); color: var(--on-dark); }
 .daily-share-actions button:hover { border-color: var(--clay); color: var(--clay); }
 .daily-share-actions button:first-child:hover { background: var(--clay); color: var(--on-dark); }
+.daily-share-actions.is-disabled { opacity: 0.56; }
+.daily-share-actions.is-disabled button, .daily-share-actions.is-disabled a { cursor: not-allowed; }
+.daily-share-actions.is-disabled button:hover, .daily-share-actions.is-disabled a:hover { transform: none; border-color: var(--line); background: transparent; color: inherit; }
+.daily-share-actions.is-disabled button:first-child:hover { background: var(--forest-panel); color: var(--on-dark); }
 .daily-share-actions > span { min-height: 17px; color: var(--muted); font-size: 12px; }
 .daily-share-socials { display: inline-flex; gap: 5px; padding: 0 3px; }
 .daily-share-socials a {
