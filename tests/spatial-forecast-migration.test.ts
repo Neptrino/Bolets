@@ -10,6 +10,10 @@ const anchorMigration = readFileSync(
   join(process.cwd(), "supabase", "migrations", "20260813153000_anchor_spatial_forecasts.sql"),
   "utf8",
 );
+const hybridForecastMigration = readFileSync(
+  join(process.cwd(), "supabase", "migrations", "20260814143000_rebuild_hybrid_forecast_issue.sql"),
+  "utf8",
+);
 const currentReader = readFileSync(
   join(process.cwd(), "supabase", "functions", "read-spatial-environment", "index.ts"),
   "utf8",
@@ -100,5 +104,16 @@ describe("spatial forecast storage", () => {
       'weatherModel: "Météo-France AROME history + ECMWF IFS HRES forecast"',
     );
     expect(refreshPipeline).toContain('forecastHistoryModel: "arome_france"');
+  });
+
+  it("atomically rebuilds a completed issue created by the previous normalizer", () => {
+    expect(hybridForecastMigration).toContain("pg_advisory_xact_lock(91600348)");
+    expect(hybridForecastMigration).toContain("completed_at is not null");
+    expect(hybridForecastMigration).toContain(
+      "Météo-France AROME history + ECMWF IFS HRES forecast",
+    );
+    expect(hybridForecastMigration).toContain("delete from public.weather_grid_forecasts");
+    expect(hybridForecastMigration).toContain("delete from public.weather_forecast_issues");
+    expect(hybridForecastMigration).toContain("pipeline = 'spatial-forecast-v2'");
   });
 });
