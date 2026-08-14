@@ -1,13 +1,16 @@
 export const scoringValueFields = new Set([
-  "temperatureC", "temperatureMin24hC", "temperatureAvg24hC", "temperatureMax24hC",
-  "temperatureMin7dC", "frostHours7d", "temperatureMin10dC", "temperatureAvg10dC",
-  "temperatureMax10dC", "frostHours10d", "relativeHumidity", "relativeHumidityAvg24h",
+  "temperatureC", "temperatureAvg7dC", "temperatureAvg14dC", "frostHours14d",
+  "heatHours14d", "temperatureAvg20dC", "frostHours20d", "heatHours20d",
+  "relativeHumidity", "relativeHumidityAvg24h",
   "relativeHumidityAvg7d",
   "soilMoisture", "soilMoistureAvg24h", "soilMoistureMin7d", "soilMoistureAvg7d",
-  "soilMoistureTrend7d", "rainfall3dMm", "rainfall7dMm", "rainfallPrevious23dMm",
-  "rainfall30dMm", "drySpellDays", "evapotranspiration3dMm", "evapotranspiration7dMm",
+  "soilMoistureTrend7d", "rainfall3dMm", "rainfall7dMm", "rainfallDays7d",
+  "rainfall14dMm", "rainfallDays14d", "rainfall21dMm", "rainfallDays21d",
+  "rainfall26dMm", "rainfallDays26d", "rainfallPrevious23dMm", "rainfall30dMm",
+  "rainfallDays30d", "drySpellDays", "evapotranspiration3dMm", "evapotranspiration7dMm",
+  "evapotranspiration14dMm", "evapotranspiration21dMm", "evapotranspiration26dMm",
   "evapotranspiration30dMm", "altitudeM", "habitatAltitudeSuitability",
-  "forestCompatibility", "soilCompatibility",
+  "habitatCoveragePercent",
   "forestTypes", "treeSpecies", "soilPh", "soilTexture", "soilSubstrate",
 ]);
 

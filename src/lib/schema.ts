@@ -118,6 +118,83 @@ const culinaryProfile = z.discriminatedUnion("kind", [
   culinaryProfileBase.extend({ kind: z.literal("safety") }),
 ]);
 
+const supportedModelEvidence = z.object({
+  status: z.enum(["expert-prior", "species-literature"]),
+  citations: z.array(z.url()).min(1),
+});
+const unsupportedModelEvidence = z.object({
+  status: z.literal("unsupported"),
+  citations: z.array(z.url()),
+});
+const waterModelParameters = z.object({
+  waterExponent: z.number().gt(0).lt(1),
+  moistureWindowDays: z.literal(7),
+  rewBand: z.tuple([
+    z.number().min(0).max(1.4),
+    z.number().min(0).max(1.4),
+    z.number().min(0).max(1.4),
+    z.number().min(0).max(1.4),
+  ]),
+  rainfallWindowDays: z.union([z.literal(14), z.literal(21), z.literal(26)]),
+  rainfallHalfSaturationMm: z.number().positive(),
+  wetDaysHalfSaturation: z.number().positive(),
+  triggerDependency: z.number().min(0).max(1),
+  drySpellGraceDays: z.number().min(0),
+  drySpellDecayDays: z.number().positive(),
+  drySpellExponent: z.number().min(0),
+  vpdComfortKpa: z.number().min(0),
+  vpdDecayKpa: z.number().positive(),
+  vpdExponent: z.number().min(0),
+}).superRefine(({ rewBand }, context) => {
+  if (!(rewBand[0] < rewBand[1] && rewBand[1] <= rewBand[2] && rewBand[2] < rewBand[3])) {
+    context.addIssue({
+      code: "custom",
+      path: ["rewBand"],
+      message: "REW response points must be ordered around the optimum plateau",
+    });
+  }
+});
+const temperatureModelParameters = z.object({
+  windowDays: z.union([z.literal(14), z.literal(20)]),
+  optimumC: z.number().min(-10).max(35),
+  coldHalfWidthC: z.number().positive(),
+  warmHalfWidthC: z.number().positive(),
+  frostHalfLifeHours: z.number().positive(),
+  heatHalfLifeHours: z.number().positive(),
+});
+const monthlyPhenologyAnchors = z.tuple([
+  z.number().min(0).max(1), z.number().min(0).max(1),
+  z.number().min(0).max(1), z.number().min(0).max(1),
+  z.number().min(0).max(1), z.number().min(0).max(1),
+  z.number().min(0).max(1), z.number().min(0).max(1),
+  z.number().min(0).max(1), z.number().min(0).max(1),
+  z.number().min(0).max(1), z.number().min(0).max(1),
+]);
+const fruitingModelConfig = z.discriminatedUnion("status", [
+  z.object({
+    model: z.literal("hydrothermal-v1"),
+    version: z.string().min(1),
+    status: z.literal("supported"),
+    guild: z.enum([
+      "ectomycorrhizal",
+      "litter-soil-saprotroph",
+      "wood-decayer",
+      "grassland",
+    ]),
+    water: waterModelParameters,
+    temperature: temperatureModelParameters,
+    phenology: z.object({ monthlyAnchors: monthlyPhenologyAnchors }),
+    evidence: supportedModelEvidence,
+  }),
+  z.object({
+    model: z.literal("hydrothermal-v1"),
+    version: z.string().min(1),
+    status: z.literal("habitat-only"),
+    guild: z.literal("hypogeous"),
+    evidence: unsupportedModelEvidence,
+  }),
+]);
+
 export const speciesProfileSchema = z.object({
   speciesId: z.string().regex(/^[a-z0-9-]+$/),
   predictionMode: z.enum(["current", "habitat_only"]),
@@ -162,12 +239,7 @@ export const speciesProfileSchema = z.object({
     seasonality: z.record(month, activity),
     regions: z.array(region)
   }),
-  modelConfig: z.object({
-    version: z.string(),
-    factors: z.array(z.object({
-      id: z.enum(["forest", "soil", "rainfall", "soilMoisture", "temperature", "altitude", "humidity", "seasonality"]), label: z.string(), weight: z.number().positive(), explanation: z.string()
-    }))
-  }),
+  modelConfig: fruitingModelConfig,
   idealConditions: z.array(z.string()),
   references: z.array(sourceReference),
   media: z.array(z.object({ id: z.string(), imageUrl: z.url().optional(), sourceUrl: z.url(), localPath: localMediaPath.optional(), attribution: z.string(), license: z.string(), identificationReference: z.boolean(), alt: z.string() })),
@@ -178,6 +250,14 @@ export const speciesProfileSchema = z.object({
       code: "custom",
       path: ["predictionCaveat"],
       message: "Habitat-only profiles must explain why a current prediction is unavailable",
+    });
+  }
+
+  if ((profile.predictionMode === "habitat_only") !== (profile.modelConfig.status === "habitat-only")) {
+    context.addIssue({
+      code: "custom",
+      path: ["modelConfig", "status"],
+      message: "Prediction mode and fruiting-model support status must agree",
     });
   }
 
@@ -205,10 +285,10 @@ export const conditionSnapshotSchema = z.object({
     weatherModel: z.string().optional(), atmosphericResolutionM: z.number().int().positive().optional(), soilMoistureResolutionM: z.number().int().positive().optional(),
     weatherGridLatitude: z.number().min(-90).max(90).optional(), weatherGridLongitude: z.number().min(-180).max(180).optional(), weatherElevationM: z.number().min(-100).max(5000).optional(),
     soilGridLatitude: z.number().min(-90).max(90).optional(), soilGridLongitude: z.number().min(-180).max(180).optional(),
-    temperatureC: z.number().optional(), temperatureMin24hC: z.number().optional(), temperatureAvg24hC: z.number().optional(), temperatureMax24hC: z.number().optional(),
-    temperatureMin7dC: z.number().optional(), frostHours7d: z.number().int().min(0).optional(),
-    temperatureMin10dC: z.number().optional(), temperatureAvg10dC: z.number().optional(), temperatureMax10dC: z.number().optional(),
-    frostHours10d: z.number().int().min(0).optional(),
+    temperatureC: z.number().optional(), temperatureAvg7dC: z.number().optional(),
+    temperatureAvg14dC: z.number().optional(), temperatureAvg20dC: z.number().optional(),
+    frostHours14d: z.number().int().min(0).optional(), frostHours20d: z.number().int().min(0).optional(),
+    heatHours14d: z.number().int().min(0).optional(), heatHours20d: z.number().int().min(0).optional(),
     relativeHumidity: z.number().min(0).max(100).optional(), relativeHumidityMin24h: z.number().min(0).max(100).optional(),
     relativeHumidityAvg24h: z.number().min(0).max(100).optional(), relativeHumidityMax24h: z.number().min(0).max(100).optional(),
     relativeHumidityAvg7d: z.number().min(0).max(100).optional(),
@@ -218,12 +298,17 @@ export const conditionSnapshotSchema = z.object({
     soilMoistureMax7d: z.number().min(0).max(1).optional(), soilMoistureTrend7d: z.number().min(-1).max(1).optional(),
     rainfall24hMm: z.number().min(0).optional(), rainfall3dMm: z.number().min(0).optional(), rainfall7dMm: z.number().min(0).optional(), rainfallPrevious23dMm: z.number().min(0).optional(),
     rainfall30dMm: z.number().min(0).optional(), drySpellDays: z.number().min(0).max(30).optional(),
+    rainfall14dMm: z.number().min(0).optional(), rainfall21dMm: z.number().min(0).optional(), rainfall26dMm: z.number().min(0).optional(),
+    rainfallDays7d: z.number().min(0).max(7).optional(), rainfallDays14d: z.number().min(0).max(14).optional(),
+    rainfallDays21d: z.number().min(0).max(21).optional(), rainfallDays26d: z.number().min(0).max(26).optional(),
+    rainfallDays30d: z.number().min(0).max(30).optional(),
     evapotranspiration3dMm: z.number().min(0).optional(), evapotranspiration7dMm: z.number().min(0).optional(),
     evapotranspiration30dMm: z.number().min(0).optional(), windKmh: z.number().min(0).optional(), windAvg24hKmh: z.number().min(0).optional(),
+    evapotranspiration14dMm: z.number().min(0).optional(), evapotranspiration21dMm: z.number().min(0).optional(), evapotranspiration26dMm: z.number().min(0).optional(),
     windMax24hKmh: z.number().min(0).optional(), windGustKmh: z.number().min(0).optional(), windGustMax24hKmh: z.number().min(0).optional(),
     altitudeM: z.number().min(0).optional(),
     habitatAltitudeSuitability: z.number().min(0).max(100).optional(),
-    forestCompatibility: z.number().min(0).max(100).optional(), soilCompatibility: z.number().min(0).max(100).optional(),
+    habitatCoveragePercent: z.number().min(0).max(100).optional(),
     forestTypes: z.array(z.string()).optional(), treeSpecies: z.array(z.string()).optional(), soilPh: z.number().min(0).max(14).optional(),
     soilTexture: z.string().optional(), soilSubstrate: z.string().optional(),
     geologicalSubstrate: geologicalSubstrateEvidenceSchema.optional()

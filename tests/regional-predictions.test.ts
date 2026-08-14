@@ -1,124 +1,184 @@
 import { describe, expect, it } from "vitest";
 import { getSpecies } from "@/data/species";
+import { predictionModelVersion } from "@/src/lib/model-versions";
 import { summariseRegionalPredictions } from "@/src/lib/predictions";
-import type { PredictionCell, RegionId } from "@/src/lib/types";
+import { opportunityLabel } from "@/src/lib/scoring";
+import type {
+  ConditionSnapshot,
+  ModelComponent,
+  PredictionCell,
+  RegionId,
+} from "@/src/lib/types";
 
 const species = getSpecies("boletus-edulis")!;
+const completeHydrothermalValues: ConditionSnapshot["values"] = {
+  temperatureAvg7dC: 13,
+  temperatureAvg20dC: 13.5,
+  frostHours20d: 0,
+  heatHours20d: 0,
+  relativeHumidityAvg7d: 90,
+  soilMoistureMin7d: 0.225,
+  soilMoistureAvg7d: 0.24,
+  rainfall26dMm: 50,
+  rainfallDays26d: 5,
+  evapotranspiration26dMm: 5,
+  drySpellDays: 0,
+  soilTexture: "franca",
+};
+
+function component(
+  id: ModelComponent["id"],
+  score: number | null,
+): ModelComponent {
+  return {
+    id,
+    label: id,
+    score,
+    state: score === null
+      ? "unknown"
+      : score >= 70
+        ? "favourable"
+        : score >= 45
+          ? "mixed"
+          : "unfavourable",
+  };
+}
 
 function predictionCell({
   cellId,
   regionId = "pirineus",
-  score,
-  forestScore,
+  fruitingConditionsScore,
+  effectiveHabitatCoverage,
   temperatureC,
-  seasonalityScore = 65,
+  phenologyScore = 100,
 }: {
   cellId: string;
   regionId?: RegionId;
-  score: number | null;
-  forestScore: number | null;
+  fruitingConditionsScore: number | null;
+  effectiveHabitatCoverage: number;
   temperatureC: number;
-  seasonalityScore?: number;
+  phenologyScore?: number;
 }): PredictionCell {
+  const opportunityIndex = fruitingConditionsScore === null
+    ? null
+    : Math.round(effectiveHabitatCoverage * fruitingConditionsScore);
   return {
     speciesId: species.speciesId,
     cellId,
     regionId,
-    observedAt: "2026-08-12T12:00:00Z",
+    observedAt: "2026-10-15T00:00:00Z",
     gridSizeM: 10000,
     cellBounds: [[1, 42], [1.1, 42.1]],
-    score,
-    label: score === null ? "sense dades" : score >= 65 ? "favorable" : "poc favorable",
+    score: opportunityIndex,
+    fruitingConditionsScore,
+    opportunityIndex,
+    effectiveHabitatCoverage,
+    label: opportunityIndex === null ? "sense dades" : opportunityLabel(opportunityIndex),
     sourceResolutionM: 10000,
     confidence: "moderate",
     stale: false,
     source: ["ICGC", "Open-Meteo"],
     unavailableFields: [],
     values: {
+      ...completeHydrothermalValues,
       temperatureC,
-      temperatureAvg24hC: temperatureC,
-      rainfall3dMm: 18,
-      rainfall7dMm: 25,
-      rainfallPrevious23dMm: 45,
-      rainfall30dMm: 70,
-      drySpellDays: 0,
-      evapotranspiration3dMm: 4,
-      evapotranspiration7dMm: 10,
-      evapotranspiration30dMm: 45,
-      soilMoisture: 0.3,
-      soilMoistureMin7d: 0.25,
-      soilMoistureAvg7d: 0.3,
-      soilMoistureMax7d: 0.33,
-      soilMoistureTrend7d: 0.01,
+      habitatCoveragePercent: effectiveHabitatCoverage * 100,
+      habitatAltitudeSuitability: 100,
     },
-    modelVersion: species.modelConfig.version,
-    factors: species.modelConfig.factors.map((factor) => {
-      const factorScore = factor.id === "forest"
-        ? forestScore
-        : factor.id === "seasonality"
-          ? seasonalityScore
-          : 70;
-      return {
-        id: factor.id,
-        label: factor.label,
-        weight: factor.weight,
-        score: factorScore,
-        state: factorScore === null
-          ? "unknown"
-          : factorScore >= 70
-            ? "favourable"
-            : factorScore >= 45
-              ? "mixed"
-              : "unfavourable",
-      };
-    }),
+    modelVersion: predictionModelVersion(species.modelConfig.version),
+    components: [
+      component("habitatCoverage", Math.round(effectiveHabitatCoverage * 100)),
+      component("altitude", 100),
+      component("phenology", phenologyScore),
+      component("water", fruitingConditionsScore),
+      component("temperature", fruitingConditionsScore),
+      component("extremes", 100),
+    ],
     occurrenceEvidence: null,
     occurrenceEvidenceStatus: "unavailable",
   };
 }
 
 describe("regional prediction summaries", () => {
-  it("uses a habitat-weighted median of scored compatible cells", () => {
+  it("uses equal-area O and effective-habitat-weighted F", () => {
     const summary = summariseRegionalPredictions(species, "pirineus", [
-      predictionCell({ cellId: "low", score: 30, forestScore: 20, temperatureC: 12 }),
-      predictionCell({ cellId: "high", score: 70, forestScore: 80, temperatureC: 18 }),
-      predictionCell({ cellId: "excluded", score: 90, forestScore: 0, temperatureC: 25 }),
+      predictionCell({
+        cellId: "large-low-f",
+        fruitingConditionsScore: 10,
+        effectiveHabitatCoverage: 0.9,
+        temperatureC: 12,
+      }),
+      predictionCell({
+        cellId: "small-high-f-1",
+        fruitingConditionsScore: 100,
+        effectiveHabitatCoverage: 0.2,
+        temperatureC: 18,
+      }),
+      predictionCell({
+        cellId: "small-high-f-2",
+        fruitingConditionsScore: 100,
+        effectiveHabitatCoverage: 0.2,
+        temperatureC: 24,
+      }),
+      predictionCell({
+        cellId: "excluded",
+        fruitingConditionsScore: 100,
+        effectiveHabitatCoverage: 0,
+        temperatureC: 25,
+      }),
       predictionCell({
         cellId: "other-region",
         regionId: "prepirineus",
-        score: 95,
-        forestScore: 100,
+        fruitingConditionsScore: 100,
+        effectiveHabitatCoverage: 1,
         temperatureC: 30,
       }),
     ]);
 
     expect(summary).not.toBeNull();
-    expect(summary?.result.score).toBe(70);
-    expect(summary?.result.label).toBe("favorable");
-    expect(summary?.scoredCellCount).toBe(2);
-    expect(summary?.snapshot.values.temperatureC).toBeCloseTo(16.8);
+    // Equal-area O median: median(9, 20, 20) = 20. Habitat weighting would
+    // instead select 9 because the low-F cell carries 90% effective habitat.
+    expect(summary?.result.opportunityIndex).toBe(20);
+    expect(summary?.result.score).toBe(20);
+    // Effective-habitat-weighted F median: the 0.9-weight cell selects F = 10;
+    // an equal-area median would be 100.
+    expect(summary?.result.fruitingConditionsScore).toBe(10);
+    expect(summary?.result.label).toBe("baixa");
+    expect(summary?.result.modelVersion).toBe(
+      predictionModelVersion(species.modelConfig.version),
+    );
+    expect(summary?.scoreRange).toEqual([9, 20]);
+    expect(summary?.scoredCellCount).toBe(3);
+    expect(summary?.snapshot.values.temperatureC).toBeCloseTo(19.2 / 1.3);
   });
 
   it("publishes zero when all compatible cells are outside the season", () => {
     const summary = summariseRegionalPredictions(species, "pirineus", [
       predictionCell({
         cellId: "inactive",
-        score: 0,
-        forestScore: 75,
+        fruitingConditionsScore: 0,
+        effectiveHabitatCoverage: 0.75,
         temperatureC: 16,
-        seasonalityScore: 0,
+        phenologyScore: 0,
       }),
     ]);
 
+    expect(summary?.result.fruitingConditionsScore).toBe(0);
+    expect(summary?.result.opportunityIndex).toBe(0);
     expect(summary?.result.score).toBe(0);
     expect(
-      summary?.result.contributions.find((factor) => factor.id === "seasonality")?.score,
+      summary?.result.components.find((item) => item.id === "phenology")?.score,
     ).toBe(0);
   });
 
-  it("withholds the regional summary when no compatible cell has a score", () => {
+  it("withholds the regional summary when no compatible cell has O", () => {
     const summary = summariseRegionalPredictions(species, "pirineus", [
-      predictionCell({ cellId: "withheld", score: null, forestScore: 65, temperatureC: 16 }),
+      predictionCell({
+        cellId: "withheld",
+        fruitingConditionsScore: null,
+        effectiveHabitatCoverage: 0.65,
+        temperatureC: 16,
+      }),
     ]);
 
     expect(summary).toBeNull();

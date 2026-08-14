@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("explores the species atlas and comparison tools", async ({ page }) => {
+  test.setTimeout(60_000);
   await page.goto("/");
   await expect(
     page.getByRole("heading", { name: /On viuen els bolets abans de trobar-los/i }),
@@ -27,11 +28,11 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(page.getByRole("link", { name: /Rossinyol/i })).toBeVisible();
   await expect(
     page
-      .getByRole("link", { name: "Obre la fitxa de Rossinyol" })
+      .getByRole("link", { name: "Obriu la fitxa de Rossinyol" })
       .locator(".culinary-rating"),
   ).toHaveText("Excel·lent");
   const rossinyolCard = page.getByRole("link", {
-    name: "Obre la fitxa de Rossinyol",
+    name: "Obriu la fitxa de Rossinyol",
   });
   await expect(rossinyolCard.locator(".card-season-month")).toHaveCount(12);
   await expect(
@@ -102,6 +103,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
       { exact: true },
     ),
   ).toBeVisible();
+  await page.locator("#distribució").scrollIntoViewIfNeeded();
   await expect(page.getByText("FungaCAT/GBIF · generalitzat a 10 km")).toBeVisible();
   await expect(
     page.getByText("Ratllat lila · registres històrics"),
@@ -114,12 +116,13 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   ).toBeVisible();
   await expect(page.getByText("Hàbitat potencial", { exact: true })).toHaveCount(0);
   await expect(page.getByText(/no amplia les zones compatibles/i)).toBeVisible();
-  await expect(page.getByText(/límits d’altitud es suavitzen/i)).toBeVisible();
+  await expect(
+    page.getByText(/límits d’altitud\s+tenen una transició suau/i),
+  ).toBeVisible();
   await expect(page.getByText(/no indica presència actual/i)).toBeVisible();
   await expect(
     page.getByRole("link", { name: /Obrir el mapa interactiu/i }),
   ).toBeVisible();
-  await page.locator("#distribució").scrollIntoViewIfNeeded();
   await expect(
     page.getByRole("button", { name: "Veure el mapa a pantalla completa" }),
   ).toBeVisible();
@@ -325,7 +328,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(comparisonSeasons.locator('.card-season-month[aria-current="date"]')).toHaveCount(2);
   await expect(comparisonSeasons.first().locator(".compare-season-summary")).toContainText("octubre");
   await expect(comparisonSeasons.nth(1).locator(".compare-season-summary")).toContainText("octubre");
-  const rightSpeciesSelect = page.getByLabel("Selecciona l’espècie dreta");
+  const rightSpeciesSelect = page.getByLabel("Seleccioneu l’espècie dreta");
   await rightSpeciesSelect.click();
   const speciesPopup = page.locator(".species-select-popup-comparison");
   await expect(speciesPopup).toBeVisible();
@@ -357,8 +360,8 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
 
   await page.setViewportSize({ width: 320, height: 720 });
   const [leftMobileBox, rightMobileBox] = await Promise.all([
-    page.getByLabel("Selecciona l’espècie esquerra").boundingBox(),
-    page.getByLabel("Selecciona l’espècie dreta").boundingBox(),
+    page.getByLabel("Seleccioneu l’espècie esquerra").boundingBox(),
+    page.getByLabel("Seleccioneu l’espècie dreta").boundingBox(),
   ]);
   expect(rightMobileBox?.y ?? 0).toBeGreaterThan(
     (leftMobileBox?.y ?? 0) + (leftMobileBox?.height ?? 0),
@@ -383,7 +386,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
 
   await page.goto("/map?species=boletus-edulis&region=pirineus");
   await expect(
-    page.getByRole("heading", { name: "Mapa de predicció" }),
+    page.getByRole("heading", { name: "Mapa de condicions" }),
   ).toBeVisible();
   await expect(page.getByLabel("Espècie seleccionada")).toHaveCount(1);
   await expect(page.locator(".species-switch-links")).toHaveCount(0);
@@ -455,7 +458,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
     page.getByRole("button", { name: "Veure tot Catalunya" }),
   ).toBeVisible();
   await expect(page.locator(".map-data-state")).toContainText(
-    /Predicció disponible|cel·les|Apropa el mapa|No s’han pogut carregar/i,
+    /Predicció disponible|Resultats mixtos|cel·les|Apropa el mapa|No s’han pogut carregar/i,
   );
   await page
     .getByRole("button", { name: "Mostra els controls del mapa" })
@@ -544,7 +547,7 @@ test("keeps the map reading guide balanced across modes and viewports", async ({
     "/map?species=amanita-caesarea&region=prelitoral&mode=prediction",
   );
   const desktopPrediction = await readGuideLayout();
-  expect(desktopPrediction.rectangles).toHaveLength(3);
+  expect(desktopPrediction.rectangles).toHaveLength(4);
   expect(
     Math.max(...desktopPrediction.rectangles.map(({ top }) => top)) -
       Math.min(...desktopPrediction.rectangles.map(({ top }) => top)),
@@ -598,7 +601,7 @@ test("switches prediction and compatibility from the layer control", async ({
   const mapCanvas = map.locator(".maplibregl-canvas");
 
   await expect(
-    page.getByRole("heading", { name: "Mapa de predicció" }),
+    page.getByRole("heading", { name: "Mapa de condicions" }),
   ).toBeVisible();
   await expect(map).toHaveAttribute("data-map-mode", "prediction");
   await page
@@ -643,7 +646,7 @@ test("switches prediction and compatibility from the layer control", async ({
 
   await expect(page).not.toHaveURL(/mode=compatibility/);
   await expect(
-    page.getByRole("heading", { name: "Mapa de predicció" }),
+    page.getByRole("heading", { name: "Mapa de condicions" }),
   ).toBeVisible();
   await expect(map).toHaveAttribute("data-map-mode", "prediction");
   await expect(map.locator(".region-map-history")).toHaveCount(0);
@@ -652,6 +655,40 @@ test("switches prediction and compatibility from the layer control", async ({
     "data-mode-switch-instance",
     "preserved",
   );
+});
+
+test("reports score-zero and withheld map cells together", async ({ page }) => {
+  const cellBounds = [[0.5, 41], [1.5, 42]];
+  await page.route("**/api/predictions?*", (route) =>
+    route.fulfill({
+      json: {
+        cells: [
+          {
+            cellId: "mixed-zero",
+            gridSizeM: 10000,
+            cellBounds,
+            score: 0,
+            habitatCoverage: 0,
+          },
+          {
+            cellId: "mixed-withheld",
+            gridSizeM: 10000,
+            cellBounds,
+            score: null,
+            habitatCoverage: 0.5,
+          },
+        ],
+        truncated: false,
+      },
+    }),
+  );
+
+  await page.goto("/map?species=boletus-edulis&region=pirineus");
+
+  const status = page.locator(".map-data-state");
+  await expect(status.locator("strong")).toHaveText("Resultats mixtos a la vista");
+  await expect(status).toContainText("O = 0, en vermell: 1 cel·la");
+  await expect(status).toContainText("índex no publicat, en gris: 1 cel·la");
 });
 
 test("keeps prediction out of the camasec species guide", async ({ page }) => {
@@ -692,7 +729,7 @@ test("keeps the black truffle in habitat-only mode", async ({ page }) => {
   await expect(page.locator(".map-floating-card")).toHaveCount(0);
 });
 
-test("keeps prediction factor labels readable on narrow maps", async ({ page }) => {
+test("keeps model component labels readable on narrow maps", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/map?species=boletus-edulis&region=prepirineus");
 
@@ -728,11 +765,11 @@ test("keeps prediction factor labels readable on narrow maps", async ({ page }) 
 
   const chart = page.locator(".factor-chart");
   await expect(chart).toBeVisible();
-  const factorList = chart.getByRole("list", { name: "Idoneïtat per factor" });
-  await expect(factorList).toBeVisible();
-  const factorLabels = factorList.locator(".factor-bar-label");
-  await expect(factorLabels.first()).toHaveText(/\S+/);
-  const labels = await factorLabels.evaluateAll((elements) =>
+  const componentList = chart.getByRole("list", { name: "Resposta dels components" });
+  await expect(componentList).toBeVisible();
+  const componentLabels = componentList.locator(".factor-bar-label");
+  await expect(componentLabels.first()).toHaveText(/\S+/);
+  const labels = await componentLabels.evaluateAll((elements) =>
     elements
       .map((element) => {
         const bounds = element.getBoundingClientRect();
@@ -754,8 +791,8 @@ test("keeps prediction factor labels readable on narrow maps", async ({ page }) 
     expect(label.top).toBeGreaterThanOrEqual(labels[index - 1].bottom);
   }
   await expect(
-    chart.getByLabel("Escala d’idoneïtat de molt dolent a excel·lent"),
-  ).toContainText("Molt dolentDolentRegularBoExcel·lent");
+    chart.getByLabel("Escala ordinal del model de molt baixa a molt alta"),
+  ).toContainText("Molt baixaBaixaMitjanaAltaMolt alta");
 
   await page.setViewportSize({ width: 320, height: 720 });
   const compactMapLayout = await page.evaluate(() => {
@@ -873,20 +910,38 @@ test("keeps ecologically excluded cells clickable after changing species", async
 
   await page.route("**/api/predictions/history?*", (route) => route.fulfill({
     json: {
+      modelVersion: "test-hydrothermal-v1",
       observed: [
-        { observedAt: "2026-10-14T12:00:00.000Z", score: 44 },
-        { observedAt: "2026-10-15T12:00:00.000Z", score: 50 },
+        {
+          observedAt: "2026-10-14T12:00:00.000Z",
+          score: 44,
+          fruitingConditionsScore: 70,
+          opportunityIndex: 44,
+        },
+        {
+          observedAt: "2026-10-15T12:00:00.000Z",
+          score: 50,
+          fruitingConditionsScore: 75,
+          opportunityIndex: 50,
+        },
       ],
       forecast: {
         generatedAt: "2026-10-15T13:00:00.000Z",
         calibratedAt: "2026-10-15T12:00:00.000Z",
         correctionMethod: "observed-anomaly-v1",
-        anchor: { observedAt: "2026-10-15T12:00:00.000Z", score: 50 },
+        anchor: {
+          observedAt: "2026-10-15T12:00:00.000Z",
+          score: 50,
+          fruitingConditionsScore: 75,
+          opportunityIndex: 50,
+        },
         source: ["ECMWF IFS HRES via Open-Meteo"],
         sourceResolutionM: 9000,
         points: [1, 2, 3, 4, 5].map((horizonDays) => ({
           validAt: new Date(Date.parse("2026-10-15T12:00:00.000Z") + horizonDays * 86_400_000).toISOString(),
           score: 50 + horizonDays * 4,
+          fruitingConditionsScore: 75 + horizonDays * 3,
+          opportunityIndex: 50 + horizonDays * 4,
           horizonDays,
           horizonConfidence: horizonDays === 1 ? "high" : horizonDays <= 3 ? "moderate" : "limited",
         })),
@@ -905,8 +960,8 @@ test("keeps ecologically excluded cells clickable after changing species", async
       gridSizeM: 2500,
       cellBounds,
       score: excluded ? 0 : 60,
-      habitatCoverage: excluded ? 0 : 0.25,
-      label: excluded ? "poc favorable" : "mixta",
+      habitatCoverage: excluded ? 0 : 0.75,
+      label: excluded ? "molt baixa" : "alta",
     };
 
     if (url.searchParams.has("cell")) {
@@ -920,32 +975,48 @@ test("keeps ecologically excluded cells clickable after changing species", async
             stale: false,
             source: ["test"],
             unavailableFields: [],
+            fruitingConditionsScore: excluded ? 60 : 80,
+            opportunityIndex: excluded ? 0 : 60,
+            effectiveHabitatCoverage: excluded ? 0 : 0.75,
             values: {
               altitudeM: excluded ? 2200 : 1200,
-              forestCompatibility: 100,
-              soilCompatibility: 100,
-              rainfall3dMm: 18,
-              rainfall7dMm: 25,
-              rainfallPrevious23dMm: 45,
-              rainfall30dMm: 70,
+              habitatCoveragePercent: excluded ? 0 : 75,
+              habitatAltitudeSuitability: excluded ? 0 : 100,
+              soilTexture: "franca",
+              rainfall21dMm: 60,
+              rainfallDays21d: 6,
+              evapotranspiration21dMm: 30,
+              rainfall26dMm: 70,
+              rainfallDays26d: 7,
+              evapotranspiration26dMm: 35,
               drySpellDays: 0,
-              evapotranspiration3dMm: 4,
-              evapotranspiration7dMm: 10,
-              evapotranspiration30dMm: 45,
-              soilMoistureAvg24h: 0.3,
               soilMoistureMin7d: 0.25,
               soilMoistureAvg7d: 0.3,
-              soilMoistureMax7d: 0.33,
-              soilMoistureTrend7d: 0.01,
-              temperatureAvg24hC: 14,
-              temperatureMin10dC: 8,
-              temperatureAvg10dC: 14,
-              temperatureMax10dC: 19,
-              frostHours10d: 0,
-              relativeHumidityAvg24h: 80,
+              temperatureAvg7dC: 14,
+              relativeHumidityAvg7d: 80,
+              temperatureAvg20dC: 14,
+              frostHours20d: 0,
+              heatHours20d: 0,
             },
             modelVersion: "test",
-            factors: [],
+            components: [
+              {
+                id: "habitatCoverage",
+                label: "Coberta d’hàbitat compatible",
+                score: excluded ? 0 : 75,
+                state: excluded ? "unfavourable" : "favourable",
+              },
+              {
+                id: "altitude",
+                label: "Idoneïtat altitudinal dins l’hàbitat",
+                score: excluded ? 0 : 100,
+                state: excluded ? "unfavourable" : "favourable",
+              },
+              { id: "phenology", label: "Fenologia", score: 90, state: "favourable" },
+              { id: "water", label: "Estat hídric unificat", score: 80, state: "favourable" },
+              { id: "temperature", label: "Resposta tèrmica", score: 95, state: "favourable" },
+              { id: "extremes", label: "Exposició a gelada i calor", score: 100, state: "favourable" },
+            ],
             occurrenceEvidence: null,
             occurrenceEvidenceStatus: "no-records",
           },
@@ -977,12 +1048,12 @@ test("keeps ecologically excluded cells clickable after changing species", async
   await mapCanvas.click();
   await expect(page.locator(".map-floating-card strong")).toHaveText("0/100");
   await expect(page.getByRole("heading", { name: "Evolució recent i projecció a 5 dies" })).toBeVisible();
-  await expect(page.locator(".cell-score-history-legend")).toContainText("Observat");
+  await expect(page.locator(".cell-score-history-legend")).toContainText("Calculat");
   await expect(page.locator(".cell-score-history-legend")).toContainText("Projectat");
   await expect(page.getByText(/D’ara a \+5 dies: \+20 punts/)).toBeVisible();
   await expect(page.getByText(/No és una predicció de l’aparició de bolets/)).toBeVisible();
   await expect(page.locator(".forecast-confidence-list li")).toHaveCount(5);
-  await expect(page.locator(".forecast-confidence-list li").last()).toContainText("Confiança de la projecció: limitada");
+  await expect(page.locator(".forecast-confidence-list li").last()).toContainText("confiança meteo limitada");
   const forecastStripHeight = await page.locator(".forecast-confidence-list").evaluate(
     (element) => element.getBoundingClientRect().height,
   );

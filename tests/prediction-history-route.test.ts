@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ConditionSnapshot, PredictionCellTimeline } from "@/src/lib/types";
 
 const { getPredictionCellHistory } = vi.hoisted(() => ({
   getPredictionCellHistory: vi.fn(),
@@ -7,6 +8,24 @@ const { getPredictionCellHistory } = vi.hoisted(() => ({
 vi.mock("@/src/lib/predictions", () => ({ getPredictionCellHistory }));
 
 import { POST } from "@/app/api/predictions/history/route";
+
+const requestValues = {
+  altitudeM: 1200,
+  habitatAltitudeSuitability: 100,
+  habitatCoveragePercent: 60,
+  soilTexture: "Franca",
+  soilMoistureAvg7d: 0.24,
+  soilMoistureMin7d: 0.225,
+  temperatureAvg7dC: 13,
+  relativeHumidityAvg7d: 90,
+  drySpellDays: 0,
+  rainfall26dMm: 50,
+  rainfallDays26d: 6,
+  evapotranspiration26dMm: 22,
+  temperatureAvg20dC: 13.5,
+  frostHours20d: 0,
+  heatHours20d: 0,
+} satisfies ConditionSnapshot["values"];
 
 function request(speciesId = "boletus-edulis") {
   return new Request("http://localhost/api/predictions/history", {
@@ -17,7 +36,7 @@ function request(speciesId = "boletus-edulis") {
       cellId: "epsg25831:2500:1:1",
       gridSizeM: 2500,
       regionId: "pirineus",
-      values: { altitudeM: 1200, forestCompatibility: 100, soilCompatibility: 100 },
+      values: requestValues,
     }),
   });
 }
@@ -28,21 +47,38 @@ describe("prediction history and forecast route", () => {
   });
 
   it("returns structurally separate observed and projected values with cache policy", async () => {
-    const timeline = {
-      observed: [{ observedAt: "2026-10-10T12:00:00Z", score: 64 }],
+    const timeline: PredictionCellTimeline = {
+      modelVersion: "hydrothermal-v1-priors-2026-08+hydrothermal-v1",
+      observed: [{
+        observedAt: "2026-10-10T12:00:00Z",
+        score: 38,
+        fruitingConditionsScore: 64,
+        opportunityIndex: 38,
+      }],
       forecast: {
         generatedAt: "2026-10-10T13:00:00Z",
         calibratedAt: "2026-10-10T12:00:00Z",
         correctionMethod: "observed-anomaly-v1" as const,
-        anchor: { observedAt: "2026-10-10T12:00:00Z", score: 64 },
+        anchor: {
+          observedAt: "2026-10-10T12:00:00Z",
+          score: 38,
+          fruitingConditionsScore: 64,
+          opportunityIndex: 38,
+        },
         source: ["ECMWF IFS HRES via Open-Meteo"],
         sourceResolutionM: 9000,
-        points: [1, 2, 3, 4, 5].map((horizonDays) => ({
-          validAt: new Date(Date.parse("2026-10-10T12:00:00Z") + horizonDays * 86_400_000).toISOString(),
-          score: 68 + horizonDays * 2,
-          horizonDays,
-          horizonConfidence: horizonDays === 1 ? "high" : horizonDays <= 3 ? "moderate" : "limited",
-        })),
+        points: [1, 2, 3, 4, 5].map((horizonDays) => {
+          const fruitingConditionsScore = 68 + horizonDays * 2;
+          const opportunityIndex = Math.round(fruitingConditionsScore * 0.6);
+          return {
+            validAt: new Date(Date.parse("2026-10-10T12:00:00Z") + horizonDays * 86_400_000).toISOString(),
+            score: opportunityIndex,
+            fruitingConditionsScore,
+            opportunityIndex,
+            horizonDays: horizonDays as 1 | 2 | 3 | 4 | 5,
+            horizonConfidence: horizonDays === 1 ? "high" : horizonDays <= 3 ? "moderate" : "limited",
+          };
+        }),
       },
     };
     getPredictionCellHistory.mockResolvedValue(timeline);
@@ -52,16 +88,34 @@ describe("prediction history and forecast route", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("public, max-age=60, s-maxage=300, stale-while-revalidate=600");
     await expect(response.json()).resolves.toEqual(timeline);
-    expect(timeline.forecast.points).toHaveLength(5);
-    expect(getPredictionCellHistory).toHaveBeenCalledWith("boletus-edulis", expect.objectContaining({
-      cellId: "epsg25831:2500:1:1",
-      gridSizeM: 2500,
-    }));
+    expect(timeline.forecast).not.toBeNull();
+    const forecast = timeline.forecast!;
+    expect(forecast.points).toHaveLength(5);
+    expect(forecast.points.every((point) =>
+      point.score === point.opportunityIndex &&
+      point.fruitingConditionsScore !== null &&
+      point.opportunityIndex !== null &&
+      point.fruitingConditionsScore > point.opportunityIndex
+    )).toBe(true);
+    expect(getPredictionCellHistory).toHaveBeenCalledWith(
+      "boletus-edulis",
+      expect.objectContaining({
+        cellId: "epsg25831:2500:1:1",
+        gridSizeM: 2500,
+        values: expect.objectContaining({ habitatCoveragePercent: 60 }),
+      }),
+    );
   });
 
   it("keeps history available when the forecast is unavailable", async () => {
     getPredictionCellHistory.mockResolvedValue({
-      observed: [{ observedAt: "2026-10-10T12:00:00Z", score: 64 }],
+      modelVersion: "hydrothermal-v1-priors-2026-08+hydrothermal-v1",
+      observed: [{
+        observedAt: "2026-10-10T12:00:00Z",
+        score: 38,
+        fruitingConditionsScore: 64,
+        opportunityIndex: 38,
+      }],
       forecast: null,
     });
 

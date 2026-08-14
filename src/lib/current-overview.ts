@@ -119,7 +119,7 @@ export async function loadCurrentOverview(
     const publishable = Boolean(
       summary &&
       summary.result.score !== null &&
-      summary.result.dataCompleteness >= 0.7 &&
+      summary.result.missingComponents.length === 0 &&
       !summary.snapshot.stale,
     );
 

@@ -10,6 +10,18 @@ import {
 } from "@/data/species";
 import { speciesProfileSchema } from "@/src/lib/schema";
 
+const monthOrder = [
+  "gen", "feb", "mar", "abr", "mai", "jun",
+  "jul", "ago", "set", "oct", "nov", "des",
+] as const;
+const phenologyAnchor = {
+  inactive: 0,
+  possible: 0.25,
+  moderate: 0.5,
+  good: 0.8,
+  peak: 1,
+} as const;
+
 describe("species profiles", () => {
   it("features the strongest seasonal species for the requested month", () => {
     const august = getFeaturedSeasonalSpecies(new Date(2026, 7, 12));
@@ -183,15 +195,138 @@ describe("species profiles", () => {
     expect("bestUses" in deathCap.culinaryProfile).toBe(false);
   });
 
-  it("keeps one valid model configuration per species", () => {
+  it("keeps one resolved hydrothermal configuration per species", () => {
     expect(new Set(speciesProfiles.map((profile) => profile.speciesId)).size).toBe(speciesProfiles.length);
     for (const profile of speciesProfiles) {
-      const weights = profile.modelConfig.factors.reduce((total, factor) => total + factor.weight, 0);
-      expect(new Set(profile.modelConfig.factors.map((factor) => factor.id)).size).toBe(8);
-      expect(weights).toBeCloseTo(1, 8);
+      const model = profile.modelConfig;
+      expect(model.model, profile.speciesId).toBe("hydrothermal-v1");
+      expect(model, profile.speciesId).not.toHaveProperty("factors");
+      expect(model.version.length, profile.speciesId).toBeGreaterThan(0);
+
+      if (model.status === "supported") {
+        expect(profile.predictionMode, profile.speciesId).toBe("current");
+        expect(model.version).toBe("hydrothermal-v1-priors-2026-08");
+        expect(model.guild).not.toBe("hypogeous");
+        expect(model.water.waterExponent).toBeGreaterThan(0);
+        expect(model.water.waterExponent).toBeLessThan(1);
+        expect(model.water.moistureWindowDays).toBe(7);
+        expect([14, 21, 26]).toContain(model.water.rainfallWindowDays);
+        expect(model.temperature.coldHalfWidthC).toBeGreaterThan(0);
+        expect(model.temperature.warmHalfWidthC).toBeGreaterThan(0);
+        expect(model.temperature.frostHalfLifeHours).toBeGreaterThan(0);
+        expect(model.temperature.heatHalfLifeHours).toBeGreaterThan(0);
+        expect(model.phenology.monthlyAnchors).toHaveLength(12);
+        expect(model.phenology.monthlyAnchors).toEqual(
+          monthOrder.map((month) => phenologyAnchor[profile.ecologicalConfig.seasonality[month]]),
+        );
+        expect(
+          model.phenology.monthlyAnchors.every((anchor) => anchor >= 0 && anchor <= 1),
+          profile.speciesId,
+        ).toBe(true);
+        expect(model.evidence.status).not.toBe("unsupported");
+      } else {
+        expect(profile.speciesId).toBe("tuber-melanosporum");
+        expect(profile.predictionMode).toBe("habitat_only");
+        expect(model.version).toBe("habitat-static-only-2026-08");
+        expect(model.guild).toBe("hypogeous");
+        expect(model.evidence.status).toBe("unsupported");
+        expect(model).not.toHaveProperty("water");
+        expect(model).not.toHaveProperty("temperature");
+        expect(model).not.toHaveProperty("phenology");
+      }
+
       expect(profile.references.length).toBeGreaterThan(0);
       expect(profile.safetyNotice).toContain("identificació");
     }
+  });
+
+  it("applies the literature-backed Boletus edulis override", () => {
+    const model = speciesProfiles.find((profile) => profile.speciesId === "boletus-edulis")!
+      .modelConfig;
+    if (model.status !== "supported") throw new Error("Expected a supported model");
+
+    expect(model.guild).toBe("ectomycorrhizal");
+    expect(model.water.rainfallWindowDays).toBe(26);
+    expect(model.temperature).toMatchObject({
+      windowDays: 20,
+      optimumC: 13.5,
+      coldHalfWidthC: 3.5,
+      warmHalfWidthC: 4.5,
+    });
+    expect(model.evidence.status).toBe("species-literature");
+    expect(model.evidence.citations).toContain(
+      "https://doi.org/10.64898/2025.12.12.693895",
+    );
+  });
+
+  it("initializes distinct temperature curves from each species ecology", () => {
+    const cold = speciesProfiles.find((profile) => profile.speciesId === "cortinarius-rubellus")!;
+    const warm = speciesProfiles.find((profile) => profile.speciesId === "amanita-caesarea")!;
+    if (cold.modelConfig.status !== "supported" || warm.modelConfig.status !== "supported") {
+      throw new Error("Expected supported models");
+    }
+
+    expect(cold.ecologicalConfig.climate.temperatureRange).toEqual([5, 16]);
+    expect(cold.modelConfig.temperature).toMatchObject({
+      optimumC: 10.5,
+      coldHalfWidthC: 5.5,
+      warmHalfWidthC: 5.5,
+    });
+    expect(warm.ecologicalConfig.climate.temperatureRange).toEqual([15, 25]);
+    expect(warm.modelConfig.temperature).toMatchObject({
+      optimumC: 20,
+      coldHalfWidthC: 5,
+      warmHalfWidthC: 5,
+    });
+  });
+
+  it("rejects malformed numeric model configurations", () => {
+    const profile = speciesProfiles.find((item) => item.speciesId === "boletus-edulis")!;
+    const model = profile.modelConfig;
+    if (model.status !== "supported") throw new Error("Expected a supported model");
+
+    const invalidWaterExponent = {
+      ...profile,
+      modelConfig: {
+        ...model,
+        water: { ...model.water, waterExponent: 1 },
+      },
+    };
+    expect(speciesProfileSchema.safeParse(invalidWaterExponent).success).toBe(false);
+
+    const invalidBand = {
+      ...profile,
+      modelConfig: {
+        ...model,
+        water: { ...model.water, rewBand: [0.5, 0.4, 0.9, 1.2] },
+      },
+    };
+    expect(speciesProfileSchema.safeParse(invalidBand).success).toBe(false);
+
+    const invalidPhenology = {
+      ...profile,
+      modelConfig: {
+        ...model,
+        phenology: {
+          monthlyAnchors: [0, 0, 0, 0, 0, 0, 0, 0.25, 0.8, 1.2, 0.8, 0],
+        },
+      },
+    };
+    expect(speciesProfileSchema.safeParse(invalidPhenology).success).toBe(false);
+
+    const modelWithoutWater = {
+      model: model.model,
+      version: model.version,
+      status: model.status,
+      guild: model.guild,
+      temperature: model.temperature,
+      phenology: model.phenology,
+      evidence: model.evidence,
+    };
+    expect(speciesProfileSchema.safeParse({
+      ...profile,
+      modelConfig: modelWithoutWater,
+    }).success).toBe(false);
   });
 
   it("keeps local Boletus edulis media traceable and out of identification references", () => {

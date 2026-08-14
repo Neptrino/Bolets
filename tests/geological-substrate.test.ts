@@ -43,11 +43,29 @@ function snapshot(
 
 const unavailableResult: SuitabilityResult = {
   score: null,
+  fruitingConditionsScore: null,
+  opportunityIndex: null,
+  rawHabitatCoverage: null,
+  effectiveHabitatCoverage: null,
   label: "sense dades",
-  contributions: [],
+  components: [
+    { id: "habitatCoverage", label: "Coberta d’hàbitat compatible", score: null, state: "unknown" },
+    { id: "altitude", label: "Idoneïtat altitudinal dins l’hàbitat", score: null, state: "unknown" },
+    { id: "phenology", label: "Fenologia", score: null, state: "unknown" },
+    { id: "water", label: "Estat hídric unificat", score: null, state: "unknown" },
+    { id: "temperature", label: "Resposta tèrmica", score: null, state: "unknown" },
+    { id: "extremes", label: "Exposició a gelada i calor", score: null, state: "unknown" },
+  ],
   modelVersion: "test",
   dataCompleteness: 0,
-  missingFactors: [],
+  missingComponents: [
+    "habitatCoverage",
+    "altitude",
+    "phenology",
+    "water",
+    "temperature",
+    "extremes",
+  ],
 };
 
 function renderSubstrate(
@@ -177,7 +195,7 @@ describe("geological substrate evidence", () => {
 
     expect(html).toContain("Mapa geològic de Catalunya");
     expect(html).toContain("escala 1:50.000");
-    expect(html).toContain("context geològic · pes 0");
+    expect(html).toContain("context geològic · fora d’H/F/O");
     expect(html).toContain("no equival a una resolució de 50 m");
     expect(html).not.toContain("250 m, 500 m, 1 km");
   });

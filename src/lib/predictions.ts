@@ -6,14 +6,14 @@ import { getOccurrenceSupport } from "@/src/lib/occurrences";
 import { boundsCentre, boundsContain } from "@/src/lib/map-grid";
 import { correctForecastValues, FORECAST_CORRECTION_METHOD } from "@/src/lib/forecast-correction";
 import { PREDICTION_CACHE_VERSION, predictionModelVersion } from "@/src/lib/model-versions";
-import { missingRainfallFields } from "@/src/lib/rainfall";
+import { missingHydrothermalFields } from "@/src/lib/hydrothermal";
 import { spatialEnvironmentHistorySchema, spatialEnvironmentResponseSchema } from "@/src/lib/schema";
-import { calculateSuitability, suitabilityLabel } from "@/src/lib/scoring";
+import { calculateSuitability, opportunityLabel } from "@/src/lib/scoring";
 import type {
   ConditionSnapshot,
   CoordinateBounds,
   EvidenceConfidence,
-  FactorContribution,
+  ModelComponent,
   HistoricalOccurrenceEvidence,
   OccurrenceEvidenceStatus,
   OccurrenceSupportCell,
@@ -63,11 +63,12 @@ export async function getPredictionCellHistory(
   if (payload.cellId !== cell.cellId || payload.regionId !== cell.regionId)
     throw new Error("Spatial environment history did not match the selected cell");
 
+  const modelVersion = predictionModelVersion(species.modelConfig.version);
+
   const habitatValues: ConditionSnapshot["values"] = {
     altitudeM: cell.values.altitudeM,
     habitatAltitudeSuitability: cell.values.habitatAltitudeSuitability,
-    forestCompatibility: cell.values.forestCompatibility,
-    soilCompatibility: cell.values.soilCompatibility,
+    habitatCoveragePercent: cell.values.habitatCoveragePercent,
     forestTypes: cell.values.forestTypes,
     treeSpecies: cell.values.treeSpecies,
     soilPh: cell.values.soilPh,
@@ -79,9 +80,10 @@ export async function getPredictionCellHistory(
     // Habitat is static at this model version. Dynamic values must come only
     // from the historical snapshot so today's weather cannot fill an old gap.
     const values = { ...habitatValues, ...snapshot.values };
-    const unavailableFields = [
-      ...new Set([...snapshot.unavailableFields, ...missingRainfallFields(values)]),
-    ];
+    const missingFields = species.modelConfig.status === "supported"
+      ? missingHydrothermalFields(values, species.modelConfig.water, species.modelConfig.temperature)
+      : [];
+    const unavailableFields = [...new Set([...snapshot.unavailableFields, ...missingFields])];
     const conditionSnapshot: ConditionSnapshot = {
         regionId: cell.regionId,
         observedAt: snapshot.observedAt,
@@ -93,11 +95,14 @@ export async function getPredictionCellHistory(
         unavailableFields,
         values,
     };
+    const result = calculateSuitability(species, conditionSnapshot);
     return {
       conditionSnapshot,
       point: {
         observedAt: snapshot.observedAt,
-        score: calculateSuitability(species, conditionSnapshot).score,
+        score: result.opportunityIndex,
+        fruitingConditionsScore: result.fruitingConditionsScore,
+        opportunityIndex: result.opportunityIndex,
       },
     };
   });
@@ -118,7 +123,7 @@ export async function getPredictionCellHistory(
     futureForecastSnapshots.length > 0;
   const baseline = payload.forecast?.baseline;
   if (!payload.forecast || !baseline || !forecastFresh || baseline.unavailableFields.length) {
-    return { observed, forecast: null };
+    return { modelVersion, observed, forecast: null };
   }
   const baselinePointCount = baseline.pointCount;
   if (baselinePointCount === undefined || forecastSnapshots.some((snapshot) =>
@@ -127,26 +132,32 @@ export async function getPredictionCellHistory(
     // During a migration-first rollout the old Edge reader may still return
     // five absolute targets. Preserve observed history, but never guess the
     // aggregation semantics needed to calibrate those targets.
-    return { observed, forecast: null };
+    return { modelVersion, observed, forecast: null };
   }
 
   // The calibration anchor must remain server-authoritative. Request values
   // provide static habitat context only; accepting browser-supplied dynamic
   // weather here would let stale or forged state redefine the forecast seam.
   const currentSnapshot = observedSnapshots.at(-1)?.conditionSnapshot;
-  if (!currentSnapshot) return { observed, forecast: null };
+  if (!currentSnapshot) return { modelVersion, observed, forecast: null };
   const currentValues = currentSnapshot.values;
   const currentObservedAt = currentSnapshot.observedAt;
-  const currentScore = calculateSuitability(species, currentSnapshot).score;
-  if (currentScore === null) return { observed, forecast: null };
-  const anchor = { observedAt: currentObservedAt, score: currentScore };
+  const currentResult = calculateSuitability(species, currentSnapshot);
+  const currentScore = currentResult.opportunityIndex;
+  if (currentScore === null) return { modelVersion, observed, forecast: null };
+  const anchor = {
+    observedAt: currentObservedAt,
+    score: currentScore,
+    fruitingConditionsScore: currentResult.fruitingConditionsScore,
+    opportunityIndex: currentResult.opportunityIndex,
+  };
   observed[observed.length - 1] = anchor;
 
   const currentWeatherAt = Date.parse(currentValues.weatherObservedAt ?? currentObservedAt);
   const baselineAt = Date.parse(baseline.validAt);
   const anchorGapMilliseconds = Math.abs(baselineAt - currentWeatherAt);
   if (!Number.isFinite(anchorGapMilliseconds) || anchorGapMilliseconds > MAX_FORECAST_ANCHOR_GAP_MS) {
-    return { observed, forecast: null };
+    return { modelVersion, observed, forecast: null };
   }
 
   const horizonConfidence = (
@@ -163,7 +174,7 @@ export async function getPredictionCellHistory(
   const baselineDrySpellDays = baseline.values.drySpellDays;
   const currentDrySpellDays = currentValues.drySpellDays;
   if (baselineDrySpellDays === undefined || currentDrySpellDays === undefined) {
-    return { observed, forecast: null };
+    return { modelVersion, observed, forecast: null };
   }
   let correctionState = {
     modelDrySpellDays: baselineDrySpellDays,
@@ -182,26 +193,27 @@ export async function getPredictionCellHistory(
     );
     correctionState = correction.state;
     const values = { ...habitatValues, ...correction.values };
+    const missingFields = species.modelConfig.status === "supported"
+      ? missingHydrothermalFields(values, species.modelConfig.water, species.modelConfig.temperature)
+      : [];
     const unavailableFields = [
       ...new Set([
         ...baseline.unavailableFields,
         ...snapshot.unavailableFields,
         ...correction.unavailableFields,
-        ...missingRainfallFields(values),
+        ...missingFields,
       ]),
     ];
     const horizonDays = (snapshot.horizonHours / 24) as PredictionForecastPoint["horizonDays"];
-    const score = unavailableFields.length
-      ? null
-      : calculateSuitability(species, {
-        regionId: cell.regionId,
-        observedAt: snapshot.validAt,
-        source: snapshot.source,
-        confidence: snapshot.confidence,
-        stale: false,
-        unavailableFields,
-        values,
-      }).score;
+    const result = calculateSuitability(species, {
+      regionId: cell.regionId,
+      observedAt: snapshot.validAt,
+      source: snapshot.source,
+      confidence: snapshot.confidence,
+      stale: false,
+      unavailableFields,
+      values,
+    });
     return {
       validAt: snapshot.validAt,
       horizonDays,
@@ -209,12 +221,15 @@ export async function getPredictionCellHistory(
         horizonDays,
         [currentSnapshot.confidence, baseline.confidence, snapshot.confidence],
       ),
-      score,
+      score: result.opportunityIndex,
+      fruitingConditionsScore: result.fruitingConditionsScore,
+      opportunityIndex: result.opportunityIndex,
     } satisfies PredictionForecastPoint;
   });
   const points = correctedPoints.filter((point) => Date.parse(point.validAt) > nowMilliseconds);
 
   return {
+    modelVersion,
     observed,
     forecast: {
       generatedAt: payload.forecast.generatedAt,
@@ -238,7 +253,7 @@ export function toPredictionMapCell(
   cell: Pick<PredictionCell, "cellId" | "regionId" | "gridSizeM" | "values"> & { bounds: CoordinateBounds },
   result: Pick<SuitabilityResult, "score" | "label">
 ): PredictionMapCell {
-  const habitatCoverage = cell.values.forestCompatibility;
+  const habitatCoverage = cell.values.habitatCoveragePercent;
   return {
     cellId: cell.cellId,
     gridSizeM: cell.gridSizeM,
@@ -335,9 +350,10 @@ export async function getPredictionCells(
   const payload = spatialEnvironmentResponseSchema.parse(await response.json());
   const cells = payload.cells.map((cell) => {
     const values = { ...cell.values };
-    const unavailableFields = [
-      ...new Set([...cell.unavailableFields, ...missingRainfallFields(values)]),
-    ];
+    const missingFields = species.modelConfig.status === "supported"
+      ? missingHydrothermalFields(values, species.modelConfig.water, species.modelConfig.temperature)
+      : [];
+    const unavailableFields = [...new Set([...cell.unavailableFields, ...missingFields])];
     const result = calculateSuitability(species, { ...cell, unavailableFields, values });
     const mapCell = toPredictionMapCell(cell, result);
     if (compact) return mapCell;
@@ -355,7 +371,10 @@ export async function getPredictionCells(
       unavailableFields,
       values,
       modelVersion: result.modelVersion,
-      factors: result.contributions,
+      fruitingConditionsScore: result.fruitingConditionsScore,
+      opportunityIndex: result.opportunityIndex,
+      effectiveHabitatCoverage: result.effectiveHabitatCoverage,
+      components: result.components,
       ...evidence
     } satisfies PredictionCell;
   });
@@ -384,10 +403,7 @@ function weightedAverage(values: WeightedValue[]) {
 }
 
 function habitatWeight(cell: PredictionCell) {
-  return Math.max(
-    cell.factors.find((factor) => factor.id === "forest")?.score ?? 0,
-    0,
-  );
+  return Math.max(cell.effectiveHabitatCoverage ?? 0, 0);
 }
 
 function aggregateNumericField(
@@ -413,8 +429,9 @@ function aggregateRegionalSnapshot(
 ): ConditionSnapshot {
   const averageFields = [
     "temperatureC",
-    "temperatureAvg24hC",
-    "temperatureAvg10dC",
+    "temperatureAvg7dC",
+    "temperatureAvg14dC",
+    "temperatureAvg20dC",
     "relativeHumidity",
     "relativeHumidityAvg24h",
     "relativeHumidityAvg7d",
@@ -426,31 +443,38 @@ function aggregateRegionalSnapshot(
     "rainfall7dMm",
     "rainfallPrevious23dMm",
     "rainfall30dMm",
+    "rainfall14dMm",
+    "rainfall21dMm",
+    "rainfall26dMm",
+    "rainfallDays7d",
+    "rainfallDays14d",
+    "rainfallDays21d",
+    "rainfallDays26d",
+    "rainfallDays30d",
     "drySpellDays",
     "evapotranspiration3dMm",
     "evapotranspiration7dMm",
     "evapotranspiration30dMm",
+    "evapotranspiration14dMm",
+    "evapotranspiration21dMm",
+    "evapotranspiration26dMm",
     "windKmh",
     "windAvg24hKmh",
     "altitudeM",
     "habitatAltitudeSuitability",
-    "forestCompatibility",
-    "soilCompatibility",
+    "habitatCoveragePercent",
     "soilPh",
   ];
   const minFields = [
-    "temperatureMin24hC",
-    "temperatureMin7dC",
-    "temperatureMin10dC",
     "relativeHumidityMin24h",
     "soilMoistureMin24h",
     "soilMoistureMin7d",
   ];
   const maxFields = [
-    "temperatureMax24hC",
-    "temperatureMax10dC",
-    "frostHours7d",
-    "frostHours10d",
+    "frostHours14d",
+    "frostHours20d",
+    "heatHours14d",
+    "heatHours20d",
     "relativeHumidityMax24h",
     "soilMoistureMax24h",
     "soilMoistureMax7d",
@@ -508,39 +532,49 @@ export function summariseRegionalPredictions(
   );
   if (!scoredCells.length) return null;
 
-  const scores = scoredCells.map((cell) => ({
-    value: cell.score,
-    weight: habitatWeight(cell),
-  }));
+  // The cell opportunity index already contains effective habitat coverage.
+  // Equal cell area therefore avoids applying that coverage a second time.
+  const scores = scoredCells.map((cell) => ({ value: cell.score, weight: 1 }));
   const score = Math.round(weightedQuantile(scores, 0.5));
-  const contributions = species.modelConfig.factors.map((factor) => {
-    const factorValues = scoredCells.flatMap((cell) => {
-      const factorScore = cell.factors.find((item) => item.id === factor.id)?.score;
-      return factorScore === null || factorScore === undefined
+  const components = scoredCells[0].components.map((template) => {
+    const componentValues = scoredCells.flatMap((cell) => {
+      const componentScore = cell.components.find((item) => item.id === template.id)?.score;
+      return componentScore === null || componentScore === undefined
         ? []
-        : [{ value: factorScore, weight: habitatWeight(cell) }];
+        : [{ value: componentScore, weight: habitatWeight(cell) }];
     });
-    const aggregate = weightedAverage(factorValues);
-    const factorScore = aggregate === undefined ? null : Math.round(aggregate);
+    const aggregate = weightedAverage(componentValues);
+    const componentScore = aggregate === undefined ? null : Math.round(aggregate);
     return {
-      id: factor.id,
-      label: factor.label,
-      weight: factor.weight,
-      score: factorScore,
-      state: factorScore === null
+      id: template.id,
+      label: template.label,
+      score: componentScore,
+      state: componentScore === null
         ? "unknown"
-        : factorScore >= 70
+        : componentScore >= 70
           ? "favourable"
-          : factorScore >= 45
+          : componentScore >= 45
             ? "mixed"
             : "unfavourable",
-    } satisfies FactorContribution;
+    } satisfies ModelComponent;
   });
-  const totalWeight = contributions.reduce((total, factor) => total + factor.weight, 0);
-  const knownWeight = contributions.reduce(
-    (total, factor) => total + (factor.score === null ? 0 : factor.weight),
-    0,
+  const missingComponents = components.filter((item) => item.score === null).map((item) => item.id);
+  const fruitingConditionValues = scoredCells.flatMap((cell) =>
+    cell.fruitingConditionsScore === null
+      ? []
+      : [{ value: cell.fruitingConditionsScore, weight: habitatWeight(cell) }]
   );
+  const fruitingConditionsScore = fruitingConditionValues.length
+    ? Math.round(weightedQuantile(fruitingConditionValues, 0.5))
+    : null;
+  const rawHabitatCoverage = weightedAverage(scoredCells.map((cell) => ({
+    value: (cell.values.habitatCoveragePercent ?? 0) / 100,
+    weight: 1,
+  }))) ?? null;
+  const effectiveHabitatCoverage = weightedAverage(scoredCells.map((cell) => ({
+    value: cell.effectiveHabitatCoverage ?? 0,
+    weight: 1,
+  }))) ?? null;
 
   return {
     regionId,
@@ -552,13 +586,15 @@ export function summariseRegionalPredictions(
     ],
     result: {
       score,
-      label: suitabilityLabel(score),
-      contributions,
+      fruitingConditionsScore,
+      opportunityIndex: score,
+      rawHabitatCoverage,
+      effectiveHabitatCoverage,
+      label: opportunityLabel(score),
+      components,
       modelVersion: predictionModelVersion(species.modelConfig.version),
-      dataCompleteness: totalWeight ? knownWeight / totalWeight : 0,
-      missingFactors: contributions
-        .filter((factor) => factor.score === null)
-        .map((factor) => factor.id),
+      dataCompleteness: (components.length - missingComponents.length) / components.length,
+      missingComponents,
     },
     snapshot: aggregateRegionalSnapshot(regionId, scoredCells),
   };

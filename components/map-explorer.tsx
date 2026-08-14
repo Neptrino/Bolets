@@ -51,7 +51,7 @@ export function MapExplorer({
   const predictionStatus = getConditionPredictionStatus(snapshot.stale, result);
   const hasPrediction = predictionStatus.kind === "available" && result.score !== null;
   const resultBand = result.score === null ? undefined : getSuitabilityBand(result.score);
-  const selectedHabitatCoverage = selectedCell?.values.forestCompatibility;
+  const selectedHabitatCoverage = selectedCell?.values.habitatCoveragePercent;
   const unavailableCopy = predictionStatus.kind === "environment-unavailable"
     ? "sense dades ambientals verificades"
     : selectedCell
@@ -90,7 +90,7 @@ export function MapExplorer({
           </div>
           <strong>{hasPrediction ? <>{result.score}<small>/100</small></> : "—"}</strong>
           <p>{hasPrediction
-            ? `${result.label} · ${selectedCell ? "lectura local" : "lectura regional"}${selectedHabitatCoverage === undefined ? "" : ` · ${Math.round(selectedHabitatCoverage)}% d’hàbitat compatible`}`
+            ? `Oportunitat territorial · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · condicions ${result.fruitingConditionsScore}/100`}${selectedHabitatCoverage === undefined ? "" : ` · ${Math.round(selectedHabitatCoverage)}% d’hàbitat compatible`}`
             : unavailableCopy}</p>
         </div>
       ) : null}

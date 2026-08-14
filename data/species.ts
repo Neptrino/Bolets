@@ -1,5 +1,6 @@
 import type { Month, SeasonalActivity, SpeciesProfile } from "@/src/lib/types";
 import { culinaryProfiles } from "@/data/culinary-profiles";
+import { modelConfigForSpecies, TUBER_SHORT_TERM_CAVEAT } from "@/data/model-priors";
 import { speciesGalleryMedia } from "@/data/species-gallery-media";
 import { speciesMedia } from "@/data/species-media";
 
@@ -352,41 +353,28 @@ function season(overrides: Partial<Record<Month, SeasonalActivity>>) {
   return Object.fromEntries(months.map((name) => [name, overrides[name] ?? "inactive"])) as Record<Month, SeasonalActivity>;
 }
 
-function model(version = "ecologia-v1.9") {
-  return {
-    version,
-    factors: [
-      { id: "forest" as const, label: "Cobertura d’hàbitat compatible", weight: 0.19, explanation: "Percentatge de cel·les base de 250 m on coincideixen la coberta, l’altitud i el pH configurats." },
-      { id: "soil" as const, label: "Condicions del sòl", weight: 0.14, explanation: "pH i textura del sòl compatibles; la geologia de l’ICGC es mostra només com a context." },
-      { id: "rainfall" as const, label: "Pluja i memòria hídrica", weight: 0.16, explanation: "Resposta contínua a la pluja de 3 i 7 dies, balanç pluja–evapotranspiració dels dies 8–30, ratxa seca i humitat del sòl de 7 dies, ponderada per la dependència de cada espècie de la humitat prèvia." },
-      { id: "soilMoisture" as const, label: "Humitat del sòl", weight: 0.16, explanation: "Resposta contínua i lineal segons la distància al nivell d’humitat preferit per l’espècie." },
-      { id: "temperature" as const, label: "Temperatura", weight: 0.13, explanation: "Mitjana dels darrers 10 dies, amb interrupcions per episodis extrems de calor o fred durant el mateix període." },
-      { id: "altitude" as const, label: "Altitud", weight: 0.06, explanation: "Resposta amb altiplà central: 100 a l’interior, descens lineal durant els 100 m previs als límits documentats fins a 75, i descens a zero dins el marge exterior de 100 m." },
-      { id: "humidity" as const, label: "Humitat relativa", weight: 0.04, explanation: "Mitjana de 24 hores amb una penalització limitada quan la mitjana de 7 dies mostra sequedat persistent." },
-      { id: "seasonality" as const, label: "Moment de temporada", weight: 0.12, explanation: "Activitat estacional documentada per a l’espècie." }
-    ]
-  };
-}
-
 type Seed = Omit<SpeciesProfile, "culinaryProfile" | "modelConfig" | "predictionMode" | "references" | "media" | "safetyNotice" | "confidence"> & {
-  modelVersion?: string;
-  predictionMode?: SpeciesProfile["predictionMode"];
   media?: SpeciesProfile["media"];
 };
 
 type SafetySeed = Pick<Seed, "speciesId" | "identity" | "morphology" | "similarSpecies" | "ecologicalConfig" | "idealConditions"> &
-  Partial<Pick<Seed, "modelVersion" | "predictionMode" | "media">>;
+  Partial<Pick<Seed, "media">>;
 
 function profile(seed: Seed): SpeciesProfile {
   const culinaryProfile = culinaryProfiles[seed.speciesId];
   if (!culinaryProfile) {
     throw new Error(`Missing culinary profile for ${seed.speciesId}`);
   }
+  const modelConfig = modelConfigForSpecies(
+    seed.speciesId,
+    seed.ecologicalConfig.climate.temperatureRange,
+    seed.ecologicalConfig.seasonality,
+  );
 
   return {
     ...seed,
-    predictionMode: seed.predictionMode ?? "current",
-    modelConfig: model(seed.modelVersion),
+    predictionMode: modelConfig.status === "supported" ? "current" : "habitat_only",
+    modelConfig,
     culinaryProfile,
     references,
     media: [
@@ -790,9 +778,7 @@ speciesProfiles.push(
   }),
   profile({
     speciesId: "tuber-melanosporum",
-    predictionMode: "habitat_only",
-    predictionCaveat: "La tòfona negra és hipogea i es desenvolupa durant mesos. El mapa només pot indicar compatibilitat edàfica i forestal; el model meteorològic de curt termini no calcula la probabilitat de trobar tòfones madures.",
-    modelVersion: "ecologia-v1.9-habitat-only",
+    predictionCaveat: TUBER_SHORT_TERM_CAVEAT,
     identity: {
       commonName: "Tòfona negra",
       alternateNames: ["tòfona del Perigord", "tòfona negra d’hivern"],

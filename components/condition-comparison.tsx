@@ -19,7 +19,7 @@ import type {
   CoordinateBounds,
   GeologicalSubstrateEvidence,
   HistoricalOccurrenceEvidence,
-  ModelFactor,
+  ModelComponentId,
   OccurrenceEvidenceStatus,
   RegionalPredictionSummary,
   SpatialGridSizeM,
@@ -34,7 +34,7 @@ import {
 } from "@/src/lib/suitability-scale";
 import { regionLabels } from "@/data/regions";
 
-type FactorChartItem = { name: string; fullName: string; score: number };
+type ComponentChartItem = { name: string; fullName: string; score: number };
 type ConditionStat = {
   label: string;
   value: string;
@@ -49,15 +49,13 @@ type ConditionContext =
     }
   | { note: string };
 
-const factorChartNames: Record<ModelFactor["id"], string> = {
-  forest: "Hàbitat",
-  soil: "Sòl",
-  rainfall: "Pluja recent",
-  soilMoisture: "Humitat del sòl",
-  temperature: "Temperatura",
+const componentChartNames: Record<ModelComponentId, string> = {
+  habitatCoverage: "Coberta",
   altitude: "Altitud",
-  humidity: "Humitat de l’aire",
-  seasonality: "Temporada",
+  phenology: "Fenologia",
+  water: "Estat hídric",
+  temperature: "Temperatura",
+  extremes: "Fred i calor",
 };
 
 const temperature = (value: number | undefined) =>
@@ -70,14 +68,12 @@ const millimetres = (value: number | undefined) =>
   value === undefined ? "—" : `${Math.round(value * 10) / 10} mm`;
 const days = (value: number | undefined) =>
   value === undefined ? "—" : `${Math.round(value * 10) / 10} dies`;
+const dayCount = (value: number | undefined) =>
+  value === undefined ? "—" : `${Math.round(value)} dies`;
 const moistureTrend = (value: number | undefined) =>
   value === undefined
     ? "—"
     : `${value >= 0 ? "+" : ""}${(value * 100).toFixed(1)} punts`;
-const lowercaseInitial = (value: string) =>
-  value
-    ? `${value.charAt(0).toLocaleLowerCase("ca-ES")}${value.slice(1)}`
-    : value;
 const uppercaseInitial = (value: string) =>
   value
     ? `${value.charAt(0).toLocaleUpperCase("ca-ES")}${value.slice(1)}`
@@ -138,7 +134,11 @@ export function ConditionComparison({
   expanded?: boolean;
 }) {
   const v = snapshot.values;
-  const weatherUpdatedAt = snapshot.stale ? "no disponible" : readingTime(snapshot.observedAt);
+  const weatherUpdatedAt = v.weatherObservedAt
+    ? readingTime(v.weatherObservedAt)
+    : snapshot.stale
+      ? "no disponible"
+      : readingTime(snapshot.observedAt);
   const predictionStatus = getConditionPredictionStatus(snapshot.stale, result);
   const atmosphericResolution = v.atmosphericResolutionM
     ? `${(v.atmosphericResolutionM / 1000).toLocaleString("ca-ES")} km`
@@ -146,17 +146,17 @@ export function ConditionComparison({
   const soilResolution = v.soilMoistureResolutionM
     ? `${(v.soilMoistureResolutionM / 1000).toLocaleString("ca-ES")} km`
     : undefined;
-  const chart: FactorChartItem[] = result.contributions
+  const chart: ComponentChartItem[] = result.components
     .filter((item) => item.score !== null)
     .map((item) => ({
-      name: factorChartNames[item.id],
+      name: componentChartNames[item.id],
       fullName: item.label,
       score: item.score ?? 0,
     }));
-  const unavailableFactors = snapshot.stale
+  const unavailableComponents = snapshot.stale
     ? []
-    : result.contributions.filter((item) => item.score === null);
-  const unavailableFactorCopy = cellId
+    : result.components.filter((item) => item.score === null);
+  const unavailableComponentCopy = cellId
     ? "No disponible per a aquesta cel·la"
     : "No disponible en la lectura territorial";
   const [altitudeMin, altitudeMax] = species.ecologicalConfig.habitat.altitude;
@@ -166,14 +166,53 @@ export function ConditionComparison({
     : undefined;
   const selectedCellCoordinates = cellCoordinates(cellBounds);
   const resultBand = result.score === null ? undefined : getSuitabilityBand(result.score);
+  const supportedModel = species.modelConfig.status === "supported"
+    ? species.modelConfig
+    : null;
+  const temperatureWindowDays = supportedModel?.temperature.windowDays;
+  const temperatureWindowAverage = temperatureWindowDays === 14
+    ? v.temperatureAvg14dC
+    : temperatureWindowDays === 20
+      ? v.temperatureAvg20dC
+      : undefined;
+  const frostHours = temperatureWindowDays === 14
+    ? v.frostHours14d
+    : temperatureWindowDays === 20
+      ? v.frostHours20d
+      : undefined;
+  const heatHours = temperatureWindowDays === 14
+    ? v.heatHours14d
+    : temperatureWindowDays === 20
+      ? v.heatHours20d
+      : undefined;
   const frostState =
-    (v.frostHours10d ?? v.frostHours7d) === undefined
+    frostHours === undefined
       ? "unknown"
-      : (v.frostHours10d ?? v.frostHours7d ?? 0) > 0
+      : frostHours > 0
         ? "warning"
         : "clear";
-  const frostWindowDays = v.frostHours10d !== undefined ? 10 : 7;
-  const frostMinimum = temperature(v.temperatureMin10dC ?? v.temperatureMin7dC);
+  const rainfallWindowDays = supportedModel?.water.rainfallWindowDays;
+  const rainfallWindowAmount = rainfallWindowDays === 14
+    ? v.rainfall14dMm
+    : rainfallWindowDays === 21
+      ? v.rainfall21dMm
+      : rainfallWindowDays === 26
+        ? v.rainfall26dMm
+        : v.rainfall7dMm;
+  const rainfallWindowWetDays = rainfallWindowDays === 14
+    ? v.rainfallDays14d
+    : rainfallWindowDays === 21
+      ? v.rainfallDays21d
+      : rainfallWindowDays === 26
+        ? v.rainfallDays26d
+        : undefined;
+  const rainfallWindowEt0 = rainfallWindowDays === 14
+    ? v.evapotranspiration14dMm
+    : rainfallWindowDays === 21
+      ? v.evapotranspiration21dMm
+      : rainfallWindowDays === 26
+        ? v.evapotranspiration26dMm
+        : v.evapotranspiration7dMm;
   const data: Array<{
     label: string;
     period: string;
@@ -186,28 +225,30 @@ export function ConditionComparison({
       label: "Temperatura",
       period: "darrera lectura",
       current: temperature(v.temperatureC),
-      context: {
-        targetLabel: "Finestra ideal",
-        targetValue: `${species.ecologicalConfig.climate.temperatureRange[0]}–${species.ecologicalConfig.climate.temperatureRange[1]} °C`,
-      },
+      context: supportedModel
+        ? {
+            targetLabel: `Resposta no lineal · ${temperatureWindowDays} dies`,
+            targetValue: `Òptim inicial: ${supportedModel.temperature.optimumC} °C`,
+          }
+        : { note: "Sense model hidrotermal de curt termini per a aquesta espècie" },
       stats: [
         {
-          label: "Mín. · 10 dies",
-          value: temperature(v.temperatureMin10dC),
+          label: `Mitj · ${temperatureWindowDays ?? "—"} dies`,
+          value: temperature(temperatureWindowAverage),
           explanation:
-            "Temperatura més baixa estimada durant els últims 10 dies. Un episodi de fred o gelada pot frenar la fructificació encara que la mitjana sigui adequada.",
+            "Mitjana tèrmica de la finestra configurada per al gremi o l’espècie. La resposta té un òptim i decau suaument tant per fred com per calor.",
         },
         {
-          label: "Mitj. · 10 dies",
-          value: temperature(v.temperatureAvg10dC),
+          label: "Hores ≤ 0 °C",
+          value: frostHours === undefined ? "—" : `${Math.round(frostHours)} h`,
           explanation:
-            "Temperatura mitjana estimada durant els últims 10 dies. Mostra si el període recent s’acosta al rang tèrmic favorable per a l’espècie.",
+            "Hores de gelada dins la mateixa finestra. Actuen com un multiplicador de dany segons la semivida configurada, no com un tall arbitrari.",
         },
         {
-          label: "Màx. · 10 dies",
-          value: temperature(v.temperatureMax10dC),
+          label: "Hores ≥ 27 °C",
+          value: heatHours === undefined ? "—" : `${Math.round(heatHours)} h`,
           explanation:
-            "Temperatura més alta estimada durant els últims 10 dies. Valors elevats poden accelerar l’assecament del sòl i reduir les condicions favorables.",
+            "Hores de calor dins la mateixa finestra. L’exposició acumulada redueix gradualment la resposta, amb tolerància pròpia del gremi.",
         },
       ],
       icon: ThermometerSun,
@@ -217,8 +258,7 @@ export function ConditionComparison({
       period: "darrera lectura · profunditat 3–9 cm",
       current: percentage(v.soilMoisture, true),
       context: {
-        targetLabel: "Perfil ideal",
-        targetValue: species.ecologicalConfig.climate.soilMoisture.toLowerCase(),
+        note: "Normalitzada per textura entre punt de marciment i capacitat de camp; forma part d’un únic estat hídric",
       },
       stats: [
         {
@@ -265,8 +305,7 @@ export function ConditionComparison({
       period: "darrera lectura",
       current: percentage(v.relativeHumidity),
       context: {
-        targetLabel: "Perfil ideal",
-        targetValue: species.ecologicalConfig.climate.relativeHumidity.toLowerCase(),
+        note: "S’utilitza amb la temperatura per estimar el dèficit de pressió de vapor dins l’estat hídric; no puntua per separat",
       },
       stats: [
         {
@@ -291,18 +330,18 @@ export function ConditionComparison({
           label: "Mitj. · 7 dies",
           value: percentage(v.relativeHumidityAvg7d),
           explanation:
-            "Humitat relativa mitjana estimada durant els últims set dies. Només penalitza la puntuació quan mostra una sequedat persistent i més intensa que la de les últimes 24 hores.",
+            "Humitat relativa mitjana dels últims set dies. Combinada amb la temperatura, estima la demanda atmosfèrica que pot accelerar l’assecament.",
         },
       ],
       icon: Cloud,
     },
     {
       label: "Pluja acumulada",
-      period: "últimes 168 h",
-      current: millimetres(v.rainfall7dMm),
-      context: {
-        note: `Balanç continu amb evapotranspiració, ratxa seca i humitat del sòl · ${lowercaseInitial(species.ecologicalConfig.rainfall.priorMoisture)}`,
-      },
+      period: rainfallWindowDays ? `finestra del model · ${rainfallWindowDays} dies` : "últimes 168 h",
+      current: millimetres(rainfallWindowAmount),
+      context: rainfallWindowDays
+        ? { note: `Finestra de ${rainfallWindowDays} dies amb nombre de dies plujosos, ET₀, ratxa seca i humitat del sòl` }
+        : { note: "Context hídric; no hi ha model de curt termini per a aquesta espècie" },
       stats: [
         {
           label: "Pluja · 24 h",
@@ -315,6 +354,24 @@ export function ConditionComparison({
           value: millimetres(v.rainfall3dMm),
           explanation:
             "Precipitació de les últimes 72 h. Mulla la capa superficial i pot reactivar ràpidament la fructificació; si és baixa, el sòl superficial pot assecar-se de pressa.",
+        },
+        {
+          label: "Pluja · 7 dies",
+          value: millimetres(v.rainfall7dMm),
+          explanation:
+            "Precipitació de la darrera setmana. Es mostra com a context recent, però el model utilitza la finestra hídrica configurada completa.",
+        },
+        {
+          label: `Dies amb ≥ 1 mm · ${rainfallWindowDays ?? "—"} dies`,
+          value: dayCount(rainfallWindowWetDays),
+          explanation:
+            "Nombre de dies amb almenys un mil·límetre de pluja dins la finestra configurada. Distingeix un pols concentrat d’una rehidratació distribuïda.",
+        },
+        {
+          label: `ET₀ · ${rainfallWindowDays ?? 7} dies`,
+          value: millimetres(rainfallWindowEt0),
+          explanation:
+            "Evapotranspiració de referència acumulada a la mateixa finestra que la pluja. Entra en la pluja efectiva i no es puntua per separat.",
         },
         {
           label: "Pluja · dies 8–30",
@@ -334,12 +391,6 @@ export function ConditionComparison({
           explanation:
             "Dies consecutius sense una pluja significativa. Com més llarga és la ratxa, més probable és que el sòl perdi humitat, fins i tot si havia plogut abans.",
         },
-        {
-          label: "ET₀ · 7 dies",
-          value: millimetres(v.evapotranspiration7dMm),
-          explanation:
-            "Aigua estimada que s’ha perdut en set dies per evaporació i transpiració de les plantes. Una ET₀ alta accelera l’assecament; es llegeix juntament amb la pluja, no com una pluja negativa exacta.",
-        },
       ],
       icon: CloudRain,
     },
@@ -347,7 +398,9 @@ export function ConditionComparison({
       label: "Vent",
       period: "darrera lectura",
       current: speed(v.windKmh),
-      context: { note: species.ecologicalConfig.climate.wind },
+      context: {
+        note: `${species.ecologicalConfig.climate.wind} · es mostra com a context i no puntua separadament`,
+      },
       stats: [
         {
           label: "Mitj. · 24 h",
@@ -396,7 +449,7 @@ export function ConditionComparison({
           className={`suitability-score ${predictionStatus.kind}`}
         >
           <strong style={resultBand ? { color: resultBand.color } : undefined}>{result.score ?? "—"}</strong>
-          <span>{predictionStatus.label}</span>
+          <span>oportunitat territorial · {predictionStatus.label}</span>
         </div>
       </div>
       {snapshot.stale && (
@@ -410,18 +463,25 @@ export function ConditionComparison({
         <p className="data-note prediction-withheld-note">
           <strong>Puntuació no disponible amb aquesta lectura.</strong>{" "}
           {cellId
-            ? "Les dades ambientals visibles són vàlides, però aquesta cel·la no incorpora tots els factors necessaris per publicar una puntuació."
+            ? "Les dades ambientals visibles són vàlides, però aquesta cel·la no incorpora tots els components necessaris per publicar una puntuació."
             : "Les dades meteorològiques són actuals, però cal seleccionar una cel·la del mapa per incorporar-hi l’hàbitat i el sòl."}
         </p>
       )}
       {regionalSummary && result.score !== null && (
         <p className="data-note regional-summary-note">
           <strong>Resum de les zones amb hàbitat compatible.</strong>{" "}
-          La puntuació és la mediana ponderada per cobertura d’hàbitat de{" "}
+          L’oportunitat és la mediana per àrea, sense tornar a ponderar la coberta, de{" "}
           {regionalSummary.scoredCellCount} quadrícules verificades de{" "}
           {formatGridDimensions(regionalSummary.gridSizeM)}. El tram central va de{" "}
           {regionalSummary.scoreRange[0]} a {regionalSummary.scoreRange[1]}/100;
           no descriu tota la regió de manera uniforme.
+        </p>
+      )}
+      {result.fruitingConditionsScore !== null && (
+        <p className="data-note">
+          <strong>Condicions dins l’hàbitat: {result.fruitingConditionsScore}/100.</strong>{" "}
+          L’índex d’oportunitat territorial ({result.opportunityIndex}/100) també incorpora
+          quina part de la cel·la és hàbitat compatible i la seva idoneïtat altitudinal.
         </p>
       )}
       {cellId && (
@@ -577,9 +637,9 @@ export function ConditionComparison({
                   </span>
                   <span className="condition-frost-copy">
                     {frostState === "warning"
-                      ? <><strong>Gelada detectada</strong><span>Mínima {frostMinimum}</span></>
+                      ? <><strong>Gelada detectada</strong><span>{Math.round(frostHours ?? 0)} hores dins la finestra</span></>
                       : frostState === "clear"
-                        ? <><strong>Sense gelada</strong><span>en {frostWindowDays} dies · mínima {frostMinimum}</span></>
+                        ? <><strong>Sense gelada</strong><span>{temperatureWindowDays ? `en ${temperatureWindowDays} dies` : "a la finestra configurada"}</span></>
                         : <strong>Historial de gelada no disponible</strong>}
                   </span>
                 </div>
@@ -603,7 +663,7 @@ export function ConditionComparison({
             </div>
             <div>
               <dt><Trees size={17} aria-hidden="true" />Coberta compatible</dt>
-              <dd>{v.forestCompatibility === undefined ? "No verificada" : `${Math.round(v.forestCompatibility)}%`}</dd>
+              <dd>{v.habitatCoveragePercent === undefined ? "No verificada" : `${Math.round(v.habitatCoveragePercent)}%`}</dd>
               <small>Part de la cel·la amb coberta forestal compatible</small>
             </div>
             <div>
@@ -638,7 +698,7 @@ export function ConditionComparison({
       ) : null}
       <div className="factor-chart">
         <div className="chart-caption">
-          <span>Idoneïtat per factor</span>
+          <span>Resposta dels components</span>
           <strong style={resultBand ? { color: resultBand.color } : undefined}>
             {predictionStatus.kind === "available" && result.score !== null
               ? getSuitabilityBand(result.score).label
@@ -648,23 +708,23 @@ export function ConditionComparison({
         </div>
         <p className="factor-chart-explanation">
           {regionalSummary
-            ? "Cada barra resumeix les quadrícules compatibles de la regió, ponderades per cobertura d’hàbitat; no és una probabilitat de trobar bolets."
-            : "La barra mostra com encaixa cada factor amb el perfil ideal de l’espècie; no és una probabilitat de trobar bolets."}
+            ? "Cada barra resumeix les condicions dins l’hàbitat compatible. Un component baix limita el producte geomètric; no és una probabilitat de trobar bolets."
+            : "Un component baix limita el producte geomètric i no queda compensat per components aliens molt alts; no és una probabilitat de trobar bolets."}
         </p>
-        {unavailableFactors.length > 0 && (
+        {unavailableComponents.length > 0 && (
           <dl
             className="unavailable-factor-list"
-            aria-label="Factors necessaris no disponibles"
+            aria-label="Components necessaris no disponibles"
           >
-            {unavailableFactors.map((factor) => (
-              <div key={factor.id}>
-                <dt>{factor.label}</dt>
-                <dd>{unavailableFactorCopy}</dd>
+            {unavailableComponents.map((item) => (
+              <div key={item.id}>
+                <dt>{item.label}</dt>
+                <dd>{unavailableComponentCopy}</dd>
               </div>
             ))}
           </dl>
         )}
-        <ul className="factor-bars" aria-label="Idoneïtat per factor">
+        <ul className="factor-bars" aria-label="Resposta dels components">
           {chart.map((entry) => {
             const band = getSuitabilityBand(entry.score);
             return (
@@ -692,7 +752,7 @@ export function ConditionComparison({
         </ul>
         <div
           className="factor-scale"
-          aria-label="Escala d’idoneïtat de molt dolent a excel·lent"
+          aria-label="Escala ordinal del model de molt baixa a molt alta"
         >
           {suitabilityScale.map((band) => (
             <div key={band.id}>

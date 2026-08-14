@@ -1,5 +1,5 @@
 export type HabitatScoringValues = {
-  forestCompatibility: number;
+  habitatCoveragePercent: number;
   habitatAltitudeSuitability?: number;
   habitatCoverage: number;
 };
@@ -38,13 +38,13 @@ export function habitatScoringValues({
     return null;
   }
 
-  const forestCompatibility = habitatCoverage * 100;
+  const habitatCoveragePercent = habitatCoverage * 100;
   if (habitatCoverage === 0) {
-    return { forestCompatibility, habitatAltitudeSuitability: 0, habitatCoverage };
+    return { habitatCoveragePercent, habitatAltitudeSuitability: 0, habitatCoverage };
   }
 
   return {
-    forestCompatibility,
+    habitatCoveragePercent,
     habitatAltitudeSuitability: Math.max(
       0,
       Math.min(100, (Math.min(altitudeWeightedCoverage, habitatCoverage) / habitatCoverage) * 100),
@@ -61,6 +61,8 @@ export function mergeHabitatScoringValues(
   const values = baseValues && typeof baseValues === "object" && !Array.isArray(baseValues)
     ? { ...(baseValues as Record<string, unknown>) }
     : {};
+  delete values.forestCompatibility;
+  delete values.soilCompatibility;
   const summary = habitatRow
     ? habitatScoringValues({
         coverage: habitatRow.coverage,
@@ -69,17 +71,17 @@ export function mergeHabitatScoringValues(
     : null;
 
   if (summary) {
-    values.forestCompatibility = summary.forestCompatibility;
+    values.habitatCoveragePercent = summary.habitatCoveragePercent;
     values.habitatAltitudeSuitability = summary.habitatAltitudeSuitability;
     return values;
   }
   if (!habitatRow && completeHabitatCoverage) {
-    values.forestCompatibility = 0;
+    values.habitatCoveragePercent = 0;
     values.habitatAltitudeSuitability = 0;
     return values;
   }
 
-  delete values.forestCompatibility;
+  delete values.habitatCoveragePercent;
   delete values.habitatAltitudeSuitability;
   delete values.forestTypes;
   delete values.treeSpecies;

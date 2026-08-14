@@ -26,6 +26,7 @@ import {
   regionBounds,
   regionCentres,
 } from "@/data/regions";
+import { fetchJsonWithRetry } from "@/src/lib/fetch-json";
 import {
   habitatCellColour,
   habitatCellIntensity,
@@ -41,8 +42,11 @@ import {
   PREDICTION_CACHE_VERSION,
 } from "@/src/lib/model-versions";
 import { cacheAlignedMapBounds, formatMapCoordinate } from "@/src/lib/map-query";
+import {
+  predictionViewportStatus,
+  type PredictionViewportStatus,
+} from "@/src/lib/prediction-map-status";
 import { predictionMapCellColour } from "@/src/lib/suitability-scale";
-import { fetchJsonWithRetry } from "@/src/lib/fetch-json";
 import type {
   OccurrenceSupportCell,
   MapViewMode,
@@ -202,8 +206,12 @@ const fitRegion = (map: MapLibreMap, region: RegionId, animate = true) => {
   );
 };
 
+function formatCellCount(count: number) {
+  return `${count} ${count === 1 ? "cel·la" : "cel·les"}`;
+}
+
 type CellState = {
-  status: "loading" | "empty" | "incompatible" | "withheld" | "ready" | "error";
+  status: "loading" | "error" | PredictionViewportStatus;
   published: number;
   excluded: number;
   withheld: number;
@@ -954,7 +962,7 @@ export function RegionMap({
           const cellWidth = Math.max(bottomRight.x - topLeft.x, 1);
           const cellHeight = Math.max(bottomRight.y - topLeft.y, 1);
           const selected = cell.cellId === selectedCellIdRef.current;
-          context.fillStyle = predictionMapCellColour(cell.score, cell.habitatCoverage);
+          context.fillStyle = predictionMapCellColour(cell.score);
           context.fillRect(topLeft.x, topLeft.y, cellWidth, cellHeight);
           context.strokeStyle = selected
             ? "#3b3b3b"
@@ -1028,13 +1036,7 @@ export function RegionMap({
         ).length;
         const withheld = payload.cells.length - published - excluded;
         setCellState({
-          status: !payload.cells.length
-            ? "empty"
-            : published
-              ? "ready"
-              : excluded
-                ? "incompatible"
-                : "withheld",
+          status: predictionViewportStatus({ published, excluded, withheld }),
           published,
           excluded,
           withheld,
@@ -1050,7 +1052,10 @@ export function RegionMap({
         completedRequestKey.current = null;
         setCellState((current) =>
           cellsById.current.size
-            ? { ...current, status: "ready" }
+            ? {
+                ...current,
+                status: predictionViewportStatus(current),
+              }
             : {
                 status: "error",
                 published: 0,
@@ -1248,11 +1253,19 @@ export function RegionMap({
               detail:
                 "No hi ha cel·les on coincideixin la coberta del sòl, l’altitud i el pH requerits.",
             }
-    : cellState.status === "ready"
+    : cellState.status === "mixed"
       ? {
-          title: "Predicció disponible",
-          detail: `Resolució: ${gridDimensions}.`,
+          title: "Resultats mixtos a la vista",
+          detail:
+            `${cellState.published ? `O publicat: ${formatCellCount(cellState.published)}; ` : ""}` +
+            `O = 0, en vermell: ${formatCellCount(cellState.excluded)}; ` +
+            `índex no publicat, en gris: ${formatCellCount(cellState.withheld)} perquè hi falten components requerits, dades vigents o evidència estàtica verificada.`,
         }
+      : cellState.status === "ready"
+        ? {
+            title: "Predicció disponible",
+            detail: `Resolució: ${gridDimensions}.`,
+          }
         : cellState.status === "incompatible"
           ? {
             title: `${cellState.excluded} cel·les amb puntuació 0`,
@@ -1263,7 +1276,7 @@ export function RegionMap({
           ? {
               title: "Cel·les disponibles, predicció retinguda",
               detail:
-                "Falten factors crítics, les dades són antigues o la cobertura no supera el llindar mínim.",
+                "Falten components requerits, les dades són antigues o la cobertura no supera el llindar mínim.",
             }
           : cellState.status === "loading"
             ? {

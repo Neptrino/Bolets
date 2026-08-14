@@ -10,40 +10,49 @@ type NumericValueField = {
 export const FORECAST_CORRECTION_METHOD = "observed-anomaly-v1" as const;
 
 const requiredCorrectedFields = [
-  "temperatureMin10dC",
-  "temperatureAvg10dC",
-  "temperatureMax10dC",
-  "frostHours10d",
-  "relativeHumidityAvg24h",
-  "soilMoistureAvg24h",
+  "temperatureAvg7dC",
+  "temperatureAvg14dC",
+  "temperatureAvg20dC",
+  "frostHours14d",
+  "heatHours14d",
+  "frostHours20d",
+  "heatHours20d",
+  "relativeHumidityAvg7d",
   "soilMoistureMin7d",
   "soilMoistureAvg7d",
-  "soilMoistureTrend7d",
-  "rainfall3dMm",
-  "rainfall7dMm",
-  "rainfall30dMm",
+  "rainfall14dMm",
+  "rainfallDays14d",
+  "rainfall21dMm",
+  "rainfallDays21d",
+  "rainfall26dMm",
+  "rainfallDays26d",
   "drySpellDays",
-  "evapotranspiration3dMm",
-  "evapotranspiration7dMm",
-  "evapotranspiration30dMm",
+  "evapotranspiration14dMm",
+  "evapotranspiration21dMm",
+  "evapotranspiration26dMm",
 ] as const satisfies readonly NumericValueField[];
 
 const optionalCorrectedFields = [
   "temperatureC",
-  "temperatureMin24hC",
-  "temperatureAvg24hC",
-  "temperatureMax24hC",
-  "temperatureMin7dC",
-  "frostHours7d",
   "relativeHumidity",
   "relativeHumidityMin24h",
+  "relativeHumidityAvg24h",
   "relativeHumidityMax24h",
-  "relativeHumidityAvg7d",
   "soilMoisture",
   "soilMoistureMin24h",
+  "soilMoistureAvg24h",
   "soilMoistureMax24h",
   "soilMoistureMax7d",
+  "soilMoistureTrend7d",
   "rainfall24hMm",
+  "rainfall3dMm",
+  "rainfall7dMm",
+  "rainfallDays7d",
+  "rainfall30dMm",
+  "rainfallDays30d",
+  "evapotranspiration3dMm",
+  "evapotranspiration7dMm",
+  "evapotranspiration30dMm",
 ] as const satisfies readonly NumericValueField[];
 
 function finiteValue(values: ConditionValues, field: NumericValueField) {
@@ -60,8 +69,13 @@ function fieldBounds(field: NumericValueField): [number, number] {
   if (field.startsWith("soilMoisture")) {
     return field === "soilMoistureTrend7d" ? [-1, 1] : [0, 1];
   }
-  if (field.startsWith("frostHours")) {
-    return [0, field === "frostHours7d" ? 168 : 240];
+  if (field.startsWith("frostHours") || field.startsWith("heatHours")) {
+    if (field.endsWith("14d")) return [0, 336];
+    return [0, 480];
+  }
+  if (field.startsWith("rainfallDays")) {
+    const days = Number(field.match(/\d+/)?.[0]);
+    return [0, Number.isFinite(days) ? days : 30];
   }
   if (field === "drySpellDays") return [0, 30];
   if (field.startsWith("rainfall") || field.startsWith("evapotranspiration")) {
@@ -84,7 +98,9 @@ function anomalyCorrectedValue(
   }
   const [minimum, maximum] = fieldBounds(field);
   const corrected = clamp(currentValue + forecastValue - baselineValue, minimum, maximum);
-  return field.startsWith("frostHours") ? Math.round(corrected) : corrected;
+  return field.startsWith("frostHours") || field.startsWith("heatHours")
+    ? Math.round(corrected)
+    : corrected;
 }
 
 function setNumericValue(values: ConditionValues, field: NumericValueField, value: number | undefined) {
@@ -97,14 +113,15 @@ function setNumericValue(values: ConditionValues, field: NumericValueField, valu
 
 function enforceIncreasingWindows(
   values: ConditionValues,
-  fields: readonly [NumericValueField, NumericValueField, NumericValueField],
+  fields: readonly NumericValueField[],
 ) {
-  const first = finiteValue(values, fields[0]);
-  const second = finiteValue(values, fields[1]);
-  const third = finiteValue(values, fields[2]);
-  if (first === undefined || second === undefined || third === undefined) return;
-  setNumericValue(values, fields[1], Math.max(first, second));
-  setNumericValue(values, fields[2], Math.max(first, second, third));
+  let floor: number | undefined;
+  for (const field of fields) {
+    const value = finiteValue(values, field);
+    if (value === undefined) continue;
+    floor = floor === undefined ? value : Math.max(floor, value);
+    setNumericValue(values, field, floor);
+  }
 }
 
 function enforceMinAverageMax(
@@ -117,17 +134,6 @@ function enforceMinAverageMax(
   if (minimum === undefined || average === undefined || maximum === undefined) return;
   setNumericValue(values, fields[0], Math.min(minimum, average));
   setNumericValue(values, fields[2], Math.max(maximum, average));
-}
-
-function reconcileFrostWithMinimum(
-  values: ConditionValues,
-  minimumField: NumericValueField,
-  frostField: NumericValueField,
-) {
-  const minimum = finiteValue(values, minimumField);
-  const frostHours = finiteValue(values, frostField);
-  if (minimum === undefined || frostHours === undefined) return;
-  setNumericValue(values, frostField, minimum > 0 ? 0 : Math.max(1, Math.round(frostHours)));
 }
 
 export type ForecastCorrectionState = {
@@ -183,12 +189,31 @@ export function correctForecastValues(
   setNumericValue(values, "drySpellDays", drySpellDays);
   if (drySpellDays === undefined) missingFields.push("drySpellDays");
 
-  enforceIncreasingWindows(values, ["rainfall3dMm", "rainfall7dMm", "rainfall30dMm"]);
+  enforceIncreasingWindows(values, [
+    "rainfall3dMm",
+    "rainfall7dMm",
+    "rainfall14dMm",
+    "rainfall21dMm",
+    "rainfall26dMm",
+    "rainfall30dMm",
+  ]);
+  enforceIncreasingWindows(values, [
+    "rainfallDays7d",
+    "rainfallDays14d",
+    "rainfallDays21d",
+    "rainfallDays26d",
+    "rainfallDays30d",
+  ]);
   enforceIncreasingWindows(values, [
     "evapotranspiration3dMm",
     "evapotranspiration7dMm",
+    "evapotranspiration14dMm",
+    "evapotranspiration21dMm",
+    "evapotranspiration26dMm",
     "evapotranspiration30dMm",
   ]);
+  enforceIncreasingWindows(values, ["frostHours14d", "frostHours20d"]);
+  enforceIncreasingWindows(values, ["heatHours14d", "heatHours20d"]);
   const rainfall3d = finiteValue(values, "rainfall3dMm");
   const rainfall7d = finiteValue(values, "rainfall7dMm");
   const rainfall30d = finiteValue(values, "rainfall30dMm");
@@ -200,13 +225,9 @@ export function correctForecastValues(
     ? undefined
     : Math.max(0, rainfall30d - rainfall7d);
 
-  enforceMinAverageMax(values, ["temperatureMin24hC", "temperatureAvg24hC", "temperatureMax24hC"]);
-  enforceMinAverageMax(values, ["temperatureMin10dC", "temperatureAvg10dC", "temperatureMax10dC"]);
   enforceMinAverageMax(values, ["relativeHumidityMin24h", "relativeHumidityAvg24h", "relativeHumidityMax24h"]);
   enforceMinAverageMax(values, ["soilMoistureMin24h", "soilMoistureAvg24h", "soilMoistureMax24h"]);
   enforceMinAverageMax(values, ["soilMoistureMin7d", "soilMoistureAvg7d", "soilMoistureMax7d"]);
-  reconcileFrostWithMinimum(values, "temperatureMin7dC", "frostHours7d");
-  reconcileFrostWithMinimum(values, "temperatureMin10dC", "frostHours10d");
 
   values.weatherObservedAt = forecast.weatherObservedAt;
   values.weatherModel = forecast.weatherModel;

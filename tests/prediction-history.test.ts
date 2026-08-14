@@ -5,6 +5,36 @@ import { getPredictionCellHistory } from "@/src/lib/predictions";
 import { calculateSuitability } from "@/src/lib/scoring";
 import type { ConditionSnapshot } from "@/src/lib/types";
 
+const completeHydrothermalValues: ConditionSnapshot["values"] = {
+  soilTexture: "Franca",
+  soilMoistureAvg7d: 0.24,
+  soilMoistureMin7d: 0.225,
+  temperatureAvg7dC: 13,
+  relativeHumidityAvg7d: 90,
+  drySpellDays: 0,
+  rainfall14dMm: 30,
+  rainfallDays14d: 4,
+  evapotranspiration14dMm: 12,
+  rainfall21dMm: 40,
+  rainfallDays21d: 5,
+  evapotranspiration21dMm: 18,
+  rainfall26dMm: 50,
+  rainfallDays26d: 6,
+  evapotranspiration26dMm: 22,
+  temperatureAvg14dC: 13,
+  frostHours14d: 0,
+  heatHours14d: 0,
+  temperatureAvg20dC: 13.5,
+  frostHours20d: 0,
+  heatHours20d: 0,
+};
+
+const habitatValues: ConditionSnapshot["values"] = {
+  altitudeM: 1200,
+  habitatAltitudeSuitability: 100,
+  habitatCoveragePercent: 60,
+};
+
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllEnvs();
@@ -15,24 +45,8 @@ describe("prediction score history", () => {
   it("never fills missing historical weather with the selected cell's current values", async () => {
     vi.stubEnv("SUPABASE_URL", "https://example.supabase.co");
     vi.stubEnv("SUPABASE_ANON_KEY", "test-anon-key");
-    const historicalValues: ConditionSnapshot["values"] = {
-      temperatureAvg10dC: 14,
-      temperatureMin10dC: 8,
-      temperatureMax10dC: 18,
-      frostHours10d: 0,
-      soilMoistureAvg24h: 0.32,
-      rainfall3dMm: 18,
-      rainfall7dMm: 25,
-      rainfallPrevious23dMm: 45,
-      rainfall30dMm: 70,
-      drySpellDays: 0,
-      evapotranspiration3dMm: 4,
-      evapotranspiration7dMm: 10,
-      evapotranspiration30dMm: 45,
-      soilMoistureMin7d: 0.28,
-      soilMoistureAvg7d: 0.32,
-      soilMoistureTrend7d: 0.01,
-    };
+    const historicalValues = { ...completeHydrothermalValues };
+    delete historicalValues.relativeHumidityAvg7d;
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       void input;
       return Response.json({
@@ -43,27 +57,21 @@ describe("prediction score history", () => {
           source: ["test"],
           sourceResolutionM: 2500,
           confidence: "moderate",
-          unavailableFields: ["relativeHumidityAvg24h"],
+          unavailableFields: ["relativeHumidityAvg7d"],
           values: historicalValues,
         }],
       });
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    const habitatValues: ConditionSnapshot["values"] = {
-      altitudeM: 1200,
-      habitatAltitudeSuitability: 100,
-      forestCompatibility: 100,
-      soilCompatibility: 100,
-    };
     const timeline = await getPredictionCellHistory("boletus-edulis", {
       cellId: "epsg25831:2500:1:1",
       gridSizeM: 2500,
       regionId: "pirineus",
       values: {
         ...habitatValues,
-        relativeHumidityAvg24h: 20,
-        temperatureAvg10dC: 30,
+        // This current value must not fill the missing historical field.
+        relativeHumidityAvg7d: 90,
       },
     });
     const expected = calculateSuitability(getSpecies("boletus-edulis")!, {
@@ -72,15 +80,29 @@ describe("prediction score history", () => {
       source: ["test"],
       confidence: "moderate",
       stale: false,
-      unavailableFields: ["relativeHumidityAvg24h"],
+      unavailableFields: ["relativeHumidityAvg7d"],
       values: { ...habitatValues, ...historicalValues },
     });
 
     expect(timeline).toEqual({
-      observed: [{ observedAt: "2026-10-10T12:00:00Z", score: expected.score }],
+      modelVersion: expected.modelVersion,
+      observed: [{
+        observedAt: "2026-10-10T12:00:00Z",
+        score: expected.opportunityIndex,
+        fruitingConditionsScore: expected.fruitingConditionsScore,
+        opportunityIndex: expected.opportunityIndex,
+      }],
       forecast: null,
     });
-    expect(timeline.observed[0].score).toBeGreaterThan(50);
+    expect(timeline.observed[0]).toMatchObject({
+      score: null,
+      fruitingConditionsScore: null,
+      opportunityIndex: null,
+    });
+    expect(expected.components.map((component) => component.id)).toEqual([
+      "habitatCoverage", "altitude", "phenology", "water", "temperature", "extremes",
+    ]);
+    expect(expected.missingComponents).toContain("water");
     const historyUrl = new URL(String(fetchMock.mock.calls[0]?.[0]));
     expect(historyUrl.searchParams.get("historyVersion")).toBe(PREDICTION_CACHE_VERSION);
     expect(historyUrl.searchParams.get("resolution")).toBe("2500");
@@ -91,25 +113,7 @@ describe("prediction score history", () => {
     vi.setSystemTime(new Date("2026-10-10T13:00:00Z"));
     vi.stubEnv("SUPABASE_URL", "https://example.supabase.co");
     vi.stubEnv("SUPABASE_ANON_KEY", "test-anon-key");
-    const forecastValues: ConditionSnapshot["values"] = {
-      temperatureAvg10dC: 14,
-      temperatureMin10dC: 8,
-      temperatureMax10dC: 18,
-      frostHours10d: 0,
-      relativeHumidityAvg24h: 78,
-      soilMoistureAvg24h: 0.3,
-      rainfall3dMm: 18,
-      rainfall7dMm: 25,
-      rainfallPrevious23dMm: 45,
-      rainfall30dMm: 70,
-      drySpellDays: 0,
-      evapotranspiration3dMm: 4,
-      evapotranspiration7dMm: 10,
-      evapotranspiration30dMm: 45,
-      soilMoistureMin7d: 0.27,
-      soilMoistureAvg7d: 0.3,
-      soilMoistureTrend7d: 0.01,
-    };
+    const forecastValues = { ...completeHydrothermalValues };
     const validTimes = [1, 2, 3, 4, 5].map((day) =>
       new Date(Date.parse("2026-10-10T12:00:00Z") + day * 86_400_000).toISOString());
     const currentHistorySnapshot = {
@@ -154,21 +158,35 @@ describe("prediction score history", () => {
       gridSizeM: 250 as const,
       regionId: "pirineus" as const,
       values: {
+        ...habitatValues,
         // Dynamic request values are deliberately hostile; only the static
         // habitat fields may affect the server-authoritative history anchor.
-        temperatureAvg10dC: 40,
-        relativeHumidityAvg24h: 5,
-        altitudeM: 1200,
-        habitatAltitudeSuitability: 100,
-        forestCompatibility: 100,
-        soilCompatibility: 100,
+        temperatureAvg20dC: 40,
+        relativeHumidityAvg7d: 5,
       },
     };
     const timeline = await getPredictionCellHistory("boletus-edulis", currentCell);
 
-    expect(timeline.observed).toEqual([
-      { observedAt: currentHistorySnapshot.observedAt, score: timeline.forecast?.anchor.score },
-    ]);
+    expect(timeline.modelVersion).toBe(
+      calculateSuitability(getSpecies("boletus-edulis")!, {
+        regionId: "pirineus",
+        observedAt: validTimes[0],
+        source: ["test"],
+        confidence: "moderate",
+        stale: false,
+        unavailableFields: [],
+        values: { ...habitatValues, ...forecastValues },
+      }).modelVersion,
+    );
+    expect(timeline.forecast).not.toBeNull();
+    const forecast = timeline.forecast!;
+    expect(timeline.observed).toEqual([forecast.anchor]);
+    expect(forecast.anchor).toMatchObject({
+      observedAt: currentHistorySnapshot.observedAt,
+      score: expect.any(Number),
+      fruitingConditionsScore: expect.any(Number),
+    });
+    expect(forecast.anchor.opportunityIndex).toBe(forecast.anchor.score);
     expect(timeline.forecast?.generatedAt).toBe("2026-10-10T12:00:00Z");
     expect(timeline.forecast?.sourceResolutionM).toBe(9000);
     expect(timeline.forecast?.calibratedAt).toBe("2026-10-10T12:00:00Z");
@@ -177,10 +195,16 @@ describe("prediction score history", () => {
     expect(timeline.forecast?.points.map((point) => point.horizonConfidence)).toEqual([
       "limited", "limited", "limited", "limited", "limited",
     ]);
-    expect(timeline.forecast?.points.every((point) => point.score !== null && point.score > 50)).toBe(true);
     expect(timeline.forecast?.points.every((point) =>
-      point.score === timeline.forecast?.anchor.score
+      point.score !== null &&
+      point.score > 50 &&
+      point.opportunityIndex === point.score &&
+      point.fruitingConditionsScore !== null &&
+      point.fruitingConditionsScore > point.opportunityIndex
     )).toBe(true);
+
+    const incompleteForecastValues = { ...forecastValues };
+    delete incompleteForecastValues.temperatureAvg20dC;
 
     vi.stubGlobal("fetch", vi.fn(async () => Response.json({
       cellId: "epsg25831:250:1:1",
@@ -205,14 +229,20 @@ describe("prediction score history", () => {
           source: ["ECMWF IFS HRES via Open-Meteo"],
           sourceResolutionM: 9000,
           confidence: "moderate",
-          unavailableFields: index === 0 ? ["windKmh"] : [],
-          values: forecastValues,
+          unavailableFields: index === 0 ? ["temperatureAvg20dC"] : [],
+          values: index === 0 ? incompleteForecastValues : forecastValues,
         })),
       },
     })));
     const incomplete = await getPredictionCellHistory("boletus-edulis", currentCell);
-    expect(incomplete.forecast?.points[0].score).toBeNull();
-    expect(incomplete.forecast?.points.slice(1).every((point) => point.score !== null)).toBe(true);
+    expect(incomplete.forecast?.points[0]).toMatchObject({
+      score: null,
+      fruitingConditionsScore: null,
+      opportunityIndex: null,
+    });
+    expect(incomplete.forecast?.points.slice(1).every((point) =>
+      point.score !== null && point.score === point.opportunityIndex
+    )).toBe(true);
     vi.useRealTimers();
   });
 
@@ -227,14 +257,7 @@ describe("prediction score history", () => {
       snapshots: [{
         observedAt: "2026-10-10T08:00:00Z",
         source: ["test"], sourceResolutionM: 2500, confidence: "moderate",
-        unavailableFields: [], values: {
-          temperatureMin10dC: 8, temperatureAvg10dC: 14, temperatureMax10dC: 18,
-          frostHours10d: 0, relativeHumidityAvg24h: 78, soilMoistureAvg24h: 0.3,
-          soilMoistureMin7d: 0.27, soilMoistureAvg7d: 0.3, soilMoistureTrend7d: 0.01,
-          rainfall3dMm: 18, rainfall7dMm: 25, rainfallPrevious23dMm: 45,
-          rainfall30dMm: 70, drySpellDays: 0, evapotranspiration3dMm: 4,
-          evapotranspiration7dMm: 10, evapotranspiration30dMm: 45,
-        },
+        unavailableFields: [], values: completeHydrothermalValues,
       }],
       forecast: {
         generatedAt: "2026-10-10T12:00:00Z",
@@ -242,7 +265,7 @@ describe("prediction score history", () => {
           validAt: new Date(Date.parse("2026-10-10T12:00:00Z") + day * 86_400_000).toISOString(),
           horizonHours: day * 24,
           source: ["test"], sourceResolutionM: 9000, confidence: "moderate",
-          unavailableFields: [], values: {},
+          unavailableFields: [], values: completeHydrothermalValues,
         })),
       },
     })));
@@ -251,7 +274,7 @@ describe("prediction score history", () => {
       cellId: "epsg25831:250:1:1",
       gridSizeM: 250,
       regionId: "pirineus",
-      values: { altitudeM: 1200, forestCompatibility: 100, soilCompatibility: 100 },
+      values: habitatValues,
     });
 
     expect(timeline.forecast).toBeNull();
@@ -264,24 +287,8 @@ describe("prediction score history", () => {
     vi.stubEnv("SUPABASE_URL", "https://example.supabase.co");
     vi.stubEnv("SUPABASE_ANON_KEY", "test-anon-key");
     const values: ConditionSnapshot["values"] = {
+      ...completeHydrothermalValues,
       weatherObservedAt: "2026-10-10T03:00:00Z",
-      temperatureMin10dC: 8,
-      temperatureAvg10dC: 14,
-      temperatureMax10dC: 18,
-      frostHours10d: 0,
-      relativeHumidityAvg24h: 78,
-      soilMoistureAvg24h: 0.3,
-      soilMoistureMin7d: 0.27,
-      soilMoistureAvg7d: 0.3,
-      soilMoistureTrend7d: 0.01,
-      rainfall3dMm: 18,
-      rainfall7dMm: 25,
-      rainfallPrevious23dMm: 45,
-      rainfall30dMm: 70,
-      drySpellDays: 0,
-      evapotranspiration3dMm: 4,
-      evapotranspiration7dMm: 10,
-      evapotranspiration30dMm: 45,
     };
     const forecastSnapshot = (horizonHours: 0 | 24 | 48 | 72 | 96 | 120) => ({
       validAt: new Date(Date.parse("2026-10-10T12:00:00Z") + horizonHours * 3_600_000).toISOString(),
@@ -315,12 +322,7 @@ describe("prediction score history", () => {
       cellId: "epsg25831:250:1:1",
       gridSizeM: 250,
       regionId: "pirineus",
-      values: {
-        altitudeM: 1200,
-        habitatAltitudeSuitability: 100,
-        forestCompatibility: 100,
-        soilCompatibility: 100,
-      },
+      values: habitatValues,
     });
 
     expect(timeline.observed[0].score).not.toBeNull();
@@ -333,12 +335,8 @@ describe("prediction score history", () => {
     vi.stubEnv("SUPABASE_URL", "https://example.supabase.co");
     vi.stubEnv("SUPABASE_ANON_KEY", "test-anon-key");
     const observedValues: ConditionSnapshot["values"] = {
-      temperatureMin10dC: 8, temperatureAvg10dC: 14, temperatureMax10dC: 18,
-      frostHours10d: 0, relativeHumidityAvg24h: 78, soilMoistureAvg24h: 0.3,
-      soilMoistureMin7d: 0.27, soilMoistureAvg7d: 0.3, soilMoistureTrend7d: 0.01,
-      rainfall3dMm: 18, rainfall7dMm: 25, rainfallPrevious23dMm: 45,
-      rainfall30dMm: 70, drySpellDays: 10, evapotranspiration3dMm: 4,
-      evapotranspiration7dMm: 10, evapotranspiration30dMm: 45,
+      ...completeHydrothermalValues,
+      drySpellDays: 10,
     };
     const modelBaselineValues = { ...observedValues, drySpellDays: 0 };
     vi.stubGlobal("fetch", vi.fn(async () => Response.json({
@@ -365,7 +363,7 @@ describe("prediction score history", () => {
           source: ["test"], sourceResolutionM: 9000, confidence: "moderate",
           unavailableFields: [],
           values: {
-            ...modelBaselineValues,
+            ...completeHydrothermalValues,
             // +1 is already expired at the fake clock. +2 is nevertheless a
             // reset from the intervening model state (3 -> 1), not an increase
             // from the horizon-zero state (0 -> 1).
@@ -375,12 +373,6 @@ describe("prediction score history", () => {
       },
     })));
 
-    const habitatValues = {
-      altitudeM: 1200,
-      habitatAltitudeSuitability: 100,
-      forestCompatibility: 100,
-      soilCompatibility: 100,
-    };
     const timeline = await getPredictionCellHistory("boletus-edulis", {
       cellId: "epsg25831:250:1:1",
       gridSizeM: 250,

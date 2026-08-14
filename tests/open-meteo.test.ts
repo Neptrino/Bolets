@@ -55,7 +55,7 @@ describe("Open-Meteo profiles", () => {
   it("requests enough UTC-safe hourly data to reach the fifth projection", () => {
     const atmosphere = new URL("https://api.open-meteo.com/v1/ecmwf");
     configureOpenMeteoForecastRequest(atmosphere, "atmosphere");
-    expect(atmosphere.searchParams.get("past_hours")).toBe("720");
+    expect(atmosphere.searchParams.get("past_hours")).toBe("744");
     expect(atmosphere.searchParams.get("forecast_hours")).toBe("121");
     expect(atmosphere.searchParams.get("timeformat")).toBe("unixtime");
     expect(atmosphere.searchParams.get("models")).toBe("ecmwf_ifs");
@@ -63,7 +63,7 @@ describe("Open-Meteo profiles", () => {
 
     const soil = new URL("https://api.open-meteo.com/v1/forecast");
     configureOpenMeteoForecastRequest(soil, "soil");
-    expect(soil.searchParams.get("past_hours")).toBe("168");
+    expect(soil.searchParams.get("past_hours")).toBe("192");
     expect(soil.searchParams.get("forecast_hours")).toBe("121");
     expect(soil.searchParams.get("hourly")).toBe("soil_moisture_3_to_9cm");
     expect(soil.searchParams.has("models")).toBe(false);
@@ -86,9 +86,18 @@ describe("Open-Meteo profiles", () => {
     expect(forecast.points[0].values.rainfall24hMm).toBeCloseTo(2.4);
     expect(forecast.points[0].values.rainfall3dMm).toBeCloseTo(7.2);
     expect(forecast.points[0].values.rainfall7dMm).toBeCloseTo(16.8);
+    expect(forecast.points[0].values.rainfall14dMm).toBeCloseTo(33.6);
+    expect(forecast.points[0].values.rainfall21dMm).toBeCloseTo(50.4);
+    expect(forecast.points[0].values.rainfall26dMm).toBeCloseTo(62.4);
+    expect(forecast.points[0].values.rainfallDays14d).toBe(14);
+    expect(forecast.points[0].values.rainfallDays21d).toBe(21);
+    expect(forecast.points[0].values.rainfallDays26d).toBe(26);
     expect(forecast.points[0].values.rainfall30dMm).toBeCloseTo(72);
     expect(forecast.points[0].values.rainfallPrevious23dMm).toBeCloseTo(55.2);
     expect(forecast.points[0].values.evapotranspiration30dMm).toBeCloseTo(36);
+    expect(forecast.points[0].values.temperatureAvg20dC).toBeCloseTo(14.00625);
+    expect(forecast.points[0].values.frostHours20d).toBe(0);
+    expect(forecast.points[0].values.heatHours20d).toBe(0);
     expect(forecast.points[0].values.drySpellDays).toBe(0);
     expect(forecast.points[0].values.soilMoistureTrend7d).toBeCloseTo(0);
     expect(forecast.points.every((point) => point.unavailableFields.length === 0)).toBe(true);
@@ -103,9 +112,11 @@ describe("Open-Meteo profiles", () => {
     const forecast = normalizeOpenMeteoForecast(atmosphere, soil, "2026-08-10T12:34:00Z");
 
     expect(forecast.points[0].values.temperatureC).toBeUndefined();
-    expect(forecast.points[0].values.temperatureAvg24hC).toBeUndefined();
+    expect(forecast.points[0].values.temperatureAvg7dC).toBeUndefined();
     expect(forecast.points[0].unavailableFields).toContain("temperatureC");
-    expect(forecast.points[0].unavailableFields).toContain("temperatureAvg10dC");
+    expect(forecast.points[0].unavailableFields).toContain("temperatureAvg7dC");
+    expect(forecast.points[0].unavailableFields).toContain("temperatureAvg20dC");
+    expect(forecast.points[0].unavailableFields).toContain("frostHours20d");
   });
 
   it("keeps exact hourly targets across a Europe/Madrid daylight-saving transition", () => {
@@ -159,12 +170,9 @@ describe("Open-Meteo profiles", () => {
     };
 
     const normalized = normalizeOpenMeteo(atmosphere, atmosphere, "atmosphere");
-    expect(normalized.values.temperatureMin7dC).toBe(14);
-    expect(normalized.values.temperatureMin10dC).toBe(14);
-    expect(normalized.values.temperatureAvg10dC).toBe(14);
-    expect(normalized.values.temperatureMax10dC).toBe(14);
+    expect(normalized.values.temperatureAvg7dC).toBe(14);
     expect(normalized.values.relativeHumidityAvg7d).toBe(76);
-    expect(normalized.unavailableFields).not.toContain("temperatureAvg10dC");
+    expect(normalized.unavailableFields).not.toContain("temperatureAvg7dC");
     expect(normalized.unavailableFields).not.toContain("relativeHumidityAvg7d");
     expect(normalized.unavailableFields).not.toContain("soilMoisture");
   });
@@ -203,11 +211,24 @@ describe("Open-Meteo profiles", () => {
     expect(normalized.values.rainfall24hMm).toBeCloseTo(4.8);
     expect(normalized.values.rainfall3dMm).toBeCloseTo(14.4);
     expect(normalized.values.rainfall7dMm).toBeCloseTo(14.4);
+    expect(normalized.values.rainfall14dMm).toBeCloseTo(31.2);
+    expect(normalized.values.rainfall21dMm).toBeCloseTo(48);
+    expect(normalized.values.rainfall26dMm).toBeCloseTo(60);
+    expect(normalized.values.rainfallDays14d).toBe(10);
+    expect(normalized.values.rainfallDays21d).toBe(17);
+    expect(normalized.values.rainfallDays26d).toBe(22);
     expect(normalized.values.rainfallPrevious23dMm).toBeCloseTo(55.2);
     expect(normalized.values.rainfall30dMm).toBeCloseTo(69.6);
     expect(normalized.values.drySpellDays).toBe(0);
     expect(normalized.values.evapotranspiration7dMm).toBeCloseTo(16.8);
+    expect(normalized.values.evapotranspiration14dMm).toBeCloseTo(33.6);
+    expect(normalized.values.evapotranspiration21dMm).toBeCloseTo(50.4);
+    expect(normalized.values.evapotranspiration26dMm).toBeCloseTo(62.4);
     expect(normalized.values.evapotranspiration30dMm).toBeCloseTo(72);
+    expect(normalized.values.temperatureAvg14dC).toBe(14);
+    expect(normalized.values.temperatureAvg20dC).toBe(14);
+    expect(normalized.values.frostHours14d).toBe(0);
+    expect(normalized.values.heatHours20d).toBe(0);
     expect(normalized.values.relativeHumidityAvg7d).toBeCloseTo(76);
     expect(normalized.values.soilMoistureMin7d).toBeCloseTo(0.2);
     expect(normalized.values.soilMoistureAvg7d).toBeCloseTo((144 * 0.2 + 24 * 0.26) / 168);

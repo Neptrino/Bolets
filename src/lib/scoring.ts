@@ -1,250 +1,273 @@
-import type { ConditionSnapshot, FactorContribution, SpeciesProfile, SuitabilityResult } from "@/src/lib/types";
-import { altitudeSuitabilityScore } from "@/src/lib/altitude";
+import {
+  extremeTemperatureMultiplier,
+  temperatureSuitability,
+  waterSuitability,
+} from "@/src/lib/hydrothermal";
 import { predictionModelVersion } from "@/src/lib/model-versions";
-import { rainfallSuitability } from "@/src/lib/rainfall";
-import { monthInTimeZone } from "@/src/lib/seasonality";
+import type {
+  ConditionSnapshot,
+  ModelComponent,
+  ModelComponentId,
+  MonthlyPhenologyAnchors,
+  SpeciesProfile,
+  SuitabilityResult,
+} from "@/src/lib/types";
 
-function rangeScore(value: number | undefined, range: [number, number]) {
-  if (value === undefined) return null;
-  const [min, max] = range;
-  if (value >= min && value <= max) return 100;
-  const span = Math.max(max - min, 1);
-  const distance = value < min ? min - value : value - max;
-  return Math.max(0, Math.round(100 - (distance / span) * 100));
+const COMPONENT_LABELS: Record<ModelComponentId, string> = {
+  habitatCoverage: "Coberta d’hàbitat compatible",
+  altitude: "Idoneïtat altitudinal dins l’hàbitat",
+  phenology: "Fenologia",
+  water: "Estat hídric unificat",
+  temperature: "Resposta tèrmica",
+  extremes: "Exposició a gelada i calor",
+};
+
+function boundedFraction(value: number | undefined) {
+  return value === undefined || !Number.isFinite(value)
+    ? null
+    : Math.max(0, Math.min(1, value / 100));
 }
 
-function altitudeScore(value: number | undefined, range: [number, number]) {
-  if (value === undefined) return null;
-  return altitudeSuitabilityScore(value, range);
+function roundIndex(value: number) {
+  return Math.max(0, Math.min(100, Math.round(value)));
 }
 
-function moistureScore(value: number | undefined, preference: string) {
-  if (value === undefined) return null;
-  const target = preference.toLowerCase().includes("alta") ? 0.32 : preference.toLowerCase().includes("baixa") ? 0.16 : 0.24;
-  const score = 100 - (Math.abs(value - target) / 0.2) * 100;
-  return Math.max(0, Math.min(100, Math.round(score * 100) / 100));
+function availableValues(snapshot: ConditionSnapshot): ConditionSnapshot["values"] {
+  if (!snapshot.unavailableFields.length) return snapshot.values;
+  const unavailable = new Set(snapshot.unavailableFields);
+  return Object.fromEntries(
+    Object.entries(snapshot.values).filter(([field]) => !unavailable.has(field)),
+  ) as ConditionSnapshot["values"];
 }
 
-function humidityWindowScore(value: number | undefined) {
-  if (value === undefined) return null;
-  if (value >= 65 && value <= 90) return 100;
-  return Math.max(0, Math.round(100 - Math.abs(value - 75) * 2));
+function localDateParts(date: Date) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Madrid",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hourCycle: "h23",
+  }).formatToParts(date);
+  const numberPart = (type: Intl.DateTimeFormatPartTypes) =>
+    Number(parts.find((part) => part.type === type)?.value);
+  return {
+    year: numberPart("year"),
+    month: numberPart("month"),
+    day: numberPart("day"),
+    hour: numberPart("hour"),
+    minute: numberPart("minute"),
+    second: numberPart("second"),
+  };
 }
 
-function humidityScore(shortTermValue: number | undefined, sevenDayValue: number | undefined) {
-  const shortTermScore = humidityWindowScore(shortTermValue);
-  if (shortTermScore === null) return null;
-  if (sevenDayValue === undefined || sevenDayValue >= 65) return shortTermScore;
-  const persistenceScore = humidityWindowScore(sevenDayValue);
-  if (persistenceScore === null || persistenceScore >= shortTermScore) return shortTermScore;
-
-  // The latest 24 hours remain the main signal. A persistently drier week can
-  // apply a limited penalty, but an older humid spell must not hide new stress.
-  return Math.round(shortTermScore * 0.75 + persistenceScore * 0.25);
+function daysInMonth(year: number, month: number) {
+  return new Date(Date.UTC(year, month, 0)).getUTCDate();
 }
 
-function temperatureScore(species: SpeciesProfile, values: ConditionSnapshot["values"]) {
-  const representativeTemperature = values.temperatureAvg10dC ?? values.temperatureAvg24hC ?? values.temperatureC;
-  const baseScore = rangeScore(representativeTemperature, species.ecologicalConfig.climate.temperatureRange);
-  if (baseScore === null) return null;
-
-  let score = baseScore;
-  const recentMinimum = values.temperatureMin10dC ?? values.temperatureMin7dC ?? values.temperatureMin24hC;
-  const toleratedFrost = normaliseTerm(species.ecologicalConfig.climate.frost).includes("tolera");
-  if (recentMinimum !== undefined && recentMinimum <= 0) score = Math.min(score, toleratedFrost ? 35 : 10);
-  else if (values.temperatureMin24hC !== undefined && values.temperatureMin24hC < 2) score = Math.min(score, 40);
-
-  const idealMaximum = species.ecologicalConfig.climate.temperatureRange[1];
-  const recentMaximum = values.temperatureMax10dC ?? values.temperatureMax24hC;
-  if (recentMaximum !== undefined && recentMaximum >= idealMaximum + 6) score = Math.min(score, 25);
-  else if (recentMaximum !== undefined && recentMaximum >= idealMaximum + 3) score = Math.min(score, 50);
-  return score;
-}
-
-function seasonalityScore(species: SpeciesProfile, observedAt: string) {
+/**
+ * Interpolates explicit month-centre anchors without discontinuities at month
+ * boundaries. Calendar arithmetic is performed in Europe/Madrid because the
+ * public phenology catalogue is defined in local ecological time.
+ */
+export function phenologySuitability(
+  observedAt: string,
+  anchors: MonthlyPhenologyAnchors,
+) {
   const date = new Date(observedAt);
   if (Number.isNaN(date.getTime())) return null;
-  const activity = species.ecologicalConfig.seasonality[monthInTimeZone(date)];
-  return { inactive: 0, possible: 35, moderate: 65, good: 85, peak: 100 }[activity];
-}
+  const local = localDateParts(date);
+  if (![local.year, local.month, local.day, local.hour, local.minute, local.second]
+    .every(Number.isFinite)) return null;
 
-function normaliseTerm(value: string) {
-  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-}
-
-function textCompatibility(observed: string[], preferred: string[]) {
-  if (!observed.length) return null;
-  const targets = preferred.map(normaliseTerm).filter(Boolean);
-  const matches = observed.map(normaliseTerm).filter(Boolean).filter((candidate) =>
-    targets.some((target) => candidate === target || candidate.includes(target) || target.includes(candidate))
-  ).length;
-  if (!targets.length) return null;
-  if (matches > 1) return 100;
-  if (matches === 1) return 80;
-  return 20;
-}
-
-function landCoverScore(observed: string[], preferred: string[]) {
-  if (!observed.length) return null;
-  const candidates = observed.map(normaliseTerm).filter(Boolean);
-  const targets = preferred.map(normaliseTerm).filter(Boolean);
-  if (!targets.length) return null;
-  return candidates.some((candidate) =>
-    targets.some((target) => candidate === target || candidate.includes(target) || target.includes(candidate))
-  ) ? 100 : 0;
-}
-
-function forestScore(species: SpeciesProfile, values: ConditionSnapshot["values"]) {
-  if (values.forestCompatibility !== undefined) return values.forestCompatibility;
-  return landCoverScore(
-    [...(values.forestTypes ?? []), ...(values.treeSpecies ?? [])],
-    [
-      ...species.ecologicalConfig.habitat.forestTypes,
-      ...species.ecologicalConfig.habitat.treeAssociations,
-      ...species.ecologicalConfig.habitat.hosts
-    ]
-  );
-}
-
-function soilScore(species: SpeciesProfile, values: ConditionSnapshot["values"]) {
-  if (values.soilCompatibility !== undefined) return values.soilCompatibility;
-  const scores: number[] = [];
-  if (values.soilPh !== undefined && species.ecologicalConfig.soil.phRange) {
-    scores.push(rangeScore(values.soilPh, species.ecologicalConfig.soil.phRange) ?? 0);
+  const currentIndex = local.month - 1;
+  const dayFraction = (local.hour + local.minute / 60 + local.second / 3600) / 24;
+  let startIndex: number;
+  let endIndex: number;
+  let progress: number;
+  if (local.day >= 15) {
+    startIndex = currentIndex;
+    endIndex = (currentIndex + 1) % 12;
+    progress = (local.day - 15 + dayFraction) / daysInMonth(local.year, local.month);
+  } else {
+    startIndex = (currentIndex + 11) % 12;
+    endIndex = currentIndex;
+    const previousMonth = local.month === 1 ? 12 : local.month - 1;
+    const previousYear = local.month === 1 ? local.year - 1 : local.year;
+    const intervalDays = daysInMonth(previousYear, previousMonth);
+    progress = (intervalDays - 15 + local.day + dayFraction) / intervalDays;
   }
-  const textScore = textCompatibility(
-    [values.soilTexture, values.soilSubstrate].filter((value): value is string => Boolean(value)),
-    [species.ecologicalConfig.soil.texture, species.ecologicalConfig.soil.substrate, species.ecologicalConfig.soil.reaction]
-  );
-  if (textScore !== null) scores.push(textScore);
-  return scores.length ? Math.round(scores.reduce((total, score) => total + score, 0) / scores.length) : null;
+  const eased = (1 - Math.cos(Math.PI * Math.max(0, Math.min(1, progress)))) / 2;
+  return anchors[startIndex] * (1 - eased) + anchors[endIndex] * eased;
 }
 
-function currentStressCeiling(contributions: FactorContribution[]) {
-  const stressFamilies: FactorContribution["id"][][] = [
-    // Rainfall readiness already contains the seven-day soil-moisture mean,
-    // floor, and trend. Treating it as independent from soil moisture here
-    // would apply the strong second-stressor penalty to the same hydrology.
-    ["rainfall", "soilMoisture"],
-    ["temperature"],
-    ["humidity"],
-  ];
-  const severities = stressFamilies
-    .flatMap((family) => {
-      const lowestScore = contributions
-        .filter((factor) => family.includes(factor.id) && factor.score !== null)
-        .reduce<number | null>((lowest, factor) =>
-          lowest === null ? factor.score : Math.min(lowest, factor.score!), null);
-      return lowestScore !== null && lowestScore < 45 ? [(45 - lowestScore) / 45] : [];
-    })
-    .sort((left, right) => right - left);
-
-  if (!severities.length) return null;
-
-  // One limiting factor lowers the ceiling smoothly from 55 to 35. A second
-  // independent stressor can lower it further to zero instead of creating a
-  // fixed 35-point plateau across very different conditions.
-  return Math.max(0, Math.round(55 - severities[0] * 20 - (severities[1] ?? 0) * 35));
-}
-
-export function calculateSuitability(species: SpeciesProfile, snapshot: ConditionSnapshot): SuitabilityResult {
-  const { values } = snapshot;
-  const modelVersion = predictionModelVersion(species.modelConfig.version);
-  if (species.predictionMode === "habitat_only") {
-    const contributions = species.modelConfig.factors.map((factor) => ({
-      id: factor.id,
-      label: factor.label,
-      weight: factor.weight,
-      score: null,
-      state: "unknown" as const,
-    }));
-    return {
-      score: null,
-      label: "sense dades",
-      contributions,
-      modelVersion,
-      dataCompleteness: 0,
-      missingFactors: contributions.map((factor) => factor.id),
-    };
-  }
-  const factorScore = (id: FactorContribution["id"]): number | null => {
-    switch (id) {
-      case "forest": return forestScore(species, values);
-      case "soil": return soilScore(species, values);
-      case "rainfall": return rainfallSuitability(species, values)?.score ?? null;
-      case "soilMoisture": return moistureScore(values.soilMoistureAvg24h ?? values.soilMoisture, species.ecologicalConfig.climate.soilMoisture);
-      case "temperature": return temperatureScore(species, values);
-      case "altitude": return values.habitatAltitudeSuitability ??
-        altitudeScore(values.altitudeM, species.ecologicalConfig.habitat.altitude);
-      case "humidity": return humidityScore(
-        values.relativeHumidityAvg24h ?? values.relativeHumidity,
-        values.relativeHumidityAvg7d,
-      );
-      case "seasonality": return seasonalityScore(species, snapshot.observedAt);
-    }
-  };
-
-  const contributions = species.modelConfig.factors.map((factor) => {
-    const score = factorScore(factor.id);
-    return {
-      id: factor.id,
-      label: factor.label,
-      weight: factor.weight,
-      score,
-      state: score === null ? "unknown" : score >= 70 ? "favourable" : score >= 45 ? "mixed" : "unfavourable"
-    } satisfies FactorContribution;
-  });
-  const known = contributions.filter((factor) => factor.score !== null);
-  const totalWeight = contributions.reduce((total, factor) => total + factor.weight, 0);
-  const knownWeight = known.reduce((total, factor) => total + factor.weight, 0);
-  const dataCompleteness = totalWeight ? knownWeight / totalWeight : 0;
-  const missingFactors = contributions.filter((factor) => factor.score === null).map((factor) => factor.id);
-  const coreHabitatMissing = (["forest", "soil"] as const).some((id) =>
-    contributions.some((factor) => factor.id === id && factor.score === null)
-  );
-  const habitatCoverage = contributions.find((factor) => factor.id === "forest")?.score;
-  const altitudeSuitability = contributions.find((factor) => factor.id === "altitude")?.score;
-  const seasonScore = contributions.find((factor) => factor.id === "seasonality")?.score;
-  const hardExcluded = !coreHabitatMissing &&
-    (habitatCoverage === 0 || altitudeSuitability === 0 || seasonScore === 0);
-  if (hardExcluded) {
-    return {
-      score: 0,
-      label: suitabilityLabel(0),
-      contributions,
-      modelVersion,
-      dataCompleteness,
-      missingFactors,
-    };
-  }
-  const dynamicKnown = (["rainfall", "soilMoisture", "temperature"] as const).filter((id) =>
-    contributions.some((factor) => factor.id === id && factor.score !== null)
-  ).length;
-  if (!known.length || snapshot.stale || coreHabitatMissing || dynamicKnown < 3 || dataCompleteness < 0.7) {
-    return { score: null, label: "sense dades", contributions, modelVersion, dataCompleteness, missingFactors };
-  }
-  const weight = known.reduce((total, factor) => total + factor.weight, 0);
-  let score = Math.round(known.reduce((total, factor) => total + (factor.score ?? 0) * factor.weight, 0) / weight);
-  const stressCeiling = currentStressCeiling(contributions);
-  if (stressCeiling !== null) score = Math.min(score, stressCeiling);
-  const frostHours = values.frostHours10d ?? values.frostHours7d ??
-    ((values.temperatureMin10dC ?? values.temperatureMin7dC) !== undefined &&
-    (values.temperatureMin10dC ?? values.temperatureMin7dC)! <= 0 ? 1 : 0);
-  if (frostHours > 0) {
-    const toleratedFrost = normaliseTerm(species.ecologicalConfig.climate.frost).includes("tolera");
-    score = Math.min(score, toleratedFrost ? 55 : 20);
-  }
-  if (seasonScore !== null && seasonScore !== undefined && seasonScore <= 35) score = Math.min(score, 55);
-  const label = suitabilityLabel(score);
-  return { score, label, contributions, modelVersion, dataCompleteness, missingFactors };
-}
-
-export function suitabilityLabel(score: number): Exclude<SuitabilityResult["label"], "sense dades"> {
-  return score >= 80
-    ? "molt favorable"
-    : score >= 65
-      ? "favorable"
+function state(score: number | null): ModelComponent["state"] {
+  return score === null
+    ? "unknown"
+    : score >= 70
+      ? "favourable"
       : score >= 45
-        ? "mixta"
-        : "poc favorable";
+        ? "mixed"
+        : "unfavourable";
+}
+
+function component(id: ModelComponentId, fraction: number | null): ModelComponent {
+  const score = fraction === null ? null : roundIndex(fraction * 100);
+  return { id, label: COMPONENT_LABELS[id], score, state: state(score) };
+}
+
+function resultFrom({
+  components,
+  modelVersion,
+  fruitingConditionsScore,
+  opportunityIndex,
+  rawHabitatCoverage,
+  effectiveHabitatCoverage,
+}: {
+  components: ModelComponent[];
+  modelVersion: string;
+  fruitingConditionsScore: number | null;
+  opportunityIndex: number | null;
+  rawHabitatCoverage: number | null;
+  effectiveHabitatCoverage: number | null;
+}): SuitabilityResult {
+  const missingComponents = components
+    .filter((item) => item.score === null)
+    .map((item) => item.id);
+  return {
+    score: opportunityIndex,
+    fruitingConditionsScore,
+    opportunityIndex,
+    rawHabitatCoverage,
+    effectiveHabitatCoverage,
+    label: opportunityIndex === null ? "sense dades" : opportunityLabel(opportunityIndex),
+    components,
+    modelVersion,
+    dataCompleteness: (components.length - missingComponents.length) / components.length,
+    missingComponents,
+  };
+}
+
+export function calculateSuitability(
+  species: SpeciesProfile,
+  snapshot: ConditionSnapshot,
+): SuitabilityResult {
+  const model = species.modelConfig;
+  const modelVersion = predictionModelVersion(model.version);
+  const values = availableValues(snapshot);
+  const rawHabitatCoverage = boundedFraction(values.habitatCoveragePercent);
+  const altitude = boundedFraction(values.habitatAltitudeSuitability);
+  const effectiveHabitatCoverage = rawHabitatCoverage === null || altitude === null
+    ? rawHabitatCoverage === 0 || altitude === 0 ? 0 : null
+    : rawHabitatCoverage * altitude;
+
+  if (model.status === "habitat-only" || species.predictionMode === "habitat_only") {
+    const components = [
+      component("habitatCoverage", rawHabitatCoverage),
+      component("altitude", altitude),
+      component("phenology", null),
+      component("water", null),
+      component("temperature", null),
+      component("extremes", null),
+    ];
+    return resultFrom({
+      components,
+      modelVersion,
+      fruitingConditionsScore: null,
+      opportunityIndex: null,
+      rawHabitatCoverage,
+      effectiveHabitatCoverage,
+    });
+  }
+
+  const phenology = phenologySuitability(
+    snapshot.observedAt,
+    model.phenology.monthlyAnchors,
+  );
+  const hardHabitatExclusion = effectiveHabitatCoverage === 0;
+  const hardSeasonalExclusion = phenology === 0;
+
+  if (snapshot.stale) {
+    const components = [
+      component("habitatCoverage", rawHabitatCoverage),
+      component("altitude", altitude),
+      component("phenology", phenology),
+      component("water", null),
+      component("temperature", null),
+      component("extremes", null),
+    ];
+    return resultFrom({
+      components,
+      modelVersion,
+      fruitingConditionsScore: hardSeasonalExclusion ? 0 : null,
+      opportunityIndex: hardHabitatExclusion || hardSeasonalExclusion ? 0 : null,
+      rawHabitatCoverage,
+      effectiveHabitatCoverage,
+    });
+  }
+
+  const water = waterSuitability(values, model.water)?.score ?? null;
+  const temperature = temperatureSuitability(values, model.temperature);
+  const extremes = extremeTemperatureMultiplier(values, model.temperature);
+  const components = [
+    component("habitatCoverage", rawHabitatCoverage),
+    component("altitude", altitude),
+    component("phenology", phenology),
+    component("water", water),
+    component("temperature", temperature),
+    component("extremes", extremes),
+  ];
+
+  if (
+    rawHabitatCoverage === null ||
+    altitude === null ||
+    phenology === null ||
+    water === null ||
+    temperature === null ||
+    extremes === null
+  ) {
+    return resultFrom({
+      components,
+      modelVersion,
+      fruitingConditionsScore: hardSeasonalExclusion ? 0 : null,
+      opportunityIndex: hardHabitatExclusion || hardSeasonalExclusion ? 0 : null,
+      rawHabitatCoverage,
+      effectiveHabitatCoverage,
+    });
+  }
+
+  const fruitingConditions =
+    phenology *
+    water ** model.water.waterExponent *
+    temperature ** (1 - model.water.waterExponent) *
+    extremes;
+  const fruitingConditionsScore = roundIndex(fruitingConditions * 100);
+  const opportunityIndex = roundIndex(
+    (effectiveHabitatCoverage ?? 0) * fruitingConditions * 100,
+  );
+
+  return resultFrom({
+    components,
+    modelVersion,
+    fruitingConditionsScore,
+    opportunityIndex,
+    rawHabitatCoverage,
+    effectiveHabitatCoverage,
+  });
+}
+
+export function opportunityLabel(
+  score: number,
+): Exclude<SuitabilityResult["label"], "sense dades"> {
+  return score >= 80
+    ? "molt alta"
+    : score >= 60
+      ? "alta"
+      : score >= 40
+        ? "mitjana"
+        : score >= 20
+          ? "baixa"
+          : "molt baixa";
 }

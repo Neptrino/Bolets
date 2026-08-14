@@ -166,17 +166,65 @@ export interface EcologicalConfig {
   regions: RegionId[];
 }
 
-export interface ModelFactor {
-  id: "forest" | "soil" | "rainfall" | "soilMoisture" | "temperature" | "altitude" | "humidity" | "seasonality";
-  label: string;
-  weight: number;
-  explanation: string;
+export type FruitingGuild =
+  | "ectomycorrhizal"
+  | "litter-soil-saprotroph"
+  | "wood-decayer"
+  | "grassland"
+  | "hypogeous";
+
+export type MonthlyPhenologyAnchors = readonly [
+  number, number, number, number, number, number,
+  number, number, number, number, number, number,
+];
+
+export interface WaterModelParameters {
+  waterExponent: number;
+  moistureWindowDays: 7;
+  rewBand: readonly [number, number, number, number];
+  rainfallWindowDays: 14 | 21 | 26;
+  rainfallHalfSaturationMm: number;
+  wetDaysHalfSaturation: number;
+  triggerDependency: number;
+  drySpellGraceDays: number;
+  drySpellDecayDays: number;
+  drySpellExponent: number;
+  vpdComfortKpa: number;
+  vpdDecayKpa: number;
+  vpdExponent: number;
 }
 
-export interface ModelConfig {
-  version: string;
-  factors: ModelFactor[];
+export interface TemperatureModelParameters {
+  windowDays: 14 | 20;
+  optimumC: number;
+  coldHalfWidthC: number;
+  warmHalfWidthC: number;
+  frostHalfLifeHours: number;
+  heatHalfLifeHours: number;
 }
+
+export type ModelEvidence =
+  | { status: "expert-prior" | "species-literature"; citations: string[] }
+  | { status: "unsupported"; citations: string[] };
+
+export type FruitingModelConfig =
+  | {
+      model: "hydrothermal-v1";
+      version: string;
+      status: "supported";
+      guild: Exclude<FruitingGuild, "hypogeous">;
+      water: WaterModelParameters;
+      temperature: TemperatureModelParameters;
+      phenology: { monthlyAnchors: MonthlyPhenologyAnchors };
+      evidence: Extract<ModelEvidence, { status: "expert-prior" | "species-literature" }>;
+    }
+  | {
+      model: "hydrothermal-v1";
+      version: string;
+      status: "habitat-only";
+      guild: "hypogeous";
+      evidence: Extract<ModelEvidence, { status: "unsupported" }>;
+    };
 
 export interface CulinaryProfileBase {
   rating: 0 | 1 | 2 | 3;
@@ -220,7 +268,7 @@ export interface SpeciesProfile {
   safetyNotice: string;
   culinaryProfile: CulinaryProfile;
   ecologicalConfig: EcologicalConfig;
-  modelConfig: ModelConfig;
+  modelConfig: FruitingModelConfig;
   idealConditions: string[];
   references: SourceReference[];
   media: MediaAsset[];
@@ -245,15 +293,13 @@ export interface ConditionSnapshot {
     soilGridLatitude?: number;
     soilGridLongitude?: number;
     temperatureC?: number;
-    temperatureMin24hC?: number;
-    temperatureAvg24hC?: number;
-    temperatureMax24hC?: number;
-    temperatureMin7dC?: number;
-    frostHours7d?: number;
-    temperatureMin10dC?: number;
-    temperatureAvg10dC?: number;
-    temperatureMax10dC?: number;
-    frostHours10d?: number;
+    temperatureAvg7dC?: number;
+    temperatureAvg14dC?: number;
+    temperatureAvg20dC?: number;
+    frostHours14d?: number;
+    frostHours20d?: number;
+    heatHours14d?: number;
+    heatHours20d?: number;
     relativeHumidity?: number;
     relativeHumidityMin24h?: number;
     relativeHumidityAvg24h?: number;
@@ -272,10 +318,21 @@ export interface ConditionSnapshot {
     rainfall7dMm?: number;
     rainfallPrevious23dMm?: number;
     rainfall30dMm?: number;
+    rainfall14dMm?: number;
+    rainfall21dMm?: number;
+    rainfall26dMm?: number;
+    rainfallDays7d?: number;
+    rainfallDays14d?: number;
+    rainfallDays21d?: number;
+    rainfallDays26d?: number;
+    rainfallDays30d?: number;
     drySpellDays?: number;
     evapotranspiration3dMm?: number;
     evapotranspiration7dMm?: number;
     evapotranspiration30dMm?: number;
+    evapotranspiration14dMm?: number;
+    evapotranspiration21dMm?: number;
+    evapotranspiration26dMm?: number;
     windKmh?: number;
     windAvg24hKmh?: number;
     windMax24hKmh?: number;
@@ -283,8 +340,7 @@ export interface ConditionSnapshot {
     windGustMax24hKmh?: number;
     altitudeM?: number;
     habitatAltitudeSuitability?: number;
-    forestCompatibility?: number;
-    soilCompatibility?: number;
+    habitatCoveragePercent?: number;
     forestTypes?: string[];
     treeSpecies?: string[];
     soilPh?: number;
@@ -294,21 +350,33 @@ export interface ConditionSnapshot {
   };
 }
 
-export interface FactorContribution {
-  id: ModelFactor["id"];
+export type ModelComponentId =
+  | "habitatCoverage"
+  | "altitude"
+  | "phenology"
+  | "water"
+  | "temperature"
+  | "extremes";
+
+export interface ModelComponent {
+  id: ModelComponentId;
   label: string;
-  weight: number;
   score: number | null;
   state: "favourable" | "mixed" | "unfavourable" | "unknown";
 }
 
 export interface SuitabilityResult {
+  /** Area-density opportunity index. This remains `score` for map/API consumers. */
   score: number | null;
-  label: "molt favorable" | "favorable" | "mixta" | "poc favorable" | "sense dades";
-  contributions: FactorContribution[];
+  fruitingConditionsScore: number | null;
+  opportunityIndex: number | null;
+  rawHabitatCoverage: number | null;
+  effectiveHabitatCoverage: number | null;
+  label: "molt baixa" | "baixa" | "mitjana" | "alta" | "molt alta" | "sense dades";
+  components: ModelComponent[];
   modelVersion: string;
   dataCompleteness: number;
-  missingFactors: ModelFactor["id"][];
+  missingComponents: ModelComponentId[];
 }
 
 export interface RegionalPredictionSummary {
@@ -361,6 +429,9 @@ export interface PredictionCell {
   gridSizeM: SpatialGridSizeM;
   cellBounds: CoordinateBounds;
   score: number | null;
+  fruitingConditionsScore: number | null;
+  opportunityIndex: number | null;
+  effectiveHabitatCoverage: number | null;
   label: SuitabilityResult["label"];
   sourceResolutionM: number;
   confidence: EvidenceConfidence;
@@ -369,7 +440,7 @@ export interface PredictionCell {
   unavailableFields: string[];
   values: ConditionSnapshot["values"];
   modelVersion: string;
-  factors: FactorContribution[];
+  components: ModelComponent[];
   occurrenceEvidence: HistoricalOccurrenceEvidence | null;
   occurrenceEvidenceStatus: OccurrenceEvidenceStatus;
 }
@@ -377,6 +448,8 @@ export interface PredictionCell {
 export interface PredictionHistoryPoint {
   observedAt: string;
   score: number | null;
+  fruitingConditionsScore: number | null;
+  opportunityIndex: number | null;
 }
 
 export type ForecastHorizonConfidence = "high" | "moderate" | "limited";
@@ -385,11 +458,14 @@ export type ForecastHorizonDays = 1 | 2 | 3 | 4 | 5;
 export interface PredictionForecastPoint {
   validAt: string;
   score: number | null;
+  fruitingConditionsScore: number | null;
+  opportunityIndex: number | null;
   horizonDays: ForecastHorizonDays;
   horizonConfidence: ForecastHorizonConfidence;
 }
 
 export interface PredictionCellTimeline {
+  modelVersion: string;
   observed: PredictionHistoryPoint[];
   forecast: {
     generatedAt: string;

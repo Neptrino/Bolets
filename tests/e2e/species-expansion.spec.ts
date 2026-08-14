@@ -12,7 +12,7 @@ test("renders new edible and lethal profiles with their local galleries", async 
 
   await page.goto("/bolets");
   await page.getByRole("textbox", { name: "Cerca espècies" }).fill("Marçot");
-  const marzotCard = page.getByRole("link", { name: "Obre la fitxa de Marçot" });
+  const marzotCard = page.getByRole("link", { name: "Obriu la fitxa de Marçot" });
   await expect(marzotCard).toBeVisible();
   await expect(marzotCard.locator("img")).toHaveAttribute(
     "src",

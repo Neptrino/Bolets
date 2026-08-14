@@ -23,12 +23,12 @@ describe("condition prediction presentation", () => {
     });
   });
 
-  it("preserves a published suitability label", () => {
+  it("preserves a published opportunity label", () => {
     expect(
       getConditionPredictionStatus(false, {
         score: 72,
-        label: "favorable",
+        label: "alta",
       }),
-    ).toEqual({ kind: "available", label: "favorable" });
+    ).toEqual({ kind: "available", label: "alta" });
   });
 });

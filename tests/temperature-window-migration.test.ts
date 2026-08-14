@@ -2,17 +2,35 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-describe("historical weather database aggregation", () => {
-  it("preserves temperature and antecedent-moisture fields in live and cached coarse cells", () => {
+describe("hydrothermal weather database aggregation", () => {
+  it("preserves only the active model windows in live and cached coarse cells", () => {
     const source = readFileSync(
-      join(process.cwd(), "supabase", "migrations", "20260812055451_add_10d_temperature_history.sql"),
+      join(process.cwd(), "supabase", "migrations", "20260814120000_add_hydrothermal_model_inputs.sql"),
       "utf8"
     );
 
-    expect(source.match(/'temperatureMin10dC'/g)).toHaveLength(4);
-    expect(source.match(/'temperatureAvg10dC'/g)).toHaveLength(4);
-    expect(source.match(/'temperatureMax10dC'/g)).toHaveLength(4);
-    expect(source.match(/'frostHours10d'/g)).toHaveLength(4);
+    for (const field of [
+      "temperatureAvg7dC",
+      "temperatureAvg14dC",
+      "frostHours14d",
+      "heatHours14d",
+      "temperatureAvg20dC",
+      "frostHours20d",
+      "heatHours20d",
+      "rainfall14dMm",
+      "rainfallDays14d",
+      "rainfall21dMm",
+      "rainfallDays21d",
+      "rainfall26dMm",
+      "rainfallDays26d",
+      "evapotranspiration14dMm",
+      "evapotranspiration21dMm",
+      "evapotranspiration26dMm",
+    ]) {
+      expect(source.match(new RegExp(`'${field}'`, "g")), field).toHaveLength(4);
+    }
+    expect(source).not.toContain("'temperatureAvg10dC'");
+    expect(source).not.toContain("'frostHours10d'");
     expect(source.match(/'rainfall3dMm'/g)).toHaveLength(4);
     expect(source.match(/'rainfallPrevious23dMm'/g)).toHaveLength(4);
     expect(source.match(/'rainfall30dMm'/g)).toHaveLength(4);

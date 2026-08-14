@@ -3,16 +3,18 @@ import type { ConditionSnapshot, RegionId } from "@/src/lib/types";
 
 const regions: RegionId[] = ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors", "altres"];
 const environmentalFields = [
-  "temperatureC", "temperatureMin24hC", "temperatureAvg24hC", "temperatureMax24hC",
-  "temperatureMin7dC", "frostHours7d",
-  "temperatureMin10dC", "temperatureAvg10dC", "temperatureMax10dC", "frostHours10d",
+  "temperatureC", "temperatureAvg7dC", "temperatureAvg14dC", "temperatureAvg20dC",
+  "frostHours14d", "frostHours20d", "heatHours14d", "heatHours20d",
   "relativeHumidity", "relativeHumidityMin24h", "relativeHumidityAvg24h", "relativeHumidityMax24h", "relativeHumidityAvg7d",
   "soilMoisture", "soilMoistureMin24h", "soilMoistureAvg24h", "soilMoistureMax24h",
   "soilMoistureMin7d", "soilMoistureAvg7d", "soilMoistureMax7d", "soilMoistureTrend7d",
-  "rainfall24hMm", "rainfall3dMm", "rainfall7dMm", "rainfallPrevious23dMm", "rainfall30dMm", "drySpellDays",
+  "rainfall3dMm", "rainfall7dMm", "rainfallPrevious23dMm", "rainfall30dMm", "drySpellDays",
+  "rainfall14dMm", "rainfall21dMm", "rainfall26dMm",
+  "rainfallDays7d", "rainfallDays14d", "rainfallDays21d", "rainfallDays26d", "rainfallDays30d",
   "evapotranspiration3dMm", "evapotranspiration7dMm", "evapotranspiration30dMm",
+  "evapotranspiration14dMm", "evapotranspiration21dMm", "evapotranspiration26dMm",
   "windKmh", "windAvg24hKmh", "windMax24hKmh", "windGustMax24hKmh",
-  "altitudeM", "forestCompatibility", "soilCompatibility"
+  "altitudeM", "habitatCoveragePercent"
 ];
 
 function unavailableSnapshot(regionId: RegionId): ConditionSnapshot {

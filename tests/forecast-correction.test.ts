@@ -9,97 +9,191 @@ import type { ConditionSnapshot } from "@/src/lib/types";
 
 type Values = ConditionSnapshot["values"];
 
+const requiredHydrothermalFields = [
+  "temperatureAvg7dC",
+  "temperatureAvg14dC",
+  "temperatureAvg20dC",
+  "frostHours14d",
+  "heatHours14d",
+  "frostHours20d",
+  "heatHours20d",
+  "relativeHumidityAvg7d",
+  "soilMoistureMin7d",
+  "soilMoistureAvg7d",
+  "rainfall14dMm",
+  "rainfallDays14d",
+  "rainfall21dMm",
+  "rainfallDays21d",
+  "rainfall26dMm",
+  "rainfallDays26d",
+  "drySpellDays",
+  "evapotranspiration14dMm",
+  "evapotranspiration21dMm",
+  "evapotranspiration26dMm",
+] as const satisfies readonly (keyof Values)[];
+
 const current: Values = {
-  temperatureMin10dC: 8,
-  temperatureAvg10dC: 14,
-  temperatureMax10dC: 20,
-  frostHours10d: 0,
-  relativeHumidityAvg24h: 63,
-  soilMoistureAvg24h: 0.171,
-  soilMoistureMin7d: 0.168,
-  soilMoistureAvg7d: 0.21,
-  soilMoistureTrend7d: -0.04,
-  rainfall3dMm: 16.2,
-  rainfall7dMm: 37.2,
-  rainfallPrevious23dMm: 54.2,
-  rainfall30dMm: 91.4,
-  drySpellDays: 2,
-  evapotranspiration3dMm: 12.36,
-  evapotranspiration7dMm: 28.43,
-  evapotranspiration30dMm: 147.17,
+  temperatureAvg7dC: 13,
+  temperatureAvg14dC: 13.2,
+  temperatureAvg20dC: 13.5,
+  frostHours14d: 1,
+  heatHours14d: 2,
+  frostHours20d: 2,
+  heatHours20d: 3,
+  relativeHumidityAvg7d: 90,
+  soilMoistureMin7d: 0.225,
+  soilMoistureAvg7d: 0.24,
+  soilMoistureMax7d: 0.27,
+  rainfall3dMm: 12,
+  rainfall7dMm: 24,
+  rainfallDays7d: 3,
+  rainfall14dMm: 35,
+  rainfallDays14d: 4,
+  rainfall21dMm: 44,
+  rainfallDays21d: 5,
+  rainfall26dMm: 50,
+  rainfallDays26d: 6,
+  rainfall30dMm: 55,
+  rainfallDays30d: 7,
+  rainfallPrevious23dMm: 31,
+  drySpellDays: 1,
+  evapotranspiration3dMm: 2,
+  evapotranspiration7dMm: 4,
+  evapotranspiration14dMm: 8,
+  evapotranspiration21dMm: 12,
+  evapotranspiration26dMm: 15,
+  evapotranspiration30dMm: 17,
+  habitatCoveragePercent: 80,
+  habitatAltitudeSuitability: 75,
+  soilTexture: "Franca",
 };
 
 const baseline: Values = {
-  temperatureMin10dC: 8,
-  temperatureAvg10dC: 17,
-  temperatureMax10dC: 23,
-  frostHours10d: 0,
-  relativeHumidityAvg24h: 67.375,
-  soilMoistureAvg24h: 0.16475,
-  soilMoistureMin7d: 0.155,
-  soilMoistureAvg7d: 0.20759,
-  soilMoistureTrend7d: -0.05,
-  rainfall3dMm: 5.9,
-  rainfall7dMm: 21.6,
-  rainfallPrevious23dMm: 52.7,
-  rainfall30dMm: 74.3,
+  temperatureAvg7dC: 14,
+  temperatureAvg14dC: 14.5,
+  temperatureAvg20dC: 15,
+  frostHours14d: 2,
+  heatHours14d: 3,
+  frostHours20d: 4,
+  heatHours20d: 5,
+  relativeHumidityAvg7d: 85,
+  soilMoistureMin7d: 0.2,
+  soilMoistureAvg7d: 0.22,
+  soilMoistureMax7d: 0.25,
+  rainfall3dMm: 8,
+  rainfall7dMm: 18,
+  rainfallDays7d: 2,
+  rainfall14dMm: 30,
+  rainfallDays14d: 3,
+  rainfall21dMm: 35,
+  rainfallDays21d: 4,
+  rainfall26dMm: 40,
+  rainfallDays26d: 5,
+  rainfall30dMm: 50,
+  rainfallDays30d: 6,
   drySpellDays: 2,
-  evapotranspiration3dMm: 11.69,
-  evapotranspiration7dMm: 27.88,
-  evapotranspiration30dMm: 131.25,
+  evapotranspiration3dMm: 3,
+  evapotranspiration7dMm: 6,
+  evapotranspiration14dMm: 10,
+  evapotranspiration21dMm: 14,
+  evapotranspiration26dMm: 18,
+  evapotranspiration30dMm: 21,
 };
 
 const initialState: ForecastCorrectionState = {
   modelDrySpellDays: 2,
-  correctedDrySpellDays: 2,
+  correctedDrySpellDays: 1,
 };
 
+function suitability(values: Values, unavailableFields: string[] = []) {
+  const species = getSpecies("boletus-edulis")!;
+  return calculateSuitability(species, {
+    regionId: "pirineus",
+    observedAt: "2026-10-14T22:00:00.000Z",
+    source: ["test"],
+    confidence: "moderate",
+    stale: false,
+    unavailableFields,
+    values,
+  });
+}
+
 describe("forecast anomaly correction", () => {
-  it("maps the model baseline back to the latest observed state", () => {
+  it("maps the model baseline to the observed hydrothermal state", () => {
     const corrected = correctForecastValues(current, baseline, baseline, initialState);
 
     expect(corrected.unavailableFields).toEqual([]);
-    for (const [field, value] of Object.entries(current)) {
-      expect(corrected.values[field as keyof Values]).toBeCloseTo(value as number, 10);
+    for (const field of requiredHydrothermalFields) {
+      expect(corrected.values[field]).toBeCloseTo(current[field]!, 10);
     }
-    expect(corrected.values.rainfallPrevious23dMm).toBeCloseTo(54.2);
+    expect(corrected.values).toMatchObject({
+      habitatCoveragePercent: 80,
+      habitatAltitudeSuitability: 75,
+      soilTexture: "Franca",
+    });
+    expect(corrected.values.rainfallPrevious23dMm).toBe(31);
   });
 
-  it("applies forecast change instead of replacing the observed weather history", () => {
+  it("applies forecast deltas across every hydrothermal response family", () => {
     const future: Values = {
       ...baseline,
-      relativeHumidityAvg24h: 55.67,
-      soilMoistureAvg24h: 0.14854,
-      soilMoistureMin7d: 0.146,
-      soilMoistureAvg7d: 0.1948,
-      rainfall3dMm: 4.3,
-      rainfall7dMm: 12.2,
-      rainfall30dMm: 74.1,
-      evapotranspiration3dMm: 12.26,
-      evapotranspiration7dMm: 28.92,
-      evapotranspiration30dMm: 130.49,
+      temperatureAvg7dC: 10,
+      temperatureAvg14dC: 11.5,
+      temperatureAvg20dC: 12,
+      frostHours14d: 4,
+      heatHours14d: 1,
+      frostHours20d: 8,
+      heatHours20d: 2,
+      relativeHumidityAvg7d: 70,
+      soilMoistureMin7d: 0.17,
+      soilMoistureAvg7d: 0.18,
+      rainfall14dMm: 36,
+      rainfallDays14d: 5,
+      rainfall21dMm: 45,
+      rainfallDays21d: 6,
+      rainfall26dMm: 65,
+      rainfallDays26d: 8,
+      evapotranspiration14dMm: 12,
+      evapotranspiration21dMm: 18,
+      evapotranspiration26dMm: 24,
       drySpellDays: 3,
     };
 
     const corrected = correctForecastValues(current, baseline, future, initialState);
 
-    expect(corrected.values.rainfall3dMm).toBeCloseTo(14.6);
-    expect(corrected.values.rainfall7dMm).toBeCloseTo(27.8);
-    expect(corrected.values.rainfall30dMm).toBeCloseTo(91.2);
-    expect(corrected.values.rainfallPrevious23dMm).toBeCloseTo(63.4);
-    expect(corrected.values.soilMoistureAvg24h).toBeCloseTo(0.15479);
-    expect(corrected.values.relativeHumidityAvg24h).toBeCloseTo(51.295);
-    expect(corrected.values.drySpellDays).toBe(3);
+    expect(corrected.values).toMatchObject({
+      temperatureAvg7dC: 9,
+      temperatureAvg14dC: 10.2,
+      temperatureAvg20dC: 10.5,
+      frostHours14d: 3,
+      heatHours14d: 0,
+      frostHours20d: 6,
+      heatHours20d: 0,
+      relativeHumidityAvg7d: 75,
+      rainfall14dMm: 41,
+      rainfallDays14d: 6,
+      rainfall21dMm: 54,
+      rainfallDays21d: 7,
+      rainfall26dMm: 75,
+      rainfallDays26d: 9,
+      evapotranspiration14dMm: 10,
+      evapotranspiration21dMm: 16,
+      evapotranspiration26dMm: 21,
+      drySpellDays: 2,
+    });
+    expect(corrected.values.soilMoistureMin7d).toBeCloseTo(0.195);
+    expect(corrected.values.soilMoistureAvg7d).toBeCloseTo(0.2);
+    expect(corrected.unavailableFields).toEqual([]);
   });
 
-  it("resets a corrected dry spell when the model path records rain", () => {
+  it("keeps exact and aggregate dry-spell paths distinct", () => {
     const first = correctForecastValues(
       current,
       baseline,
       { ...baseline, drySpellDays: 4 },
       initialState,
     );
-    expect(first.values.drySpellDays).toBe(4);
+    expect(first.values.drySpellDays).toBe(3);
 
     const reset = correctForecastValues(
       current,
@@ -108,294 +202,90 @@ describe("forecast anomaly correction", () => {
       first.state,
     );
     expect(reset.values.drySpellDays).toBe(0);
-  });
 
-  it("preserves partial dry-spell resets for aggregated coarse cells", () => {
-    const coarseCurrent = { ...current, drySpellDays: 10 };
-    const coarseBaseline = { ...baseline, drySpellDays: 8 };
-    const partialReset = correctForecastValues(
-      coarseCurrent,
-      coarseBaseline,
-      { ...baseline, drySpellDays: 4 },
+    const aggregate = correctForecastValues(
+      { ...current, drySpellDays: 10, rainfallDays14d: 4.25 },
+      { ...baseline, drySpellDays: 8, rainfallDays14d: 3.5 },
+      { ...baseline, drySpellDays: 4, rainfallDays14d: 3 },
       { modelDrySpellDays: 8, correctedDrySpellDays: 10 },
-      { aggregatePointCount: 2 },
+      { aggregatePointCount: 4 },
     );
-
-    expect(partialReset.values.drySpellDays).toBe(6);
+    expect(aggregate.values.drySpellDays).toBe(6);
+    expect(aggregate.values.rainfallDays14d).toBe(3.75);
   });
 
-  it("withholds missing required fields and reconciles physical window ordering", () => {
-    const incompleteBaseline = { ...baseline, rainfall30dMm: undefined };
-    const incomplete = correctForecastValues(
+  it("reports a missing model window and withholds F and O", () => {
+    const correction = correctForecastValues(
       current,
-      incompleteBaseline,
+      { ...baseline, rainfall26dMm: undefined },
       baseline,
       initialState,
     );
-    expect(incomplete.unavailableFields).toContain("rainfall30dMm");
-    expect(incomplete.values.rainfall30dMm).toBeUndefined();
-    expect(incomplete.values.rainfallPrevious23dMm).toBeUndefined();
+    const result = suitability(correction.values, correction.unavailableFields);
 
-    const corrected = correctForecastValues(
-      current,
-      baseline,
-      {
-        ...baseline,
-        relativeHumidityAvg24h: 200,
-        soilMoistureAvg24h: -2,
-        rainfall3dMm: 30,
-        rainfall7dMm: 20,
-        rainfall30dMm: 10,
-      },
-      initialState,
-    );
-    expect(corrected.values.relativeHumidityAvg24h).toBe(100);
-    expect(corrected.values.soilMoistureAvg24h).toBe(0);
-    expect(corrected.values.rainfall7dMm).toBeGreaterThanOrEqual(corrected.values.rainfall3dMm!);
-    expect(corrected.values.rainfall30dMm).toBeGreaterThanOrEqual(corrected.values.rainfall7dMm!);
+    expect(correction.unavailableFields).toContain("rainfall26dMm");
+    expect(correction.values.rainfall26dMm).toBeUndefined();
+    expect(result.fruitingConditionsScore).toBeNull();
+    expect(result.opportunityIndex).toBeNull();
   });
 
-  it("keeps extrema and frost evidence physically consistent", () => {
-    const currentWithWindows: Values = {
-      ...current,
-      temperatureMin24hC: 5,
-      temperatureAvg24hC: 10,
-      temperatureMax24hC: 15,
-      temperatureMin7dC: 5,
-      frostHours7d: 0,
-      relativeHumidityMin24h: 40,
-      relativeHumidityMax24h: 80,
-      soilMoistureMin24h: 0.15,
-      soilMoistureMax24h: 0.2,
-      soilMoistureMax7d: 0.25,
-    };
-    const baselineWithFrost: Values = {
+  it("reconciles nested totals and bounded exposure memories", () => {
+    const corrected = correctForecastValues(current, baseline, {
       ...baseline,
-      temperatureMin24hC: -5,
-      temperatureAvg24hC: 0,
-      temperatureMax24hC: 5,
-      temperatureMin7dC: -5,
-      frostHours7d: 10,
-      temperatureMin10dC: -5,
-      frostHours10d: 10,
-      relativeHumidityMin24h: 30,
-      relativeHumidityMax24h: 90,
-      soilMoistureMin24h: 0.1,
-      soilMoistureMax24h: 0.3,
-      soilMoistureMax7d: 0.35,
-    };
-    const future = {
-      ...baselineWithFrost,
-      temperatureAvg24hC: 20,
-      temperatureMax24hC: 0,
-      frostHours7d: 20,
-      frostHours10d: 20,
-      relativeHumidityMin24h: 95,
-      relativeHumidityAvg24h: 60,
-      relativeHumidityMax24h: 20,
-      soilMoistureMin24h: 0.4,
-      soilMoistureAvg24h: 0.1,
-      soilMoistureMax24h: 0.05,
-      soilMoistureMin7d: 0.4,
-      soilMoistureAvg7d: 0.1,
-      soilMoistureMax7d: 0.05,
-    } satisfies Values;
+      rainfall14dMm: 100,
+      rainfall21dMm: 0,
+      rainfall26dMm: 0,
+      rainfall30dMm: 0,
+      rainfallDays14d: 99,
+      rainfallDays21d: 0,
+      rainfallDays26d: 0,
+      rainfallDays30d: 0,
+      evapotranspiration14dMm: 100,
+      evapotranspiration21dMm: 0,
+      evapotranspiration26dMm: 0,
+      evapotranspiration30dMm: 0,
+      frostHours14d: 500,
+      frostHours20d: 0,
+      heatHours14d: 500,
+      heatHours20d: 0,
+    }, initialState).values;
 
-    const corrected = correctForecastValues(
-      currentWithWindows,
-      baselineWithFrost,
-      future,
-      initialState,
-    ).values;
-
-    expect(corrected.temperatureMin24hC).toBeLessThanOrEqual(corrected.temperatureAvg24hC!);
-    expect(corrected.temperatureMax24hC).toBeGreaterThanOrEqual(corrected.temperatureAvg24hC!);
-    expect(corrected.relativeHumidityMin24h).toBeLessThanOrEqual(corrected.relativeHumidityAvg24h!);
-    expect(corrected.relativeHumidityMax24h).toBeGreaterThanOrEqual(corrected.relativeHumidityAvg24h!);
-    expect(corrected.soilMoistureMin24h).toBeLessThanOrEqual(corrected.soilMoistureAvg24h!);
-    expect(corrected.soilMoistureMax24h).toBeGreaterThanOrEqual(corrected.soilMoistureAvg24h!);
-    expect(corrected.soilMoistureMin7d).toBeLessThanOrEqual(corrected.soilMoistureAvg7d!);
-    expect(corrected.soilMoistureMax7d).toBeGreaterThanOrEqual(corrected.soilMoistureAvg7d!);
-    expect(corrected.temperatureMin10dC).toBeGreaterThan(0);
-    expect(corrected.frostHours10d).toBe(0);
-    expect(corrected.frostHours7d).toBe(0);
+    expect(corrected.rainfall21dMm).toBeGreaterThanOrEqual(corrected.rainfall14dMm!);
+    expect(corrected.rainfall26dMm).toBeGreaterThanOrEqual(corrected.rainfall21dMm!);
+    expect(corrected.rainfall30dMm).toBeGreaterThanOrEqual(corrected.rainfall26dMm!);
+    expect(corrected.rainfallDays14d).toBe(14);
+    expect(corrected.rainfallDays21d).toBeGreaterThanOrEqual(corrected.rainfallDays14d!);
+    expect(corrected.evapotranspiration26dMm)
+      .toBeGreaterThanOrEqual(corrected.evapotranspiration21dMm!);
+    expect(corrected.frostHours14d).toBe(336);
+    expect(corrected.frostHours20d).toBe(336);
+    expect(corrected.heatHours14d).toBe(336);
+    expect(corrected.heatHours20d).toBe(336);
   });
 
-  it("regresses the reported cell across its full calibrated five-day trajectory", () => {
-    const exactCurrent: Values = {
-      temperatureMin10dC: 9.9,
-      temperatureAvg10dC: 15.8183333333333,
-      temperatureMax10dC: 23.1,
-      frostHours10d: 0,
-      relativeHumidityAvg24h: 62.7291666666667,
-      soilMoistureAvg24h: 0.171083333333333,
-      soilMoistureMin7d: 0.168,
-      soilMoistureAvg7d: 0.210488095238095,
-      soilMoistureTrend7d: -0.0459722222222223,
-      rainfall3dMm: 16.2,
-      rainfall7dMm: 37.2,
-      rainfallPrevious23dMm: 54.2,
-      rainfall30dMm: 91.4,
-      drySpellDays: 1,
-      evapotranspiration3dMm: 12.36,
-      evapotranspiration7dMm: 28.43,
-      evapotranspiration30dMm: 147.165,
-    };
-    const exactBaseline: Values = {
-      temperatureMin10dC: 13,
-      temperatureAvg10dC: 17.367,
-      temperatureMax10dC: 23.3,
-      frostHours10d: 0,
-      relativeHumidityAvg24h: 67.375,
-      soilMoistureAvg24h: 0.16475,
-      soilMoistureMin7d: 0.155,
-      soilMoistureAvg7d: 0.20759,
-      soilMoistureTrend7d: -0.04998,
-      rainfall3dMm: 5.9,
-      rainfall7dMm: 21.6,
-      rainfallPrevious23dMm: 52.7,
-      rainfall30dMm: 74.3,
-      drySpellDays: 0,
-      evapotranspiration3dMm: 11.69,
-      evapotranspiration7dMm: 27.88,
-      evapotranspiration30dMm: 131.25,
-    };
-    const exactDayOne: Values = {
-      ...exactBaseline,
-      temperatureAvg10dC: 17.59625,
-      temperatureMax10dC: 24.2,
-      relativeHumidityAvg24h: 55.6666666667,
-      soilMoistureAvg24h: 0.1485416666667,
-      soilMoistureMin7d: 0.146,
-      soilMoistureAvg7d: 0.1947976190476,
-      soilMoistureTrend7d: -0.0539652777778,
-      rainfall3dMm: 4.3,
-      rainfall7dMm: 12.2,
-      rainfallPrevious23dMm: 61.9,
-      rainfall30dMm: 74.1,
-      drySpellDays: 1,
-      evapotranspiration3dMm: 12.26,
-      evapotranspiration7dMm: 28.92,
-      evapotranspiration30dMm: 130.49,
-    };
-    const exactForecasts: Values[] = [
-      exactDayOne,
-      {
-        ...exactBaseline,
-        temperatureMin10dC: 13.1,
-        temperatureAvg10dC: 17.815,
-        temperatureMax10dC: 24.2,
-        relativeHumidityAvg24h: 51.1666666667,
-        soilMoistureAvg24h: 0.1405416666667,
-        soilMoistureMin7d: 0.139,
-        soilMoistureAvg7d: 0.1799642857143,
-        soilMoistureTrend7d: -0.0459930555556,
-        rainfall3dMm: 2.8,
-        rainfall7dMm: 9.2,
-        rainfallPrevious23dMm: 63.4,
-        rainfall30dMm: 72.6,
-        drySpellDays: 2,
-        evapotranspiration3dMm: 12.95,
-        evapotranspiration7dMm: 29.38,
-        evapotranspiration30dMm: 129.55,
-      },
-      {
-        ...exactBaseline,
-        temperatureMin10dC: 11.9,
-        temperatureAvg10dC: 17.7445833333,
-        temperatureMax10dC: 24.2,
-        relativeHumidityAvg24h: 71.75,
-        soilMoistureAvg24h: 0.1572916666667,
-        soilMoistureMin7d: 0.135,
-        soilMoistureAvg7d: 0.1695297619048,
-        soilMoistureTrend7d: -0.0142777777778,
-        rainfall3dMm: 4.1,
-        rainfall7dMm: 11.2,
-        rainfallPrevious23dMm: 62,
-        rainfall30dMm: 73.2,
-        drySpellDays: 0,
-        evapotranspiration3dMm: 12.63,
-        evapotranspiration7dMm: 29.01,
-        evapotranspiration30dMm: 129.15,
-      },
-      {
-        ...exactBaseline,
-        temperatureMin10dC: 11.5,
-        temperatureAvg10dC: 17.6195833333,
-        temperatureMax10dC: 24.2,
-        relativeHumidityAvg24h: 82.75,
-        soilMoistureAvg24h: 0.1836666666667,
-        soilMoistureMin7d: 0.135,
-        soilMoistureAvg7d: 0.1663333333331,
-        soilMoistureTrend7d: 0.0202222222222,
-        rainfall3dMm: 10.5,
-        rainfall7dMm: 16.8,
-        rainfallPrevious23dMm: 62,
-        rainfall30dMm: 78.8,
-        drySpellDays: 0,
-        evapotranspiration3dMm: 11.54,
-        evapotranspiration7dMm: 27.68,
-        evapotranspiration30dMm: 127.35,
-      },
-      {
-        ...exactBaseline,
-        temperatureMin10dC: 11.5,
-        temperatureAvg10dC: 17.3229166667,
-        temperatureMax10dC: 24.2,
-        relativeHumidityAvg24h: 83,
-        soilMoistureAvg24h: 0.2199583333334,
-        soilMoistureMin7d: 0.135,
-        soilMoistureAvg7d: 0.1706488095238,
-        soilMoistureTrend7d: 0.0575277777778,
-        rainfall3dMm: 29.4,
-        rainfall7dMm: 34,
-        rainfallPrevious23dMm: 62.3,
-        rainfall30dMm: 96.3,
-        drySpellDays: 0,
-        evapotranspiration3dMm: 10.5,
-        evapotranspiration7dMm: 27.22,
-        evapotranspiration30dMm: 126.26,
-      },
-    ];
-    const habitat = {
-      altitudeM: 1882,
-      habitatAltitudeSuitability: 76.8493881391788,
-      forestCompatibility: 81.7499995231628,
-      soilCompatibility: 90,
-    };
-    const species = getSpecies("boletus-edulis")!;
-    const score = (observedAt: string, values: Values) => calculateSuitability(species, {
-      regionId: "pirineus",
-      observedAt,
-      source: [],
-      confidence: "moderate",
-      stale: false,
-      unavailableFields: [],
-      values: { ...habitat, ...values },
-    });
+  it("carries corrected conditions into the hydrothermal F and O indices", () => {
+    const observed = suitability(current);
+    const correction = correctForecastValues(current, baseline, {
+      ...baseline,
+      temperatureAvg20dC: 26,
+      heatHours20d: 100,
+      relativeHumidityAvg7d: 40,
+      soilMoistureMin7d: 0.1,
+      soilMoistureAvg7d: 0.11,
+      rainfall26dMm: 10,
+      rainfallDays26d: 1,
+      evapotranspiration26dMm: 35,
+      drySpellDays: 8,
+    }, initialState);
+    const projected = suitability(correction.values, correction.unavailableFields);
 
-    const validAts = [14, 15, 16, 17, 18].map((day) =>
-      `2026-08-${day}T07:00:00Z`
-    );
-    let correctionState: ForecastCorrectionState = {
-      modelDrySpellDays: 0,
-      correctedDrySpellDays: 1,
-    };
-    const projected = exactForecasts.map((forecast, index) => {
-      const correction = correctForecastValues(
-        exactCurrent,
-        exactBaseline,
-        forecast,
-        correctionState,
-      );
-      correctionState = correction.state;
-      return score(validAts[index]!, correction.values);
-    });
-
-    expect(score("2026-08-13T00:30:00Z", exactCurrent).score).toBe(46);
-    expect(projected.map((result) => result.score)).toEqual([43, 39, 45, 51, 55]);
-    const dayOne = projected[0]!;
-    expect(dayOne.contributions.find((factor) => factor.id === "rainfall")?.score).toBe(35.23);
-    expect(dayOne.contributions.find((factor) => factor.id === "soilMoisture")?.score).toBe(17.44);
+    expect(observed.fruitingConditionsScore).toBeGreaterThan(0);
+    expect(observed.opportunityIndex).toBeGreaterThan(0);
+    expect(observed.opportunityIndex).toBeLessThan(observed.fruitingConditionsScore!);
+    expect(projected.fruitingConditionsScore).not.toBeNull();
+    expect(projected.fruitingConditionsScore)
+      .toBeLessThan(observed.fruitingConditionsScore!);
+    expect(projected.opportunityIndex).toBeLessThan(observed.opportunityIndex!);
+    expect(projected.score).toBe(projected.opportunityIndex);
   });
 });

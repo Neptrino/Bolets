@@ -25,14 +25,13 @@ import {
   ThermometerSun,
   Trees,
 } from "lucide-react";
-import { speciesProfiles } from "@/data/species";
 import { suitabilityScale } from "@/src/lib/suitability-scale";
 import { DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
   title: "Mètode del mapa de bolets",
   description:
-    "Fórmules, factors, llindars i límits dels mapes d’hàbitat potencial i de predicció de Bolets Atles.",
+    "Fórmules, components, llindars i límits dels mapes d’hàbitat potencial i de condicions de Bolets Atles.",
   alternates: { canonical: "/metode" },
   openGraph: {
     url: "/metode",
@@ -48,19 +47,6 @@ export const metadata: Metadata = {
   },
 };
 
-const sharedModel = speciesProfiles[0].modelConfig;
-
-const factorSymbols: Record<string, string> = {
-  forest: "H",
-  soil: "S",
-  rainfall: "P",
-  soilMoisture: "M",
-  temperature: "T",
-  altitude: "A",
-  humidity: "HR",
-  seasonality: "E",
-};
-
 function suitabilityRange(index: number) {
   const band = suitabilityScale[index];
   const nextBand = suitabilityScale[index + 1];
@@ -72,7 +58,7 @@ function AltitudeCurve() {
     <figure className="method-curve" aria-labelledby="altitude-curve-title">
       <figcaption id="altitude-curve-title">
         <span>Resposta d’altitud A(h)</span>
-        <small>La mateixa corba s’aplica al mapa estàtic i al factor d’altitud.</small>
+        <small>La mateixa corba s’aplica al mapa estàtic i a l’hàbitat efectiu H.</small>
       </figcaption>
       <svg viewBox="0 0 720 230" role="img" aria-label="La puntuació puja de zero a 75 abans del límit mínim, arriba a 100 dins del rang central i baixa simètricament després del límit màxim.">
         <g className="curve-grid">
@@ -102,7 +88,7 @@ function AltitudeCurve() {
           <text x="653" y="209" textAnchor="middle">màx + 100 m</text>
         </g>
       </svg>
-      <p>Els 100 m interiors de cada extrem fan la transició de 75 a 100. En rangs més estrets que 200 m, les dues transicions es troben al punt mitjà.</p>
+      <p>Els 100 m interiors de cada extrem fan la transició de 75% a 100%. En rangs més estrets de 200 m, les dues transicions es troben al punt mig. A les fórmules, A es normalitza a 0—1.</p>
     </figure>
   );
 }
@@ -125,33 +111,30 @@ export default function MethodPage() {
           <div className="method-hero-copy">
             <p className="eyebrow light"><ShieldCheck size={15} /> Mètode obert</p>
             <h1>Cap caixa<br /><i>negra.</i></h1>
-            <p>Expliquem com passem d’una cel·la de territori a un indicador de compatibilitat. Què suma, què limita i quan preferim no publicar cap puntuació.</p>
+            <p>Expliquem com passem d’una cel·la de territori a H, F i O: què representa cada magnitud, què la limita i quan preferim no publicar-la.</p>
             <nav className="method-jump-links" aria-label="Índex del mètode">
               <a href="#distribucio">01 · Distribució</a>
-              <a href="#prediccio">02 · Predicció</a>
+              <a href="#prediccio">02 · Condicions</a>
               <a href="#publicacio">03 · Publicació</a>
               <a href="#fonts">04 · Fonts</a>
             </nav>
           </div>
-          <div className="method-hero-equation" aria-label="Resum de la fórmula de predicció">
+          <div className="method-hero-equation" aria-label="Resum de l’índex de condicions de fructificació">
             <div className="method-equation-meta">
-              <span>MODEL DE FRUCTIFICACIÓ</span>
+              <span>ÍNDEX DE CONDICIONS</span>
               <span>0—100</span>
             </div>
             <div className="method-equation-main">
               <span className="method-equation-score">F</span>
               <Equal aria-hidden="true" />
-              <span className="method-equation-fraction">
-                <span><Sigma aria-hidden="true" /> w<sub>i</sub> · s<sub>i</sub></span>
-                <span><Sigma aria-hidden="true" /> w<sub>i</sub></span>
-              </span>
+              <span>100 · P · W<sup>α</sup> · T<sup>1−α</sup> · E</span>
             </div>
             <div className="method-equation-legend">
-              <p><b>s<sub>i</sub></b> resposta ambiental de cada factor</p>
-              <p><b>w<sub>i</sub></b> pes versionat per a l’espècie</p>
+              <p><b>P</b> fenologia · <b>W</b> aigua · <b>T</b> temperatura</p>
+              <p><b>E</b> extrems tèrmics · <b>α</b> balanç hidrotermal</p>
             </div>
             <div className="method-equation-stamp">
-              <Database size={16} /> Configuració ecològica única per a fitxes i mapes
+              <Database size={16} /> Índex ordinal · no és una probabilitat de presència
             </div>
           </div>
         </div>
@@ -175,8 +158,8 @@ export default function MethodPage() {
           <article>
             <span className="method-track-number">02</span>
             <CloudRain size={25} />
-            <h3>Predicció actual</h3>
-            <p>Combina aquell hàbitat amb pluja, humitat, temperatura i moment de temporada.</p>
+            <h3>Condicions actuals</h3>
+            <p>Combina fenologia, estat hídric, temperatura i extrems tèrmics dins de l’hàbitat compatible.</p>
             <strong>No és una garantia de trobar bolets.</strong>
           </article>
         </div>
@@ -203,7 +186,7 @@ export default function MethodPage() {
                 <span>01</span>
                 <Trees size={23} />
                 <h3>Coberta</h3>
-                <p>Sumem la fracció real de cobertes que coincideixen amb boscos, arbres associats o hostes de l’espècie.</p>
+                <p>Sumem la fracció real de classes de coberta que coincideixen amb els tipus d’hàbitat configurats per a l’espècie. Aquesta capa no verifica arbres hoste individuals.</p>
               </article>
               <article>
                 <span>02</span>
@@ -229,10 +212,10 @@ export default function MethodPage() {
               </article>
               <article className="method-formula-card method-formula-card-accent">
                 <span className="method-formula-kicker">INTENSITAT DEL BLAU</span>
-                <Formula label="La intensitat del mapa és la cobertura compatible multiplicada pel pes d'altitud.">
+                <Formula label="La intensitat del mapa és la cobertura compatible multiplicada per la resposta d'altitud.">
                   I<sub>250</sub> = C<sub>250</sub> · A(h)
                 </Formula>
-                <p>La predicció conserva <b>C</b> com a factor d’hàbitat i <b>A</b> com a factor d’altitud separat; així no els compta dues vegades.</p>
+                <p>El model conserva <b>C</b> i <b>A</b> per calcular l’hàbitat efectiu <b>H = C · A</b>. Les condicions de fructificació es calculen després, només dins d’aquest hàbitat.</p>
               </article>
             </div>
 
@@ -254,7 +237,7 @@ export default function MethodPage() {
                 <Formula label="La idoneïtat d'altitud agregada es calcula només dins de la cobertura compatible.">
                   A<sub>g</sub> = <span className="method-inline-fraction"><span>I<sub>g</sub></span><span>C<sub>g</sub></span></span>
                 </Formula>
-                <p>En predicció, el color de la puntuació es barreja amb el color d’exclusió segons <b>C<sub>g</sub></b>. Una clapa petita compatible no tenyeix tot el sector com si fos uniforme.</p>
+                <p>Al mapa de condicions, el color correspon directament a la banda de l’índex d’oportunitat <b>O</b>, que ja incorpora la proporció d’hàbitat efectiu. L’opacitat no torna a aplicar <b>C<sub>g</sub></b>.</p>
                 <small>Resolucions de visualització: 250 m, 1 km, 2,5 km, 5 km i 10 km.</small>
               </div>
             </div>
@@ -265,7 +248,7 @@ export default function MethodPage() {
                 <h3>I les observacions històriques?</h3>
                 <p>Els registres de FungaCAT/GBIF només corroboren presència passada en quadrícules generalitzades d’almenys 10 km. No entren en cap fórmula, no amplien l’hàbitat i l’absència de registres mai compta com a absència de l’espècie.</p>
               </div>
-              <strong>pes = 0</strong>
+              <strong>fora d’H/F/O</strong>
             </aside>
           </div>
         </div>
@@ -276,105 +259,123 @@ export default function MethodPage() {
           <aside className="method-chapter-index" aria-hidden="true">
             <span>02</span>
             <div />
-            <small>PREDICCIÓ</small>
+            <small>CONDICIONS</small>
           </aside>
           <div className="method-chapter-body">
             <header className="method-chapter-header">
               <div>
-                <p className="eyebrow"><Sigma size={15} /> Model dinàmic</p>
+                <p className="eyebrow"><Sigma size={15} /> Model hidrotermal · v1</p>
                 <h2>Després, llegim<br />el moment.</h2>
               </div>
-              <p>Cada factor produeix una resposta entre 0 i 100. El resultat inicial és una mitjana ponderada dels factors coneguts, sempre que la cel·la superi abans els criteris de publicació.</p>
+              <p>Quatre respostes normalitzades entre 0 i 1 actuen conjuntament. Com que es multipliquen, una condició limitant no queda amagada per una altra de favorable.</p>
             </header>
 
             <div className="method-score-equation">
-              <Formula label="La puntuació inicial és la mitjana ponderada de les respostes dels factors coneguts.">
-                F<sub>base</sub> = arrodoneix&nbsp;
-                <span className="method-inline-fraction method-inline-fraction-large">
-                  <span>Σ w<sub>i</sub> s<sub>i</sub></span>
-                  <span>Σ w<sub>i</sub></span>
-                </span>
+              <Formula label="L’índex condicional de fructificació és cent multiplicat per la fenologia, l’aigua elevada a alfa, la temperatura elevada a un menys alfa i el modificador d’extrems.">
+                F = 100 · P · W<sup>α</sup> · T<sup>1−α</sup> · E
               </Formula>
-              <p>Els pesos sumen 100%. Són configuració versionada, no valors escrits només per a aquesta pàgina.</p>
+              <p><b>F</b> descriu les condicions dins d’un hàbitat compatible. <b>α</b> regula el balanç entre aigua i temperatura: 0,60 per als ectomicorrízics, 0,65 per als sapròtrofs de sòl o virosta i els de prat, i 0,55 per als lignícoles, amb excepcions versionades per espècie.</p>
             </div>
 
             <div className="method-factor-grid">
-              {sharedModel.factors.map((factor, index) => (
-                <article key={factor.id} style={{ "--factor-weight": `${factor.weight * 100}%`, "--factor-order": index } as React.CSSProperties}>
-                  <div className="method-factor-topline">
-                    <span>{factorSymbols[factor.id]}</span>
-                    <strong>{Math.round(factor.weight * 100)}%</strong>
-                  </div>
-                  <h3>{factor.label}</h3>
-                  <p>{factor.explanation}</p>
-                  <div className="method-factor-bar" aria-hidden="true"><span /></div>
-                </article>
-              ))}
+              <article style={{ "--component-order": 0 } as React.CSSProperties}>
+                <div className="method-factor-topline"><span>P</span><strong>0—1</strong></div>
+                <h3>Fenologia</h3>
+                <p>Una corba contínua situa el dia de l’any dins de la finestra habitual de fructificació.</p>
+              </article>
+              <article style={{ "--component-order": 1 } as React.CSSProperties}>
+                <div className="method-factor-topline"><span>W</span><strong>0—1</strong></div>
+                <h3>Estat hídric</h3>
+                <p>Integra pluja, ET₀, ratxa seca i humitat superficial en una única resposta, sense comptar l’aigua dues vegades.</p>
+              </article>
+              <article style={{ "--component-order": 2 } as React.CSSProperties}>
+                <div className="method-factor-topline"><span>T</span><strong>0—1</strong></div>
+                <h3>Temperatura</h3>
+                <p>Resposta no lineal al voltant de la finestra tèrmica configurada per a l’espècie.</p>
+              </article>
+              <article style={{ "--component-order": 3 } as React.CSSProperties}>
+                <div className="method-factor-topline"><span>E</span><strong>0—1</strong></div>
+                <h3>Extrems tèrmics</h3>
+                <p>Les gelades i la calor recent redueixen el resultat dins de la fórmula, sense aplicar un sostre posterior.</p>
+              </article>
             </div>
 
             <div className="method-subscore-heading">
-              <p className="eyebrow">Dins dels factors</p>
-              <h3>Les respostes que més transformem</h3>
-              <p><b>clamp(x)</b> limita qualsevol resultat a l’interval 0—100.</p>
+              <p className="eyebrow">Dins dels components</p>
+              <h3>Una resposta hidrotermal, no una suma de punts</h3>
+              <p><b>clamp(x)</b> limita qualsevol resposta normalitzada a l’interval 0—1. Els paràmetres de v1 són priors experts de confiança baixa, no estimacions ajustades amb observacions.</p>
             </div>
 
             <div className="method-subscore-grid">
               <article className="method-subscore method-subscore-rain">
-                <div className="method-subscore-title"><CloudRain size={24} /><div><span>P · PLUJA I MEMÒRIA HÍDRICA</span><h4>Un pols recent, corregit per la memòria del sòl.</h4></div></div>
+                <div className="method-subscore-title"><CloudRain size={24} /><div><span>W · ESTAT HÍDRIC UNIFICAT</span><h4>Pols recent, reserva anterior i assecat en una sola resposta.</h4></div></div>
                 <div className="method-rain-steps">
                   <div>
-                    <b>1 · Pluja efectiva recent</b>
-                    <Formula label="La pluja efectiva recent descompta la meitat de l'evapotranspiració de referència i dona la meitat de pes als dies quatre a set.">
-                      R<sub>ef</sub> = max(0, R<sub>3</sub> − 0,5 ET<sub>3</sub>) + 0,5 max(0, R<sub>4–7</sub> − 0,5 ET<sub>4–7</sub>)
+                    <b>1 · Producte hídric</b>
+                    <Formula label="L’estat hídric multiplica la resposta d’humitat del sòl, la preparació per pluja, la penalització de dèficit de pressió de vapor i la de ratxa seca.">
+                      W = M · [(1 − ρ) + ρQ] · V<sup>βV</sup> · D<sup>βD</sup>
                     </Formula>
-                    <p>Pols recent = clamp(R<sub>ef</sub> / 15 mm × 100)</p>
+                    <p><b>ρ</b>, <b>βV</b> i <b>βD</b> són paràmetres versionats del gremi o de l’espècie. La humitat de l’aire no és un factor separat: el seu efecte d’assecat entra una sola vegada a <b>V</b>.</p>
                   </div>
                   <div>
-                    <b>2 · Preparació anterior</b>
-                    <Formula label="La preparació anterior combina mitjana, mínim i tendència d'humitat del sòl, balanç hídric i retenció de la ratxa seca.">
-                      Q = 0,30 M̄<sub>7</sub> + 0,15 M<sub>mín7</sub> + 0,15 ΔM<sub>7</sub> + 0,25 B<sub>8–30</sub> + 0,15 L<sub>seca</sub>
+                    <b>2 · Humitat i pluja efectiva</b>
+                    <Formula label="La humitat combina tres quarts de la resposta de la mitjana setmanal d’aigua extractable relativa i un quart de la resposta del mínim setmanal.">
+                      M = 0,75 R<sub>REW</sub>(mitjana<sub>7</sub>) + 0,25 R<sub>REW</sub>(mínim<sub>7</sub>)
                     </Formula>
-                    <p><b>B<sub>8–30</sub></b> compara pluja i ET₀ dels dies 8—30. <b>L<sub>seca</sub></b> = clamp((1 − dies secs / 14) × 100).</p>
+                    <p><b>REW = (θ − θ<sub>marciment</sub>) / (θ<sub>camp</sub> − θ<sub>marciment</sub>)</b>, limitada a 0—1,4. Els dos llindars provenen d’una taula versionada per textura del sòl.</p>
+                    <p><b>Q = 0,7 Hill(R<sub>ef</sub>, R<sub>50</sub>) + 0,3 Hill(N<sub>humit</sub>, N<sub>50</sub>)</b>, on Hill(x, x<sub>50</sub>) = x² / (x² + x<sub>50</sub>²). La finestra és de 14 o 21 dies segons el gremi, amb 26 dies per al cep. Cada dia humit té ≥ 1 mm i <b>R<sub>ef</sub> = max(0, pluja − N<sub>humit</sub> · 1 mm − 0,5 ET₀)</b>.</p>
                   </div>
                   <div>
-                    <b>3 · Resposta final</b>
-                    <Formula label="La pluja final és el màxim entre el pols recent i l'arrossegament anterior, modulat per la dependència de la humitat prèvia.">
-                      P = max(pols, 0,5 B<sub>8–30</sub> L<sub>seca</sub> / 100) · ((1 − d) + dQ / 100)
+                    <b>3 · Assecat atmosfèric i ratxa seca</b>
+                    <Formula label="El dèficit de pressió de vapor i la ratxa seca decauen exponencialment només després dels seus llindars de gràcia.">
+                      V = exp(−max(0, VPD<sub>7</sub> − v₀) / s<sub>v</sub>)<br />
+                      D = exp(−max(0, dies secs − gràcia) / τ)
                     </Formula>
-                    <p><b>d</b> tradueix la dependència d’humitat prèvia: moderada 0,55 · important 0,70 · molt important o essencial 0,85 · valor general 0,65.</p>
+                    <p>La pluja, la humitat del sòl, el VPD i la ratxa seca queden consolidats en una única sortida <b>W</b>; no reapareixen com a puntuacions independents.</p>
                   </div>
                 </div>
               </article>
 
               <article className="method-subscore">
-                <div className="method-subscore-title"><Sprout size={24} /><div><span>M · HUMITAT DEL SÒL</span><h4>Distància al nivell preferit.</h4></div></div>
-                <Formula label="La humitat del sòl perd punts linealment a mesura que s'allunya del valor objectiu.">
-                  M = clamp(100 − |m − μ| / 0,20 × 100)
+                <div className="method-subscore-title"><ThermometerSun size={24} /><div><span>T · RESPOSTA TÈRMICA</span><h4>Un òptim, amb descens progressiu als dos costats.</h4></div></div>
+                <Formula label="La temperatura segueix una corba exponencial centrada a l’òptim, amb una amplada diferent al costat fred i al càlid.">
+                  T = 2<sup>−((T̄ − T<sub>òpt</sub>) / h<sub>costat</sub>)²</sup>
                 </Formula>
-                <p>μ = 0,16 si la preferència és baixa · 0,24 si és mitjana · 0,32 si és alta. El factor usa la mitjana de 24 h, amb el valor actual com a alternativa.</p>
+                <p><b>T̄</b> és la mitjana configurada de 14 o 20 dies. Per a cada espècie, el punt mig de l’interval tèrmic numèric versionat inicialitza <b>T<sub>òpt</sub></b>, i cada extrem de l’interval correspon a mitja resposta. Una excepció explícita basada en literatura pot substituir aquests valors, com en el cas del cep. Així espècies fredòfiles i termòfiles no comparteixen la mateixa corba.</p>
               </article>
 
               <article className="method-subscore">
-                <div className="method-subscore-title"><ThermometerSun size={24} /><div><span>T · TEMPERATURA</span><h4>Rang ideal amb memòria de 10 dies.</h4></div></div>
-                <Formula label="Dins del rang de temperatura la resposta és cent; fora, perd punts segons la distància dividida per l'amplada del rang.">
-                  T = 100 dins [T<sub>mín</sub>, T<sub>màx</sub>]; fora: max(0, 100 − distància / amplada × 100)
+                <div className="method-subscore-title"><Gauge size={24} /><div><span>P · FENOLOGIA</span><h4>Dotze ancoratges mensuals formen una corba contínua.</h4></div></div>
+                <Formula label="La fenologia interpola suaument dotze ancoratges mensuals amb una transició cosinus.">
+                  u′ = (1 − cos(πu)) / 2<br />
+                  P = (1 − u′)p<sub>mes</sub> + u′p<sub>mes següent</sub>
                 </Formula>
-                <p>La referència és la mitjana de 10 dies. Una temperatura mínima ≤ 0 °C limita el factor a 10, o a 35 si la fitxa documenta tolerància. Una temperatura màxima situada ≥ 3 °C o ≥ 6 °C per sobre de l’ideal el limita a 50 o 25.</p>
+                <p>Els dotze ancoratges provenen directament del calendari ecològic únic de l’espècie: inactiu = 0, possible = 0,25, moderat = 0,50, bo = 0,80 i pic = 1. Corresponen al centre de cada mes i es llegeixen en hora d’Europa/Madrid. Fora de la finestra biològica, <b>P = 0</b> i, per tant, <b>F = 0</b>.</p>
               </article>
 
               <article className="method-subscore">
-                <div className="method-subscore-title"><Gauge size={24} /><div><span>HR + E · ATMOSFERA I TEMPORADA</span><h4>Resposta ràpida amb memòria limitada.</h4></div></div>
-                <Formula label="Cada finestra d'humitat relativa puntua 100 entre el 65 % i el 90 %; fora d’aquest interval, resta 2 punts per cada punt de distància respecte del 75 %.">
-                  H(h) = 100 si 65 ≤ h ≤ 90; fora: max(0, 100 − 2|h − 75|)
+                <div className="method-subscore-title"><Sprout size={24} /><div><span>E · EXTREMS TÈRMICS</span><h4>La interrupció forma part del producte.</h4></div></div>
+                <Formula label="El modificador d’extrems decau a la meitat per cada vida mitjana configurada d’hores de gelada o calor.">
+                  E = 2<sup>−hores gelada / vida mitjana gelada</sup> · 2<sup>−hores calor / vida mitjana calor</sup>
                 </Formula>
-                <p>La base és <b>H(HR̄<sub>24 h</sub>)</b>. Si la mitjana de 7 dies és inferior al 65% i dona una resposta pitjor, HR = 0,75 H(HR̄<sub>24 h</sub>) + 0,25 H(HR̄<sub>7 d</sub>); en cap altre cas la finestra setmanal augmenta o redueix la puntuació. Sense aquesta finestra, conservem la base de 24 h.</p>
-                <div className="method-season-scale" aria-label="Puntuacions d'activitat estacional">
-                  <span><i />Inactiva <b>0</b></span>
-                  <span><i />Possible <b>35</b></span>
-                  <span><i />Moderada <b>65</b></span>
-                  <span><i />Bona <b>85</b></span>
-                  <span><i />Pic <b>100</b></span>
-                </div>
+                <p>Comptem gelada a ≤ 0 °C i calor a ≥ 27 °C durant la mateixa finestra de 14 o 20 dies que T. Les vides mitjanes representen la tolerància versionada, i el producte ja incorpora tota la reducció per extrems.</p>
+              </article>
+            </div>
+
+            <div className="method-static-formulas">
+              <article className="method-formula-card">
+                <span className="method-formula-kicker">HÀBITAT EFECTIU</span>
+                <Formula label="L’hàbitat efectiu és la cobertura compatible multiplicada per la resposta d’altitud.">
+                  H = C · A
+                </Formula>
+                <p><b>C</b> és la fracció exacta de coberta que supera les portes estàtiques; <b>A</b> és la resposta d’altitud agregada dins d’aquella cobertura. Totes dues entren normalitzades entre 0 i 1. <b>H</b> és una fracció derivada d’àrea compatible efectiva, no una puntuació ni una probabilitat de presència.</p>
+              </article>
+              <article className="method-formula-card method-formula-card-accent">
+                <span className="method-formula-kicker">ÍNDEX D’OPORTUNITAT DE CEL·LA</span>
+                <Formula label="L’índex d’oportunitat és l’hàbitat efectiu multiplicat per l’índex condicional de fructificació.">
+                  O = H · F
+                </Formula>
+                <p><b>F</b> respon «com són les condicions dins de l’hàbitat?»; <b>O</b> respon «quina oportunitat relativa representa tota la cel·la?». Tots dos són índexs ordinals, no probabilitats.</p>
               </article>
             </div>
           </div>
@@ -394,7 +395,7 @@ export default function MethodPage() {
                 <p className="eyebrow light"><ShieldCheck size={15} /> Prudència abans que precisió aparent</p>
                 <h2>De vegades, la millor<br />puntuació és cap.</h2>
               </div>
-              <p>No omplim buits amb suposicions. Abans de pintar una cel·la, comprovem actualitat, evidència estàtica i completitud. Després apliquem límits ecològics que una mitjana no pot compensar.</p>
+              <p>No omplim buits ni tornem a repartir exponents entre els components disponibles. Abans de calcular una cel·la, comprovem actualitat, evidència estàtica i totes les entrades requerides.</p>
             </header>
 
             <div className="method-publication-grid">
@@ -402,44 +403,44 @@ export default function MethodPage() {
                 <span><CircleSlash2 size={21} /> ES MOSTRA «SENSE DADES»</span>
                 <ul>
                   <li><Check size={16} /> La instantània és antiga.</li>
-                  <li><Check size={16} /> Falta hàbitat compatible o evidència del sòl.</li>
-                  <li><Check size={16} /> Falta pluja, humitat del sòl o temperatura.</li>
-                  <li><Check size={16} /> Els factors coneguts pesen menys del 70%.</li>
+                  <li><Check size={16} /> Falta evidència estàtica verificada.</li>
+                  <li><Check size={16} /> Falta una entrada requerida de P, W, T o E.</li>
+                  <li><Check size={16} /> Una finestra temporal no és completa.</li>
                 </ul>
               </article>
               <article className="method-publish-card method-publish-zero">
                 <span><CircleSlash2 size={21} /> RESULTAT FORÇAT A 0</span>
                 <ul>
-                  <li><Check size={16} /> Cobertura ecològica exacta = 0.</li>
-                  <li><Check size={16} /> Altitud al límit exterior o més enllà.</li>
-                  <li><Check size={16} /> Mes d’activitat inactiva per a l’espècie.</li>
+                  <li><Check size={16} /> Hàbitat efectiu H = 0 implica O = 0.</li>
+                  <li><Check size={16} /> Fenologia P = 0 implica F = 0.</li>
+                  <li><Check size={16} /> Qualsevol component nul anul·la el producte.</li>
                 </ul>
               </article>
               <article className="method-publish-card method-publish-cap">
-                <span><Gauge size={21} /> RESULTAT LIMITAT</span>
+                <span><Gauge size={21} /> TRES LECTURES SEPARADES</span>
                 <ul>
-                  <li><Check size={16} /> Gelada recent: màxim 20; 55 amb tolerància documentada.</li>
-                  <li><Check size={16} /> Mes només possible: màxim 55.</li>
-                  <li><Check size={16} /> Estrès actual: pluja, temperatura, sòl i humitat imposen un sostre.</li>
+                  <li><Check size={16} /> H: hàbitat efectiu de la cel·la.</li>
+                  <li><Check size={16} /> F: condicions dins de l’hàbitat.</li>
+                  <li><Check size={16} /> O: oportunitat relativa a tota la cel·la.</li>
                 </ul>
               </article>
             </div>
 
             <div className="method-stress">
               <div>
-                <p className="eyebrow light">El sostre d’estrès</p>
-                <h3>Un factor molt dolent no pot quedar amagat dins d’una bona mitjana.</h3>
-                <p>Per cada factor dinàmic per sota de 45, definim la severitat <b>e = (45 − s) / 45</b>. Ordenem les severitats i fem servir les dues més grans.</p>
+                <p className="eyebrow light">Co-limitació explícita</p>
+                <h3>No hi ha mitjana compensatòria ni límits afegits després.</h3>
+                <p>W i T es combinen geomètricament; P i E multipliquen el resultat. Les gelades i la calor ja formen part d’E, i la sequedat entra una sola vegada dins de W.</p>
               </div>
-              <Formula label="El sostre d'estrès és cinquanta-cinc menys vint vegades la severitat més gran i trenta-cinc vegades la segona.">
-                sostre = max(0, arrodoneix(55 − 20e<sub>1</sub> − 35e<sub>2</sub>))
+              <Formula label="Quan qualsevol component s’apropa a zero, el producte complet també s’apropa a zero.">
+                x → 0 ⇒ F → 0
               </Formula>
             </div>
 
             <div className="method-label-scale" aria-label="Etiquetes finals segons puntuació">
               <div className="method-label-scale-heading">
-                <span>ETIQUETA FINAL</span>
-                <small>després dels valors zero i dels límits</small>
+                <span>BANDA ORDINAL D’O</span>
+                <small>no equival a una probabilitat</small>
               </div>
               <div className="method-label-ranges">
                 {suitabilityScale.map((band, index) => (
@@ -456,6 +457,7 @@ export default function MethodPage() {
               <div>
                 <h3>Resolució de pantalla ≠ resolució de la font</h3>
                 <p>La cel·la visible pot ser de 250 m a 10 km, però sempre conserva la resolució real del relleu, la coberta, el sòl i el proveïdor meteorològic. La geologia conserva per separat l’escala cartogràfica 1:50.000, que no equival a una resolució de 50 m. Les condicions agregades preserven també mínimes, màximes, vent i hores de gelada.</p>
+                <p>En el resum regional, la mediana i els quartils d’<b>O</b> donen el mateix pes a cada cel·la de visualització de 10 km amb hàbitat compatible verificat: <b>H</b> ja forma part d’<b>O</b> i no es torna a aplicar. El resum separat d’<b>F</b> sí que es pondera per <b>H</b>, perquè descriu les condicions dins de l’hàbitat. Cap dels dos és una probabilitat regional.</p>
               </div>
             </aside>
           </div>
@@ -478,14 +480,14 @@ export default function MethodPage() {
               <p>Cada valor publicat conserva la font, la data i la resolució o escala d’origen. Les capes estàtiques es preparen fora de línia; les condicions ambientals s’ingereixen al servidor i mai es demanen directament des del navegador.</p>
             </header>
 
-            <div className="method-source-lanes" aria-label="Flux de les fonts cap als dos models">
+            <div className="method-source-lanes" aria-label="Flux de les fonts cap a la distribució i els índexs">
               <span><Mountain size={18} /> Territori estàtic</span>
               <i aria-hidden="true" />
               <span><CloudSun size={18} /> Condicions dinàmiques</span>
               <i aria-hidden="true" />
               <span><Database size={18} /> Instantània normalitzada</span>
               <i aria-hidden="true" />
-              <span><Sigma size={18} /> Distribució + predicció</span>
+              <span><Sigma size={18} /> Distribució + H + índexs F/O</span>
             </div>
 
             <div className="method-source-group">
@@ -505,7 +507,7 @@ export default function MethodPage() {
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>5 / 15 m</dd></div>
                     <div><dt><RefreshCw size={14} /> Atles</dt><dd>reconstrucció estàtica</dd></div>
-                    <div><dt>Ús</dt><dd>distribució + predicció</dd></div>
+                    <div><dt>Ús</dt><dd>distribució + hàbitat H</dd></div>
                     <div><dt>Llicència</dt><dd>CC BY 4.0</dd></div>
                   </dl>
                   <a href="https://www.icgc.cat/ca/Geoinformacio-i-mapes/Geoinformacio-en-linia-Geoserveis/WMS-i-WCS-Elevacions/WCS-del-Model-dElevacions-del-Terreny" target="_blank" rel="noreferrer">Fitxa oficial <ExternalLink size={14} /></a>
@@ -531,7 +533,7 @@ export default function MethodPage() {
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>250 m</dd></div>
                     <div><dt><RefreshCw size={14} /> Atles</dt><dd>reconstrucció estàtica</dd></div>
-                    <div><dt>Ús</dt><dd>hàbitat + factor sòl</dd></div>
+                    <div><dt>Ús</dt><dd>hàbitat + context hídric</dd></div>
                     <div><dt>Llicència</dt><dd>CC BY 4.0</dd></div>
                   </dl>
                   <a href="https://docs.isric.org/globaldata/soilgrids/index.html" target="_blank" rel="noreferrer">Documentació oficial <ExternalLink size={14} /></a>
@@ -544,7 +546,7 @@ export default function MethodPage() {
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>escala 1:50.000</dd></div>
                     <div><dt><RefreshCw size={14} /> Atles</dt><dd>reconstrucció estàtica</dd></div>
-                    <div><dt>Ús</dt><dd>context geològic · pes 0</dd></div>
+                    <div><dt>Ús</dt><dd>context geològic · fora d’H/F/O</dd></div>
                     <div><dt>Llicència</dt><dd>CC BY 4.0</dd></div>
                   </dl>
                   <a href="https://www.icgc.cat/ca/Geoinformacio-i-mapes/Dades-i-productes/Geoinformacio-geologica-i-geofisica/Cartografia-geologica/Mapa-geologic-150000" target="_blank" rel="noreferrer">Fitxa oficial <ExternalLink size={14} /></a>
@@ -558,7 +560,7 @@ export default function MethodPage() {
                     <div><dt><Ruler size={14} /> Detall oficial</dt><dd>1:5.000</dd></div>
                     <div><dt><RefreshCw size={14} /> Atles</dt><dd>versió fixada</dd></div>
                     <div><dt>Ús</dt><dd>retall cartogràfic</dd></div>
-                    <div><dt>Pes</dt><dd>0</dd></div>
+                    <div><dt>Ús en H/F/O</dt><dd>cap</dd></div>
                   </dl>
                   <a href="https://www.icgc.cat/ca/Geoinformacio-i-mapes/Dades-i-productes/Geoinformacio-cartografica/Divisions-administratives" target="_blank" rel="noreferrer">Fitxa oficial <ExternalLink size={14} /></a>
                 </article>
@@ -578,12 +580,12 @@ export default function MethodPage() {
                 <article className="method-source-card method-source-card-weather">
                   <div className="method-source-card-top"><CloudSun size={24} /><span>MÉTÉO-FRANCE · OPEN-METEO</span></div>
                   <h4>AROME France</h4>
-                  <p>Temperatura, humitat relativa, precipitació, vent i ET₀. Les sèries horàries alimenten les finestres de 24 h, la memòria d’humitat relativa de 7 dies, les finestres hídriques de 3/7/30 dies i els extrems de temperatura de 10 dies.</p>
+                  <p>Temperatura, humitat relativa, precipitació, vent i ET₀. Les sèries horàries alimenten la temperatura mitjana de 14 o 20 dies, les hores d’extrems, la pluja efectiva, els dies humits i el VPD setmanal.</p>
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>2,5 km · horari</dd></div>
                     <div><dt><RefreshCw size={14} /> Proveïdor</dt><dd>cada 3 h</dd></div>
                     <div><dt><RefreshCw size={14} /> Atles</dt><dd>diari</dd></div>
-                    <div><dt>Ús</dt><dd>P · T · HR</dd></div>
+                    <div><dt>Ús</dt><dd>W · T · E</dd></div>
                   </dl>
                   <a href="https://open-meteo.com/en/docs/meteofrance-api" target="_blank" rel="noreferrer">Documentació del model <ExternalLink size={14} /></a>
                 </article>
@@ -595,7 +597,7 @@ export default function MethodPage() {
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>9 km · horari</dd></div>
                     <div><dt><RefreshCw size={14} /> Atles</dt><dd>diari</dd></div>
-                    <div><dt>Ús</dt><dd>M + memòria de P</dd></div>
+                    <div><dt>Ús</dt><dd>component W</dd></div>
                     <div><dt>Unitat</dt><dd>m³/m³</dd></div>
                   </dl>
                   <a href="https://open-meteo.com/en/docs" target="_blank" rel="noreferrer">Documentació de variables <ExternalLink size={14} /></a>
@@ -622,7 +624,7 @@ export default function MethodPage() {
                   <div><dt>Dataset key</dt><dd>8583f4f6…45e9a</dd></div>
                   <div><dt>DOI</dt><dd>10.15468/ttivpp</dd></div>
                   <div><dt>Llicència</dt><dd>CC BY-NC 4.0</dd></div>
-                  <div><dt>Pes al model</dt><dd>0</dd></div>
+                  <div><dt>Ús en H/F/O</dt><dd>cap</dd></div>
                 </dl>
                 <a href="https://www.gbif.org/dataset/8583f4f6-f762-11e1-a439-00145eb45e9a" target="_blank" rel="noreferrer">Fitxa i llicència <ExternalLink size={14} /></a>
               </article>
@@ -632,7 +634,7 @@ export default function MethodPage() {
               <ShieldCheck size={25} />
               <div>
                 <h3>Una font no hereta la resolució de la cel·la</h3>
-                <p>Una predicció pintada a 250 m pot compartir el mateix punt atmosfèric de 2,5 km i la mateixa humitat del sòl de 9 km amb moltes cel·les veïnes. Guardem resolucions i escales cartogràfiques per separat i exposem camps absents, antiguitat i confiança.</p>
+                <p>Un índex O pintat a 250 m pot compartir el mateix punt atmosfèric de 2,5 km i la mateixa humitat del sòl de 9 km amb moltes cel·les veïnes. Guardem resolucions i escales cartogràfiques per separat i exposem camps absents, antiguitat, confiança i versió del model.</p>
               </div>
             </aside>
           </div>
@@ -646,8 +648,8 @@ export default function MethodPage() {
             <h2>Ara llegiu el mapa<br />amb uns altres ulls.</h2>
           </div>
           <div>
-            <p>Seleccioneu una espècie i una cel·la per veure la puntuació, els factors disponibles, la procedència i la incertesa que hi ha al darrere.</p>
-            <Link href="/map" className="button">Obriu el mapa de predicció <ArrowUpRight size={17} /></Link>
+            <p>Seleccioneu una espècie i una cel·la per separar l’hàbitat efectiu H, les condicions F i l’oportunitat de cel·la O, amb la procedència i els límits de les dades.</p>
+            <Link href="/map" className="button">Obriu el mapa de condicions <ArrowUpRight size={17} /></Link>
           </div>
         </div>
       </section>

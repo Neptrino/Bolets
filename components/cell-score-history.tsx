@@ -36,7 +36,7 @@ function chartDayLabel(timestamp: number) {
   return chartDayFormatter.format(new Date(timestamp * 1000));
 }
 
-function scoreChartPlugin(boundaryTimestamp?: number): uPlot.Plugin {
+function scoreChartPlugin(boundaryIndex?: number): uPlot.Plugin {
   return {
     hooks: {
       draw: (chart) => {
@@ -47,8 +47,8 @@ function scoreChartPlugin(boundaryTimestamp?: number): uPlot.Plugin {
         context.textAlign = "center";
         context.textBaseline = "middle";
 
-        if (boundaryTimestamp !== undefined) {
-          const boundaryX = chart.valToPos(boundaryTimestamp, "x", true);
+        if (boundaryIndex !== undefined) {
+          const boundaryX = chart.valToPos(boundaryIndex, "x", true);
           context.strokeStyle = "rgba(117, 91, 67, 0.42)";
           context.lineWidth = ratio;
           context.setLineDash([4 * ratio, 5 * ratio]);
@@ -66,7 +66,7 @@ function scoreChartPlugin(boundaryTimestamp?: number): uPlot.Plugin {
             .flatMap((score, index) => score === null || score === undefined ? [] : [index]);
           seriesValues.forEach((score, index) => {
             if (score === null || score === undefined) return;
-            if (seriesIndex === 2 && boundaryTimestamp === chart.data[0][index]) return;
+            if (seriesIndex === 2 && boundaryIndex === index) return;
             if (narrow && index !== availableIndices.at(-1)) return;
             const x = chart.valToPos(chart.data[0][index], "x", true);
             const pointY = chart.valToPos(score, "y", true);
@@ -149,6 +149,10 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       ...(forecast?.points.map((point) => new Date(point.validAt).getTime() / 1000) ?? []),
     ];
     if (!timestamps.length) return;
+    // This is a daily summary. Historical and forecast providers can publish
+    // their daily values at different hours, so use ordinal daily slots rather
+    // than those raw hours to avoid visually compressing adjacent dates.
+    const dailySlots = timestamps.map((_timestamp, index) => index);
     const observedScores = [
       ...observed.map((point) => point.score),
       ...Array(forecast?.points.length ?? 0).fill(null),
@@ -163,18 +167,18 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     forecast?.points.forEach((point, index) => {
       projectedScores[observed.length + index] = point.score;
     });
-    const boundaryTimestamp = forecast && anchorObservedIndex >= 0
-      ? timestamps[anchorObservedIndex]
+    const boundaryIndex = forecast && anchorObservedIndex >= 0
+      ? anchorObservedIndex
       : undefined;
     const chart = new uPlot({
       width: Math.max(host.clientWidth, 1),
       height: 260,
       padding: [18, 14, 0, 4],
-      plugins: [scoreChartPlugin(boundaryTimestamp)],
+      plugins: [scoreChartPlugin(boundaryIndex)],
       series: [
         {},
         {
-          label: "Observat",
+          label: "Calculat",
           stroke: "#28734e",
           width: 3,
           points: {
@@ -201,8 +205,10 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       ],
       scales: {
         x: {
-          time: true,
-          range: (_chart, minimum, maximum) => [minimum - 6 * 3600, maximum + 6 * 3600],
+          time: false,
+          range: (_chart, minimum, maximum) => minimum === maximum
+            ? [minimum - 0.5, maximum + 0.5]
+            : [minimum - 0.35, maximum + 0.35],
         },
         y: { range: [0, 100] },
       },
@@ -213,10 +219,11 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
           size: 34,
           gap: 9,
           splits: (currentChart) => currentChart.width < 520
-            ? timestamps.filter((_timestamp, index) =>
+            ? dailySlots.filter((_slot, index) =>
               index === anchorObservedIndex || index === timestamps.length - 1 || index % 2 === 0)
-            : timestamps,
-          values: (_chart, values) => values.map(chartDayLabel),
+            : dailySlots,
+          values: (_chart, values) => values.map((slot) =>
+            chartDayLabel(timestamps[Math.round(slot)] ?? timestamps[0]!)),
           grid: { stroke: "rgba(105, 112, 99, 0.10)", width: 1 },
           ticks: { show: false },
           border: { show: false },
@@ -235,7 +242,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       ],
       legend: { show: false },
       cursor: { show: false },
-    }, [timestamps, observedScores, projectedScores], host);
+    }, [dailySlots, observedScores, projectedScores], host);
     const observer = new ResizeObserver(() => chart.setSize({ width: Math.max(host.clientWidth, 1), height: 260 }));
     observer.observe(host);
     return () => { observer.disconnect(); chart.destroy(); };
@@ -284,7 +291,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     <section className="cell-score-history" aria-labelledby={titleId}>
       <div className="cell-score-history-heading">
         <div>
-          <p className="eyebrow">Idoneïtat ambiental local</p>
+          <p className="eyebrow">Oportunitat territorial local</p>
           <h4 id={titleId}>{title}</h4>
         </div>
         <span className={change > 0 ? "improving" : change < 0 ? "worsening" : "steady"}>
@@ -292,7 +299,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
         </span>
       </div>
       <div className="cell-score-history-legend" aria-hidden="true">
-        {observed.length ? <span><i className="observed" />Observat</span> : null}
+        {observed.length ? <span><i className="observed" />Calculat</span> : null}
         {forecast ? <>
           <span><i className="projected" />Projectat des d’ara</span>
           {observed.length ? <span><i className="boundary" />Inici de la projecció</span> : null}
@@ -304,10 +311,11 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
           {forecast.points.map((point) => (
             <li key={point.validAt}>
               <span>+{point.horizonDays} {point.horizonDays === 1 ? "dia" : "dies"}</span>
-              <strong>{scoreLabel(point.score)}</strong>
+              <strong>O · {scoreLabel(point.opportunityIndex)}</strong>
               <small>
-                <span className="visually-hidden">Confiança de la projecció: </span>
-                {confidenceLabel(point.horizonConfidence)}
+                F · {scoreLabel(point.fruitingConditionsScore)} ·{" "}
+                <span className="visually-hidden">Confiança meteorològica de l’horitzó: </span>
+                confiança meteo {confidenceLabel(point.horizonConfidence)}
               </small>
             </li>
           ))}
@@ -318,20 +326,21 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       <p className="cell-score-history-note">
         {forecast
           ? `La projecció parteix de les condicions observades actuals i hi aplica els canvis d’una mateixa emissió de previsió: ECMWF per a l’atmosfera i Open-Meteo per al sòl. No és una predicció de l’aparició de bolets. La incertesa augmenta amb l’horitzó. Generada el ${dayLabel(forecast.generatedAt)} amb dades a ${Math.round(forecast.sourceResolutionM / 1000)} km.`
-          : "Cada punt observat recalcula el model actual amb les dades ambientals verificades d’aquell dia."}
+          : "Cada punt calculat aplica el mateix model a les dades ambientals verificades d’aquell dia."}
+        {` Versió: ${state.timeline.modelVersion}.`}
       </p>
       <table className="visually-hidden">
-        <caption>Dades de l’evolució observada i la projecció ambiental</caption>
-        <thead><tr><th scope="col">Data</th><th scope="col">Tipus</th><th scope="col">Puntuació</th><th scope="col">Confiança de la projecció</th></tr></thead>
+        <caption>Dades de l’evolució calculada i la projecció ambiental</caption>
+        <thead><tr><th scope="col">Data</th><th scope="col">Tipus</th><th scope="col">Oportunitat</th><th scope="col">Condicions dins l’hàbitat</th><th scope="col">Confiança meteorològica de l’horitzó</th></tr></thead>
         <tbody>
           {observed.map((point) => (
             <tr key={`observed:${point.observedAt}`}>
-              <td>{dayLabel(point.observedAt)}</td><td>Observada</td><td>{scoreLabel(point.score)}</td><td>No aplicable</td>
+              <td>{dayLabel(point.observedAt)}</td><td>Calculada</td><td>{scoreLabel(point.opportunityIndex)}</td><td>{scoreLabel(point.fruitingConditionsScore)}</td><td>No aplicable</td>
             </tr>
           ))}
           {forecast?.points.map((point) => (
             <tr key={`projected:${point.validAt}`}>
-              <td>{dayLabel(point.validAt)}</td><td>Projectada</td><td>{scoreLabel(point.score)}</td><td>{confidenceLabel(point.horizonConfidence)}</td>
+              <td>{dayLabel(point.validAt)}</td><td>Projectada</td><td>{scoreLabel(point.opportunityIndex)}</td><td>{scoreLabel(point.fruitingConditionsScore)}</td><td>{confidenceLabel(point.horizonConfidence)}</td>
             </tr>
           ))}
         </tbody>

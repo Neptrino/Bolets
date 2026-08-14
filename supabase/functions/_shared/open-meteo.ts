@@ -12,6 +12,10 @@ export type RequestProfile = "complete" | "atmosphere" | "soil";
 export const FORECAST_HORIZON_HOURS = [24, 48, 72, 96, 120] as const;
 export const FORECAST_BASELINE_HOURS = 0 as const;
 const FORECAST_OUTPUT_HOURS = [FORECAST_BASELINE_HOURS, ...FORECAST_HORIZON_HOURS] as const;
+// Portable hydrothermal-v1 thresholds. Species vary the decay/half-life of
+// these exposures in the scorer, while ingestion keeps one stable contract.
+export const RAINFALL_DAY_THRESHOLD_MM = 1;
+export const HEAT_HOUR_THRESHOLD_C = 27;
 
 const finiteNumber = (value: unknown) => typeof value === "number" && Number.isFinite(value) ? value : undefined;
 
@@ -54,15 +58,13 @@ const soilVariables = ["soil_moisture_3_to_9cm"];
 
 const requiredAtmosphericFields = [
   "temperatureC",
-  "temperatureMin24hC",
-  "temperatureAvg24hC",
-  "temperatureMax24hC",
-  "temperatureMin7dC",
-  "frostHours7d",
-  "temperatureMin10dC",
-  "temperatureAvg10dC",
-  "temperatureMax10dC",
-  "frostHours10d",
+  "temperatureAvg7dC",
+  "temperatureAvg14dC",
+  "frostHours14d",
+  "heatHours14d",
+  "temperatureAvg20dC",
+  "frostHours20d",
+  "heatHours20d",
   "relativeHumidity",
   "relativeHumidityMin24h",
   "relativeHumidityAvg24h",
@@ -71,11 +73,22 @@ const requiredAtmosphericFields = [
   "rainfall24hMm",
   "rainfall3dMm",
   "rainfall7dMm",
+  "rainfallDays7d",
+  "rainfall14dMm",
+  "rainfallDays14d",
+  "rainfall21dMm",
+  "rainfallDays21d",
+  "rainfall26dMm",
+  "rainfallDays26d",
   "rainfallPrevious23dMm",
   "rainfall30dMm",
+  "rainfallDays30d",
   "drySpellDays",
   "evapotranspiration3dMm",
   "evapotranspiration7dMm",
+  "evapotranspiration14dMm",
+  "evapotranspiration21dMm",
+  "evapotranspiration26dMm",
   "evapotranspiration30dMm",
   "windKmh",
   "windAvg24hKmh",
@@ -116,7 +129,11 @@ export function configureOpenMeteoForecastRequest(url: URL, profile: "atmosphere
   const hourlyVariables = profile === "atmosphere"
     ? atmosphericHourlyVariables
     : soilVariables;
-  url.searchParams.set("past_hours", profile === "soil" ? "168" : "720");
+  // Keep one extra day beyond the longest trailing window. Forecast-provider
+  // model boundaries can omit part of the nominal first historical day; the
+  // overlap keeps the horizon-zero 7-day soil and 30-day drought windows
+  // complete without shortening either calculation.
+  url.searchParams.set("past_hours", profile === "soil" ? "192" : "744");
   // Open-Meteo includes the base hour in this count. 121 samples therefore
   // reach the exact +120 h target used by the fifth daily projection.
   url.searchParams.set("forecast_hours", "121");
@@ -176,6 +193,15 @@ function sum(values: number[], expectedHours: number) {
   return values.reduce((total, value) => total + value, 0);
 }
 
+function thresholdHours(
+  values: number[],
+  expectedHours: number,
+  matches: (value: number) => boolean,
+) {
+  if (values.length !== expectedHours) return undefined;
+  return values.filter(matches).length;
+}
+
 function drySpellDays(precipitation30d: number[]) {
   if (precipitation30d.length < 540) return undefined;
   let dryDays = 0;
@@ -191,12 +217,27 @@ function drySpellDays(precipitation30d: number[]) {
   return dryDays;
 }
 
+function rainfallDays(precipitation: number[], days: number) {
+  const expectedHours = days * 24;
+  if (precipitation.length !== expectedHours) return undefined;
+  // Consecutive trailing 24-hour bins end at the snapshot's valid hour; no bin
+  // contains provider values later than the score or forecast valid time.
+  let count = 0;
+  for (let start = 0; start < expectedHours; start += 24) {
+    const dailyTotal = precipitation
+      .slice(start, start + 24)
+      .reduce((total, value) => total + value, 0);
+    if (dailyTotal >= RAINFALL_DAY_THRESHOLD_MM) count += 1;
+  }
+  return count;
+}
+
 export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: OpenMeteoLocation = location, profile: RequestProfile = "complete") {
   const endIndex = lastHourlyIndex(location);
   const soilEndIndex = lastHourlyIndex(soilLocation);
-  const temperatures24h = numericWindow(location, "temperature_2m", 24, endIndex);
   const temperatures7d = numericWindow(location, "temperature_2m", 168, endIndex);
-  const temperatures10d = numericWindow(location, "temperature_2m", 240, endIndex);
+  const temperatures14d = numericWindow(location, "temperature_2m", 336, endIndex);
+  const temperatures20d = numericWindow(location, "temperature_2m", 480, endIndex);
   const humidity24h = numericWindow(location, "relative_humidity_2m", 24, endIndex);
   const humidity7d = numericWindow(location, "relative_humidity_2m", 168, endIndex);
   const soilMoisture24h = numericWindow(soilLocation, "soil_moisture_3_to_9cm", 24, soilEndIndex);
@@ -207,11 +248,16 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
   const precipitation24h = numericWindow(location, "precipitation", 24, endIndex);
   const precipitation3d = numericWindow(location, "precipitation", 72, endIndex);
   const precipitation7d = numericWindow(location, "precipitation", 168, endIndex);
+  const precipitation14d = numericWindow(location, "precipitation", 336, endIndex);
+  const precipitation21d = numericWindow(location, "precipitation", 504, endIndex);
+  const precipitation26d = numericWindow(location, "precipitation", 624, endIndex);
   const precipitation30d = numericWindow(location, "precipitation", 720, endIndex);
   const evapotranspiration3d = numericWindow(location, "et0_fao_evapotranspiration", 72, endIndex);
   const evapotranspiration7d = numericWindow(location, "et0_fao_evapotranspiration", 168, endIndex);
+  const evapotranspiration14d = numericWindow(location, "et0_fao_evapotranspiration", 336, endIndex);
+  const evapotranspiration21d = numericWindow(location, "et0_fao_evapotranspiration", 504, endIndex);
+  const evapotranspiration26d = numericWindow(location, "et0_fao_evapotranspiration", 624, endIndex);
   const evapotranspiration30d = numericWindow(location, "et0_fao_evapotranspiration", 720, endIndex);
-  const temperature = summary(temperatures24h, 24);
   const humidity = summary(humidity24h, 24);
   const humidityWeek = summary(humidity7d, 168);
   const soilMoisture = summary(soilMoisture24h, 24);
@@ -220,26 +266,34 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
   const wind = summary(wind24h, 24);
   const gusts = summary(gusts24h, 24);
   const temperature7d = summary(temperatures7d, 168);
-  const temperature10d = summary(temperatures10d, 240);
-  const hasSevenDays = temperature7d.average !== undefined;
-  const hasTenDays = temperature10d.average !== undefined;
+  const temperature14d = summary(temperatures14d, 336);
+  const temperature20d = summary(temperatures20d, 480);
   const rainfall24hMm = sum(precipitation24h, 24);
   const rainfall3dMm = sum(precipitation3d, 72);
   const rainfall7dMm = sum(precipitation7d, 168);
+  const rainfall14dMm = sum(precipitation14d, 336);
+  const rainfall21dMm = sum(precipitation21d, 504);
+  const rainfall26dMm = sum(precipitation26d, 624);
   const rainfall30dMm = sum(precipitation30d, 720);
 
   const values = {
     weatherObservedAt: validTime(location),
     temperatureC: finiteNumber(location.current?.temperature_2m),
-    temperatureMin24hC: temperature.min,
-    temperatureAvg24hC: temperature.average,
-    temperatureMax24hC: temperature.max,
-    temperatureMin7dC: temperature7d.min,
-    frostHours7d: hasSevenDays ? temperatures7d.filter((value) => value <= 0).length : undefined,
-    temperatureMin10dC: temperature10d.min,
-    temperatureAvg10dC: temperature10d.average,
-    temperatureMax10dC: temperature10d.max,
-    frostHours10d: hasTenDays ? temperatures10d.filter((value) => value <= 0).length : undefined,
+    temperatureAvg7dC: temperature7d.average,
+    temperatureAvg14dC: temperature14d.average,
+    frostHours14d: thresholdHours(temperatures14d, 336, (value) => value <= 0),
+    heatHours14d: thresholdHours(
+      temperatures14d,
+      336,
+      (value) => value >= HEAT_HOUR_THRESHOLD_C,
+    ),
+    temperatureAvg20dC: temperature20d.average,
+    frostHours20d: thresholdHours(temperatures20d, 480, (value) => value <= 0),
+    heatHours20d: thresholdHours(
+      temperatures20d,
+      480,
+      (value) => value >= HEAT_HOUR_THRESHOLD_C,
+    ),
     relativeHumidity: finiteNumber(location.current?.relative_humidity_2m),
     relativeHumidityMin24h: humidity.min,
     relativeHumidityAvg24h: humidity.average,
@@ -258,13 +312,24 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
     rainfall24hMm,
     rainfall3dMm,
     rainfall7dMm,
+    rainfallDays7d: rainfallDays(precipitation7d, 7),
+    rainfall14dMm,
+    rainfallDays14d: rainfallDays(precipitation14d, 14),
+    rainfall21dMm,
+    rainfallDays21d: rainfallDays(precipitation21d, 21),
+    rainfall26dMm,
+    rainfallDays26d: rainfallDays(precipitation26d, 26),
     rainfallPrevious23dMm: rainfall30dMm !== undefined && rainfall7dMm !== undefined
       ? Math.max(0, rainfall30dMm - rainfall7dMm)
       : undefined,
     rainfall30dMm,
+    rainfallDays30d: rainfallDays(precipitation30d, 30),
     drySpellDays: drySpellDays(precipitation30d),
     evapotranspiration3dMm: sum(evapotranspiration3d, 72),
     evapotranspiration7dMm: sum(evapotranspiration7d, 168),
+    evapotranspiration14dMm: sum(evapotranspiration14d, 336),
+    evapotranspiration21dMm: sum(evapotranspiration21d, 504),
+    evapotranspiration26dMm: sum(evapotranspiration26d, 624),
     evapotranspiration30dMm: sum(evapotranspiration30d, 720),
     windKmh: finiteNumber(location.current?.wind_speed_10m),
     windAvg24hKmh: wind.average,
@@ -342,6 +407,11 @@ function projectedDrySpellDays(series: HourlySeries, target: number) {
   return drySpellDays(values);
 }
 
+function projectedRainfallDays(series: HourlySeries, target: number, days: number) {
+  const values = completeWindow(series, target, days * 24);
+  return values ? rainfallDays(values, days) : undefined;
+}
+
 function projectedSoilTrend(series: HourlySeries, target: number) {
   const recent = completeWindow(series, target, 24);
   const previous = completeWindow(series, target - 24 * 3600, 144);
@@ -393,9 +463,9 @@ export function normalizeOpenMeteoForecast(
 
   const output = FORECAST_OUTPUT_HOURS.map((horizonHours) => {
     const target = baseHour! + horizonHours * 3600;
-    const temperature24h = completeSummary(temperature, target, 24);
     const temperature7d = completeSummary(temperature, target, 168);
-    const temperature10d = completeSummary(temperature, target, 240);
+    const temperature14d = completeSummary(temperature, target, 336);
+    const temperature20d = completeSummary(temperature, target, 480);
     const humidity24h = completeSummary(humidity, target, 24);
     const humidity7d = completeSummary(humidity, target, 168);
     const soil24h = completeSummary(soilMoisture, target, 24);
@@ -405,22 +475,28 @@ export function normalizeOpenMeteoForecast(
     const rainfall24hMm = completeSum(precipitation, target, 24);
     const rainfall3dMm = completeSum(precipitation, target, 72);
     const rainfall7dMm = completeSum(precipitation, target, 168);
+    const rainfall14dMm = completeSum(precipitation, target, 336);
+    const rainfall21dMm = completeSum(precipitation, target, 504);
+    const rainfall26dMm = completeSum(precipitation, target, 624);
     const rainfall30dMm = completeSum(precipitation, target, 720);
     const evapotranspiration3dMm = completeSum(evapotranspiration, target, 72);
     const evapotranspiration7dMm = completeSum(evapotranspiration, target, 168);
+    const evapotranspiration14dMm = completeSum(evapotranspiration, target, 336);
+    const evapotranspiration21dMm = completeSum(evapotranspiration, target, 504);
+    const evapotranspiration26dMm = completeSum(evapotranspiration, target, 624);
     const evapotranspiration30dMm = completeSum(evapotranspiration, target, 720);
     const values = {
       weatherObservedAt: new Date(target * 1000).toISOString(),
       temperatureC: temperature.get(target),
-      temperatureMin24hC: temperature24h.min,
-      temperatureAvg24hC: temperature24h.average,
-      temperatureMax24hC: temperature24h.max,
-      temperatureMin7dC: temperature7d.min,
-      frostHours7d: temperature7d.values?.filter((value) => value <= 0).length,
-      temperatureMin10dC: temperature10d.min,
-      temperatureAvg10dC: temperature10d.average,
-      temperatureMax10dC: temperature10d.max,
-      frostHours10d: temperature10d.values?.filter((value) => value <= 0).length,
+      temperatureAvg7dC: temperature7d.average,
+      temperatureAvg14dC: temperature14d.average,
+      frostHours14d: temperature14d.values?.filter((value) => value <= 0).length,
+      heatHours14d: temperature14d.values
+        ?.filter((value) => value >= HEAT_HOUR_THRESHOLD_C).length,
+      temperatureAvg20dC: temperature20d.average,
+      frostHours20d: temperature20d.values?.filter((value) => value <= 0).length,
+      heatHours20d: temperature20d.values
+        ?.filter((value) => value >= HEAT_HOUR_THRESHOLD_C).length,
       relativeHumidity: humidity.get(target),
       relativeHumidityMin24h: humidity24h.min,
       relativeHumidityAvg24h: humidity24h.average,
@@ -437,13 +513,24 @@ export function normalizeOpenMeteoForecast(
       rainfall24hMm,
       rainfall3dMm,
       rainfall7dMm,
+      rainfallDays7d: projectedRainfallDays(precipitation, target, 7),
+      rainfall14dMm,
+      rainfallDays14d: projectedRainfallDays(precipitation, target, 14),
+      rainfall21dMm,
+      rainfallDays21d: projectedRainfallDays(precipitation, target, 21),
+      rainfall26dMm,
+      rainfallDays26d: projectedRainfallDays(precipitation, target, 26),
       rainfallPrevious23dMm: rainfall30dMm !== undefined && rainfall7dMm !== undefined
         ? Math.max(0, rainfall30dMm - rainfall7dMm)
         : undefined,
       rainfall30dMm,
+      rainfallDays30d: projectedRainfallDays(precipitation, target, 30),
       drySpellDays: projectedDrySpellDays(precipitation, target),
       evapotranspiration3dMm,
       evapotranspiration7dMm,
+      evapotranspiration14dMm,
+      evapotranspiration21dMm,
+      evapotranspiration26dMm,
       evapotranspiration30dMm,
       windKmh: wind.get(target),
       windAvg24hKmh: wind24h.average,

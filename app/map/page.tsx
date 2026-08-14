@@ -12,7 +12,7 @@ import type { MapViewMode, RegionId } from "@/src/lib/types";
 
 export const metadata: Metadata = {
   title: "Mapa de bolets de Catalunya",
-  description: "Mapa de bolets de Catalunya amb compatibilitat d’hàbitat i condicions de fructificació actuals per espècie i regió.",
+  description: "Mapa de bolets de Catalunya amb hàbitat efectiu i índexs ordinals de condicions de fructificació per espècie i regió.",
   alternates: { canonical: "/map" },
   openGraph: {
     url: "/map",
@@ -44,12 +44,12 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
     <div className="page-width map-page-heading">
       <div className="map-page-title">
         <p className="eyebrow">Lectura territorial</p>
-        <h1>{isCompatibility ? "Mapa de compatibilitat" : "Mapa de predicció"}</h1>
+        <h1>{isCompatibility ? "Mapa de compatibilitat" : "Mapa de condicions"}</h1>
         <p><span className="visually-hidden">Mapa de bolets de Catalunya. </span>{species.predictionMode === "habitat_only"
           ? species.predictionCaveat
           : isCompatibility
-          ? "Exploreu on la coberta del sòl, l’altitud i el pH encaixen amb l’espècie. No és una predicció de fructificació."
-          : "Combina l’hàbitat compatible amb les condicions ambientals actuals i només mostra resultats quan les dades són prou completes."}</p>
+          ? "Explora on la coberta del sòl, l’altitud i el pH encaixen amb l’espècie. No és una predicció de fructificació."
+          : "Mostra l’oportunitat relativa de cada cel·la combinant hàbitat efectiu i condicions ambientals. És un índex ordinal, no una probabilitat de presència."}</p>
       </div>
       <div className="map-controls">
         <div className="map-species-picker">
@@ -89,9 +89,10 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
               <p>El blau identifica els sectors on coincideixen la coberta del sòl, l’altitud i el pH requerits. Més intensitat indica més cobertura compatible dins del sector.</p>
               <p>El ratllat lila aporta context històric generalitzat a 10 km; no amplia les zones compatibles ni demostra presència actual.</p>
             </> : <>
-              <p>La cartografia mostra el relleu i els elements topogràfics. Una cel·la mai representa una observació de bolets ni una garantia de presència.</p>
-              <p>El color combina la puntuació actual amb la proporció exacta d’hàbitat compatible: una cobertura baixa acosta la cel·la al vermell encara que la puntuació sigui positiva. En graelles agregades, l’altitud es resumeix només dins d’aquest hàbitat, no amb la cota mitjana de tot el sector.</p>
-              <p>Seleccioneu una cel·la per veure’n el sòl, la coberta, l’altitud i les condicions actuals. El temps conserva la resolució real del proveïdor i pot ser compartit entre cel·les veïnes.</p>
+              <p>La cartografia mostra el relleu i els elements topogràfics. Una cel·la mai representa una observació de bolets, una probabilitat de presència ni una garantia de trobar-ne.</p>
+              <p>El color correspon directament a la banda de l’índex d’oportunitat O = H × F. H combina cobertura compatible i altitud; F descriu les condicions hidrotermals dins d’aquell hàbitat. El color no torna a aplicar la cobertura mitjançant l’opacitat.</p>
+              <p>Sense cap cel·la seleccionada, la lectura regional resumeix O a partir de cel·les de 10 km amb hàbitat compatible verificat, totes amb el mateix pes; el resum d’F es pondera per H. Són dues lectures ordinals diferents, no una probabilitat per a tota la regió.</p>
+              <p>Selecciona una cel·la per separar H, F i O i consultar-ne l’aigua, la temperatura, la fenologia i els extrems. El temps conserva la resolució real del proveïdor i pot ser compartit entre cel·les veïnes.</p>
             </>}
           </div>
           <Link href={`${speciesPath(species)}?region=${region}`} className="text-link">Llegir la fitxa de {species.identity.commonName} <ArrowUpRight size={17} /></Link>

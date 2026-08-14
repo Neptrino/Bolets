@@ -12,18 +12,31 @@ import {
 import type { RegionId, RegionalPredictionSummary } from "@/src/lib/types";
 
 function summary(regionId: RegionId, options: { stale?: boolean; completeness?: number; score?: number } = {}): RegionalPredictionSummary {
+  const incomplete = (options.completeness ?? 1) < 1;
+  const opportunityIndex = incomplete ? null : options.score ?? 65;
   return {
     regionId,
     gridSizeM: 10000,
     scoredCellCount: 4,
     scoreRange: [58, 72],
     result: {
-      score: options.score ?? 65,
-      label: "favorable",
-      contributions: [],
+      score: opportunityIndex,
+      fruitingConditionsScore: incomplete ? null : 72,
+      opportunityIndex,
+      rawHabitatCoverage: 0.9,
+      effectiveHabitatCoverage: 0.9,
+      label: incomplete ? "sense dades" : "alta",
+      components: [
+        { id: "habitatCoverage", label: "Coberta d’hàbitat compatible", score: 90, state: "favourable" },
+        { id: "altitude", label: "Idoneïtat altitudinal dins l’hàbitat", score: 100, state: "favourable" },
+        { id: "phenology", label: "Fenologia", score: 90, state: "favourable" },
+        { id: "water", label: "Estat hídric unificat", score: incomplete ? null : 65, state: incomplete ? "unknown" : "mixed" },
+        { id: "temperature", label: "Resposta tèrmica", score: incomplete ? null : 70, state: incomplete ? "unknown" : "favourable" },
+        { id: "extremes", label: "Exposició a gelada i calor", score: incomplete ? null : 100, state: incomplete ? "unknown" : "favourable" },
+      ],
       modelVersion: "test-v1",
       dataCompleteness: options.completeness ?? 1,
-      missingFactors: [],
+      missingComponents: incomplete ? ["water", "temperature", "extremes"] : [],
     },
     snapshot: {
       regionId,

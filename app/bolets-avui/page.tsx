@@ -3,13 +3,13 @@ import Link from "next/link";
 import {
   ArrowUpRight,
   Clock3,
-  CloudRain,
   Database,
   Gauge,
   Map,
   MapPinned,
   ShieldCheck,
-  ThermometerSun,
+  Sprout,
+  Trees,
 } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
@@ -53,22 +53,25 @@ const timeOnly = new Intl.DateTimeFormat("ca-ES", {
   timeZone: "Europe/Madrid",
 });
 
-function metric(value: number | undefined, unit: string, fractionDigits = 0) {
-  if (typeof value !== "number" || !Number.isFinite(value)) return "—";
-  return `${value.toLocaleString("ca-ES", { maximumFractionDigits: fractionDigits })}${unit}`;
+function scoreMetric(value: number | null | undefined) {
+  return typeof value === "number" && Number.isFinite(value) ? `${Math.round(value)}/100` : "—";
+}
+
+function habitatMetric(value: number | null | undefined) {
+  return typeof value === "number" && Number.isFinite(value) ? `${Math.round(value * 100)}%` : "—";
 }
 
 function limitingFactor(item: CurrentOverviewItem) {
-  return item.summary?.result.contributions
+  return item.summary?.result.components
     .filter((factor) => factor.score !== null)
     .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0]?.label ?? "Sense factor limitant publicat";
 }
 
-function readingMetrics(item: CurrentOverviewItem) {
-  const values = item.summary?.snapshot.values;
+function modelMetrics(item: CurrentOverviewItem) {
+  const result = item.summary?.result;
   return {
-    rainfall: metric(values?.rainfall7dMm, " mm", 1),
-    temperature: metric(values?.temperatureAvg10dC ?? values?.temperatureAvg24hC, " °C", 1),
+    fruiting: scoreMetric(result?.fruitingConditionsScore),
+    habitat: habitatMetric(result?.effectiveHabitatCoverage),
   };
 }
 
@@ -117,31 +120,31 @@ export default async function MushroomsTodayPage() {
       <PageHeader
         eyebrow={<><Map size={15} /> Predicció amb les últimes dades disponibles</>}
         title={<>Bolets avui<br /><PageTitleAccent>a Catalunya.</PageTitleAccent></>}
-        description="Per cada zona general seleccionem les tres espècies comestibles més rellevants aquest mes, segons activitat estacional, prioritat editorial i de cerca i valor culinari. Després comparem ambientalment les candidates i publiquem el top 10."
+        description="Comparem les combinacions estacionals prioritàries i publiquem les deu oportunitats territorials més altes. L’índex separa les condicions dins l’hàbitat de l’oportunitat de tota la cel·la: no confirma presència ni garanteix trobar bolets."
         layout="split"
       />
 
-      {leader?.summary && leader.summary.result.score !== null ? (
+      {leader?.summary && leader.summary.result.opportunityIndex !== null ? (
         <section className="current-leader" aria-labelledby="current-leader-title">
           <div className="current-leader-copy">
             <p className="current-leader-eyebrow"><MapPinned size={15} /> Lectura més favorable ara</p>
             <h2 id="current-leader-title">{leader.regionName}</h2>
-            <p><Link href={speciesPath(leader)} className="current-leader-species-link"><strong>{leader.speciesName}</strong><ArrowUpRight size={14} /></Link> forma la combinació amb més puntuació entre totes les parelles d’espècie i zona que han passat els controls de publicació.</p>
+            <p><Link href={speciesPath(leader)} className="current-leader-species-link"><strong>{leader.speciesName}</strong><ArrowUpRight size={14} /></Link> forma la combinació amb l’oportunitat territorial O més alta entre les parelles d’espècie i zona que han passat els controls de publicació.</p>
             <Link href={`/map?species=${leader.speciesId}&region=${leader.regionId}`} className="current-leader-link">
               <Map size={16} /> Veure al mapa <ArrowUpRight size={16} />
             </Link>
           </div>
-          <div className="current-leader-score" aria-label={`Puntuació ${leader.summary.result.score} sobre 100`}>
-            <strong>{leader.summary.result.score}</strong>
+          <div className="current-leader-score" aria-label={`Oportunitat territorial ${leader.summary.result.opportunityIndex} sobre 100`}>
+            <strong>{leader.summary.result.opportunityIndex}</strong>
             <span>/ 100</span>
-            <small>{leader.summary.result.label}</small>
+            <small>O · {leader.summary.result.label}</small>
           </div>
           <dl className="current-leader-signals">
-            <div><dt><CloudRain size={16} /> Pluja 7 dies</dt><dd>{readingMetrics(leader).rainfall}</dd></div>
-            <div><dt><ThermometerSun size={16} /> Temperatura</dt><dd>{readingMetrics(leader).temperature}</dd></div>
-            <div><dt><Gauge size={16} /> Factor més limitant</dt><dd>{limitingFactor(leader)}</dd></div>
+            <div><dt><Sprout size={16} /> Condicions F</dt><dd>{modelMetrics(leader).fruiting}</dd></div>
+            <div><dt><Trees size={16} /> Hàbitat efectiu H</dt><dd>{modelMetrics(leader).habitat}</dd></div>
+            <div><dt><Gauge size={16} /> Component més limitant</dt><dd>{limitingFactor(leader)}</dd></div>
           </dl>
-          <p className="current-leader-meta"><Clock3 size={14} /> Observat {dateTime.format(new Date(leader.summary.snapshot.observedAt))}</p>
+          <p className="current-leader-meta"><Clock3 size={14} /> Calculat amb dades de {dateTime.format(new Date(leader.summary.snapshot.observedAt))}</p>
         </section>
       ) : (
         <aside className="current-leader current-leader-empty">
@@ -152,33 +155,33 @@ export default async function MushroomsTodayPage() {
 
       <aside className="current-overview-method">
         <ShieldCheck size={21} aria-hidden="true" />
-        <p><strong>Això compara combinacions de zona i espècie, no punts on hi hagi bolets.</strong> Avaluem fins a tres candidates per zona: prioritzem l’activitat estacional i, a igual activitat, l’interès editorial i de cerca i el valor culinari. Només incloem espècies amb predicció actual i configuració ecològica compatible. Aquesta selecció no modifica la puntuació, no confirma presència ni garanteix cap troballa.</p>
+        <p><strong>Això compara combinacions de zona i espècie, no punts on hi hagi bolets.</strong> Avaluem fins a tres candidates per zona segons el calendari ecològic i la rellevància editorial; la selecció no modifica O. Només publiquem H, F i O quan tots els components requerits són complets i vigents. Si falta evidència o una font falla, no calculem cap substitut.</p>
       </aside>
 
       <section className="current-board" aria-labelledby="current-board-title">
         <header className="current-board-heading">
           <div>
             <p className="eyebrow">Comparador territorial</p>
-            <h2 id="current-board-title">Top 10 de combinacions d’avui</h2>
+            <h2 id="current-board-title">Top 10 d’oportunitat territorial</h2>
           </div>
           <div>
             <p>Hem avaluat <strong>{allItems.length} combinacions prioritàries</strong> de {speciesEvaluated} espècies en nou zones; {availableReadings} han generat una lectura publicable. Aquí mostrem les deu puntuacions més altes.</p>
-            <p className="current-board-key"><strong>Calendari</strong>: activitat habitual de l’espècie aquest mes. <strong>Condició</strong>: lectura ambiental d’avui.</p>
+            <p className="current-board-key"><strong>O</strong>: oportunitat relativa de tota la cel·la. <strong>F</strong>: condicions dins l’hàbitat. <strong>H</strong>: fracció d’hàbitat efectiu. Són índexs ordinals, no probabilitats de presència.</p>
             {observedWindow ? <p className="current-board-updated"><Clock3 size={14} /> {observedWindow}</p> : null}
           </div>
         </header>
 
         {items.length > 0 ? <>
           <div className="current-board-columns" aria-hidden="true">
-            <span>Posició</span><span>Zona i espècie</span><span>Condició</span><span>Senyals</span><span>Mapa</span>
+            <span>Posició</span><span>Zona i espècie</span><span>Oportunitat O</span><span>H / F</span><span>Mapa</span>
           </div>
-          <ol className="current-overview-grid" aria-label="Top 10 de condicions actuals per espècie i regió">
+          <ol className="current-overview-grid" aria-label="Top 10 d’oportunitat territorial actual per espècie i regió">
             {items.map((item, index) => {
             const summary = item.summary;
-            const score = summary?.result.score;
+            const score = summary?.result.opportunityIndex;
             const isAvailable = item.status === "available" && summary !== null && score !== null && score !== undefined;
             const rank = isAvailable ? index + 1 : null;
-            const signals = readingMetrics(item);
+            const signals = modelMetrics(item);
 
             return (
               <li className={`current-overview-card is-${item.status}`} key={`${item.speciesId}-${item.regionId}`}>
@@ -189,7 +192,7 @@ export default async function MushroomsTodayPage() {
                 </div>
                 {isAvailable && summary && score !== null && score !== undefined ? (
                   <div className="current-score">
-                    <div><strong>{score}</strong><span>/100 · {summary.result.label}</span></div>
+                    <div><strong>{score}</strong><span>/100 · O · {summary.result.label}</span></div>
                     <span className="current-score-track" aria-hidden="true"><span style={{ width: `${score}%` }} /></span>
                   </div>
                 ) : (
@@ -199,8 +202,8 @@ export default async function MushroomsTodayPage() {
                   </div>
                 )}
                 <dl className="current-row-signals">
-                  <div><dt>Pluja 7 d</dt><dd>{signals.rainfall}</dd></div>
-                  <div><dt>Temp.</dt><dd>{signals.temperature}</dd></div>
+                  <div><dt>F dins l’hàbitat</dt><dd>{signals.fruiting}</dd></div>
+                  <div><dt>H efectiu</dt><dd>{signals.habitat}</dd></div>
                 </dl>
                 <Link href={`/map?species=${item.speciesId}&region=${item.regionId}`} className="current-row-map" aria-label={`Veure al mapa: ${item.regionName}, ${item.speciesName}`}>
                   <Map size={15} /><span>Veure mapa</span>

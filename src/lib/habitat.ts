@@ -47,7 +47,6 @@ export function habitatProfileKey(species: SpeciesProfile) {
   const phRange = species.ecologicalConfig.soil.phRange;
   return [
     HABITAT_MODEL_VERSION,
-    species.modelConfig.version,
     habitatForestTerms(species).sort().join(","),
     species.ecologicalConfig.habitat.altitude.join("-"),
     phRange?.join("-") ?? "any-ph",

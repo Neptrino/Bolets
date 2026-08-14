@@ -1,10 +1,24 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getPredictionCells, getRegionalPredictionSummary } from "@/src/lib/predictions";
 import { PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
-import type { PredictionCell } from "@/src/lib/types";
+import type { ConditionSnapshot, PredictionCell } from "@/src/lib/types";
 
 const bounds = { west: 1, south: 41, east: 2, north: 42 };
 const cellId = "epsg25831:5000:90:936";
+const completeHydrothermalValues: ConditionSnapshot["values"] = {
+  temperatureAvg7dC: 11,
+  temperatureAvg14dC: 11,
+  frostHours14d: 0,
+  heatHours14d: 0,
+  relativeHumidityAvg7d: 90,
+  soilMoistureMin7d: 0.225,
+  soilMoistureAvg7d: 0.24,
+  rainfall14dMm: 30,
+  rainfallDays14d: 4,
+  evapotranspiration14dMm: 5,
+  drySpellDays: 0,
+  soilTexture: "franca",
+};
 
 function stubSpatialFeeds(coverage?: number | "unavailable", truncated = false) {
   vi.stubEnv("SUPABASE_URL", "https://example.supabase.co");
@@ -32,34 +46,15 @@ function stubSpatialFeeds(coverage?: number | "unavailable", truncated = false) 
         stale: false,
         unavailableFields: [],
         values: {
-          temperatureAvg24hC: 16,
-          temperatureMin24hC: 12,
-          temperatureMax24hC: 20,
-          temperatureMin7dC: 10,
-          frostHours7d: 0,
-          relativeHumidityAvg24h: 75,
-          soilMoistureAvg24h: 0.24,
-          rainfall3dMm: 18,
-          rainfall7dMm: 25,
-          rainfallPrevious23dMm: 45,
-          rainfall30dMm: 70,
-          drySpellDays: 0,
-          evapotranspiration3dMm: 4,
-          evapotranspiration7dMm: 10,
-          evapotranspiration30dMm: 45,
-          soilMoistureMin7d: 0.22,
-          soilMoistureAvg7d: 0.24,
-          soilMoistureMax7d: 0.28,
-          soilMoistureTrend7d: 0.01,
+          ...completeHydrothermalValues,
           altitudeM: 2200,
           ...(coverage === "unavailable"
             ? {}
             : {
-                forestCompatibility: (coverage ?? 0) * 100,
+                habitatCoveragePercent: (coverage ?? 0) * 100,
                 habitatAltitudeSuitability: coverage ? 50 : 0,
               }),
           soilPh: 6.5,
-          soilTexture: "franca"
         }
       }],
       truncated,
@@ -81,9 +76,12 @@ describe("prediction habitat coverage", () => {
     const result = await getPredictionCells("marasmius-oreades", bounds, 10, 5000);
     const cell = result.cells[0] as PredictionCell;
 
-    expect(cell.values.forestCompatibility).toBe(37.5);
-    expect(cell.factors.find((factor) => factor.id === "forest")?.score).toBe(37.5);
-    expect(cell.factors.find((factor) => factor.id === "altitude")?.score).toBe(50);
+    expect(cell.values.habitatCoveragePercent).toBe(37.5);
+    expect(cell.components.find((component) => component.id === "habitatCoverage")?.score)
+      .toBe(38);
+    expect(cell.components.find((component) => component.id === "altitude")?.score).toBe(50);
+    expect(cell.fruitingConditionsScore).toBeGreaterThan(0);
+    expect(cell.score).toBe(cell.opportunityIndex);
     expect(cell.score).toBeGreaterThan(0);
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining(
@@ -130,14 +128,25 @@ describe("prediction habitat coverage", () => {
     const result = await getPredictionCells("marasmius-oreades", bounds, 10, 5000);
     const cell = result.cells[0] as PredictionCell;
 
-    expect(cell.values.forestCompatibility).toBe(0);
+    expect(cell.values.habitatCoveragePercent).toBe(0);
     expect(cell.values.habitatAltitudeSuitability).toBe(0);
+    expect(cell.fruitingConditionsScore).toBeGreaterThan(0);
+    expect(cell.opportunityIndex).toBe(0);
     expect(cell.score).toBe(0);
   });
 
-  it("reports required rainfall fields that are absent from a legacy snapshot", async () => {
+  it("reports exact hydrothermal fields omitted from an incomplete snapshot", async () => {
     stubSpatialFeeds(0.375);
     const fetchMock = vi.mocked(fetch);
+    const incompleteValues: ConditionSnapshot["values"] = {
+      ...completeHydrothermalValues,
+      altitudeM: 500,
+      habitatCoveragePercent: 37.5,
+      habitatAltitudeSuitability: 50,
+    };
+    delete incompleteValues.rainfall14dMm;
+    delete incompleteValues.rainfallDays14d;
+    delete incompleteValues.evapotranspiration14dMm;
     fetchMock.mockImplementation(async (input: string | URL | Request) => {
       const url = new URL(String(input));
       if (url.pathname.endsWith("/read-occurrence-support")) {
@@ -155,15 +164,7 @@ describe("prediction habitat coverage", () => {
           confidence: "limited",
           stale: false,
           unavailableFields: [],
-          values: {
-            temperatureAvg24hC: 16,
-            relativeHumidityAvg24h: 75,
-            soilMoistureAvg24h: 0.24,
-            rainfall7dMm: 25,
-            altitudeM: 500,
-            forestCompatibility: 37.5,
-            soilCompatibility: 100,
-          },
+          values: incompleteValues,
         }],
         truncated: false,
         bounds,
@@ -174,11 +175,12 @@ describe("prediction habitat coverage", () => {
     const cell = result.cells[0] as PredictionCell;
 
     expect(cell.unavailableFields).toEqual(expect.arrayContaining([
-      "rainfall3dMm",
-      "rainfall30dMm",
-      "evapotranspiration30dMm",
-      "soilMoistureAvg7d",
+      "rainfall14dMm",
+      "rainfallDays14d",
+      "evapotranspiration14dMm",
     ]));
+    expect(cell.fruitingConditionsScore).toBeNull();
+    expect(cell.opportunityIndex).toBeNull();
   });
 
   it("withholds the score instead of falling back to merged cover labels when coverage is unavailable", async () => {
@@ -188,9 +190,12 @@ describe("prediction habitat coverage", () => {
     const result = await getPredictionCells("marasmius-oreades", bounds, 10, 5000);
     const cell = result.cells[0] as PredictionCell;
 
-    expect(cell.values.forestCompatibility).toBeUndefined();
+    expect(cell.values.habitatCoveragePercent).toBeUndefined();
     expect(cell.values.habitatAltitudeSuitability).toBeUndefined();
-    expect(cell.factors.find((factor) => factor.id === "forest")?.score).toBeNull();
+    expect(cell.components.find((component) => component.id === "habitatCoverage")?.score)
+      .toBeNull();
+    expect(cell.fruitingConditionsScore).toBeNull();
+    expect(cell.opportunityIndex).toBeNull();
     expect(cell.score).toBeNull();
   });
 });

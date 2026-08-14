@@ -65,9 +65,10 @@ describe("spatial forecast storage", () => {
   it("reads one complete issue rather than mixing partial forecast dates", () => {
     expect(currentReader).toContain("const expectedHorizons = [0, 24, 48, 72, 96, 120]");
     expect(currentReader).toContain("candidate.snapshot_date}:${candidate.generated_at}");
-    expect(currentReader).toContain("group.length === expectedHorizons.length");
+    expect(currentReader).toContain("group.length === expectedHorizons.length * pointIds.length");
     expect(currentReader).toContain("group.every((row) => row.unavailable_fields.length === 0)");
     expect(currentReader).toContain(".limit(18 * pointIds.length)");
+    expect(currentReader).toContain("baseline: aggregateHorizon(0)");
     expect(currentReader).toContain("atmospherePoint.soil_point_id");
     expect(currentReader).toContain("condition_observed_at,condition_snapshot_date");
     expect(currentReader).toContain("snapshotDate <= cell.publishedSnapshotDate");

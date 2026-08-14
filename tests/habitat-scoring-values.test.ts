@@ -13,7 +13,7 @@ describe("coarse habitat scoring values", () => {
       coverage: 0.25,
       altitudeWeightedCoverage: 0.125,
     })).toEqual({
-      forestCompatibility: 25,
+      habitatCoveragePercent: 25,
       habitatAltitudeSuitability: 50,
       habitatCoverage: 0.25,
     });
@@ -24,7 +24,7 @@ describe("coarse habitat scoring values", () => {
       coverage: 0,
       altitudeWeightedCoverage: 0,
     })).toEqual({
-      forestCompatibility: 0,
+      habitatCoveragePercent: 0,
       habitatAltitudeSuitability: 0,
       habitatCoverage: 0,
     });
@@ -70,7 +70,7 @@ describe("coarse habitat scoring values", () => {
     expect(coverage).toBe(0.25);
     expect(8 / 16).toBe(0.5);
     expect(result).toEqual({
-      forestCompatibility: 25,
+      habitatCoveragePercent: 25,
       habitatAltitudeSuitability: 50,
       habitatCoverage: 0.25,
     });
@@ -83,31 +83,24 @@ describe("coarse habitat scoring values", () => {
       eligible_cell_count: 4,
     };
     const values = mergeHabitatScoringValues({
-      temperatureAvg10dC: 14,
-      temperatureMin10dC: 8,
-      temperatureMax10dC: 18,
-      frostHours10d: 0,
-      relativeHumidityAvg24h: 75,
-      soilMoistureAvg24h: 0.32,
-      rainfall3dMm: 18,
-      rainfall7dMm: 25,
-      rainfallPrevious23dMm: 45,
-      rainfall30dMm: 70,
+      temperatureAvg7dC: 13,
+      temperatureAvg20dC: 13.5,
+      frostHours20d: 0,
+      heatHours20d: 0,
+      relativeHumidityAvg7d: 90,
+      soilMoistureMin7d: 0.225,
+      soilMoistureAvg7d: 0.24,
+      rainfall26dMm: 50,
+      rainfallDays26d: 5,
+      evapotranspiration26dMm: 5,
       drySpellDays: 0,
-      evapotranspiration3dMm: 4,
-      evapotranspiration7dMm: 10,
-      evapotranspiration30dMm: 45,
-      soilMoistureMin7d: 0.28,
-      soilMoistureAvg7d: 0.32,
-      soilMoistureMax7d: 0.34,
-      soilMoistureTrend7d: 0.01,
       altitudeM: 2040,
-      soilCompatibility: 100,
+      soilTexture: "franca",
     }, rawHabitatRow, true) as ConditionSnapshot["values"];
 
-    expect(values.forestCompatibility).toBeCloseTo(27.7500003576279);
+    expect(values.habitatCoveragePercent).toBeCloseTo(27.7500003576279);
     expect(values.habitatAltitudeSuitability).toBeCloseTo(46.5720724863486);
-    expect((values.forestCompatibility ?? 0) / 100).not.toBe(4 / 16);
+    expect((values.habitatCoveragePercent ?? 0) / 100).not.toBe(4 / 16);
 
     const result = calculateSuitability(getSpecies("boletus-edulis")!, {
       regionId: "pirineus",
@@ -118,14 +111,17 @@ describe("coarse habitat scoring values", () => {
       unavailableFields: [],
       values,
     });
-    expect(result.contributions.find((factor) => factor.id === "altitude")?.score)
-      .toBeCloseTo(46.5720724863486);
-    expect(result.score).toBe(82);
+    expect(result.components.find((component) => component.id === "altitude")?.score)
+      .toBe(47);
+    expect(result.rawHabitatCoverage).toBeCloseTo(0.277500003576279);
+    expect(result.effectiveHabitatCoverage).toBeCloseTo(0.129237502813339);
+    expect(result.fruitingConditionsScore).not.toBeNull();
+    expect(result.score).toBe(result.opportunityIndex);
   });
 
   it("withholds malformed rows instead of reusing stale habitat values", () => {
     const values = mergeHabitatScoringValues({
-      forestCompatibility: 80,
+      habitatCoveragePercent: 80,
       habitatAltitudeSuitability: 75,
       forestTypes: ["pinedes"],
       treeSpecies: ["Pinus"],
@@ -134,7 +130,7 @@ describe("coarse habitat scoring values", () => {
       altitude_weighted_coverage: undefined,
     }, true);
 
-    expect(values).not.toHaveProperty("forestCompatibility");
+    expect(values).not.toHaveProperty("habitatCoveragePercent");
     expect(values).not.toHaveProperty("habitatAltitudeSuitability");
     expect(values).not.toHaveProperty("forestTypes");
     expect(values).not.toHaveProperty("treeSpecies");
