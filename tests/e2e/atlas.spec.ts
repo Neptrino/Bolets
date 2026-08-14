@@ -90,7 +90,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   const climateDisclosureWidths = await climateDisclosure.evaluate((details) => ({
     details: details.getBoundingClientRect().width,
     grid: details.parentElement?.getBoundingClientRect().width ?? 0,
-  }));
+    }));
   expect(
     Math.abs(climateDisclosureWidths.details - climateDisclosureWidths.grid),
   ).toBeLessThan(2);
@@ -332,10 +332,13 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await rightSpeciesSelect.click();
   const speciesPopup = page.locator(".species-select-popup-comparison");
   await expect(speciesPopup).toBeVisible();
+  await expect(
+    speciesPopup.locator(".species-select-item:not([data-selected]) .species-select-item-text").first(),
+  ).toHaveCSS("grid-column-start", "2");
   await expect
     .poll(async () => {
       const [triggerBox, popupBox] = await Promise.all([
-        rightSpeciesSelect.boundingBox(),
+        page.locator(".compare-profile-card-right .species-select-trigger").boundingBox(),
         speciesPopup.boundingBox(),
       ]);
       return Math.abs((triggerBox?.width ?? 0) - (popupBox?.width ?? 0));
@@ -348,8 +351,15 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
     .evaluate((element) => ({
       clientHeight: element.clientHeight,
       scrollHeight: element.scrollHeight,
-    }));
+  }));
   expect(listOverflow.scrollHeight).toBeGreaterThan(listOverflow.clientHeight);
+  await rightSpeciesSelect.press("r");
+  await expect(rightSpeciesSelect).toHaveValue("r");
+  await rightSpeciesSelect.press("o");
+  await expect(rightSpeciesSelect).toHaveValue("ro");
+  await rightSpeciesSelect.fill("rossinyol");
+  await expect(speciesPopup.getByRole("option")).toHaveCount(1);
+  await expect(speciesPopup.getByRole("option", { name: "Rossinyol" })).toBeVisible();
   await page.getByRole("option", { name: "Rossinyol" }).click();
   await expect(page).toHaveURL(/right=cantharellus-cibarius/);
   await expect(
@@ -388,7 +398,15 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Mapa de condicions" }),
   ).toBeVisible();
-  await expect(page.getByLabel("Espècie seleccionada")).toHaveCount(1);
+  const mapSpeciesSearch = page.getByLabel("Espècie seleccionada");
+  await expect(mapSpeciesSearch).toHaveCount(1);
+  await mapSpeciesSearch.click();
+  await mapSpeciesSearch.press("c");
+  await expect(mapSpeciesSearch).toHaveValue("c");
+  await mapSpeciesSearch.press("a");
+  await expect(mapSpeciesSearch).toHaveValue("ca");
+  await mapSpeciesSearch.press("Escape");
+  await expect(mapSpeciesSearch).toHaveValue("Cep");
   await expect(page.locator(".species-switch-links")).toHaveCount(0);
   await expect(page.getByLabel("Àrea de Catalunya seleccionada")).toHaveCount(0);
   await expect(
@@ -442,7 +460,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(
     page.getByRole("button", { name: "Sortir de pantalla completa" }),
   ).toBeVisible();
-  await expect(fullscreenSpeciesSelect).toContainText("Cep rogenc");
+  await expect(fullscreenSpeciesSelect).toHaveValue("Cep rogenc");
   await page
     .getByRole("button", { name: "Sortir de pantalla completa" })
     .click();

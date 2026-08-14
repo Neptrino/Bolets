@@ -399,6 +399,12 @@ function distributionCentre(activeRegions: RegionId[]): [number, number] {
   ];
 }
 
+export type PredictionCellDetailState = {
+  status: "idle" | "loading" | "ready" | "error";
+  cellId?: string;
+  gridSizeM?: SpatialGridSizeM;
+};
+
 export function RegionMap({
   activeRegions = [],
   autoGeolocate = true,
@@ -414,6 +420,7 @@ export function RegionMap({
   className = "",
   fullscreenTarget = "viewport",
   onCellSelect,
+  onCellDetailStateChange,
 }: {
   activeRegions?: RegionId[];
   autoGeolocate?: boolean;
@@ -429,6 +436,7 @@ export function RegionMap({
   className?: string;
   fullscreenTarget?: "viewport" | "parent";
   onCellSelect?: (cell?: PredictionCell) => void;
+  onCellDetailStateChange?: (state: PredictionCellDetailState) => void;
 }) {
   const showCompatibility = habitat || mode === "compatibility";
   const node = useRef<HTMLDivElement>(null);
@@ -1026,6 +1034,7 @@ export function RegionMap({
         ) {
           selectedCellIdRef.current = null;
           onCellSelect?.(undefined);
+          onCellDetailStateChange?.({ status: "idle" });
         }
         drawCells();
         const published = payload.cells.filter(
@@ -1097,8 +1106,14 @@ export function RegionMap({
           detailRequest.current === controller &&
           !controller.signal.aborted &&
           selectedCellIdRef.current === cell.cellId
-        )
+        ) {
           onCellSelect?.(payload.cell);
+          onCellDetailStateChange?.({
+            status: "ready",
+            cellId: cell.cellId,
+            gridSizeM: cell.gridSizeM,
+          });
+        }
       } catch (error) {
         if (
           detailRequest.current !== controller ||
@@ -1109,6 +1124,11 @@ export function RegionMap({
           selectedCellIdRef.current = null;
           drawCells();
           onCellSelect?.(undefined);
+          onCellDetailStateChange?.({
+            status: "error",
+            cellId: cell.cellId,
+            gridSizeM: cell.gridSizeM,
+          });
         }
       } finally {
         if (detailRequest.current === controller) detailRequest.current = null;
@@ -1120,6 +1140,11 @@ export function RegionMap({
       if (!cell) return;
       selectedCellIdRef.current = cell.cellId;
       drawCells();
+      onCellDetailStateChange?.({
+        status: "loading",
+        cellId: cell.cellId,
+        gridSizeM: cell.gridSizeM,
+      });
       void loadCellDetails(cell);
     };
     const updatePointer = (event: MapMouseEvent) => {
@@ -1185,7 +1210,7 @@ export function RegionMap({
       locator?.off("geolocate", handleGeolocate);
       drawCellsRef.current = () => undefined;
     };
-  }, [showCompatibility, speciesId, onCellSelect]);
+  }, [showCompatibility, speciesId, onCellSelect, onCellDetailStateChange]);
 
   const changeBasemap = (nextBasemapId: BasemapId) => {
     const localMap = map.current;
