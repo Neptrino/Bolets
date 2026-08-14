@@ -257,19 +257,69 @@
 .map-page-guide-links { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .7rem 1.2rem; margin-top: 1rem; }
 .map-page-guide-links a { display: inline-flex; align-items: center; gap: .3rem; color: #31472e; font-weight: 800; }
 
-.rain-factor-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.rain-species-examples { margin-top: 3.5rem; }
-.rain-species-examples > div:first-child { margin-bottom: 1.2rem; }
+.rain-direct-answer { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; align-items: start; margin: 0 0 4.25rem; padding: 1.35rem 1.5rem; border-radius: 14px; background: #304839; color: #fffaf0; box-shadow: 0 16px 38px rgba(40, 54, 43, .1); }
+.rain-direct-answer > svg { margin-top: .18rem; color: #ffc28f; }
+.rain-direct-answer .eyebrow { margin: 0 0 .35rem; color: #ffc28f; }
+.rain-direct-answer h2 { margin: 0; color: inherit; font-size: clamp(1.45rem, 2.5vw, 2.1rem); line-height: 1.15; letter-spacing: -.02em; }
+.rain-direct-answer p:last-child { max-width: 60rem; margin: .55rem 0 0; color: #e4e9df; line-height: 1.65; }
+
+.rain-model-section,
+.rain-signals-section,
+.rain-species-examples,
+.rain-evidence { margin-top: 4.5rem; }
+
+.rain-index-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.35rem; }
+.rain-index-flow article { position: relative; min-height: 13.5rem; padding: 1.45rem; overflow: hidden; border: 1px solid rgba(47, 65, 42, .16); border-radius: 16px; background: rgba(255, 252, 244, .48); }
+.rain-index-flow article > span { position: absolute; top: .65rem; right: 1rem; color: rgba(48, 72, 57, .12); font-size: 5.2rem; font-weight: 900; line-height: 1; }
+.rain-index-flow article > svg { color: #a95027; }
+.rain-index-flow h3 { position: relative; margin: 2.5rem 0 .55rem; color: #304839; font-size: 1.25rem; }
+.rain-index-flow p { position: relative; margin: 0; color: #596359; line-height: 1.65; }
+
+.rain-formula-panel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 2rem; margin-top: 1rem; padding: 1.35rem 1.5rem; border-radius: 16px; background: #304839; color: #fffaf0; }
+.rain-formula-panel > div { display: grid; gap: .35rem; }
+.rain-formula-panel span { color: #cdd8ce; font-size: .72rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.rain-formula-panel code { color: #fffaf0; font-family: var(--font-nunito-sans), sans-serif; font-size: clamp(1.05rem, 2vw, 1.45rem); font-weight: 850; letter-spacing: -.01em; }
+.rain-formula-panel p { grid-column: 1 / -1; display: flex; gap: .55rem; align-items: flex-start; margin: 0; padding-top: .85rem; border-top: 1px solid rgba(255, 255, 255, .14); color: #dce4da; font-size: .84rem; line-height: 1.55; }
+.rain-formula-panel p svg { flex: 0 0 auto; margin-top: .1rem; color: #ffc28f; }
+
+.rain-factor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 1.35rem 0 0; }
+.rain-factor-grid article { position: relative; padding: 1.5rem; border: 1px solid rgba(47, 65, 42, .08); background: #f4efe5; }
+.rain-factor-grid article:last-child { grid-column: 1 / -1; }
+.rain-factor-grid article > svg { color: #a95027; }
+.rain-factor-grid article > span { display: block; margin-top: 1.55rem; color: #596359; font-size: .7rem; font-weight: 900; letter-spacing: .09em; text-transform: uppercase; }
+.rain-factor-grid h3 { margin: .3rem 0 .55rem; color: #304839; font-size: 1.3rem; }
+.rain-factor-grid p { margin: 0; color: #4e594f; line-height: 1.65; }
+
+.rain-species-examples { margin-bottom: 0; }
 .rain-species-examples > article { display: grid; grid-template-columns: minmax(9rem, .65fr) minmax(0, 2fr); gap: 1rem 2rem; padding: 1.25rem 0; border-top: 1px solid rgba(47, 65, 42, .2); }
 .rain-species-examples article > div:first-child { display: grid; align-content: start; gap: .2rem; }
 .rain-species-examples article > div span { font-size: 1.2rem; font-weight: 800; }
 .rain-species-examples article > div em { color: #626b60; }
+.rain-species-identity small { justify-self: start; margin-top: .45rem; padding: .25rem .45rem; border: 1px solid rgba(47, 65, 42, .18); border-radius: 999px; color: #596359; font-size: .66rem; font-weight: 850; letter-spacing: .04em; text-transform: uppercase; }
 .rain-species-examples dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; margin: 0; }
 .rain-species-examples dl div { display: grid; align-content: start; gap: .2rem; }
 .rain-species-examples dt { font-size: .75rem; font-weight: 850; color: #65705f; text-transform: uppercase; letter-spacing: .06em; }
 .rain-species-examples dd { margin: 0; line-height: 1.5; }
 .rain-species-examples article > p { grid-column: 2; margin: 0; padding: .75rem; border-radius: 10px; background: #f3eee4; color: #596258; line-height: 1.55; }
 .rain-species-examples article > a { grid-column: 2; justify-self: start; }
+
+.rain-evidence-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.35rem; }
+.rain-evidence-grid article { display: grid; align-content: start; min-height: 17rem; padding: 1.35rem; border-top: 3px solid #657451; border-radius: 0 0 14px 14px; background: rgba(244, 239, 229, .86); }
+.rain-evidence-grid article > span { color: #a95027; font-size: .68rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.rain-evidence-grid h3 { margin: .7rem 0 .6rem; color: #304839; font-size: 1.08rem; line-height: 1.35; }
+.rain-evidence-grid p { margin: 0; color: #596359; font-size: .9rem; line-height: 1.6; }
+.rain-evidence-grid a { display: inline-flex; gap: .3rem; align-items: center; align-self: end; justify-self: start; margin-top: 1rem; color: #a95027; font-size: .78rem; font-weight: 850; }
+.rain-model-caveat { display: flex; gap: .75rem; align-items: flex-start; margin-top: 1rem; padding: 1rem 1.15rem; border: 1px solid rgba(47, 65, 42, .17); border-left: 3px solid #657451; border-radius: 10px; background: rgba(255, 252, 244, .5); }
+.rain-model-caveat svg { flex: 0 0 auto; margin-top: .18rem; color: #52664a; }
+.rain-model-caveat p { margin: 0; color: #4f5a50; line-height: 1.6; }
+
+.rain-guide-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin: 2.5rem 0 1.5rem; }
+.rain-guide-actions a { display: inline-flex; gap: .4rem; align-items: center; min-height: 2.75rem; padding: .65rem .9rem; border: 1px solid rgba(47, 65, 42, .25); border-radius: 999px; color: #304839; font-size: .78rem; font-weight: 850; text-decoration: none; }
+.rain-guide-actions a:first-child { border-color: #304839; background: #304839; color: #fffaf0; }
+.rain-guide-actions a:hover { border-color: #a95027; color: #a95027; }
+.rain-guide-actions a:first-child:hover { background: #a95027; color: #fffaf0; }
+.rain-guide-actions a:focus-visible,
+.rain-evidence-grid a:focus-visible { outline: 3px solid #c8794d; outline-offset: 3px; }
 
 .comparison-reference-images { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 2rem 0; }
 .comparison-reference-images figure { margin: 0; overflow: hidden; border-radius: 17px; background: #eee8dc; }
@@ -299,6 +349,13 @@
   .editorial-sources > span { padding-top: 0; }
 }
 
+@media (max-width: 900px) {
+  .rain-index-flow,
+  .rain-evidence-grid { grid-template-columns: 1fr; }
+  .rain-index-flow article,
+  .rain-evidence-grid article { min-height: 0; }
+}
+
 @media (max-width: 640px) {
   .current-leader { grid-template-columns: 1fr; gap: 1.25rem; margin-top: 1.5rem; padding: 1.4rem; }
   .current-leader-score { grid-row: auto; padding: 1.2rem 0 0; border-top: 1px solid rgba(255, 255, 255, .18); border-left: 0; }
@@ -320,6 +377,12 @@
   .rain-species-examples > article { grid-template-columns: 1fr; }
   .rain-species-examples article > p,
   .rain-species-examples article > a { grid-column: 1; }
+  .rain-direct-answer { grid-template-columns: 1fr; margin-bottom: 3.25rem; padding: 1.2rem; }
+  .rain-formula-panel { grid-template-columns: 1fr; }
+  .rain-formula-panel p { grid-column: 1; }
+  .rain-factor-grid article:last-child { grid-column: 1; }
+  .rain-guide-actions { display: grid; }
+  .rain-guide-actions a { justify-content: space-between; }
   .rain-species-examples dl { grid-template-columns: 1fr; }
   .catalogue-habitats { grid-template-columns: 1fr; gap: 1.4rem; padding: 1.5rem 0; }
   .catalogue-habitats header { max-width: 32rem; }

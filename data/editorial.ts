@@ -62,6 +62,30 @@ export const environmentalSources: SourceReference[] = [
   coreEditorialSources[2],
 ].filter((source): source is SourceReference => Boolean(source));
 
+export const hydrothermalScientificSources: SourceReference[] = [
+  {
+    id: "agreda-2016-climate-sporocarps",
+    title: "Long-term monitoring reveals interspecific climatic responses",
+    publisher: "Agricultural and Forest Meteorology",
+    url: "https://doi.org/10.1016/j.agrformet.2016.03.015",
+    confidence: "high",
+  },
+  {
+    id: "karavani-2018-soil-moisture",
+    title: "Climate, soil moisture and Mediterranean mushroom productivity",
+    publisher: "Agricultural and Forest Meteorology",
+    url: "https://doi.org/10.1016/j.agrformet.2017.10.024",
+    confidence: "high",
+  },
+  {
+    id: "brejon-hoffman-2026-porcini",
+    title: "Meteorological triggers of Boletus edulis fruiting (preprint)",
+    publisher: "bioRxiv",
+    url: "https://doi.org/10.64898/2025.12.12.693895",
+    confidence: "limited",
+  },
+];
+
 const defaultMetadata: EditorialMetadata = {
   publishedAt: EDITORIAL_LAUNCH_DATE,
   updatedAt: EDITORIAL_LAUNCH_DATE,
@@ -69,7 +93,11 @@ const defaultMetadata: EditorialMetadata = {
   reviewStatus: "editorial-only",
 };
 
-const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {};
+const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
+  "quan-surten-els-bolets-despres-de-ploure": {
+    updatedAt: "2026-08-14",
+  },
+};
 
 export function getEditorialMetadata(contentId: string): EditorialMetadata {
   return { ...defaultMetadata, ...metadataOverrides[contentId] };

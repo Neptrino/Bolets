@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { EDITORIAL_LAUNCH_DATE } from "@/data/editorial";
+import { EDITORIAL_LAUNCH_DATE, getEditorialMetadata } from "@/data/editorial";
 import { comparisonPages } from "@/data/comparison-pages";
 import {
   locationPagePath,
@@ -15,6 +15,9 @@ import { absoluteUrl, speciesImage, speciesPath } from "@/src/lib/seo";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 
 const lastModified = new Date(`${EDITORIAL_LAUNCH_DATE}T00:00:00+02:00`);
+const rainGuideLastModified = new Date(
+  `${getEditorialMetadata("quan-surten-els-bolets-despres-de-ploure").updatedAt}T00:00:00+02:00`,
+);
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const pages: MetadataRoute.Sitemap = [
@@ -22,7 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: absoluteUrl("/bolets"), lastModified },
     { url: absoluteUrl("/bolets-avui"), lastModified },
     ...seasonGuides.map((guide) => ({ url: absoluteUrl(guide.path), lastModified })),
-    { url: absoluteUrl("/quan-surten-els-bolets-despres-de-ploure"), lastModified },
+    { url: absoluteUrl("/quan-surten-els-bolets-despres-de-ploure"), lastModified: rainGuideLastModified },
     { url: absoluteUrl("/bolets-comestibles"), lastModified },
     { url: absoluteUrl("/bolets-verinosos"), lastModified },
     { url: absoluteUrl("/temporada"), lastModified },
