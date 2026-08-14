@@ -8,6 +8,7 @@ import {
   Map,
   MapPinned,
   ShieldCheck,
+  Share2,
   Sprout,
   Trees,
 } from "lucide-react";
@@ -123,6 +124,8 @@ export default async function MushroomsTodayPage() {
         description="Comparem zones i espècies amb dades ambientals vigents i mostrem les deu puntuacions més favorables. Cada puntuació combina l’hàbitat adequat amb les condicions per fructificar-hi; no confirma presència ni garanteix trobar bolets."
         layout="split"
       />
+
+      <Link href="/compartir" className="daily-share-entry"><Share2 size={16} /> Prepara targetes per compartir la lectura d’avui <ArrowUpRight size={16} /></Link>
 
       {leader?.summary && leader.summary.result.opportunityIndex !== null ? (
         <section className="current-leader" aria-labelledby="current-leader-title">

@@ -32,6 +32,113 @@
   --content-page-title-tracking: -0.035em;
 }
 
+/* Daily social cards: a quiet field bulletin, generated only from publishable readings. */
+.daily-share-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: -30px 0 40px;
+  color: var(--forest-panel);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.daily-share-entry:hover { color: var(--clay); }
+.daily-share-entry svg:last-child { margin-left: 2px; }
+.daily-share-intro {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  margin: 0 0 72px;
+  padding: 21px 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface-warm);
+}
+.daily-share-intro svg { flex: 0 0 auto; color: var(--clay); }
+.daily-share-intro p { max-width: 860px; margin: 0; color: var(--muted); line-height: 1.65; }
+.daily-share-intro strong { color: var(--ink); }
+.daily-share-grid { margin-bottom: 118px; }
+.daily-share-grid-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.65fr);
+  gap: 38px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+.daily-share-grid-heading h2 { margin: 8px 0 0; font-size: clamp(37px, 4.8vw, 63px); line-height: 0.98; letter-spacing: -0.045em; }
+.daily-share-grid-heading > p { display: flex; gap: 9px; align-items: flex-start; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+.daily-share-grid-heading > p svg { flex: 0 0 auto; color: var(--clay); }
+.daily-share-grid > ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 25px; padding: 0; margin: 0; list-style: none; }
+.daily-share-grid > ol > li {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 253, 247, 0.75);
+  box-shadow: 0 12px 30px rgba(51, 64, 43, 0.07);
+}
+.daily-share-grid > ol > li.is-catalunya { grid-column: 1 / -1; }
+.daily-share-preview { overflow: hidden; background: var(--forest-panel); aspect-ratio: 1200 / 675; }
+.daily-share-preview img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 260ms ease; }
+.daily-share-grid > ol > li:hover .daily-share-preview img { transform: scale(1.018); }
+.daily-share-card-meta { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding: 20px 22px 16px; }
+.daily-share-card-meta span { display: block; color: var(--clay); font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
+.daily-share-card-meta h3 { margin: 5px 0 0; font-size: 25px; line-height: 1.08; letter-spacing: -0.03em; }
+.daily-share-card-meta a { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; color: var(--forest-panel); font-size: 13px; font-weight: 800; text-decoration: none; }
+.daily-share-card-meta a:hover { color: var(--clay); }
+.daily-share-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 0 22px 22px; }
+.daily-share-actions button {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  min-height: 35px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+}
+.daily-share-actions button:first-child { border-color: var(--forest-panel); background: var(--forest-panel); color: var(--on-dark); }
+.daily-share-actions button:hover { border-color: var(--clay); color: var(--clay); }
+.daily-share-actions button:first-child:hover { background: var(--clay); color: var(--on-dark); }
+.daily-share-actions > span { min-height: 17px; color: var(--muted); font-size: 12px; }
+.daily-share-socials { display: inline-flex; gap: 5px; padding: 0 3px; }
+.daily-share-socials a {
+  display: inline-flex;
+  width: 35px;
+  height: 35px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--forest-panel);
+  text-decoration: none;
+  transition: transform 160ms ease, border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+.daily-share-socials a span { font-size: 15px; font-weight: 800; line-height: 1; }
+.daily-share-socials a:hover { transform: translateY(-2px); border-color: var(--clay); background: var(--surface-warm); color: var(--clay); }
+.daily-share-socials a:focus-visible { outline: 3px solid rgba(242, 138, 46, 0.55); outline-offset: 2px; }
+.daily-share-single { padding-bottom: 112px; }
+.daily-share-single-card { overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: var(--forest-panel); box-shadow: 0 20px 48px rgba(51, 64, 43, 0.12); }
+.daily-share-single-card img { display: block; width: 100%; height: auto; }
+.daily-share-single-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 21px; }
+.daily-share-single-actions a { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 9px 14px; border: 1px solid var(--line); border-radius: var(--radius-pill); color: var(--forest-panel); font-size: 13px; font-weight: 800; text-decoration: none; }
+.daily-share-single-actions a:last-child { border-color: var(--forest-panel); background: var(--forest-panel); color: var(--on-dark); }
+.daily-share-single-actions a:hover { border-color: var(--clay); color: var(--clay); }
+.daily-share-single-actions a:last-child:hover { background: var(--clay); color: var(--on-dark); }
+@media (max-width: 700px) {
+  .daily-share-entry { margin: -12px 0 31px; }
+  .daily-share-intro { margin-bottom: 52px; }
+  .daily-share-grid-heading { grid-template-columns: 1fr; gap: 18px; }
+  .daily-share-grid > ol { grid-template-columns: 1fr; }
+  .daily-share-grid > ol > li.is-catalunya { grid-column: auto; }
+  .daily-share-card-meta { align-items: flex-start; flex-direction: column; }
+}
+
 /* Rovellons territory hub: a species-first field dossier, never a spot map. */
 .rovellons-hub {
   background: var(--paper);
