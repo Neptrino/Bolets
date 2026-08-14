@@ -12,7 +12,7 @@ import type { MapViewMode, RegionId } from "@/src/lib/types";
 
 export const metadata: Metadata = {
   title: "Mapa de bolets de Catalunya",
-  description: "Mapa de bolets de Catalunya amb hàbitat efectiu i índexs ordinals de condicions de fructificació per espècie i regió.",
+  description: "Mapa de bolets de Catalunya amb hàbitat adequat, condicions actuals i una puntuació comparativa per espècie i cel·la.",
   alternates: { canonical: "/map" },
   openGraph: {
     url: "/map",
@@ -49,7 +49,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
           ? species.predictionCaveat
           : isCompatibility
           ? "Explora on la coberta del sòl, l’altitud i el pH encaixen amb l’espècie. No és una predicció de fructificació."
-          : "Mostra l’oportunitat relativa de cada cel·la combinant hàbitat efectiu i condicions ambientals. És un índex ordinal, no una probabilitat de presència."}</p>
+          : "Mostra com de favorable és cada cel·la combinant l’hàbitat adequat amb les condicions per fructificar-hi. La puntuació serveix per comparar; no és una probabilitat de presència."}</p>
       </div>
       <div className="map-controls">
         <div className="map-species-picker">
@@ -90,9 +90,9 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
               <p>El ratllat lila aporta context històric generalitzat a 10 km; no amplia les zones compatibles ni demostra presència actual.</p>
             </> : <>
               <p>La cartografia mostra el relleu i els elements topogràfics. Una cel·la mai representa una observació de bolets, una probabilitat de presència ni una garantia de trobar-ne.</p>
-              <p>El color correspon directament a la banda de l’índex d’oportunitat O = H × F. H combina cobertura compatible i altitud; F descriu les condicions hidrotermals dins d’aquell hàbitat. El color no torna a aplicar la cobertura mitjançant l’opacitat.</p>
-              <p>Sense cap cel·la seleccionada, la lectura regional resumeix O a partir de cel·les de 10 km amb hàbitat compatible verificat, totes amb el mateix pes; el resum d’F es pondera per H. Són dues lectures ordinals diferents, no una probabilitat per a tota la regió.</p>
-              <p>Selecciona una cel·la per separar H, F i O i consultar-ne l’aigua, la temperatura, la fenologia i els extrems. El temps conserva la resolució real del proveïdor i pot ser compartit entre cel·les veïnes.</p>
+              <p>El color mostra la puntuació de cada cel·la. Combina quina part té un hàbitat adequat —segons coberta, sòl i altitud— amb les condicions ambientals dins d’aquest hàbitat.</p>
+              <p>Els colors permeten comparar cel·les entre si, però no formen una puntuació única per a tota la regió. La proporció d’hàbitat ja forma part del resultat i no es torna a aplicar mitjançant l’opacitat.</p>
+              <p>Selecciona una cel·la per veure la puntuació, l’hàbitat adequat i les condicions per fructificar-hi, amb el detall de l’aigua, la temperatura, la temporada i els extrems. El temps pot ser compartit entre cel·les veïnes perquè conserva la resolució real del proveïdor.</p>
             </>}
           </div>
           <Link href={`${speciesPath(species)}?region=${region}`} className="text-link">Llegir la fitxa de {species.identity.commonName} <ArrowUpRight size={17} /></Link>

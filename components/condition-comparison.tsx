@@ -5,7 +5,6 @@ import {
   Cloud,
   CloudRain,
   CircleHelp,
-  Database,
   Droplets,
   Layers3,
   Mountain,
@@ -18,9 +17,7 @@ import type {
   ConditionSnapshot,
   CoordinateBounds,
   GeologicalSubstrateEvidence,
-  HistoricalOccurrenceEvidence,
   ModelComponentId,
-  OccurrenceEvidenceStatus,
   RegionalPredictionSummary,
   SpatialGridSizeM,
   SpeciesProfile,
@@ -28,13 +25,15 @@ import type {
 } from "@/src/lib/types";
 import { formatGridDimensions } from "@/src/lib/map-grid";
 import { getConditionPredictionStatus } from "@/src/lib/condition-presentation";
-import {
-  getSuitabilityBand,
-  suitabilityScale,
-} from "@/src/lib/suitability-scale";
+import { getSuitabilityBand } from "@/src/lib/suitability-scale";
 import { regionLabels } from "@/data/regions";
 
-type ComponentChartItem = { name: string; fullName: string; score: number };
+type ComponentChartItem = {
+  id: ModelComponentId;
+  name: string;
+  fullName: string;
+  score: number;
+};
 type ConditionStat = {
   label: string;
   value: string;
@@ -54,8 +53,8 @@ const componentChartNames: Record<ModelComponentId, string> = {
   altitude: "Altitud",
   phenology: "Fenologia",
   water: "Estat hídric",
-  temperature: "Temperatura",
-  extremes: "Fred i calor",
+  temperature: "Temperatura mitjana",
+  extremes: "Gelades i calor extrema",
 };
 
 const temperature = (value: number | undefined) =>
@@ -117,8 +116,6 @@ export function ConditionComparison({
   cellId,
   cellGridSizeM,
   cellBounds,
-  occurrenceEvidence,
-  occurrenceEvidenceStatus,
   regionalSummary,
   expanded = false,
 }: {
@@ -128,8 +125,6 @@ export function ConditionComparison({
   cellId?: string;
   cellGridSizeM?: SpatialGridSizeM;
   cellBounds?: CoordinateBounds;
-  occurrenceEvidence?: HistoricalOccurrenceEvidence | null;
-  occurrenceEvidenceStatus?: OccurrenceEvidenceStatus;
   regionalSummary?: RegionalPredictionSummary | null;
   expanded?: boolean;
 }) {
@@ -140,15 +135,10 @@ export function ConditionComparison({
       ? "no disponible"
       : readingTime(snapshot.observedAt);
   const predictionStatus = getConditionPredictionStatus(snapshot.stale, result);
-  const atmosphericResolution = v.atmosphericResolutionM
-    ? `${(v.atmosphericResolutionM / 1000).toLocaleString("ca-ES")} km`
-    : undefined;
-  const soilResolution = v.soilMoistureResolutionM
-    ? `${(v.soilMoistureResolutionM / 1000).toLocaleString("ca-ES")} km`
-    : undefined;
   const chart: ComponentChartItem[] = result.components
     .filter((item) => item.score !== null)
     .map((item) => ({
+      id: item.id,
       name: componentChartNames[item.id],
       fullName: item.label,
       score: item.score ?? 0,
@@ -168,6 +158,77 @@ export function ConditionComparison({
   const resultBand = result.score === null ? undefined : getSuitabilityBand(result.score);
   const supportedModel = species.modelConfig.status === "supported"
     ? species.modelConfig
+    : null;
+  const componentScore = (id: ModelComponentId) =>
+    result.components.find((item) => item.id === id)?.score ?? null;
+  const habitatCoverageScore = componentScore("habitatCoverage");
+  const altitudeScore = componentScore("altitude");
+  const phenologyScore = componentScore("phenology");
+  const waterScore = componentScore("water");
+  const temperatureScore = componentScore("temperature");
+  const extremesScore = componentScore("extremes");
+  const effectiveHabitatScore = result.effectiveHabitatCoverage === null
+    ? null
+    : Math.round(result.effectiveHabitatCoverage * 100);
+  const cellCalculation = cellId && supportedModel &&
+      result.fruitingConditionsScore !== null &&
+      result.opportunityIndex !== null &&
+      effectiveHabitatScore !== null &&
+      habitatCoverageScore !== null &&
+      altitudeScore !== null &&
+      phenologyScore !== null &&
+      waterScore !== null &&
+      temperatureScore !== null &&
+      extremesScore !== null
+    ? {
+        altitude: altitudeScore,
+        effectiveHabitat: effectiveHabitatScore,
+        extremes: extremesScore,
+        fruiting: result.fruitingConditionsScore,
+        habitatCoverage: habitatCoverageScore,
+        opportunity: result.opportunityIndex,
+        phenology: phenologyScore,
+        temperature: temperatureScore,
+        temperatureWeight: 1 - supportedModel.water.waterExponent,
+        water: waterScore,
+        waterWeight: supportedModel.water.waterExponent,
+      }
+    : null;
+  const appliedComponentMultiplier = (entry: ComponentChartItem) => {
+    const normalizedScore = entry.score / 100;
+    if (entry.id === "water" && supportedModel) {
+      return normalizedScore ** supportedModel.water.waterExponent;
+    }
+    if (entry.id === "temperature" && supportedModel) {
+      return normalizedScore ** (1 - supportedModel.water.waterExponent);
+    }
+    return normalizedScore;
+  };
+  const componentExplanation = (entry: ComponentChartItem) => {
+    const score = `${entry.score}/100.`;
+    switch (entry.id) {
+      case "habitatCoverage":
+        return `${score} És la part de la cel·la amb coberta i sòl compatibles per a l’espècie, abans d’aplicar l’altitud. Per exemple, 83 indica aproximadament un 83% de superfície compatible; no és una probabilitat de trobar bolets.`;
+      case "altitude":
+        return `${score} Indica com encaixa l’altitud de l’hàbitat compatible amb el rang de l’espècie. 100 correspon al rang central; baixa gradualment als marges i arriba a 0 fora del marge ecològic.`;
+      case "phenology":
+        return `${score} Situa la data dins el calendari de fructificació de l’espècie. 100 és el pic estacional, 25 una fase només possible i 0 una temporada inactiva. Multiplica directament les condicions.`;
+      case "water":
+        return supportedModel
+          ? `${score} Resumeix la humitat del sòl de 7 dies, la pluja, els dies plujosos i l’ET₀ de ${supportedModel.water.rainfallWindowDays} dies, més la sequedat atmosfèrica i la ratxa seca. 100 és la resposta hídrica òptima del model. En el càlcul s’aplica amb l’exponent ${supportedModel.water.waterExponent.toLocaleString("ca-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`
+          : `${score} Resumeix la disponibilitat recent d’aigua al sòl i l’assecament atmosfèric. 100 representa la resposta hídrica òptima del model.`;
+      case "temperature":
+        return supportedModel
+          ? `${score} Compara la temperatura mitjana de l’aire de ${supportedModel.temperature.windowDays} dies amb l’òptim inicial de ${supportedModel.temperature.optimumC.toLocaleString("ca-ES")} °C. 100 és a prop de l’òptim i disminueix tant per fred com per calor. En el càlcul s’aplica amb l’exponent ${(1 - supportedModel.water.waterExponent).toLocaleString("ca-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}; les hores extremes es tracten a part.`
+          : `${score} Compara la temperatura mitjana recent amb el rang òptim de l’espècie. 100 és a prop de l’òptim i disminueix tant per fred com per calor.`;
+      case "extremes":
+        return supportedModel
+          ? `${score} Penalitza les hores ≤ 0 °C i ≥ 27 °C acumulades durant ${supportedModel.temperature.windowDays} dies. 100 significa que no hi ha penalització tèrmica; 75 conserva tres quartes parts de la resposta i 0 la redueix pràcticament del tot.`
+          : `${score} Penalitza l’exposició recent a gelades i calor extrema. 100 significa que no hi ha penalització tèrmica.`;
+    }
+  };
+  const lowestAppliedMultiplier = chart.length
+    ? Math.min(...chart.map(appliedComponentMultiplier))
     : null;
   const temperatureWindowDays = supportedModel?.temperature.windowDays;
   const temperatureWindowAverage = temperatureWindowDays === 14
@@ -449,7 +510,7 @@ export function ConditionComparison({
           className={`suitability-score ${predictionStatus.kind}`}
         >
           <strong style={resultBand ? { color: resultBand.color } : undefined}>{result.score ?? "—"}</strong>
-          <span>oportunitat territorial · {predictionStatus.label}</span>
+          <span>{cellId ? "puntuació de la cel·la" : "puntuació territorial"} · {predictionStatus.label}</span>
         </div>
       </div>
       {snapshot.stale && (
@@ -477,99 +538,6 @@ export function ConditionComparison({
           no descriu tota la regió de manera uniforme.
         </p>
       )}
-      {result.fruitingConditionsScore !== null && (
-        <p className="data-note">
-          <strong>Condicions dins l’hàbitat: {result.fruitingConditionsScore}/100.</strong>{" "}
-          L’índex d’oportunitat territorial ({result.opportunityIndex}/100) també incorpora
-          quina part de la cel·la és hàbitat compatible i la seva idoneïtat altitudinal.
-        </p>
-      )}
-      {cellId && (
-        <p className="data-note">
-          Relleu, coberta i sòl corresponen a aquesta cel·la.{" "}
-          {v.weatherModel
-            ? `Atmosfera: ${v.weatherModel}${atmosphericResolution ? ` · ${atmosphericResolution}` : ""}. `
-            : ""}
-          {soilResolution
-            ? `Humitat del sòl: ${soilResolution}.`
-            : "El temps pot ser compartit amb cel·les veïnes perquè la seva resolució real és més baixa."}
-        </p>
-      )}
-      {cellId && occurrenceEvidenceStatus ? (
-        <div className={`occurrence-evidence ${occurrenceEvidenceStatus}`}>
-          <Database size={18} />
-          <div>
-            <strong>Evidència històrica · quadrícula de 10 km</strong>
-            {occurrenceEvidenceStatus === "supported" && occurrenceEvidence ? (
-              <>
-                <span>
-                  {occurrenceEvidence.recordCount}{" "}
-                  {occurrenceEvidence.recordCount === 1
-                    ? "registre publicat"
-                    : "registres publicats"}
-                  {occurrenceEvidence.observedYearMin &&
-                  occurrenceEvidence.observedYearMax
-                    ? occurrenceEvidence.observedYearMin ===
-                      occurrenceEvidence.observedYearMax
-                      ? ` · ${occurrenceEvidence.observedYearMin}`
-                      : ` · ${occurrenceEvidence.observedYearMin}–${occurrenceEvidence.observedYearMax}`
-                    : ""}
-                  . És una corroboració històrica; no modifica la puntuació
-                  ambiental actual.
-                </span>
-                <small>
-                  {occurrenceEvidence.sources.map((source, index) => (
-                    <span key={source.datasetKey}>
-                      {index > 0 ? " · " : ""}
-                      <a
-                        href={source.sourceUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {source.title}
-                      </a>
-                      {source.doi ? (
-                        <>
-                          {" "}
-                          ·{" "}
-                          <a
-                            href={`https://doi.org/${source.doi}`}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            DOI
-                          </a>
-                        </>
-                      ) : null}
-                      <>
-                        {" "}
-                        ·{" "}
-                        <a
-                          href={source.licenseUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          llicència
-                        </a>
-                      </>
-                    </span>
-                  ))}
-                </small>
-              </>
-            ) : occurrenceEvidenceStatus === "no-records" ? (
-              <span>
-                No s’hi han trobat registres publicats. Això no és evidència
-                d’absència: el mostreig històric és incomplet i desigual.
-              </span>
-            ) : (
-              <span>
-                La capa d’ocurrències no està disponible ara mateix. La
-                puntuació ambiental es manté independent d’aquesta incidència.
-              </span>
-            )}
-          </div>
-        </div>
-      ) : null}
       <div className="condition-list">
         {data.map((item) => {
           const Icon = item.icon;
@@ -698,7 +666,7 @@ export function ConditionComparison({
       ) : null}
       <div className="factor-chart">
         <div className="chart-caption">
-          <span>Resposta dels components</span>
+          <span>{cellCalculation ? "Com es calcula la puntuació" : "Resposta dels components"}</span>
           <strong style={resultBand ? { color: resultBand.color } : undefined}>
             {predictionStatus.kind === "available" && result.score !== null
               ? getSuitabilityBand(result.score).label
@@ -706,10 +674,67 @@ export function ConditionComparison({
                 predictionStatus.label.slice(1)}
           </strong>
         </div>
+        {cellCalculation && (
+          <ol className="score-calculation" aria-label="Càlcul de la puntuació de la cel·la">
+            <li>
+              <span className="score-calculation-step">1 · Condicions per fructificar</span>
+              <strong>{cellCalculation.fruiting}<small>/100</small></strong>
+              <p
+                className="score-calculation-expression"
+                aria-label={`Fenologia ${cellCalculation.phenology} per cent, estat hídric ${cellCalculation.water} per cent amb pes ${Math.round(cellCalculation.waterWeight * 100)} per cent, temperatura mitjana ${cellCalculation.temperature} per cent amb pes ${Math.round(cellCalculation.temperatureWeight * 100)} per cent, i gelades i calor extrema ${cellCalculation.extremes} per cent`}
+              >
+                <span>{cellCalculation.phenology}%</span>
+                <b>×</b>
+                <span>{cellCalculation.water}%<sup>{cellCalculation.waterWeight.toLocaleString("ca-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</sup></span>
+                <b>×</b>
+                <span>{cellCalculation.temperature}%<sup>{cellCalculation.temperatureWeight.toLocaleString("ca-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</sup></span>
+                <b>×</b>
+                <span>{cellCalculation.extremes}%</span>
+                <b>=</b>
+                <span>{cellCalculation.fruiting}</span>
+              </p>
+              <small>Fenologia × estat hídric × temperatura mitjana × extrems tèrmics. Els exponents reparteixen el pes entre aigua i temperatura.</small>
+            </li>
+            <li>
+              <span className="score-calculation-step">2 · Hàbitat efectiu</span>
+              <strong>{cellCalculation.effectiveHabitat}<small>% de la cel·la</small></strong>
+              <p
+                className="score-calculation-expression"
+                aria-label={`Coberta compatible ${cellCalculation.habitatCoverage} per cent per idoneïtat altitudinal ${cellCalculation.altitude} per cent igual a ${cellCalculation.effectiveHabitat} per cent d’hàbitat efectiu`}
+              >
+                <span>{cellCalculation.habitatCoverage}%</span>
+                <b>×</b>
+                <span>{cellCalculation.altitude}%</span>
+                <b>=</b>
+                <span>{cellCalculation.effectiveHabitat}%</span>
+              </p>
+              <small>Coberta compatible × idoneïtat altitudinal.</small>
+            </li>
+            <li className="score-calculation-result">
+              <span className="score-calculation-step">3 · Puntuació de la cel·la</span>
+              <strong style={resultBand ? { color: resultBand.color } : undefined}>
+                {cellCalculation.opportunity}<small>/100</small>
+              </strong>
+              <p
+                className="score-calculation-expression"
+                aria-label={`Condicions per fructificar ${cellCalculation.fruiting} per cent per hàbitat efectiu ${cellCalculation.effectiveHabitat} per cent igual a una puntuació de ${cellCalculation.opportunity} sobre 100`}
+              >
+                <span>{cellCalculation.fruiting}</span>
+                <b>×</b>
+                <span>{cellCalculation.effectiveHabitat}%</span>
+                <b>=</b>
+                <span>{cellCalculation.opportunity}</span>
+              </p>
+              <small>Condicions per fructificar × part efectiva de la cel·la.</small>
+            </li>
+          </ol>
+        )}
         <p className="factor-chart-explanation">
           {regionalSummary
-            ? "Cada barra resumeix les condicions dins l’hàbitat compatible. Un component baix limita el producte geomètric; no és una probabilitat de trobar bolets."
-            : "Un component baix limita el producte geomètric i no queda compensat per components aliens molt alts; no és una probabilitat de trobar bolets."}
+            ? "Cada barra resumeix les condicions dins l’hàbitat compatible. Una condició molt desfavorable redueix tota la puntuació, encara que les altres siguin bones; no és una probabilitat de trobar bolets."
+            : cellCalculation
+              ? "Les barres són multiplicadors, no punts que se sumin. Un 50% redueix el producte a la meitat encara que la resta de respostes siguin altes."
+              : "Una condició molt desfavorable redueix tota la puntuació, encara que les altres siguin bones; no és una probabilitat de trobar bolets."}
         </p>
         {unavailableComponents.length > 0 && (
           <dl
@@ -724,12 +749,40 @@ export function ConditionComparison({
             ))}
           </dl>
         )}
-        <ul className="factor-bars" aria-label="Resposta dels components">
+        <ul className="factor-bars" aria-label="Multiplicadors del càlcul">
           {chart.map((entry) => {
             const band = getSuitabilityBand(entry.score);
+            const appliedMultiplier = appliedComponentMultiplier(entry);
+            const limiting = lowestAppliedMultiplier !== null &&
+              lowestAppliedMultiplier < 0.999 &&
+              Math.abs(appliedMultiplier - lowestAppliedMultiplier) < 0.000_001;
             return (
-              <li key={entry.name} title={`${entry.fullName}: ${band.label}. ${band.description}`}>
-                <span className="factor-bar-label">{entry.name}</span>
+              <li
+                key={entry.id}
+                className={limiting ? "is-limiting" : undefined}
+              >
+                <span className="factor-bar-heading">
+                  <span className="factor-bar-label">{entry.name}</span>
+                  <button
+                    type="button"
+                    className="factor-bar-help"
+                    aria-label={`Què significa ${entry.name}: ${entry.score} sobre 100?`}
+                    aria-describedby={`factor-tooltip-${entry.id}`}
+                  >
+                    <CircleHelp aria-hidden="true" size={16} />
+                  </button>
+                  <span
+                    id={`factor-tooltip-${entry.id}`}
+                    className="factor-bar-tooltip"
+                    role="tooltip"
+                  >
+                    {componentExplanation(entry)}
+                  </span>
+                </span>
+                <span className="factor-bar-reading">
+                  <strong>{entry.score}%</strong>
+                  {limiting && <small>Més restrictiu</small>}
+                </span>
                 <span
                   className="factor-bar-meter"
                   role="meter"
@@ -750,17 +803,6 @@ export function ConditionComparison({
             );
           })}
         </ul>
-        <div
-          className="factor-scale"
-          aria-label="Escala ordinal del model de molt baixa a molt alta"
-        >
-          {suitabilityScale.map((band) => (
-            <div key={band.id}>
-              <i style={{ backgroundColor: band.color }} />
-              <span>{band.label}</span>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );

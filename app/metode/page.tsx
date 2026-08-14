@@ -58,7 +58,7 @@ function AltitudeCurve() {
     <figure className="method-curve" aria-labelledby="altitude-curve-title">
       <figcaption id="altitude-curve-title">
         <span>Resposta d’altitud A(h)</span>
-        <small>La mateixa corba s’aplica al mapa estàtic i a l’hàbitat efectiu H.</small>
+        <small>La mateixa corba s’aplica al mapa estàtic i al càlcul de l’hàbitat efectiu.</small>
       </figcaption>
       <svg viewBox="0 0 720 230" role="img" aria-label="La puntuació puja de zero a 75 abans del límit mínim, arriba a 100 dins del rang central i baixa simètricament després del límit màxim.">
         <g className="curve-grid">
@@ -111,7 +111,7 @@ export default function MethodPage() {
           <div className="method-hero-copy">
             <p className="eyebrow light"><ShieldCheck size={15} /> Mètode obert</p>
             <h1>Cap caixa<br /><i>negra.</i></h1>
-            <p>Expliquem com passem d’una cel·la de territori a H, F i O: què representa cada magnitud, què la limita i quan preferim no publicar-la.</p>
+            <p>Expliquem com passem d’una cel·la de territori a tres lectures: quant hàbitat adequat hi ha, com són les condicions per fructificar-hi i quina puntuació rep tota la cel·la.</p>
             <nav className="method-jump-links" aria-label="Índex del mètode">
               <a href="#distribucio">01 · Distribució</a>
               <a href="#prediccio">02 · Condicions</a>
@@ -237,7 +237,7 @@ export default function MethodPage() {
                 <Formula label="La idoneïtat d'altitud agregada es calcula només dins de la cobertura compatible.">
                   A<sub>g</sub> = <span className="method-inline-fraction"><span>I<sub>g</sub></span><span>C<sub>g</sub></span></span>
                 </Formula>
-                <p>Al mapa de condicions, el color correspon directament a la banda de l’índex d’oportunitat <b>O</b>, que ja incorpora la proporció d’hàbitat efectiu. L’opacitat no torna a aplicar <b>C<sub>g</sub></b>.</p>
+                <p>Al mapa de condicions, el color correspon directament a la banda de la puntuació de la cel·la, que ja incorpora la proporció d’hàbitat efectiu. L’opacitat no torna a aplicar <b>C<sub>g</sub></b>.</p>
                 <small>Resolucions de visualització: 250 m, 1 km, 2,5 km, 5 km i 10 km.</small>
               </div>
             </div>
@@ -248,7 +248,7 @@ export default function MethodPage() {
                 <h3>I les observacions històriques?</h3>
                 <p>Els registres de FungaCAT/GBIF només corroboren presència passada en quadrícules generalitzades d’almenys 10 km. No entren en cap fórmula, no amplien l’hàbitat i l’absència de registres mai compta com a absència de l’espècie.</p>
               </div>
-              <strong>fora d’H/F/O</strong>
+              <strong>no intervé en els càlculs</strong>
             </aside>
           </div>
         </div>
@@ -411,17 +411,17 @@ export default function MethodPage() {
               <article className="method-publish-card method-publish-zero">
                 <span><CircleSlash2 size={21} /> RESULTAT FORÇAT A 0</span>
                 <ul>
-                  <li><Check size={16} /> Hàbitat efectiu H = 0 implica O = 0.</li>
-                  <li><Check size={16} /> Fenologia P = 0 implica F = 0.</li>
+                  <li><Check size={16} /> Si no hi ha hàbitat efectiu, la puntuació de la cel·la és 0.</li>
+                  <li><Check size={16} /> Fora de la temporada biològica, les condicions per fructificar són 0.</li>
                   <li><Check size={16} /> Qualsevol component nul anul·la el producte.</li>
                 </ul>
               </article>
               <article className="method-publish-card method-publish-cap">
                 <span><Gauge size={21} /> TRES LECTURES SEPARADES</span>
                 <ul>
-                  <li><Check size={16} /> H: hàbitat efectiu de la cel·la.</li>
-                  <li><Check size={16} /> F: condicions dins de l’hàbitat.</li>
-                  <li><Check size={16} /> O: oportunitat relativa a tota la cel·la.</li>
+                  <li><Check size={16} /> Hàbitat efectiu (H): proporció adequada de la cel·la.</li>
+                  <li><Check size={16} /> Condicions de fructificació (F): lectura dins de l’hàbitat.</li>
+                  <li><Check size={16} /> Puntuació de la cel·la (O): resultat comparatiu final.</li>
                 </ul>
               </article>
             </div>
@@ -439,7 +439,7 @@ export default function MethodPage() {
 
             <div className="method-label-scale" aria-label="Etiquetes finals segons puntuació">
               <div className="method-label-scale-heading">
-                <span>BANDA ORDINAL D’O</span>
+                <span>BANDA DE LA PUNTUACIÓ DE LA CEL·LA</span>
                 <small>no equival a una probabilitat</small>
               </div>
               <div className="method-label-ranges">
@@ -457,7 +457,7 @@ export default function MethodPage() {
               <div>
                 <h3>Resolució de pantalla ≠ resolució de la font</h3>
                 <p>La cel·la visible pot ser de 250 m a 10 km, però sempre conserva la resolució real del relleu, la coberta, el sòl i el proveïdor meteorològic. La geologia conserva per separat l’escala cartogràfica 1:50.000, que no equival a una resolució de 50 m. Les condicions agregades preserven també mínimes, màximes, vent i hores de gelada.</p>
-                <p>En el resum regional, la mediana i els quartils d’<b>O</b> donen el mateix pes a cada cel·la de visualització de 10 km amb hàbitat compatible verificat: <b>H</b> ja forma part d’<b>O</b> i no es torna a aplicar. El resum separat d’<b>F</b> sí que es pondera per <b>H</b>, perquè descriu les condicions dins de l’hàbitat. Cap dels dos és una probabilitat regional.</p>
+                <p>En el resum regional, la mediana i els quartils de la puntuació de la cel·la (<b>O</b>) donen el mateix pes a cada cel·la de visualització de 10 km amb hàbitat compatible verificat: l’hàbitat efectiu (<b>H</b>) ja forma part del resultat i no es torna a aplicar. El resum separat de les condicions de fructificació (<b>F</b>) sí que es pondera per l’hàbitat efectiu, perquè descriu les condicions dins de l’hàbitat. Cap dels dos és una probabilitat regional.</p>
               </div>
             </aside>
           </div>
@@ -480,14 +480,14 @@ export default function MethodPage() {
               <p>Cada valor publicat conserva la font, la data i la resolució o escala d’origen. Les capes estàtiques es preparen fora de línia; les condicions ambientals s’ingereixen al servidor i mai es demanen directament des del navegador.</p>
             </header>
 
-            <div className="method-source-lanes" aria-label="Flux de les fonts cap a la distribució i els índexs">
+            <div className="method-source-lanes" aria-label="Flux de les fonts cap a la distribució i les puntuacions">
               <span><Mountain size={18} /> Territori estàtic</span>
               <i aria-hidden="true" />
               <span><CloudSun size={18} /> Condicions dinàmiques</span>
               <i aria-hidden="true" />
               <span><Database size={18} /> Instantània normalitzada</span>
               <i aria-hidden="true" />
-              <span><Sigma size={18} /> Distribució + H + índexs F/O</span>
+              <span><Sigma size={18} /> Distribució + hàbitat + puntuacions</span>
             </div>
 
             <div className="method-source-group">
@@ -507,7 +507,7 @@ export default function MethodPage() {
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>5 / 15 m</dd></div>
                     <div><dt><RefreshCw size={14} /> Atles</dt><dd>reconstrucció estàtica</dd></div>
-                    <div><dt>Ús</dt><dd>distribució + hàbitat H</dd></div>
+                    <div><dt>Ús</dt><dd>distribució + hàbitat efectiu</dd></div>
                     <div><dt>Llicència</dt><dd>CC BY 4.0</dd></div>
                   </dl>
                   <a href="https://www.icgc.cat/ca/Geoinformacio-i-mapes/Geoinformacio-en-linia-Geoserveis/WMS-i-WCS-Elevacions/WCS-del-Model-dElevacions-del-Terreny" target="_blank" rel="noreferrer">Fitxa oficial <ExternalLink size={14} /></a>
@@ -546,7 +546,7 @@ export default function MethodPage() {
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>escala 1:50.000</dd></div>
                     <div><dt><RefreshCw size={14} /> Atles</dt><dd>reconstrucció estàtica</dd></div>
-                    <div><dt>Ús</dt><dd>context geològic · fora d’H/F/O</dd></div>
+                    <div><dt>Ús</dt><dd>context geològic · fora del càlcul</dd></div>
                     <div><dt>Llicència</dt><dd>CC BY 4.0</dd></div>
                   </dl>
                   <a href="https://www.icgc.cat/ca/Geoinformacio-i-mapes/Dades-i-productes/Geoinformacio-geologica-i-geofisica/Cartografia-geologica/Mapa-geologic-150000" target="_blank" rel="noreferrer">Fitxa oficial <ExternalLink size={14} /></a>
@@ -560,7 +560,7 @@ export default function MethodPage() {
                     <div><dt><Ruler size={14} /> Detall oficial</dt><dd>1:5.000</dd></div>
                     <div><dt><RefreshCw size={14} /> Atles</dt><dd>versió fixada</dd></div>
                     <div><dt>Ús</dt><dd>retall cartogràfic</dd></div>
-                    <div><dt>Ús en H/F/O</dt><dd>cap</dd></div>
+                    <div><dt>Ús en la puntuació</dt><dd>cap</dd></div>
                   </dl>
                   <a href="https://www.icgc.cat/ca/Geoinformacio-i-mapes/Dades-i-productes/Geoinformacio-cartografica/Divisions-administratives" target="_blank" rel="noreferrer">Fitxa oficial <ExternalLink size={14} /></a>
                 </article>
@@ -585,7 +585,7 @@ export default function MethodPage() {
                     <div><dt><Ruler size={14} /> Origen</dt><dd>2,5 km · horari</dd></div>
                     <div><dt><RefreshCw size={14} /> Proveïdor</dt><dd>cada 3 h</dd></div>
                     <div><dt><RefreshCw size={14} /> Atles</dt><dd>diari</dd></div>
-                    <div><dt>Ús</dt><dd>W · T · E</dd></div>
+                    <div><dt>Ús</dt><dd>estat hídric · temperatura · extrems</dd></div>
                   </dl>
                   <a href="https://open-meteo.com/en/docs/meteofrance-api" target="_blank" rel="noreferrer">Documentació del model <ExternalLink size={14} /></a>
                 </article>
@@ -597,7 +597,7 @@ export default function MethodPage() {
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>9 km · horari</dd></div>
                     <div><dt><RefreshCw size={14} /> Atles</dt><dd>diari</dd></div>
-                    <div><dt>Ús</dt><dd>component W</dd></div>
+                    <div><dt>Ús</dt><dd>estat hídric</dd></div>
                     <div><dt>Unitat</dt><dd>m³/m³</dd></div>
                   </dl>
                   <a href="https://open-meteo.com/en/docs" target="_blank" rel="noreferrer">Documentació de variables <ExternalLink size={14} /></a>
@@ -624,7 +624,7 @@ export default function MethodPage() {
                   <div><dt>Dataset key</dt><dd>8583f4f6…45e9a</dd></div>
                   <div><dt>DOI</dt><dd>10.15468/ttivpp</dd></div>
                   <div><dt>Llicència</dt><dd>CC BY-NC 4.0</dd></div>
-                  <div><dt>Ús en H/F/O</dt><dd>cap</dd></div>
+                  <div><dt>Ús en la puntuació</dt><dd>cap</dd></div>
                 </dl>
                 <a href="https://www.gbif.org/dataset/8583f4f6-f762-11e1-a439-00145eb45e9a" target="_blank" rel="noreferrer">Fitxa i llicència <ExternalLink size={14} /></a>
               </article>
@@ -634,7 +634,7 @@ export default function MethodPage() {
               <ShieldCheck size={25} />
               <div>
                 <h3>Una font no hereta la resolució de la cel·la</h3>
-                <p>Un índex O pintat a 250 m pot compartir el mateix punt atmosfèric de 2,5 km i la mateixa humitat del sòl de 9 km amb moltes cel·les veïnes. Guardem resolucions i escales cartogràfiques per separat i exposem camps absents, antiguitat, confiança i versió del model.</p>
+                <p>Una puntuació pintada en una cel·la de 250 m pot compartir el mateix punt atmosfèric de 2,5 km i la mateixa humitat del sòl de 9 km amb moltes cel·les veïnes. Guardem resolucions i escales cartogràfiques per separat i exposem camps absents, antiguitat, confiança i versió del model.</p>
               </div>
             </aside>
           </div>
@@ -648,7 +648,7 @@ export default function MethodPage() {
             <h2>Ara llegiu el mapa<br />amb uns altres ulls.</h2>
           </div>
           <div>
-            <p>Seleccioneu una espècie i una cel·la per separar l’hàbitat efectiu H, les condicions F i l’oportunitat de cel·la O, amb la procedència i els límits de les dades.</p>
+            <p>Seleccioneu una espècie i una cel·la per veure per separat l’hàbitat adequat, les condicions per fructificar i la puntuació final, amb la procedència i els límits de les dades.</p>
             <Link href="/map" className="button">Obriu el mapa de condicions <ArrowUpRight size={17} /></Link>
           </div>
         </div>

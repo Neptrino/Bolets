@@ -94,6 +94,9 @@ const defaultMetadata: EditorialMetadata = {
 };
 
 const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
+  "bolets-avui": {
+    updatedAt: "2026-08-14",
+  },
   "quan-surten-els-bolets-despres-de-ploure": {
     updatedAt: "2026-08-14",
   },

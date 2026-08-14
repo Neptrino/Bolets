@@ -687,8 +687,8 @@ test("reports score-zero and withheld map cells together", async ({ page }) => {
 
   const status = page.locator(".map-data-state");
   await expect(status.locator("strong")).toHaveText("Resultats mixtos a la vista");
-  await expect(status).toContainText("O = 0, en vermell: 1 cel·la");
-  await expect(status).toContainText("índex no publicat, en gris: 1 cel·la");
+  await expect(status).toContainText("puntuació 0, en vermell: 1 cel·la");
+  await expect(status).toContainText("sense puntuació, en gris: 1 cel·la");
 });
 
 test("keeps prediction out of the camasec species guide", async ({ page }) => {
@@ -765,10 +765,20 @@ test("keeps model component labels readable on narrow maps", async ({ page }) =>
 
   const chart = page.locator(".factor-chart");
   await expect(chart).toBeVisible();
-  const componentList = chart.getByRole("list", { name: "Resposta dels components" });
+  const componentList = chart.getByRole("list", { name: "Multiplicadors del càlcul" });
   await expect(componentList).toBeVisible();
   const componentLabels = componentList.locator(".factor-bar-label");
+  const componentValues = componentList.locator(".factor-bar-reading strong");
+  const componentHelp = componentList.getByRole("button", { name: /Què significa/ });
   await expect(componentLabels.first()).toHaveText(/\S+/);
+  await expect(componentValues.first()).toHaveText(/^\d+%$/);
+  const renderedComponentCount = await componentLabels.count();
+  await expect(componentHelp).toHaveCount(renderedComponentCount);
+  await componentHelp.first().focus();
+  const firstTooltipId = await componentHelp.first().getAttribute("aria-describedby");
+  expect(firstTooltipId).toBeTruthy();
+  await expect(page.locator(`#${firstTooltipId}`)).toBeVisible();
+  await expect(page.locator(`#${firstTooltipId}`)).toContainText(/\d+\/100/);
   const labels = await componentLabels.evaluateAll((elements) =>
     elements
       .map((element) => {
@@ -790,9 +800,7 @@ test("keeps model component labels readable on narrow maps", async ({ page }) =>
     if (index === 0) continue;
     expect(label.top).toBeGreaterThanOrEqual(labels[index - 1].bottom);
   }
-  await expect(
-    chart.getByLabel("Escala ordinal del model de molt baixa a molt alta"),
-  ).toContainText("Molt baixaBaixaMitjanaAltaMolt alta");
+  await expect(chart.locator(".factor-scale")).toHaveCount(0);
 
   await page.setViewportSize({ width: 320, height: 720 });
   const compactMapLayout = await page.evaluate(() => {

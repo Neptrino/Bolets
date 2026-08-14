@@ -195,7 +195,7 @@ describe("geological substrate evidence", () => {
 
     expect(html).toContain("Mapa geològic de Catalunya");
     expect(html).toContain("escala 1:50.000");
-    expect(html).toContain("context geològic · fora d’H/F/O");
+    expect(html).toContain("context geològic · fora del càlcul");
     expect(html).toContain("no equival a una resolució de 50 m");
     expect(html).not.toContain("250 m, 500 m, 1 km");
   });

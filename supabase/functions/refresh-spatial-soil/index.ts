@@ -24,6 +24,16 @@ const FORECAST_CURSOR_PIPELINE = "spatial-forecast-v2";
 
 type Settled<T> = { data: T; error?: undefined } | { data?: undefined; error: string };
 
+type ForecastReconciliation = {
+  realigned: boolean;
+  issueComplete: boolean;
+  reason?: string;
+  generatedAt?: string;
+  previousGeneratedAt?: string;
+  anchorGapSeconds?: number;
+  deletedForecastRows?: number;
+};
+
 async function settle<T>(promise: Promise<T>): Promise<Settled<T>> {
   try {
     return { data: await promise };
@@ -104,6 +114,55 @@ async function forecastIssueGeneratedAt(
   return data;
 }
 
+async function reconcileForecastIssue(
+  supabase: ReturnType<typeof createAdminClient>,
+  snapshotDate: string,
+) {
+  const { data, error } = await supabase.rpc("reconcile_weather_forecast_issue", {
+    p_snapshot_date: snapshotDate,
+    p_max_anchor_gap: "8 hours",
+  });
+  if (error) throw error;
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    throw new Error("Forecast reconciliation returned an invalid result");
+  }
+  const result = data as Record<string, unknown>;
+  return {
+    realigned: result.realigned === true,
+    issueComplete: result.issueComplete === true,
+    reason: typeof result.reason === "string" ? result.reason : undefined,
+    generatedAt: typeof result.generatedAt === "string" ? result.generatedAt : undefined,
+    previousGeneratedAt: typeof result.previousGeneratedAt === "string"
+      ? result.previousGeneratedAt
+      : undefined,
+    anchorGapSeconds: finiteNumber(result.anchorGapSeconds),
+    deletedForecastRows: finiteNumber(result.deletedForecastRows),
+  } satisfies ForecastReconciliation;
+}
+
+async function completeForecastIssue(
+  supabase: ReturnType<typeof createAdminClient>,
+  snapshotDate: string,
+  generatedAt: string,
+) {
+  const { data, error } = await supabase.rpc("complete_weather_forecast_issue", {
+    p_snapshot_date: snapshotDate,
+    p_generated_at: generatedAt,
+  });
+  if (error) throw error;
+  return data === true;
+}
+
+async function pruneForecastIssues(
+  supabase: ReturnType<typeof createAdminClient>,
+) {
+  const { data, error } = await supabase.rpc("prune_weather_forecast_issues", {
+    p_keep_complete: 1,
+  });
+  if (error) throw error;
+  return data;
+}
+
 async function fetchSoil(points: SoilPoint[]) {
   const results: OpenMeteoLocation[] = [];
   for (let start = 0; start < points.length; start += PROVIDER_BATCH_SIZE) {
@@ -150,6 +209,16 @@ Deno.serve(async (request) => {
     if (!await verifyIngestionRequest(request, supabase)) return json({ error: "Unauthorized ingestion request" }, 401);
     const today = new Date().toISOString().slice(0, 10);
     const body = await request.json().catch(() => ({})) as { trigger?: "cron" | "manual" };
+    const forecastReconciliation = await reconcileForecastIssue(supabase, today);
+    if (forecastReconciliation.issueComplete && !forecastReconciliation.realigned) {
+      await saveCursor(
+        supabase,
+        FORECAST_CURSOR_PIPELINE,
+        today,
+        COMPLETE_CURSOR,
+        new Date().toISOString(),
+      );
+    }
     const { data: cursors, error: cursorError } = await supabase
       .from("pipeline_cursors")
       .select("pipeline,snapshot_date,last_cell_id")
@@ -173,7 +242,11 @@ Deno.serve(async (request) => {
       "spatial-soil",
       body.trigger === "manual" ? "manual" : "cron",
       today,
-      { batchSize: BATCH_SIZE, forecastCursor: FORECAST_CURSOR_PIPELINE },
+      {
+        batchSize: BATCH_SIZE,
+        forecastCursor: FORECAST_CURSOR_PIPELINE,
+        forecastReconciliation,
+      },
     );
     const sharedPointBatch = !soilAlreadyComplete && !forecastAlreadyComplete &&
         soilLastPointId === forecastLastPointId
@@ -201,20 +274,30 @@ Deno.serve(async (request) => {
       soilErrorMessage = result.error;
     }
     if (!forecastAlreadyComplete && !forecastPoints.length) {
-      const result = await settle(saveCursor(
-        supabase,
-        FORECAST_CURSOR_PIPELINE,
-        today,
-        COMPLETE_CURSOR,
-        cursorUpdatedAt,
-      ));
-      forecastErrorMessage = result.error;
+      const completion = await settle((async () => {
+        const generatedAt = await forecastIssueGeneratedAt(supabase, today);
+        if (!await completeForecastIssue(supabase, today, generatedAt)) {
+          throw new Error("Forecast issue did not contain every required point and horizon");
+        }
+        await saveCursor(
+          supabase,
+          FORECAST_CURSOR_PIPELINE,
+          today,
+          COMPLETE_CURSOR,
+          cursorUpdatedAt,
+        );
+        await pruneForecastIssues(supabase);
+      })());
+      forecastErrorMessage = completion.error;
     }
     if (!soilPoints.length && !forecastPoints.length) {
       const cursorError = soilErrorMessage ?? forecastErrorMessage;
       await finishRun(supabase, runId, cursorError ? "partial" : "skipped", {
         errorMessage: cursorError,
-        metadata: { reason: "Daily soil and forecast refresh completed" },
+        metadata: {
+          reason: "Daily soil and forecast refresh completed",
+          forecastReconciliation,
+        },
       });
       const conditionsRefreshed = soilErrorMessage
         ? false
@@ -429,10 +512,31 @@ Deno.serve(async (request) => {
       !forecastErrorMessage && !forecastHasUnavailableFields &&
       storedForecastRows === forecastPoints.length * 6;
     const forecastIncomplete = forecastPoints.length > 0 && !forecastBatchSucceeded;
+    const soilComplete = soilAlreadyComplete ||
+      (!soilErrorMessage && soilPoints.length < BATCH_SIZE);
+    let forecastComplete = forecastAlreadyComplete ||
+      (!forecastIncomplete && forecastPoints.length < BATCH_SIZE);
+    if (soilComplete && !soilAlreadyComplete) {
+      await saveCursor(supabase, SOIL_CURSOR_PIPELINE, today, COMPLETE_CURSOR, observedAt);
+    }
+    if (forecastComplete && !forecastAlreadyComplete) {
+      const completedIssue = await completeForecastIssue(
+        supabase,
+        today,
+        forecastGeneratedAt,
+      );
+      if (completedIssue) {
+        await saveCursor(supabase, FORECAST_CURSOR_PIPELINE, today, COMPLETE_CURSOR, observedAt);
+        await pruneForecastIssues(supabase);
+      } else {
+        forecastErrorMessage = "Forecast issue did not contain every required point and horizon";
+        forecastComplete = false;
+      }
+    }
     await finishRun(
       supabase,
       runId,
-      Boolean(soilErrorMessage) || rows.some((row) =>
+      Boolean(soilErrorMessage) || Boolean(forecastErrorMessage) || rows.some((row) =>
         Array.isArray(row.unavailable_fields) && row.unavailable_fields.length > 0
       ) ||
           forecastIncomplete || forecastHasUnavailableFields
@@ -450,6 +554,7 @@ Deno.serve(async (request) => {
           firstForecastPointId: forecastPoints[0]?.point_id,
           lastForecastPointId: forecastPoints.at(-1)?.point_id,
           forecastRows: storedForecastRows,
+          forecastReconciliation,
           forecastError: forecastErrorMessage,
           atmosphericForecastError,
           soilForecastError,
@@ -457,16 +562,6 @@ Deno.serve(async (request) => {
         },
       },
     );
-    const soilComplete = soilAlreadyComplete ||
-      (!soilErrorMessage && soilPoints.length < BATCH_SIZE);
-    const forecastComplete = forecastAlreadyComplete ||
-      (!forecastIncomplete && forecastPoints.length < BATCH_SIZE);
-    if (soilComplete && !soilAlreadyComplete) {
-      await saveCursor(supabase, SOIL_CURSOR_PIPELINE, today, COMPLETE_CURSOR, observedAt);
-    }
-    if (forecastComplete && !forecastAlreadyComplete) {
-      await saveCursor(supabase, FORECAST_CURSOR_PIPELINE, today, COMPLETE_CURSOR, observedAt);
-    }
     const complete = soilComplete && forecastComplete;
     const conditionsRefreshed = soilComplete
       ? await refreshSpatialLevelConditionsAfterIngestion(supabase, today)
@@ -476,6 +571,7 @@ Deno.serve(async (request) => {
       refreshed: storedSoilRows,
       forecasted: storedForecastRows,
       forecastAvailable: forecastPoints.length === 0 || forecastBatchSucceeded,
+      forecastRealigned: forecastReconciliation.realigned,
       complete,
       conditionsRefreshed,
       snapshotDate: today,

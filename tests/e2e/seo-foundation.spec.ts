@@ -89,6 +89,12 @@ test("the current overview stays usable without publishing invented scores", asy
   const cardCount = await cards.count();
   expect(cardCount).toBeLessThanOrEqual(10);
   await expect(page.locator("body")).not.toContainText(/Model ecologia-v/i);
+  await expect(page.locator(".current-board-key")).toContainText(
+    "La puntuació combina l’hàbitat adequat amb les condicions per fructificar-hi",
+  );
+  await expect(page.locator("body")).not.toContainText("Oportunitat O");
+  await expect(page.locator("body")).not.toContainText("Condicions F");
+  await expect(page.locator("body")).not.toContainText("H / F");
   expect((await cards.allTextContents()).join(" ")).not.toContain("NaN");
   if (cardCount === 0) {
     await expect(page.locator(".current-board-empty")).toBeVisible();

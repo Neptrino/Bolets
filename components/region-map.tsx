@@ -1257,9 +1257,9 @@ export function RegionMap({
       ? {
           title: "Resultats mixtos a la vista",
           detail:
-            `${cellState.published ? `O publicat: ${formatCellCount(cellState.published)}; ` : ""}` +
-            `O = 0, en vermell: ${formatCellCount(cellState.excluded)}; ` +
-            `índex no publicat, en gris: ${formatCellCount(cellState.withheld)} perquè hi falten components requerits, dades vigents o evidència estàtica verificada.`,
+            `${cellState.published ? `Amb puntuació publicada: ${formatCellCount(cellState.published)}; ` : ""}` +
+            `puntuació 0, en vermell: ${formatCellCount(cellState.excluded)}; ` +
+            `sense puntuació, en gris: ${formatCellCount(cellState.withheld)} perquè hi falten components requerits, dades vigents o evidència estàtica verificada.`,
         }
       : cellState.status === "ready"
         ? {

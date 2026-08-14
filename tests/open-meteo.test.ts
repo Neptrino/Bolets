@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   configureOpenMeteoForecastRequest,
+  configureOpenMeteoHistoricalRequest,
   configureOpenMeteoRequest,
   normalizeOpenMeteo,
+  normalizeOpenMeteoAt,
   normalizeOpenMeteoForecast,
   type OpenMeteoLocation,
 } from "@/supabase/functions/_shared/open-meteo";
@@ -67,6 +69,37 @@ describe("Open-Meteo profiles", () => {
     expect(soil.searchParams.get("forecast_hours")).toBe("121");
     expect(soil.searchParams.get("hourly")).toBe("soil_moisture_3_to_9cm");
     expect(soil.searchParams.has("models")).toBe(false);
+  });
+
+  it("requests the full trailing window before an earlier historical target", () => {
+    const targetAt = "2026-08-11T13:15:00Z";
+    const referenceAt = "2026-08-14T10:00:00Z";
+    const atmosphere = new URL("https://api.open-meteo.com/v1/meteofrance");
+    configureOpenMeteoHistoricalRequest(atmosphere, "atmosphere", targetAt, referenceAt);
+    expect(Number(atmosphere.searchParams.get("past_hours"))).toBeGreaterThanOrEqual(789);
+    expect(atmosphere.searchParams.get("timeformat")).toBe("unixtime");
+    expect(atmosphere.searchParams.get("hourly")).toContain("et0_fao_evapotranspiration");
+
+    const soil = new URL("https://api.open-meteo.com/v1/forecast");
+    configureOpenMeteoHistoricalRequest(soil, "soil", targetAt, referenceAt);
+    expect(Number(soil.searchParams.get("past_hours"))).toBeGreaterThanOrEqual(237);
+    expect(soil.searchParams.get("hourly")).toBe("soil_moisture_3_to_9cm");
+  });
+
+  it("rebuilds a historical snapshot only from complete hours ending at its target", () => {
+    const { atmosphere, soil, base } = forecastFixture();
+    const targetAt = new Date(base * 1000 + 15 * 60_000).toISOString();
+    const historicalAtmosphere = normalizeOpenMeteoAt(atmosphere, targetAt, "atmosphere");
+    const historicalSoil = normalizeOpenMeteoAt(soil, targetAt, "soil");
+
+    expect(historicalAtmosphere.values.weatherObservedAt).toBe(
+      new Date(base * 1000).toISOString(),
+    );
+    expect(historicalAtmosphere.values.temperatureAvg20dC).toBe(14);
+    expect(historicalAtmosphere.values.rainfall30dMm).toBeCloseTo(72);
+    expect(historicalAtmosphere.unavailableFields).toEqual([]);
+    expect(historicalSoil.values.soilMoistureAvg7d).toBeCloseTo(0.25);
+    expect(historicalSoil.unavailableFields).toEqual([]);
   });
 
   it("recalculates complete rolling inputs at each of five future target hours", () => {

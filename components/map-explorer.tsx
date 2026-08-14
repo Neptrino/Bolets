@@ -51,7 +51,9 @@ export function MapExplorer({
   const predictionStatus = getConditionPredictionStatus(snapshot.stale, result);
   const hasPrediction = predictionStatus.kind === "available" && result.score !== null;
   const resultBand = result.score === null ? undefined : getSuitabilityBand(result.score);
-  const selectedHabitatCoverage = selectedCell?.values.habitatCoveragePercent;
+  const selectedEffectiveHabitat = selectedCell && typeof result.effectiveHabitatCoverage === "number"
+    ? result.effectiveHabitatCoverage
+    : undefined;
   const unavailableCopy = predictionStatus.kind === "environment-unavailable"
     ? "sense dades ambientals verificades"
     : selectedCell
@@ -90,7 +92,7 @@ export function MapExplorer({
           </div>
           <strong>{hasPrediction ? <>{result.score}<small>/100</small></> : "—"}</strong>
           <p>{hasPrediction
-            ? `Oportunitat territorial · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · condicions ${result.fruitingConditionsScore}/100`}${selectedHabitatCoverage === undefined ? "" : ` · ${Math.round(selectedHabitatCoverage)}% d’hàbitat compatible`}`
+            ? `Puntuació de la cel·la · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · condicions per fructificar ${result.fruitingConditionsScore}/100`}${selectedEffectiveHabitat === undefined ? "" : ` · ${Math.round(selectedEffectiveHabitat * 100)}% d’hàbitat adequat`}`
             : unavailableCopy}</p>
         </div>
       ) : null}
@@ -106,8 +108,6 @@ export function MapExplorer({
             cellId={selectedCell?.cellId}
             cellGridSizeM={selectedCell?.gridSizeM}
             cellBounds={selectedCell?.cellBounds}
-            occurrenceEvidence={selectedCell?.occurrenceEvidence}
-            occurrenceEvidenceStatus={selectedCell?.occurrenceEvidenceStatus}
           />
           {selectedCell ? <CellScoreHistory key={`${species.speciesId}:${selectedCell.cellId}`} speciesId={species.speciesId} cell={selectedCell} /> : null}
         </>

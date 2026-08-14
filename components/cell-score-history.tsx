@@ -291,7 +291,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     <section className="cell-score-history" aria-labelledby={titleId}>
       <div className="cell-score-history-heading">
         <div>
-          <p className="eyebrow">Oportunitat territorial local</p>
+          <p className="eyebrow">Puntuació de la cel·la</p>
           <h4 id={titleId}>{title}</h4>
         </div>
         <span className={change > 0 ? "improving" : change < 0 ? "worsening" : "steady"}>
@@ -309,11 +309,14 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       {forecast ? (
         <ol className="forecast-confidence-list" role="list" aria-label="Projecció diària i confiança de la projecció">
           {forecast.points.map((point) => (
-            <li key={point.validAt}>
+            <li
+              key={point.validAt}
+              aria-label={`D’aquí a ${point.horizonDays} ${point.horizonDays === 1 ? "dia" : "dies"}: puntuació ${scoreLabel(point.opportunityIndex)}, condicions per fructificar ${scoreLabel(point.fruitingConditionsScore)}, confiança meteorològica ${confidenceLabel(point.horizonConfidence)}`}
+            >
               <span>+{point.horizonDays} {point.horizonDays === 1 ? "dia" : "dies"}</span>
-              <strong>O · {scoreLabel(point.opportunityIndex)}</strong>
+              <strong>Puntuació · {scoreLabel(point.opportunityIndex)}</strong>
               <small>
-                F · {scoreLabel(point.fruitingConditionsScore)} ·{" "}
+                Condicions · {scoreLabel(point.fruitingConditionsScore)} ·{" "}
                 <span className="visually-hidden">Confiança meteorològica de l’horitzó: </span>
                 confiança meteo {confidenceLabel(point.horizonConfidence)}
               </small>
@@ -331,7 +334,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       </p>
       <table className="visually-hidden">
         <caption>Dades de l’evolució calculada i la projecció ambiental</caption>
-        <thead><tr><th scope="col">Data</th><th scope="col">Tipus</th><th scope="col">Oportunitat</th><th scope="col">Condicions dins l’hàbitat</th><th scope="col">Confiança meteorològica de l’horitzó</th></tr></thead>
+        <thead><tr><th scope="col">Data</th><th scope="col">Tipus</th><th scope="col">Puntuació de la cel·la</th><th scope="col">Condicions per fructificar dins l’hàbitat</th><th scope="col">Confiança meteorològica de l’horitzó</th></tr></thead>
         <tbody>
           {observed.map((point) => (
             <tr key={`observed:${point.observedAt}`}>

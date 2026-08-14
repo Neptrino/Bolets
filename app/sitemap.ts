@@ -18,12 +18,15 @@ const lastModified = new Date(`${EDITORIAL_LAUNCH_DATE}T00:00:00+02:00`);
 const rainGuideLastModified = new Date(
   `${getEditorialMetadata("quan-surten-els-bolets-despres-de-ploure").updatedAt}T00:00:00+02:00`,
 );
+const currentOverviewLastModified = new Date(
+  `${getEditorialMetadata("bolets-avui").updatedAt}T00:00:00+02:00`,
+);
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const pages: MetadataRoute.Sitemap = [
     { url: absoluteUrl(), lastModified, images: [absoluteUrl("/media/generated/home-hero-boletus-v2.webp")] },
     { url: absoluteUrl("/bolets"), lastModified },
-    { url: absoluteUrl("/bolets-avui"), lastModified },
+    { url: absoluteUrl("/bolets-avui"), lastModified: currentOverviewLastModified },
     ...seasonGuides.map((guide) => ({ url: absoluteUrl(guide.path), lastModified })),
     { url: absoluteUrl("/quan-surten-els-bolets-despres-de-ploure"), lastModified: rainGuideLastModified },
     { url: absoluteUrl("/bolets-comestibles"), lastModified },

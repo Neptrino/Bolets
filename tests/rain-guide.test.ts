@@ -18,12 +18,15 @@ describe("rain response guide", () => {
 
   it("explains the hydrothermal model without promising a fruiting date", () => {
     expect(html).toContain("La pluja no activa un compte enrere");
-    expect(html).toContain("F = 100 × P × W");
-    expect(html).toContain("O = H × F");
+    expect(html).toContain("La puntuació baixa si hi ha poc hàbitat adequat");
+    expect(html).not.toContain("F = 100 × P × W");
+    expect(html).not.toContain("O = H × F");
+    expect(html).not.toContain("P · temporada");
+    expect(html).not.toContain("W · estat hídric");
     for (const heading of [
-      "Hàbitat efectiu",
-      "Condicions de fructificació",
-      "Oportunitat territorial",
+      "Hàbitat adequat",
+      "Condicions per fructificar",
+      "Puntuació de la cel·la",
       "Calendari suau",
       "Sòl i pluja efectiva",
       "14, 21 o 26 dies",
@@ -51,8 +54,8 @@ describe("rain response guide", () => {
       ["Camasec", 14, 14],
     ] as const) {
       const card = articleFor(html, species);
-      expect(card).toContain(`<dt>Memòria hídrica W</dt><dd>${waterDays} dies</dd>`);
-      expect(card).toContain(`<dt>Memòria tèrmica T</dt><dd>${temperatureDays} dies</dd>`);
+      expect(card).toContain(`<dt>Finestra hídrica</dt><dd>${waterDays} dies</dd>`);
+      expect(card).toContain(`<dt>Finestra tèrmica</dt><dd>${temperatureDays} dies</dd>`);
       expect(card).toContain(`aria-label="Veure la fitxa de ${species}"`);
     }
   });

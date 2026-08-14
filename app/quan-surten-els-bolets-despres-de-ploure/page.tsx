@@ -114,17 +114,17 @@ export default function MushroomsAfterRainPage() {
           meta="Lectura del nou model"
           title="Pluja, hàbitat i fructificació són coses diferents"
           titleId="rain-model-title"
-          description="La pluja només modifica una part de les condicions dinàmiques. El mapa manté separats l’hàbitat compatible, les condicions dins d’aquest hàbitat i l’oportunitat territorial final."
+          description="La pluja només modifica una part de les condicions actuals. Per llegir el mapa, primer distingim on l’espècie podria créixer, després si pot fructificar-hi i finalment la puntuació de tota la cel·la."
         />
         <div className="rain-index-flow">
-          <article><span>H</span><Trees size={20} /><h3>Hàbitat efectiu</h3><p>Combina la fracció de coberta i sòl compatibles amb l’adequació altitudinal. No utilitza el temps d’avui.</p></article>
-          <article><span>F</span><Gauge size={20} /><h3>Condicions de fructificació</h3><p>Combina temporada <strong>P</strong>, estat hídric <strong>W</strong>, temperatura <strong>T</strong> i extrems <strong>E</strong> dins l’hàbitat.</p></article>
-          <article><span>O</span><CloudRain size={20} /><h3>Oportunitat territorial</h3><p>Aplica les condicions F a la fracció H de tota la cel·la. Una bona F no crea hàbitat on no n’hi ha.</p></article>
+          <article><span aria-hidden="true">1</span><Trees size={20} /><h3>Hàbitat adequat</h3><p>Comprova quina part de la cel·la té una coberta, un sòl i una altitud adequats per a l’espècie. No utilitza el temps d’avui.</p></article>
+          <article><span aria-hidden="true">2</span><Gauge size={20} /><h3>Condicions per fructificar</h3><p>Combina la temporada, l’aigua disponible, la temperatura i els extrems recents només dins de l’hàbitat adequat.</p></article>
+          <article><span aria-hidden="true">3</span><CloudRain size={20} /><h3>Puntuació de la cel·la</h3><p>Combina els dos resultats. Un temps favorable no crea hàbitat on no n’hi ha.</p></article>
         </div>
         <div className="rain-formula-panel">
-          <div><span>Condicions dins l’hàbitat</span><code>F = 100 × P × W<sup>α</sup> × T<sup>1−α</sup> × E</code></div>
-          <div><span>Oportunitat de tota la cel·la</span><code>O = H × F</code></div>
-          <p><ShieldCheck size={17} aria-hidden="true" /> F i O són índexs ordinals de 0 a 100. No són probabilitats de presència, abundància ni dates de sortida.</p>
+          <div><span>Primer</span><strong>Valorem com són les condicions per fructificar dins de l’hàbitat adequat.</strong></div>
+          <div><span>Després</span><strong>La puntuació baixa si hi ha poc hàbitat adequat o si una condició clau és desfavorable.</strong></div>
+          <p><ShieldCheck size={17} aria-hidden="true" /> Les puntuacions són escales comparatives de 0 a 100. No indiquen probabilitat de presència, abundància ni data de sortida. Les fórmules completes es poden consultar a la pàgina del mètode.</p>
         </div>
       </section>
 
@@ -136,11 +136,11 @@ export default function MushroomsAfterRainPage() {
           description="Les finestres indiquen quanta història meteorològica consulta el model. No indiquen quants dies trigarà a sortir un bolet."
         />
         <div className="rain-factor-grid" aria-label="Components dinàmics del model després de ploure">
-          <article><CalendarRange size={22} /><span>P · temporada</span><h3>Calendari suau</h3><p>El calendari propi de cada espècie limita la resposta i s’interpola entre mesos. Fora de temporada, una pluja no activa la lectura.</p></article>
-          <article><Droplets size={22} /><span>W · estat hídric</span><h3>Sòl i pluja efectiva</h3><p>Combina la mitjana —75%— i el mínim —25%— de la humitat estimada a 3–9 cm durant 7 dies, normalitzada per la textura. Massa poca aigua i la saturació excessiva poden reduir W.</p></article>
-          <article><CloudRain size={22} /><span>W · desencadenant</span><h3>14, 21 o 26 dies</h3><p>La quantitat de pluja i els dies amb almenys 1 mm es corregeixen per la intercepció i la meitat de l’ET₀. S’usen 14 o 21 dies segons el prior versionat; 26 només per a <em>Boletus edulis</em>.</p></article>
-          <article><ThermometerSun size={22} /><span>T + E · ambient</span><h3>Memòria tèrmica i extrems</h3><p>La temperatura mitjana de l’aire usa 14 o 20 dies. Les hores a ≤ 0 °C i ≥ 27 °C redueixen gradualment la lectura dins la mateixa finestra.</p></article>
-          <article><Wind size={22} /><span>W · assecat</span><h3>Atmosfera i ratxa seca</h3><p>La temperatura i la humitat mitjanes de 7 dies formen el dèficit de vapor; els dies consecutius amb menys d’1 mm també penalitzen. El vent no es puntua directament: només pot quedar reflectit indirectament en l’ET₀.</p></article>
+          <article><CalendarRange size={22} /><span>Temporada</span><h3>Calendari suau</h3><p>El calendari propi de cada espècie limita la resposta i s’interpola entre mesos. Fora de temporada, una pluja no activa la lectura.</p></article>
+          <article><Droplets size={22} /><span>Estat hídric</span><h3>Sòl i pluja efectiva</h3><p>Combina la mitjana —75%— i el mínim —25%— de la humitat estimada a 3–9 cm durant 7 dies, normalitzada per la textura. Massa poca aigua i la saturació excessiva poden reduir la resposta.</p></article>
+          <article><CloudRain size={22} /><span>Pluja efectiva</span><h3>14, 21 o 26 dies</h3><p>La quantitat de pluja i els dies amb almenys 1 mm es corregeixen per la intercepció i la meitat de l’ET₀. S’usen 14 o 21 dies segons el prior versionat; 26 només per a <em>Boletus edulis</em>.</p></article>
+          <article><ThermometerSun size={22} /><span>Temperatura i extrems</span><h3>Memòria tèrmica i extrems</h3><p>La temperatura mitjana de l’aire usa 14 o 20 dies. Les hores a ≤ 0 °C i ≥ 27 °C redueixen gradualment la lectura dins la mateixa finestra.</p></article>
+          <article><Wind size={22} /><span>Assecat atmosfèric</span><h3>Atmosfera i ratxa seca</h3><p>La temperatura i la humitat mitjanes de 7 dies formen el dèficit de vapor; els dies consecutius amb menys d’1 mm també penalitzen. El vent no es puntua directament: només pot quedar reflectit indirectament en l’ET₀.</p></article>
         </div>
       </section>
 
@@ -149,7 +149,7 @@ export default function MushroomsAfterRainPage() {
           meta="Sis exemples del catàleg"
           title="La finestra del model no és el retard"
           titleId="rain-species-title"
-          description="W i T provenen de la configuració que consumeix el mapa. El patró temporal, les interrupcions i la necessitat d’aigua són context editorial de la fitxa i no es converteixen en coeficients."
+          description="Les finestres hídrica i tèrmica provenen de la mateixa configuració que consumeix el mapa. El patró temporal, les interrupcions i la necessitat d’aigua són context editorial de la fitxa i no es converteixen en coeficients."
         />
         {exampleSpecies.map((species) => {
           const rainfall = species.ecologicalConfig.rainfall;
@@ -157,8 +157,8 @@ export default function MushroomsAfterRainPage() {
           return <article key={species.speciesId}>
             <div className="rain-species-identity"><span>{species.identity.commonName}</span><em>{species.identity.scientificName}</em>{memory ? <small>{memory.evidence}</small> : null}</div>
             <dl>
-              <div><dt>Memòria hídrica W</dt><dd>{memory ? `${memory.waterDays} dies` : "No calculada"}</dd></div>
-              <div><dt>Memòria tèrmica T</dt><dd>{memory ? `${memory.temperatureDays} dies` : "No calculada"}</dd></div>
+              <div><dt>Finestra hídrica</dt><dd>{memory ? `${memory.waterDays} dies` : "No calculada"}</dd></div>
+              <div><dt>Finestra tèrmica</dt><dd>{memory ? `${memory.temperatureDays} dies` : "No calculada"}</dd></div>
               <div><dt>Patró temporal descrit</dt><dd>{rainfall.fruitingDelay}</dd></div>
               <div><dt>Necessitat ecològica d’aigua</dt><dd>{rainfall.preferredAccumulation}</dd></div>
               <div><dt>Humitat prèvia</dt><dd>{rainfall.priorMoisture}</dd></div>
@@ -185,7 +185,7 @@ export default function MushroomsAfterRainPage() {
             <a href={source.url} target="_blank" rel="noreferrer" aria-label={`Consultar l’estudi: ${source.title}`}>Consultar l’estudi <ArrowUpRight size={14} /></a>
           </article>)}
         </div>
-        <aside className="rain-model-caveat"><ShieldCheck size={21} aria-hidden="true" /><p><strong>Estat actual del model.</strong> <em>Boletus edulis</em> té un ajust parcial de literatura per a les finestres de pluja i temperatura; la resta de termes i les altres espècies parteixen de priors experts versionats de confiança baixa. Encara no s’han calibrat amb observacions de camp estructurades a Catalunya; per això F i O descriuen idoneïtat relativa, no una probabilitat.</p></aside>
+        <aside className="rain-model-caveat"><ShieldCheck size={21} aria-hidden="true" /><p><strong>Estat actual del model.</strong> <em>Boletus edulis</em> té un ajust parcial de literatura per a les finestres de pluja i temperatura; la resta de termes i les altres espècies parteixen de priors experts versionats de confiança baixa. Encara no s’han calibrat amb observacions de camp estructurades a Catalunya; per això els resultats només permeten comparar condicions relatives, no expressen una probabilitat.</p></aside>
       </section>
 
       <nav className="rain-guide-actions" aria-label="Continuar explorant les condicions dels bolets">
