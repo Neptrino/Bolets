@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useRef, useState, type ReactNode } from "react";
-import { Map as MapIcon } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { CheckCircle2, LoaderCircle, Map as MapIcon } from "lucide-react";
 import { ConditionComparison } from "@/components/condition-comparison";
 import { CellScoreHistory } from "@/components/cell-score-history";
-import { RegionMap } from "@/components/region-map";
+import { RegionMap, type PredictionCellDetailState } from "@/components/region-map";
 import { QuerySelect, type QuerySelectItem } from "@/components/ui/query-select";
 import { regionLabels } from "@/data/regions";
 import { getConditionPredictionStatus } from "@/src/lib/condition-presentation";
@@ -37,8 +37,18 @@ export function MapExplorer({
     speciesId: string;
     cell: PredictionCell;
   }>();
+  const [cellDetailSelection, setCellDetailSelection] = useState<{
+    speciesId: string;
+    state: PredictionCellDetailState;
+  }>();
+  const cellDetailState = cellDetailSelection?.speciesId === species.speciesId
+    ? cellDetailSelection.state
+    : { status: "idle" } satisfies PredictionCellDetailState;
   const selectedCell = mode === "prediction" && selection?.speciesId === species.speciesId
     ? selection.cell
+    : undefined;
+  const selectedCellId = mode === "prediction"
+    ? cellDetailState.cellId ?? selectedCell?.cellId
     : undefined;
   const selectCell = useCallback(
     (cell?: PredictionCell) => setSelection(
@@ -46,6 +56,23 @@ export function MapExplorer({
     ),
     [species.speciesId],
   );
+  const updateCellDetailState = useCallback((state: PredictionCellDetailState) => {
+    if (state.status === "loading") setSelection(undefined);
+    setCellDetailSelection({ speciesId: species.speciesId, state });
+  }, [species.speciesId]);
+  useEffect(() => {
+    if (cellDetailState.status !== "ready") return;
+    const timer = window.setTimeout(() => {
+      setCellDetailSelection((current) =>
+        current?.speciesId === species.speciesId &&
+        current.state.status === "ready" &&
+        current.state.cellId === cellDetailState.cellId
+          ? { speciesId: species.speciesId, state: { status: "idle" } }
+          : current,
+      );
+    }, 3_000);
+    return () => window.clearTimeout(timer);
+  }, [cellDetailState.cellId, cellDetailState.status, species.speciesId]);
   const snapshot: ConditionSnapshot = selectedCell ?? regionalSnapshot;
   const result = selectedCell ? calculateSuitability(species, snapshot) : regionalResult;
   const predictionStatus = getConditionPredictionStatus(snapshot.stale, result);
@@ -54,7 +81,15 @@ export function MapExplorer({
   const selectedEffectiveHabitat = selectedCell && typeof result.effectiveHabitatCoverage === "number"
     ? result.effectiveHabitatCoverage
     : undefined;
-  const unavailableCopy = predictionStatus.kind === "environment-unavailable"
+  const isLoadingCell = cellDetailState.status === "loading";
+  const isLoadedCell = cellDetailState.status === "ready" && Boolean(selectedCell);
+  const hasCellLoadError = cellDetailState.status === "error";
+  const selectedGridSizeM = cellDetailState.gridSizeM ?? selectedCell?.gridSizeM;
+  const unavailableCopy = isLoadingCell
+    ? "Actualitzant el model d’aquesta cel·la amb les seves dades ambientals…"
+    : hasCellLoadError
+      ? "No s’ha pogut carregar el model local d’aquesta cel·la. Torna-la a seleccionar."
+    : predictionStatus.kind === "environment-unavailable"
     ? "sense dades ambientals verificades"
     : selectedCell
       ? "puntuació local no disponible"
@@ -69,8 +104,9 @@ export function MapExplorer({
         speciesId={species.speciesId}
         mode={mode}
         predictionAvailable={species.predictionMode === "current"}
-        selectedCellId={selectedCell?.cellId}
+        selectedCellId={selectedCellId}
         onCellSelect={selectCell}
+        onCellDetailStateChange={updateCellDetailState}
         className="full-map"
         fullscreenTarget="parent"
       />
@@ -87,9 +123,19 @@ export function MapExplorer({
         <div className="map-floating-card" aria-live="polite">
           <div className="map-floating-card-label">
             <MapIcon size={17} aria-hidden="true" />
-            <span>{selectedCell ? `Cel·la ${formatGridDimensions(selectedCell.gridSizeM)}` : regionLabels[region]}</span>
+            <span>{selectedGridSizeM ? `Cel·la ${formatGridDimensions(selectedGridSizeM)}` : regionLabels[region]}</span>
             {hasPrediction && resultBand ? <i style={{ backgroundColor: resultBand.color }} aria-hidden="true" /> : null}
           </div>
+          {isLoadingCell || isLoadedCell || hasCellLoadError ? (
+            <span
+              className={`map-floating-card-status ${isLoadingCell ? "is-loading" : hasCellLoadError ? "is-error" : "is-ready"}`}
+              role="status"
+              aria-live="polite"
+            >
+              {isLoadingCell ? <LoaderCircle size={14} aria-hidden="true" /> : isLoadedCell ? <CheckCircle2 size={14} aria-hidden="true" /> : null}
+              {isLoadingCell ? "Carregant model local" : isLoadedCell ? "Model local carregat" : "No s’ha pogut carregar"}
+            </span>
+          ) : null}
           <strong>{hasPrediction ? <>{result.score}<small>/100</small></> : "—"}</strong>
           <p>{hasPrediction
             ? `Puntuació de la cel·la · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · condicions per fructificar ${result.fruitingConditionsScore}/100`}${selectedEffectiveHabitat === undefined ? "" : ` · ${Math.round(selectedEffectiveHabitat * 100)}% d’hàbitat adequat`}`
