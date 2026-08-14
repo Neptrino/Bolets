@@ -328,7 +328,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       )}
       <p className="cell-score-history-note">
         {forecast
-          ? `La projecció parteix de les condicions observades actuals i hi aplica els canvis d’una mateixa emissió de previsió: ECMWF per a l’atmosfera i Open-Meteo per al sòl. No és una predicció de l’aparició de bolets. La incertesa augmenta amb l’horitzó. Generada el ${dayLabel(forecast.generatedAt)} amb dades a ${Math.round(forecast.sourceResolutionM / 1000)} km.`
+          ? `La projecció conserva l’historial atmosfèric observat d’AROME fins a l’inici i hi enllaça les hores futures d’ECMWF; la humitat del sòl prové d’Open-Meteo. Així, la pluja, la calor i el fred recents desapareixen gradualment de cada finestra del model. No és una predicció de l’aparició de bolets. La incertesa augmenta amb l’horitzó. Generada el ${dayLabel(forecast.generatedAt)} amb dades a ${Math.round(forecast.sourceResolutionM / 1000)} km.`
           : "Cada punt calculat aplica el mateix model a les dades ambientals verificades d’aquell dia."}
         {` Versió: ${state.timeline.modelVersion}.`}
       </p>

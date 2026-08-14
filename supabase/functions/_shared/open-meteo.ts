@@ -149,6 +149,21 @@ export function configureOpenMeteoForecastRequest(url: URL, profile: "atmosphere
 }
 
 /**
+ * Fetches the verified atmospheric history that precedes an ECMWF forecast.
+ * Forecast windows splice this AROME history with ECMWF future hours so old
+ * heat, frost, rain, and drying events age out instead of inheriting ECMWF's
+ * different retrospective analysis.
+ */
+export function configureOpenMeteoForecastHistoryRequest(url: URL) {
+  url.searchParams.set("past_hours", "744");
+  url.searchParams.set("forecast_hours", "1");
+  url.searchParams.set("hourly", atmosphericHourlyVariables.join(","));
+  url.searchParams.set("models", "arome_france");
+  url.searchParams.set("timezone", "Europe/Madrid");
+  url.searchParams.set("timeformat", "unixtime");
+}
+
+/**
  * Requests enough operational history to rebuild a snapshot at an earlier
  * valid hour without reading any provider value after that target. The extra
  * day absorbs provider boundary differences while the normalizer still
@@ -404,6 +419,25 @@ function hourlySeries(location: OpenMeteoLocation, key: string): HourlySeries {
   return values;
 }
 
+function forecastAtmosphericSeries(
+  forecast: OpenMeteoLocation,
+  key: string,
+  history?: OpenMeteoLocation,
+  cutover?: number,
+) {
+  const future = hourlySeries(forecast, key);
+  if (!history || cutover === undefined) return future;
+
+  const combined = new Map<number, number>();
+  for (const [time, value] of hourlySeries(history, key)) {
+    if (time <= cutover) combined.set(time, value);
+  }
+  for (const [time, value] of future) {
+    if (time > cutover) combined.set(time, value);
+  }
+  return combined;
+}
+
 function completeWindow(series: HourlySeries, target: number, hours: number) {
   const values: number[] = [];
   for (let time = target - (hours - 1) * 3600; time <= target; time += 3600) {
@@ -453,13 +487,21 @@ function normalizedValuesAtTarget(
   atmosphere: OpenMeteoLocation,
   soil: OpenMeteoLocation,
   target: number,
+  historicalAtmosphere?: OpenMeteoLocation,
+  atmosphericCutover?: number,
 ) {
-  const temperature = hourlySeries(atmosphere, "temperature_2m");
-  const humidity = hourlySeries(atmosphere, "relative_humidity_2m");
-  const wind = hourlySeries(atmosphere, "wind_speed_10m");
-  const gusts = hourlySeries(atmosphere, "wind_gusts_10m");
-  const precipitation = hourlySeries(atmosphere, "precipitation");
-  const evapotranspiration = hourlySeries(atmosphere, "et0_fao_evapotranspiration");
+  const atmosphericSeries = (key: string) => forecastAtmosphericSeries(
+    atmosphere,
+    key,
+    historicalAtmosphere,
+    atmosphericCutover,
+  );
+  const temperature = atmosphericSeries("temperature_2m");
+  const humidity = atmosphericSeries("relative_humidity_2m");
+  const wind = atmosphericSeries("wind_speed_10m");
+  const gusts = atmosphericSeries("wind_gusts_10m");
+  const precipitation = atmosphericSeries("precipitation");
+  const evapotranspiration = atmosphericSeries("et0_fao_evapotranspiration");
   const soilMoisture = hourlySeries(soil, "soil_moisture_3_to_9cm");
   const temperature7d = completeSummary(temperature, target, 168);
   const temperature14d = completeSummary(temperature, target, 336);
@@ -565,6 +607,7 @@ export function normalizeOpenMeteoForecast(
   atmosphere: OpenMeteoLocation,
   soil: OpenMeteoLocation,
   generatedAt: string,
+  historicalAtmosphere?: OpenMeteoLocation,
 ) {
   const temperature = hourlySeries(atmosphere, "temperature_2m");
   const humidity = hourlySeries(atmosphere, "relative_humidity_2m");
@@ -573,7 +616,19 @@ export function normalizeOpenMeteoForecast(
   const precipitation = hourlySeries(atmosphere, "precipitation");
   const evapotranspiration = hourlySeries(atmosphere, "et0_fao_evapotranspiration");
   const soilMoisture = hourlySeries(soil, "soil_moisture_3_to_9cm");
-  const requiredSeries = [temperature, humidity, wind, gusts, precipitation, evapotranspiration, soilMoisture];
+  const historicalSeries = historicalAtmosphere
+    ? atmosphericHourlyVariables.map((key) => hourlySeries(historicalAtmosphere, key))
+    : [];
+  const requiredSeries = [
+    temperature,
+    humidity,
+    wind,
+    gusts,
+    precipitation,
+    evapotranspiration,
+    soilMoisture,
+    ...historicalSeries,
+  ];
   const generatedAtSeconds = Math.floor(Date.parse(generatedAt) / 3_600_000) * 3600;
   let baseHour: number | undefined;
   for (let candidate = generatedAtSeconds; candidate >= generatedAtSeconds - 6 * 3600; candidate -= 3600) {
@@ -592,7 +647,13 @@ export function normalizeOpenMeteoForecast(
 
   const output = FORECAST_OUTPUT_HOURS.map((horizonHours) => {
     const target = baseHour! + horizonHours * 3600;
-    const values = normalizedValuesAtTarget(atmosphere, soil, target);
+    const values = normalizedValuesAtTarget(
+      atmosphere,
+      soil,
+      target,
+      historicalAtmosphere,
+      baseHour,
+    );
     return {
       validAt: values.weatherObservedAt,
       horizonHours,

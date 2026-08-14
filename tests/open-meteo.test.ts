@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  configureOpenMeteoForecastHistoryRequest,
   configureOpenMeteoForecastRequest,
   configureOpenMeteoHistoricalRequest,
   configureOpenMeteoRequest,
@@ -71,6 +72,18 @@ describe("Open-Meteo profiles", () => {
     expect(soil.searchParams.has("models")).toBe(false);
   });
 
+  it("requests AROME history for the observed side of forecast windows", () => {
+    const history = new URL("https://api.open-meteo.com/v1/meteofrance");
+    configureOpenMeteoForecastHistoryRequest(history);
+
+    expect(history.searchParams.get("past_hours")).toBe("744");
+    expect(history.searchParams.get("forecast_hours")).toBe("1");
+    expect(history.searchParams.get("models")).toBe("arome_france");
+    expect(history.searchParams.get("timeformat")).toBe("unixtime");
+    expect(history.searchParams.get("hourly")).toContain("temperature_2m");
+    expect(history.searchParams.get("hourly")).toContain("et0_fao_evapotranspiration");
+  });
+
   it("requests the full trailing window before an earlier historical target", () => {
     const targetAt = "2026-08-11T13:15:00Z";
     const referenceAt = "2026-08-14T10:00:00Z";
@@ -134,6 +147,54 @@ describe("Open-Meteo profiles", () => {
     expect(forecast.points[0].values.drySpellDays).toBe(0);
     expect(forecast.points[0].values.soilMoistureTrend7d).toBeCloseTo(0);
     expect(forecast.points.every((point) => point.unavailableFields.length === 0)).toBe(true);
+  });
+
+  it("ages observed AROME heat out of future ECMWF rolling windows", () => {
+    const { atmosphere, soil, base, hourlyTimes } = forecastFixture();
+    const historicalTemperature = hourlyTimes.map((time) =>
+      time >= base - 479 * 3600 && time <= base - 360 * 3600 ? 28 : 14
+    );
+    const history: OpenMeteoLocation = {
+      hourly: {
+        ...atmosphere.hourly,
+        temperature_2m: historicalTemperature,
+      },
+    };
+
+    const forecast = normalizeOpenMeteoForecast(
+      atmosphere,
+      soil,
+      "2026-08-10T12:34:00Z",
+      history,
+    );
+
+    expect(forecast.baseline?.values.heatHours20d).toBe(120);
+    expect(forecast.points.map((point) => point.values.heatHours20d)).toEqual([96, 72, 48, 24, 0]);
+    expect(forecast.points[4].values.temperatureAvg20dC).toBeCloseTo(14.00625);
+    expect(forecast.points.every((point) => point.unavailableFields.length === 0)).toBe(true);
+  });
+
+  it("withholds hybrid temperature windows when verified history has a gap", () => {
+    const { atmosphere, soil, base } = forecastFixture();
+    const history: OpenMeteoLocation = {
+      hourly: {
+        ...atmosphere.hourly,
+        temperature_2m: (atmosphere.hourly!.temperature_2m as number[]).map((value, index) =>
+          index === 619 ? undefined : value
+        ),
+      },
+    };
+
+    const forecast = normalizeOpenMeteoForecast(
+      atmosphere,
+      soil,
+      new Date(base * 1000).toISOString(),
+      history,
+    );
+
+    expect(forecast.baseline?.values.temperatureAvg7dC).toBeUndefined();
+    expect(forecast.baseline?.values.temperatureAvg20dC).toBeUndefined();
+    expect(forecast.baseline?.unavailableFields).toContain("temperatureAvg20dC");
   });
 
   it("withholds fields whose future hourly series has a gap or duplicate", () => {

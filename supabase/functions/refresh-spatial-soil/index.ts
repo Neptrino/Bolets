@@ -1,5 +1,6 @@
 import { createAdminClient, finiteNumber, finishRun, json, refreshSpatialLevelConditionsAfterIngestion, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
 import {
+  configureOpenMeteoForecastHistoryRequest,
   configureOpenMeteoForecastRequest,
   configureOpenMeteoRequest,
   fetchOpenMeteoLocations,
@@ -201,6 +202,25 @@ async function fetchForecast(points: SoilPoint[], profile: "atmosphere" | "soil"
   return results;
 }
 
+async function fetchAtmosphericForecastHistory(points: SoilPoint[]) {
+  const results: OpenMeteoLocation[] = [];
+  for (let start = 0; start < points.length; start += PROVIDER_BATCH_SIZE) {
+    const batch = points.slice(start, start + PROVIDER_BATCH_SIZE);
+    const url = new URL("https://api.open-meteo.com/v1/meteofrance");
+    url.searchParams.set("latitude", batch.map((point) => point.requested_lat).join(","));
+    url.searchParams.set("longitude", batch.map((point) => point.requested_lon).join(","));
+    if (batch.every((point) => point.requested_elevation_m !== null)) {
+      url.searchParams.set("elevation", batch.map((point) => point.requested_elevation_m).join(","));
+    }
+    configureOpenMeteoForecastHistoryRequest(url);
+    results.push(...await fetchOpenMeteoLocations(url, "AROME forecast history"));
+  }
+  if (results.length !== points.length) {
+    throw new Error(`Open-Meteo returned ${results.length} of ${points.length} AROME history locations`);
+  }
+  return results;
+}
+
 Deno.serve(async (request) => {
   let runId: string | undefined;
   try {
@@ -315,7 +335,7 @@ Deno.serve(async (request) => {
     const forecastGeneratedAt = forecastPoints.length
       ? await forecastIssueGeneratedAt(supabase, today)
       : new Date().toISOString();
-    const [currentSoil, forecastAtmosphere, forecastSoil] = await Promise.all([
+    const [currentSoil, forecastAtmosphere, forecastAtmosphereHistory, forecastSoil] = await Promise.all([
       soilPoints.length
         ? settle(fetchSoil(soilPoints))
         : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
@@ -323,13 +343,17 @@ Deno.serve(async (request) => {
         ? settle(fetchForecast(forecastPoints, "atmosphere"))
         : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
       forecastPoints.length
+        ? settle(fetchAtmosphericForecastHistory(forecastPoints))
+        : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
+      forecastPoints.length
         ? settle(fetchForecast(forecastPoints, "soil"))
         : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
     ]);
     soilErrorMessage ??= currentSoil.error;
     const atmosphericForecastError = forecastAtmosphere.error;
+    const atmosphericHistoryError = forecastAtmosphereHistory.error;
     const soilForecastError = forecastSoil.error;
-    forecastErrorMessage ??= [atmosphericForecastError, soilForecastError]
+    forecastErrorMessage ??= [atmosphericForecastError, atmosphericHistoryError, soilForecastError]
       .filter((message): message is string => Boolean(message))
       .join("; ") || undefined;
 
@@ -388,16 +412,19 @@ Deno.serve(async (request) => {
 
     let forecastRows: Array<Record<string, unknown>> = [];
     const atmosphericForecastLocations = forecastAtmosphere.data;
+    const atmosphericHistoryLocations = forecastAtmosphereHistory.data;
     const soilForecastLocations = forecastSoil.data;
-    if (atmosphericForecastLocations && soilForecastLocations) {
+    if (atmosphericForecastLocations && atmosphericHistoryLocations && soilForecastLocations) {
       try {
         forecastRows = forecastPoints.flatMap((point, index) => {
           const atmosphereLocation = atmosphericForecastLocations[index];
+          const atmosphericHistoryLocation = atmosphericHistoryLocations[index];
           const soilLocation = soilForecastLocations[index];
           const normalized = normalizeOpenMeteoForecast(
             atmosphereLocation,
             soilLocation,
             forecastGeneratedAt,
+            atmosphericHistoryLocation,
           );
           const forecasts = normalized.baseline
             ? [normalized.baseline, ...normalized.points]
@@ -408,13 +435,17 @@ Deno.serve(async (request) => {
             generated_at: forecastGeneratedAt,
             valid_at: forecast.validAt,
             horizon_hours: forecast.horizonHours,
-            sources: ["ECMWF IFS HRES via Open-Meteo", "Open-Meteo soil-moisture forecast"],
+            sources: [
+              "Météo-France AROME history via Open-Meteo",
+              "ECMWF IFS HRES forecast via Open-Meteo",
+              "Open-Meteo soil-moisture forecast",
+            ],
             source_resolution_m: 9000,
             confidence: forecast.unavailableFields.length ? "limited" : "moderate",
             unavailable_fields: forecast.unavailableFields,
             values: {
               ...forecast.values,
-              weatherModel: "ECMWF IFS HRES forecast",
+              weatherModel: "Météo-France AROME history + ECMWF IFS HRES forecast",
               atmosphericResolutionM: 9000,
               soilMoistureResolutionM: 9000,
               weatherGridLatitude: finiteNumber(atmosphereLocation.latitude),
@@ -550,6 +581,7 @@ Deno.serve(async (request) => {
           lastPointId: soilPoints.at(-1)?.point_id,
           soilMoistureResolutionM: 9000,
           forecastModel: "ecmwf_ifs_hres",
+          forecastHistoryModel: "arome_france",
           forecastResolutionM: 9000,
           firstForecastPointId: forecastPoints[0]?.point_id,
           lastForecastPointId: forecastPoints.at(-1)?.point_id,
@@ -557,6 +589,7 @@ Deno.serve(async (request) => {
           forecastReconciliation,
           forecastError: forecastErrorMessage,
           atmosphericForecastError,
+          atmosphericHistoryError,
           soilForecastError,
           soilError: soilErrorMessage,
         },

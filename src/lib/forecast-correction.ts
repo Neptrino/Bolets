@@ -142,9 +142,10 @@ export type ForecastCorrectionState = {
 };
 
 /**
- * Applies the change forecast by one homogeneous model issuance to the latest
- * observed environmental state. The absolute ECMWF history is therefore used
- * as a change signal, not as a silent replacement for today's AROME history.
+ * Applies the change from a horizon-zero baseline to the latest observed
+ * environmental state. Atmospheric forecast windows already splice AROME
+ * history with ECMWF future hours, so the anomaly carries the ageing of real
+ * recent events without replacing the cell's higher-resolution observation.
  *
  * These are aggregate anomaly corrections because the pipeline does not retain
  * provider hourly series. Path-dependent dry-spell resets are handled

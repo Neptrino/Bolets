@@ -88,4 +88,17 @@ describe("spatial forecast storage", () => {
     expect(refreshPipeline).toContain('recordForecastSourceState(\n          supabase,\n          "open-meteo-soil-forecast"');
     expect(refreshPipeline).toContain("Current spatial soil stream will retry independently");
   });
+
+  it("builds rolling forecast windows from AROME history and ECMWF future hours", () => {
+    expect(refreshPipeline).toContain("configureOpenMeteoForecastHistoryRequest");
+    expect(refreshPipeline).toContain("fetchAtmosphericForecastHistory(forecastPoints)");
+    expect(refreshPipeline).toContain("atmosphericHistoryLocation");
+    expect(refreshPipeline).toContain(
+      '"Météo-France AROME history via Open-Meteo"',
+    );
+    expect(refreshPipeline).toContain(
+      'weatherModel: "Météo-France AROME history + ECMWF IFS HRES forecast"',
+    );
+    expect(refreshPipeline).toContain('forecastHistoryModel: "arome_france"');
+  });
 });
