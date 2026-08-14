@@ -9,7 +9,7 @@ import { getSpecies } from "@/data/species";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Quan surten els bolets després de ploure? Factors i espècies",
+  title: "Bolets després de ploure: quan surten?",
   description: "No hi ha un nombre universal de dies. Compareu la resposta a la pluja de rovelló, pinetell, cep, camagroc, múrgola i cama-sec.",
   alternates: { canonical: "/quan-surten-els-bolets-despres-de-ploure" },
   openGraph: {

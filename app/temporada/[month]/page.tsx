@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const activeSpecies = speciesInSeason(month);
   const path = seasonMonthPath(month);
-  const title = `Bolets de temporada ${monthWithPreposition(month)}: calendari de Catalunya`;
+  const title = `Bolets ${monthWithPreposition(month)}: temporada a Catalunya`;
   const description = `Consulteu ${activeSpecies.length} espècies de bolets actives ${monthWithPreposition(month)}: hàbitat, identificació i calendari ecològic de la temporada a Catalunya.`;
 
   return {

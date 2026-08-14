@@ -21,6 +21,7 @@ describe("SEO helpers", () => {
     expect(description).toContain(species.identity.commonName);
     expect(description).toContain(species.identity.scientificName);
     expect(description.length).toBeGreaterThan(80);
+    expect(description.length).toBeLessThanOrEqual(155);
   });
 
   it("uses a crawlable absolute image URL when media exists", () => {

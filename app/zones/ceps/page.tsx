@@ -40,7 +40,7 @@ import {
 import type { SpeciesProfile } from "@/src/lib/types";
 
 export const metadata: Metadata = {
-  title: "On trobar ceps a Catalunya: tipus, zones i temporada",
+  title: "On trobar ceps a Catalunya",
   description:
     "Guia dels quatre ceps del catàleg: hàbitats, temporada, nou zones generals, mapes actuals, guies locals i diferències amb el mataparent i el matagent.",
   keywords: [

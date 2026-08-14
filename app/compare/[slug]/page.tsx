@@ -24,13 +24,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!page) return {};
 
   return {
-    title: page.title,
+    title: page.shortTitle,
     description: page.metaDescription,
     keywords: page.searchTerms,
     alternates: { canonical: `/compare/${page.slug}` },
     openGraph: {
       url: `/compare/${page.slug}`,
-      title: page.title,
+      title: page.shortTitle,
       description: page.metaDescription,
       images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
     },

@@ -29,7 +29,7 @@ import type { RegionId, SpeciesProfile } from "@/src/lib/types";
 
 export const metadata: Metadata = {
   title: "On trobar rovellons a Catalunya: zones i temporada",
-  description: "Guia per saber on trobar rovellons a Catalunya segons l’hàbitat, la temporada i les condicions actuals. Zones generals, mapa i diferències entre rovelló i pinetell.",
+  description: "Guia per trobar rovellons a Catalunya: hàbitat, temporada, zones generals, mapa i diferències entre rovelló i pinetell.",
   keywords: [
     "on trobar rovellons",
     "on trobar rovellons a Catalunya",

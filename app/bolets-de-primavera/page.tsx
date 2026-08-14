@@ -12,7 +12,7 @@ import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/
 import { seasonGuidesById } from "@/src/lib/season-guides";
 
 export const metadata: Metadata = {
-  title: "Bolets de primavera a Catalunya: múrgoles i més espècies",
+  title: "Bolets de primavera a Catalunya",
   description: "Guia de bolets de primavera a Catalunya, derivada del calendari de març a juny: múrgola, moixeró, cama-sec i totes les espècies actives.",
   alternates: { canonical: "/bolets-de-primavera" },
   openGraph: {

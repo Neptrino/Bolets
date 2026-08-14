@@ -11,7 +11,7 @@ import { monthInTimeZone } from "@/src/lib/seasonality";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Bolets verinosos de Catalunya: identificació i riscos",
+  title: "Bolets verinosos a Catalunya",
   description: `Guia de ${toxicSpecies.length} bolets verinosos de Catalunya amb fotografies, trets d’identificació, espècies semblants i advertiments de toxicitat.`,
   alternates: { canonical: "/bolets-verinosos" },
   openGraph: {

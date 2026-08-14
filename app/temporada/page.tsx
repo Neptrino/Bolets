@@ -4,7 +4,7 @@ import { monthInTimeZone } from "@/src/lib/seasonality";
 import { DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Temporada de bolets a Catalunya: calendari per espècie",
+  title: "Temporada de bolets a Catalunya",
   description: "Calendari de la temporada de bolets a Catalunya per mesos i espècies. Consulteu quins bolets poden fructificar ara i quines condicions necessiten.",
   alternates: { canonical: "/temporada" },
   openGraph: {

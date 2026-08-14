@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = `${page.titlePhrase}: hàbitat compatible, temporada i condicions ecològiques de ${species.identity.commonName} (${species.identity.scientificName}).`;
   const image = speciesImage(species);
   return {
-    title: `${page.titlePhrase}: hàbitat i temporada`, description, alternates: { canonical: path },
+    title: page.titlePhrase, description, alternates: { canonical: path },
     keywords: [page.titlePhrase, `${page.searchName} ${location.name}`, `temporada ${page.searchName} ${location.name}`, species.identity.scientificName],
     openGraph: { type: "article", url: path, title: page.titlePhrase, description, images: image ? [{ url: image, alt: species.media[0]?.alt ?? page.titlePhrase }] : undefined },
     twitter: { card: "summary_large_image", title: page.titlePhrase, description, images: image ? [image] : undefined },
