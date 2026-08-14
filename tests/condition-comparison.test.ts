@@ -72,5 +72,11 @@ describe("condition calculation presentation", () => {
     expect(html).not.toContain("Evidència històrica");
     expect(html).not.toContain("Météo-France AROME France");
     expect(html).not.toContain("Humitat del sòl: 9 km");
+    expect(html).toContain("Pluja · 3 dies");
+    expect(html).toContain("Pluja · 7 dies");
+    expect(html).toContain("Ratxa seca");
+    expect(html).toContain("Pluja · 24 h");
+    expect(html).not.toContain("Pluja · dies 8–30");
+    expect(html).not.toContain("Pluja · 30 dies");
   });
 });

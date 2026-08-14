@@ -435,18 +435,6 @@ export function ConditionComparison({
             "Evapotranspiració de referència acumulada a la mateixa finestra que la pluja. Entra en la pluja efectiva i no es puntua per separat.",
         },
         {
-          label: "Pluja · dies 8–30",
-          value: millimetres(v.rainfallPrevious23dMm),
-          explanation:
-            "Precipitació caiguda entre fa 8 i 30 dies; no inclou l’última setmana. Indica si hi havia una reserva d’aigua prèvia que pugui mantenir la humitat del sòl.",
-        },
-        {
-          label: "Pluja · 30 dies",
-          value: millimetres(v.rainfall30dMm),
-          explanation:
-            "Tota la precipitació dels últims 30 dies, incloses les pluges recents. Dona el context general d’humitat, però no substitueix una pluja recent ni una mesura directa del sòl.",
-        },
-        {
           label: "Ratxa seca",
           value: days(v.drySpellDays),
           explanation:
