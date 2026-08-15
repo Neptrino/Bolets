@@ -11,7 +11,7 @@ import { comparisonPages, comparisonPagesBySlug } from "@/data/comparison-pages"
 import { getSpecies } from "@/data/species";
 import { getEdibilityPresentation } from "@/src/lib/edibility-presentation";
 import { SEASON_MONTHS } from "@/src/lib/seasonality";
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
+import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, metaDescription, pageTitle, SITE_URL, speciesPath } from "@/src/lib/seo";
 import type { SpeciesProfile } from "@/src/lib/types";
 
 export function generateStaticParams() {
@@ -24,14 +24,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!page) return {};
 
   return {
-    title: page.shortTitle,
-    description: page.metaDescription,
+    title: pageTitle(page.shortTitle),
+    description: metaDescription(page.metaDescription),
     keywords: page.searchTerms,
     alternates: { canonical: `/compare/${page.slug}` },
     openGraph: {
       url: `/compare/${page.slug}`,
-      title: page.shortTitle,
-      description: page.metaDescription,
+      title: pageTitle(page.shortTitle),
+      description: metaDescription(page.metaDescription),
       images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
     },
   };

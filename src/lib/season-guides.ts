@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { speciesAcrossMonths } from "@/src/lib/species-collections";
-import { DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
+import { DEFAULT_SOCIAL_IMAGE, metaDescription, pageTitle } from "@/src/lib/seo";
 import type { Month } from "@/src/lib/types";
 
 export type SeasonGuideId = "primavera" | "estiu" | "tardor" | "hivern";
@@ -106,8 +106,8 @@ export function speciesForSeasonGuide(guide: SeasonGuide) {
 
 export function seasonGuideMetadata(guide: SeasonGuide): Metadata {
   const count = speciesForSeasonGuide(guide).length;
-  const title = `${guide.cardTitle} a Catalunya: espècies i calendari`;
-  const description = `Guia de ${count} espècies de ${guide.cardTitle.toLocaleLowerCase("ca")} a Catalunya amb calendari ${guide.rangeSentence}, hàbitat, identificació i condicions ecològiques.`;
+  const title = pageTitle(`${guide.cardTitle} a Catalunya: espècies i calendari`);
+  const description = metaDescription(`Guia de ${count} espècies de ${guide.cardTitle.toLocaleLowerCase("ca")} a Catalunya amb calendari ${guide.rangeSentence}, hàbitat, identificació i condicions ecològiques.`);
 
   return {
     title,

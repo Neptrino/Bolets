@@ -8,7 +8,7 @@ import {
   seasonMonthPath,
   SEASON_MONTHS,
 } from "@/src/lib/seasonality";
-import { DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
+import { DEFAULT_SOCIAL_IMAGE, metaDescription, pageTitle } from "@/src/lib/seo";
 
 type Props = { params: Promise<{ month: string }> };
 
@@ -26,8 +26,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const activeSpecies = speciesInSeason(month);
   const path = seasonMonthPath(month);
-  const title = `Bolets ${monthWithPreposition(month)}: temporada a Catalunya`;
-  const description = `Consulteu ${activeSpecies.length} espècies de bolets actives ${monthWithPreposition(month)}: hàbitat, identificació i calendari ecològic de la temporada a Catalunya.`;
+  const title = pageTitle(`Bolets ${monthWithPreposition(month)}: temporada a Catalunya`);
+  const description = metaDescription(`Consulteu ${activeSpecies.length} espècies de bolets actives ${monthWithPreposition(month)}: hàbitat, identificació i calendari ecològic de la temporada a Catalunya.`);
 
   return {
     title,

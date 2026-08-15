@@ -10,8 +10,8 @@ const safetyNotice =
 const references = [
   { id: "fungacat", title: "FungaCAT — Banc de dades dels fongs de Catalunya", publisher: "Universitat de Barcelona / GBIF España", url: "https://ipt.gbif.es/resource?r=fungacat", confidence: "moderate" as const },
   { id: "gbif", title: "GBIF — Occurrence search", publisher: "Global Biodiversity Information Facility", url: "https://www.gbif.org/occurrence/search", confidence: "moderate" as const },
-  { id: "gencat-edible", title: "Bolets comestibles", publisher: "Generalitat de Catalunya", url: "https://tramits.gencat.cat/ca/actualitat/reportatges/temporada-de-bolets/bolets/bolets-comestibles/", confidence: "moderate" as const },
-  { id: "gencat-toxic", title: "Bolets tòxics", publisher: "Generalitat de Catalunya", url: "https://tramits.gencat.cat/ca/actualitat/reportatges/temporada-de-bolets/bolets/bolets-toxics/", confidence: "moderate" as const },
+  { id: "gencat-edible", title: "Bolets: varietats i consum", publisher: "Canal Aliments — Generalitat de Catalunya", url: "https://canalaliments.gencat.cat/ca/coneix-aliments/bolets-tofona/bolets/", confidence: "moderate" as const },
+  { id: "gencat-toxic", title: "Bolets: consells de seguretat alimentària", publisher: "Agència Catalana de Seguretat Alimentària", url: "https://acsa.gencat.cat/ca/detall/article/Bolets", confidence: "moderate" as const },
   { id: "scm-toxic", title: "Bolets tòxics de Catalunya", publisher: "Societat Catalana de Micologia", url: "https://www.micocat.org/UNCINULA09/micologia09/Toxicologia/BoletsToxics_v07.pdf", confidence: "moderate" as const },
   { id: "species-fungorum", title: "Species Fungorum — Names and synonymy", publisher: "Royal Botanic Gardens, Kew", url: "https://www.speciesfungorum.org/names/names.asp", confidence: "moderate" as const }
 ];

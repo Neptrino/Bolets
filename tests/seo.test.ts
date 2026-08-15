@@ -3,6 +3,8 @@ import { speciesProfiles } from "@/data/species";
 import {
   absoluteUrl,
   jsonLd,
+  metaDescription,
+  pageTitle,
   speciesDescription,
   speciesImage,
   speciesPath,
@@ -22,6 +24,16 @@ describe("SEO helpers", () => {
     expect(description).toContain(species.identity.scientificName);
     expect(description.length).toBeGreaterThan(80);
     expect(description.length).toBeLessThanOrEqual(155);
+  });
+
+  it("keeps document titles and snippets within their rendered limits", () => {
+    const title = pageTitle("Pinetells (rovellons) a Castellar de n’Hug: hàbitat i temporada");
+    const description = metaDescription("paraula ".repeat(40));
+
+    expect(title.length).toBeLessThanOrEqual(49);
+    expect(title.endsWith("…")).toBe(true);
+    expect(description.length).toBeLessThanOrEqual(155);
+    expect(description.endsWith("…")).toBe(true);
   });
 
   it("uses a crawlable absolute image URL when media exists", () => {

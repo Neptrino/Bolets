@@ -60,7 +60,7 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <Link href="/" className="brand" aria-label="Bolets de Catalunya, inici">
-        <Image className="brand-mark" src={brandMark} alt="" width={36} height={36} loading="eager" />
+        <Image className="brand-mark" src={brandMark} alt="Bolets Atles" width={36} height={36} loading="eager" />
         <span className="brand-lockup">
           <strong>BOLETS</strong>
           <small>ATLES · CATALUNYA</small>

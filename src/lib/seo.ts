@@ -7,6 +7,9 @@ export const DEFAULT_DESCRIPTION =
 export const DEFAULT_SOCIAL_IMAGE = `${SITE_URL}/opengraph-image`;
 
 const META_DESCRIPTION_MAX_LENGTH = 155;
+// The root title template adds ` | Bolets Atles` (15 characters). Keep page
+// titles below this limit so the full document title stays within 64 characters.
+const PAGE_TITLE_MAX_LENGTH = 49;
 
 export function absoluteUrl(path = "/") {
   return new URL(path, SITE_URL).toString();
@@ -19,10 +22,22 @@ export function speciesPath(species: Pick<SpeciesProfile, "speciesId">) {
 export function speciesDescription(species: SpeciesProfile) {
   const { commonName, scientificName, shortDescription } = species.identity;
   const description = `${commonName} (${scientificName}): ${shortDescription}`;
-  if (description.length <= META_DESCRIPTION_MAX_LENGTH) return description;
+  return truncateSeoText(description, META_DESCRIPTION_MAX_LENGTH);
+}
 
-  const truncated = description
-    .slice(0, META_DESCRIPTION_MAX_LENGTH + 1)
+export function pageTitle(title: string) {
+  return truncateSeoText(title, PAGE_TITLE_MAX_LENGTH);
+}
+
+export function metaDescription(description: string) {
+  return truncateSeoText(description, META_DESCRIPTION_MAX_LENGTH);
+}
+
+function truncateSeoText(value: string, maxLength: number) {
+  if (value.length <= maxLength) return value;
+
+  const truncated = value
+    .slice(0, maxLength)
     .replace(/\s+\S*$/, "")
     .trimEnd();
 
