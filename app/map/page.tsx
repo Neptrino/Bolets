@@ -1,13 +1,16 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowUpRight, Info, Trees } from "lucide-react";
+import { EditorialAttribution } from "@/components/editorial-attribution";
+import { JsonLd } from "@/components/json-ld";
 import { MapExplorer } from "@/components/map-explorer";
 import { QuerySelect } from "@/components/ui/query-select";
+import { coreEditorialSources, editorialArticleFields, environmentalSources } from "@/data/editorial";
 import { isRegionId } from "@/data/regions";
 import { getSpecies, speciesSelectItems } from "@/data/species";
 import { getConditionSnapshot } from "@/src/lib/conditions";
 import { calculateSuitability } from "@/src/lib/scoring";
-import { DEFAULT_SOCIAL_IMAGE, speciesPath } from "@/src/lib/seo";
+import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 import type { MapViewMode, RegionId } from "@/src/lib/types";
 
 export const metadata: Metadata = {
@@ -41,6 +44,29 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
   const result = calculateSuitability(species, snapshot);
 
   return <section className="map-page">
+    <JsonLd data={{
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "@id": absoluteUrl("/map"),
+          name: "Mapa de bolets de Catalunya",
+          description: metadata.description,
+          url: absoluteUrl("/map"),
+          inLanguage: "ca",
+          isPartOf: { "@id": `${SITE_URL}/#website` },
+          about: { "@type": "Thing", name: "Hàbitat i condicions de fructificació dels bolets a Catalunya" },
+          ...editorialArticleFields("map"),
+        },
+        {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "Mapa de bolets", item: absoluteUrl("/map") },
+          ],
+        },
+      ],
+    }} />
     <div className="page-width map-page-heading">
       <div className="map-page-title">
         <p className="eyebrow">Lectura territorial</p>
@@ -99,6 +125,13 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
         </aside>
       }
     />
-    <nav className="map-page-guide-links page-width" aria-label="Guies relacionades amb les condicions actuals"><Link href="/bolets-avui">Resum de bolets avui <ArrowUpRight size={16} /></Link><Link href="/quan-surten-els-bolets-despres-de-ploure">Quan surten després de ploure <ArrowUpRight size={16} /></Link></nav>
+    <nav className="map-page-guide-links page-width" aria-label="Guies relacionades amb el mapa de bolets"><Link href="/bolets-avui">Resum de bolets avui <ArrowUpRight size={16} /></Link><Link href="/zones">Comparar zones de Catalunya <ArrowUpRight size={16} /></Link><Link href="/bolets">Consultar espècies <ArrowUpRight size={16} /></Link><Link href="/quan-surten-els-bolets-despres-de-ploure">Quan surten després de ploure <ArrowUpRight size={16} /></Link></nav>
+    <section className="map-page-seo-copy page-width" aria-labelledby="map-search-guide-title">
+      <p className="eyebrow">Mapa de bolets de Catalunya</p>
+      <h2 id="map-search-guide-title">Com fer servir el mapa per preparar una sortida</h2>
+      <p>Seleccioneu una espècie i una zona per diferenciar el seu hàbitat compatible de les condicions actuals per fructificar. El mapa és una lectura ecològica agregada: serveix per comparar cel·les i entendre els factors que limiten una espècie, però no mostra observacions ni localitzacions exactes.</p>
+      <p>Per decidir què consultar primer, vegeu el resum de <Link href="/bolets-avui">bolets avui</Link>; per entendre una puntuació concreta, contrasteu-la amb la <Link href={speciesPath(species)}>fitxa de {species.identity.commonName}</Link> i amb les <Link href="/zones">zones generals de predicció</Link>.</p>
+      <EditorialAttribution contentId="map" sources={[...environmentalSources, ...coreEditorialSources]} />
+    </section>
   </section>;
 }

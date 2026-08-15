@@ -21,6 +21,9 @@ const rainGuideLastModified = new Date(
 const currentOverviewLastModified = new Date(
   `${getEditorialMetadata("bolets-avui").updatedAt}T00:00:00+02:00`,
 );
+const mushroomPartsGuideLastModified = new Date(
+  `${getEditorialMetadata("parts-dun-bolet").updatedAt}T00:00:00+02:00`,
+);
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const pages: MetadataRoute.Sitemap = [
@@ -29,6 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: absoluteUrl("/bolets-avui"), lastModified: currentOverviewLastModified },
     ...seasonGuides.map((guide) => ({ url: absoluteUrl(guide.path), lastModified })),
     { url: absoluteUrl("/quan-surten-els-bolets-despres-de-ploure"), lastModified: rainGuideLastModified },
+    { url: absoluteUrl("/parts-dun-bolet"), lastModified: mushroomPartsGuideLastModified },
     { url: absoluteUrl("/bolets-comestibles"), lastModified },
     { url: absoluteUrl("/bolets-verinosos"), lastModified },
     { url: absoluteUrl("/temporada"), lastModified },

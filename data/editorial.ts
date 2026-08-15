@@ -100,6 +100,9 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "quan-surten-els-bolets-despres-de-ploure": {
     updatedAt: "2026-08-14",
   },
+  "parts-dun-bolet": {
+    updatedAt: "2026-08-15",
+  },
 };
 
 export function getEditorialMetadata(contentId: string): EditorialMetadata {
@@ -127,6 +130,7 @@ export const publicEditorialItems = [
   "bolets-de-tardor",
   "bolets-d-hivern",
   "quan-surten-els-bolets-despres-de-ploure",
+  "parts-dun-bolet",
   "zones-ceps",
   "equip-editorial",
 ] as const;

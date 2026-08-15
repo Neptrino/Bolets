@@ -29,6 +29,7 @@ export function SiteFooter() {
           <Link href="/guies">Guies locals</Link>
           <CurrentSeasonGuideLink guides={seasonalFooterGuides} initialMonth={initialMonth} />
           <Link href="/quan-surten-els-bolets-despres-de-ploure">Després de ploure</Link>
+          <Link href="/parts-dun-bolet">Parts d’un bolet</Link>
           <Link href="/equip-editorial">Equip editorial</Link>
         </nav>
       </div>

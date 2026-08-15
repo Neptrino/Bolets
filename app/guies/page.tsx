@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, BookOpenText, MapPinned, Trees } from "lucide-react";
+import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import {
   PageHeader,
@@ -15,6 +16,7 @@ import {
   placesForArea,
   speciesLocationPages,
 } from "@/data/location-pages";
+import { coreEditorialSources } from "@/data/editorial";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 
@@ -128,6 +130,7 @@ export default function GuidesPage() {
         <Trees size={22} />
         <div><strong>Hàbitat potencial, no una coordenada.</strong><p>Les guies descriuen compatibilitat ecològica agregada. No demostren presència actual ni substitueixen una identificació experta.</p></div>
       </aside>
+      <EditorialAttribution contentId="guies" sources={coreEditorialSources} />
     </PageShell>
   );
 }

@@ -142,13 +142,17 @@
 .seo-guide-grid section,
 .rain-factor-grid article { padding: 1.4rem; border-radius: 16px; background: #f4efe5; }
 .seo-guide-grid h2,
-.rain-factor-grid h2 { margin: .8rem 0 .5rem; font-size: 1.3rem; }
+.seo-guide-grid h3,
+.rain-factor-grid h2,
+.rain-factor-grid h3 { margin: .8rem 0 .5rem; font-size: 1.3rem; }
 .seo-guide-grid p,
 .rain-factor-grid p { margin: 0; line-height: 1.65; color: #4e594f; }
 .seo-guide-section { max-width: 52rem; margin: 3.2rem 0; }
 .seo-guide-section h2 { margin: 0 0 .65rem; font-size: clamp(1.8rem, 3vw, 2.7rem); }
 .seo-guide-section > p { line-height: 1.7; }
 .seo-guide-section > p:not(.eyebrow) { margin: 0 0 1.25rem; }
+.seo-guide-section--wide { max-width: none; }
+.seo-guide-section--wide > p { max-width: 52rem; }
 
 .current-leader { display: grid; grid-template-columns: minmax(0, 1.15fr) 9.5rem minmax(15rem, .85fr); gap: 1.4rem 2rem; align-items: center; margin: 2.2rem 0 1rem; padding: 2rem; border-radius: 18px; background: #304839; color: #fffaf0; box-shadow: 0 18px 45px rgba(40, 54, 43, .12); }
 .current-leader-copy h2 { margin: .25rem 0 .45rem; color: #fffaf0; font-size: clamp(2rem, 4vw, 3.5rem); letter-spacing: -.035em; }
@@ -256,6 +260,12 @@
 .season-related-links { display: flex; flex-wrap: wrap; gap: .65rem 1.2rem; }
 .map-page-guide-links { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .7rem 1.2rem; margin-top: 1rem; }
 .map-page-guide-links a { display: inline-flex; align-items: center; gap: .3rem; color: #31472e; font-weight: 800; }
+.map-page-seo-copy { max-width: 72rem; margin-top: 3.75rem; margin-bottom: 1rem; }
+.map-page-seo-copy .eyebrow { color: #a95027; }
+.map-page-seo-copy h2 { max-width: 42rem; margin: .35rem 0 .85rem; color: #304839; font-size: clamp(1.8rem, 3.4vw, 2.75rem); line-height: 1.08; letter-spacing: -.03em; }
+.map-page-seo-copy > p:not(.eyebrow) { max-width: 64rem; margin: 0 0 .9rem; color: #536053; line-height: 1.7; }
+.map-page-seo-copy > p a { color: #304839; font-weight: 800; text-decoration-color: rgba(169, 80, 39, .55); text-underline-offset: .2em; }
+.map-page-seo-copy > p a:hover { color: #a95027; }
 
 .rain-direct-answer { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; align-items: start; margin: 0 0 4.25rem; padding: 1.35rem 1.5rem; border-radius: 14px; background: #304839; color: #fffaf0; box-shadow: 0 16px 38px rgba(40, 54, 43, .1); }
 .rain-direct-answer > svg { margin-top: .18rem; color: #ffc28f; }

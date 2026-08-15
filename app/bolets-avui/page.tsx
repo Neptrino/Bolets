@@ -22,18 +22,25 @@ import {
   type CurrentOverviewItem,
 } from "@/src/lib/current-overview";
 import { SEASONAL_ACTIVITY_LABELS } from "@/src/lib/seasonality";
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
+import {
+  absoluteUrl,
+  DEFAULT_SOCIAL_IMAGE,
+  metaDescription,
+  pageTitle,
+  SITE_URL,
+  speciesPath,
+} from "@/src/lib/seo";
 
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Bolets avui: millors zones i condicions",
-  description: "Descobriu les deu millors combinacions prioritàries d’espècie i zona a Catalunya, comparades amb dades vigents de pluja, temperatura i hàbitat.",
+  title: pageTitle("On trobar bolets avui a Catalunya"),
+  description: metaDescription("Consulteu les zones i espècies amb les condicions més favorables avui a Catalunya, comparades amb dades vigents de pluja, temperatura i hàbitat."),
   alternates: { canonical: "/bolets-avui" },
   openGraph: {
     url: "/bolets-avui",
-    title: "Bolets avui: millors zones i condicions",
-    description: "Top 10 de combinacions d’espècie i zona, calculat entre les candidates estacionals prioritàries i amb dades ambientals vigents.",
+    title: "On trobar bolets avui a Catalunya",
+    description: "Zones i espècies amb les condicions més favorables avui, comparades amb dades ambientals vigents.",
     images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
   },
 };
