@@ -149,6 +149,22 @@ export function configureOpenMeteoForecastRequest(url: URL, profile: "atmosphere
 }
 
 /**
+ * Past precipitation for the observed spatial stream. The 2026-08 station
+ * sweep showed AROME precipitation is the least trustworthy event-level
+ * choice (missed summer storms, phantom autumn ones), while the seamless
+ * Météo-France blend tracked gauges closest; thermal fields stay on AROME.
+ * The request mirrors configureOpenMeteoRequest's window and timezone so the
+ * hourly axis aligns index-for-index with the AROME response.
+ */
+export function configureOpenMeteoSeamlessPrecipitationRequest(url: URL) {
+  url.searchParams.set("past_hours", "720");
+  url.searchParams.set("forecast_hours", "1");
+  url.searchParams.set("hourly", "precipitation");
+  url.searchParams.set("models", "meteofrance_seamless");
+  url.searchParams.set("timezone", "Europe/Madrid");
+}
+
+/**
  * Fetches the verified atmospheric history that precedes an ECMWF forecast.
  * Forecast windows splice this AROME history with ECMWF future hours so old
  * heat, frost, rain, and drying events age out instead of inheriting ECMWF's

@@ -231,6 +231,93 @@ export const XEMA_INTERPOLATION = {
 } as const;
 
 /**
+ * Versions the promoted past-precipitation source: gauge inverse-distance
+ * hours where the XEMA network is dense enough, the seamless Météo-France
+ * blend elsewhere. Promoted 2026-08-16 on the 12-run station sweep: AROME
+ * missed 9 real storms and invented 16 phantom ones across six cells and
+ * two seasons, and phantom autumn rain inflates soil-water state just as
+ * badly as missed summer rain suppresses it.
+ */
+export const STATION_RAIN_SOURCE_VERSION = "station-rain-v1";
+
+export type StationHourSeries = {
+  station_code: string;
+  latitude: number;
+  longitude: number;
+  hours: Record<string, number>;
+};
+
+/**
+ * Validates one row of the `get_xema_rain_matrix` RPC: a station with its
+ * complete gauge hours keyed by Europe/Madrid local time strings, matching
+ * the provider's hourly axis format.
+ */
+export function normalizeStationMatrixRow(input: unknown): StationHourSeries | undefined {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return undefined;
+  const row = input as Record<string, unknown>;
+  const stationCode = typeof row.station_code === "string" ? row.station_code : "";
+  const latitude = finiteNumber(row.latitude);
+  const longitude = finiteNumber(row.longitude);
+  if (!STATION_CODE_PATTERN.test(stationCode) || latitude === undefined || longitude === undefined) return undefined;
+  const rawHours = row.hours;
+  if (!rawHours || typeof rawHours !== "object" || Array.isArray(rawHours)) return undefined;
+  const hours: Record<string, number> = {};
+  for (const [time, value] of Object.entries(rawHours as Record<string, unknown>)) {
+    const millimetres = finiteNumber(value);
+    if (millimetres !== undefined && millimetres >= 0 && millimetres <= XEMA_MAX_HOURLY_MM) {
+      hours[time] = millimetres;
+    }
+  }
+  return { station_code: stationCode, latitude, longitude, hours };
+}
+
+/**
+ * Builds the promoted past-precipitation series for one grid point: per
+ * hour, the gauge inverse-distance value when enough complete stations sit
+ * within the cutoff, otherwise the aligned fallback model value. Hours the
+ * gauges cannot cover keep model semantics (including the fallback's own
+ * nulls), so window-completeness guards behave exactly as before.
+ */
+export function buildStationCorrectedPrecipitation(
+  hourlyTimes: unknown[],
+  fallbackPrecipitation: unknown[],
+  stations: StationHourSeries[],
+  targetLatitude: number,
+  targetLongitude: number,
+  options: Partial<typeof XEMA_INTERPOLATION> = {},
+): { series: (number | null)[]; gaugeHours: number; totalHours: number } {
+  const settings = { ...XEMA_INTERPOLATION, ...options };
+  const candidates = stations
+    .map((station) => ({
+      station,
+      distanceKm: haversineKm(targetLatitude, targetLongitude, station.latitude, station.longitude),
+    }))
+    .filter((entry) => entry.distanceKm <= settings.maxDistanceKm);
+  let gaugeHours = 0;
+  const series = hourlyTimes.map((time, index) => {
+    const fallback = finiteNumber(fallbackPrecipitation[index]) ?? null;
+    if (typeof time !== "string" || candidates.length < settings.minStations) return fallback;
+    const samples: StationRainSample[] = [];
+    for (const candidate of candidates) {
+      const value = candidate.station.hours[time];
+      if (value !== undefined) {
+        samples.push({
+          station_code: candidate.station.station_code,
+          latitude: candidate.station.latitude,
+          longitude: candidate.station.longitude,
+          precipitation_mm: value,
+        });
+      }
+    }
+    const interpolated = interpolateStationRain(targetLatitude, targetLongitude, samples, settings);
+    if (!interpolated) return fallback;
+    gaugeHours += 1;
+    return interpolated.precipitation_mm;
+  });
+  return { series, gaugeHours, totalHours: hourlyTimes.length };
+}
+
+/**
  * Inverse-distance-weighted station rain at one target point. Returns
  * undefined instead of guessing when the network is too thin nearby, so a
  * cell far from every gauge keeps its model value rather than a fabricated

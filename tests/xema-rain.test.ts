@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   aggregateXemaRainHours,
+  buildStationCorrectedPrecipitation,
   haversineKm,
   interpolateStationRain,
+  normalizeStationMatrixRow,
   normalizeXemaStation,
   XEMA_INTERPOLATION,
   xemaRainReadingsUrl,
@@ -168,5 +170,65 @@ describe("station rain interpolation", () => {
     const crowd = Array.from({ length: 10 }, (_, index) => gauge(`S${index}`, 42.4 + index * 0.01, 2.3, index));
     const result = interpolateStationRain(42.4, 2.3, crowd);
     expect(result!.stations_used).toBe(XEMA_INTERPOLATION.maxStations);
+  });
+});
+
+describe("station-rain-v1 corrected precipitation", () => {
+  const matrixStation = (code: string, latitude: number, longitude: number, hours: Record<string, number>) => ({
+    station_code: code,
+    latitude,
+    longitude,
+    hours,
+  });
+
+  it("validates gauge matrix rows and drops impossible hour values", () => {
+    const row = normalizeStationMatrixRow({
+      station_code: "WW",
+      latitude: 41.9,
+      longitude: 1.9,
+      hours: { "2026-08-15T16:00": 3.9, "2026-08-15T17:00": 999, "2026-08-15T18:00": "1.2" },
+    });
+    expect(row).toEqual({
+      station_code: "WW",
+      latitude: 41.9,
+      longitude: 1.9,
+      hours: { "2026-08-15T16:00": 3.9, "2026-08-15T18:00": 1.2 },
+    });
+    expect(normalizeStationMatrixRow({ station_code: "bad!", latitude: 41.9, longitude: 1.9, hours: {} })).toBeUndefined();
+  });
+
+  it("uses gauge hours where the network is dense and the fallback elsewhere", () => {
+    const times = ["T00", "T01", "T02"];
+    const fallback = [5, 5, null];
+    const stations = [
+      matrixStation("A", 42.41, 2.3, { T00: 0, T02: 2 }),
+      matrixStation("B", 42.39, 2.3, { T00: 1, T02: 4 }),
+    ];
+    const corrected = buildStationCorrectedPrecipitation(times, fallback, stations, 42.4, 2.3, { minStations: 2 });
+    // T00 has both gauges (~0.5 mm), T01 only the fallback, T02 both gauges
+    // even though the fallback was null there.
+    expect(corrected.gaugeHours).toBe(2);
+    expect(corrected.totalHours).toBe(3);
+    expect(corrected.series[0]).toBeGreaterThanOrEqual(0);
+    expect(corrected.series[0]).toBeLessThan(1.1);
+    expect(corrected.series[1]).toBe(5);
+    expect(corrected.series[2]).toBeGreaterThan(2);
+  });
+
+  it("keeps model rain untouched when every station is beyond the cutoff", () => {
+    const corrected = buildStationCorrectedPrecipitation(
+      ["T00", "T01"],
+      [1.5, 2.5],
+      [matrixStation("FAR", 41.0, 0.5, { T00: 30, T01: 30 })],
+      42.4,
+      2.3,
+    );
+    expect(corrected.series).toEqual([1.5, 2.5]);
+    expect(corrected.gaugeHours).toBe(0);
+  });
+
+  it("preserves fallback nulls so completeness guards still see missing hours", () => {
+    const corrected = buildStationCorrectedPrecipitation(["T00"], [null], [], 42.4, 2.3);
+    expect(corrected.series).toEqual([null]);
   });
 });

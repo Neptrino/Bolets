@@ -77,5 +77,7 @@ export function predictionModelVersion(ecologyVersion: string) {
 // Change this whenever the compact spatial payload, environmental history,
 // habitat coverage, or map scoring contract changes. It versions both the
 // browser-facing request and the server-to-Supabase cache key.
+// v18: past precipitation moved to station-rain-v1 (XEMA gauge IDW over the
+// seamless Météo-France fallback), changing every stored rain window.
 export const PREDICTION_CACHE_VERSION =
-  `prediction-map-v17-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;
+  `prediction-map-v18-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;

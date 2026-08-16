@@ -181,8 +181,11 @@ for (const day of days) {
 
 // --- Models: the archived past the production pipeline would have stored ---
 
-const modelByDay = new Map<string, Map<string, number | undefined>>(days.map((day) => [day, new Map()]));
-for (const model of MODEL_IDS) {
+// One request covers every model; per-model keys come back suffixed. The
+// free tier enforces a per-IP concurrency guard whose cool-down outlasts a
+// quick retry, so 429s and transient errors back off patiently instead of
+// failing a whole sweep.
+async function fetchModelArchive() {
   const url = new URL("https://historical-forecast-api.open-meteo.com/v1/forecast");
   url.searchParams.set("latitude", String(latitude));
   url.searchParams.set("longitude", String(longitude));
@@ -190,16 +193,43 @@ for (const model of MODEL_IDS) {
   url.searchParams.set("end_date", endDate);
   url.searchParams.set("daily", "precipitation_sum");
   url.searchParams.set("timezone", "UTC");
-  url.searchParams.set("models", model);
-  const response = await fetch(url, { headers: { "User-Agent": "Bolets-Atles/1.0" } });
-  if (!response.ok) throw new Error(`Open-Meteo ${model} archive request returned ${response.status}`);
-  const payload = await response.json() as { daily?: { time?: string[]; precipitation_sum?: (number | null)[] } };
-  const times = payload.daily?.time ?? [];
-  const sums = payload.daily?.precipitation_sum ?? [];
-  times.forEach((day, index) => {
-    const value = sums[index];
-    modelByDay.get(day)?.set(model, typeof value === "number" && Number.isFinite(value) ? value : undefined);
-  });
+  url.searchParams.set("models", MODEL_IDS.join(","));
+  for (let attempt = 1; attempt <= 6; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: { "User-Agent": "Bolets-Atles/1.0" },
+        signal: AbortSignal.timeout(60_000),
+      });
+      const payload = await response.json().catch(() => undefined) as
+        | { error?: boolean; reason?: string; daily?: Record<string, unknown> }
+        | undefined;
+      if (response.ok && payload?.daily) return payload.daily;
+      const reason = payload?.reason ?? `status ${response.status}`;
+      if (attempt === 6) throw new Error(`Open-Meteo archive request failed: ${reason}`);
+      log(`  model archive busy (${reason}); retrying in ${attempt * 30}s`);
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith("Open-Meteo")) throw error;
+      if (attempt === 6) throw new Error("Open-Meteo archive request failed after retries");
+      log(`  model archive transport error; retrying in ${attempt * 30}s`);
+    }
+    await new Promise((resolve) => setTimeout(resolve, attempt * 30_000));
+  }
+  throw new Error("Open-Meteo archive request failed");
+}
+
+const modelByDay = new Map<string, Map<string, number | undefined>>(days.map((day) => [day, new Map()]));
+{
+  const daily = await fetchModelArchive();
+  const times = Array.isArray(daily.time) ? daily.time as string[] : [];
+  for (const model of MODEL_IDS) {
+    // Multi-model responses suffix each variable; a single-model response
+    // keeps the plain name.
+    const series = (daily[`precipitation_sum_${model}`] ?? daily.precipitation_sum) as (number | null)[] | undefined;
+    times.forEach((day, index) => {
+      const value = series?.[index];
+      modelByDay.get(day)?.set(model, typeof value === "number" && Number.isFinite(value) ? value : undefined);
+    });
+  }
 }
 
 // --- AEMET (optional): an independent gauge network as cross-validation ---

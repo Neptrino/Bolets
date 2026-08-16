@@ -57,13 +57,19 @@ export const AEMET_STATION_INVENTORY_PATH = "/valores/climatologicos/inventarioe
  * whose payload is Latin-1 JSON.
  */
 export async function fetchAemetJson(path, apiKey, fetchImplementation = fetch) {
-  const envelopeResponse = await fetchImplementation(`${AEMET_API_ORIGIN}${path}`, {
-    headers: { api_key: apiKey, "User-Agent": "Bolets-Atles/1.0" },
-  });
-  if (!envelopeResponse.ok) throw new Error(`AEMET envelope request returned ${envelopeResponse.status}`);
-  const envelope = await envelopeResponse.json();
-  if (!envelope || typeof envelope.datos !== "string" || !envelope.datos.startsWith("https://")) {
-    throw new Error(`AEMET request was rejected: ${envelope?.descripcion ?? "no data URL"}`);
+  // Free AEMET keys enforce a strict per-minute quota; a rejected envelope
+  // usually clears on the next minute, so wait it out instead of failing.
+  let envelope;
+  for (let attempt = 1; attempt <= 4; attempt += 1) {
+    const envelopeResponse = await fetchImplementation(`${AEMET_API_ORIGIN}${path}`, {
+      headers: { api_key: apiKey, "User-Agent": "Bolets-Atles/1.0" },
+    });
+    envelope = envelopeResponse.status === 429 ? undefined : await envelopeResponse.json().catch(() => undefined);
+    if (envelope && typeof envelope.datos === "string" && envelope.datos.startsWith("https://")) break;
+    if (attempt === 4) {
+      throw new Error(`AEMET request was rejected: ${envelope?.descripcion ?? "no data URL"}`);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 65_000));
   }
   const dataResponse = await fetchImplementation(envelope.datos, {
     headers: { "User-Agent": "Bolets-Atles/1.0" },

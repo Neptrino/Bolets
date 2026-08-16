@@ -48,3 +48,36 @@ describe("XEMA station rain shadow migration", () => {
     expect(config).toContain("[functions.import-xema-rain]");
   });
 });
+
+describe("station-rain-v1 promotion", () => {
+  const promotion = readFileSync(
+    join(process.cwd(), "supabase", "migrations", "20260816180000_promote_station_rain_correction.sql"),
+    "utf8",
+  );
+  const refresh = readFileSync(
+    join(process.cwd(), "supabase", "functions", "refresh-spatial-environment", "index.ts"),
+    "utf8",
+  );
+
+  it("serves the gauge matrix only to the service role, in provider-local hours", () => {
+    expect(promotion).toContain("create or replace function public.get_xema_rain_matrix");
+    expect(promotion).toContain("revoke all on function public.get_xema_rain_matrix(integer) from public, anon, authenticated");
+    expect(promotion).toContain("grant execute on function public.get_xema_rain_matrix(integer) to service_role");
+    expect(promotion).toContain("at time zone 'Europe/Madrid'");
+    expect(promotion).toContain("h.sample_count = 2");
+  });
+
+  it("corrects past precipitation in the refresh while keeping AROME thermal fields", () => {
+    expect(refresh).toContain("buildStationCorrectedPrecipitation");
+    expect(refresh).toContain("get_xema_rain_matrix");
+    expect(refresh).toContain('"models", "arome_france"');
+    expect(refresh).toContain("meteofrance_seamless");
+    expect(refresh).toContain("precipitationSource: STATION_RAIN_SOURCE_VERSION");
+    expect(refresh).toContain("precipitationGaugeCoverage");
+  });
+
+  it("registers the seamless fallback source with attribution", () => {
+    expect(promotion).toContain("'meteofrance-seamless-precipitation'");
+    expect(promotion).toContain("station-rain-v1");
+  });
+});

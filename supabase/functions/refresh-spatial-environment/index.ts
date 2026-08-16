@@ -1,5 +1,11 @@
 import { createAdminClient, finiteNumber, finishRun, json, refreshSpatialLevelConditionsAfterIngestion, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
-import { configureOpenMeteoRequest, fetchOpenMeteoLocations, normalizeOpenMeteo, type OpenMeteoLocation, type RequestProfile } from "../_shared/open-meteo.ts";
+import { configureOpenMeteoRequest, configureOpenMeteoSeamlessPrecipitationRequest, fetchOpenMeteoLocations, normalizeOpenMeteo, type OpenMeteoLocation, type RequestProfile } from "../_shared/open-meteo.ts";
+import {
+  buildStationCorrectedPrecipitation,
+  normalizeStationMatrixRow,
+  STATION_RAIN_SOURCE_VERSION,
+  type StationHourSeries,
+} from "../_shared/xema-rain.ts";
 
 type WeatherPoint = {
   point_id: string;
@@ -35,6 +41,43 @@ async function fetchWeather(points: WeatherPoint[], profile: RequestProfile) {
   return results;
 }
 
+/**
+ * Past precipitation from the seamless Météo-France blend on the identical
+ * hourly axis as the AROME request. A failure degrades to AROME rain for
+ * this run instead of blocking the daily thermal refresh.
+ */
+async function fetchSeamlessPrecipitation(points: WeatherPoint[]) {
+  try {
+    const results: OpenMeteoLocation[] = [];
+    for (let start = 0; start < points.length; start += PROVIDER_BATCH_SIZE) {
+      const batch = points.slice(start, start + PROVIDER_BATCH_SIZE);
+      const url = new URL("https://api.open-meteo.com/v1/meteofrance");
+      url.searchParams.set("latitude", batch.map((point) => point.requested_lat).join(","));
+      url.searchParams.set("longitude", batch.map((point) => point.requested_lon).join(","));
+      configureOpenMeteoSeamlessPrecipitationRequest(url);
+      results.push(...await fetchOpenMeteoLocations(url, "seamless precipitation"));
+    }
+    if (results.length !== points.length) return undefined;
+    return results;
+  } catch (error) {
+    console.error("Seamless precipitation fetch failed; keeping AROME rain for this run", {
+      message: error instanceof Error ? error.message : "unknown",
+    });
+    return undefined;
+  }
+}
+
+async function fetchGaugeMatrix(supabase: ReturnType<typeof createAdminClient>) {
+  const { data, error } = await supabase.rpc("get_xema_rain_matrix", { p_hours: 744 });
+  if (error) {
+    console.error("Gauge matrix read failed; past rain falls back to the model blend", { message: error.message });
+    return [];
+  }
+  return (Array.isArray(data) ? data : [])
+    .map(normalizeStationMatrixRow)
+    .filter((station): station is StationHourSeries => station !== undefined);
+}
+
 Deno.serve(async (request) => {
   let runId: string | undefined;
   try {
@@ -66,13 +109,43 @@ Deno.serve(async (request) => {
     }
 
     const weather = await fetchWeather(points, "atmosphere");
+    const seamless = await fetchSeamlessPrecipitation(points);
+    const gaugeStations = await fetchGaugeMatrix(supabase);
     const observedAt = new Date().toISOString();
     const rows = points.map((point, index) => {
       const location = weather[index];
+      // station-rain-v1: replace past precipitation before normalization so
+      // every rain window, wet-day count and dry-spell length recomputes
+      // from one corrected series. Thermal fields stay untouched AROME.
+      const aromeTimes = Array.isArray(location.hourly?.time) ? location.hourly.time as unknown[] : [];
+      const seamlessHourly = seamless?.[index]?.hourly;
+      const seamlessTimes = Array.isArray(seamlessHourly?.time) ? seamlessHourly.time as unknown[] : undefined;
+      const seamlessPrecipitation = Array.isArray(seamlessHourly?.precipitation)
+        ? seamlessHourly.precipitation as unknown[]
+        : undefined;
+      const seamlessAligned = seamlessTimes !== undefined && seamlessPrecipitation !== undefined &&
+        JSON.stringify(seamlessTimes) === JSON.stringify(aromeTimes);
+      const fallbackSeries = seamlessAligned && seamlessPrecipitation
+        ? seamlessPrecipitation
+        : (Array.isArray(location.hourly?.precipitation) ? location.hourly.precipitation as unknown[] : []);
+      const corrected = buildStationCorrectedPrecipitation(
+        aromeTimes,
+        fallbackSeries,
+        gaugeStations,
+        point.requested_lat,
+        point.requested_lon,
+      );
+      if (location.hourly) location.hourly.precipitation = corrected.series;
+      const gaugeCoverage = corrected.totalHours
+        ? Math.round((corrected.gaugeHours / corrected.totalHours) * 100) / 100
+        : 0;
       const normalized = normalizeOpenMeteo(location, location, "atmosphere");
       const values = {
         ...normalized.values,
         weatherModel: "Météo-France AROME France",
+        precipitationSource: STATION_RAIN_SOURCE_VERSION,
+        precipitationFallbackModel: seamlessAligned ? "meteofrance_seamless" : "arome_france",
+        precipitationGaugeCoverage: gaugeCoverage,
         atmosphericResolutionM: 2500,
         soilMoistureResolutionM: 9000,
         weatherGridLatitude: finiteNumber(location.latitude),
@@ -83,7 +156,11 @@ Deno.serve(async (request) => {
         point_id: point.point_id,
         snapshot_date: today,
         observed_at: observedAt,
-        sources: ["Météo-France AROME via Open-Meteo"],
+        sources: [
+          "Météo-France AROME via Open-Meteo",
+          ...(seamlessAligned ? ["Météo-France seamless precipitation via Open-Meteo"] : []),
+          ...(gaugeCoverage > 0 ? ["Meteocat XEMA station gauges"] : []),
+        ],
         source_resolution_m: point.native_resolution_m,
         confidence: normalized.unavailableFields.length ? "limited" : "moderate",
         stale: false,
@@ -105,7 +182,16 @@ Deno.serve(async (request) => {
     await finishRun(supabase, runId, rows.some((row) => row.unavailable_fields.length) ? "partial" : "succeeded", {
       rowsRead: points.length,
       rowsWritten: rows.length,
-      metadata: { firstPointId: points[0].point_id, lastPointId: points.at(-1)?.point_id, atmosphericModel: "arome_france", atmosphericResolutionM: 2500, soilMoistureResolutionM: 9000 }
+      metadata: {
+        firstPointId: points[0].point_id,
+        lastPointId: points.at(-1)?.point_id,
+        atmosphericModel: "arome_france",
+        precipitationSource: STATION_RAIN_SOURCE_VERSION,
+        precipitationFallbackModel: seamless ? "meteofrance_seamless" : "arome_france",
+        gaugeStationCount: gaugeStations.length,
+        atmosphericResolutionM: 2500,
+        soilMoistureResolutionM: 9000
+      }
     });
     const conditionsRefreshed = complete
       ? await refreshSpatialLevelConditionsAfterIngestion(supabase, today)
