@@ -40,6 +40,17 @@ describe("XEMA station rain shadow migration", () => {
     expect(migration).toContain("'x-ingestion-token', (select decrypted_secret from vault.decrypted_secrets where name = 'bolets_ingestion_token')");
   });
 
+  it("relaxes the cadence to three-hourly with a self-healing twelve-hour window", () => {
+    const cadence = readFileSync(
+      join(process.cwd(), "supabase", "migrations", "20260816200000_relax_xema_rain_cadence.sql"),
+      "utf8",
+    );
+    expect(cadence).toContain("'import-xema-rain-3h'");
+    expect(cadence).toContain("'50 2-23/3 * * *'");
+    expect(cadence).toContain('"hours":12');
+    expect(cadence).toContain("jobname = 'import-xema-rain-hourly'");
+  });
+
   it("keeps the importer authenticated, bounded and outside production scoring", () => {
     expect(importer).toContain("verifyIngestionRequest");
     expect(importer).toContain('"station-rain"');

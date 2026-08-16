@@ -610,7 +610,7 @@ export default function MethodPage() {
                   <p>Els pluviòmetres oficials mesuren la pluja que va caure de veritat; cap arxiu de model no corregeix una tempesta mal situada. Per a cada hora amb almenys dues estacions completes a menys de 30 km, la pluja passada és la interpolació ponderada per distància dels pluviòmetres; les hores i cel·les sense prou cobertura usen la mescla «seamless» de Météo-France. Font versionada station-rain-v1, amb la cobertura de pluviòmetres desada a cada instantània.</p>
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>~187 estacions · semihorari</dd></div>
-                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>cada hora</dd></div>
+                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>cada 3 h</dd></div>
                     <div><dt>Ús</dt><dd>pluja acumulada · dies humits · ratxa seca</dd></div>
                     <div><dt>Llicència</dt><dd>CC BY 4.0 · Meteocat</dd></div>
                   </dl>
