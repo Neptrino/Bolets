@@ -1,8 +1,9 @@
 export const scoringValueFields = new Set([
   "temperatureC", "temperatureAvg7dC", "temperatureAvg14dC", "frostHours14d",
   "heatHours14d", "temperatureAvg20dC", "frostHours20d", "heatHours20d",
-  "relativeHumidity", "relativeHumidityAvg24h", "temperatureAvg24hC",
-  "relativeHumidityAvg7d",
+  "relativeHumidity", "relativeHumidityAvg24h",
+  "temperatureMin24hC", "temperatureAvg24hC", "temperatureMax24hC",
+  "relativeHumidityAvg7d", "weatherElevationM",
   "soilMoisture", "soilMoistureAvg24h", "soilMoistureMin7d", "soilMoistureAvg7d",
   "soilMoistureTrend7d", "rainfall3dMm", "rainfall7dMm", "rainfallDays7d",
   "rainfall14dMm", "rainfallDays14d", "rainfall21dMm", "rainfallDays21d",

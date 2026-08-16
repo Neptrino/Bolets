@@ -226,23 +226,28 @@ const TERRAIN_LAPSE_MAX_DELTA_C = 6;
  * correction removes it. Threshold-counted frost/heat hours cannot be shifted
  * linearly and stay unchanged, as does the 7-day mean feeding the water term.
  */
-export function terrainThermalCorrection(
-  values: EnvironmentValues,
-): Partial<EnvironmentValues> {
+/** The capped lapse delta between grid elevation and cell altitude, in C. */
+export function terrainLapseDeltaC(values: EnvironmentValues): number | null {
   const gridElevation = values.weatherElevationM;
   const cellAltitude = values.altitudeM;
   if (
     gridElevation === undefined || cellAltitude === undefined ||
     !Number.isFinite(gridElevation) || !Number.isFinite(cellAltitude)
-  ) return {};
-  const deltaC = Math.max(
+  ) return null;
+  return Math.max(
     -TERRAIN_LAPSE_MAX_DELTA_C,
     Math.min(
       TERRAIN_LAPSE_MAX_DELTA_C,
       TERRAIN_LAPSE_C_PER_KM * (gridElevation - cellAltitude) / 1000,
     ),
   );
-  if (deltaC === 0) return {};
+}
+
+export function terrainThermalCorrection(
+  values: EnvironmentValues,
+): Partial<EnvironmentValues> {
+  const deltaC = terrainLapseDeltaC(values);
+  if (deltaC === null || deltaC === 0) return {};
   const corrected: Partial<EnvironmentValues> = {};
   if (values.temperatureAvg14dC !== undefined) {
     corrected.temperatureAvg14dC = values.temperatureAvg14dC + deltaC;

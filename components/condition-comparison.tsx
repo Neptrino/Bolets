@@ -26,6 +26,7 @@ import type {
 import { formatGridDimensions } from "@/src/lib/map-grid";
 import { getConditionPredictionStatus } from "@/src/lib/condition-presentation";
 import { getSuitabilityBand } from "@/src/lib/suitability-scale";
+import { terrainLapseDeltaC } from "@/src/lib/hydrothermal-v2";
 import { regionLabels } from "@/data/regions";
 
 type ComponentChartItem = {
@@ -267,6 +268,15 @@ export function ConditionComparison({
       : rainfallWindowDays === 26
         ? v.evapotranspiration26dMm
         : v.evapotranspiration7dMm;
+  // All air temperatures in this card are read at the provider grid's
+  // representative elevation; display them corrected to the cell's altitude,
+  // matching what the model scores.
+  const lapseDeltaC = terrainLapseDeltaC(v) ?? 0;
+  const atCellAltitude = (value: number | undefined) =>
+    value === undefined ? undefined : value + lapseDeltaC;
+  const lapseNote = Math.abs(lapseDeltaC) >= 0.05
+    ? ` Temperatures corregides ${lapseDeltaC > 0 ? "+" : "−"}${Math.abs(lapseDeltaC).toFixed(1)} °C del punt de malla (${Math.round(v.weatherElevationM ?? 0)} m) a l’altitud de la cel·la (${Math.round(v.altitudeM ?? 0)} m).`
+    : "";
   const data: Array<{
     label: string;
     period: string;
@@ -283,23 +293,23 @@ export function ConditionComparison({
       // An instantaneous reading says little about a day in the forest; the
       // daily range and mean describe the thermal environment fungi live in.
       current: v.temperatureMin24hC !== undefined && v.temperatureMax24hC !== undefined
-        ? `${temperature(v.temperatureMin24hC)} – ${temperature(v.temperatureMax24hC)}`
-        : temperature(v.temperatureC),
+        ? `${temperature(atCellAltitude(v.temperatureMin24hC))} – ${temperature(atCellAltitude(v.temperatureMax24hC))}`
+        : temperature(atCellAltitude(v.temperatureC)),
       context: {
         note: supportedModel
-          ? `El rang diari és context. El model compara la temperatura mitjana de ${temperatureWindowDays} dies amb l’òptim inicial de l’espècie (${supportedModel.temperature.optimumC} °C); les gelades i la calor extrema s’apliquen per separat.`
-          : "Sense model hidrotermal de curt termini per a aquesta espècie",
+          ? `El rang diari és context. El model compara la temperatura mitjana de ${temperatureWindowDays} dies amb l’òptim inicial de l’espècie (${supportedModel.temperature.optimumC} °C); les gelades i la calor extrema s’apliquen per separat.${lapseNote}`
+          : `Sense model hidrotermal de curt termini per a aquesta espècie.${lapseNote}`,
       },
       stats: [
         {
           label: "Mitj · 24 h",
-          value: temperature(v.temperatureAvg24hC),
+          value: temperature(atCellAltitude(v.temperatureAvg24hC)),
           explanation:
-            "Mitjana tèrmica de les últimes 24 hores, nits incloses.",
+            "Mitjana tèrmica de les últimes 24 hores, nits incloses, a l’altitud de la cel·la.",
         },
         {
           label: `Mitj · ${temperatureWindowDays ?? "—"} dies`,
-          value: temperature(temperatureWindowAverage),
+          value: temperature(atCellAltitude(temperatureWindowAverage)),
           explanation:
             "Mitjana tèrmica de la finestra configurada per al gremi o l’espècie. La resposta té un òptim i decau suaument tant per fred com per calor.",
         },
