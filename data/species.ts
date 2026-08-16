@@ -1376,3 +1376,20 @@ export function getSpecies(speciesId: string) {
 export function getSpeciesByScientificName(scientificName: string) {
   return speciesByScientificName.get(scientificName.trim().toLocaleLowerCase("la"));
 }
+
+/**
+ * The legacy hydrothermal-v1 config a species would carry if it were not in
+ * the v2 allowlist. Regression tests keep exercising the v1 response
+ * functions with it, and shadow replays use it to score both model versions
+ * side by side.
+ */
+export function getSpeciesV1ModelConfig(speciesId: string) {
+  const species = speciesById[speciesId];
+  if (!species) return undefined;
+  return modelConfigForSpecies(
+    speciesId,
+    species.ecologicalConfig.climate.temperatureRange,
+    species.ecologicalConfig.seasonality,
+    "hydrothermal-v1",
+  );
+}

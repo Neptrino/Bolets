@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getSpecies } from "@/data/species";
+import { getSpecies, getSpeciesV1ModelConfig } from "@/data/species";
 import { calculateSuitability, phenologySuitability } from "@/src/lib/scoring";
 import type {
   ConditionSnapshot,
@@ -51,13 +51,11 @@ function snapshot(
 
 function supportedSpecies(speciesId = "boletus-edulis"): SupportedProfile {
   const species = getSpecies(speciesId)!;
-  if (
-    species.modelConfig.status !== "supported" ||
-    species.modelConfig.model !== "hydrothermal-v1"
-  ) {
+  const modelConfig = getSpeciesV1ModelConfig(speciesId)!;
+  if (modelConfig.status !== "supported" || modelConfig.model !== "hydrothermal-v1") {
     throw new Error(`${speciesId} is not supported by the hydrothermal-v1 model`);
   }
-  return species as SupportedProfile;
+  return { ...species, modelConfig } as SupportedProfile;
 }
 
 describe("hydrothermal scoring integration", () => {

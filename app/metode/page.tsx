@@ -303,7 +303,7 @@ export default function MethodPage() {
             <div className="method-subscore-heading">
               <p className="eyebrow">Dins dels components</p>
               <h3>Una resposta hidrotermal, no una suma de punts</h3>
-              <p><b>clamp(x)</b> limita qualsevol resposta normalitzada a l’interval 0—1. Els paràmetres de v1 són priors experts de confiança baixa, no estimacions ajustades amb observacions.</p>
+              <p><b>clamp(x)</b> limita qualsevol resposta normalitzada a l’interval 0—1. L’estructura de resposta prové de priors experts citats; els pesos i sòls mínims de v2 s’han contrastat i ajustat amb troballes datades i graduades per abundància.</p>
             </div>
 
             <div className="method-subscore-grid">
@@ -311,19 +311,22 @@ export default function MethodPage() {
                 <div className="method-subscore-title"><CloudRain size={24} /><div><span>W · ESTAT HÍDRIC UNIFICAT</span><h4>Pols recent, reserva anterior i assecat en una sola resposta.</h4></div></div>
                 <div className="method-rain-steps">
                   <div>
-                    <b>1 · Producte hídric</b>
-                    <Formula label="L’estat hídric multiplica la resposta d’humitat del sòl, la preparació per pluja, la penalització de dèficit de pressió de vapor i la de ratxa seca.">
-                      W = M · [(1 − ρ) + ρQ] · V<sup>βV</sup> · D<sup>βD</sup>
+                    <b>1 · Dos estimadors, una mitjana geomètrica ponderada</b>
+                    <Formula label="L’estat hídric combina el balanç de pluja i l’estat del sòl com a mitjana geomètrica ponderada, amb les penalitzacions de dèficit de pressió de vapor i de ratxa seca.">
+                      W = B<sup>1 − w</sup> · M<sup>w</sup> · V<sup>βV</sup> · D<sup>βD</sup>
                     </Formula>
-                    <p><b>ρ</b>, <b>βV</b> i <b>βD</b> són paràmetres versionats del gremi o de l’espècie. La humitat de l’aire no és un factor separat: el seu efecte d’assecat entra una sola vegada a <b>V</b>.</p>
+                    <p><b>B</b> (pluja) i <b>M</b> (sòl) estimen la mateixa aigua des de dues fonts. El pes <b>w</b> reflecteix la fiabilitat mesurada de cada font: la sèrie modelada de sòl a 2,5–9 km es va mostrar poc informativa en troballes datades, així que actualment <b>w = 0,15</b> i la pluja porta la resta. Cap de les dues pot anul·lar sola la puntuació: totes dues respostes tenen un sòl mínim. <b>βV</b> i <b>βD</b> són paràmetres versionats del gremi o de l’espècie, i la humitat de l’aire entra una sola vegada a <b>V</b>.</p>
                   </div>
                   <div>
-                    <b>2 · Humitat i pluja efectiva</b>
-                    <Formula label="La humitat combina tres quarts de la resposta de la mitjana setmanal d’aigua extractable relativa i un quart de la resposta del mínim setmanal.">
-                      M = 0,75 R<sub>REW</sub>(mitjana<sub>7</sub>) + 0,25 R<sub>REW</sub>(mínim<sub>7</sub>)
+                    <b>2 · Balanç de pluja i estat del sòl</b>
+                    <Formula label="El balanç de pluja aplica un sòl mínim a la resposta saturant de pluja efectiva i dies humits.">
+                      B = 0,1 + 0,9 · [0,7 Hill(R<sub>ef</sub>, R<sub>50</sub>) + 0,3 Hill(N<sub>humit</sub>, N<sub>50</sub>)]
                     </Formula>
-                    <p><b>REW = (θ − θ<sub>marciment</sub>) / (θ<sub>camp</sub> − θ<sub>marciment</sub>)</b>, limitada a 0—1,4. Els dos llindars provenen d’una taula versionada per textura del sòl.</p>
-                    <p><b>Q = 0,7 Hill(R<sub>ef</sub>, R<sub>50</sub>) + 0,3 Hill(N<sub>humit</sub>, N<sub>50</sub>)</b>, on Hill(x, x<sub>50</sub>) = x² / (x² + x<sub>50</sub>²). La finestra és de 14 o 21 dies segons el gremi, amb 26 dies per al cep. Cada dia humit té ≥ 1 mm i <b>R<sub>ef</sub> = max(0, pluja − N<sub>humit</sub> · 1 mm − 0,5 ET₀)</b>.</p>
+                    <p>Hill(x, x<sub>50</sub>) = x² / (x² + x<sub>50</sub>²). La finestra és de 14 o 21 dies segons el gremi, amb 26 dies per al cep. Cada dia humit té ≥ 1 mm i <b>R<sub>ef</sub> = max(0, pluja − N<sub>humit</sub> · 1 mm − 0,5 ET₀)</b>.</p>
+                    <Formula label="L’estat del sòl combina la mitjana i el mínim setmanals d’aigua extractable relativa, amb sòls mínims a banda seca i humida.">
+                      M = 0,85 R<sub>REW</sub>(mitjana<sub>7</sub>) + 0,15 R<sub>REW</sub>(mínim<sub>7</sub>)
+                    </Formula>
+                    <p><b>REW = (θ − θ<sub>marciment</sub>) / (θ<sub>camp</sub> − θ<sub>marciment</sub>)</b>, limitada a 0—1,4, amb llindars d’una taula versionada per textura. Fora de la banda òptima, <b>R<sub>REW</sub></b> baixa fins a un sòl mínim versionat (0,25 en sec, 0,40 en saturat) en lloc de zero: una lectura de sòl desfavorable és evidència, no una impossibilitat.</p>
                   </div>
                   <div>
                     <b>3 · Assecat atmosfèric i ratxa seca</b>
@@ -341,7 +344,7 @@ export default function MethodPage() {
                 <Formula label="La temperatura segueix una corba exponencial centrada a l’òptim, amb una amplada diferent al costat fred i al càlid.">
                   T = 2<sup>−((T̄ − T<sub>òpt</sub>) / h<sub>costat</sub>)²</sup>
                 </Formula>
-                <p><b>T̄</b> és la mitjana configurada de 14 o 20 dies. Per a cada espècie, el punt mig de l’interval tèrmic numèric versionat inicialitza <b>T<sub>òpt</sub></b>, i cada extrem de l’interval correspon a mitja resposta. Una excepció explícita basada en literatura pot substituir aquests valors, com en el cas del cep. Així espècies fredòfiles i termòfiles no comparteixen la mateixa corba.</p>
+                <p><b>T̄</b> és la mitjana configurada de 14 o 20 dies, nits incloses. Per a cada espècie, <b>T<sub>òpt</sub></b> parteix del punt mig de l’interval tèrmic versionat desplaçat 3 °C avall — l’interval editorial descriu condicions diürnes, mentre que la mitjana de finestra inclou les nits — i les amplades asimètriques (costat fred i càlid) provenen del gremi. Una excepció explícita basada en literatura pot substituir aquests valors, com en el cas del cep. Així espècies fredòfiles i termòfiles no comparteixen la mateixa corba.</p>
               </article>
 
               <article className="method-subscore">
@@ -372,10 +375,10 @@ export default function MethodPage() {
               </article>
               <article className="method-formula-card method-formula-card-accent">
                 <span className="method-formula-kicker">ÍNDEX D’OPORTUNITAT DE CEL·LA</span>
-                <Formula label="L’índex d’oportunitat és l’hàbitat efectiu multiplicat per l’índex condicional de fructificació.">
-                  O = H · F
+                <Formula label="L’índex d’oportunitat pondera l’hàbitat efectiu de manera còncava i el multiplica per l’índex condicional de fructificació calibrat.">
+                  O = H<sup>0,4</sup> · F<sup>0,8</sup>
                 </Formula>
-                <p><b>F</b> respon «com són les condicions dins de l’hàbitat?»; <b>O</b> respon «quina oportunitat relativa representa tota la cel·la?». Tots dos són índexs ordinals, no probabilitats.</p>
+                <p><b>F</b> respon «com són les condicions dins de l’hàbitat?»; <b>O</b> respon «quina oportunitat relativa representa tota la cel·la?». L’exponent còncau sobre <b>H</b> permet que una cel·la parcialment compatible arribi a les bandes altes quan les condicions ho justifiquen, i l’exponent 0,8 sobre <b>F</b> és una corba de calibratge monòtona ajustada amb troballes datades i graduades per abundància. Tots dos són índexs ordinals, no probabilitats, i H = 0 continua anul·lant la cel·la.</p>
               </article>
             </div>
           </div>
@@ -430,10 +433,10 @@ export default function MethodPage() {
               <div>
                 <p className="eyebrow light">Co-limitació explícita</p>
                 <h3>No hi ha mitjana compensatòria ni límits afegits després.</h3>
-                <p>W i T es combinen geomètricament; P i E multipliquen el resultat. Les gelades i la calor ja formen part d’E, i la sequedat entra una sola vegada dins de W.</p>
+                <p>W i T es combinen geomètricament; P i E multipliquen el resultat. Les gelades i la calor ja formen part d’E, i la sequedat entra una sola vegada dins de W. Els zeros són biològics: fora de temporada o sense hàbitat, la cel·la és 0. Les lectures de mesura, en canvi, tenen sòls mínims perquè una sola font dubtosa no pugui anul·lar la resta de l’evidència.</p>
               </div>
-              <Formula label="Quan qualsevol component s’apropa a zero, el producte complet també s’apropa a zero.">
-                x → 0 ⇒ F → 0
+              <Formula label="Quan la fenologia o l’hàbitat són zero, el producte complet és zero.">
+                P = 0 ó H = 0 ⇒ O = 0
               </Formula>
             </div>
 

@@ -126,7 +126,7 @@ const unsupportedModelEvidence = z.object({
   status: z.literal("unsupported"),
   citations: z.array(z.url()),
 });
-const waterModelParameters = z.object({
+const waterModelParametersBase = z.object({
   waterExponent: z.number().gt(0).lt(1),
   moistureWindowDays: z.literal(7),
   rewBand: z.tuple([
@@ -145,7 +145,11 @@ const waterModelParameters = z.object({
   vpdComfortKpa: z.number().min(0),
   vpdDecayKpa: z.number().positive(),
   vpdExponent: z.number().min(0),
-}).superRefine(({ rewBand }, context) => {
+});
+const orderedRewBand = (
+  { rewBand }: { rewBand: [number, number, number, number] },
+  context: z.RefinementCtx,
+) => {
   if (!(rewBand[0] < rewBand[1] && rewBand[1] <= rewBand[2] && rewBand[2] < rewBand[3])) {
     context.addIssue({
       code: "custom",
@@ -153,7 +157,8 @@ const waterModelParameters = z.object({
       message: "REW response points must be ordered around the optimum plateau",
     });
   }
-});
+};
+const waterModelParameters = waterModelParametersBase.superRefine(orderedRewBand);
 const temperatureModelParameters = z.object({
   windowDays: z.union([z.literal(14), z.literal(20)]),
   optimumC: z.number().min(-10).max(35),
@@ -170,19 +175,44 @@ const monthlyPhenologyAnchors = z.tuple([
   z.number().min(0).max(1), z.number().min(0).max(1),
   z.number().min(0).max(1), z.number().min(0).max(1),
 ]);
-const fruitingModelConfig = z.discriminatedUnion("status", [
+const supportedGuild = z.enum([
+  "ectomycorrhizal",
+  "litter-soil-saprotroph",
+  "wood-decayer",
+  "grassland",
+]);
+const waterModelParametersV2 = waterModelParametersBase.omit({
+  triggerDependency: true,
+}).extend({
+  soilWeight: z.number().min(0).max(1),
+  soilFloorWeight: z.number().min(0).max(1),
+  soilDryFloor: z.number().min(0).max(1),
+  soilWetFloor: z.number().min(0).max(1),
+  rainFloor: z.number().min(0).max(1),
+}).superRefine(orderedRewBand);
+const combinationModelParameters = z.object({
+  habitatExponent: z.number().gt(0).max(1),
+  calibrationGamma: z.number().positive(),
+});
+const fruitingModelConfig = z.union([
   z.object({
     model: z.literal("hydrothermal-v1"),
     version: z.string().min(1),
     status: z.literal("supported"),
-    guild: z.enum([
-      "ectomycorrhizal",
-      "litter-soil-saprotroph",
-      "wood-decayer",
-      "grassland",
-    ]),
+    guild: supportedGuild,
     water: waterModelParameters,
     temperature: temperatureModelParameters,
+    phenology: z.object({ monthlyAnchors: monthlyPhenologyAnchors }),
+    evidence: supportedModelEvidence,
+  }),
+  z.object({
+    model: z.literal("hydrothermal-v2"),
+    version: z.string().min(1),
+    status: z.literal("supported"),
+    guild: supportedGuild,
+    water: waterModelParametersV2,
+    temperature: temperatureModelParameters,
+    combination: combinationModelParameters,
     phenology: z.object({ monthlyAnchors: monthlyPhenologyAnchors }),
     evidence: supportedModelEvidence,
   }),

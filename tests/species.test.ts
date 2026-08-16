@@ -199,13 +199,17 @@ describe("species profiles", () => {
     expect(new Set(speciesProfiles.map((profile) => profile.speciesId)).size).toBe(speciesProfiles.length);
     for (const profile of speciesProfiles) {
       const model = profile.modelConfig;
-      expect(model.model, profile.speciesId).toBe("hydrothermal-v1");
+      // Supported species score with hydrothermal-v2 since the 2026-08-16
+      // cutover; the habitat-only truffle keeps the v1 tag.
+      expect(model.model, profile.speciesId).toBe(
+        model.status === "supported" ? "hydrothermal-v2" : "hydrothermal-v1",
+      );
       expect(model, profile.speciesId).not.toHaveProperty("factors");
       expect(model.version.length, profile.speciesId).toBeGreaterThan(0);
 
       if (model.status === "supported") {
         expect(profile.predictionMode, profile.speciesId).toBe("current");
-        expect(model.version).toBe("hydrothermal-v1-priors-2026-08");
+        expect(model.version).toBe("hydrothermal-v2-priors-2026-08");
         expect(model.guild).not.toBe("hypogeous");
         expect(model.water.waterExponent).toBeGreaterThan(0);
         expect(model.water.waterExponent).toBeLessThan(1);
@@ -266,16 +270,18 @@ describe("species profiles", () => {
       throw new Error("Expected supported models");
     }
 
+    // v2 shifts the optimum 3 degrees below the editorial daytime midpoint
+    // (window means include nights) and keeps the guild's asymmetric widths.
     expect(cold.ecologicalConfig.climate.temperatureRange).toEqual([5, 16]);
     expect(cold.modelConfig.temperature).toMatchObject({
-      optimumC: 10.5,
-      coldHalfWidthC: 5.5,
-      warmHalfWidthC: 5.5,
+      optimumC: 7.5,
+      coldHalfWidthC: 4,
+      warmHalfWidthC: 5,
     });
     expect(warm.ecologicalConfig.climate.temperatureRange).toEqual([15, 25]);
     expect(warm.modelConfig.temperature).toMatchObject({
-      optimumC: 20,
-      coldHalfWidthC: 5,
+      optimumC: 17,
+      coldHalfWidthC: 4,
       warmHalfWidthC: 5,
     });
   });

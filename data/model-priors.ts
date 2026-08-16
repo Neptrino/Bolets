@@ -497,6 +497,9 @@ export function modelConfigForSpecies(
   speciesId: string,
   temperatureRange: readonly [number, number],
   seasonality: Readonly<Record<Month, SeasonalActivity>>,
+  // v1/v2 dispatch normally follows HYDROTHERMAL_V2_SPECIES; regression tests
+  // and dual-model shadow replays force the legacy branch explicitly.
+  forceModel?: "hydrothermal-v1",
 ): FruitingModelConfig {
   const entry = SPECIES_MODEL_CATALOGUE[speciesId as keyof typeof SPECIES_MODEL_CATALOGUE];
   if (!entry) throw new Error(`Missing hydrothermal model config for ${speciesId}`);
@@ -520,7 +523,7 @@ export function modelConfigForSpecies(
   const temperatureMidpoint = (minimumTemperature + maximumTemperature) / 2;
   const temperatureHalfWidth = (maximumTemperature - minimumTemperature) / 2;
 
-  if (speciesUsesHydrothermalV2(speciesId)) {
+  if (forceModel !== "hydrothermal-v1" && speciesUsesHydrothermalV2(speciesId)) {
     return hydrothermalV2Config({
       guild: supportedEntry.guild,
       prior,

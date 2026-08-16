@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getSpecies } from "@/data/species";
+import { getSpeciesV1ModelConfig } from "@/data/species";
 import {
   extremeTemperatureMultiplier,
   relativeExtractableWater,
@@ -15,7 +15,7 @@ import type {
 } from "@/src/lib/types";
 
 function parameters() {
-  const config = getSpecies("boletus-edulis")!.modelConfig;
+  const config = getSpeciesV1ModelConfig("boletus-edulis")!;
   if (config.status !== "supported" || config.model !== "hydrothermal-v1") {
     throw new Error("Expected a supported hydrothermal-v1 config");
   }

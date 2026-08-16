@@ -1,14 +1,67 @@
 export const HABITAT_MODEL_VERSION = "habitat-static-v8-ph-taper";
-export const PREDICTION_SCORING_VERSION = "hydrothermal-v1";
+export const PREDICTION_SCORING_VERSION = "hydrothermal-v2";
 export const HYDROTHERMAL_PRIOR_VERSION = "hydrothermal-v1-priors-2026-08";
 export const HYDROTHERMAL_V2_PRIOR_VERSION = "hydrothermal-v2-priors-2026-08";
 
 /**
- * Species scored by hydrothermal-v2. The cutover runs in waves so each one can
- * be validated against dated findings before the next; an empty set keeps every
- * species on v1.
+ * Species scored by hydrothermal-v2. Full cutover 2026-08-16 after validation
+ * against dated private findings (docs/fruiting-model-diagnosis.md); removing
+ * a species from this set reverts it to v1 scoring, and the truffle stays
+ * habitat-only regardless.
  */
-export const HYDROTHERMAL_V2_SPECIES = new Set<string>();
+export const HYDROTHERMAL_V2_SPECIES = new Set<string>([
+  "agaricus-campestris",
+  "amanita-caesarea",
+  "amanita-muscaria",
+  "amanita-pantherina",
+  "amanita-phalloides",
+  "amanita-verna",
+  "amanita-virosa",
+  "boletus-aereus",
+  "boletus-edulis",
+  "boletus-pinophilus",
+  "boletus-reticulatus",
+  "calocybe-gambosa",
+  "cantharellus-cibarius",
+  "chroogomphus-rutilus",
+  "clitocybe-rivulosa",
+  "coprinus-comatus",
+  "cortinarius-orellanus",
+  "cortinarius-rubellus",
+  "craterellus-cornucopioides",
+  "craterellus-lutescens",
+  "craterellus-tubaeformis",
+  "cyclocybe-cylindracea",
+  "entoloma-sinuatum",
+  "galerina-marginata",
+  "gyromitra-esculenta",
+  "hydnum-repandum",
+  "hygrophorus-eburneus",
+  "hygrophorus-latitabundus",
+  "hygrophorus-marzuolus",
+  "hygrophorus-russula",
+  "inocybe-erubescens",
+  "lactarius-deliciosus",
+  "lactarius-sanguifluus",
+  "lepiota-brunneoincarnata",
+  "lepista-nuda",
+  "macrolepiota-procera",
+  "marasmius-oreades",
+  "morchella-esculenta",
+  "omphalotus-olearius",
+  "paxillus-involutus",
+  "pleurotus-eryngii",
+  "pleurotus-ostreatus",
+  "ramaria-aurea",
+  "rubroboletus-satanas",
+  "russula-virescens",
+  "suillus-granulatus",
+  "suillus-luteus",
+  "tricholoma-pardinum",
+  "tricholoma-portentosum",
+  "tricholoma-terreum",
+  "tylopilus-felleus",
+]);
 
 export function speciesUsesHydrothermalV2(speciesId: string) {
   return HYDROTHERMAL_V2_SPECIES.has(speciesId);
@@ -25,4 +78,4 @@ export function predictionModelVersion(ecologyVersion: string) {
 // habitat coverage, or map scoring contract changes. It versions both the
 // browser-facing request and the server-to-Supabase cache key.
 export const PREDICTION_CACHE_VERSION =
-  `prediction-map-v16-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_PRIOR_VERSION}`;
+  `prediction-map-v17-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getSpecies } from "@/data/species";
+import { getSpecies, getSpeciesV1ModelConfig } from "@/data/species";
 import { smoothBand, waterSuitability } from "@/src/lib/hydrothermal";
 import {
   calibrate,
@@ -19,7 +19,7 @@ import type {
 const BAND = [0.15, 0.5, 0.9, 1.2] as const;
 
 function v1Config() {
-  const config = getSpecies("lactarius-deliciosus")!.modelConfig;
+  const config = getSpeciesV1ModelConfig("lactarius-deliciosus")!;
   if (config.status !== "supported" || config.model !== "hydrothermal-v1") {
     throw new Error("Expected a supported hydrothermal-v1 config");
   }
@@ -233,8 +233,9 @@ describe("habitat weighting and calibration", () => {
 
 describe("end-to-end scoring", () => {
   it("scores the diagnosed failure case above zero where v1 returns zero", () => {
+    const species = getSpecies("lactarius-deliciosus")!;
     const v1 = calculateSuitability(
-      getSpecies("lactarius-deliciosus")!,
+      { ...species, modelConfig: getSpeciesV1ModelConfig("lactarius-deliciosus")! },
       snapshot(RAIN_WET_SOIL_DRY),
     );
     const v2 = calculateSuitability(v2Profile(), snapshot(RAIN_WET_SOIL_DRY));

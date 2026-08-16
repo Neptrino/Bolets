@@ -3,7 +3,7 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statS
 import { join } from "node:path";
 import { expect, it } from "vitest";
 import { hydrothermalV2ConfigFrom } from "@/data/model-priors";
-import { getSpecies } from "@/data/species";
+import { getSpecies, getSpeciesV1ModelConfig } from "@/data/species";
 import { calculateSuitability } from "@/src/lib/scoring";
 import type { ConditionSnapshot, PredictionCell } from "@/src/lib/types";
 import {
@@ -300,18 +300,22 @@ it.skipIf(!inputPath || !artifactsDir)(
           for (const { speciesId, cell } of cells) {
             const shipped = getSpecies(speciesId)!;
             if (shipped.modelConfig.status !== "supported") continue;
-            // Scoring both versions from the shipped config keeps the shadow
-            // run identical to what a cutover would publish.
-            const profile = scoringModel === "v2" &&
-                shipped.modelConfig.model === "hydrothermal-v1"
-              ? {
+            // Either model version can be requested regardless of which one
+            // the shipped catalogue currently selects, so v1-vs-v2 shadow
+            // comparisons keep working after the production cutover.
+            const profile = scoringModel === "v1"
+              ? shipped.modelConfig.model === "hydrothermal-v1"
+                ? shipped
+                : { ...shipped, modelConfig: getSpeciesV1ModelConfig(speciesId)! }
+              : {
                   ...shipped,
                   modelConfig: applyV2Overrides(
-                    hydrothermalV2ConfigFrom(shipped.modelConfig),
+                    shipped.modelConfig.model === "hydrothermal-v1"
+                      ? hydrothermalV2ConfigFrom(shipped.modelConfig)
+                      : shipped.modelConfig,
                     v2Overrides,
                   ),
-                }
-              : shipped;
+                };
             const model = profile.modelConfig;
             if (model.status !== "supported") continue;
             const values: ConditionSnapshot["values"] = {
