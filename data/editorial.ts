@@ -53,6 +53,22 @@ export const environmentalSources: SourceReference[] = [
     confidence: "high",
   },
   {
+    id: "meteo-france-arome",
+    title: "AROME France (via Open-Meteo)",
+    publisher: "Météo-France",
+    url: "https://open-meteo.com/en/docs/meteofrance-api",
+    confidence: "high",
+  },
+  {
+    // Station rain feeds production scores; the XEMA CC BY 4.0 licence
+    // requires attributing Meteocat in derived publications.
+    id: "meteocat-xema",
+    title: "Dades meteorològiques de la XEMA",
+    publisher: "Servei Meteorològic de Catalunya (Meteocat)",
+    url: "https://analisi.transparenciacatalunya.cat/Medi-Ambient/Dades-meteorol-giques-de-la-XEMA/nzvn-apee",
+    confidence: "high",
+  },
+  {
     id: "soilgrids",
     title: "SoilGrids: global gridded soil information",
     publisher: "ISRIC — World Soil Information",
