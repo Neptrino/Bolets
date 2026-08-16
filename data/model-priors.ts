@@ -41,6 +41,11 @@ type HabitatOnlyCatalogueEntry = {
   };
 };
 
+// Frost half-lives were raised 8x on 2026-08-16: dated montane finds fruited
+// through substantial accumulated sub-zero hours (findings conditions AUC
+// 0.654 -> 0.691, events at 40+: 64% -> 73%), and a lag variant that only
+// forgave recent frost changed nothing, so this is genuine tolerance rather
+// than timing. The exponential kill is kept for sustained deep frost.
 const GUILD_PRIORS: Record<SupportedGuild, {
   water: WaterModelParameters;
   temperature: TemperatureModelParameters;
@@ -66,7 +71,7 @@ const GUILD_PRIORS: Record<SupportedGuild, {
       optimumC: 13,
       coldHalfWidthC: 4,
       warmHalfWidthC: 5,
-      frostHalfLifeHours: 4,
+      frostHalfLifeHours: 32,
       heatHalfLifeHours: 12,
     },
   },
@@ -91,7 +96,7 @@ const GUILD_PRIORS: Record<SupportedGuild, {
       optimumC: 12,
       coldHalfWidthC: 4,
       warmHalfWidthC: 5,
-      frostHalfLifeHours: 4,
+      frostHalfLifeHours: 32,
       heatHalfLifeHours: 12,
     },
   },
@@ -116,7 +121,7 @@ const GUILD_PRIORS: Record<SupportedGuild, {
       optimumC: 12,
       coldHalfWidthC: 5,
       warmHalfWidthC: 6,
-      frostHalfLifeHours: 12,
+      frostHalfLifeHours: 96,
       heatHalfLifeHours: 24,
     },
   },
@@ -141,7 +146,7 @@ const GUILD_PRIORS: Record<SupportedGuild, {
       optimumC: 11,
       coldHalfWidthC: 4,
       warmHalfWidthC: 5,
-      frostHalfLifeHours: 4,
+      frostHalfLifeHours: 32,
       heatHalfLifeHours: 12,
     },
   },

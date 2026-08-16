@@ -119,7 +119,12 @@ function applyV2Overrides(
   // optimumShiftC is additive on the already-derived species optimum, and the
   // half-saturation scales are multiplicative on species-specific values, so a
   // sweep can move every species uniformly; the remaining keys replace.
-  const { optimumShiftC = 0, ...temperatureReplacements } = overrides.temperature ?? {};
+  const {
+    optimumShiftC = 0,
+    frostHalfLifeScale = 1,
+    heatHalfLifeScale = 1,
+    ...temperatureReplacements
+  } = overrides.temperature ?? {};
   const {
     rainfallHalfSaturationScale = 1,
     wetDaysHalfSaturationScale = 1,
@@ -140,6 +145,8 @@ function applyV2Overrides(
       ...config.temperature,
       ...temperatureReplacements,
       optimumC: config.temperature.optimumC + optimumShiftC,
+      frostHalfLifeHours: config.temperature.frostHalfLifeHours * frostHalfLifeScale,
+      heatHalfLifeHours: config.temperature.heatHalfLifeHours * heatHalfLifeScale,
     },
     phenology: overrides.phenology && config.phenology.altitudeShift
       ? {
@@ -152,6 +159,36 @@ function applyV2Overrides(
 
 function spanCovers(span: { startDate: string; endDate: string }, date: string) {
   return date >= span.startDate && date <= span.endDate;
+}
+
+/**
+ * Fruiting-lag experiment for frost: bodies picked today developed over the
+ * preceding weeks, so frost from the last few days cannot have prevented
+ * them. Recounts frost hours over [target − windowHours, target − lagHours]
+ * from the span's raw hourly series, leaving older exposure untouched.
+ */
+function laggedFrostHours(
+  location: OpenMeteoLocation,
+  observedAt: string,
+  windowHours: number,
+  lagHours: number,
+) {
+  const hourly = location.hourly as Record<string, unknown> | undefined;
+  const times = Array.isArray(hourly?.time) ? hourly.time as unknown[] : [];
+  const temperatures = Array.isArray(hourly?.temperature_2m)
+    ? hourly.temperature_2m as unknown[]
+    : [];
+  const target = Math.floor(Date.parse(observedAt) / 3_600_000) * 3600;
+  const from = target - windowHours * 3600;
+  const to = target - lagHours * 3600;
+  let frost = 0;
+  for (let index = 0; index < Math.min(times.length, temperatures.length); index += 1) {
+    const time = times[index];
+    const temperature = temperatures[index];
+    if (typeof time !== "number" || typeof temperature !== "number") continue;
+    if (time > from && time <= to && temperature <= 0) frost += 1;
+  }
+  return frost;
 }
 
 /**
@@ -188,6 +225,9 @@ it.skipIf(!inputPath || !artifactsDir)(
     // Rebuilds each span's past rain the way production ingests it since
     // station-rain-v1: seamless Météo-France base, gauge IDW where dense.
     const stationRain = process.env.FINDING_EVAL_STATION_RAIN === "1";
+    // Frost hours inside the lag are forgiven: fruiting bodies found on the
+    // target date developed before them.
+    const frostLagDays = Number(process.env.FINDING_EVAL_FROST_LAG_DAYS ?? 0);
     const scoringModel = process.env.FINDING_EVAL_MODEL === "v2" ? "v2" : "v1";
     // Parameter sweeps patch the v2 config so candidate values can be fitted
     // against the same events without editing shipped priors.
@@ -366,6 +406,13 @@ it.skipIf(!inputPath || !artifactsDir)(
             target.observedAt,
             "atmosphere",
           );
+          if (frostLagDays > 0) {
+            const raw = atmosphereBySpan.get(spanIndex)!;
+            atmosphere.values.frostHours14d =
+              laggedFrostHours(raw, target.observedAt, 336, frostLagDays * 24);
+            atmosphere.values.frostHours20d =
+              laggedFrostHours(raw, target.observedAt, 480, frostLagDays * 24);
+          }
           const soil = normalizeOpenMeteoAt(
             soilBySpan.get(spanIndex)!,
             target.observedAt,
