@@ -221,7 +221,7 @@ export default async function MushroomsTodayPage() {
                   </div>
                 )}
                 <dl className="current-row-signals">
-                  <div><dt>Millor àrea (cel·la de 10 km)</dt><dd>{bestArea}</dd></div>
+                  <div><dt>{item.speciesName} · cel·la de 10 km</dt><dd>{bestArea}</dd></div>
                 </dl>
                 <Link href={`/map?species=${item.speciesId}&region=${item.regionId}`} className="current-row-map" aria-label={`Veure al mapa: ${item.regionName}, ${item.speciesName}`}>
                   <Map size={15} /><span>Veure mapa</span>
