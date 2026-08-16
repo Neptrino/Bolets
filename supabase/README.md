@@ -211,6 +211,29 @@ next call. `pipeline_sources` stays `blocked` after one-field probes and stages,
 pending the all-three same-run smoke and semantic decoder. Neither path
 references production snapshot or prediction tables.
 
+## Re-running a day's observed ingestion
+
+The observed atmosphere, observed soil, and the daily forecast issue are a
+coupled triple: the app refuses to splice a forecast whose baseline sits more
+than 8 hours from the observed anchor, and the forecast reconciler only
+rebuilds the issue once **both** observed streams have moved past it. To
+re-ingest a day (for example after deploying new normalization fields), clear
+both observed cursors and let the crons do the rest, in this order:
+
+```sql
+update pipeline_cursors set last_cell_id = null, updated_at = now()
+where pipeline in ('spatial-atmosphere', 'spatial-soil')
+  and snapshot_date = current_date;
+```
+
+The 2-minute atmosphere and 5-minute soil crons re-sweep their grids in
+resumable batches; when both finish, `reconcile_weather_forecast_issue`
+invalidates the stale issue and the forecast rebuilds anchored to the fresh
+observation. Resetting only one stream leaves the reconciler blind to the
+drift and the app withholding every forecast until the next natural cycle.
+While a sweep is mid-flight the map mixes snapshot generations point by
+point; this resolves itself at completion plus one CDN expiry.
+
 ## Publication rules
 
 A cell is published only when terrain, land cover, and soil evidence are verified, at least two authoritative sources are named, a current weather grid point is available, and every required `hydrothermal-v1` input window is complete. Missing inputs withhold the result; exponents are never renormalized around an absent component. The response reports the 0–1 derived effective compatible-area fraction `H = C × A`, conditional fruiting conditions `F = 100 × P × W^α × T^(1-α) × E`, and whole-cell opportunity `O = H × F` separately, together with component diagnostics, source resolution, provenance, unavailable fields, timestamp, and `modelVersion`. `F` and `O` are 0–100 ordinal indices; `H` is not a score, and none is a probability of presence.
