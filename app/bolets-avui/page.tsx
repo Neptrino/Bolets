@@ -9,8 +9,6 @@ import {
   MapPinned,
   ShieldCheck,
   Share2,
-  Sprout,
-  Trees,
 } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
@@ -66,22 +64,19 @@ function scoreMetric(value: number | null | undefined) {
   return typeof value === "number" && Number.isFinite(value) ? `${Math.round(value)}/100` : "—";
 }
 
-function habitatMetric(value: number | null | undefined) {
-  return typeof value === "number" && Number.isFinite(value) ? `${Math.round(value * 100)}%` : "—";
-}
-
 function limitingFactor(item: CurrentOverviewItem) {
   return item.summary?.result.components
     .filter((factor) => factor.score !== null)
     .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0]?.label ?? "Sense factor limitant publicat";
 }
 
-function modelMetrics(item: CurrentOverviewItem) {
-  const result = item.summary?.result;
-  return {
-    fruiting: scoreMetric(result?.fruitingConditionsScore),
-    habitat: habitatMetric(result?.effectiveHabitatCoverage),
-  };
+/**
+ * The zone score is a region-wide median, so a localized pocket (a rained-on
+ * valley, for instance) can sit far above it. The best 10 km cell surfaces
+ * that pocket without changing what the median communicates.
+ */
+function bestAreaMetric(item: CurrentOverviewItem) {
+  return scoreMetric(item.summary?.bestCell.score);
 }
 
 function observationWindow(items: CurrentOverviewItem[]) {
@@ -165,8 +160,7 @@ export default async function MushroomsTodayPage() {
             <small>Puntuació de la zona · {leader.summary.result.label}</small>
           </div>
           <dl className="current-leader-signals">
-            <div><dt><Sprout size={16} /> Condicions per fructificar</dt><dd>{modelMetrics(leader).fruiting}</dd></div>
-            <div><dt><Trees size={16} /> Hàbitat adequat mitjà</dt><dd>{modelMetrics(leader).habitat}</dd></div>
+            <div><dt><MapPinned size={16} /> Millor àrea (cel·la de 10 km)</dt><dd>{bestAreaMetric(leader)}</dd></div>
             <div><dt><Gauge size={16} /> Component més limitant</dt><dd>{limitingFactor(leader)}</dd></div>
           </dl>
           <p className="current-leader-meta"><Clock3 size={14} /> Calculat amb dades de {dateTime.format(new Date(leader.summary.snapshot.observedAt))}</p>
@@ -198,7 +192,7 @@ export default async function MushroomsTodayPage() {
 
         {items.length > 0 ? <>
           <div className="current-board-columns" aria-hidden="true">
-            <span>Posició</span><span>Zona i espècie</span><span>Puntuació</span><span>Condicions / hàbitat</span><span>Mapa</span>
+            <span>Posició</span><span>Zona i espècie</span><span>Puntuació</span><span>Millor àrea</span><span>Mapa</span>
           </div>
           <ol className="current-overview-grid" aria-label="Top 10 de puntuacions actuals per espècie i zona">
             {items.map((item, index) => {
@@ -206,7 +200,7 @@ export default async function MushroomsTodayPage() {
             const score = summary?.result.opportunityIndex;
             const isAvailable = item.status === "available" && summary !== null && score !== null && score !== undefined;
             const rank = isAvailable ? index + 1 : null;
-            const signals = modelMetrics(item);
+            const bestArea = bestAreaMetric(item);
 
             return (
               <li className={`current-overview-card is-${item.status}`} key={`${item.speciesId}-${item.regionId}`}>
@@ -227,8 +221,7 @@ export default async function MushroomsTodayPage() {
                   </div>
                 )}
                 <dl className="current-row-signals">
-                  <div><dt>Condicions per fructificar</dt><dd>{signals.fruiting}</dd></div>
-                  <div><dt>Hàbitat adequat mitjà</dt><dd>{signals.habitat}</dd></div>
+                  <div><dt>Millor àrea (cel·la de 10 km)</dt><dd>{bestArea}</dd></div>
                 </dl>
                 <Link href={`/map?species=${item.speciesId}&region=${item.regionId}`} className="current-row-map" aria-label={`Veure al mapa: ${item.regionName}, ${item.speciesName}`}>
                   <Map size={15} /><span>Veure mapa</span>

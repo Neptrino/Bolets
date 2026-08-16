@@ -198,9 +198,13 @@ export function rankCurrentOverviewItems(items: CurrentOverviewItem[]) {
 
     const scoreDifference = (right.summary?.result.score ?? -1) -
       (left.summary?.result.score ?? -1);
+    // Equal medians are common out of season; a nonzero best cell means a
+    // localized pocket worth surfacing ahead of uniformly flat regions.
+    const bestCellDifference = (right.summary?.bestCell.score ?? -1) -
+      (left.summary?.bestCell.score ?? -1);
     const activityDifference = seasonalActivityRank[right.seasonalActivity] -
       seasonalActivityRank[left.seasonalActivity];
-    return scoreDifference || activityDifference ||
+    return scoreDifference || bestCellDifference || activityDifference ||
       catalanCollator.compare(left.speciesName, right.speciesName) ||
       catalanCollator.compare(left.regionName, right.regionName);
   });

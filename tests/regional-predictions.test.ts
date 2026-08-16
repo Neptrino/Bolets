@@ -149,6 +149,7 @@ describe("regional prediction summaries", () => {
     );
     expect(summary?.scoreRange).toEqual([9, 20]);
     expect(summary?.scoredCellCount).toBe(3);
+    expect(summary?.bestCell).toMatchObject({ cellId: "small-high-f-1", score: 20 });
     expect(summary?.snapshot.values.temperatureC).toBeCloseTo(19.2 / 1.3);
   });
 

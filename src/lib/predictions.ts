@@ -576,6 +576,10 @@ export function summariseRegionalPredictions(
     weight: 1,
   }))) ?? null;
 
+  const bestScoredCell = scoredCells.reduce((best, cell) =>
+    cell.score > best.score ? cell : best,
+  );
+
   return {
     regionId,
     gridSizeM: 10000,
@@ -584,6 +588,11 @@ export function summariseRegionalPredictions(
       Math.round(weightedQuantile(scores, 0.25)),
       Math.round(weightedQuantile(scores, 0.75)),
     ],
+    bestCell: {
+      cellId: bestScoredCell.cellId,
+      score: bestScoredCell.score,
+      cellBounds: bestScoredCell.cellBounds,
+    },
     result: {
       score,
       fruitingConditionsScore,

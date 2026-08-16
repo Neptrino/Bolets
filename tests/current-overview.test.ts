@@ -13,7 +13,7 @@ import {
 } from "@/src/lib/current-overview";
 import type { RegionId, RegionalPredictionSummary } from "@/src/lib/types";
 
-function summary(regionId: RegionId, options: { stale?: boolean; completeness?: number; score?: number } = {}): RegionalPredictionSummary {
+function summary(regionId: RegionId, options: { stale?: boolean; completeness?: number; score?: number; bestCellScore?: number } = {}): RegionalPredictionSummary {
   const incomplete = (options.completeness ?? 1) < 1;
   const opportunityIndex = incomplete ? null : options.score ?? 65;
   return {
@@ -21,6 +21,11 @@ function summary(regionId: RegionId, options: { stale?: boolean; completeness?: 
     gridSizeM: 10000,
     scoredCellCount: 4,
     scoreRange: [58, 72],
+    bestCell: {
+      cellId: "epsg25831:10000:40:468",
+      score: options.bestCellScore ?? (incomplete ? 0 : Math.max(options.score ?? 65, 74)),
+      cellBounds: [[1.66, 42.26], [1.79, 42.36]],
+    },
     result: {
       score: opportunityIndex,
       fruitingConditionsScore: incomplete ? null : 72,
@@ -183,6 +188,18 @@ describe("current-condition overview", () => {
     expect(topTen.every((item, index) => index === 0 || (topTen[index - 1]?.summary?.result.score ?? 0) >= (item.summary?.result.score ?? 0))).toBe(true);
     expect(topTen.some((item) => item.regionId === "emporda")).toBe(false);
     expect(ranked.at(-1)).toMatchObject({ regionId: "emporda", status: "insufficient", summary: null });
+  });
+
+  it("surfaces a localized best-cell pocket ahead of uniformly flat regions", async () => {
+    const items = await loadCurrentOverview(async (speciesId, regionId) =>
+      summary(regionId, {
+        score: 0,
+        bestCellScore: regionId === "pirineus" && speciesId === "boletus-edulis" ? 16 : 0,
+      }), "ago");
+    const ranked = rankCurrentOverviewItems(items);
+
+    expect(ranked[0]).toMatchObject({ regionId: "pirineus", speciesId: "boletus-edulis" });
+    expect(ranked[0]?.summary?.bestCell.score).toBe(16);
   });
 
   it("returns an honest empty top ten when every environmental read fails", async () => {

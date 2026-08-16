@@ -442,6 +442,12 @@ export interface RegionalPredictionSummary {
   gridSizeM: 10000;
   scoredCellCount: number;
   scoreRange: [number, number];
+  /**
+   * Highest-scoring cell in the region. A localized pocket (for example a
+   * post-storm valley) can score well above the region-wide median, so the
+   * summary keeps both readings.
+   */
+  bestCell: { cellId: string; score: number; cellBounds: CoordinateBounds };
   result: SuitabilityResult;
   snapshot: ConditionSnapshot;
 }
