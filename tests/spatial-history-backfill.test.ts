@@ -43,7 +43,7 @@ describe("spatial hydrothermal history backfill", () => {
     expect(worker).toContain("buildStationCorrectedPrecipitation");
     // The historical hourly axis is epoch seconds; the gauge matrix keys are
     // Europe/Madrid local strings, so the axis must be translated first.
-    expect(worker).toContain("madridHourKey(time)");
+    expect(worker).toContain("cachedMadridHourKey(time)");
     expect(worker).toContain("STATION_RAIN_SOURCE_VERSION");
     expect(worker).toContain("precipitationGaugeCoverage");
     // Soil backfills carry no precipitation and must skip the gauge read.

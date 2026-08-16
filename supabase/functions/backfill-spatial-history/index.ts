@@ -53,6 +53,21 @@ async function fetchGaugeMatrix(
  * model series where the network is dense enough, and everything else keeps
  * model semantics.
  */
+// Every location in a batch shares the same hourly axis, and Intl-based key
+// formatting is expensive enough that translating it repeatedly exhausts the
+// worker's CPU budget (observed as WORKER_RESOURCE_LIMIT), so keys are
+// memoised per epoch hour.
+const hourKeyByEpoch = new Map<number, string>();
+
+function cachedMadridHourKey(epochSeconds: number) {
+  const cached = hourKeyByEpoch.get(epochSeconds);
+  if (cached !== undefined) return cached;
+  const key = madridHourKey(epochSeconds) ?? "";
+  if (hourKeyByEpoch.size >= 100_000) hourKeyByEpoch.clear();
+  hourKeyByEpoch.set(epochSeconds, key);
+  return key;
+}
+
 function applyStationRain(
   location: OpenMeteoLocation,
   stations: StationHourSeries[],
@@ -65,7 +80,7 @@ function applyStationRain(
     : [];
   if (!times.length || !stations.length) return { gaugeCoverage: 0, applied: false };
   const localKeys = times.map((time) =>
-    typeof time === "number" ? madridHourKey(time) ?? "" : ""
+    typeof time === "number" ? cachedMadridHourKey(time) : ""
   );
   const corrected = buildStationCorrectedPrecipitation(
     localKeys,
