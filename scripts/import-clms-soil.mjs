@@ -14,6 +14,7 @@ const manifestPath = args.get("manifest");
 const assetDirectory = args.get("asset-dir");
 const pointsPath = args.get("points");
 const dryRun = args.has("dry-run");
+const historyOnly = args.has("history-only");
 const limit = args.has("limit") ? Number(args.get("limit")) : Number.POSITIVE_INFINITY;
 if (!manifestPath || !assetDirectory) {
   throw new Error(
@@ -377,15 +378,21 @@ for (let batchIndex = 0; batchIndex < batchCount; batchIndex += 1) {
       batchIndex,
       batchCount,
       expectedSamples: samples.length,
+      // Dates older than the four-date hot preview only feed the append-only
+      // history archive (pass --history-only for backfills).
+      ...(historyOnly ? { historyOnly: true } : {}),
     }),
   });
   const result = await response.json();
   if (!response.ok) throw new Error(`CLMS import failed in batch ${batchIndex + 1} (${result.error ?? response.status})`);
   finalResult = result;
-  console.log(`Imported CLMS shadow batch ${batchIndex + 1}/${batchCount}: ${result.samplesWritten} samples`);
+  console.log(
+    `Imported CLMS ${historyOnly ? "history" : "shadow"} batch ${batchIndex + 1}/${batchCount}: ` +
+      `${historyOnly ? result.historyRowsWritten : result.samplesWritten} samples`,
+  );
 }
 
-if (finalResult?.complete !== true) {
+if (!historyOnly && finalResult?.complete !== true) {
   throw new Error(
     `CLMS shadow import is incomplete (${finalResult?.samplesStoredForDate ?? 0}/${finalResult?.canonicalSampleCount ?? "unknown"} canonical samples)`,
   );

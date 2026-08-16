@@ -51,7 +51,11 @@ Deno.serve(async (request) => {
 
     const contentLength = Number(request.headers.get("content-length") ?? 0);
     if (contentLength > 1_500_000) return json({ error: "CLMS import payload is too large" }, 413);
-    const payload = normalizeClmsImport(await request.json());
+    const body = await request.json() as Record<string, unknown>;
+    const payload = normalizeClmsImport(body as Parameters<typeof normalizeClmsImport>[0]);
+    // Backfill batches carry dates older than the four-date hot preview: they
+    // write the append-only history archive and skip the preview entirely.
+    const historyOnly = body.historyOnly === true;
     const snapshotDate = payload.manifest.snapshot_date;
     runId = await startRun(supabase, "spatial-soil-satellite", "import", snapshotDate, {
       source: "Copernicus CLMS SSM v1 + SWI v2",
@@ -61,29 +65,50 @@ Deno.serve(async (request) => {
       nativeResolutionM: 1000,
       samplingSpacingM: 2500,
       scoringEnabled: false,
+      historyOnly,
     });
 
-    const { data, error } = await supabase.rpc("upsert_clms_soil_shadow", {
-      p_manifest: payload.manifest,
-      p_samples: payload.samples,
-      p_run_id: runId,
-      p_reset: payload.batchIndex === 0,
-      p_expected_samples: payload.expectedSamples,
-    });
-    if (error) throw error;
-    if (!data || typeof data !== "object" || Array.isArray(data)) {
-      throw new Error("CLMS import returned an invalid write result");
-    }
-    const result = data as Record<string, unknown>;
-    const samplesWritten = Number(result.samplesWritten);
-    let samplesStoredForDate = Number(result.samplesStoredForDate);
-    if (!Number.isInteger(samplesWritten) || samplesWritten !== payload.samples.length ||
-        !Number.isInteger(samplesStoredForDate) || samplesStoredForDate < samplesWritten ||
-        samplesStoredForDate > payload.expectedSamples) {
-      throw new Error("CLMS import returned inconsistent sample counts");
+    const { data: historyData, error: historyError } = await supabase.rpc(
+      "upsert_clms_soil_history",
+      {
+        p_manifest: payload.manifest,
+        p_samples: payload.samples,
+        p_run_id: runId,
+      },
+    );
+    if (historyError) throw historyError;
+    const historyRowsWritten = Number(
+      (historyData as Record<string, unknown> | null)?.historyRowsWritten,
+    );
+    if (!Number.isInteger(historyRowsWritten) || historyRowsWritten !== payload.samples.length) {
+      throw new Error("CLMS history write returned inconsistent counts");
     }
 
-    const lastBatch = payload.batchIndex === payload.batchCount - 1;
+    let samplesWritten = 0;
+    let samplesStoredForDate = 0;
+    if (!historyOnly) {
+      const { data, error } = await supabase.rpc("upsert_clms_soil_shadow", {
+        p_manifest: payload.manifest,
+        p_samples: payload.samples,
+        p_run_id: runId,
+        p_reset: payload.batchIndex === 0,
+        p_expected_samples: payload.expectedSamples,
+      });
+      if (error) throw error;
+      if (!data || typeof data !== "object" || Array.isArray(data)) {
+        throw new Error("CLMS import returned an invalid write result");
+      }
+      const result = data as Record<string, unknown>;
+      samplesWritten = Number(result.samplesWritten);
+      samplesStoredForDate = Number(result.samplesStoredForDate);
+      if (!Number.isInteger(samplesWritten) || samplesWritten !== payload.samples.length ||
+          !Number.isInteger(samplesStoredForDate) || samplesStoredForDate < samplesWritten ||
+          samplesStoredForDate > payload.expectedSamples) {
+        throw new Error("CLMS import returned inconsistent sample counts");
+      }
+    }
+
+    const lastBatch = !historyOnly && payload.batchIndex === payload.batchCount - 1;
     let canonicalSampleCount: number | undefined;
     let complete = false;
     if (lastBatch) {
@@ -117,7 +142,7 @@ Deno.serve(async (request) => {
 
     await finishRun(supabase, runId, lastBatch && !complete ? "partial" : "succeeded", {
       rowsRead: payload.samples.length,
-      rowsWritten: samplesWritten,
+      rowsWritten: historyOnly ? historyRowsWritten : samplesWritten,
       metadata: {
         snapshotDate,
         batchIndex: payload.batchIndex,
@@ -126,6 +151,8 @@ Deno.serve(async (request) => {
         expectedSamples: payload.expectedSamples,
         canonicalSampleCount,
         complete,
+        historyRowsWritten,
+        historyOnly,
         scoringEnabled: false,
       },
     });
@@ -136,6 +163,8 @@ Deno.serve(async (request) => {
       samplesStoredForDate,
       canonicalSampleCount,
       complete,
+      historyRowsWritten,
+      historyOnly,
       scoringEnabled: false,
     });
   } catch (error) {
