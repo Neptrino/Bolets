@@ -3,7 +3,9 @@ import { getSpecies, speciesProfiles } from "@/data/species";
 import {
   CURRENT_OVERVIEW_CANDIDATES_PER_REGION,
   CURRENT_OVERVIEW_CONCURRENCY,
+  CURRENT_OVERVIEW_MONTANE_REACH_M,
   currentOverviewTargetsForMonth,
+  dominantLimitingComponent,
   loadCurrentOverview,
   rankCurrentOverviewItems,
   seasonalActivityRank,
@@ -51,6 +53,45 @@ function summary(regionId: RegionId, options: { stale?: boolean; completeness?: 
 }
 
 describe("current-condition overview", () => {
+  it("guarantees a montane-reach candidate wherever one is in season", () => {
+    const targets = currentOverviewTargetsForMonth("ago");
+    for (const regionId of new Set(targets.map((target) => target.regionId))) {
+      const hasEligibleMontane = speciesProfiles.some((species) =>
+        species.predictionMode === "current" &&
+        ["excellent_edible", "edible", "edible_with_conditions"].includes(species.identity.edibility) &&
+        species.ecologicalConfig.regions.includes(regionId) &&
+        species.ecologicalConfig.seasonality.ago !== "inactive" &&
+        species.ecologicalConfig.habitat.altitude[1] >= CURRENT_OVERVIEW_MONTANE_REACH_M
+      );
+      if (!hasEligibleMontane) continue;
+      const selectedMontane = targets
+        .filter((target) => target.regionId === regionId)
+        .some((target) =>
+          getSpecies(target.speciesId)!.ecologicalConfig.habitat.altitude[1] >=
+            CURRENT_OVERVIEW_MONTANE_REACH_M
+        );
+      expect(selectedMontane, regionId).toBe(true);
+    }
+  });
+
+  it("names the component that limits most publishable readings", () => {
+    const lowWater = summary("pirineus", { score: 0 });
+    lowWater.result.components.find((c) => c.id === "water")!.score = 5;
+    const lowWaterToo = summary("montseny", { score: 0 });
+    lowWaterToo.result.components.find((c) => c.id === "water")!.score = 3;
+    const lowExtremes = summary("ports", { score: 0 });
+    lowExtremes.result.components.find((c) => c.id === "extremes")!.score = 1;
+    const items = [
+      { speciesId: "a", regionId: "pirineus", seasonalActivity: "good", speciesName: "a", regionName: "Pirineus", status: "available", summary: lowWater },
+      { speciesId: "b", regionId: "montseny", seasonalActivity: "good", speciesName: "b", regionName: "Montseny", status: "available", summary: lowWaterToo },
+      { speciesId: "c", regionId: "ports", seasonalActivity: "good", speciesName: "c", regionName: "Ports", status: "available", summary: lowExtremes },
+      { speciesId: "d", regionId: "emporda", seasonalActivity: "good", speciesName: "d", regionName: "Empordà", status: "insufficient", summary: null },
+    ] as const;
+    expect(dominantLimitingComponent([...items] as never)).toBe("Estat hídric unificat");
+    expect(dominantLimitingComponent([])).toBeNull();
+  });
+
+
   it("selects up to three priority in-season edible species for every region", () => {
     const targets = currentOverviewTargetsForMonth("ago");
 
@@ -66,7 +107,13 @@ describe("current-condition overview", () => {
         species.ecologicalConfig.regions.includes(regionId) &&
         species.ecologicalConfig.seasonality.ago !== "inactive"
       ).length;
-      expect(regionTargets).toHaveLength(Math.min(CURRENT_OVERVIEW_CANDIDATES_PER_REGION, eligibleCount));
+      // The montane-reach guarantee may append one extra candidate.
+      expect(regionTargets.length).toBeGreaterThanOrEqual(
+        Math.min(CURRENT_OVERVIEW_CANDIDATES_PER_REGION, eligibleCount),
+      );
+      expect(regionTargets.length).toBeLessThanOrEqual(
+        Math.min(CURRENT_OVERVIEW_CANDIDATES_PER_REGION + 1, eligibleCount),
+      );
 
       for (const target of regionTargets) {
         const species = getSpecies(target.speciesId);

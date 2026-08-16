@@ -17,6 +17,7 @@ import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { editorialArticleFields, environmentalSources } from "@/data/editorial";
 import {
+  dominantLimitingComponent,
   loadCurrentOverview,
   topCurrentOverviewItems,
   type CurrentOverviewItem,
@@ -134,7 +135,21 @@ export default async function MushroomsTodayPage() {
 
       <Link href="/compartir" className="daily-share-entry"><Share2 size={16} /> Prepara targetes per compartir la lectura d’avui <ArrowUpRight size={16} /></Link>
 
-      {leader?.summary && leader.summary.result.opportunityIndex !== null ? (
+      {leader?.summary && leader.summary.result.opportunityIndex === 0 ? (
+        <aside className="current-leader current-leader-empty">
+          <ShieldCheck size={24} />
+          <div>
+            <strong>Cap zona destaca avui.</strong>
+            <p>
+              Totes les combinacions publicables puntuen 0 sobre 100, així que no
+              destaquem cap «lectura més favorable»: ordenar zeros no aporta
+              informació. {dominantLimitingComponent(allItems)
+                ? <>El component més limitant a la majoria de zones és «{dominantLimitingComponent(allItems)}».</>
+                : null} La taula següent mostra igualment totes les lectures avaluades.
+            </p>
+          </div>
+        </aside>
+      ) : leader?.summary && leader.summary.result.opportunityIndex !== null ? (
         <section className="current-leader" aria-labelledby="current-leader-title">
           <div className="current-leader-copy">
             <p className="current-leader-eyebrow"><MapPinned size={15} /> Lectura més favorable ara</p>
@@ -165,7 +180,7 @@ export default async function MushroomsTodayPage() {
 
       <aside className="current-overview-method">
         <ShieldCheck size={21} aria-hidden="true" />
-        <p><strong>Això compara combinacions de zona i espècie, no punts on hi hagi bolets.</strong> Avaluem fins a tres candidates per zona segons el calendari ecològic i la rellevància editorial; la selecció no modifica la puntuació. Només publiquem un resultat quan l’hàbitat, les condicions ambientals i totes les dades requerides són complets i vigents. Si falta evidència o una font falla, no calculem cap substitut.</p>
+        <p><strong>Això compara combinacions de zona i espècie, no punts on hi hagi bolets.</strong> Avaluem fins a quatre candidates per zona segons el calendari ecològic, la rellevància editorial i una representant d’alta muntanya; la selecció no modifica la puntuació. Només publiquem un resultat quan l’hàbitat, les condicions ambientals i totes les dades requerides són complets i vigents. Si falta evidència o una font falla, no calculem cap substitut.</p>
       </aside>
 
       <section className="current-board" aria-labelledby="current-board-title">

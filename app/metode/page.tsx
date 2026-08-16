@@ -264,7 +264,7 @@ export default function MethodPage() {
           <div className="method-chapter-body">
             <header className="method-chapter-header">
               <div>
-                <p className="eyebrow"><Sigma size={15} /> Model hidrotermal · v1</p>
+                <p className="eyebrow"><Sigma size={15} /> Model hidrotermal · v2</p>
                 <h2>Després, llegim<br />el moment.</h2>
               </div>
               <p>Quatre respostes normalitzades entre 0 i 1 actuen conjuntament. Com que es multipliquen, una condició limitant no queda amagada per una altra de favorable.</p>

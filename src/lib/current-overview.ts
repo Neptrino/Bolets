@@ -41,6 +41,14 @@ export const seasonalActivityRank: Record<SeasonalActivity, number> = {
 
 export const CURRENT_OVERVIEW_CANDIDATES_PER_REGION = 3;
 export const CURRENT_OVERVIEW_CONCURRENCY = 6;
+/**
+ * A calendar-only top-3 can fill up with lowland species whose season reads
+ * stronger on paper, leaving high-mountain conditions unevaluated exactly when
+ * they are the only favourable ones (high summer). Every region therefore
+ * guarantees one candidate whose habitat reaches at least this altitude when
+ * an in-season one exists.
+ */
+export const CURRENT_OVERVIEW_MONTANE_REACH_M = 1600;
 
 const catalanCollator = new Intl.Collator("ca", { sensitivity: "base" });
 
@@ -52,24 +60,63 @@ const catalanCollator = new Intl.Collator("ca", { sensitivity: "base" });
 export function currentOverviewTargetsForMonth(month: Month): CurrentOverviewTarget[] {
   return regionSelectItems
     .filter(({ value }) => value !== "altres")
-    .flatMap(({ value: regionId }) => speciesProfiles
-      .filter((profile) =>
-        profile.predictionMode === "current" &&
-        edibleStatuses.has(profile.identity.edibility) &&
-        profile.ecologicalConfig.regions.includes(regionId) &&
-        profile.ecologicalConfig.seasonality[month] !== "inactive"
-      )
-      .sort((left, right) => {
-        const activityDifference = seasonalActivityRank[right.ecologicalConfig.seasonality[month]] -
-          seasonalActivityRank[left.ecologicalConfig.seasonality[month]];
-        return activityDifference || compareSpeciesDiscoveryPriority(left, right);
-      })
-      .slice(0, CURRENT_OVERVIEW_CANDIDATES_PER_REGION)
-      .map((profile) => ({
+    .flatMap(({ value: regionId }) => {
+      const eligible = speciesProfiles
+        .filter((profile) =>
+          profile.predictionMode === "current" &&
+          edibleStatuses.has(profile.identity.edibility) &&
+          profile.ecologicalConfig.regions.includes(regionId) &&
+          profile.ecologicalConfig.seasonality[month] !== "inactive"
+        )
+        .sort((left, right) => {
+          const activityDifference = seasonalActivityRank[right.ecologicalConfig.seasonality[month]] -
+            seasonalActivityRank[left.ecologicalConfig.seasonality[month]];
+          return activityDifference || compareSpeciesDiscoveryPriority(left, right);
+        });
+
+      const selected = eligible.slice(0, CURRENT_OVERVIEW_CANDIDATES_PER_REGION);
+      const reachesMontane = (profile: (typeof eligible)[number]) =>
+        profile.ecologicalConfig.habitat.altitude[1] >= CURRENT_OVERVIEW_MONTANE_REACH_M;
+      // Appending the first montane-reach candidate from the same sorted list
+      // preserves the descending-activity order of the selection.
+      if (!selected.some(reachesMontane)) {
+        const montane = eligible
+          .slice(CURRENT_OVERVIEW_CANDIDATES_PER_REGION)
+          .find(reachesMontane);
+        if (montane) selected.push(montane);
+      }
+
+      return selected.map((profile) => ({
         speciesId: profile.speciesId,
         regionId,
         seasonalActivity: profile.ecologicalConfig.seasonality[month],
-      })));
+      }));
+    });
+}
+
+/**
+ * The component that most often carries the lowest score across publishable
+ * readings — the honest headline when every evaluated pairing scores zero.
+ */
+export function dominantLimitingComponent(items: CurrentOverviewItem[]) {
+  const counts = new Map<string, number>();
+  for (const item of items) {
+    if (item.status !== "available" || !item.summary) continue;
+    const limiting = item.summary.result.components
+      .filter((component) => component.score !== null)
+      .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0];
+    if (!limiting) continue;
+    counts.set(limiting.label, (counts.get(limiting.label) ?? 0) + 1);
+  }
+  let dominant: string | null = null;
+  let best = 0;
+  for (const [label, count] of counts) {
+    if (count > best) {
+      dominant = label;
+      best = count;
+    }
+  }
+  return dominant;
 }
 
 type SummaryLoader = (
