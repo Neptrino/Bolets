@@ -73,10 +73,13 @@ function limitingFactor(item: CurrentOverviewItem) {
 /**
  * The zone score is a region-wide median, so a localized pocket (a rained-on
  * valley, for instance) can sit far above it. The best 10 km cell surfaces
- * that pocket without changing what the median communicates.
+ * that pocket without changing what the median communicates. A verified zero
+ * reads as "no area stands out" — distinct from "—", which means withheld.
  */
 function bestAreaMetric(item: CurrentOverviewItem) {
-  return scoreMetric(item.summary?.bestCell.score);
+  const score = item.summary?.bestCell.score;
+  if (score === 0) return "Cap àrea destaca";
+  return scoreMetric(score);
 }
 
 function observationWindow(items: CurrentOverviewItem[]) {
