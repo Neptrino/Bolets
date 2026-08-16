@@ -98,13 +98,17 @@ describe("potential habitat database reader", () => {
     expect(storageMigration).not.toContain("drop column if exists habitat_forest_types");
   });
 
-  it("routes core-aware requests to the weighted reader and keeps the legacy fallback", () => {
+  it("routes every habitat request to the weighted tapered readers", () => {
     const source = readFileSync(
       join(process.cwd(), "supabase", "functions", "read-spatial-environment", "index.ts"),
       "utf8",
     );
 
     expect(source).toContain('numberParam(searchParams, "altitudeCoreMin")');
+    // The legacy binary reader was removed with the pH taper rollout; the
+    // core-altitude band is required and only the weighted readers remain.
+    expect(source).not.toContain('"read_potential_habitat_cells"');
+    expect(source).not.toContain("weightedAltitude");
     expect(source).toContain('url.searchParams.get("includeHabitat") === "true"');
     expect(source).toContain("async function readHabitatRowsForBounds(");
     expect(source).toContain("const tileCount = Math.min(Math.ceil(requestArea / 0.5), 10)");

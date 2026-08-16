@@ -230,11 +230,10 @@ type HabitatRequest = {
   forestTerms: string[];
   altitudeMin: number;
   altitudeMax: number;
-  altitudeCoreMin?: number;
-  altitudeCoreMax?: number;
+  altitudeCoreMin: number;
+  altitudeCoreMax: number;
   phMin?: number;
   phMax?: number;
-  weightedAltitude: boolean;
 };
 
 function habitatRequest(searchParams: URLSearchParams): HabitatRequest | string {
@@ -254,12 +253,11 @@ function habitatRequest(searchParams: URLSearchParams): HabitatRequest | string 
   if (altitudeMin === undefined || altitudeMax === undefined || altitudeMin < 0 || altitudeMin >= altitudeMax || altitudeMax > 4000) {
     return "Invalid habitat altitude range";
   }
-  if ((altitudeCoreMin === undefined) !== (altitudeCoreMax === undefined)) {
-    return "Invalid habitat altitude core";
-  }
-  const weightedAltitude = altitudeCoreMin !== undefined && altitudeCoreMax !== undefined;
-  if (weightedAltitude && (altitudeCoreMin < 0 || altitudeCoreMin >= altitudeCoreMax ||
-    altitudeCoreMax > 4000 || altitudeCoreMin < altitudeMin || altitudeCoreMax > altitudeMax)) {
+  // The weighted readers are the only supported gate, so the core band that
+  // anchors their altitude taper is required.
+  if (altitudeCoreMin === undefined || altitudeCoreMax === undefined ||
+    altitudeCoreMin < 0 || altitudeCoreMin >= altitudeCoreMax ||
+    altitudeCoreMax > 4000 || altitudeCoreMin < altitudeMin || altitudeCoreMax > altitudeMax) {
     return "Invalid habitat altitude core";
   }
   if ((phMin === undefined) !== (phMax === undefined) || (phMin !== undefined && (phMin < 0 || phMax! > 14 || phMin >= phMax!))) {
@@ -268,7 +266,7 @@ function habitatRequest(searchParams: URLSearchParams): HabitatRequest | string 
   return {
     speciesId, profileKey,
     forestTerms, altitudeMin, altitudeMax, altitudeCoreMin, altitudeCoreMax,
-    phMin, phMax, weightedAltitude,
+    phMin, phMax,
   };
 }
 
@@ -279,14 +277,9 @@ async function readHabitatRows(
   limit: number,
   habitat: HabitatRequest,
 ) {
-  let rpc = "read_potential_habitat_cells";
-  if (habitat.weightedAltitude) {
-    if (resolution === 250) {
-      rpc = "read_weighted_potential_habitat_cells";
-    } else {
-      rpc = "read_weighted_coarse_potential_habitat_cells";
-    }
-  }
+  const rpc = resolution === 250
+    ? "read_weighted_potential_habitat_cells"
+    : "read_weighted_coarse_potential_habitat_cells";
   const result = await supabase.rpc(rpc, {
     p_west: bounds.west,
     p_south: bounds.south,
@@ -294,8 +287,8 @@ async function readHabitatRows(
     p_north: bounds.north,
     p_grid_size_m: resolution,
     p_forest_terms: habitat.forestTerms,
-    p_altitude_min: habitat.weightedAltitude ? habitat.altitudeCoreMin : habitat.altitudeMin,
-    p_altitude_max: habitat.weightedAltitude ? habitat.altitudeCoreMax : habitat.altitudeMax,
+    p_altitude_min: habitat.altitudeCoreMin,
+    p_altitude_max: habitat.altitudeCoreMax,
     p_ph_min: habitat.phMin ?? null,
     p_ph_max: habitat.phMax ?? null,
     p_limit: limit,
