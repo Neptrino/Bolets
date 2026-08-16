@@ -11,6 +11,75 @@ import {
   normalizeOpenMeteoAt,
   type OpenMeteoLocation,
 } from "../_shared/open-meteo.ts";
+import {
+  buildStationCorrectedPrecipitation,
+  madridHourKey,
+  normalizeStationMatrixRow,
+  STATION_RAIN_SOURCE_VERSION,
+  type StationHourSeries,
+} from "../_shared/xema-rain.ts";
+
+const XEMA_GAUGE_SOURCE = "Meteocat XEMA station gauges";
+
+/**
+ * Gauge hours reaching back to the start of the earliest 30-day window the
+ * backfill will renormalize, within the matrix RPC's 2000-hour cap.
+ */
+function gaugeMatrixHours(earliestTargetAt: string, referenceAt: string) {
+  const spanHours = Math.ceil(
+    (Date.parse(referenceAt) - Date.parse(earliestTargetAt)) / 3_600_000,
+  );
+  return Math.min(2000, Math.max(1, spanHours + 744));
+}
+
+async function fetchGaugeMatrix(
+  supabase: ReturnType<typeof createAdminClient>,
+  hours: number,
+) {
+  const { data, error } = await supabase.rpc("get_xema_rain_matrix", { p_hours: hours });
+  if (error) {
+    console.error("Gauge matrix read failed; backfill keeps model rain", { message: error.message });
+    return [];
+  }
+  return (Array.isArray(data) ? data : [])
+    .map(normalizeStationMatrixRow)
+    .filter((station): station is StationHourSeries => station !== undefined);
+}
+
+/**
+ * Applies station-rain-v1 to a historical response before renormalization,
+ * mirroring the live refresh: the epoch hourly axis is translated to the
+ * gauge matrix's Europe/Madrid keys, gauge inverse-distance hours replace the
+ * model series where the network is dense enough, and everything else keeps
+ * model semantics.
+ */
+function applyStationRain(
+  location: OpenMeteoLocation,
+  stations: StationHourSeries[],
+  latitude: number,
+  longitude: number,
+) {
+  const times = Array.isArray(location.hourly?.time) ? location.hourly.time as unknown[] : [];
+  const precipitation = Array.isArray(location.hourly?.precipitation)
+    ? location.hourly.precipitation as unknown[]
+    : [];
+  if (!times.length || !stations.length) return { gaugeCoverage: 0, applied: false };
+  const localKeys = times.map((time) =>
+    typeof time === "number" ? madridHourKey(time) ?? "" : ""
+  );
+  const corrected = buildStationCorrectedPrecipitation(
+    localKeys,
+    precipitation,
+    stations,
+    latitude,
+    longitude,
+  );
+  if (location.hourly) location.hourly.precipitation = corrected.series;
+  const gaugeCoverage = corrected.totalHours
+    ? Math.round((corrected.gaugeHours / corrected.totalHours) * 100) / 100
+    : 0;
+  return { gaugeCoverage, applied: gaugeCoverage > 0 };
+}
 
 type HistoricalProfile = "atmosphere" | "soil";
 
@@ -205,9 +274,18 @@ Deno.serve(async (request) => {
       Date.parse(candidate) < Date.parse(earliest) ? candidate : earliest);
     const referenceAt = new Date().toISOString();
     const locations = await fetchHistoricalWeather(points, profile, earliestTargetAt, referenceAt);
+    // station-rain-v1: historical model precipitation is replaced with gauge
+    // hours before renormalization, so backfilled days carry the same rain
+    // source as freshly ingested ones instead of a mixed-source seam.
+    const gaugeStations = profile === "atmosphere"
+      ? await fetchGaugeMatrix(supabase, gaugeMatrixHours(earliestTargetAt, referenceAt))
+      : [];
     const rows = points.map((point, index) => {
       const snapshot = byPointId.get(point.point_id)!;
       const originalTargetAt = targetAt(snapshot);
+      const stationRain = profile === "atmosphere"
+        ? applyStationRain(locations[index], gaugeStations, point.requested_lat, point.requested_lon)
+        : { gaugeCoverage: 0, applied: false };
       const normalized = normalizeOpenMeteoAt(locations[index], originalTargetAt, profile);
       if (normalized.unavailableFields.length) {
         throw new Error(
@@ -223,7 +301,9 @@ Deno.serve(async (request) => {
         observed_at: snapshot.observed_at,
         // The provider source remains unchanged; run_id records the backfill
         // transformation without repeating provenance text in every grid row.
-        sources: snapshot.sources,
+        sources: stationRain.applied
+          ? [...new Set([...snapshot.sources, XEMA_GAUGE_SOURCE])]
+          : snapshot.sources,
         source_resolution_m: snapshot.source_resolution_m,
         confidence: "moderate",
         stale: snapshot.stale,
@@ -231,6 +311,15 @@ Deno.serve(async (request) => {
         values: {
           ...preservedValues,
           ...normalized.values,
+          ...(profile === "atmosphere"
+            ? {
+                precipitationSource: stationRain.applied
+                  ? STATION_RAIN_SOURCE_VERSION
+                  : "arome_france",
+                precipitationFallbackModel: "arome_france",
+                precipitationGaugeCoverage: stationRain.gaugeCoverage,
+              }
+            : {}),
           weatherObservedAt: originalTargetAt,
         },
         run_id: runId,

@@ -31,8 +31,22 @@ describe("spatial hydrothermal history backfill", () => {
 
   it("keeps snapshot timing and source provenance while removing obsolete fields", () => {
     expect(worker).toContain("observed_at: snapshot.observed_at");
-    expect(worker).toContain("sources: snapshot.sources");
+    // Provenance is preserved and only extended: the gauge source joins the
+    // list when station rain was actually applied to the batch.
+    expect(worker).toContain("[...new Set([...snapshot.sources, XEMA_GAUGE_SOURCE])]");
+    expect(worker).toContain(": snapshot.sources");
     expect(worker).toContain("removeLegacyAtmosphereValues(snapshot.values)");
     expect(worker).toContain("run_id: runId");
+  });
+
+  it("replaces historical model rain with gauge hours before renormalization", () => {
+    expect(worker).toContain("buildStationCorrectedPrecipitation");
+    // The historical hourly axis is epoch seconds; the gauge matrix keys are
+    // Europe/Madrid local strings, so the axis must be translated first.
+    expect(worker).toContain("madridHourKey(time)");
+    expect(worker).toContain("STATION_RAIN_SOURCE_VERSION");
+    expect(worker).toContain("precipitationGaugeCoverage");
+    // Soil backfills carry no precipitation and must skip the gauge read.
+    expect(worker).toMatch(/profile === "atmosphere"\s*\?\s*await fetchGaugeMatrix/);
   });
 });

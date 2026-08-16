@@ -271,6 +271,26 @@ export function normalizeStationMatrixRow(input: unknown): StationHourSeries | u
   return { station_code: stationCode, latitude, longitude, hours };
 }
 
+const MADRID_HOUR_KEY_FORMAT = new Intl.DateTimeFormat("sv-SE", {
+  timeZone: "Europe/Madrid",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+/**
+ * The Europe/Madrid local hour key used by `get_xema_rain_matrix`, for hourly
+ * axes delivered as epoch seconds (historical requests use timeformat
+ * unixtime, while the live refresh receives local-time strings directly).
+ */
+export function madridHourKey(epochSeconds: number) {
+  if (!Number.isFinite(epochSeconds)) return undefined;
+  return MADRID_HOUR_KEY_FORMAT.format(new Date(epochSeconds * 1000)).replace(" ", "T");
+}
+
 /**
  * Builds the promoted past-precipitation series for one grid point: per
  * hour, the gauge inverse-distance value when enough complete stations sit

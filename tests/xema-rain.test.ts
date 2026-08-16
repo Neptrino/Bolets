@@ -4,6 +4,7 @@ import {
   buildStationCorrectedPrecipitation,
   haversineKm,
   interpolateStationRain,
+  madridHourKey,
   normalizeStationMatrixRow,
   normalizeXemaStation,
   XEMA_INTERPOLATION,
@@ -230,5 +231,15 @@ describe("station-rain-v1 corrected precipitation", () => {
   it("preserves fallback nulls so completeness guards still see missing hours", () => {
     const corrected = buildStationCorrectedPrecipitation(["T00"], [null], [], 42.4, 2.3);
     expect(corrected.series).toEqual([null]);
+  });
+});
+
+describe("madridHourKey", () => {
+  it("converts epoch hours to the gauge matrix's Madrid local keys across DST", () => {
+    // 2026-08-16 12:00 UTC is 14:00 CEST.
+    expect(madridHourKey(1786881600)).toBe("2026-08-16T14:00");
+    // 2026-01-15 12:00 UTC is 13:00 CET.
+    expect(madridHourKey(1768478400)).toBe("2026-01-15T13:00");
+    expect(madridHourKey(Number.NaN)).toBeUndefined();
   });
 });
