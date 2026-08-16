@@ -28,6 +28,10 @@ import {
 } from "@/data/regions";
 import { fetchJsonWithRetry } from "@/src/lib/fetch-json";
 import {
+  GLOBAL_MINIMUM_GRID_SIZE_M,
+  GLOBAL_SPECIES_ID,
+} from "@/src/lib/global-map";
+import {
   habitatCellColour,
   habitatCellIntensity,
   isHabitatCellCorroborated,
@@ -49,6 +53,7 @@ import {
 import { predictionMapCellColour } from "@/src/lib/suitability-scale";
 import type {
   OccurrenceSupportCell,
+  GlobalSpeciesScore,
   MapViewMode,
   PotentialHabitatMapCell,
   PredictionCell,
@@ -295,11 +300,19 @@ function visibleSpatialBounds(localMap: MapLibreMap): SpatialBounds {
   };
 }
 
-function visibleGridSize(localMap: MapLibreMap) {
-  return gridSizeForViewport(
+function visibleGridSize(
+  localMap: MapLibreMap,
+  minimumGridSizeM: SpatialGridSizeM = 250,
+) {
+  const gridSizeM = gridSizeForViewport(
     localMap.getZoom(),
     visibleSpatialBounds(localMap),
   );
+  // The combined map has no 250 m habitat cache, so it never requests finer
+  // than its coarse floor even when the zoom would allow it.
+  return gridSizeM < minimumGridSizeM
+    ? (minimumGridSizeM as SpatialGridSizeM)
+    : gridSizeM;
 }
 
 function visibleGridParams(localMap: MapLibreMap, speciesId: string, gridSizeM: SpatialGridSizeM, extras?: Record<string, string>) {
@@ -435,10 +448,15 @@ export function RegionMap({
   selectedCellId?: string;
   className?: string;
   fullscreenTarget?: "viewport" | "parent";
-  onCellSelect?: (cell?: PredictionCell) => void;
+  onCellSelect?: (
+    cell?: PredictionCell,
+    topSpecies?: GlobalSpeciesScore[],
+    combined?: { score: number | null; cellId: string; gridSizeM: SpatialGridSizeM },
+  ) => void;
   onCellDetailStateChange?: (state: PredictionCellDetailState) => void;
 }) {
   const showCompatibility = habitat || mode === "compatibility";
+  const globalPrediction = speciesId === GLOBAL_SPECIES_ID;
   const node = useRef<HTMLDivElement>(null);
   const cellCanvas = useRef<HTMLCanvasElement>(null);
   const historicalEvidenceCanvas = useRef<HTMLCanvasElement>(null);
@@ -953,6 +971,8 @@ export function RegionMap({
     const localMap = map.current;
     if (!localMap || !speciesId || showCompatibility) return;
 
+    const minimumGridSizeM: SpatialGridSizeM =
+      speciesId === GLOBAL_SPECIES_ID ? GLOBAL_MINIMUM_GRID_SIZE_M : 250;
     const locator = geolocateControl.current;
     let geolocationReloadFrame: number | undefined;
     let waitingForGeolocationMoveEnd = false;
@@ -998,11 +1018,11 @@ export function RegionMap({
       excluded: 0,
       withheld: 0,
       truncated: false,
-      gridSizeM: visibleGridSize(localMap),
+      gridSizeM: visibleGridSize(localMap, minimumGridSizeM),
     });
 
     const loadCells = async () => {
-      const gridSizeM = visibleGridSize(localMap);
+      const gridSizeM = visibleGridSize(localMap, minimumGridSizeM);
       const params = visibleGridParams(localMap, speciesId, gridSizeM, {
         view: "map",
         v: PREDICTION_CACHE_VERSION,
@@ -1098,16 +1118,23 @@ export function RegionMap({
         v: PREDICTION_CACHE_VERSION,
       });
       try {
-        const payload = await fetchJsonWithRetry<{ cell: PredictionCell }>(
-          `/api/predictions?${params}`,
-          controller.signal,
-        );
+        const payload = await fetchJsonWithRetry<{
+          cell: PredictionCell | null;
+          topSpecies?: GlobalSpeciesScore[];
+          score?: number | null;
+        }>(`/api/predictions?${params}`, controller.signal);
         if (
           detailRequest.current === controller &&
           !controller.signal.aborted &&
           selectedCellIdRef.current === cell.cellId
         ) {
-          onCellSelect?.(payload.cell);
+          onCellSelect?.(
+            payload.cell ?? undefined,
+            payload.topSpecies,
+            payload.topSpecies
+              ? { score: payload.score ?? null, cellId: cell.cellId, gridSizeM: cell.gridSizeM }
+              : undefined,
+          );
           onCellDetailStateChange?.({
             status: "ready",
             cellId: cell.cellId,
@@ -1289,7 +1316,9 @@ export function RegionMap({
       : cellState.status === "ready"
         ? {
             title: "Predicció disponible",
-            detail: `Resolució: ${gridDimensions}.`,
+            detail: globalPrediction && cellState.gridSizeM === GLOBAL_MINIMUM_GRID_SIZE_M
+              ? `Resolució: ${gridDimensions}, la màxima del mapa combinat. Tria una espècie concreta per a la graella de 250 m.`
+              : `Resolució: ${gridDimensions}.`,
           }
         : cellState.status === "incompatible"
           ? {
@@ -1427,7 +1456,7 @@ export function RegionMap({
               aria-label="Capes del mapa"
               hidden={!layerControlsExpanded}
             >
-              {!habitat ? (
+              {!habitat && !globalPrediction ? (
                 <MapModeControl
                   mode={mode}
                   predictionAvailable={predictionAvailable}

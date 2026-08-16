@@ -543,6 +543,22 @@ export type PredictionMapCell = Pick<
   habitatCoverage: number | null;
 };
 
+/**
+ * Combined-map cell: the best opportunity score among the candidate species,
+ * attributed to the species that produced it. `topSpeciesId` is null exactly
+ * when the score is withheld or every candidate scored zero.
+ */
+export type GlobalPredictionMapCell = PredictionMapCell & {
+  topSpeciesId: string | null;
+};
+
+export interface GlobalSpeciesScore {
+  speciesId: string;
+  score: number;
+  fruitingConditionsScore: number | null;
+  effectiveHabitatCoverage: number | null;
+}
+
 export interface PotentialHabitatCell {
   speciesId: string;
   cellId: string;

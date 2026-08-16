@@ -25,6 +25,20 @@ describe("prediction map rendering", () => {
     expect(source).toContain("void loadHistoricalEvidence()");
   });
 
+  it("never requests finer than the coarse floor for the combined map", () => {
+    expect(source).toContain(
+      'speciesId === GLOBAL_SPECIES_ID ? GLOBAL_MINIMUM_GRID_SIZE_M : 250',
+    );
+    expect(source).toContain("visibleGridSize(localMap, minimumGridSizeM)");
+  });
+
+  it("tells combined-map users why the grid stops at its coarse floor", () => {
+    expect(source).toContain(
+      "globalPrediction && cellState.gridSizeM === GLOBAL_MINIMUM_GRID_SIZE_M",
+    );
+    expect(source).toContain("la màxima del mapa combinat");
+  });
+
   it.each([
     [{ published: 0, excluded: 0, withheld: 0 }, "empty"],
     [{ published: 2, excluded: 0, withheld: 0 }, "ready"],

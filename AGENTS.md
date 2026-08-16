@@ -52,6 +52,7 @@
 - Preserve 3/7/14/21/26/30-day rain and ET₀, rainy-day counts, days 8–30 rain, dry-spell length, 7-day shallow-soil moisture memory, 7/14/20-day temperature means, and 14/20-day frost/heat exposure end to end.
 - Past precipitation is the versioned `station-rain-v1` source: XEMA gauge inverse-distance hours where at least two complete stations sit inside the cutoff, the seamless Météo-France blend as the only model fallback, and AROME retained for thermal/humidity/wind fields. Keep half-hour completeness counts and bounded retention on the gauge stream, never fabricate gauge values for uncovered cells, record `precipitationSource` and gauge coverage on every snapshot, and re-validate with `weather:compare-station-rain` plus the private findings replay before changing the correction's definition or fallback model.
 - Record provider state in `pipeline_sources` and every ingestion attempt in `ingestion_runs` so degraded and blocked sources remain visible.
+- The combined map (`species=all`) scores every edible supported species per coarse cell from the slot-indexed species-habitat cache and publishes the max with its attribution; it is withheld whenever any candidate withholds, never served below 1 km, and fails closed (503) when a cached profile is missing, incomplete, or key-mismatched. Rerun `scripts/precompute-coarse-habitat.mjs` after any change to habitat config, the species catalogue, or `HABITAT_MODEL_VERSION`, or the combined map will refuse to score by design.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

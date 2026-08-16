@@ -448,18 +448,55 @@ Deno.serve(async (request) => {
       p_limit: limit,
       ...(resolution === 250 ? {} : { p_grid_size_m: resolution })
     };
-    const includeHabitat = url.searchParams.get("includeHabitat") === "true";
+    const includeHabitatParam = url.searchParams.get("includeHabitat");
+    const includeHabitat = includeHabitatParam === "true";
+    // "all" attaches every species' cached coverage arrays to each cell so the
+    // combined prediction map scores the whole catalogue from one response.
+    const includeAllHabitat = includeHabitatParam === "all";
+    if (includeAllHabitat && resolution < 1000) {
+      return json({ error: "All-species habitat requires a coarse resolution" }, 400);
+    }
     const habitat = includeHabitat ? habitatRequest(url.searchParams) : null;
     if (typeof habitat === "string") return json({ error: habitat }, 400);
-    const [environmentResult, habitatResult] = await Promise.all([
+    const [environmentResult, habitatResult, allHabitatResult, habitatProfilesResult] = await Promise.all([
       supabase.rpc(rpc, rpcParams),
       habitat ? readHabitatRowsForBounds(supabase, bounds, resolution, limit, habitat) : Promise.resolve(null),
+      includeAllHabitat
+        ? supabase.rpc("read_all_cached_species_habitat_cells", {
+            p_west: bounds.west,
+            p_south: bounds.south,
+            p_east: bounds.east,
+            p_north: bounds.north,
+            p_grid_size_m: resolution,
+            p_limit: limit,
+          })
+        : Promise.resolve(null),
+      includeAllHabitat
+        ? supabase.from("species_habitat_profiles").select("species_id,slot,profile_key,complete")
+        : Promise.resolve(null),
     ]);
     const { data, error } = environmentResult;
     if (error) throw error;
     // Habitat is a required scoring input when requested. Never turn a failed
     // habitat read into a successful response full of misleading null scores.
     if (habitatResult?.error) throw habitatResult.error;
+    if (allHabitatResult?.error) throw allHabitatResult.error;
+    if (habitatProfilesResult?.error) throw habitatProfilesResult.error;
+    const allHabitatRows = (allHabitatResult?.data ?? []) as Record<string, unknown>[];
+    if (allHabitatResult && allHabitatRows.length >= limit) {
+      // A truncated all-slots read cannot be told apart from verified zeros,
+      // so it must fail loudly rather than score absent species as zero.
+      throw new Error("All-species habitat read was truncated");
+    }
+    const allHabitatByCellId = new Map(allHabitatRows.map((row) => [row.cell_id, row]));
+    const habitatProfiles = includeAllHabitat
+      ? ((habitatProfilesResult?.data ?? []) as Record<string, unknown>[]).map((row) => ({
+          speciesId: row.species_id,
+          slot: row.slot,
+          profileKey: row.profile_key,
+          complete: row.complete,
+        }))
+      : undefined;
     const habitatRows = habitatResult ? habitatResult.data ?? [] : null;
     const habitatRowsByCellId = new Map(
       (habitatRows ?? []).map((row: Record<string, unknown>) => [row.cell_id, row]),
@@ -497,6 +534,9 @@ Deno.serve(async (request) => {
           completeHabitatCoverage,
         );
       }
+      const allHabitat = includeAllHabitat
+        ? allHabitatByCellId.get(row.cell_id)
+        : undefined;
       return {
         cellId: row.cell_id,
         regionId: row.region_id,
@@ -509,9 +549,23 @@ Deno.serve(async (request) => {
         stale: row.stale,
         unavailableFields: row.unavailable_fields,
         values,
+        // A cell without a cached row carries verified zeros for every slot;
+        // the arrays are omitted rather than materialised as 52 zeros.
+        ...(allHabitat
+          ? {
+              habitatCoverages: allHabitat.coverages,
+              habitatWeightedCoverages: allHabitat.weighted_coverages,
+            }
+          : {}),
       };
     });
-    return json({ cells, truncated: cells.length === limit, bounds, resolution }, 200, {
+    return json({
+      cells,
+      truncated: cells.length === limit,
+      bounds,
+      resolution,
+      ...(habitatProfiles ? { habitatProfiles } : {}),
+    }, 200, {
       "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=600"
     });
   } catch (error) {

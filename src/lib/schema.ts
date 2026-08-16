@@ -354,22 +354,41 @@ export const conditionSnapshotSchema = z.object({
   })
 });
 
+const spatialEnvironmentCellSchema = z.object({
+  cellId: z.string(),
+  regionId: region,
+  gridSizeM: spatialGridSizeSchema,
+  bounds: z.tuple([z.tuple([z.number(), z.number()]), z.tuple([z.number(), z.number()])]),
+  observedAt: z.string().datetime({ offset: true }),
+  source: z.array(z.string()),
+  sourceResolutionM: z.number().int().positive(),
+  confidence,
+  stale: z.boolean(),
+  unavailableFields: z.array(z.string()),
+  values: conditionSnapshotSchema.shape.values
+});
+
 export const spatialEnvironmentResponseSchema = z.object({
-  cells: z.array(z.object({
-    cellId: z.string(),
-    regionId: region,
-    gridSizeM: spatialGridSizeSchema,
-    bounds: z.tuple([z.tuple([z.number(), z.number()]), z.tuple([z.number(), z.number()])]),
-    observedAt: z.string().datetime({ offset: true }),
-    source: z.array(z.string()),
-    sourceResolutionM: z.number().int().positive(),
-    confidence,
-    stale: z.boolean(),
-    unavailableFields: z.array(z.string()),
-    values: conditionSnapshotSchema.shape.values
-  })),
+  cells: z.array(spatialEnvironmentCellSchema),
   truncated: z.boolean(),
   bounds: z.object({ west: z.number(), south: z.number(), east: z.number(), north: z.number() })
+});
+
+export const spatialGlobalEnvironmentResponseSchema = z.object({
+  cells: z.array(spatialEnvironmentCellSchema.extend({
+    // Slot-ordered coverage fractions; absent arrays mean the cell carries
+    // verified zeros for every species (the all-slots read is never partial).
+    habitatCoverages: z.array(z.number().min(0).max(1)).optional(),
+    habitatWeightedCoverages: z.array(z.number().min(0).max(1)).optional(),
+  })),
+  truncated: z.boolean(),
+  bounds: z.object({ west: z.number(), south: z.number(), east: z.number(), north: z.number() }),
+  habitatProfiles: z.array(z.object({
+    speciesId: z.string(),
+    slot: z.number().int().min(1).max(64),
+    profileKey: z.string(),
+    complete: z.boolean(),
+  })),
 });
 
 export const spatialEnvironmentHistorySchema = z.object({

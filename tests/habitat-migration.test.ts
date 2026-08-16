@@ -109,7 +109,7 @@ describe("potential habitat database reader", () => {
     // core-altitude band is required and only the weighted readers remain.
     expect(source).not.toContain('"read_potential_habitat_cells"');
     expect(source).not.toContain("weightedAltitude");
-    expect(source).toContain('url.searchParams.get("includeHabitat") === "true"');
+    expect(source).toContain('const includeHabitat = includeHabitatParam === "true"');
     expect(source).toContain("async function readHabitatRowsForBounds(");
     expect(source).toContain("const tileCount = Math.min(Math.ceil(requestArea / 0.5), 10)");
     expect(source).toContain("const completeHabitatCoverage = habitatResult?.complete ?? false");

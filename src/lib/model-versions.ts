@@ -79,5 +79,9 @@ export function predictionModelVersion(ecologyVersion: string) {
 // browser-facing request and the server-to-Supabase cache key.
 // v18: past precipitation moved to station-rain-v1 (XEMA gauge IDW over the
 // seamless Météo-France fallback), changing every stored rain window.
+// v19: combined all-species map (species=all) added; map payload gains the
+// global variant with topSpeciesId and the all-slots habitat read.
+// v20: combined cell detail returns the full positive ranking (up to 8
+// species) instead of the top 3.
 export const PREDICTION_CACHE_VERSION =
-  `prediction-map-v18-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;
+  `prediction-map-v20-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;

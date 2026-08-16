@@ -49,20 +49,39 @@ function availableValues(snapshot: ConditionSnapshot): ConditionSnapshot["values
   ) as ConditionSnapshot["values"];
 }
 
-function localDateParts(date: Date) {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Madrid",
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-    hourCycle: "h23",
-  }).formatToParts(date);
+// Formatter construction dominates the cost of a phenology evaluation, and the
+// combined map scores every candidate species for every visible cell, so both
+// the formatter and the per-timestamp parts are shared across calls.
+const madridDateFormat = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Europe/Madrid",
+  year: "numeric",
+  month: "numeric",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+  second: "numeric",
+  hourCycle: "h23",
+});
+
+type LocalDateParts = {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  second: number;
+};
+
+const localDatePartsCache = new Map<number, LocalDateParts>();
+
+function localDateParts(date: Date): LocalDateParts {
+  const key = date.getTime();
+  const cached = localDatePartsCache.get(key);
+  if (cached) return cached;
+  const parts = madridDateFormat.formatToParts(date);
   const numberPart = (type: Intl.DateTimeFormatPartTypes) =>
     Number(parts.find((part) => part.type === type)?.value);
-  return {
+  const local = {
     year: numberPart("year"),
     month: numberPart("month"),
     day: numberPart("day"),
@@ -70,6 +89,9 @@ function localDateParts(date: Date) {
     minute: numberPart("minute"),
     second: numberPart("second"),
   };
+  if (localDatePartsCache.size >= 4096) localDatePartsCache.clear();
+  localDatePartsCache.set(key, local);
+  return local;
 }
 
 function daysInMonth(year: number, month: number) {
