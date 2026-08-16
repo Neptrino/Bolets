@@ -203,7 +203,7 @@ export default async function MushroomsTodayPage() {
             const score = summary?.result.opportunityIndex;
             const isAvailable = item.status === "available" && summary !== null && score !== null && score !== undefined;
             const rank = isAvailable ? index + 1 : null;
-            const bestArea = bestAreaMetric(item);
+            const bestCellScore = summary?.bestCell.score;
 
             return (
               <li className={`current-overview-card is-${item.status}`} key={`${item.speciesId}-${item.regionId}`}>
@@ -223,9 +223,13 @@ export default async function MushroomsTodayPage() {
                     <span>{item.status === "unavailable" ? "La font ambiental no ha respost" : "Resultat retingut pels controls"}</span>
                   </div>
                 )}
-                <dl className="current-row-signals">
-                  <div><dt>{item.speciesName} · cel·la de 10 km</dt><dd>{bestArea}</dd></div>
-                </dl>
+                {typeof bestCellScore === "number" && bestCellScore > 0 ? (
+                  <dl className="current-row-signals">
+                    <div><dt>{item.speciesName} · cel·la de 10 km</dt><dd>{scoreMetric(bestCellScore)}</dd></div>
+                  </dl>
+                ) : (
+                  <p className="current-row-signals-empty">{bestCellScore === 0 ? "Cap àrea destaca" : "—"}</p>
+                )}
                 <Link href={`/map?species=${item.speciesId}&region=${item.regionId}`} className="current-row-map" aria-label={`Veure al mapa: ${item.regionName}, ${item.speciesName}`}>
                   <Map size={15} /><span>Veure mapa</span>
                 </Link>

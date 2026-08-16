@@ -215,6 +215,7 @@
 .current-row-signals div { display: grid; gap: .1rem; }
 .current-row-signals dt { color: #747a72; font-size: .75rem; letter-spacing: .04em; text-transform: uppercase; }
 .current-row-signals dd { margin: 0; color: #344338; font-size: .8rem; font-weight: 800; }
+.current-row-signals-empty { margin: 0; align-self: center; color: #747a72; font-size: .8rem; }
 .current-row-map { display: inline-flex; gap: .4rem; align-items: center; justify-content: center; min-height: 2.75rem; justify-self: end; padding: .55rem .75rem; border: 1px solid rgba(47, 65, 42, .25); border-radius: 999px; color: #304839; font-size: .75rem; font-weight: 850; line-height: 1; text-decoration: none; white-space: nowrap; }
 .current-row-map svg { flex: 0 0 auto; }
 .current-row-map:hover { border-color: #304839; background: #304839; color: #fffaf0; }
@@ -245,7 +246,8 @@
   .current-overview-card-heading { align-self: center; }
   .current-score,
   .current-unavailable,
-  .current-row-signals { grid-column: 2 / -1; }
+  .current-row-signals,
+  .current-row-signals-empty { grid-column: 2 / -1; }
   .current-row-map { grid-column: 2; grid-row: auto; justify-self: start; }
 }
 
