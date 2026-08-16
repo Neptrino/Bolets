@@ -4,6 +4,7 @@ import {
   configureOpenMeteoForecastRequest,
   configureOpenMeteoHistoricalRequest,
   configureOpenMeteoRequest,
+  configureOpenMeteoTerrainThermalRequest,
   normalizeOpenMeteo,
   normalizeOpenMeteoAt,
   normalizeOpenMeteoForecast,
@@ -97,6 +98,28 @@ describe("Open-Meteo profiles", () => {
     configureOpenMeteoHistoricalRequest(soil, "soil", targetAt, referenceAt);
     expect(Number(soil.searchParams.get("past_hours"))).toBeGreaterThanOrEqual(237);
     expect(soil.searchParams.get("hourly")).toBe("soil_moisture_3_to_9cm");
+  });
+
+  it("keeps a terrain replay on the same AROME grid while requesting local elevation", () => {
+    const targetAt = "2026-08-15T00:15:00Z";
+    const referenceAt = "2026-08-15T12:00:00Z";
+    const request = new URL("https://api.open-meteo.com/v1/meteofrance");
+    configureOpenMeteoTerrainThermalRequest(request, targetAt, 1375, referenceAt);
+
+    expect(request.searchParams.get("models")).toBe("arome_france");
+    expect(request.searchParams.get("elevation")).toBe("1375");
+    expect(request.searchParams.get("timeformat")).toBe("unixtime");
+    expect(request.searchParams.get("hourly")).toContain("temperature_2m");
+    expect(Number(request.searchParams.get("past_hours"))).toBeGreaterThanOrEqual(744);
+  });
+
+  it("rejects an invalid terrain replay elevation", () => {
+    const request = new URL("https://api.open-meteo.com/v1/meteofrance");
+    expect(() => configureOpenMeteoTerrainThermalRequest(
+      request,
+      "2026-08-15T00:15:00Z",
+      Number.NaN,
+    )).toThrow(RangeError);
   });
 
   it("rebuilds a historical snapshot only from complete hours ending at its target", () => {

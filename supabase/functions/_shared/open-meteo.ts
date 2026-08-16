@@ -192,6 +192,25 @@ export function configureOpenMeteoHistoricalRequest(
   url.searchParams.set("timeformat", "unixtime");
 }
 
+/**
+ * Replays the same AROME grid at one selected cell's terrain elevation.
+ * This changes the provider's statistical elevation correction, not the
+ * atmospheric model's native horizontal resolution.
+ */
+export function configureOpenMeteoTerrainThermalRequest(
+  url: URL,
+  targetAt: string,
+  elevationM: number,
+  referenceAt = new Date().toISOString(),
+) {
+  if (!Number.isFinite(elevationM) || elevationM < -100 || elevationM > 5000) {
+    throw new RangeError("Terrain thermal elevation is outside the supported range");
+  }
+  configureOpenMeteoHistoricalRequest(url, "atmosphere", targetAt, referenceAt);
+  url.searchParams.set("models", "arome_france");
+  url.searchParams.set("elevation", String(elevationM));
+}
+
 function validTime(location: OpenMeteoLocation) {
   const localTime = typeof location.current?.time === "string" ? location.current.time : undefined;
   const offsetSeconds = finiteNumber(location.utc_offset_seconds);
