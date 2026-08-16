@@ -29,6 +29,10 @@ import {
   parsePrivateEvaluationFindings,
   type PrivateHistoricalFinding,
 } from "@/tests/helpers/historical-finding-replay";
+import {
+  applyStationRainToLocation,
+  fetchHistoricalStationSeries,
+} from "@/tests/helpers/xema-historical-rain";
 import { comparisonAppUrl } from "@/tests/helpers/provider-shadow-report";
 
 const inputPath = process.env.FINDING_EVAL_INPUT;
@@ -146,6 +150,9 @@ it.skipIf(!inputPath || !artifactsDir)(
     const controlsPerEvent = Number(process.env.FINDING_EVAL_CONTROLS_PER_EVENT ?? 3);
     const seed = Number(process.env.FINDING_EVAL_SEED ?? 1);
     const soilShadow = process.env.FINDING_EVAL_SOIL_SHADOW === "1";
+    // Rebuilds each span's past rain the way production ingests it since
+    // station-rain-v1: seamless Météo-France base, gauge IDW where dense.
+    const stationRain = process.env.FINDING_EVAL_STATION_RAIN === "1";
     const scoringModel = process.env.FINDING_EVAL_MODEL === "v2" ? "v2" : "v1";
     // Parameter sweeps patch the v2 config so candidate values can be fitted
     // against the same events without editing shipped priors.
@@ -248,8 +255,9 @@ it.skipIf(!inputPath || !artifactsDir)(
         const atmosphereBySpan = new Map<number, OpenMeteoLocation>();
         const soilBySpan = new Map<number, OpenMeteoLocation>();
         const iconEuBySpan = new Map<number, OpenMeteoLocation>();
+        const stationRainCoverageBySpan = new Map<number, number>();
         for (const [spanIndex, span] of spans.entries()) {
-          atmosphereBySpan.set(spanIndex, await fetchSeriesCached(
+          const atmosphere = await fetchSeriesCached(
             historicalRangeRequestUrl({
               profile: "atmosphere",
               latitude: atmosphericLatitude,
@@ -260,7 +268,34 @@ it.skipIf(!inputPath || !artifactsDir)(
             }),
             "evaluation AROME atmosphere",
             cacheDir,
-          ));
+          );
+          if (stationRain) {
+            const seamless = await fetchSeriesCached(
+              historicalRangeRequestUrl({
+                profile: "precipitation",
+                latitude: atmosphericLatitude,
+                longitude: atmosphericLongitude,
+                startDate: span.startDate,
+                endDate: span.endDate,
+              }),
+              "evaluation seamless precipitation",
+              cacheDir,
+            );
+            const stations = await fetchHistoricalStationSeries(
+              span.startDate,
+              span.endDate,
+              cacheDir,
+            );
+            const applied = applyStationRainToLocation(
+              atmosphere,
+              stations,
+              atmosphericLatitude,
+              atmosphericLongitude,
+              seamless,
+            );
+            stationRainCoverageBySpan.set(spanIndex, applied.gaugeCoverage);
+          }
+          atmosphereBySpan.set(spanIndex, atmosphere);
           soilBySpan.set(spanIndex, await fetchSeriesCached(
             historicalRangeRequestUrl({
               profile: "soil",
@@ -408,6 +443,10 @@ it.skipIf(!inputPath || !artifactsDir)(
               unavailableFields,
               modelVersion: model.version,
               scoringModel,
+              stationRain,
+              stationRainCoverage: stationRain
+                ? stationRainCoverageBySpan.get(spanIndex) ?? 0
+                : null,
             };
 
             const line = JSON.stringify(record);
@@ -432,6 +471,7 @@ it.skipIf(!inputPath || !artifactsDir)(
       seed,
       soilShadow,
       scoringModel,
+      stationRain,
       seriesFromNetwork: transfers.networkFetches,
       seriesFromCache: transfers.cacheHits,
       records: written,

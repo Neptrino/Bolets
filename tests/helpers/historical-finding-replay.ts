@@ -7,6 +7,9 @@ export const HISTORICAL_AROME_MODEL = "arome_france";
 export const HISTORICAL_SOIL_MODEL = "best_match";
 export const HISTORICAL_ICON_EU_SOIL_MODEL = "icon_eu";
 export const HISTORICAL_ICON_GLOBAL_SOIL_MODEL = "icon_global";
+// Production past precipitation is station-rain-v1 over the seamless blend,
+// never AROME rain; a precipitation-only series lets replays mirror that.
+export const HISTORICAL_SEAMLESS_PRECIPITATION_MODEL = "meteofrance_seamless";
 
 const MAX_PRIVATE_FINDING_LOCATIONS = 24;
 const MAX_EVALUATION_FINDING_LOCATIONS = 200;
@@ -24,6 +27,8 @@ const ATMOSPHERIC_HOURLY_VARIABLES = [
 ] as const;
 
 const SOIL_HOURLY_VARIABLES = ["soil_moisture_3_to_9cm"] as const;
+
+const PRECIPITATION_HOURLY_VARIABLES = ["precipitation"] as const;
 
 export type PrivateHistoricalFinding = {
   observedAt: string;
@@ -48,7 +53,7 @@ type HistoricalForecastRequest = {
 };
 
 type HistoricalRangeRequest = {
-  profile: "atmosphere" | "soil";
+  profile: "atmosphere" | "soil" | "precipitation";
   latitude: number;
   longitude: number;
   startDate: string;
@@ -57,6 +62,7 @@ type HistoricalRangeRequest = {
   cellSelection?: "land" | "sea" | "nearest";
   model?: typeof HISTORICAL_AROME_MODEL |
     typeof HISTORICAL_SOIL_MODEL |
+    typeof HISTORICAL_SEAMLESS_PRECIPITATION_MODEL |
     typeof HISTORICAL_ICON_EU_SOIL_MODEL |
     typeof HISTORICAL_ICON_GLOBAL_SOIL_MODEL;
 };
@@ -257,7 +263,7 @@ function historicalSeriesUrl({
   model,
   cellSelection,
 }: {
-  profile: "atmosphere" | "soil";
+  profile: "atmosphere" | "soil" | "precipitation";
   latitude: number;
   longitude: number;
   elevationM?: number;
@@ -276,7 +282,9 @@ function historicalSeriesUrl({
     "hourly",
     (profile === "atmosphere"
       ? ATMOSPHERIC_HOURLY_VARIABLES
-      : SOIL_HOURLY_VARIABLES).join(","),
+      : profile === "precipitation"
+        ? PRECIPITATION_HOURLY_VARIABLES
+        : SOIL_HOURLY_VARIABLES).join(","),
   );
   url.searchParams.set("models", model);
   url.searchParams.set("timezone", "GMT");
@@ -341,10 +349,16 @@ export function historicalRangeRequestUrl({
       `Historical range span must not exceed ${MAXIMUM_RANGE_SPAN_DAYS} days`,
     );
   }
-  const requestedModel = model ??
-    (profile === "atmosphere" ? HISTORICAL_AROME_MODEL : HISTORICAL_SOIL_MODEL);
+  const requestedModel = model ?? (
+    profile === "atmosphere"
+      ? HISTORICAL_AROME_MODEL
+      : profile === "precipitation"
+        ? HISTORICAL_SEAMLESS_PRECIPITATION_MODEL
+        : HISTORICAL_SOIL_MODEL
+  );
   if (
     (profile === "atmosphere" && requestedModel !== HISTORICAL_AROME_MODEL) ||
+    (profile === "precipitation" && requestedModel !== HISTORICAL_SEAMLESS_PRECIPITATION_MODEL) ||
     (profile === "soil" && ![
       HISTORICAL_SOIL_MODEL,
       HISTORICAL_ICON_EU_SOIL_MODEL,
