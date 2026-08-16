@@ -162,16 +162,19 @@ function spanCovers(span: { startDate: string; endDate: string }, date: string) 
 }
 
 /**
- * Fruiting-lag experiment for frost: bodies picked today developed over the
- * preceding weeks, so frost from the last few days cannot have prevented
- * them. Recounts frost hours over [target − windowHours, target − lagHours]
- * from the span's raw hourly series, leaving older exposure untouched.
+ * Recounts threshold hours from the span's raw hourly series over
+ * [target − windowHours, target − lagHours], optionally with a constant
+ * lapse shift applied to every hour. Serves two experiments: the frost
+ * fruiting-lag hypothesis (lagHours > 0) and terrain-corrected frost/heat
+ * exposure (deltaC ≠ 0), which production does not yet apply to hour counts.
  */
-function laggedFrostHours(
+function recountedThresholdHours(
   location: OpenMeteoLocation,
   observedAt: string,
   windowHours: number,
   lagHours: number,
+  deltaC: number,
+  matches: (temperatureC: number) => boolean,
 ) {
   const hourly = location.hourly as Record<string, unknown> | undefined;
   const times = Array.isArray(hourly?.time) ? hourly.time as unknown[] : [];
@@ -181,14 +184,26 @@ function laggedFrostHours(
   const target = Math.floor(Date.parse(observedAt) / 3_600_000) * 3600;
   const from = target - windowHours * 3600;
   const to = target - lagHours * 3600;
-  let frost = 0;
+  let count = 0;
   for (let index = 0; index < Math.min(times.length, temperatures.length); index += 1) {
     const time = times[index];
     const temperature = temperatures[index];
     if (typeof time !== "number" || typeof temperature !== "number") continue;
-    if (time > from && time <= to && temperature <= 0) frost += 1;
+    if (time > from && time <= to && matches(temperature + deltaC)) count += 1;
   }
-  return frost;
+  return count;
+}
+
+const TERRAIN_LAPSE_C_PER_KM = 6.5;
+const TERRAIN_LAPSE_MAX_DELTA_C = 6;
+
+/** Same lapse delta the production mean-correction applies, for hour counts. */
+function terrainDeltaC(values: ConditionSnapshot["values"]) {
+  const altitude = values.altitudeM;
+  const gridElevation = values.weatherElevationM;
+  if (typeof altitude !== "number" || typeof gridElevation !== "number") return 0;
+  const delta = -TERRAIN_LAPSE_C_PER_KM * (altitude - gridElevation) / 1000;
+  return Math.max(-TERRAIN_LAPSE_MAX_DELTA_C, Math.min(TERRAIN_LAPSE_MAX_DELTA_C, delta));
 }
 
 /**
@@ -228,6 +243,10 @@ it.skipIf(!inputPath || !artifactsDir)(
     // Frost hours inside the lag are forgiven: fruiting bodies found on the
     // target date developed before them.
     const frostLagDays = Number(process.env.FINDING_EVAL_FROST_LAG_DAYS ?? 0);
+    // Recounts frost/heat hours at the cell's altitude via the same lapse
+    // shift production applies to window means (hour counts stay at grid
+    // elevation in production; this measures what correcting them would do).
+    const terrainHours = process.env.FINDING_EVAL_TERRAIN_HOURS === "1";
     const scoringModel = process.env.FINDING_EVAL_MODEL === "v2" ? "v2" : "v1";
     // Parameter sweeps patch the v2 config so candidate values can be fitted
     // against the same events without editing shipped priors.
@@ -408,10 +427,10 @@ it.skipIf(!inputPath || !artifactsDir)(
           );
           if (frostLagDays > 0) {
             const raw = atmosphereBySpan.get(spanIndex)!;
-            atmosphere.values.frostHours14d =
-              laggedFrostHours(raw, target.observedAt, 336, frostLagDays * 24);
-            atmosphere.values.frostHours20d =
-              laggedFrostHours(raw, target.observedAt, 480, frostLagDays * 24);
+            atmosphere.values.frostHours14d = recountedThresholdHours(
+              raw, target.observedAt, 336, frostLagDays * 24, 0, (t) => t <= 0);
+            atmosphere.values.frostHours20d = recountedThresholdHours(
+              raw, target.observedAt, 480, frostLagDays * 24, 0, (t) => t <= 0);
           }
           const soil = normalizeOpenMeteoAt(
             soilBySpan.get(spanIndex)!,
@@ -451,6 +470,20 @@ it.skipIf(!inputPath || !artifactsDir)(
               atmosphericResolutionM: 2500,
               soilMoistureResolutionM: 9000,
             };
+            if (terrainHours) {
+              const raw = atmosphereBySpan.get(spanIndex)!;
+              const deltaC = terrainDeltaC(values);
+              const lagHours = frostLagDays * 24;
+              // 27 °C mirrors the shared HEAT_HOUR_THRESHOLD_C contract.
+              values.frostHours14d = recountedThresholdHours(
+                raw, target.observedAt, 336, lagHours, deltaC, (t) => t <= 0);
+              values.frostHours20d = recountedThresholdHours(
+                raw, target.observedAt, 480, lagHours, deltaC, (t) => t <= 0);
+              values.heatHours14d = recountedThresholdHours(
+                raw, target.observedAt, 336, 0, deltaC, (t) => t >= 27);
+              values.heatHours20d = recountedThresholdHours(
+                raw, target.observedAt, 480, 0, deltaC, (t) => t >= 27);
+            }
             const unavailableFields = [
               ...new Set([
                 ...atmosphere.unavailableFields,
