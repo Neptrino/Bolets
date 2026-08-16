@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getSpecies, speciesProfiles } from "@/data/species";
-import { assessPotentialHabitat, getPotentialHabitatCells, habitatForestTerms } from "@/src/lib/habitat";
+import { getPotentialHabitatCells, habitatForestTerms } from "@/src/lib/habitat";
 import { HABITAT_MODEL_VERSION } from "@/src/lib/model-versions";
 
 const boletusEdulis = getSpecies("boletus-edulis")!;
@@ -11,58 +11,6 @@ afterEach(() => {
 });
 
 describe("potential habitat", () => {
-  it("requires compatible forest, altitude, and soil pH for Boletus edulis", () => {
-    const result = assessPotentialHabitat(boletusEdulis, {
-      forestTypes: ["fagedes", "rouredes", "boscos de planifolis"],
-      altitudeM: 1150,
-      soilPh: 5.4
-    });
-
-    expect(result).toEqual({
-      eligible: true,
-      complete: true,
-      gates: { forest: "compatible", altitude: "compatible", soilPh: "compatible" }
-    });
-  });
-
-  it.each<{ values: { forestTypes: string[]; altitudeM: number; soilPh: number }; gate: "forest" | "altitude" | "soilPh" }>([
-    { values: { forestTypes: ["prats"], altitudeM: 1150, soilPh: 5.4 }, gate: "forest" },
-    { values: { forestTypes: ["fagedes"], altitudeM: 120, soilPh: 5.4 }, gate: "altitude" },
-    { values: { forestTypes: ["fagedes"], altitudeM: 1150, soilPh: 7.8 }, gate: "soilPh" }
-  ])("excludes a cell when the $gate gate is incompatible", ({ values, gate }) => {
-    const result = assessPotentialHabitat(boletusEdulis, values);
-
-    expect(result.eligible).toBe(false);
-    expect(result.gates[gate]).toBe("incompatible");
-  });
-
-  it("withholds cells with missing required static evidence", () => {
-    const result = assessPotentialHabitat(boletusEdulis, {
-      forestTypes: ["fagedes"],
-      altitudeM: 1150
-    });
-
-    expect(result).toMatchObject({ eligible: false, complete: false });
-    expect(result.gates.soilPh).toBe("unknown");
-  });
-
-  it("keeps altitude compatible inside the 100 m uncertainty margin", () => {
-    const species = getSpecies("amanita-caesarea")!;
-    const withinMargin = assessPotentialHabitat(species, {
-      forestTypes: ["alzinars"],
-      altitudeM: 1250,
-      soilPh: 5.5
-    });
-    const outsideMargin = assessPotentialHabitat(species, {
-      forestTypes: ["alzinars"],
-      altitudeM: 1300,
-      soilPh: 5.5
-    });
-
-    expect(withinMargin.gates.altitude).toBe("compatible");
-    expect(outsideMargin.gates.altitude).toBe("incompatible");
-  });
-
   it("derives exact ICGC habitat labels from the versioned forest profile", () => {
     expect(habitatForestTerms(boletusEdulis)).toEqual(expect.arrayContaining([
       "fagedes", "avetanoses", "rouredes", "pinedes", "pinedes de muntanya"

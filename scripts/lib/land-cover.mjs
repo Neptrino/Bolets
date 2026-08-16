@@ -6,7 +6,7 @@ export const landCoverClasses = new Map([
   [225, { name: "Boscos clars d’aciculifolis", habitat: ["pinedes", "pinedes obertes", "boscos de coníferes"] }],
   [226, { name: "Boscos clars de caducifolis i planifolis", habitat: ["fagedes", "rouredes", "boscos de planifolis"] }],
   [227, { name: "Boscos clars d’esclerofil·les i laurifolis", habitat: ["alzinars", "suredes", "boscos d’esclerofil·les"] }],
-  [228, { name: "Prats i herbassars", habitat: ["prats", "clarianes", "vores de bosc"] }],
+  [228, { name: "Prats i herbassars", habitat: ["prats", "pastures", "gespes", "vores de camí", "clarianes", "vores de bosc"] }],
   [229, { name: "Bosc de ribera", habitat: ["bosc de ribera", "boscos humits"] }],
 ]);
 

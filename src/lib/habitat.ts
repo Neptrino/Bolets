@@ -1,21 +1,12 @@
 import { getSpecies } from "@/data/species";
-import { altitudeHabitatEnvelope, altitudeSuitabilityScore } from "@/src/lib/altitude";
+import { altitudeHabitatEnvelope } from "@/src/lib/altitude";
 import { getOccurrenceSupport } from "@/src/lib/occurrences";
 import {
   HABITAT_MODEL_VERSION,
   PREDICTION_CACHE_VERSION,
 } from "@/src/lib/model-versions";
 import { spatialHabitatResponseSchema } from "@/src/lib/schema";
-import type { ConditionSnapshot, PotentialHabitatCell, SpatialBounds, SpatialGridSizeM, SpeciesProfile } from "@/src/lib/types";
-
-export type HabitatGateId = "forest" | "altitude" | "soilPh";
-export type HabitatGateState = "compatible" | "incompatible" | "unknown";
-
-export interface HabitatAssessment {
-  eligible: boolean;
-  complete: boolean;
-  gates: Record<HabitatGateId, HabitatGateState>;
-}
+import type { PotentialHabitatCell, SpatialBounds, SpatialGridSizeM, SpeciesProfile } from "@/src/lib/types";
 
 function normaliseTerm(value: string) {
   return value
@@ -24,14 +15,6 @@ function normaliseTerm(value: string) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
-}
-
-function termsOverlap(observed: string[], preferred: string[]) {
-  const candidates = observed.map(normaliseTerm).filter(Boolean);
-  const targets = preferred.map(normaliseTerm).filter(Boolean);
-  return candidates.some((candidate) => targets.some((target) =>
-    candidate === target || candidate.includes(target) || target.includes(candidate)
-  ));
 }
 
 export function habitatForestTerms(species: SpeciesProfile) {
@@ -53,40 +36,11 @@ export function habitatProfileKey(species: SpeciesProfile) {
   ].join("|");
 }
 
-export function assessPotentialHabitat(
-  species: SpeciesProfile,
-  values: Pick<ConditionSnapshot["values"], "altitudeM" | "forestTypes" | "treeSpecies" | "soilPh">
-): HabitatAssessment {
-  const observedForest = [...(values.forestTypes ?? []), ...(values.treeSpecies ?? [])];
-  const preferredForest = [
-    ...species.ecologicalConfig.habitat.forestTypes,
-    ...species.ecologicalConfig.habitat.treeAssociations,
-    ...species.ecologicalConfig.habitat.hosts
-  ];
-  const forest = observedForest.length
-    ? termsOverlap(observedForest, preferredForest) ? "compatible" : "incompatible"
-    : "unknown";
-
-  const altitude = values.altitudeM === undefined
-    ? "unknown"
-    : altitudeSuitabilityScore(values.altitudeM, species.ecologicalConfig.habitat.altitude) > 0 ? "compatible" : "incompatible";
-
-  const phRange = species.ecologicalConfig.soil.phRange;
-  const soilPh = !phRange
-    ? "compatible"
-    : values.soilPh === undefined
-      ? "unknown"
-      : values.soilPh >= phRange[0] && values.soilPh <= phRange[1] ? "compatible" : "incompatible";
-
-  const gates = { forest, altitude, soilPh } satisfies HabitatAssessment["gates"];
-  const complete = Object.values(gates).every((state) => state !== "unknown");
-  return {
-    eligible: complete && Object.values(gates).every((state) => state === "compatible"),
-    complete,
-    gates
-  };
-}
-
+// The habitat gate itself is implemented once, in SQL, where the prediction
+// path executes it (supabase/migrations/*_taper_habitat_soil_ph.sql and the
+// packed-scoring readers it replaces). A TypeScript mirror used to live here
+// but diverged from the SQL in matching semantics, input vocabulary, and
+// missing-evidence handling, so it was removed rather than reconciled.
 export async function getPotentialHabitatCells(
   speciesId: string,
   bounds: SpatialBounds,

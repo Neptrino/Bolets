@@ -1,4 +1,4 @@
-export const HABITAT_MODEL_VERSION = "habitat-static-v7-coarse-species-cache";
+export const HABITAT_MODEL_VERSION = "habitat-static-v8-ph-taper";
 export const PREDICTION_SCORING_VERSION = "hydrothermal-v1";
 export const HYDROTHERMAL_PRIOR_VERSION = "hydrothermal-v1-priors-2026-08";
 export const HABITAT_ONLY_MODEL_VERSION = "habitat-static-only-2026-08";
