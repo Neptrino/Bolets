@@ -94,6 +94,21 @@ Deno.serve(async (request) => {
       return json({ refreshed: 0, complete: true, conditionsRefreshed, snapshotDate: today });
     }
 
+    // Overlapping ticks double the provider's concurrent connections and can
+    // trip its per-IP guard into a self-sustaining stall, so a tick yields
+    // while a recent run is still active. Runs older than the fetch budget
+    // are treated as dead rather than blocking the pipeline forever.
+    const { count: activeRuns, error: activeError } = await supabase
+      .from("ingestion_runs")
+      .select("id", { count: "exact", head: true })
+      .eq("pipeline", "spatial-atmosphere")
+      .eq("status", "running")
+      .gt("started_at", new Date(Date.now() - 5 * 60_000).toISOString());
+    if (activeError) throw activeError;
+    if ((activeRuns ?? 0) > 0) {
+      return json({ refreshed: 0, complete: false, deferred: true, snapshotDate: today });
+    }
+
     runId = await startRun(supabase, "spatial-atmosphere", body.trigger === "manual" ? "manual" : "cron", today, { batchSize: BATCH_SIZE, model: "arome_france" });
 
     let query = supabase.from("weather_grid_points").select("point_id,requested_lat,requested_lon,requested_elevation_m,native_resolution_m,model").eq("model", "arome_france").order("point_id").limit(BATCH_SIZE);

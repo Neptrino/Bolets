@@ -21,19 +21,37 @@ const finiteNumber = (value: unknown) => typeof value === "number" && Number.isF
 
 const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
+// A stalled provider connection must fail fast: without a deadline, a hung
+// request keeps its worker alive until the platform kills it, the run stays
+// "running" forever, and overlapping cron ticks pile more concurrent
+// connections onto the provider's per-IP guard.
+const OPEN_METEO_REQUEST_TIMEOUT_MS = 45_000;
+
 export async function fetchOpenMeteoLocations(url: URL, context: string, attempts = 3) {
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
-    const response = await fetch(url, { headers: { "User-Agent": "Bolets-Atles/1.0" } });
-    if (response.ok) {
-      const payload = await response.json() as OpenMeteoLocation | OpenMeteoLocation[];
-      return Array.isArray(payload) ? payload : [payload];
+    try {
+      const response = await fetch(url, {
+        headers: { "User-Agent": "Bolets-Atles/1.0" },
+        signal: AbortSignal.timeout(OPEN_METEO_REQUEST_TIMEOUT_MS),
+      });
+      if (response.ok) {
+        const payload = await response.json() as OpenMeteoLocation | OpenMeteoLocation[];
+        return Array.isArray(payload) ? payload : [payload];
+      }
+      const retryable = response.status === 429 || response.status >= 500;
+      if (!retryable || attempt === attempts) throw new Error(`Open-Meteo ${context} request returned ${response.status}`);
+      const retryAfterSeconds = Number(response.headers.get("retry-after"));
+      await wait(Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
+        ? Math.min(retryAfterSeconds * 1000, 15_000)
+        : attempt * 1500);
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith("Open-Meteo")) throw error;
+      if (attempt === attempts) {
+        const reason = error instanceof Error ? error.message : "unknown transport error";
+        throw new Error(`Open-Meteo ${context} request failed: ${reason}`);
+      }
+      await wait(attempt * 1500);
     }
-    const retryable = response.status === 429 || response.status >= 500;
-    if (!retryable || attempt === attempts) throw new Error(`Open-Meteo ${context} request returned ${response.status}`);
-    const retryAfterSeconds = Number(response.headers.get("retry-after"));
-    await wait(Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
-      ? Math.min(retryAfterSeconds * 1000, 15_000)
-      : attempt * 1500);
   }
   throw new Error(`Open-Meteo ${context} request failed`);
 }
