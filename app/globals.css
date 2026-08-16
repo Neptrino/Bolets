@@ -86,7 +86,7 @@
 .daily-share-preview img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 260ms ease; }
 .daily-share-grid > ol > li:hover .daily-share-preview img { transform: scale(1.018); }
 .daily-share-card-meta { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding: 20px 22px 16px; }
-.daily-share-card-meta span { display: block; color: var(--clay); font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
+.daily-share-card-meta span { display: block; color: var(--clay); font-size: 12px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
 .daily-share-card-meta h3 { margin: 5px 0 0; font-size: 25px; line-height: 1.08; letter-spacing: -0.03em; }
 .daily-share-card-meta a { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; color: var(--forest-panel); font-size: 13px; font-weight: 800; text-decoration: none; }
 .daily-share-card-meta a:hover { color: var(--clay); }

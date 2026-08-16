@@ -403,9 +403,13 @@ describe("species profiles", () => {
 
   it("keeps application-owned raster media in WebP", () => {
     const mediaRoot = join(process.cwd(), "public", "media");
+    // Share-card backgrounds are embedded into ImageResponse (satori), which
+    // decodes JPEG and PNG but not WebP, so `-share.jpg` files are exempt.
+    const satoriShareBackground = /-share\.jpe?g$/i;
     const legacyRasterFiles = readdirSync(mediaRoot, { recursive: true })
       .map((file) => file.toString())
-      .filter((file) => /\.(?:gif|jpe?g|png)$/i.test(file));
+      .filter((file) => /\.(?:gif|jpe?g|png)$/i.test(file))
+      .filter((file) => !satoriShareBackground.test(file));
 
     expect(legacyRasterFiles).toEqual([]);
   });
