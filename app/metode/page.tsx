@@ -315,7 +315,7 @@ export default function MethodPage() {
                     <Formula label="L’estat hídric combina el balanç de pluja i l’estat del sòl com a mitjana geomètrica ponderada, amb les penalitzacions de dèficit de pressió de vapor i de ratxa seca.">
                       W = B<sup>1 − w</sup> · M<sup>w</sup> · V<sup>βV</sup> · D<sup>βD</sup>
                     </Formula>
-                    <p><b>B</b> (pluja) i <b>M</b> (sòl) estimen la mateixa aigua des de dues fonts. El pes <b>w</b> reflecteix la fiabilitat mesurada de cada font: la sèrie modelada de sòl a 2,5–9 km es va mostrar poc informativa en troballes datades, així que actualment <b>w = 0,15</b> i la pluja porta la resta. Cap de les dues pot anul·lar sola la puntuació: totes dues respostes tenen un sòl mínim. <b>βV</b> i <b>βD</b> són paràmetres versionats del gremi o de l’espècie, i la humitat de l’aire entra una sola vegada a <b>V</b>.</p>
+                    <p><b>B</b> (pluja) i <b>M</b> (sòl) estimen la mateixa aigua des de dues fonts. El pes <b>w</b> reflecteix la fiabilitat mesurada de cada font: des que la pluja passada prové dels pluviòmetres de la XEMA, la sèrie modelada de sòl a 2,5–9 km només restava capacitat de discriminació en troballes datades, així que actualment <b>w = 0</b> i la pluja mesurada porta tot el pes. L’estructura es conserva: una font de sòl observada (satèl·lit CLMS a 1 km) podrà guanyar-se un pes positiu quan superi una temporada de validació. La resposta de pluja té un sòl mínim, de manera que cap lectura aïllada pot anul·lar la puntuació. <b>βV</b> i <b>βD</b> són paràmetres versionats del gremi o de l’espècie, i la humitat de l’aire entra una sola vegada a <b>V</b>.</p>
                   </div>
                   <div>
                     <b>2 · Balanç de pluja i estat del sòl</b>
@@ -377,9 +377,9 @@ export default function MethodPage() {
               <article className="method-formula-card method-formula-card-accent">
                 <span className="method-formula-kicker">ÍNDEX D’OPORTUNITAT DE CEL·LA</span>
                 <Formula label="L’índex d’oportunitat pondera l’hàbitat efectiu de manera còncava i el multiplica per l’índex condicional de fructificació calibrat.">
-                  O = H<sup>0,4</sup> · F<sup>0,8</sup>
+                  O = H<sup>0,4</sup> · F<sup>0,7</sup>
                 </Formula>
-                <p><b>F</b> respon «com són les condicions dins de l’hàbitat?»; <b>O</b> respon «quina oportunitat relativa representa tota la cel·la?». L’exponent còncau sobre <b>H</b> permet que una cel·la parcialment compatible arribi a les bandes altes quan les condicions ho justifiquen, i l’exponent 0,8 sobre <b>F</b> és una corba de calibratge monòtona ajustada amb troballes datades i graduades per abundància. Tots dos són índexs ordinals, no probabilitats, i H = 0 continua anul·lant la cel·la.</p>
+                <p><b>F</b> respon «com són les condicions dins de l’hàbitat?»; <b>O</b> respon «quina oportunitat relativa representa tota la cel·la?». L’exponent còncau sobre <b>H</b> permet que una cel·la parcialment compatible arribi a les bandes altes quan les condicions ho justifiquen, i l’exponent 0,7 sobre <b>F</b> és una corba de calibratge monòtona ajustada amb troballes datades i graduades per abundància, reajustada quan la pluja passada va passar a mesurar-se amb pluviòmetres. Tots dos són índexs ordinals, no probabilitats, i H = 0 continua anul·lant la cel·la.</p>
               </article>
             </div>
           </div>

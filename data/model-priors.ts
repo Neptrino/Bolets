@@ -161,14 +161,16 @@ const GUILD_PRIOR_CITATIONS = [
 
 /**
  * Confidence in the modelled 3-9 cm soil series. It was anti-predictive at
- * observed finds (AUC 0.145) and degrades with altitude (r = -0.73), so it is
- * demoted to a minority weight. A terrain-aware source (CLMS 1 km SWI) should
- * raise this rather than change the structure. A sweep over the same events
- * favoured dropping it entirely; 0.15 keeps the term alive at near-zero cost
- * (montane AUC 0.542 versus 0.558 at zero, and no measurable effect on lowland
- * records) so the CLMS replacement re-weights rather than reintroduces it.
+ * observed finds (AUC 0.145) and degrades with altitude (r = -0.73). While
+ * past rain was itself modelled, 0.15 kept the term alive at near-zero cost;
+ * once station-rain-v1 replaced past rain with gauge measurements, the
+ * 2026-08-16 refit sweep showed the modelled-soil residue only subtracts
+ * (conditions AUC 0.605 at w=0.15 versus 0.620 at zero on the mixed set, and
+ * raising it to 0.3 fell to 0.590), so the term is switched off. The
+ * structure stays: a trustworthy observation source (CLMS 1 km SWI) earns a
+ * positive weight here after a season of shadow validation.
  */
-const COARSE_SOIL_WEIGHT = 0.15;
+const COARSE_SOIL_WEIGHT = 0;
 /** Below-band soil no longer means "impossible", only "unfavourable". */
 const SOIL_DRY_FLOOR = 0.25;
 /** Waterlogging never zeroed an observed find, so the wet tail is gentler. */
@@ -209,11 +211,14 @@ const COMBINATION_V2: CombinationModelParameters = {
   // A 30% compatible cell could never exceed a score of 30 under v1, leaving
   // the upper bands unreachable at most observed finds.
   habitatExponent: 0.4,
-  // Fitted on abundance-graded findings: 0.8 lifts abundant-find days into the
-  // band their abundance indicates (alta-rate 36% -> 45%) while background
-  // days stay in the bottom band; stronger curves only inflated background.
-  // Monotone, so discrimination is unchanged by construction.
-  calibrationGamma: 0.8,
+  // Fitted on abundance-graded findings against modelled rain (0.8), then
+  // refitted 2026-08-16 when station-rain-v1 replaced past rain with gauge
+  // measurements: measured windows carry less rain than AROME's phantom
+  // storms did, and 0.7 restores observed finds to their bands (events at
+  // conditions >= 40: 50% -> 58% mixed set, 51% -> 64% on graded findings)
+  // while background days stay put. Monotone, so discrimination is unchanged
+  // by construction.
+  calibrationGamma: 0.7,
 };
 
 function hydrothermalV2Config({

@@ -156,8 +156,10 @@ describe("terrain thermal sensitivity comparison", () => {
     const species = getSpecies("suillus-luteus")!;
     const withoutElevation = { ...baselineValues };
     delete withoutElevation.weatherElevationM;
+    // Soil inputs stopped being load-bearing when the soil estimator weight
+    // reached zero, so incompleteness is simulated on a rain window instead.
     const withoutWater = { ...baselineValues };
-    delete withoutWater.soilMoistureAvg7d;
+    delete withoutWater.drySpellDays;
 
     expect(compareTerrainThermalSuitability(
       species,

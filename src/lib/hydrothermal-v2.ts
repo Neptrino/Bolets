@@ -114,9 +114,6 @@ export function waterSuitabilityV2(
   const rain = rainfallWindow(values, parameters.rainfallWindowDays);
 
   if (
-    !texture ||
-    moistureMean === undefined ||
-    moistureFloor === undefined ||
     temperature7d === undefined ||
     humidity7d === undefined ||
     drySpellDays === undefined ||
@@ -125,16 +122,32 @@ export function waterSuitabilityV2(
     rain.evapotranspiration === undefined
   ) return null;
 
-  const rewMean = relativeExtractableWater(moistureMean, texture);
-  const rewFloor = relativeExtractableWater(moistureFloor, texture);
-  if (rewMean === null || rewFloor === null) return null;
-
-  const floors = { dryFloor: parameters.soilDryFloor, wetFloor: parameters.soilWetFloor };
-  // The 7-day minimum is kept, but at a lower weight than v1's 0.25: a single
-  // dry hour in a coarse grid cell is weak evidence about the whole week.
-  const soilWaterState =
-    (1 - parameters.soilFloorWeight) * smoothBandV2(rewMean, parameters.rewBand, floors) +
-    parameters.soilFloorWeight * smoothBandV2(rewFloor, parameters.rewBand, floors);
+  // At weight zero the soil estimator cannot move the score, so a soil-feed
+  // outage must not block scoring; the state is still reported when the
+  // inputs exist so shadow comparisons keep their diagnostics.
+  const soilRequired = parameters.soilWeight > 0;
+  let rewMean = 0;
+  let rewFloor = 0;
+  let soilWaterState = 1;
+  const soilInputsPresent = Boolean(texture) &&
+    moistureMean !== undefined && moistureFloor !== undefined;
+  if (soilRequired && !soilInputsPresent) return null;
+  if (soilInputsPresent) {
+    const mean = relativeExtractableWater(moistureMean!, texture!);
+    const floor = relativeExtractableWater(moistureFloor!, texture!);
+    if (mean === null || floor === null) {
+      if (soilRequired) return null;
+    } else {
+      rewMean = mean;
+      rewFloor = floor;
+      const floors = { dryFloor: parameters.soilDryFloor, wetFloor: parameters.soilWetFloor };
+      // The 7-day minimum is kept, but at a lower weight than v1's 0.25: a
+      // single dry hour in a coarse grid cell is weak evidence about the week.
+      soilWaterState =
+        (1 - parameters.soilFloorWeight) * smoothBandV2(rewMean, parameters.rewBand, floors) +
+        parameters.soilFloorWeight * smoothBandV2(rewFloor, parameters.rewBand, floors);
+    }
+  }
 
   // Aggregated precipitation cannot identify each hourly interception loss.
   // One millimetre per wet day and half of reference ET0 are conservative,
@@ -296,10 +309,13 @@ export function missingHydrothermalFieldsV2(
   const temperatureFields = temperature.windowDays === 14
     ? ["temperatureAvg14dC", "frostHours14d", "heatHours14d"] as const
     : ["temperatureAvg20dC", "frostHours20d", "heatHours20d"] as const;
+  // Soil inputs are only load-bearing while the soil estimator carries
+  // weight; at zero they stay optional diagnostics.
+  const soilFields = water.soilWeight > 0
+    ? ["soilTexture", "soilMoistureAvg7d", "soilMoistureMin7d"] as const
+    : [] as const;
   const required = [
-    "soilTexture",
-    "soilMoistureAvg7d",
-    "soilMoistureMin7d",
+    ...soilFields,
     "temperatureAvg7dC",
     "relativeHumidityAvg7d",
     "drySpellDays",

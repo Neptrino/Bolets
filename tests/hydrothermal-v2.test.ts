@@ -189,6 +189,24 @@ describe("waterSuitabilityV2", () => {
     expect(waterSuitabilityV2(withoutTexture, parameters.water)).toBeNull();
   });
 
+  it("scores without soil inputs once the soil estimator carries no weight", () => {
+    const weightless = { ...parameters.water, soilWeight: 0 };
+    const withoutSoil = {
+      ...RAIN_WET_SOIL_DRY,
+      soilTexture: undefined,
+      soilMoistureAvg7d: undefined,
+      soilMoistureMin7d: undefined,
+    };
+    const scored = waterSuitabilityV2(withoutSoil, weightless);
+    expect(scored).not.toBeNull();
+    // M^0 = 1: the score must match the fully-fed computation exactly.
+    expect(scored!.score).toBeCloseTo(
+      waterSuitabilityV2(RAIN_WET_SOIL_DRY, weightless)!.score,
+      12,
+    );
+    expect(scored!.soilWaterState).toBe(1);
+  });
+
   it("rejects a soil weight outside [0, 1]", () => {
     expect(() =>
       waterSuitabilityV2(RAIN_WET_SOIL_DRY, { ...parameters.water, soilWeight: 1.5 })
