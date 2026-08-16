@@ -16,7 +16,9 @@ import type {
 
 function parameters() {
   const config = getSpecies("boletus-edulis")!.modelConfig;
-  if (config.status !== "supported") throw new Error("Expected supported config");
+  if (config.status !== "supported" || config.model !== "hydrothermal-v1") {
+    throw new Error("Expected a supported hydrothermal-v1 config");
+  }
   return config;
 }
 

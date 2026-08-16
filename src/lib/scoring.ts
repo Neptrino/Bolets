@@ -1,8 +1,15 @@
 import {
   extremeTemperatureMultiplier,
+  missingHydrothermalFields,
   temperatureSuitability,
   waterSuitability,
 } from "@/src/lib/hydrothermal";
+import {
+  calibrate,
+  habitatWeight,
+  missingHydrothermalFieldsV2,
+  waterSuitabilityV2,
+} from "@/src/lib/hydrothermal-v2";
 import { predictionModelVersion } from "@/src/lib/model-versions";
 import type {
   ConditionSnapshot,
@@ -150,6 +157,22 @@ function resultFrom({
   };
 }
 
+/**
+ * Required environmental fields for whichever model version scores a species.
+ * Both versions read the same inputs today; keeping one dispatch point means a
+ * v2-only field cannot silently bypass the availability check.
+ */
+export function missingModelFields(
+  species: SpeciesProfile,
+  values: ConditionSnapshot["values"],
+) {
+  const model = species.modelConfig;
+  if (model.status !== "supported") return [];
+  return model.model === "hydrothermal-v2"
+    ? missingHydrothermalFieldsV2(values, model.water, model.temperature)
+    : missingHydrothermalFields(values, model.water, model.temperature);
+}
+
 export function calculateSuitability(
   species: SpeciesProfile,
   snapshot: ConditionSnapshot,
@@ -208,7 +231,9 @@ export function calculateSuitability(
     });
   }
 
-  const water = waterSuitability(values, model.water)?.score ?? null;
+  const water = model.model === "hydrothermal-v2"
+    ? waterSuitabilityV2(values, model.water)?.score ?? null
+    : waterSuitability(values, model.water)?.score ?? null;
   const temperature = temperatureSuitability(values, model.temperature);
   const extremes = extremeTemperatureMultiplier(values, model.temperature);
   const components = [
@@ -238,15 +263,21 @@ export function calculateSuitability(
     });
   }
 
-  const fruitingConditions =
+  const rawFruitingConditions =
     phenology *
     water ** model.water.waterExponent *
     temperature ** (1 - model.water.waterExponent) *
     extremes;
+  // v2 applies a versioned calibration to the raw product, and weights habitat
+  // concavely so that a partly compatible cell can still reach the upper bands.
+  const fruitingConditions = model.model === "hydrothermal-v2"
+    ? calibrate(rawFruitingConditions, model.combination.calibrationGamma)
+    : rawFruitingConditions;
+  const habitatFactor = model.model === "hydrothermal-v2"
+    ? habitatWeight(effectiveHabitatCoverage ?? 0, model.combination.habitatExponent)
+    : effectiveHabitatCoverage ?? 0;
   const fruitingConditionsScore = roundIndex(fruitingConditions * 100);
-  const opportunityIndex = roundIndex(
-    (effectiveHabitatCoverage ?? 0) * fruitingConditions * 100,
-  );
+  const opportunityIndex = roundIndex(habitatFactor * fruitingConditions * 100);
 
   return resultFrom({
     components,

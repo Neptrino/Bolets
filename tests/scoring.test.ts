@@ -8,7 +8,10 @@ import type {
 } from "@/src/lib/types";
 
 type SupportedProfile = SpeciesProfile & {
-  modelConfig: Extract<FruitingModelConfig, { status: "supported" }>;
+  modelConfig: Extract<
+    FruitingModelConfig,
+    { status: "supported"; model: "hydrothermal-v1" }
+  >;
 };
 
 const peakObservedAt = "2026-10-14T22:00:00.000Z"; // 15 October, 00:00 in Madrid.
@@ -48,8 +51,11 @@ function snapshot(
 
 function supportedSpecies(speciesId = "boletus-edulis"): SupportedProfile {
   const species = getSpecies(speciesId)!;
-  if (species.modelConfig.status !== "supported") {
-    throw new Error(`${speciesId} is not supported by the hydrothermal model`);
+  if (
+    species.modelConfig.status !== "supported" ||
+    species.modelConfig.model !== "hydrothermal-v1"
+  ) {
+    throw new Error(`${speciesId} is not supported by the hydrothermal-v1 model`);
   }
   return species as SupportedProfile;
 }

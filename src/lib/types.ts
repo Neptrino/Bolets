@@ -203,6 +203,33 @@ export interface TemperatureModelParameters {
   heatHalfLifeHours: number;
 }
 
+/**
+ * v2 water parameters. The rain and soil estimators are combined as a weighted
+ * geometric mean instead of v1's chain, and both carry floors, so a single
+ * unreliable input cannot zero an otherwise favourable score.
+ */
+export interface WaterModelParametersV2 extends Omit<
+  WaterModelParameters,
+  "waterExponent" | "triggerDependency"
+> {
+  /** Weight given to the soil estimator; the rain estimator takes the rest. */
+  soilWeight: number;
+  /** Weight of the 7-day soil minimum within the soil estimator. */
+  soilFloorWeight: number;
+  soilDryFloor: number;
+  soilWetFloor: number;
+  rainFloor: number;
+  /** Exponent on water in the fruiting product; temperature takes the rest. */
+  waterExponent: number;
+}
+
+export interface CombinationModelParameters {
+  /** Concave habitat weight: opportunity = habitat^exponent x conditions. */
+  habitatExponent: number;
+  /** Monotone calibration applied to the raw component product. */
+  calibrationGamma: number;
+}
+
 export type ModelEvidence =
   | { status: "expert-prior" | "species-literature"; citations: string[] }
   | { status: "unsupported"; citations: string[] };
@@ -215,6 +242,17 @@ export type FruitingModelConfig =
       guild: Exclude<FruitingGuild, "hypogeous">;
       water: WaterModelParameters;
       temperature: TemperatureModelParameters;
+      phenology: { monthlyAnchors: MonthlyPhenologyAnchors };
+      evidence: Extract<ModelEvidence, { status: "expert-prior" | "species-literature" }>;
+    }
+  | {
+      model: "hydrothermal-v2";
+      version: string;
+      status: "supported";
+      guild: Exclude<FruitingGuild, "hypogeous">;
+      water: WaterModelParametersV2;
+      temperature: TemperatureModelParameters;
+      combination: CombinationModelParameters;
       phenology: { monthlyAnchors: MonthlyPhenologyAnchors };
       evidence: Extract<ModelEvidence, { status: "expert-prior" | "species-literature" }>;
     }

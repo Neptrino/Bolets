@@ -1,4 +1,5 @@
 import type {
+  CombinationModelParameters,
   FruitingGuild,
   FruitingModelConfig,
   Month,
@@ -6,10 +7,13 @@ import type {
   SeasonalActivity,
   TemperatureModelParameters,
   WaterModelParameters,
+  WaterModelParametersV2,
 } from "@/src/lib/types";
 import {
   HABITAT_ONLY_MODEL_VERSION,
   HYDROTHERMAL_PRIOR_VERSION,
+  HYDROTHERMAL_V2_PRIOR_VERSION,
+  speciesUsesHydrothermalV2,
 } from "@/src/lib/model-versions";
 
 // These values are versioned expert priors, not fitted coefficients. The
@@ -147,6 +151,140 @@ const GUILD_PRIOR_CITATIONS = [
   "https://doi.org/10.1016/j.agrformet.2016.03.015",
   "https://doi.org/10.1016/j.agrformet.2017.10.024",
 ] as const;
+
+/**
+ * v2 parameters revised against dated fruiting observations rather than expert
+ * judgement alone; see docs/fruiting-model-diagnosis.md for the measurements
+ * behind each change. The response structure and its citations are unchanged —
+ * these are re-weightings of inputs whose reliability was measured.
+ */
+
+/**
+ * Confidence in the modelled 3-9 cm soil series. It was anti-predictive at
+ * observed finds (AUC 0.145) and degrades with altitude (r = -0.73), so it is
+ * demoted to a minority weight. A terrain-aware source (CLMS 1 km SWI) should
+ * raise this rather than change the structure. A sweep over the same events
+ * favoured dropping it entirely; 0.15 keeps the term alive at near-zero cost
+ * (montane AUC 0.542 versus 0.558 at zero, and no measurable effect on lowland
+ * records) so the CLMS replacement re-weights rather than reintroduces it.
+ */
+const COARSE_SOIL_WEIGHT = 0.15;
+/** Below-band soil no longer means "impossible", only "unfavourable". */
+const SOIL_DRY_FLOOR = 0.25;
+/** Waterlogging never zeroed an observed find, so the wet tail is gentler. */
+const SOIL_WET_FLOOR = 0.4;
+/** A rainless window is real evidence, so the rain floor stays low. */
+const RAIN_FLOOR = 0.1;
+/** v1 gave the 7-day soil minimum 0.25; one dry hour in a coarse cell is weak. */
+const SOIL_FLOOR_WEIGHT = 0.15;
+/**
+ * Editorial temperature ranges describe daytime conditions but are scored
+ * against 14-20 day means that include nights. Observed finds sat 4.0 degrees
+ * below their species optimum on montane data and 1.1 on lowland records.
+ */
+const TEMPERATURE_OPTIMUM_SHIFT_C = 3;
+
+const COMBINATION_V2: CombinationModelParameters = {
+  // A 30% compatible cell could never exceed a score of 30 under v1, leaving
+  // the upper bands unreachable at most observed finds.
+  habitatExponent: 0.4,
+  // Fitted on abundance-graded findings: 0.8 lifts abundant-find days into the
+  // band their abundance indicates (alta-rate 36% -> 45%) while background
+  // days stay in the bottom band; stronger curves only inflated background.
+  // Monotone, so discrimination is unchanged by construction.
+  calibrationGamma: 0.8,
+};
+
+function hydrothermalV2Config({
+  guild,
+  prior,
+  temperatureMidpoint,
+  waterOverrides,
+  temperatureOverrides,
+  monthlyAnchors,
+  evidence,
+}: {
+  guild: SupportedGuild;
+  prior: { water: WaterModelParameters; temperature: TemperatureModelParameters };
+  temperatureMidpoint: number;
+  waterOverrides?: Partial<WaterModelParameters>;
+  temperatureOverrides?: Partial<TemperatureModelParameters>;
+  monthlyAnchors: MonthlyPhenologyAnchors;
+  evidence?: { status: "expert-prior" | "species-literature"; citations: readonly string[] };
+}): FruitingModelConfig {
+  return {
+    model: "hydrothermal-v2" as const,
+    version: HYDROTHERMAL_V2_PRIOR_VERSION,
+    status: "supported" as const,
+    guild,
+    water: { ...waterParametersV2(prior.water), ...(waterOverrides ?? {}) },
+    // v2 keeps the guild's asymmetric half-widths instead of replacing them
+    // with the editorial half-range, and shifts the optimum down towards the
+    // multi-day mean the model actually scores.
+    temperature: {
+      ...prior.temperature,
+      optimumC: temperatureMidpoint - TEMPERATURE_OPTIMUM_SHIFT_C,
+      ...(temperatureOverrides ?? {}),
+    },
+    combination: { ...COMBINATION_V2 },
+    phenology: { monthlyAnchors },
+    evidence: evidence
+      ? { status: evidence.status, citations: [...evidence.citations] }
+      : { status: "expert-prior" as const, citations: [...GUILD_PRIOR_CITATIONS] },
+  };
+}
+
+/**
+ * Builds the v2 counterpart of a shipped v1 config using the same production
+ * constants. Shadow evaluation scores both versions from one source of truth,
+ * so a validated v2 config cannot drift from the one a cutover would ship.
+ */
+export function hydrothermalV2ConfigFrom(
+  config: Extract<FruitingModelConfig, { status: "supported"; model: "hydrothermal-v1" }>,
+): FruitingModelConfig {
+  const prior = GUILD_PRIORS[config.guild];
+  // v1 replaced the guild half-widths with the editorial half-range, so the
+  // shipped optimum is the editorial midpoint that v2 shifts down.
+  return hydrothermalV2Config({
+    guild: config.guild,
+    prior,
+    temperatureMidpoint: config.temperature.optimumC,
+    temperatureOverrides: {
+      frostHalfLifeHours: config.temperature.frostHalfLifeHours,
+      heatHalfLifeHours: config.temperature.heatHalfLifeHours,
+      windowDays: config.temperature.windowDays,
+    },
+    monthlyAnchors: config.phenology.monthlyAnchors,
+    evidence: config.evidence,
+  });
+}
+
+function waterParametersV2(prior: WaterModelParameters): WaterModelParametersV2 {
+  // triggerDependency is intentionally dropped: v2 weights the rain estimator
+  // through soilWeight instead of damping it into a fixed range.
+  const shared: Omit<WaterModelParameters, "triggerDependency"> = {
+    waterExponent: prior.waterExponent,
+    moistureWindowDays: prior.moistureWindowDays,
+    rewBand: prior.rewBand,
+    rainfallWindowDays: prior.rainfallWindowDays,
+    rainfallHalfSaturationMm: prior.rainfallHalfSaturationMm,
+    wetDaysHalfSaturation: prior.wetDaysHalfSaturation,
+    drySpellGraceDays: prior.drySpellGraceDays,
+    drySpellDecayDays: prior.drySpellDecayDays,
+    drySpellExponent: prior.drySpellExponent,
+    vpdComfortKpa: prior.vpdComfortKpa,
+    vpdDecayKpa: prior.vpdDecayKpa,
+    vpdExponent: prior.vpdExponent,
+  };
+  return {
+    ...shared,
+    soilWeight: COARSE_SOIL_WEIGHT,
+    soilFloorWeight: SOIL_FLOOR_WEIGHT,
+    soilDryFloor: SOIL_DRY_FLOOR,
+    soilWetFloor: SOIL_WET_FLOOR,
+    rainFloor: RAIN_FLOOR,
+  };
+}
 
 const MONTHS = [
   "gen", "feb", "mar", "abr", "mai", "jun",
@@ -381,6 +519,19 @@ export function modelConfigForSpecies(
   const [minimumTemperature, maximumTemperature] = temperatureRange;
   const temperatureMidpoint = (minimumTemperature + maximumTemperature) / 2;
   const temperatureHalfWidth = (maximumTemperature - minimumTemperature) / 2;
+
+  if (speciesUsesHydrothermalV2(speciesId)) {
+    return hydrothermalV2Config({
+      guild: supportedEntry.guild,
+      prior,
+      temperatureMidpoint,
+      waterOverrides: supportedEntry.water,
+      temperatureOverrides: supportedEntry.temperature,
+      monthlyAnchors: phenologyAnchors(seasonality),
+      evidence: supportedEntry.evidence,
+    });
+  }
+
   return {
     model: "hydrothermal-v1" as const,
     version: HYDROTHERMAL_PRIOR_VERSION,

@@ -1,0 +1,235 @@
+import {
+  clamp01,
+  relativeExtractableWater,
+  smoothstep,
+} from "@/src/lib/hydrothermal";
+import type {
+  ConditionSnapshot,
+  TemperatureModelParameters,
+  WaterModelParametersV2,
+} from "@/src/lib/types";
+
+type EnvironmentValues = ConditionSnapshot["values"];
+
+/**
+ * hydrothermal-v2 water response.
+ *
+ * The 2026-08 diagnostic replay (docs/fruiting-model-diagnosis.md) measured the
+ * two water inputs separately against dated fruiting observations. Accumulated
+ * rainfall discriminated real fruiting days well (AUC 0.81); modelled 3-9 cm
+ * soil moisture was anti-predictive (AUC 0.145) and collapsed to a hard zero at
+ * 38 of 55 montane finds while rainfall said the ground was wet. v1 weights the
+ * two the wrong way round: soil state is an unbounded multiplier that can zero
+ * the score, while the rain response is damped into [1 - triggerDependency, 1].
+ *
+ * v2 therefore treats them as two estimators of the same quantity, combined as
+ * a weighted geometric mean, each bounded away from zero so that one unreliable
+ * source cannot erase an otherwise favourable score. Confidence in the soil
+ * estimator is a parameter, so replacing the coarse series with a terrain-aware
+ * one (CLMS 1 km SWI) is a weight change rather than a restructure.
+ */
+
+/**
+ * Four-point response like v1's `smoothBand`, but the tails settle onto floors
+ * instead of zero. A reading outside the band means "unfavourable", and with an
+ * input this noisy it must not mean "impossible".
+ */
+export function smoothBandV2(
+  value: number,
+  [minimum, optimumStart, optimumEnd, maximum]: readonly [number, number, number, number],
+  { dryFloor, wetFloor }: { dryFloor: number; wetFloor: number },
+) {
+  if (!(minimum < optimumStart && optimumStart <= optimumEnd && optimumEnd < maximum)) {
+    throw new RangeError("A response band must be strictly ordered around its optimum");
+  }
+  if (!(dryFloor >= 0 && dryFloor <= 1 && wetFloor >= 0 && wetFloor <= 1)) {
+    throw new RangeError("Response floors must be within [0, 1]");
+  }
+  if (value <= minimum) return dryFloor;
+  if (value >= maximum) return wetFloor;
+  if (value < optimumStart) {
+    return dryFloor + (1 - dryFloor) * smoothstep((value - minimum) / (optimumStart - minimum));
+  }
+  if (value <= optimumEnd) return 1;
+  return wetFloor + (1 - wetFloor) * (1 - smoothstep((value - optimumEnd) / (maximum - optimumEnd)));
+}
+
+function hill(value: number, halfSaturation: number) {
+  const squared = Math.max(0, value) ** 2;
+  return squared / (squared + halfSaturation ** 2);
+}
+
+function saturationVapourPressureKpa(temperatureC: number) {
+  return 0.6108 * Math.exp((17.27 * temperatureC) / (temperatureC + 237.3));
+}
+
+function rainfallWindow(
+  values: EnvironmentValues,
+  days: WaterModelParametersV2["rainfallWindowDays"],
+) {
+  if (days === 14) {
+    return {
+      rainfall: values.rainfall14dMm,
+      rainyDays: values.rainfallDays14d,
+      evapotranspiration: values.evapotranspiration14dMm,
+    };
+  }
+  if (days === 21) {
+    return {
+      rainfall: values.rainfall21dMm,
+      rainyDays: values.rainfallDays21d,
+      evapotranspiration: values.evapotranspiration21dMm,
+    };
+  }
+  return {
+    rainfall: values.rainfall26dMm,
+    rainyDays: values.rainfallDays26d,
+    evapotranspiration: values.evapotranspiration26dMm,
+  };
+}
+
+export type WaterSuitabilityV2 = {
+  score: number;
+  waterBalance: number;
+  soilWaterState: number;
+  soilWeight: number;
+  relativeExtractableWaterMean: number;
+  relativeExtractableWaterFloor: number;
+  vapourPressureDeficitKpa: number;
+  atmosphericRetention: number;
+  drySpellRetention: number;
+  soilWaterSource: "open-meteo-rew";
+};
+
+export function waterSuitabilityV2(
+  values: EnvironmentValues,
+  parameters: WaterModelParametersV2,
+): WaterSuitabilityV2 | null {
+  const texture = values.soilTexture;
+  const moistureMean = values.soilMoistureAvg7d;
+  const moistureFloor = values.soilMoistureMin7d;
+  const temperature7d = values.temperatureAvg7dC;
+  const humidity7d = values.relativeHumidityAvg7d;
+  const drySpellDays = values.drySpellDays;
+  const rain = rainfallWindow(values, parameters.rainfallWindowDays);
+
+  if (
+    !texture ||
+    moistureMean === undefined ||
+    moistureFloor === undefined ||
+    temperature7d === undefined ||
+    humidity7d === undefined ||
+    drySpellDays === undefined ||
+    rain.rainfall === undefined ||
+    rain.rainyDays === undefined ||
+    rain.evapotranspiration === undefined
+  ) return null;
+
+  const rewMean = relativeExtractableWater(moistureMean, texture);
+  const rewFloor = relativeExtractableWater(moistureFloor, texture);
+  if (rewMean === null || rewFloor === null) return null;
+
+  const floors = { dryFloor: parameters.soilDryFloor, wetFloor: parameters.soilWetFloor };
+  // The 7-day minimum is kept, but at a lower weight than v1's 0.25: a single
+  // dry hour in a coarse grid cell is weak evidence about the whole week.
+  const soilWaterState =
+    (1 - parameters.soilFloorWeight) * smoothBandV2(rewMean, parameters.rewBand, floors) +
+    parameters.soilFloorWeight * smoothBandV2(rewFloor, parameters.rewBand, floors);
+
+  // Aggregated precipitation cannot identify each hourly interception loss.
+  // One millimetre per wet day and half of reference ET0 are conservative,
+  // explicit deductions before the saturating rain response.
+  const effectiveRainfall = Math.max(
+    0,
+    rain.rainfall - rain.rainyDays - rain.evapotranspiration * 0.5,
+  );
+  const rainResponse =
+    0.7 * hill(effectiveRainfall, parameters.rainfallHalfSaturationMm) +
+    0.3 * hill(rain.rainyDays, parameters.wetDaysHalfSaturation);
+  // Rain is the better-measured estimator, but a saturating response still
+  // reaches zero in a genuinely rainless window, so it carries its own floor.
+  const waterBalance = parameters.rainFloor + (1 - parameters.rainFloor) * rainResponse;
+
+  const vpd = saturationVapourPressureKpa(temperature7d) *
+    (1 - Math.max(0, Math.min(100, humidity7d)) / 100);
+  const atmosphericRetention = Math.exp(
+    -Math.max(0, vpd - parameters.vpdComfortKpa) / parameters.vpdDecayKpa,
+  );
+  const drySpellRetention = Math.exp(
+    -Math.max(0, drySpellDays - parameters.drySpellGraceDays) /
+      parameters.drySpellDecayDays,
+  );
+
+  const soilWeight = parameters.soilWeight;
+  if (!(soilWeight >= 0 && soilWeight <= 1)) {
+    throw new RangeError("Soil estimator weight must be within [0, 1]");
+  }
+  const score = clamp01(
+    waterBalance ** (1 - soilWeight) *
+      soilWaterState ** soilWeight *
+      atmosphericRetention ** parameters.vpdExponent *
+      drySpellRetention ** parameters.drySpellExponent,
+  );
+
+  return {
+    score,
+    waterBalance,
+    soilWaterState,
+    soilWeight,
+    relativeExtractableWaterMean: rewMean,
+    relativeExtractableWaterFloor: rewFloor,
+    vapourPressureDeficitKpa: vpd,
+    atmosphericRetention,
+    drySpellRetention,
+    soilWaterSource: "open-meteo-rew",
+  };
+}
+
+/**
+ * Monotone calibration applied to the raw component product. Kept as an
+ * explicit, versioned step so the published bands can be aligned with observed
+ * fruiting frequency without hiding a correction inside a component.
+ */
+export function calibrate(value: number, gamma: number) {
+  if (!(gamma > 0)) throw new RangeError("Calibration exponent must be positive");
+  return clamp01(value) ** gamma;
+}
+
+/**
+ * Habitat enters as a concave weight rather than a linear area fraction. Under
+ * v1 a cell that is 30% compatible woodland could never exceed a score of 30,
+ * so the upper bands were unreachable at 55-70% of observed finds even in
+ * perfect conditions.
+ */
+export function habitatWeight(effectiveHabitatCoverage: number, exponent: number) {
+  if (!(exponent > 0 && exponent <= 1)) {
+    throw new RangeError("Habitat exponent must be within (0, 1]");
+  }
+  return clamp01(effectiveHabitatCoverage) ** exponent;
+}
+
+export function missingHydrothermalFieldsV2(
+  values: EnvironmentValues,
+  water: WaterModelParametersV2,
+  temperature: TemperatureModelParameters,
+) {
+  const rainFields = water.rainfallWindowDays === 14
+    ? ["rainfall14dMm", "rainfallDays14d", "evapotranspiration14dMm"] as const
+    : water.rainfallWindowDays === 21
+      ? ["rainfall21dMm", "rainfallDays21d", "evapotranspiration21dMm"] as const
+      : ["rainfall26dMm", "rainfallDays26d", "evapotranspiration26dMm"] as const;
+  const temperatureFields = temperature.windowDays === 14
+    ? ["temperatureAvg14dC", "frostHours14d", "heatHours14d"] as const
+    : ["temperatureAvg20dC", "frostHours20d", "heatHours20d"] as const;
+  const required = [
+    "soilTexture",
+    "soilMoistureAvg7d",
+    "soilMoistureMin7d",
+    "temperatureAvg7dC",
+    "relativeHumidityAvg7d",
+    "drySpellDays",
+    ...rainFields,
+    ...temperatureFields,
+  ] as const satisfies readonly (keyof EnvironmentValues)[];
+  return required.filter((field) => values[field] === undefined);
+}

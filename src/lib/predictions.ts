@@ -6,9 +6,12 @@ import { getOccurrenceSupport } from "@/src/lib/occurrences";
 import { boundsCentre, boundsContain } from "@/src/lib/map-grid";
 import { correctForecastValues, FORECAST_CORRECTION_METHOD } from "@/src/lib/forecast-correction";
 import { PREDICTION_CACHE_VERSION, predictionModelVersion } from "@/src/lib/model-versions";
-import { missingHydrothermalFields } from "@/src/lib/hydrothermal";
 import { spatialEnvironmentHistorySchema, spatialEnvironmentResponseSchema } from "@/src/lib/schema";
-import { calculateSuitability, opportunityLabel } from "@/src/lib/scoring";
+import {
+  calculateSuitability,
+  missingModelFields,
+  opportunityLabel,
+} from "@/src/lib/scoring";
 import type {
   ConditionSnapshot,
   CoordinateBounds,
@@ -80,9 +83,7 @@ export async function getPredictionCellHistory(
     // Habitat is static at this model version. Dynamic values must come only
     // from the historical snapshot so today's weather cannot fill an old gap.
     const values = { ...habitatValues, ...snapshot.values };
-    const missingFields = species.modelConfig.status === "supported"
-      ? missingHydrothermalFields(values, species.modelConfig.water, species.modelConfig.temperature)
-      : [];
+    const missingFields = missingModelFields(species, values);
     const unavailableFields = [...new Set([...snapshot.unavailableFields, ...missingFields])];
     const conditionSnapshot: ConditionSnapshot = {
         regionId: cell.regionId,
@@ -193,9 +194,7 @@ export async function getPredictionCellHistory(
     );
     correctionState = correction.state;
     const values = { ...habitatValues, ...correction.values };
-    const missingFields = species.modelConfig.status === "supported"
-      ? missingHydrothermalFields(values, species.modelConfig.water, species.modelConfig.temperature)
-      : [];
+    const missingFields = missingModelFields(species, values);
     const unavailableFields = [
       ...new Set([
         ...baseline.unavailableFields,
@@ -350,9 +349,7 @@ export async function getPredictionCells(
   const payload = spatialEnvironmentResponseSchema.parse(await response.json());
   const cells = payload.cells.map((cell) => {
     const values = { ...cell.values };
-    const missingFields = species.modelConfig.status === "supported"
-      ? missingHydrothermalFields(values, species.modelConfig.water, species.modelConfig.temperature)
-      : [];
+    const missingFields = missingModelFields(species, values);
     const unavailableFields = [...new Set([...cell.unavailableFields, ...missingFields])];
     const result = calculateSuitability(species, { ...cell, unavailableFields, values });
     const mapCell = toPredictionMapCell(cell, result);
