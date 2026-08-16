@@ -124,6 +124,11 @@ file_size_limit = "50MiB"
 # allowed_mime_types = ["image/png", "image/jpeg"]
 # objects_path = "./images"
 
+[storage.buckets.environment-shadow]
+public = false
+file_size_limit = "8MiB"
+allowed_mime_types = ["application/wmo-grib"]
+
 # Allow connections via S3 compatible clients
 [storage.s3_protocol]
 enabled = true
@@ -389,6 +394,15 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.import-spatial-cells]
+verify_jwt = true
+
+[functions.import-clms-soil]
+verify_jwt = true
+
+[functions.stage-arome-shadow]
+verify_jwt = true
+
+[functions.import-xema-rain]
 verify_jwt = true
 
 [functions.refresh-spatial-environment]

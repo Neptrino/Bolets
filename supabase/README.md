@@ -10,12 +10,15 @@ Supabase stores normalized environmental evidence and exposes it only through se
 | `import-spatial-cells` | Trusted offline/CI worker | Validates and upserts reviewed 250 m terrain, land-cover, and soil evidence. |
 | `refresh-spatial-environment` | Every 2 minutes | Refreshes the shared 2.5 km AROME atmosphere grid once per day, in resumable batches. |
 | `refresh-spatial-soil` | Every 5 minutes until complete | Refreshes the independent 9 km soil-moisture grid and its separate horizon-zero plus five-day environmental forecast once per day in rate-limited batches. If both observed streams are refreshed later and move more than 8 hours beyond the stored baseline, the same-day issue is invalidated and rebuilt automatically. Independent cursors let a transient forecast failure retry without blocking current soil ingestion. |
+| `import-clms-soil` | Trusted raster-staging worker | Validates and imports Copernicus CLMS 1 km surface-soil-moisture and soil-water-index samples on the existing 2.5 km atmosphere lattice. This is a private hot evaluation stream and cannot alter published scores. |
+| `stage-arome-shadow` | Named-token maintenance request | Probes one authenticated Météo-France WCS field contract or stages one bounded 0.01-degree response after a single-message GRIB2 container check. Semantics remain unverified, the source stays blocked, and it cannot alter production weather or scores. |
+| `import-xema-rain` | Hourly at minute 50 | Imports Meteocat XEMA semi-hourly gauge precipitation collapsed to station hours with completeness counts, keeping a 60-day rolling shadow window. Observed station rain is validation evidence only and cannot alter production rain windows or scores. `npm run weather:backfill-xema-rain` refills the window through the same function; `npm run weather:compare-station-rain` runs the station-versus-model validation. |
 | `refresh-spatial-level-conditions` | After the daily observed atmosphere and soil ingestions both complete | Materializes current conditions for the 2.5, 5, and 10 km display levels. Forecast degradation cannot block current conditions, and completed ingestion invocations keep retrying the idempotent refresh gate after transient failures. |
 | `refresh-species-occurrences` | Seven monthly batches from 03:15 through 04:15 UTC on day 1 | Refreshes whitelisted FungaCAT records through GBIF, applies quality gates, and stores only 10 km support cells. |
 | `read-environment` | Next.js server request | Returns the latest regional snapshot. |
 | `read-spatial-environment` | Next.js server request | Returns verified cells in a bounded local map view. |
 | `read-occurrence-support` | Next.js server request | Returns privacy-safe historical record counts and provenance for one species in a bounded view. |
-| retention job | Daily at 00:00 UTC | Retains 45 days of regional weather, four complete dates of observed grid weather, the newest completed five-day issue plus any newer in-progress replacement, 24 hours of completed `pg_cron` history, and 90 days of ingestion runs. Snapshot and cron-log vacuums run at 00:02/00:03 before the observed pipelines restart at 00:05/00:06; the forecast-table vacuum remains at 06:40. |
+| retention job | Daily at 00:00 UTC | Retains 45 days of regional weather, four complete dates of observed grid weather, the newest completed five-day issue plus any newer in-progress replacement, 24 hours of completed `pg_cron` history, and 90 days of ingestion runs. CLMS shadow imports retain the newest four completed product dates, so provider gaps do not silently shorten the hot preview. Snapshot and cron-log vacuums run at 00:02/00:03 before the observed pipelines restart at 00:05/00:06; the forecast-table vacuum remains at 06:40. |
 
 Every write run is audited in `ingestion_runs`. `pipeline_sources` records source health, `pipeline_cursors` makes large refreshes resumable, and all application tables have RLS enabled without browser table grants.
 
@@ -28,7 +31,9 @@ Every write run is audited in `ingestion_runs`. `pipeline_sources` records sourc
 - Geological context: ICGC Mapa geològic de Catalunya 1:50.000 v3r0, sampled across each canonical 250 m cell and stored in compact side tables with mapped/class/unit coverage. It is display-only evidence, is area-weighted from 250 m at coarse zooms, and never enters soil readiness, habitat gates, or suitability scoring.
 - Potential habitat: every recognized ICGC cover fraction sampled within each 250 m cell is retained. The database sums only fractions compatible with the selected species, then preserves raw cover/altitude/pH-compatible coverage `C` and the compatible-cover-weighted altitude response `A`. Both are normalized to 0–1 before the distribution map and `hydrothermal-v1` derive effective habitat as `H = C × A`.
 - Atmosphere: Météo-France AROME through Open-Meteo at 2.5 km native resolution, sampled on aligned 2.5 km model tiles and statistically adjusted to each tile's median terrain elevation. Temperature, air humidity, precipitation, reference evapotranspiration (ET₀) and wind use this model.
+- Direct atmosphere shadow: authenticated Météo-France AROME WCS metadata is checked against the pinned 0.01-degree grid, level, unit, run, forecast-lead and extent contract. At most one temperature, relative-humidity or wind request and one 0.25° × 0.25° Catalonia subset may be staged per named-token call. Returned bytes must contain exactly one complete GRIB2 message, but container framing does not prove its field, level, grid, bounds or valid time; semantic verification remains pending. Private bytes do not enter production weather or scoring.
 - Soil moisture: Open-Meteo's available land model at 9 km. It remains an explicitly coarser input and is never labelled as 2.5 km data. The 7-day mean and minimum are normalized as relative extractable water inside unified water state `W`; soil moisture is not a separate final factor.
+- Satellite soil shadow: Copernicus CLMS SSM v1 and SWI v2 are 1/112° daily rasters (about 1 km sampling) with explicit noise, QFLAG, mask, and surface-state fields. Raw values are sampled only at the existing 2.5 km AROME point centres to bound database size. SSM/SWI are relative percentages rather than 3–9 cm volumetric moisture, can be biased or masked in forests and steep terrain, and remain outside `hydrothermal-v1` until a versioned calibration proves a safe single-water-source bridge. PostgreSQL keeps only a four-date hot preview; seasonal calibration requires an external raster/archive backfill or sufficient-statistics export rather than pretending this window is training history.
 - Five-day projection: verified Météo-France AROME atmosphere provides the history through the issue baseline, ECMWF IFS HRES provides future atmospheric hours, and the existing Open-Meteo 3–9 cm layer provides soil moisture; the forecast is represented at 9 km. The normalizer splices AROME at or before horizon zero with ECMWF after horizon zero and recalculates every complete hydrothermal window for +1…+5 days. This lets observed heat, frost, rain, and drying events age out without substituting ECMWF's different retrospective analysis. Forecast data is stored in `weather_grid_forecasts`, never in the latest-observation table. An issue is marked complete only after every configured point has all six publishable horizons. The application applies future-minus-baseline anomalies to the latest publishable observation, reconciles physical bounds and dependent windows, and scores the corrected values. Missing hours remain unavailable rather than being shortened or backfilled from the other provider. ECMWF atmosphere and generic soil-forecast health are recorded separately, and forecast ingestion advances on its own cursor so current-soil failures cannot suppress a successful projection batch. A later same-day observation cycle that crosses the 8-hour seam automatically replaces the daily issue; ordinary cursor resets cannot overwrite a completed issue silently.
 - The horizon-zero rollout migration deliberately withholds projections for the remainder of its UTC deployment date. The v2 forecast stream starts with the next observed-weather cycle, preventing a late-day provider baseline from being calibrated against a many-hours-old current snapshot.
 - Time windows: the snapshot keeps the latest model estimate and the sufficient statistics required by `hydrothermal-v1`. Temperature mean plus frost-hour (≤ 0 °C) and heat-hour (≥ 27 °C) counts use the configured 20-day ectomycorrhizal window or 14-day window for the other guilds. Effective rain and wet-day counts use 21 days for ectomycorrhizal and wood-decaying species, 14 days for litter/soil and grassland species, and a 26-day `Boletus edulis` override. A wet day starts at 1 mm; accumulated effective rain is `max(0, rain - wetDays × 1 mm - 0.5 × ET0)`. Water state also uses vapour-pressure deficit derived from 7-day mean temperature and humidity, dry-spell length, and 7-day mean/minimum shallow relative extractable water. Air humidity, rain, soil moisture, and drought feed `W` once rather than becoming independent scores. All windows use `Europe/Madrid` local time.
@@ -90,6 +95,121 @@ client. This country-wide aggregation is intentionally kept outside a
 request-bound Edge Function. Re-run `spatial:update-geology-mapping` only when
 adopting a new pinned ICGC dataset, then review every changed unit
 classification before importing it.
+
+## Import the CLMS soil shadow
+
+CLMS catalogue discovery is public, but raster downloads require a Copernicus Data Space account. Stage the nine aligned COG assets outside the repository: SSM, SSM noise, SWI002/005/010, their matching QFLAG rasters, and SSF. The manifest must preserve each official `s3://eodata/CLMS/...` asset path, checksum, and explicit `checksumAlgorithm` plus product ID, version, nominal time, content window, and publication time. The adapter accepts CDSE's `d50110<MD5>` multihash directly and verifies the staged file. Only reviewed SSM V1.2.1+ patch releases within the V1.2 line and spatial-shift-corrected SWI V2.1.1+ patches within V2.1 are accepted; a new minor or major line requires an adapter review. The snapshot date is parsed from the nominal product ID rather than STAC `datetime`.
+
+Discover the newest complete, reviewed product pair without credentials, or stage its nine authenticated OData nodes with a CDSE Sentinel Hub OAuth client. `CDSE_CLIENT_ID` and `CDSE_CLIENT_SECRET` must be injected into the controlled local or CI process environment; managed Edge secrets are not readable by this local worker. They are exchanged once for a short-lived token and are never written to the manifest or logs. The staging directory must be an absolute path outside the repository. Every COG is checked against its STAC byte length and checksum before the manifest is created:
+
+```bash
+npm run soil:fetch-clms -- --discover-only
+
+# After injecting CDSE_CLIENT_ID and CDSE_CLIENT_SECRET from the secret manager:
+npm run soil:fetch-clms -- \
+  --output-dir=/absolute/path/outside-the-repository/clms-cogs \
+  --date=YYYY-MM-DD
+```
+
+The authenticated command writes `clms-manifest.json` alongside the verified COGs. Existing files are reused only when both length and checksum match; an unexpected catalogue grid, product version, band scale, QFLAG codebook or product-specific SSF codebook stops staging.
+
+Run a local validation before uploading:
+
+```bash
+npm run soil:import-clms -- \
+  --manifest=/absolute/path/clms-manifest.json \
+  --asset-dir=/absolute/path/clms-cogs \
+  --dry-run
+```
+
+For an authenticated import, use a service-role key in controlled CI so the local staging worker can read the canonical AROME points. An anon key plus `CLMS_SOIL_IMPORT_TOKEN` is also supported only when `--points=/absolute/path/trusted-arome-points.json` supplies a service-generated point export. The local worker samples raw UINT8 values without applying raster scale metadata and posts batches of 500 through the authenticated Edge Function:
+
+```bash
+npm run soil:import-clms -- \
+  --manifest=/absolute/path/clms-manifest.json \
+  --asset-dir=/absolute/path/clms-cogs
+```
+
+Moisture, noise, and QFLAG DNs `0…200` decode with a `0.5%` scale. Embedded `241…255` flag codes are never scaled or clamped. SSF is deliberately decoded without scaling using the product-specific CDSE codebook: `0` unfrozen/nominal, `1` frozen, `2` thawing, `3` frozen with snow cover, and `4` wet snow. This differs from the generic ASCAT/H SAF codebook, so only `0` is accepted as usable here. Every manifest records expected/imported counts and a completion time; a partial newer import cannot evict complete evidence. Raw rasters and exact ecological findings are not committed. A failed or late CLMS import degrades only this shadow source; it never blocks the two production weather streams or their forecast.
+
+Private provider comparisons run against `http://localhost:3101` by default. Supplying any non-loopback `--app-url` also requires `--allow-remote`, because a prediction request contains a tight bounding box around the private field observation. Optional CLMS comparison input is a `clms-shadow-comparison-evidence-v1` external envelope containing the full generated manifest, a completed import record whose expected/imported/canonical counts agree, and a bounded sample set keyed by canonical atmosphere point. Its required `evidenceSha256` is calculated from that version marker, the normalized manifest, completion record, and normalized point-sorted samples. The comparison derives the atmosphere point from the selected 250 m cell ID, checks that the sample pixel lies within half a CLMS pixel of the cell's weather-grid coordinate, and emits only order labels plus content hashes and product provenance—not the observation coordinate, canonical point ID, or source-pixel coordinate.
+
+## Stage a direct AROME shadow field
+
+Deploy `20260815160509_add_arome_shadow_staging.sql` and the
+`stage-arome-shadow` Edge Function only after configuring
+`METEOFRANCE_AROME_API_KEY` as a Supabase Edge Function secret. Separately,
+generate a high-entropy `AROME_SHADOW_STAGE_TOKEN` outside the repository, hash
+it with SHA-256, and store only its 64-character lowercase hash in
+`pipeline_secrets` under the name `arome-shadow-stage`. Never paste the raw
+token into SQL history. The provider credential is attached inside the function
+and is never accepted in request JSON, object names, responses, logs or database
+metadata. The Edge gateway keeps JWT verification enabled; callers use the anon
+JWT plus this least-privilege named token, never the service-role key.
+
+For example, after calculating the hash in a controlled shell, insert only the
+hash through an administrator connection:
+
+```sql
+insert into public.pipeline_secrets (name, secret_hash)
+values ('arome-shadow-stage', '<64-character-lowercase-sha256>')
+on conflict (name) do update set
+  secret_hash = excluded.secret_hash,
+  rotated_at = pg_catalog.now();
+```
+
+First probe one field's current WCS metadata. This performs GetCapabilities and
+DescribeCoverage only and writes no object:
+
+```bash
+curl --fail-with-body --silent --show-error \
+  "$SUPABASE_URL/functions/v1/stage-arome-shadow" \
+  -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+  -H "apikey: $SUPABASE_ANON_KEY" \
+  -H "x-arome-shadow-stage-token: $AROME_SHADOW_STAGE_TOKEN" \
+  -H "Content-Type: application/json" \
+  --data '{"action":"probe","variable":"temperature_2m"}'
+```
+
+After the one-field metadata probe, stage one small response. Bounds
+are snapped outward to the 0.01-degree native grid, must remain inside the fixed
+Catalonia envelope, and may span no more than 0.25 degrees on either axis. If
+`validAt` is omitted, the function selects the latest available non-future lead
+from the described run and withholds when every available lead is still in the
+future:
+
+```bash
+curl --fail-with-body --silent --show-error \
+  "$SUPABASE_URL/functions/v1/stage-arome-shadow" \
+  -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+  -H "apikey: $SUPABASE_ANON_KEY" \
+  -H "x-arome-shadow-stage-token: $AROME_SHADOW_STAGE_TOKEN" \
+  -H "Content-Type: application/json" \
+  --data '{
+    "action":"stage",
+    "variable":"temperature_2m",
+    "bounds":{
+      "minLatitude":41.50,
+      "maxLatitude":41.55,
+      "minLongitude":1.50,
+      "maxLongitude":1.55
+    }
+  }'
+```
+
+The function requires exactly one complete GRIB2 container and hashes the bytes
+before an idempotent, non-overwriting upload. It does not decode GRIB sections,
+so object metadata records `semantic_verification=pending`; callers must not
+interpret the staged bytes as the requested field until a decoder verifies the
+message semantics. Object names contain run time, requested valid time, request
+field and a content-hash prefix, but no requested coordinates. Exact subset
+bounds and units remain private object metadata. No signed or public URL is
+created. Each authenticated attempt is recorded in `ingestion_runs`; if an
+object upload succeeds but audit finalization fails, the request returns an
+error and the content-addressed private object is recoverable/idempotent on the
+next call. `pipeline_sources` stays `blocked` after one-field probes and stages,
+pending the all-three same-run smoke and semantic decoder. Neither path
+references production snapshot or prediction tables.
 
 ## Publication rules
 

@@ -1,6 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.112.3";
 
-export type PipelineName = "regional-environment" | "spatial-environment" | "spatial-atmosphere" | "spatial-soil" | "spatial-static-import" | "species-occurrences";
+export type PipelineName = "regional-environment" | "spatial-environment" | "spatial-atmosphere" | "spatial-atmosphere-shadow" | "spatial-soil" | "spatial-soil-satellite" | "spatial-static-import" | "species-occurrences" | "station-rain";
 export type TriggerType = "cron" | "manual" | "import";
 
 export function createAdminClient() {
@@ -83,7 +83,11 @@ export async function finishRun(
     error_message: values.errorMessage,
     metadata: values.metadata ?? {}
   }).eq("id", runId);
-  if (error) console.error("Unable to finish ingestion run", { runId, error: error.message });
+  if (error) {
+    console.error("Unable to finish ingestion run", { runId, error: error.message });
+    return false;
+  }
+  return true;
 }
 
 /**

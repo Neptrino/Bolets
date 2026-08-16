@@ -30,6 +30,7 @@
 - Clip ecological and prediction grids to the version-controlled ICGC Catalonia land boundary before rendering.
 - Keep Supabase access server-side and protect database boundaries appropriately.
 - Treat external environmental data as normalized, timestamped snapshots with provenance and uncertainty.
+- Keep terrain-aware temperature replays as explicitly versioned, limited-confidence shadow comparisons: replay both the stored representative elevation and the selected cell elevation on the same atmospheric model, native grid and valid hour; withhold when the representative control does not reproduce the stored thermal fields; replace only the long-window thermal response and heat/frost exposure; and leave the unified water calculation unchanged. Never present this as finer observed weather.
 - Do not expose exact sensitive ecological locations in public maps or interfaces.
 - Treat occurrence datasets as presence-only corroboration, never absence evidence or a direct suitability-score input. Generalize them to at least 10 km before storage, retain dataset DOI/licence/provenance, and deduplicate sources by their GBIF dataset key.
 - Build species-page potential-habitat maps from verified 250 m static cells using hard forest and soil gates plus the shared altitude envelope from the versioned species ecology; aggregate compatible-cell coverage for coarser zoom levels and keep this layer separate from current fruiting predictions.
@@ -37,6 +38,7 @@
 ## Environmental pipeline conventions
 
 - Ingest regional and cell weather through authenticated Supabase Edge Functions; never call providers directly from the browser.
+- Keep Copernicus CLMS surface-soil-moisture and soil-water-index products in a private, quality-aware shadow stream until a versioned calibration validates a single-source bridge into the unified water model. Preserve raw flags, product-specific SSF semantics, product times/version, completion state, 1 km native resolution and actual sample spacing; never relabel relative percentage as volumetric moisture, score SSM and SWI independently, or splice CLMS days into the production Open-Meteo moisture window. Treat the bounded relational hot window as operational preview data, not as sufficient seasonal calibration history.
 - Import 250 m static terrain, land-cover, and soil evidence only through the service-role importer with source and verification metadata.
 - Treat ICGC 1:50,000 geological units as display-only contextual evidence: store their mapped coverage and provenance separately from soil scoring inputs, never interpret map scale as metre resolution, and aggregate coarse geology area-weightedly from canonical 250 m cells.
 - Calculate the hydrothermal fruiting-conditions index (`F`) and territorial opportunity index (`O`) on the Next.js server with the same resolved, versioned species model used by profile pages.
@@ -48,6 +50,7 @@
 - For coarse predictions, derive altitude suitability inside compatible habitat as `sum(coverage × altitude taper) / sum(coverage)` from canonical 250 m cells; never score the arithmetic mean elevation of a mixed parent cell. Cell opportunity already contains `H`, so regional opportunity summaries must be equal-area and must not weight by habitat a second time. Paint every prediction cell with its opportunity score-band colour.
 - Model water once: normalize shallow-soil moisture by the verified texture class, combine it with distributed rain, ET₀, dry-spell memory and vapour-pressure deficit, and do not add rain, soil moisture or humidity again as independent factors.
 - Preserve 3/7/14/21/26/30-day rain and ET₀, rainy-day counts, days 8–30 rain, dry-spell length, 7-day shallow-soil moisture memory, 7/14/20-day temperature means, and 14/20-day frost/heat exposure end to end.
+- Keep Meteocat XEMA station precipitation as a private hourly shadow stream with explicit half-hour completeness counts and a bounded rolling retention window. Treat gauges as observed ground truth that model archives cannot supply, interpolate with a strict station-distance cutoff instead of fabricating values for uncovered cells, and never let station rain enter production windows, the unified water model, or scores before a versioned station-versus-model validation promotes a single complete correction source.
 - Record provider state in `pipeline_sources` and every ingestion attempt in `ingestion_runs` so degraded and blocked sources remain visible.
 
 <!-- BEGIN:nextjs-agent-rules -->
