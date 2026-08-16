@@ -116,12 +116,25 @@ function applyV2Overrides(
   if (!overrides || config.status !== "supported" || config.model !== "hydrothermal-v2") {
     return config;
   }
-  // optimumShiftC is additive on the already-derived species optimum, so a
+  // optimumShiftC is additive on the already-derived species optimum, and the
+  // half-saturation scales are multiplicative on species-specific values, so a
   // sweep can move every species uniformly; the remaining keys replace.
   const { optimumShiftC = 0, ...temperatureReplacements } = overrides.temperature ?? {};
+  const {
+    rainfallHalfSaturationScale = 1,
+    wetDaysHalfSaturationScale = 1,
+    ...waterReplacements
+  } = overrides.water ?? {};
   return {
     ...config,
-    water: { ...config.water, ...(overrides.water ?? {}) },
+    water: {
+      ...config.water,
+      ...waterReplacements,
+      rainfallHalfSaturationMm:
+        config.water.rainfallHalfSaturationMm * rainfallHalfSaturationScale,
+      wetDaysHalfSaturation:
+        config.water.wetDaysHalfSaturation * wetDaysHalfSaturationScale,
+    },
     combination: { ...config.combination, ...(overrides.combination ?? {}) },
     temperature: {
       ...config.temperature,
@@ -485,5 +498,7 @@ it.skipIf(!inputPath || !artifactsDir)(
     console.log(JSON.stringify(summary, null, 2));
     expect(written).toBeGreaterThan(0);
   },
-  1_800_000,
+  // Station-rain replays of the larger sets fetch hundreds of per-day gauge
+  // queries on a cold cache, which does not fit the default half hour.
+  Number(process.env.FINDING_EVAL_TIMEOUT_MS ?? 1_800_000),
 );
