@@ -154,6 +154,28 @@ function spanCovers(span: { startDate: string; endDate: string }, date: string) 
   return date >= span.startDate && date <= span.endDate;
 }
 
+/**
+ * Canonical-cell resolution through the app API dominates warm-cache replay
+ * time (seconds per location against a dev server) and its replay-relevant
+ * content is static habitat plus provider-grid metadata, so sweeps reuse a
+ * disk copy instead of re-asking per candidate.
+ */
+async function predictionCellCached(
+  finding: PrivateHistoricalFinding,
+  speciesId: string,
+  appUrl: string,
+  cacheDir: string,
+) {
+  const key = createHash("sha256")
+    .update(`prediction-cell|${finding.latitude}|${finding.longitude}|${speciesId}`)
+    .digest("hex");
+  const file = join(cacheDir, `${key}.json`);
+  if (existsSync(file)) return JSON.parse(readFileSync(file, "utf8")) as PredictionCell;
+  const cell = await predictionCell(finding, speciesId, appUrl) as PredictionCell;
+  writeFileSync(file, JSON.stringify(cell), { mode: 0o600 });
+  return cell;
+}
+
 it.skipIf(!inputPath || !artifactsDir)(
   "replays findings and matched controls into private evaluation artifacts",
   async () => {
@@ -248,7 +270,7 @@ it.skipIf(!inputPath || !artifactsDir)(
       try {
         const cells = await Promise.all(finding.speciesIds.map(async (speciesId) => ({
           speciesId,
-          cell: await predictionCell(finding, speciesId, appUrl) as PredictionCell,
+          cell: await predictionCellCached(finding, speciesId, appUrl, cacheDir),
         })));
         const reference = cells[0].cell.values;
         const atmosphericLatitude = reference.weatherGridLatitude;
