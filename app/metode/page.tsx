@@ -198,17 +198,17 @@ export default function MethodPage() {
                 <span>03</span>
                 <Sprout size={23} />
                 <h3>pH del sòl</h3>
-                <p>Quan l’espècie té un rang de pH documentat, el pH de la cel·la ha de quedar dins d’aquest rang. Sense evidència verificada, no es publica.</p>
+                <p>Quan l’espècie té un rang de pH documentat, el pes és màxim dins del rang i decreix linealment fins a zero en un marge de 0,8 unitats — per sota de la incertesa del mapa de sòls. Sense evidència verificada, no es publica.</p>
               </article>
             </div>
 
             <div className="method-static-formulas">
               <article className="method-formula-card">
                 <span className="method-formula-kicker">COBERTURA EXACTA · 250 m</span>
-                <Formula label="La cobertura compatible és la suma de les fraccions de coberta coincidents, sempre que l'altitud i el pH siguin compatibles.">
-                  C<sub>250</sub> = <Sigma size={28} /> q<sub>j compatible</sub> · 𝟙<sub>A(h)&gt;0</sub> · 𝟙<sub>pH dins rang</sub>
+                <Formula label="La cobertura compatible és la suma de les fraccions de coberta coincidents, ponderada per la resposta de pH, sempre que l'altitud sigui compatible.">
+                  C<sub>250</sub> = <Sigma size={28} /> q<sub>j compatible</sub> · W<sub>pH</sub> · 𝟙<sub>A(h)&gt;0</sub>
                 </Formula>
-                <p><b>q<sub>j</sub></b> és la proporció mostrejada de cada coberta. Per tant, un 35% de pineda compatible aporta 0,35: mai converteix tota la cel·la en un 100%.</p>
+                <p><b>q<sub>j</sub></b> és la proporció mostrejada de cada coberta. Per tant, un 35% de pineda compatible aporta 0,35: mai converteix tota la cel·la en un 100%. <b>W<sub>pH</sub></b> val 1 dins del rang documentat i baixa linealment fins a 0 a 0,8 unitats del límit; sense rang documentat, val 1.</p>
               </article>
               <article className="method-formula-card method-formula-card-accent">
                 <span className="method-formula-kicker">INTENSITAT DEL BLAU</span>
@@ -368,7 +368,7 @@ export default function MethodPage() {
                 <Formula label="L’hàbitat efectiu és la cobertura compatible multiplicada per la resposta d’altitud.">
                   H = C · A
                 </Formula>
-                <p><b>C</b> és la fracció exacta de coberta que supera les portes estàtiques; <b>A</b> és la resposta d’altitud agregada dins d’aquella cobertura. Totes dues entren normalitzades entre 0 i 1. <b>H</b> és una fracció derivada d’àrea compatible efectiva, no una puntuació ni una probabilitat de presència.</p>
+                <p><b>C</b> és la fracció exacta de coberta que supera les portes estàtiques, ja ponderada per la resposta de pH; <b>A</b> és la resposta d’altitud agregada dins d’aquella cobertura. Totes dues entren normalitzades entre 0 i 1. <b>H</b> és una fracció derivada d’àrea compatible efectiva, no una puntuació ni una probabilitat de presència.</p>
               </article>
               <article className="method-formula-card method-formula-card-accent">
                 <span className="method-formula-kicker">ÍNDEX D’OPORTUNITAT DE CEL·LA</span>
