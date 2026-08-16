@@ -105,8 +105,6 @@ export default async function MushroomsTodayPage() {
   const allItems = await loadCurrentOverview();
   const items = topCurrentOverviewItems(allItems);
   const leader = items[0];
-  const speciesEvaluated = new Set(allItems.map((item) => item.speciesId)).size;
-  const availableReadings = allItems.filter((item) => item.status === "available").length;
   const observedWindow = observationWindow(items);
   const overviewSources = [...new Set(
     allItems.flatMap((item) => item.summary?.snapshot.source ?? []),
@@ -187,8 +185,8 @@ export default async function MushroomsTodayPage() {
             <h2 id="current-board-title">Top 10 de zones i espècies</h2>
           </div>
           <div>
-            <p>Hem avaluat <strong>{allItems.length} combinacions prioritàries</strong> de {speciesEvaluated} espècies en nou zones; {availableReadings} han generat una lectura publicable. Aquí mostrem les deu puntuacions més altes.</p>
-            <p className="current-board-key">Cada posició resumeix una zona a partir de cel·les de 10 km. La puntuació combina l’hàbitat adequat amb les condicions per fructificar-hi. Serveix per comparar; no és una probabilitat de trobar bolets.</p>
+            <p>Hem avaluat <strong>{allItems.length} combinacions</strong> de zona i espècie; aquí, les deu puntuacions més altes.</p>
+            <p className="current-board-key">Puntuació per comparar zones a partir de cel·les de 10 km; no és una probabilitat de trobar bolets.</p>
             {observedWindow ? <p className="current-board-updated"><Clock3 size={14} /> {observedWindow}</p> : null}
           </div>
         </header>
