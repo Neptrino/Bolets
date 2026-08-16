@@ -21,6 +21,7 @@ const averageFields = [
   "temperatureAvg20dC",
   "relativeHumidity",
   "relativeHumidityAvg24h",
+  "temperatureAvg24hC",
   "relativeHumidityAvg7d",
   "rainfall24hMm",
   "rainfall3dMm",
@@ -58,6 +59,7 @@ const minimumFields = [
   "temperatureMin7dC",
   "temperatureMin10dC",
   "relativeHumidityMin24h",
+  "temperatureMin24hC",
   "soilMoistureMin24h",
   "soilMoistureMin7d",
 ] as const;
@@ -74,6 +76,7 @@ const maximumFields = [
   "frostHours20d",
   "heatHours20d",
   "relativeHumidityMax24h",
+  "temperatureMax24hC",
   "soilMoistureMax24h",
   "soilMoistureMax7d",
   "windMax24hKmh",

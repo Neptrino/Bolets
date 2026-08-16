@@ -431,6 +431,7 @@ function aggregateRegionalSnapshot(
     "temperatureAvg20dC",
     "relativeHumidity",
     "relativeHumidityAvg24h",
+    "temperatureAvg24hC",
     "relativeHumidityAvg7d",
     "soilMoisture",
     "soilMoistureAvg24h",
@@ -464,6 +465,7 @@ function aggregateRegionalSnapshot(
   ];
   const minFields = [
     "relativeHumidityMin24h",
+    "temperatureMin24hC",
     "soilMoistureMin24h",
     "soilMoistureMin7d",
   ];
@@ -473,6 +475,7 @@ function aggregateRegionalSnapshot(
     "heatHours14d",
     "heatHours20d",
     "relativeHumidityMax24h",
+    "temperatureMax24hC",
     "soilMoistureMax24h",
     "soilMoistureMax7d",
     "windMax24hKmh",

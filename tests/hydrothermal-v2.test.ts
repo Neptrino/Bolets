@@ -6,6 +6,7 @@ import {
   habitatWeight,
   phenologyObservationDate,
   smoothBandV2,
+  terrainThermalCorrection,
   waterSuitabilityV2,
 } from "@/src/lib/hydrothermal-v2";
 import { calculateSuitability } from "@/src/lib/scoring";
@@ -317,5 +318,40 @@ describe("altitude-shifted phenology", () => {
     expect(montane.fruitingConditionsScore!).toBeGreaterThan(
       lowland.fruitingConditionsScore! * 1.5,
     );
+  });
+});
+
+describe("terrain thermal correction", () => {
+  it("warms a cell read from a higher grid point and cools the reverse", () => {
+    const up = terrainThermalCorrection({
+      weatherElevationM: 2286, altitudeM: 1771, temperatureAvg14dC: 14, temperatureAvg20dC: 14.8,
+    });
+    expect(up.temperatureAvg14dC).toBeCloseTo(14 + 6.5 * 0.515, 3);
+    expect(up.temperatureAvg20dC).toBeCloseTo(14.8 + 6.5 * 0.515, 3);
+    const down = terrainThermalCorrection({
+      weatherElevationM: 1710, altitudeM: 1785, temperatureAvg20dC: 18.4,
+    });
+    expect(down.temperatureAvg20dC).toBeCloseTo(18.4 - 6.5 * 0.075, 3);
+    expect(down.temperatureAvg14dC).toBeUndefined();
+  });
+
+  it("caps the correction and passes through when elevations are missing", () => {
+    const capped = terrainThermalCorrection({
+      weatherElevationM: 3500, altitudeM: 500, temperatureAvg20dC: 10,
+    });
+    expect(capped.temperatureAvg20dC).toBe(16);
+    expect(terrainThermalCorrection({ altitudeM: 1000, temperatureAvg20dC: 10 })).toEqual({});
+    expect(terrainThermalCorrection({ weatherElevationM: 1000, temperatureAvg20dC: 10 })).toEqual({});
+  });
+
+  it("closes the seam between the two observed adjacent cells", () => {
+    // Real case: same real altitude, grid elevations 576 m apart, 3.6 C seam.
+    const a = terrainThermalCorrection({
+      weatherElevationM: 2286, altitudeM: 1771, temperatureAvg20dC: 14.8,
+    });
+    const b = terrainThermalCorrection({
+      weatherElevationM: 1710, altitudeM: 1785, temperatureAvg20dC: 18.4,
+    });
+    expect(Math.abs(a.temperatureAvg20dC! - b.temperatureAvg20dC!)).toBeLessThan(0.6);
   });
 });

@@ -10,6 +10,7 @@ import {
   habitatWeight,
   missingHydrothermalFieldsV2,
   phenologyObservationDate,
+  terrainThermalCorrection,
   waterSuitabilityV2,
 } from "@/src/lib/hydrothermal-v2";
 import { phenologySuitability } from "@/src/lib/scoring";
@@ -27,6 +28,7 @@ export type ReplayLocation = {
 
 export const STATIC_HABITAT_FIELDS = [
   "altitudeM",
+  "weatherElevationM",
   "habitatAltitudeSuitability",
   "habitatCoveragePercent",
   "forestTypes",
@@ -145,8 +147,11 @@ export function rawDiagnostics(
     ? waterSuitabilityV2(values, model.water)
     : waterSuitability(values, model.water);
   const water = waterDetails?.score ?? null;
-  const temperature = temperatureSuitability(values, model.temperature);
-  const extremes = extremeTemperatureMultiplier(values, model.temperature);
+  const thermalValues = model.model === "hydrothermal-v2"
+    ? { ...values, ...terrainThermalCorrection(values) }
+    : values;
+  const temperature = temperatureSuitability(thermalValues, model.temperature);
+  const extremes = extremeTemperatureMultiplier(thermalValues, model.temperature);
   const rawFruitingConditions = [phenology, water, temperature, extremes].every(
     (value) => value !== null,
   )

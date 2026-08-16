@@ -345,6 +345,23 @@ the finds at the same spots, and the lowland-heavy GBIF set shows no leakage
 (AUC 0.563→0.567). The three high-summer S. luteus zeros remain zero: with
 phenology unblocked they are heat-bound, which matches their abundance-1 grades.
 
+## Terrain lapse correction (2026-08-16)
+
+Two adjacent 250 m cells at the same real altitude (1771 m and 1785 m) showed a
+3.6 °C seam in their 20-day means because they snap to AROME points whose
+representative elevations differ by 576 m (2286 m vs 1710 m). Fetching the same
+grid points at both elevations shows Open-Meteo's own downscaling implies
+**6.46–6.67 °C/km** — the standard 6.5 lapse — so v2 now corrects the scored
+14/20-day means from grid elevation to cell altitude analytically (capped at
+±6 °C). Threshold-counted frost/heat hours cannot be shifted linearly and stay
+uncorrected, as does the 7-day mean feeding the water term.
+
+Harness validation: opportunity AUC 0.546 → 0.554, conditions AUC 0.606 →
+0.617, GBIF unchanged. Row-level, the September abundance-4 cep days rise
+(78→80, 77→80, 74→77) while the summer montane finds soften slightly — the
+removal of the same false-cold flattery that painted the seam. The correction
+reproduces the exact sweep numbers in production code.
+
 ## Status
 
 `hydrothermal-v2` exists side by side with v1 and is **not enabled for any

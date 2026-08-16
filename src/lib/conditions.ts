@@ -3,7 +3,8 @@ import type { ConditionSnapshot, RegionId } from "@/src/lib/types";
 
 const regions: RegionId[] = ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors", "altres"];
 const environmentalFields = [
-  "temperatureC", "temperatureAvg7dC", "temperatureAvg14dC", "temperatureAvg20dC",
+  "temperatureC", "temperatureMin24hC", "temperatureAvg24hC", "temperatureMax24hC",
+  "temperatureAvg7dC", "temperatureAvg14dC", "temperatureAvg20dC",
   "frostHours14d", "frostHours20d", "heatHours14d", "heatHours20d",
   "relativeHumidity", "relativeHumidityMin24h", "relativeHumidityAvg24h", "relativeHumidityMax24h", "relativeHumidityAvg7d",
   "soilMoisture", "soilMoistureMin24h", "soilMoistureAvg24h", "soilMoistureMax24h",

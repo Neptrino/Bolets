@@ -9,6 +9,7 @@ import {
   habitatWeight,
   missingHydrothermalFieldsV2,
   phenologyObservationDate,
+  terrainThermalCorrection,
   waterSuitabilityV2,
 } from "@/src/lib/hydrothermal-v2";
 import { predictionModelVersion } from "@/src/lib/model-versions";
@@ -241,8 +242,13 @@ export function calculateSuitability(
   const water = model.model === "hydrothermal-v2"
     ? waterSuitabilityV2(values, model.water)?.score ?? null
     : waterSuitability(values, model.water)?.score ?? null;
-  const temperature = temperatureSuitability(values, model.temperature);
-  const extremes = extremeTemperatureMultiplier(values, model.temperature);
+  // v2 reads the window means at the cell's true altitude rather than the
+  // provider grid's representative elevation.
+  const thermalValues = model.model === "hydrothermal-v2"
+    ? { ...values, ...terrainThermalCorrection(values) }
+    : values;
+  const temperature = temperatureSuitability(thermalValues, model.temperature);
+  const extremes = extremeTemperatureMultiplier(thermalValues, model.temperature);
   const components = [
     component("habitatCoverage", rawHabitatCoverage),
     component("altitude", altitude),

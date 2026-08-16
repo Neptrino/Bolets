@@ -277,14 +277,26 @@ export function ConditionComparison({
   }> = [
     {
       label: "Temperatura",
-      period: "darrera lectura",
-      current: temperature(v.temperatureC),
+      period: v.temperatureMin24hC !== undefined && v.temperatureMax24hC !== undefined
+        ? "mín – màx · 24 h"
+        : "darrera lectura",
+      // An instantaneous reading says little about a day in the forest; the
+      // daily range and mean describe the thermal environment fungi live in.
+      current: v.temperatureMin24hC !== undefined && v.temperatureMax24hC !== undefined
+        ? `${temperature(v.temperatureMin24hC)} – ${temperature(v.temperatureMax24hC)}`
+        : temperature(v.temperatureC),
       context: {
         note: supportedModel
-          ? `La lectura actual és context. El model compara la temperatura mitjana de ${temperatureWindowDays} dies amb l’òptim inicial de l’espècie (${supportedModel.temperature.optimumC} °C); les gelades i la calor extrema s’apliquen per separat.`
+          ? `El rang diari és context. El model compara la temperatura mitjana de ${temperatureWindowDays} dies amb l’òptim inicial de l’espècie (${supportedModel.temperature.optimumC} °C); les gelades i la calor extrema s’apliquen per separat.`
           : "Sense model hidrotermal de curt termini per a aquesta espècie",
       },
       stats: [
+        {
+          label: "Mitj · 24 h",
+          value: temperature(v.temperatureAvg24hC),
+          explanation:
+            "Mitjana tèrmica de les últimes 24 hores, nits incloses.",
+        },
         {
           label: `Mitj · ${temperatureWindowDays ?? "—"} dies`,
           value: temperature(temperatureWindowAverage),

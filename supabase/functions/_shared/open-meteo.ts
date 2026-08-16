@@ -318,6 +318,7 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
   const temperatures14d = numericWindow(location, "temperature_2m", 336, endIndex);
   const temperatures20d = numericWindow(location, "temperature_2m", 480, endIndex);
   const humidity24h = numericWindow(location, "relative_humidity_2m", 24, endIndex);
+  const temperature24hWindow = numericWindow(location, "temperature_2m", 24, endIndex);
   const humidity7d = numericWindow(location, "relative_humidity_2m", 168, endIndex);
   const soilMoisture24h = numericWindow(soilLocation, "soil_moisture_3_to_9cm", 24, soilEndIndex);
   const soilMoisturePrevious6d = numericWindow(soilLocation, "soil_moisture_3_to_9cm", 144, soilEndIndex - 24);
@@ -338,6 +339,7 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
   const evapotranspiration26d = numericWindow(location, "et0_fao_evapotranspiration", 624, endIndex);
   const evapotranspiration30d = numericWindow(location, "et0_fao_evapotranspiration", 720, endIndex);
   const humidity = summary(humidity24h, 24);
+  const temperatureDay = summary(temperature24hWindow, 24);
   const humidityWeek = summary(humidity7d, 168);
   const soilMoisture = summary(soilMoisture24h, 24);
   const previousSoilMoisture = summary(soilMoisturePrevious6d, 144);
@@ -358,6 +360,9 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
   const values = {
     weatherObservedAt: validTime(location),
     temperatureC: finiteNumber(location.current?.temperature_2m),
+    temperatureMin24hC: temperatureDay.min,
+    temperatureAvg24hC: temperatureDay.average,
+    temperatureMax24hC: temperatureDay.max,
     temperatureAvg7dC: temperature7d.average,
     temperatureAvg14dC: temperature14d.average,
     frostHours14d: thresholdHours(temperatures14d, 336, (value) => value <= 0),
@@ -542,6 +547,7 @@ function normalizedValuesAtTarget(
   const temperature14d = completeSummary(temperature, target, 336);
   const temperature20d = completeSummary(temperature, target, 480);
   const humidity24h = completeSummary(humidity, target, 24);
+  const temperature24h = completeSummary(temperature, target, 24);
   const humidity7d = completeSummary(humidity, target, 168);
   const soil24h = completeSummary(soilMoisture, target, 24);
   const soil7d = completeSummary(soilMoisture, target, 168);
@@ -557,6 +563,9 @@ function normalizedValuesAtTarget(
   return {
     weatherObservedAt: new Date(target * 1000).toISOString(),
     temperatureC: temperature.get(target),
+    temperatureMin24hC: temperature24h.min,
+    temperatureAvg24hC: temperature24h.average,
+    temperatureMax24hC: temperature24h.max,
     temperatureAvg7dC: temperature7d.average,
     temperatureAvg14dC: temperature14d.average,
     frostHours14d: temperature14d.values?.filter((value) => value <= 0).length,

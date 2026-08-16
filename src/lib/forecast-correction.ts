@@ -34,6 +34,9 @@ const requiredCorrectedFields = [
 
 const optionalCorrectedFields = [
   "temperatureC",
+  "temperatureMin24hC",
+  "temperatureAvg24hC",
+  "temperatureMax24hC",
   "relativeHumidity",
   "relativeHumidityMin24h",
   "relativeHumidityAvg24h",
@@ -227,6 +230,7 @@ export function correctForecastValues(
     : Math.max(0, rainfall30d - rainfall7d);
 
   enforceMinAverageMax(values, ["relativeHumidityMin24h", "relativeHumidityAvg24h", "relativeHumidityMax24h"]);
+  enforceMinAverageMax(values, ["temperatureMin24hC", "temperatureAvg24hC", "temperatureMax24hC"]);
   enforceMinAverageMax(values, ["soilMoistureMin24h", "soilMoistureAvg24h", "soilMoistureMax24h"]);
   enforceMinAverageMax(values, ["soilMoistureMin7d", "soilMoistureAvg7d", "soilMoistureMax7d"]);
 

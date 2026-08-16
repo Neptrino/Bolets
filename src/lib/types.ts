@@ -348,6 +348,9 @@ export interface ConditionSnapshot {
     soilGridLatitude?: number;
     soilGridLongitude?: number;
     temperatureC?: number;
+    temperatureMin24hC?: number;
+    temperatureAvg24hC?: number;
+    temperatureMax24hC?: number;
     temperatureAvg7dC?: number;
     temperatureAvg14dC?: number;
     temperatureAvg20dC?: number;

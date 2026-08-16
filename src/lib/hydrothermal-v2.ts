@@ -211,6 +211,49 @@ export function habitatWeight(effectiveHabitatCoverage: number, exponent: number
 const MILLISECONDS_PER_DAY = 86_400_000;
 
 /**
+ * Standard atmospheric lapse rate. Open-Meteo's own elevation downscaling of
+ * the AROME points behind the montane cells implies 6.46-6.67 C/km, so this
+ * constant reproduces per-cell provider downscaling without per-cell requests.
+ */
+export const TERRAIN_LAPSE_C_PER_KM = 6.5;
+const TERRAIN_LAPSE_MAX_DELTA_C = 6;
+
+/**
+ * Corrects the scored temperature window means from the provider grid's
+ * representative elevation to the cell's true altitude. Adjacent 250 m cells
+ * at the same real altitude can snap to AROME points whose representative
+ * elevations differ by hundreds of metres, painting a false seam; the lapse
+ * correction removes it. Threshold-counted frost/heat hours cannot be shifted
+ * linearly and stay unchanged, as does the 7-day mean feeding the water term.
+ */
+export function terrainThermalCorrection(
+  values: EnvironmentValues,
+): Partial<EnvironmentValues> {
+  const gridElevation = values.weatherElevationM;
+  const cellAltitude = values.altitudeM;
+  if (
+    gridElevation === undefined || cellAltitude === undefined ||
+    !Number.isFinite(gridElevation) || !Number.isFinite(cellAltitude)
+  ) return {};
+  const deltaC = Math.max(
+    -TERRAIN_LAPSE_MAX_DELTA_C,
+    Math.min(
+      TERRAIN_LAPSE_MAX_DELTA_C,
+      TERRAIN_LAPSE_C_PER_KM * (gridElevation - cellAltitude) / 1000,
+    ),
+  );
+  if (deltaC === 0) return {};
+  const corrected: Partial<EnvironmentValues> = {};
+  if (values.temperatureAvg14dC !== undefined) {
+    corrected.temperatureAvg14dC = values.temperatureAvg14dC + deltaC;
+  }
+  if (values.temperatureAvg20dC !== undefined) {
+    corrected.temperatureAvg20dC = values.temperatureAvg20dC + deltaC;
+  }
+  return corrected;
+}
+
+/**
  * The date at which a cell should read the phenology calendar. Dated
  * observations put the autumn season 25-40 days earlier per 1000 m of
  * altitude, so a cell above the species' reference altitude reads the
