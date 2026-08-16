@@ -594,14 +594,27 @@ export default function MethodPage() {
                 <article className="method-source-card method-source-card-weather">
                   <div className="method-source-card-top"><CloudSun size={24} /><span>MÉTÉO-FRANCE · OPEN-METEO</span></div>
                   <h4>AROME France</h4>
-                  <p>Temperatura, humitat relativa, precipitació, vent i ET₀. Les sèries horàries alimenten la temperatura mitjana de 14 o 20 dies, les hores d’extrems, la pluja efectiva, els dies humits i el VPD setmanal.</p>
+                  <p>Temperatura, humitat relativa, vent i ET₀. Les sèries horàries alimenten la temperatura mitjana de 14 o 20 dies, les hores d’extrems i el VPD setmanal. La pluja passada no surt d’aquí: l’avaluació amb pluviòmetres va mostrar que el model perd tempestes reals i n’inventa d’altres.</p>
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>2,5 km · horari</dd></div>
                     <div><dt><RefreshCw size={14} /> Proveïdor</dt><dd>cada 3 h</dd></div>
                     <div><dt><RefreshCw size={14} /> Atles</dt><dd>diari</dd></div>
-                    <div><dt>Ús</dt><dd>estat hídric · temperatura · extrems</dd></div>
+                    <div><dt>Ús</dt><dd>temperatura · extrems · assecatge</dd></div>
                   </dl>
                   <a href="https://open-meteo.com/en/docs/meteofrance-api" target="_blank" rel="noreferrer">Documentació del model <ExternalLink size={14} /></a>
+                </article>
+
+                <article className="method-source-card method-source-card-weather">
+                  <div className="method-source-card-top"><CloudRain size={24} /><span>METEOCAT · XEMA</span></div>
+                  <h4>Pluja observada a les estacions</h4>
+                  <p>Els pluviòmetres oficials mesuren la pluja que va caure de veritat; cap arxiu de model no corregeix una tempesta mal situada. Per a cada hora amb almenys dues estacions completes a menys de 30 km, la pluja passada és la interpolació ponderada per distància dels pluviòmetres; les hores i cel·les sense prou cobertura usen la mescla «seamless» de Météo-France. Font versionada station-rain-v1, amb la cobertura de pluviòmetres desada a cada instantània.</p>
+                  <dl>
+                    <div><dt><Ruler size={14} /> Origen</dt><dd>~187 estacions · semihorari</dd></div>
+                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>cada hora</dd></div>
+                    <div><dt>Ús</dt><dd>pluja acumulada · dies humits · ratxa seca</dd></div>
+                    <div><dt>Llicència</dt><dd>CC BY 4.0 · Meteocat</dd></div>
+                  </dl>
+                  <a href="https://analisi.transparenciacatalunya.cat/Medi-Ambient/Dades-meteorol-giques-de-la-XEMA/nzvn-apee" target="_blank" rel="noreferrer">Dades obertes de la XEMA <ExternalLink size={14} /></a>
                 </article>
 
                 <article className="method-source-card method-source-card-moisture">
