@@ -184,11 +184,11 @@ export default async function MushroomsTodayPage() {
             <p className="eyebrow">Comparador territorial</p>
             <h2 id="current-board-title">Top 10 de zones i espècies</h2>
           </div>
-          <div>
-            <p>Hem avaluat <strong>{allItems.length} combinacions</strong> de zona i espècie; aquí, les deu puntuacions més altes.</p>
-            <p className="current-board-key">Puntuació per comparar zones a partir de cel·les de 10 km; no és una probabilitat de trobar bolets.</p>
-            {observedWindow ? <p className="current-board-updated"><Clock3 size={14} /> {observedWindow}</p> : null}
-          </div>
+          {observedWindow ? (
+            <div>
+              <p className="current-board-updated"><Clock3 size={14} /> {observedWindow}</p>
+            </div>
+          ) : null}
         </header>
 
         {items.length > 0 ? <>
