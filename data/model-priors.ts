@@ -226,6 +226,36 @@ const COMBINATION_V2: CombinationModelParameters = {
   calibrationGamma: 0.7,
 };
 
+/**
+ * v2 scores matured rain: for slow guilds the last seven days are excluded
+ * from the rain window because fruiting bodies found today developed before
+ * them (see rainfallWindow in hydrothermal-v2.ts). Fitted 2026-08-16 with
+ * the 7-day exclusion under gauge rain: findings conditions AUC
+ * 0.691 -> 0.723, and a same-week storm false positive fell from 48 to 31.
+ * Fast saprotrophs fruit within days of rain — the dated grassland finds
+ * (spring fairy rings) lost 14-18 conditions points under the exclusion —
+ * so those guilds keep the plain trailing window.
+ */
+const RECENT_RAIN_WEIGHT_BY_GUILD: Record<SupportedGuild, number> = {
+  ectomycorrhizal: 0,
+  "wood-decayer": 0,
+  "litter-soil-saprotroph": 1,
+  grassland: 1,
+};
+
+/**
+ * The saturation constants were fitted to full trailing windows, so guilds
+ * that exclude the fresh week shrink them to match the shorter accumulation
+ * (0.7 restores band hit-rates while keeping the exclusion's discrimination
+ * gain); guilds that keep the full window keep their original constants.
+ */
+const MATURED_RAIN_HALF_SATURATION_SCALE = 0.7;
+
+function halfSaturationScale(recentRainWeight: number) {
+  return MATURED_RAIN_HALF_SATURATION_SCALE +
+    (1 - MATURED_RAIN_HALF_SATURATION_SCALE) * recentRainWeight;
+}
+
 function hydrothermalV2Config({
   guild,
   prior,
@@ -245,12 +275,18 @@ function hydrothermalV2Config({
   altitudeRange?: readonly [number, number];
   evidence?: { status: "expert-prior" | "species-literature"; citations: readonly string[] };
 }): FruitingModelConfig {
+  // The matured-rain scale applies to the resolved value so species-level
+  // half-saturation overrides shrink with the shortened window too.
+  const water = { ...waterParametersV2(prior.water, guild), ...(waterOverrides ?? {}) };
+  const scale = halfSaturationScale(water.recentRainWeight);
+  water.rainfallHalfSaturationMm *= scale;
+  water.wetDaysHalfSaturation *= scale;
   return {
     model: "hydrothermal-v2" as const,
     version: HYDROTHERMAL_V2_PRIOR_VERSION,
     status: "supported" as const,
     guild,
-    water: { ...waterParametersV2(prior.water), ...(waterOverrides ?? {}) },
+    water,
     // v2 keeps the guild's asymmetric half-widths instead of replacing them
     // with the editorial half-range, and shifts the optimum down towards the
     // multi-day mean the model actually scores.
@@ -303,7 +339,10 @@ export function hydrothermalV2ConfigFrom(
   });
 }
 
-function waterParametersV2(prior: WaterModelParameters): WaterModelParametersV2 {
+function waterParametersV2(
+  prior: WaterModelParameters,
+  guild: SupportedGuild,
+): WaterModelParametersV2 {
   // triggerDependency is intentionally dropped: v2 weights the rain estimator
   // through soilWeight instead of damping it into a fixed range.
   const shared: Omit<WaterModelParameters, "triggerDependency"> = {
@@ -327,6 +366,7 @@ function waterParametersV2(prior: WaterModelParameters): WaterModelParametersV2 
     soilDryFloor: SOIL_DRY_FLOOR,
     soilWetFloor: SOIL_WET_FLOOR,
     rainFloor: RAIN_FLOOR,
+    recentRainWeight: RECENT_RAIN_WEIGHT_BY_GUILD[guild],
   };
 }
 

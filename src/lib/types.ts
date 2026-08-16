@@ -219,6 +219,13 @@ export interface WaterModelParametersV2 extends Omit<
   soilDryFloor: number;
   soilWetFloor: number;
   rainFloor: number;
+  /**
+   * Weight of the trailing week's rain within the window. Fruiting bodies
+   * found today developed over the preceding weeks, so fresh rain counts
+   * less: 0 scores matured rain only, 1 restores the plain trailing window.
+   * Fast saprotroph guilds sit high, slow ectomycorrhizal guilds low.
+   */
+  recentRainWeight: number;
   /** Exponent on water in the fruiting product; temperature takes the rest. */
   waterExponent: number;
 }

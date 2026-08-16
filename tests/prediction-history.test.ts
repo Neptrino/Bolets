@@ -21,6 +21,10 @@ const completeHydrothermalValues: ConditionSnapshot["values"] = {
   rainfall26dMm: 50,
   rainfallDays26d: 6,
   evapotranspiration26dMm: 22,
+  // Matured rain: the trailing week is subtracted from the window.
+  rainfall7dMm: 0,
+  rainfallDays7d: 0,
+  evapotranspiration7dMm: 0,
   temperatureAvg14dC: 13,
   frostHours14d: 0,
   heatHours14d: 0,

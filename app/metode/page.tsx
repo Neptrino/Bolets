@@ -319,7 +319,7 @@ export default function MethodPage() {
                   </div>
                   <div>
                     <b>2 · Balanç de pluja i estat del sòl</b>
-                    <Formula label="El balanç de pluja aplica un sòl mínim a la resposta saturant de pluja efectiva i dies humits.">
+                    <Formula label="El balanç de pluja aplica un sòl mínim a la resposta saturant de pluja efectiva i dies humits. Per als gremis lents (micorízics i lignícoles) s’exclouen els últims set dies: els bolets d’avui es van desenvolupar abans, i la pluja acabada de caure encara no ha pogut produir-los. Els sapròtrofs de prat i virosta fructifiquen en pocs dies i conserven la finestra completa.">
                       B = 0,1 + 0,9 · [0,7 Hill(R<sub>ef</sub>, R<sub>50</sub>) + 0,3 Hill(N<sub>humit</sub>, N<sub>50</sub>)]
                     </Formula>
                     <p>Hill(x, x<sub>50</sub>) = x² / (x² + x<sub>50</sub>²). La finestra és de 14 o 21 dies segons el gremi, amb 26 dies per al cep. Cada dia humit té ≥ 1 mm i <b>R<sub>ef</sub> = max(0, pluja − N<sub>humit</sub> · 1 mm − 0,5 ET₀)</b>.</p>

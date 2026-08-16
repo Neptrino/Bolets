@@ -194,6 +194,54 @@ function recountedThresholdHours(
   return count;
 }
 
+/**
+ * Matured-rain experiment: flushes trail triggering rain by one to three
+ * weeks, so rain from the last few days cannot have produced today's
+ * fruiting bodies. Recomputes a rain window's sum, wet-day count, and ET
+ * deduction over [target − windowHours, target − lagHours], with wet days
+ * binned in trailing 24 h blocks ending at the lagged edge exactly like the
+ * production window ends at the valid hour.
+ */
+function laggedRainWindow(
+  location: OpenMeteoLocation,
+  observedAt: string,
+  windowHours: number,
+  lagHours: number,
+) {
+  const hourly = location.hourly as Record<string, unknown> | undefined;
+  const times = Array.isArray(hourly?.time) ? hourly.time as unknown[] : [];
+  const rain = Array.isArray(hourly?.precipitation) ? hourly.precipitation as unknown[] : [];
+  const evapotranspiration = Array.isArray(hourly?.et0_fao_evapotranspiration)
+    ? hourly.et0_fao_evapotranspiration as unknown[]
+    : [];
+  const target = Math.floor(Date.parse(observedAt) / 3_600_000) * 3600;
+  const to = target - lagHours * 3600;
+  const from = target - windowHours * 3600;
+  const rainByTime = new Map<number, number>();
+  const etByTime = new Map<number, number>();
+  for (let index = 0; index < times.length; index += 1) {
+    const time = times[index];
+    if (typeof time !== "number") continue;
+    if (typeof rain[index] === "number") rainByTime.set(time, rain[index] as number);
+    if (typeof evapotranspiration[index] === "number") {
+      etByTime.set(time, evapotranspiration[index] as number);
+    }
+  }
+  let rainfallMm = 0;
+  let evapotranspirationMm = 0;
+  let rainyDays = 0;
+  for (let binEnd = to; binEnd > from; binEnd -= 24 * 3600) {
+    let binRain = 0;
+    for (let time = binEnd - 23 * 3600; time <= binEnd; time += 3600) {
+      binRain += rainByTime.get(time) ?? 0;
+      evapotranspirationMm += etByTime.get(time) ?? 0;
+    }
+    rainfallMm += binRain;
+    if (binRain >= 1) rainyDays += 1;
+  }
+  return { rainfallMm, rainyDays, evapotranspirationMm };
+}
+
 const TERRAIN_LAPSE_C_PER_KM = 6.5;
 const TERRAIN_LAPSE_MAX_DELTA_C = 6;
 
@@ -247,6 +295,11 @@ it.skipIf(!inputPath || !artifactsDir)(
     // shift production applies to window means (hour counts stay at grid
     // elevation in production; this measures what correcting them would do).
     const terrainHours = process.env.FINDING_EVAL_TERRAIN_HOURS === "1";
+    // Rain inside the lag is discounted: it has not had time to produce the
+    // fruiting bodies being scored. The window END moves back; drying terms
+    // (dry spell, VPD) stay anchored to the present since they act on
+    // already-emerged bodies.
+    const rainLagDays = Number(process.env.FINDING_EVAL_RAIN_LAG_DAYS ?? 0);
     const scoringModel = process.env.FINDING_EVAL_MODEL === "v2" ? "v2" : "v1";
     // Parameter sweeps patch the v2 config so candidate values can be fitted
     // against the same events without editing shipped priors.
@@ -470,6 +523,20 @@ it.skipIf(!inputPath || !artifactsDir)(
               atmosphericResolutionM: 2500,
               soilMoistureResolutionM: 9000,
             };
+            if (rainLagDays > 0) {
+              const raw = atmosphereBySpan.get(spanIndex)!;
+              const lagHours = rainLagDays * 24;
+              for (const [days, rainKey, daysKey, etKey] of [
+                [14, "rainfall14dMm", "rainfallDays14d", "evapotranspiration14dMm"],
+                [21, "rainfall21dMm", "rainfallDays21d", "evapotranspiration21dMm"],
+                [26, "rainfall26dMm", "rainfallDays26d", "evapotranspiration26dMm"],
+              ] as const) {
+                const window = laggedRainWindow(raw, target.observedAt, days * 24, lagHours);
+                values[rainKey] = window.rainfallMm;
+                values[daysKey] = window.rainyDays;
+                values[etKey] = window.evapotranspirationMm;
+              }
+            }
             if (terrainHours) {
               const raw = atmosphereBySpan.get(spanIndex)!;
               const deltaC = terrainDeltaC(values);

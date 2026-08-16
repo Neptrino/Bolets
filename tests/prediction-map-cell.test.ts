@@ -59,6 +59,10 @@ describe("compact prediction map cells", () => {
       rainfallDays26d: 5,
       drySpellDays: 0,
       evapotranspiration26dMm: 5,
+      // Matured rain: the trailing week is subtracted from the window.
+      rainfall7dMm: 0,
+      rainfallDays7d: 0,
+      evapotranspiration7dMm: 0,
       altitudeM: 2040,
       habitatAltitudeSuitability: 50,
       habitatCoveragePercent: 51,

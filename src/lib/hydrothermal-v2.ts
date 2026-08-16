@@ -63,7 +63,50 @@ function saturationVapourPressureKpa(temperatureC: number) {
   return 0.6108 * Math.exp((17.27 * temperatureC) / (temperatureC + 237.3));
 }
 
+/**
+ * Matured rain: for slow guilds the trailing seven days are excluded from
+ * the rain window. Fruiting bodies found today developed over the preceding
+ * weeks, so rain from the last few days cannot have produced them —
+ * crediting it instantly inflated background days right after storms (a
+ * measured-rain zero-find day scored 48; excluding the fresh week drops it
+ * to 31 while dated finds keep their bands). Fast saprotroph guilds fruit
+ * within days of rain and keep the plain trailing window
+ * (recentRainWeight 1). Computed as window-minus-7d from the stored
+ * trailing fields, whose 24 h bins subtract exactly. Drying terms (dry
+ * spell, VPD) stay anchored to the present: they act on already-emerged
+ * bodies.
+ */
+function maturedWindow(
+  total: number | undefined,
+  recent: number | undefined,
+  recentWeight: number,
+) {
+  return total === undefined || recent === undefined
+    ? undefined
+    : Math.max(0, total - recent) + recentWeight * recent;
+}
+
 function rainfallWindow(
+  values: EnvironmentValues,
+  parameters: WaterModelParametersV2,
+) {
+  const raw = rawRainfallWindow(values, parameters.rainfallWindowDays);
+  const weight = parameters.recentRainWeight;
+  if (!(weight >= 0 && weight <= 1)) {
+    throw new RangeError("Recent-rain weight must be within [0, 1]");
+  }
+  return {
+    rainfall: maturedWindow(raw.rainfall, values.rainfall7dMm, weight),
+    rainyDays: maturedWindow(raw.rainyDays, values.rainfallDays7d, weight),
+    evapotranspiration: maturedWindow(
+      raw.evapotranspiration,
+      values.evapotranspiration7dMm,
+      weight,
+    ),
+  };
+}
+
+function rawRainfallWindow(
   values: EnvironmentValues,
   days: WaterModelParametersV2["rainfallWindowDays"],
 ) {
@@ -111,7 +154,7 @@ export function waterSuitabilityV2(
   const temperature7d = values.temperatureAvg7dC;
   const humidity7d = values.relativeHumidityAvg7d;
   const drySpellDays = values.drySpellDays;
-  const rain = rainfallWindow(values, parameters.rainfallWindowDays);
+  const rain = rainfallWindow(values, parameters);
 
   if (
     temperature7d === undefined ||
@@ -319,6 +362,10 @@ export function missingHydrothermalFieldsV2(
     "temperatureAvg7dC",
     "relativeHumidityAvg7d",
     "drySpellDays",
+    // The matured-rain exclusion subtracts the trailing week from the window.
+    "rainfall7dMm",
+    "rainfallDays7d",
+    "evapotranspiration7dMm",
     ...rainFields,
     ...temperatureFields,
   ] as const satisfies readonly (keyof EnvironmentValues)[];

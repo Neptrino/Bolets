@@ -189,6 +189,7 @@ const waterModelParametersV2 = waterModelParametersBase.omit({
   soilDryFloor: z.number().min(0).max(1),
   soilWetFloor: z.number().min(0).max(1),
   rainFloor: z.number().min(0).max(1),
+  recentRainWeight: z.number().min(0).max(1),
 }).superRefine(orderedRewBand);
 const combinationModelParameters = z.object({
   habitatExponent: z.number().gt(0).max(1),

@@ -93,6 +93,10 @@ describe("coarse habitat scoring values", () => {
       rainfall26dMm: 50,
       rainfallDays26d: 5,
       evapotranspiration26dMm: 5,
+      // Matured rain: the trailing week is subtracted from the window.
+      rainfall7dMm: 0,
+      rainfallDays7d: 0,
+      evapotranspiration7dMm: 0,
       drySpellDays: 0,
       altitudeM: 2040,
       soilTexture: "franca",

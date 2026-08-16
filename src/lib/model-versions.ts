@@ -1,7 +1,7 @@
 export const HABITAT_MODEL_VERSION = "habitat-static-v8-ph-taper";
 export const PREDICTION_SCORING_VERSION = "hydrothermal-v2";
 export const HYDROTHERMAL_PRIOR_VERSION = "hydrothermal-v1-priors-2026-08b";
-export const HYDROTHERMAL_V2_PRIOR_VERSION = "hydrothermal-v2-priors-2026-08c";
+export const HYDROTHERMAL_V2_PRIOR_VERSION = "hydrothermal-v2-priors-2026-08d";
 
 /**
  * Species scored by hydrothermal-v2. Full cutover 2026-08-16 after validation

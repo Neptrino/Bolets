@@ -42,6 +42,10 @@ const completeValues: ConditionSnapshot["values"] = {
   rainfall26dMm: 66,
   rainfallDays26d: 8,
   evapotranspiration26dMm: 17,
+  // Matured rain: the trailing week is subtracted from the window.
+  rainfall7dMm: 0,
+  rainfallDays7d: 0,
+  evapotranspiration7dMm: 0,
   drySpellDays: 1,
   soilTexture: "franca",
   altitudeM: 900,

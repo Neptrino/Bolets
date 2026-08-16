@@ -33,6 +33,10 @@ const baselineValues: ConditionSnapshot["values"] = {
   rainfall21dMm: 42,
   rainfallDays21d: 6,
   evapotranspiration21dMm: 38,
+  // Matured rain: the trailing week is subtracted from the window.
+  rainfall7dMm: 0,
+  rainfallDays7d: 0,
+  evapotranspiration7dMm: 0,
   temperatureAvg14dC: 23,
   temperatureAvg20dC: 23,
   frostHours14d: 0,
