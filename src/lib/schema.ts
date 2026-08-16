@@ -213,7 +213,14 @@ const fruitingModelConfig = z.union([
     water: waterModelParametersV2,
     temperature: temperatureModelParameters,
     combination: combinationModelParameters,
-    phenology: z.object({ monthlyAnchors: monthlyPhenologyAnchors }),
+    phenology: z.object({
+      monthlyAnchors: monthlyPhenologyAnchors,
+      altitudeShift: z.object({
+        daysPer100m: z.number(),
+        referenceAltitudeM: z.number().min(0).max(3500),
+        maxShiftDays: z.number().min(0).max(120),
+      }).optional(),
+    }),
     evidence: supportedModelEvidence,
   }),
   z.object({

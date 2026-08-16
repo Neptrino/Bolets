@@ -9,6 +9,7 @@ import {
   calibrate,
   habitatWeight,
   missingHydrothermalFieldsV2,
+  phenologyObservationDate,
   waterSuitabilityV2,
 } from "@/src/lib/hydrothermal-v2";
 import { phenologySuitability } from "@/src/lib/scoring";
@@ -135,7 +136,9 @@ export function rawDiagnostics(
   }
   const model = profile.modelConfig;
   const phenology = phenologySuitability(
-    observedAt,
+    model.model === "hydrothermal-v2"
+      ? phenologyObservationDate(observedAt, values.altitudeM, model.phenology.altitudeShift)
+      : observedAt,
     model.phenology.monthlyAnchors,
   );
   const waterDetails = model.model === "hydrothermal-v2"

@@ -184,6 +184,27 @@ const SOIL_FLOOR_WEIGHT = 0.15;
  */
 const TEMPERATURE_OPTIMUM_SHIFT_C = 3;
 
+/**
+ * Calendar days read ahead per 100 m above the species' reference altitude.
+ * Fitted cluster across dated autumn observations: 25-40 days earlier per
+ * 1000 m (L. deliciosus -27 d, A. muscaria -27 d, T. terreum -30 d,
+ * A. phalloides -34 d). Applied only to autumn-shaped calendars; spring
+ * calendars shift the opposite way and are left unshifted until fitted.
+ */
+const PHENOLOGY_SHIFT_DAYS_PER_100M = 3;
+const PHENOLOGY_SHIFT_MAX_DAYS = 45;
+
+/**
+ * A calendar is autumn-shaped when its strongest month falls in
+ * August-December and spring never rises above "moderate". Detected from the
+ * anchors themselves so no per-species list can drift out of date.
+ */
+export function isAutumnCalendar(anchors: MonthlyPhenologyAnchors) {
+  const strongest = anchors.indexOf(Math.max(...anchors));
+  const springMax = Math.max(anchors[2], anchors[3], anchors[4], anchors[5]);
+  return strongest >= 7 && springMax <= 0.5;
+}
+
 const COMBINATION_V2: CombinationModelParameters = {
   // A 30% compatible cell could never exceed a score of 30 under v1, leaving
   // the upper bands unreachable at most observed finds.
@@ -202,6 +223,7 @@ function hydrothermalV2Config({
   waterOverrides,
   temperatureOverrides,
   monthlyAnchors,
+  altitudeRange,
   evidence,
 }: {
   guild: SupportedGuild;
@@ -210,6 +232,7 @@ function hydrothermalV2Config({
   waterOverrides?: Partial<WaterModelParameters>;
   temperatureOverrides?: Partial<TemperatureModelParameters>;
   monthlyAnchors: MonthlyPhenologyAnchors;
+  altitudeRange?: readonly [number, number];
   evidence?: { status: "expert-prior" | "species-literature"; citations: readonly string[] };
 }): FruitingModelConfig {
   return {
@@ -227,7 +250,18 @@ function hydrothermalV2Config({
       ...(temperatureOverrides ?? {}),
     },
     combination: { ...COMBINATION_V2 },
-    phenology: { monthlyAnchors },
+    phenology: {
+      monthlyAnchors,
+      ...(altitudeRange && isAutumnCalendar(monthlyAnchors)
+        ? {
+            altitudeShift: {
+              daysPer100m: PHENOLOGY_SHIFT_DAYS_PER_100M,
+              referenceAltitudeM: (altitudeRange[0] + altitudeRange[1]) / 2,
+              maxShiftDays: PHENOLOGY_SHIFT_MAX_DAYS,
+            },
+          }
+        : {}),
+    },
     evidence: evidence
       ? { status: evidence.status, citations: [...evidence.citations] }
       : { status: "expert-prior" as const, citations: [...GUILD_PRIOR_CITATIONS] },
@@ -500,6 +534,7 @@ export function modelConfigForSpecies(
   // v1/v2 dispatch normally follows HYDROTHERMAL_V2_SPECIES; regression tests
   // and dual-model shadow replays force the legacy branch explicitly.
   forceModel?: "hydrothermal-v1",
+  altitudeRange?: readonly [number, number],
 ): FruitingModelConfig {
   const entry = SPECIES_MODEL_CATALOGUE[speciesId as keyof typeof SPECIES_MODEL_CATALOGUE];
   if (!entry) throw new Error(`Missing hydrothermal model config for ${speciesId}`);
@@ -531,6 +566,7 @@ export function modelConfigForSpecies(
       waterOverrides: supportedEntry.water,
       temperatureOverrides: supportedEntry.temperature,
       monthlyAnchors: phenologyAnchors(seasonality),
+      altitudeRange,
       evidence: supportedEntry.evidence,
     });
   }

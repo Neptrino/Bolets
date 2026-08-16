@@ -106,6 +106,7 @@ function applyV2Overrides(
     water?: Record<string, number>;
     combination?: Record<string, number>;
     temperature?: Record<string, number>;
+    phenology?: Record<string, number>;
   } | null,
 ) {
   if (!overrides || config.status !== "supported" || config.model !== "hydrothermal-v2") {
@@ -123,6 +124,12 @@ function applyV2Overrides(
       ...temperatureReplacements,
       optimumC: config.temperature.optimumC + optimumShiftC,
     },
+    phenology: overrides.phenology && config.phenology.altitudeShift
+      ? {
+          ...config.phenology,
+          altitudeShift: { ...config.phenology.altitudeShift, ...overrides.phenology },
+        }
+      : config.phenology,
   };
 }
 
@@ -147,6 +154,7 @@ it.skipIf(!inputPath || !artifactsDir)(
           water?: Record<string, number>;
           combination?: Record<string, number>;
           temperature?: Record<string, number>;
+          phenology?: Record<string, number>;
         }
       : null;
     mkdirSync(artifactsDir!, { recursive: true, mode: 0o700 });

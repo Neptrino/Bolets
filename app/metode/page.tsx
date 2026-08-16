@@ -354,6 +354,7 @@ export default function MethodPage() {
                   P = (1 − u′)p<sub>mes</sub> + u′p<sub>mes següent</sub>
                 </Formula>
                 <p>Els dotze ancoratges provenen directament del calendari ecològic únic de l’espècie: inactiu = 0, possible = 0,25, moderat = 0,50, bo = 0,80 i pic = 1. Corresponen al centre de cada mes i es llegeixen amb el dia i l’hora exactes d’Europa/Madrid. Per exemple, l’1 d’agost encara combina juliol i agost, el 15 coincideix amb l’ancoratge d’agost i el 31 ja transita cap al setembre. Fora de la finestra biològica, <b>P = 0</b> i, per tant, <b>F = 0</b>.</p>
+                <p>La temporada de tardor comença abans en altitud i baixa cap a la costa: en observacions datades, entre 25 i 40 dies més aviat per cada 1.000 m. Per això, en espècies de calendari de tardor, cada cel·la llegeix el calendari desplaçat <b>3 dies per cada 100 m</b> per sobre de l’altitud de referència de l’espècie (i endarrerit per sota), amb un límit de ±45 dies. Les espècies de primavera, que es desplacen en sentit contrari, no porten desplaçament.</p>
               </article>
 
               <article className="method-subscore">

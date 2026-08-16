@@ -230,6 +230,20 @@ export interface CombinationModelParameters {
   calibrationGamma: number;
 }
 
+/**
+ * Altitude correction for the phenology calendar. The fruiting season moves
+ * downslope through autumn (~25-40 days per 1000 m in dated observations), so
+ * a cell above the species' reference altitude reads the calendar that many
+ * days ahead; below it, behind. Spring-calendar species shift the opposite
+ * way and currently carry no shift.
+ */
+export interface PhenologyAltitudeShift {
+  /** Calendar days read ahead per 100 m above the reference altitude. */
+  daysPer100m: number;
+  referenceAltitudeM: number;
+  maxShiftDays: number;
+}
+
 export type ModelEvidence =
   | { status: "expert-prior" | "species-literature"; citations: string[] }
   | { status: "unsupported"; citations: string[] };
@@ -253,7 +267,10 @@ export type FruitingModelConfig =
       water: WaterModelParametersV2;
       temperature: TemperatureModelParameters;
       combination: CombinationModelParameters;
-      phenology: { monthlyAnchors: MonthlyPhenologyAnchors };
+      phenology: {
+        monthlyAnchors: MonthlyPhenologyAnchors;
+        altitudeShift?: PhenologyAltitudeShift;
+      };
       evidence: Extract<ModelEvidence, { status: "expert-prior" | "species-literature" }>;
     }
   | {

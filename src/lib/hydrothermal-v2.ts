@@ -208,6 +208,33 @@ export function habitatWeight(effectiveHabitatCoverage: number, exponent: number
   return clamp01(effectiveHabitatCoverage) ** exponent;
 }
 
+const MILLISECONDS_PER_DAY = 86_400_000;
+
+/**
+ * The date at which a cell should read the phenology calendar. Dated
+ * observations put the autumn season 25-40 days earlier per 1000 m of
+ * altitude, so a cell above the species' reference altitude reads the
+ * calendar ahead by the configured rate; below it, behind. Without a cell
+ * altitude the calendar is read at the observation date unchanged.
+ */
+export function phenologyObservationDate(
+  observedAt: string,
+  altitudeM: number | undefined,
+  shift: {
+    daysPer100m: number;
+    referenceAltitudeM: number;
+    maxShiftDays: number;
+  } | undefined,
+) {
+  if (!shift || altitudeM === undefined || !Number.isFinite(altitudeM)) return observedAt;
+  if (!(shift.maxShiftDays >= 0)) throw new RangeError("Phenology shift cap must be non-negative");
+  const rawDays = ((altitudeM - shift.referenceAltitudeM) / 100) * shift.daysPer100m;
+  const shiftDays = Math.max(-shift.maxShiftDays, Math.min(shift.maxShiftDays, rawDays));
+  const shifted = Date.parse(observedAt) + shiftDays * MILLISECONDS_PER_DAY;
+  if (!Number.isFinite(shifted)) return observedAt;
+  return new Date(shifted).toISOString();
+}
+
 export function missingHydrothermalFieldsV2(
   values: EnvironmentValues,
   water: WaterModelParametersV2,

@@ -369,6 +369,8 @@ function profile(seed: Seed): SpeciesProfile {
     seed.speciesId,
     seed.ecologicalConfig.climate.temperatureRange,
     seed.ecologicalConfig.seasonality,
+    undefined,
+    seed.ecologicalConfig.habitat.altitude,
   );
 
   return {

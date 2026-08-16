@@ -318,6 +318,33 @@ their current values — the sweep found them already at the optimum on this
 dataset — and the August heat response stays on the watch list until a season
 with abundant summer finds can distinguish it from phenology.
 
+## Altitude-shifted phenology (2026-08-16)
+
+A single statewide calendar per species ignores that the autumn season starts
+high and descends: fitting observation date against altitude across 703 dated
+records puts the autumn cluster at **25–40 days earlier per 1000 m**
+(L. deliciosus −27 d/1000 m r² 0.36, A. muscaria −27, T. terreum −30,
+A. phalloides −34), while the spring species M. oreades moves the opposite way
+(+106 d/1000 m, r² 0.41) — the same physics with the opposite sign.
+
+v2 therefore reads the calendar shifted **+3 days per 100 m** above the
+species' reference altitude (habitat-range midpoint), capped at ±45 days,
+applied only to autumn-shaped calendars (strongest month Aug–Dec, spring never
+above "moderate" — detected from the anchors, not a species list). Sweeping the
+slope on the replay harness:
+
+| Slope (d/100 m) | AUC conditions | Events ≥20 | Events ≥40 |
+|---|---|---|---|
+| 0 | 0.594 | 49% | 33% |
+| 3 | **0.606** | **53%** | **40%** |
+| 4 | 0.609 | 47% | 42% |
+
+Row-level, the montane July–August finds the calendar had been suppressing rise
+from "baixa" into "mitjana" (30→43, 37→47, 38→52), negatives stay ordered below
+the finds at the same spots, and the lowland-heavy GBIF set shows no leakage
+(AUC 0.563→0.567). The three high-summer S. luteus zeros remain zero: with
+phenology unblocked they are heat-bound, which matches their abundance-1 grades.
+
 ## Status
 
 `hydrothermal-v2` exists side by side with v1 and is **not enabled for any

@@ -4,6 +4,7 @@ import { smoothBand, waterSuitability } from "@/src/lib/hydrothermal";
 import {
   calibrate,
   habitatWeight,
+  phenologyObservationDate,
   smoothBandV2,
   waterSuitabilityV2,
 } from "@/src/lib/hydrothermal-v2";
@@ -262,5 +263,59 @@ describe("end-to-end scoring", () => {
   it("reports the v2 model version", () => {
     const result = calculateSuitability(v2Profile(), snapshot(RAIN_WET_SOIL_DRY));
     expect(result.modelVersion).toContain("hydrothermal-v2-test");
+  });
+});
+
+describe("altitude-shifted phenology", () => {
+  const shift = { daysPer100m: 3, referenceAltitudeM: 950, maxShiftDays: 45 };
+
+  it("reads the calendar ahead above the reference and behind below it", () => {
+    const base = "2025-08-15T12:00:00.000Z";
+    // 1850 m is 900 m above reference: +27 days -> mid-September calendar.
+    expect(phenologyObservationDate(base, 1850, shift).slice(0, 10)).toBe("2025-09-11");
+    // 350 m is 600 m below reference: -18 days -> late-July calendar.
+    expect(phenologyObservationDate(base, 350, shift).slice(0, 10)).toBe("2025-07-28");
+    expect(phenologyObservationDate(base, 950, shift)).toBe(base);
+  });
+
+  it("caps the shift and passes through when altitude or shift is missing", () => {
+    const base = "2025-08-15T12:00:00.000Z";
+    // 3000 m above reference would be +61 days; the cap holds it at +45.
+    expect(phenologyObservationDate(base, 3950, shift).slice(0, 10)).toBe("2025-09-29");
+    expect(phenologyObservationDate(base, undefined, shift)).toBe(base);
+    expect(phenologyObservationDate(base, 1850, undefined)).toBe(base);
+  });
+
+  it("classifies autumn calendars and leaves spring calendars unshifted", () => {
+    const suillus = getSpecies("suillus-luteus")!.modelConfig;
+    const oreades = getSpecies("marasmius-oreades")!.modelConfig;
+    if (suillus.status !== "supported" || suillus.model !== "hydrothermal-v2") throw new Error("v2 expected");
+    if (oreades.status !== "supported" || oreades.model !== "hydrothermal-v2") throw new Error("v2 expected");
+    expect(suillus.phenology.altitudeShift).toBeDefined();
+    expect(suillus.phenology.altitudeShift!.referenceAltitudeM).toBe(950);
+    expect(oreades.phenology.altitudeShift).toBeUndefined();
+  });
+
+  it("raises the montane August score without touching a lowland cell", () => {
+    const species = getSpecies("suillus-luteus")!;
+    const august = {
+      ...RAIN_WET_SOIL_DRY,
+      soilMoistureAvg7d: 0.2,
+      soilMoistureMin7d: 0.18,
+      temperatureAvg14dC: 14,
+      temperatureAvg20dC: 14,
+      habitatCoveragePercent: 60,
+    };
+    const montane = calculateSuitability(species, {
+      ...snapshot({ ...august, altitudeM: 1800 }),
+      observedAt: "2025-08-15T12:00:00.000Z",
+    });
+    const lowland = calculateSuitability(species, {
+      ...snapshot({ ...august, altitudeM: 950 }),
+      observedAt: "2025-08-15T12:00:00.000Z",
+    });
+    expect(montane.fruitingConditionsScore!).toBeGreaterThan(
+      lowland.fruitingConditionsScore! * 1.5,
+    );
   });
 });

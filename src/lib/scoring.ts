@@ -8,6 +8,7 @@ import {
   calibrate,
   habitatWeight,
   missingHydrothermalFieldsV2,
+  phenologyObservationDate,
   waterSuitabilityV2,
 } from "@/src/lib/hydrothermal-v2";
 import { predictionModelVersion } from "@/src/lib/model-versions";
@@ -206,7 +207,13 @@ export function calculateSuitability(
   }
 
   const phenology = phenologySuitability(
-    snapshot.observedAt,
+    model.model === "hydrothermal-v2"
+      ? phenologyObservationDate(
+          snapshot.observedAt,
+          values.altitudeM,
+          model.phenology.altitudeShift,
+        )
+      : snapshot.observedAt,
     model.phenology.monthlyAnchors,
   );
   const hardHabitatExclusion = effectiveHabitatCoverage === 0;
