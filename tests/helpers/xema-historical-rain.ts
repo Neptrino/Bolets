@@ -123,6 +123,20 @@ async function fetchJsonCached(url: URL, cacheDir: string, context: string) {
 
 let stationInventory: XemaStation[] | undefined;
 
+// Both caches are per-process: replays visit the same calendar days for many
+// locations, and re-parsing day files plus re-formatting Intl hour keys per
+// location turns a cached sweep into hours of pure CPU.
+const hourKeyByEpoch = new Map<number, string>();
+const dayHoursCache = new Map<string, { stationCode: string; key: string; precipitationMm: number }[]>();
+
+function cachedMadridHourKey(epochSeconds: number) {
+  const cached = hourKeyByEpoch.get(epochSeconds);
+  if (cached !== undefined) return cached;
+  const key = madridHourKey(epochSeconds) ?? "";
+  hourKeyByEpoch.set(epochSeconds, key);
+  return key;
+}
+
 async function fetchStationInventory(cacheDir: string) {
   if (!stationInventory) {
     const rows = await fetchJsonCached(xemaStationsUrl(), cacheDir, "station inventory");
@@ -156,15 +170,23 @@ export async function fetchHistoricalStationSeries(
     dayMs += DAY_MS
   ) {
     const day = new Date(dayMs).toISOString().slice(0, 10);
-    const rows = await fetchJsonCached(xemaDayHourlyUrl(day), cacheDir, `day ${day}`);
-    if (!Array.isArray(rows)) throw new Error(`XEMA day ${day} response is not a row list`);
-    for (const raw of rows) {
-      const row = normalizeDayHourRow(day, raw);
-      if (!row) continue;
-      const key = madridHourKey(row.hourStartEpoch);
-      if (!key) continue;
+    let dayHours = dayHoursCache.get(day);
+    if (!dayHours) {
+      const rows = await fetchJsonCached(xemaDayHourlyUrl(day), cacheDir, `day ${day}`);
+      if (!Array.isArray(rows)) throw new Error(`XEMA day ${day} response is not a row list`);
+      dayHours = [];
+      for (const raw of rows) {
+        const row = normalizeDayHourRow(day, raw);
+        if (!row) continue;
+        const key = cachedMadridHourKey(row.hourStartEpoch);
+        if (!key) continue;
+        dayHours.push({ stationCode: row.stationCode, key, precipitationMm: row.precipitationMm });
+      }
+      dayHoursCache.set(day, dayHours);
+    }
+    for (const row of dayHours) {
       const hours = hoursByStation.get(row.stationCode) ?? {};
-      hours[key] = row.precipitationMm;
+      hours[row.key] = row.precipitationMm;
       hoursByStation.set(row.stationCode, hours);
     }
   }
@@ -208,7 +230,7 @@ export function applyStationRainToLocation(
     fallback = times.map((time) => byTime.get(time) ?? null);
   }
   const localKeys = times.map((time) =>
-    typeof time === "number" ? madridHourKey(time) ?? "" : ""
+    typeof time === "number" ? cachedMadridHourKey(time) : ""
   );
   const corrected = buildStationCorrectedPrecipitation(
     localKeys,
