@@ -242,6 +242,43 @@ function laggedRainWindow(
   return { rainfallMm, rainyDays, evapotranspirationMm };
 }
 
+/**
+ * Gauge-driven soil water-balance probe: a single bucket integrating the
+ * span's (station-corrected) hourly rain against ET0 and drainage, read at
+ * the target hour. Diagnostic only — it decorates records so the offline
+ * metrics can ask whether measured-rain soil memory discriminates where
+ * modelled soil could not, before it earns a place in the model. The
+ * 38-day lead-in doubles as spin-up, washing out the neutral initial state.
+ */
+const BUCKET_CAPACITY_MM = 100;
+const BUCKET_ET_COEFFICIENT = 0.7;
+const BUCKET_DRAINAGE_THRESHOLD_MM = 60;
+const BUCKET_DRAINAGE_RATE_PER_HOUR = 0.01;
+
+function bucketLevelAt(location: OpenMeteoLocation, observedAt: string) {
+  const hourly = location.hourly as Record<string, unknown> | undefined;
+  const times = Array.isArray(hourly?.time) ? hourly.time as unknown[] : [];
+  const rain = Array.isArray(hourly?.precipitation) ? hourly.precipitation as unknown[] : [];
+  const et = Array.isArray(hourly?.et0_fao_evapotranspiration)
+    ? hourly.et0_fao_evapotranspiration as unknown[]
+    : [];
+  const target = Math.floor(Date.parse(observedAt) / 3_600_000) * 3600;
+  let store = BUCKET_CAPACITY_MM / 2;
+  for (let index = 0; index < times.length; index += 1) {
+    const time = times[index];
+    if (typeof time !== "number" || time > target) continue;
+    const rainMm = typeof rain[index] === "number" ? rain[index] as number : 0;
+    const etMm = typeof et[index] === "number" ? et[index] as number : 0;
+    store = Math.min(BUCKET_CAPACITY_MM, store + rainMm);
+    store -= BUCKET_ET_COEFFICIENT * etMm;
+    if (store > BUCKET_DRAINAGE_THRESHOLD_MM) {
+      store -= (store - BUCKET_DRAINAGE_THRESHOLD_MM) * BUCKET_DRAINAGE_RATE_PER_HOUR;
+    }
+    store = Math.max(0, store);
+  }
+  return Math.round((store / BUCKET_CAPACITY_MM) * 1000) / 1000;
+}
+
 const TERRAIN_LAPSE_C_PER_KM = 6.5;
 const TERRAIN_LAPSE_MAX_DELTA_C = 6;
 
@@ -300,6 +337,7 @@ it.skipIf(!inputPath || !artifactsDir)(
     // (dry spell, VPD) stay anchored to the present since they act on
     // already-emerged bodies.
     const rainLagDays = Number(process.env.FINDING_EVAL_RAIN_LAG_DAYS ?? 0);
+    const bucketProbe = process.env.FINDING_EVAL_BUCKET === "1";
     const scoringModel = process.env.FINDING_EVAL_MODEL === "v2" ? "v2" : "v1";
     // Parameter sweeps patch the v2 config so candidate values can be fitted
     // against the same events without editing shipped priors.
@@ -628,6 +666,9 @@ it.skipIf(!inputPath || !artifactsDir)(
               stationRain,
               stationRainCoverage: stationRain
                 ? stationRainCoverageBySpan.get(spanIndex) ?? 0
+                : null,
+              bucketLevel: bucketProbe
+                ? bucketLevelAt(atmosphereBySpan.get(spanIndex)!, target.observedAt)
                 : null,
             };
 
