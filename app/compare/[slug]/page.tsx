@@ -87,6 +87,7 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
         eyebrow={<><ArrowRightLeft size={15} /> Guia comparativa</>}
         title={<>{left.identity.commonName} <PageTitleAccent>vs.</PageTitleAccent> {right.identity.commonName.toLocaleLowerCase("ca")}</>}
         description={page.introduction}
+        className="page-header--wide"
       />
 
       <div className="comparison-reference-images" aria-label="Fotografies de referència">
@@ -105,6 +106,36 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
         <div><span>Diferència clau</span><strong>{page.decisiveDifference}</strong></div>
       </aside>
 
+      {page.diagnosticTraits && page.diagnosticTraits.length > 0 && (
+        <section className="comparison-facts" aria-labelledby="comparison-traits-title">
+          <h2 id="comparison-traits-title">Trets decisius</h2>
+          <div className="comparison-facts-table">
+            <header><span>Tret</span><strong>{left.identity.commonName}</strong><strong>{right.identity.commonName}</strong></header>
+            {page.diagnosticTraits.map((trait) => (
+              <div key={trait.label}><span>{trait.label}</span><p>{trait.left}</p><p>{trait.right}</p></div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {page.fieldChecks && page.fieldChecks.length > 0 && (
+        <section className="seo-guide-section seo-guide-section--wide seo-guide-section--wide-prose" aria-labelledby="comparison-checks-title">
+          <p className="eyebrow">Al camp</p>
+          <h2 id="comparison-checks-title">Com comprovar-ho, per ordre</h2>
+          <ol className="comparison-field-checks">
+            {page.fieldChecks.map((check) => <li key={check}>{check}</li>)}
+          </ol>
+        </section>
+      )}
+
+      {page.habitatAndSeason && (
+        <section className="seo-guide-section seo-guide-section--wide seo-guide-section--wide-prose" aria-labelledby="comparison-habitat-title">
+          <p className="eyebrow">Hàbitat i temporada</p>
+          <h2 id="comparison-habitat-title">Ajuda el lloc o el mes a distingir-los?</h2>
+          <p>{page.habitatAndSeason}</p>
+        </section>
+      )}
+
       <section className="comparison-facts" aria-labelledby="comparison-facts-title">
         <h2 id="comparison-facts-title">Diferències entre {left.identity.commonName.toLocaleLowerCase("ca")} i {right.identity.commonName.toLocaleLowerCase("ca")}</h2>
         <div className="comparison-facts-table">
@@ -120,7 +151,7 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
       </div>
 
       <aside className="intent-emergency-note comparison-warning">
-        <CircleAlert size={22} /><div><strong>No decidiu el consum amb una taula.</strong><p>La variació natural, l’edat i l’estat del bolet poden alterar-ne l’aspecte. Confirmeu qualsevol identificació amb una persona experta.</p></div>
+        <CircleAlert size={22} /><div><strong>{page.confusionRisk ? "Què hi ha en joc" : "No decidiu el consum amb una taula."}</strong><p>{page.confusionRisk ?? "La variació natural, l’edat i l’estat del bolet poden alterar-ne l’aspecte. Confirmeu qualsevol identificació amb una persona experta."}</p></div>
       </aside>
       <EditorialAttribution contentId={`compare:${page.slug}`} sources={[officialSafetySource, ...left.references, ...right.references]} />
     </PageShell>

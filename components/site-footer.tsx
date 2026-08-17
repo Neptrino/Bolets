@@ -32,6 +32,7 @@ export function SiteFooter() {
           <Link href="/quan-surten-els-bolets-despres-de-ploure">Després de ploure</Link>
           <Link href="/parts-dun-bolet">Parts d’un bolet</Link>
           <Link href="/equip-editorial">Equip editorial</Link>
+          <Link href="/avis-legal">Avís legal i privadesa</Link>
         </nav>
         <InstallApp />
       </div>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BookOpenCheck, ExternalLink } from "lucide-react";
-import { editorialTeam, getEditorialMetadata } from "@/data/editorial";
+import { editorialAuthors, editorialTeam, getEditorialMetadata } from "@/data/editorial";
 import type { SourceReference } from "@/src/lib/types";
 
 function formatEditorialDate(date: string) {
@@ -18,6 +18,7 @@ export function EditorialAttribution({
   sources: SourceReference[];
 }) {
   const editorial = getEditorialMetadata(contentId);
+  const author = editorialAuthors[editorial.authorId];
   const uniqueSources = [...new Map(sources.map((source) => [source.url, source])).values()];
 
   return (
@@ -26,11 +27,12 @@ export function EditorialAttribution({
         <div className="editorial-panel-heading">
           <BookOpenCheck size={18} aria-hidden="true" />
           <div>
-            <span>Responsabilitat editorial</span>
-            <strong><Link href="/equip-editorial">{editorialTeam.name}</Link></strong>
+            <span>Autoria</span>
+            <strong><Link href="/equip-editorial#autoria">{author.name}</Link></strong>
           </div>
         </div>
         <dl className="editorial-meta">
+          <div><dt>Editor</dt><dd><Link href="/equip-editorial">{editorialTeam.name}</Link></dd></div>
           <div><dt>Actualitzat</dt><dd><time dateTime={editorial.updatedAt}>{formatEditorialDate(editorial.updatedAt)}</time></dd></div>
           <div><dt>Revisió</dt><dd>{editorial.reviewStatus === "expert-reviewed" ? "Revisió micològica independent completada" : "Revisió editorial; revisió micològica independent pendent"}</dd></div>
         </dl>

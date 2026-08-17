@@ -16,7 +16,8 @@
 .editorial-sources > span { display: block; font-size: .75rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
 .editorial-panel-heading strong { display: block; margin-top: .08rem; line-height: 1.25; }
 .editorial-panel-heading a { color: inherit; text-underline-offset: .2em; }
-.editorial-meta { display: grid; grid-template-columns: minmax(8.5rem, .65fr) minmax(15rem, 1.35fr); gap: 1rem; margin: 0; }
+.editorial-meta { display: grid; grid-template-columns: minmax(8rem, .7fr) minmax(7.5rem, .6fr) minmax(13rem, 1.7fr); gap: 1rem; margin: 0; }
+@media (width < 720px) { .editorial-meta { grid-template-columns: 1fr; } }
 .editorial-meta div { display: grid; gap: .12rem; padding-left: 1rem; border-left: 1px solid rgba(55, 56, 52, .14); }
 .editorial-meta dt { font-size: .75rem; font-weight: 800; color: #526248; text-transform: uppercase; letter-spacing: .06em; }
 .editorial-meta dd { margin: 0; font-size: .9rem; line-height: 1.35; }
@@ -149,7 +150,7 @@
 .rain-factor-grid p { margin: 0; line-height: 1.65; color: #4e594f; }
 .seo-guide-section { max-width: 52rem; margin: 3.2rem 0; }
 .seo-guide-section h2 { margin: 0 0 .65rem; font-size: clamp(1.8rem, 3vw, 2.7rem); }
-.seo-guide-section > p { line-height: 1.7; }
+.seo-guide-section > p { font-size: 17px; line-height: 1.7; }
 .seo-guide-section > p:not(.eyebrow) { margin: 0 0 1.25rem; }
 .seo-guide-section--wide { max-width: none; }
 .seo-guide-section--wide > p { max-width: 52rem; }

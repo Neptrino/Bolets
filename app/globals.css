@@ -3781,6 +3781,69 @@ body {
   font-size: clamp(30px, 4vw, 46px);
   letter-spacing: -0.03em;
 }
+/* Stacked headers cap at 850px, which leaves half the row empty on wide
+   viewports. This modifier keeps the two-row order (title, then intro) and
+   lets both span the shell, matching .seo-guide-section--wide. */
+/* Specificity is deliberate: page-layout.module.css and seo-content.css are
+   both imported after this file, so a single-class override would lose on
+   source order. */
+[data-page-header].page-header--wide {
+  max-width: none;
+}
+[data-page-header].page-header--wide h1,
+[data-page-header].page-header--wide > p {
+  max-width: none;
+}
+[data-page-header].page-header--wide > p {
+  font-size: 17px;
+}
+/* .seo-guide-section--wide releases the section but still holds prose at
+   52rem; this releases the prose too. */
+.seo-guide-section.seo-guide-section--wide-prose > p,
+.seo-guide-section.seo-guide-section--wide-prose > ol {
+  max-width: none;
+}
+/* Ordered field checks as numbered step cards: the default <ol> markers get
+   lost in a grid layout, so the number is drawn explicitly and made part of
+   the visual hierarchy. */
+.comparison-field-checks {
+  display: grid;
+  gap: 14px;
+  margin: 1.4rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: field-check;
+}
+.comparison-field-checks > li {
+  counter-increment: field-check;
+  position: relative;
+  padding: 17px 21px 17px 62px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 253, 247, 0.7);
+  font-size: 17px;
+  line-height: 1.65;
+}
+.comparison-field-checks > li::before {
+  content: counter(field-check);
+  position: absolute;
+  top: 16px;
+  left: 19px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 14px;
+  font-weight: 850;
+}
+@media (width >= 900px) {
+  .comparison-field-checks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 .comparison-facts-table {
   overflow: hidden;
   border: 1px solid var(--line);

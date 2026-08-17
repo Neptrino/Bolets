@@ -3,10 +3,12 @@ import { SITE_URL } from "@/src/lib/seo";
 
 export type EditorialReviewStatus = "editorial-only" | "expert-reviewed";
 
+export type EditorialAuthorId = "editorial-team" | "aleix-ventayol";
+
 export interface EditorialMetadata {
   publishedAt: string;
   updatedAt: string;
-  authorId: "editorial-team";
+  authorId: EditorialAuthorId;
   reviewStatus: EditorialReviewStatus;
 }
 
@@ -17,6 +19,29 @@ export const editorialTeam = {
   name: "Equip editorial de Bolets Atles",
   url: `${SITE_URL}/equip-editorial`,
 };
+
+// A named person carries the authorship signal that an anonymous collective
+// cannot. The description states what the author does and does not bring:
+// claiming mycological credentials that do not exist would be worse than
+// staying anonymous.
+export const siteAuthor = {
+  id: "aleix-ventayol" as const,
+  entityId: `${SITE_URL}/#author-aleix-ventayol`,
+  name: "Aleix Ventayol",
+  url: `${SITE_URL}/equip-editorial#autoria`,
+  role: "Autor i responsable del model",
+  summary:
+    "Boletaire aficionat des de petit, desenvolupa i manté l’atles i el model hidrotèrmic. La seva formació és en desenvolupament de software i tractament de dades, no en micologia: els trets d’identificació provenen de bibliografia micològica i de fonts oficials, citades a cada fitxa.",
+};
+
+export const editorialAuthors = {
+  [siteAuthor.id]: siteAuthor,
+  [editorialTeam.id]: editorialTeam,
+} as const;
+
+export function authorEntityId(authorId: EditorialAuthorId) {
+  return authorId === siteAuthor.id ? siteAuthor.entityId : `${SITE_URL}/#editorial-team`;
+}
 
 export const officialSafetySource: SourceReference = {
   id: "acsa-bolets",
@@ -105,7 +130,7 @@ export const hydrothermalScientificSources: SourceReference[] = [
 const defaultMetadata: EditorialMetadata = {
   publishedAt: EDITORIAL_LAUNCH_DATE,
   updatedAt: EDITORIAL_LAUNCH_DATE,
-  authorId: editorialTeam.id,
+  authorId: siteAuthor.id,
   reviewStatus: "editorial-only",
 };
 
@@ -119,6 +144,10 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "parts-dun-bolet": {
     updatedAt: "2026-08-15",
   },
+  "avis-legal": {
+    publishedAt: "2026-08-17",
+    updatedAt: "2026-08-17",
+  },
 };
 
 export function getEditorialMetadata(contentId: string): EditorialMetadata {
@@ -129,9 +158,14 @@ export function editorialArticleFields(contentId: string) {
   const editorial = getEditorialMetadata(contentId);
 
   return {
-    author: { "@id": `${SITE_URL}/#editorial-team` },
+    author: { "@id": authorEntityId(editorial.authorId) },
     datePublished: editorial.publishedAt,
     dateModified: editorial.updatedAt,
+    // reviewedBy is emitted only once a real reviewer exists: an unreviewed
+    // page must not carry a review claim.
+    ...(editorial.reviewStatus === "expert-reviewed"
+      ? { reviewedBy: { "@id": `${SITE_URL}/#editorial-team` } }
+      : {}),
   };
 }
 

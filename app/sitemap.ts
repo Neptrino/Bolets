@@ -48,6 +48,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     { url: absoluteUrl("/metode"), lastModified },
     { url: absoluteUrl("/equip-editorial"), lastModified },
+    { url: absoluteUrl("/avis-legal"), lastModified },
     { url: absoluteUrl("/zones"), lastModified },
     { url: absoluteUrl("/guies"), lastModified },
     ...speciesTerritoryGuides.map((guide) => ({

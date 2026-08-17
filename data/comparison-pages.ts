@@ -1,3 +1,12 @@
+// A trait the reader can check in the field, written per pair. The species
+// table below it is generated from shared data and therefore cannot say which
+// difference actually settles the identification.
+export interface ComparisonTrait {
+  label: string;
+  left: string;
+  right: string;
+}
+
 export interface ComparisonPage {
   slug: string;
   leftSpeciesId: string;
@@ -8,6 +17,12 @@ export interface ComparisonPage {
   searchTerms?: string[];
   introduction: string;
   decisiveDifference: string;
+  // Optional depth, filled per pair. Pages without these still render: an
+  // empty section is better than padded prose on safety content.
+  diagnosticTraits?: ComparisonTrait[];
+  fieldChecks?: string[];
+  habitatAndSeason?: string;
+  confusionRisk?: string;
 }
 
 export const comparisonPages: ComparisonPage[] = [
@@ -31,6 +46,20 @@ export const comparisonPages: ComparisonPage[] = [
     searchTerms: ["ou de reig vs amanita muscaria", "amanita caesarea vs amanita muscaria"],
     introduction: "L’ou de reig i el reig bord són amanites vistoses que poden perdre part dels colors o de les restes del vel amb la pluja. Una comparació segura ha de mirar làmines, peu, anell, volva i no només el barret.",
     decisiveDifference: "L’ou de reig té làmines, peu i anell grocs; el reig bord els té blancs i sol mostrar berrugues blanques sobre un barret vermell o ataronjat.",
+    diagnosticTraits: [
+      { label: "Làmines", left: "Grogues i denses.", right: "Blanques." },
+      { label: "Peu i anell", left: "Grocs.", right: "Blancs, amb base bulbosa." },
+      { label: "Superfície del barret", left: "Llisa, sense berrugues, amb marge estriat.", right: "Berrugues blanques sobre fons vermell o ataronjat; la pluja les pot rentar." },
+      { label: "Base", left: "Volva blanca ampla en sac.", right: "Base bulbosa amb restes de volva, no en sac ampli." },
+    ],
+    fieldChecks: [
+      "No decidiu pel color del barret: la pluja pot rentar les berrugues del reig bord i deixar-lo ataronjat i llis.",
+      "Comproveu el color de les làmines, del peu i de l’anell alhora. Grocs a totes tres parts apunten a ou de reig.",
+      "Busqueu el marge estriat del barret, característic de l’ou de reig.",
+      "Examineu la base sencera per distingir una volva ampla en sac d’un bulb amb restes.",
+    ],
+    habitatAndSeason: "L’ou de reig prefereix alzinars, suredes i castanyedes; el reig bord apareix sobretot en pinedes, fagedes i boscos mixtos. Els hàbitats són prou diferents per orientar, però la coincidència en boscos mixtos és possible.",
+    confusionRisk: "El reig bord no és mortal com la farinera borda, però provoca una intoxicació neurològica que pot requerir atenció hospitalària. La confusió més greu que envolta l’ou de reig no és aquesta, sinó la que el pot barrejar amb la farinera borda en estat d’ou tancat.",
   },
   {
     slug: "rossinyol-vs-bolet-olivera",
@@ -111,6 +140,20 @@ export const comparisonPages: ComparisonPage[] = [
     metaDescription: "Diferències vitals entre camperol i farinera borda: làmines, volva, base del peu, hàbitat i risc d’intoxicació mortal.",
     introduction: "Els exemplars pàl·lids poden generar una confusió extremadament perillosa entre el camperol i la farinera borda mortal. Cal desenterrar la base sencera i revisar el canvi de color de les làmines.",
     decisiveDifference: "El camperol no té volva i les làmines passen de rosades a xocolata; la farinera borda conserva les làmines blanques i presenta una volva en sac a la base.",
+    diagnosticTraits: [
+      { label: "Làmines joves", left: "Rosades.", right: "Blanques." },
+      { label: "Làmines madures", left: "Bru xocolata.", right: "Blanques: no canvien mai de color." },
+      { label: "Base del peu", left: "Sense volva; anell fi i fugaç.", right: "Volva blanca membranosa en sac i base bulbosa." },
+      { label: "Hàbitat", left: "Prats, clarianes i vores de bosc.", right: "Sota planifolis: alzinars, rouredes, fagedes i castanyedes." },
+    ],
+    fieldChecks: [
+      "Desenterreu la base completa abans de res: si hi ha una volva en sac, no és un camperol.",
+      "Observeu el color de les làmines. Qualsevol tonalitat rosada o xocolata exclou la farinera borda; unes làmines blanques persistents l’han de fer sospitar.",
+      "Situeu la troballa: un exemplar sota alzines o roures no encaixa amb l’hàbitat de prat del camperol.",
+      "Comproveu si la base grogueja en rascar-la i si fa olor de fenol o de tinta, que apunten al xampinyó pudent i no al camperol.",
+    ],
+    habitatAndSeason: "El camperol és una espècie de prat, clariana i vora de bosc, mentre que la farinera borda fructifica sota planifolis. L’hàbitat és, per tant, un primer filtre útil, però no infal·lible: les vores de bosc poden posar-les a pocs metres l’una de l’altra.",
+    confusionRisk: "Confondre un camperol amb una farinera borda pot ser mortal. Les làmines blanques que no viren i la presència de volva són els dos senyals d’alarma; si un dels dos hi és, descarteu la recol·lecció sencera i no la barregeu amb la resta del cistell.",
   },
   {
     slug: "girgola-vs-bolet-olivera",
@@ -131,6 +174,20 @@ export const comparisonPages: ComparisonPage[] = [
     metaDescription: "Rovelló o pinetell? Compareu el color del làtex, el barret, l’hàbitat, la temporada i els trets que els diferencien.",
     introduction: "Tots dos són lactaris comestibles associats als pins i sovint comparteixen el nom popular de rovelló. El color del làtex és el tret macroscòpic més útil per començar a separar-los.",
     decisiveDifference: "El rovelló segrega làtex vermell vinós; el pinetell, làtex taronja o color pastanaga.",
+    diagnosticTraits: [
+      { label: "Color del làtex", left: "Vermell vinós.", right: "Taronja, color pastanaga." },
+      { label: "Tons del barret", left: "Més apagats, amb tons grisos o verdosos.", right: "Més vius, amb cercles concèntrics marcats." },
+      { label: "Làmines", left: "Decurrents, poden virar a vinós.", right: "Ataronjades, amb taques verdes per pressió." },
+      { label: "Peu", left: "Curt, del color del barret o més clar.", right: "Cilíndric, ataronjat, sovint amb clotets." },
+    ],
+    fieldChecks: [
+      "Feu un tall net a les làmines i espereu uns segons: el làtex necessita un moment per aparèixer.",
+      "Valoreu el color del làtex acabat de sortir, no passats uns minuts, perquè s’enfosqueix amb l’aire.",
+      "Comproveu si la carn verdeja on l’heu tocat, un tret habitual del pinetell.",
+      "Descarteu qualsevol lactari de làtex blanc: cap dels dos el té, i alguns amb làtex blanc causen trastorns digestius.",
+    ],
+    habitatAndSeason: "Tots dos surten en pinedes i la temporada se solapa àmpliament, de manera que ni l’arbre ni el mes els separen. El rovelló tendeix a pinedes calcàries i de solell; el pinetell apareix també en pinedes mixtes. La distinció és gastronòmica i de mercat, no de seguretat: cap dels dos és tòxic.",
+    confusionRisk: "Confondre’ls no comporta cap risc d’intoxicació, perquè les dues espècies són comestibles i apreciades. El risc real és confondre qualsevol dels dos amb un lactari de làtex blanc, que sí que pot provocar trastorns digestius.",
   },
   {
     slug: "ou-de-reig-vs-farinera-borda",
@@ -141,6 +198,22 @@ export const comparisonPages: ComparisonPage[] = [
     metaDescription: "Compareu l’ou de reig i la farinera borda mortal: làmines, peu, anell, volva, colors i advertiments de seguretat.",
     introduction: "Dues amanites amb volva que mai s’han d’identificar només pel color del barret, especialment quan són joves o encara tancades. La farinera borda és mortal.",
     decisiveDifference: "L’ou de reig presenta làmines, peu i anell grocs; la farinera borda els té blancs i el barret pot variar del verd oliva al gairebé blanc.",
+    diagnosticTraits: [
+      { label: "Làmines", left: "Lliures, denses i grogues; mai blanques en un exemplar típic.", right: "Lliures, blanques i denses, amb esporada blanca." },
+      { label: "Peu i anell", left: "Peu groc amb anell groc.", right: "Peu blanc o verdós amb anell membranós penjant." },
+      { label: "Volva", left: "Blanca, ampla, en forma de sac.", right: "Blanca, ampla, en forma de sac: no distingeix les dues espècies." },
+      { label: "Marge del barret", left: "Estriat de manera perceptible.", right: "Llis, sense estries." },
+      { label: "Carn al tall", left: "Blanca, groga sota la cutícula, immutable.", right: "Blanca i immutable." },
+    ],
+    fieldChecks: [
+      "Desenterreu la base sencera: la volva en sac hi és en totes dues espècies, de manera que la seva presència no resol res per si sola.",
+      "Mireu el color de les làmines amb llum directa. Grogues apunten a ou de reig; blanques descarten l’ou de reig.",
+      "Comproveu si el groc continua pel peu i per l’anell, no només a les làmines.",
+      "Passeu el dit pel marge del barret buscant estries.",
+      "Si l’exemplar és un ou tancat, no l’identifiqueu: en aquesta fase el color extern no distingeix les dues espècies.",
+    ],
+    habitatAndSeason: "Comparteixen alzinars, rouredes i castanyedes, i la temporada se solapa a la tardor, per la qual cosa ni el bosc ni el mes ajuden a separar-les. Trobar-les al mateix indret el mateix dia és normal.",
+    confusionRisk: "La farinera borda és responsable de la major part de les intoxicacions mortals per bolets. Els símptomes poden trigar entre sis i dotze hores a aparèixer, quan la lesió hepàtica ja ha començat, i una millora aparent no indica recuperació. Davant qualsevol dubte, no consumiu i truqueu al 061.",
   },
   {
     slug: "fredolic-vs-fredolic-metzinos",

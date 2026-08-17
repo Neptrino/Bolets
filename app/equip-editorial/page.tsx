@@ -4,7 +4,7 @@ import { ArrowUpRight, BookOpenCheck, CircleAlert, Database, ShieldCheck } from 
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
-import { coreEditorialSources, editorialArticleFields, editorialTeam } from "@/data/editorial";
+import { coreEditorialSources, editorialArticleFields, editorialTeam, siteAuthor } from "@/data/editorial";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
@@ -34,9 +34,16 @@ export default function EditorialTeamPage() {
       <PageHeader
         eyebrow={<><BookOpenCheck size={15} /> Transparència editorial</>}
         title={<>Equip editorial<br /><PageTitleAccent>de Bolets Atles.</PageTitleAccent></>}
-        description={<>{editorialTeam.name} és l’autoria organitzativa del contingut. Bolets Atles n’és l’editor i el responsable de publicació.</>}
+        description={<>{siteAuthor.name} signa i manté el contingut. {editorialTeam.name} n’és l’autoria organitzativa i Bolets Atles el responsable de publicació.</>}
         layout="split"
       />
+
+      <section className="seo-guide-section seo-guide-section--wide seo-guide-section--wide-prose" id="autoria">
+        <p className="eyebrow">Qui signa el contingut</p>
+        <h2>{siteAuthor.name}</h2>
+        <p><strong>{siteAuthor.role}.</strong> {siteAuthor.summary}</p>
+        <p>Aquesta distinció és deliberada: el criteri ecològic i de modelització és propi, mentre que els trets d’identificació i les advertències de consum es recolzen en fonts externes citades. Quan una font no permet afirmar alguna cosa amb prou seguretat, la fitxa ho fa constar en comptes d’omplir el buit.</p>
+      </section>
 
       <div className="seo-guide-grid">
         <section><Database size={22} /><h2>Com compilem la informació</h2><p>Les fitxes parteixen de bibliografia micològica, catàlegs de biodiversitat i fonts oficials. Els trets d’identificació es contrasten entre fonts; la configuració ecològica versionada alimenta alhora les fitxes i el model, de manera que no hi ha dues definicions independents.</p></section>
@@ -48,7 +55,7 @@ export default function EditorialTeamPage() {
         <div><strong>Revisió micològica independent pendent.</strong><p>El contingut actual ha passat revisió editorial, però no s’atribueix cap revisió científica o micològica externa. Ho indiquem a cada pàgina sensible.</p></div>
       </aside>
 
-      <section className="seo-guide-section">
+      <section className="seo-guide-section seo-guide-section--wide seo-guide-section--wide-prose">
         <p className="eyebrow">Correccions públiques</p>
         <h2>Com proposar una esmena</h2>
         <p>Si detectes un error, una font que falta o una afirmació que cal matisar, obre una incidència pública amb l’URL afectat, la proposta i la font que la sosté.</p>
