@@ -73,7 +73,7 @@
   background: var(--surface-warm);
 }
 .daily-share-intro svg { flex: 0 0 auto; color: var(--clay); }
-.daily-share-intro p { max-width: 860px; margin: 0; color: var(--muted); line-height: 1.65; }
+.daily-share-intro p { margin: 0; color: var(--muted); line-height: 1.65; }
 .daily-share-intro strong { color: var(--ink); }
 .daily-share-preview-notice { display: flex; gap: 12px; align-items: flex-start; margin: -45px 0 48px; padding: 16px 20px; border: 1px dashed var(--clay); border-radius: 14px; background: #fff4df; }
 .daily-share-preview-notice svg { flex: 0 0 auto; color: var(--clay); }
@@ -203,7 +203,6 @@
   margin-top: 58px;
 }
 .rovellons-hero h1 {
-  max-width: 900px;
   margin: 0 0 24px;
   color: var(--on-dark);
   font-size: var(--display-xl);
@@ -216,7 +215,6 @@
   font-weight: 500;
 }
 .rovellons-hero-grid > div > p:last-child {
-  max-width: 620px;
   margin: 0;
   color: var(--on-dark-muted);
   font-size: var(--text-base);
@@ -479,7 +477,6 @@
   margin-bottom: 88px;
 }
 .rovellons-signals > header {
-  max-width: 680px;
   margin-bottom: 25px;
 }
 .rovellons-signals > div {
@@ -718,7 +715,6 @@
   letter-spacing: 0.12em;
 }
 .prediction-zone-card h3 {
-  max-width: 230px;
   margin: 0;
   color: var(--forest-panel);
   font-size: var(--text-2xl);
@@ -785,11 +781,53 @@
   color: var(--forest-panel);
 }
 .prediction-zone-note {
-  max-width: 820px;
   margin: 18px 0 0;
   color: var(--muted);
   font-size: var(--text-base);
   line-height: 1.65;
+}
+.location-hub-body .current-board {
+  margin-top: 64px;
+}
+.location-hub-body .guides-species-module {
+  margin-top: 52px;
+}
+.region-map-link-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.region-map-link-list a {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 13px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.region-map-link-list a:hover {
+  border-color: var(--bark);
+}
+.region-map-link-name {
+  flex: 1;
+  font-size: var(--text-base);
+  font-weight: 800;
+}
+.region-map-link-count {
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.region-map-link-list svg {
+  flex: 0 0 auto;
+  color: var(--clay);
 }
 .guides-summary {
   display: grid;
@@ -876,7 +914,6 @@
   font-size: var(--text-xl);
 }
 .guides-species-row p {
-  max-width: 760px;
   margin: 0;
   color: var(--on-dark-muted);
   font-size: var(--text-base);
@@ -1196,7 +1233,6 @@ h3 {
   text-transform: uppercase;
 }
 .site-footer-safety span {
-  max-width: 520px;
   color: rgba(255, 247, 232, 0.82);
   font-size: var(--text-xs);
   line-height: 1.5;
@@ -1304,7 +1340,6 @@ h3 {
   object-position: center;
 }
 .hero-copy {
-  max-width: 590px;
   position: relative;
   z-index: 2;
 }
@@ -1318,7 +1353,6 @@ h3 {
   font-weight: 400;
 }
 .hero-lede {
-  max-width: 430px;
   margin: 29px 0;
   color: #d9dfc8;
   font-size: var(--text-base);
@@ -1358,7 +1392,6 @@ h3 {
   margin: 0;
 }
 .home-intro > p {
-  max-width: 400px;
   align-self: end;
   color: #535c50;
   font-size: var(--text-base);
@@ -1489,7 +1522,6 @@ h3 {
 .home-map-callout-copy {
   position: relative;
   z-index: 2;
-  max-width: 500px;
 }
 .home-map-callout-action {
   position: relative;
@@ -1529,7 +1561,6 @@ h3 {
   margin: 0 0 19px;
 }
 .home-map-callout p {
-  max-width: 430px;
   line-height: 1.7;
 }
 .directory-shell {
@@ -2204,7 +2235,6 @@ h3 {
   padding: 25px;
 }
 .not-found h1 {
-  max-width: 500px;
   font-size: var(--display-lg);
   line-height: 0.9;
   margin: 0 0 18px;
@@ -3793,32 +3823,9 @@ body {
   line-height: 1.45;
 }
 .comparison-facts h2 {
-  max-width: 770px;
   margin-bottom: 20px;
   font-size: var(--display-sm);
   letter-spacing: -0.03em;
-}
-/* Stacked headers cap at 850px, which leaves half the row empty on wide
-   viewports. This modifier keeps the two-row order (title, then intro) and
-   lets both span the shell, matching .seo-guide-section--wide. */
-/* Specificity is deliberate: page-layout.module.css and seo-content.css are
-   both imported after this file, so a single-class override would lose on
-   source order. */
-[data-page-header].page-header--wide {
-  max-width: none;
-}
-[data-page-header].page-header--wide h1,
-[data-page-header].page-header--wide > p {
-  max-width: none;
-}
-[data-page-header].page-header--wide > p {
-  font-size: var(--text-base);
-}
-/* .seo-guide-section--wide releases the section but still holds prose at
-   52rem; this releases the prose too. */
-.seo-guide-section.seo-guide-section--wide-prose > p,
-.seo-guide-section.seo-guide-section--wide-prose > ol {
-  max-width: none;
 }
 /* Ordered field checks as numbered step cards: the default <ol> markers get
    lost in a grid layout, so the number is drawn explicitly and made part of
@@ -3930,7 +3937,6 @@ body {
   font-size: var(--text-3xl);
 }
 .comparison-guides-intro > p:last-child {
-  max-width: 34ch;
   margin: 14px 0 0;
   color: var(--muted);
   font-size: var(--text-base);
@@ -4036,7 +4042,6 @@ body {
     gap: 20px;
   }
   .comparison-guides-intro > p:last-child {
-    max-width: 52ch;
   }
   .comparison-guide-groups {
     grid-template-columns: 1fr;
@@ -4178,7 +4183,6 @@ body {
   font-size: var(--text-xl);
 }
 .season-now-panel p {
-  max-width: 650px;
   margin: 0;
   color: var(--on-dark-muted);
   font-size: var(--text-base);
@@ -4359,7 +4363,6 @@ body {
   font-weight: 650;
 }
 .location-hub-copy > p:last-child {
-  max-width: 690px;
   margin: 0;
   color: var(--on-dark-muted);
   font-size: var(--text-lg);
@@ -4578,7 +4581,6 @@ body {
 }
 .local-species-hero em { color: #d8b971; font-size: var(--text-xl); }
 .local-species-hero-grid > div:first-child > p:last-child {
-  max-width: 680px;
   margin: 28px 0 0;
   color: var(--on-dark-muted);
   font-size: var(--text-lg);
@@ -5095,9 +5097,6 @@ body {
   .hero-media img {
     object-position: 58% center;
   }
-  .hero-copy {
-    max-width: 520px;
-  }
   .condition-list {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -5164,7 +5163,6 @@ body {
   }
   .hero-lede {
     font-size: var(--text-base);
-    max-width: 340px;
   }
   .hero-actions {
     display: grid;
@@ -5591,7 +5589,6 @@ body {
   font-size: var(--text-base);
 }
 .compare-profile-body > p {
-  max-width: 420px;
   min-height: 44px;
   margin: 14px 0 18px;
   color: #665b52;
@@ -6514,7 +6511,6 @@ body {
   font-weight: 400;
 }
 .method-hero-copy > p:not(.eyebrow) {
-  max-width: 530px;
   margin: 34px 0 28px;
   color: #ddd3c3;
   font-size: var(--text-base);
@@ -6702,7 +6698,6 @@ body {
   line-height: 1;
 }
 .method-dual-track p {
-  max-width: 420px;
   margin: 0 0 21px;
   color: #635f58;
   line-height: 1.65;
@@ -6788,7 +6783,6 @@ body {
   line-height: 0.88;
 }
 .method-chapter-header > p {
-  max-width: 445px;
   margin: 0 0 3px;
   color: #566264;
   font-size: var(--text-base);
@@ -6925,7 +6919,6 @@ body {
   font-weight: 750;
 }
 .method-curve > p {
-  max-width: 665px;
   margin: -3px 0 0;
   line-height: 1.6;
 }
@@ -7560,7 +7553,6 @@ body {
   font-size: var(--text-xl);
 }
 .method-source-trust-note p {
-  max-width: 780px;
   margin: 0;
   color: #d1c6b5;
   font-size: var(--text-base);
@@ -7586,7 +7578,6 @@ body {
   line-height: 0.9;
 }
 .method-cta p:not(.eyebrow) {
-  max-width: 450px;
   margin-bottom: 24px;
   color: #58301f;
   font-size: var(--text-base);
@@ -8343,7 +8334,6 @@ body {
   font: 18px var(--font-nunito-sans), sans-serif;
 }
 .species-alternate-names {
-  max-width: 510px;
   margin: 10px 0 0;
   color: #6b6d65;
   font-size: var(--text-base);
@@ -8354,7 +8344,6 @@ body {
   font-weight: 750;
 }
 .compact-species-page .species-dek {
-  max-width: 510px;
   margin: 19px 0;
   color: #5b5d56;
   font-size: var(--text-base);
@@ -8739,9 +8728,6 @@ body {
   font-size: var(--text-base);
   font-weight: 750;
 }
-.compact-species-page .species-main {
-  max-width: 920px;
-}
 .compact-species-page .content-section {
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr);
@@ -8755,7 +8741,6 @@ body {
   font-size: var(--text-xs);
 }
 .compact-species-page .content-section h2 {
-  max-width: 780px;
   margin: 0 0 18px;
   font-size: var(--display-sm);
   line-height: 1.02;
@@ -9682,7 +9667,6 @@ body {
   letter-spacing: -0.035em;
 }
 .map-page-heading .map-page-title > p:last-child {
-  max-width: 620px;
   margin-bottom: 0;
   color: #5b554e;
   font-size: var(--text-base);
@@ -10543,7 +10527,7 @@ body {
   background: var(--surface-warm);
 }
 .offline-note svg { flex: 0 0 auto; color: var(--clay); }
-.offline-note p { max-width: 860px; margin: 0; color: var(--muted); line-height: 1.65; }
+.offline-note p { margin: 0; color: var(--muted); line-height: 1.65; }
 .offline-note strong { color: var(--ink); }
 .offline-actions { margin: 0 0 96px; }
 

@@ -96,7 +96,7 @@ export default function MushroomPartsGuidePage() {
         <div><strong>Cap part, per si sola, confirma l’espècie.</strong><p>Color, forma i mida canvien amb l’edat, la humitat i el lloc. Per a una identificació responsable cal contrastar diversos trets, incloses les confusions possibles, amb una persona experta.</p></div>
       </aside>
 
-      <section className="seo-guide-section seo-guide-section--wide" aria-labelledby="visible-parts-title">
+      <section className="seo-guide-section" aria-labelledby="visible-parts-title">
         <SectionHeader
           meta="Del barret a la base"
           title="Les parts visibles que convé descriure"
@@ -127,7 +127,7 @@ export default function MushroomPartsGuidePage() {
         </div>
       </section>
 
-      <section className="seo-guide-section seo-guide-section--wide" aria-labelledby="less-visible-parts-title">
+      <section className="seo-guide-section" aria-labelledby="less-visible-parts-title">
         <SectionHeader
           meta="Més enllà del cos visible"
           title="Carn, espores i miceli"
@@ -158,7 +158,7 @@ export default function MushroomPartsGuidePage() {
         </div>
       </section>
 
-      <section className="seo-guide-section seo-guide-section--wide" aria-labelledby="observation-title">
+      <section className="seo-guide-section" aria-labelledby="observation-title">
         <SectionHeader
           meta="Una observació útil"
           title="Què anotar abans de consultar una fitxa"

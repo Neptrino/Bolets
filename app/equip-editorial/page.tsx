@@ -38,7 +38,7 @@ export default function EditorialTeamPage() {
         layout="split"
       />
 
-      <section className="seo-guide-section seo-guide-section--wide seo-guide-section--wide-prose" id="autoria">
+      <section className="seo-guide-section" id="autoria">
         <p className="eyebrow">Qui signa el contingut</p>
         <h2>{siteAuthor.name}</h2>
         <p><strong>{siteAuthor.role}.</strong> {siteAuthor.summary}</p>
@@ -55,7 +55,7 @@ export default function EditorialTeamPage() {
         <div><strong>Revisió micològica independent pendent.</strong><p>El contingut actual ha passat revisió editorial, però no s’atribueix cap revisió científica o micològica externa. Ho indiquem a cada pàgina sensible.</p></div>
       </aside>
 
-      <section className="seo-guide-section seo-guide-section--wide seo-guide-section--wide-prose">
+      <section className="seo-guide-section">
         <p className="eyebrow">Correccions públiques</p>
         <h2>Com proposar una esmena</h2>
         <p>Si detectes un error, una font que falta o una afirmació que cal matisar, obre una incidència pública amb l’URL afectat, la proposta i la font que la sosté.</p>

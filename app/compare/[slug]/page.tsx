@@ -87,7 +87,6 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
         eyebrow={<><ArrowRightLeft size={15} /> Guia comparativa</>}
         title={<>{left.identity.commonName} <PageTitleAccent>vs.</PageTitleAccent> {right.identity.commonName.toLocaleLowerCase("ca")}</>}
         description={page.introduction}
-        className="page-header--wide"
       />
 
       <div className="comparison-reference-images" aria-label="Fotografies de referència">
@@ -119,7 +118,7 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
       )}
 
       {page.fieldChecks && page.fieldChecks.length > 0 && (
-        <section className="seo-guide-section seo-guide-section--wide seo-guide-section--wide-prose" aria-labelledby="comparison-checks-title">
+        <section className="seo-guide-section" aria-labelledby="comparison-checks-title">
           <p className="eyebrow">Al camp</p>
           <h2 id="comparison-checks-title">Com comprovar-ho, per ordre</h2>
           <ol className="comparison-field-checks">
@@ -129,7 +128,7 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
       )}
 
       {page.habitatAndSeason && (
-        <section className="seo-guide-section seo-guide-section--wide seo-guide-section--wide-prose" aria-labelledby="comparison-habitat-title">
+        <section className="seo-guide-section" aria-labelledby="comparison-habitat-title">
           <p className="eyebrow">Hàbitat i temporada</p>
           <h2 id="comparison-habitat-title">Ajuda el lloc o el mes a distingir-los?</h2>
           <p>{page.habitatAndSeason}</p>

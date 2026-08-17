@@ -39,14 +39,14 @@ export default function LegalPage() {
         layout="split"
       />
 
-      <section className="seo-guide-section seo-guide-section--wide seo-guide-section--wide-prose" id="titularitat">
+      <section className="seo-guide-section" id="titularitat">
         <p className="eyebrow">Titularitat</p>
         <h2>Qui és el responsable del lloc</h2>
         <p>{SITE_NAME} ({SITE_URL}) és un projecte educatiu editat per {LEGAL_OWNER}, amb {siteAuthor.name} com a autor i responsable del contingut. Podeu contactar amb el titular per qualsevol qüestió relacionada amb el lloc a <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. El lloc no ven productes ni serveis, no mostra publicitat i no cobra per l’accés.</p>
         <p>{LEGAL_OWNER} · NIF B75990788 · Carrer Joan Maragall, 36 · 08820 el Prat de Llobregat (Barcelona).</p>
       </section>
 
-      <section className="seo-guide-section seo-guide-section--wide seo-guide-section--wide-prose" id="condicions">
+      <section className="seo-guide-section" id="condicions">
         <p className="eyebrow">Condicions d’ús</p>
         <h2>Ús de la informació i limitació de responsabilitat</h2>
         <p>Tot el contingut de {SITE_NAME} és educatiu i orientatiu. Cap fitxa, comparació, mapa o predicció no constitueix una identificació micològica ni una garantia de comestibilitat. La identificació segura d’un bolet requereix la confirmació d’una persona experta amb l’exemplar al davant; no consumiu mai cap bolet basant-vos únicament en aquesta aplicació.</p>
@@ -54,7 +54,7 @@ export default function LegalPage() {
         <p>Si detecteu un error, el <a href="/equip-editorial">procés públic de correccions</a> descriu com proposar una esmena.</p>
       </section>
 
-      <section className="seo-guide-section seo-guide-section--wide seo-guide-section--wide-prose" id="privadesa">
+      <section className="seo-guide-section" id="privadesa">
         <p className="eyebrow">Privadesa</p>
         <h2>Quines dades tractem</h2>
         <p>{SITE_NAME} no té comptes d’usuari, no fa servir galetes i no mostra cap bàner de consentiment perquè no hi ha res a consentir. En concret:</p>
@@ -64,7 +64,7 @@ export default function LegalPage() {
         <p>Per exercir qualsevol dret sobre les vostres dades o fer qualsevol consulta de privadesa, escriviu a <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
       </section>
 
-      <section className="seo-guide-section seo-guide-section--wide seo-guide-section--wide-prose" id="continguts">
+      <section className="seo-guide-section" id="continguts">
         <p className="eyebrow">Continguts i llicències</p>
         <h2>Fonts, fotografies i atribucions</h2>
         <p>Les fotografies d’espècies provenen de fonts amb llicència compatible i mantenen l’atribució al costat de cada imatge. Les dades meteorològiques i cartogràfiques s’atribueixen als seus proveïdors (Meteocat XEMA sota CC BY 4.0, Open-Meteo, ICGC, SoilGrids) a les pàgines on s’utilitzen. Si considereu que algun contingut vulnera drets de tercers, contacteu amb el titular i es revisarà.</p>
