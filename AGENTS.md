@@ -8,6 +8,7 @@
 - Preserve the single source of truth for species ecology and prediction-model configuration.
 - Reserve mathematical symbols such as `H`, `F`, `O`, `P`, `W`, `T`, and `E` for the technical method and internal documentation. In normal product interfaces, use complete plain-language labels and explain the relationship without requiring users to decode a formula.
 - Build standard light content pages with `PageShell`, `PageHeader`, and `SectionHeader`; extend their narrow layout/tone variants instead of adding page-specific title, gutter, or vertical-spacing rules. Keep full-bleed home, species, map, method, and territorial heroes explicit when their composition is genuinely different.
+- Set font sizes only through the type-scale tokens defined in `app/globals.css` (`--text-xs` … `--text-3xl` for fixed text, `--display-xs` … `--display-xl` for fluid titles); never hardcode px/rem sizes or new `clamp()` expressions. The only exceptions are the OG/share image generators and the few decorative watermark numerals already marked in the stylesheet.
 - Document important architectural decisions and update this file when project conventions change.
 
 ## Testing and verification
