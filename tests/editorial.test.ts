@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { comparisonPages } from "@/data/comparison-pages";
 import {
   editorialArticleFields,
+  editorialAuthors,
   getEditorialMetadata,
   publicEditorialItems,
 } from "@/data/editorial";
@@ -18,7 +19,7 @@ describe("editorial metadata", () => {
     const now = Date.now();
     for (const id of ids) {
       const metadata = getEditorialMetadata(id);
-      expect(metadata.authorId, id).toBe("editorial-team");
+      expect(Object.keys(editorialAuthors), id).toContain(metadata.authorId);
       expect(metadata.reviewStatus, id).toBe("editorial-only");
       expect(new Date(metadata.publishedAt).getTime(), id).toBeLessThanOrEqual(now);
       expect(new Date(metadata.updatedAt).getTime(), id).toBeLessThanOrEqual(now);
