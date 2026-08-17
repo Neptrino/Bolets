@@ -362,7 +362,7 @@ export default function MethodPage() {
                 <Formula label="El modificador d’extrems decau a la meitat per cada vida mitjana configurada d’hores de gelada o calor.">
                   E = 2<sup>−hores gelada / vida mitjana gelada</sup> · 2<sup>−hores calor / vida mitjana calor</sup>
                 </Formula>
-                <p>Comptem gelada a ≤ 0 °C i calor a ≥ 27 °C durant la mateixa finestra de 14 o 20 dies que T. Les vides mitjanes representen la tolerància versionada, i el producte ja incorpora tota la reducció per extrems.</p>
+                <p>Comptem gelada a ≤ 0 °C i calor a ≥ 27 °C durant la mateixa finestra de 14 o 20 dies que T. Les vides mitjanes representen la tolerància versionada, i el producte ja incorpora tota la reducció per extrems. La tolerància a la gelada es va recalibrar amb troballes datades de muntanya: les primeres gelades de tardor acompanyen la fructificació i ja no l’anul·len, mentre que la gelada profunda sostinguda continua tancant la temporada.</p>
               </article>
             </div>
 
