@@ -41,11 +41,20 @@ import {
   formatGridDimensions,
   gridSizeForViewport,
 } from "@/src/lib/map-grid";
+import { PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
 import {
-  HABITAT_MODEL_VERSION,
-  PREDICTION_CACHE_VERSION,
-} from "@/src/lib/model-versions";
-import { cacheAlignedMapBounds, formatMapCoordinate } from "@/src/lib/map-query";
+  loadBucketedCells,
+  summarizeBucketCoverage,
+} from "@/src/lib/bucket-loader";
+import {
+  bucketsForBounds,
+  cacheAlignedMapBounds,
+  formatMapCoordinate,
+} from "@/src/lib/map-query";
+import {
+  habitatBucketUrl,
+  predictionBucketUrl,
+} from "@/src/lib/map-request-url";
 import {
   predictionViewportStatus,
   type PredictionViewportStatus,
@@ -221,6 +230,12 @@ type CellState = {
   excluded: number;
   withheld: number;
   truncated: boolean;
+  /**
+   * Part of the viewport never resolved. Offline this is how a partly
+   * downloaded zone presents, and the map must say so rather than passing a
+   * viewport with holes off as complete.
+   */
+  incomplete: boolean;
   gridSizeM: SpatialGridSizeM;
 };
 type HabitatEvidenceState = {
@@ -331,6 +346,23 @@ function visibleGridParams(localMap: MapLibreMap, speciesId: string, gridSizeM: 
     resolution: String(gridSizeM),
     ...extras,
   });
+}
+
+/**
+ * A long session pans over far more ground than it shows. Retaining every
+ * bucket ever fetched would grow without bound, so the oldest are dropped once
+ * the store passes a few screenfuls' worth; they are cheap to fetch again.
+ */
+const RETAINED_BUCKETS = 240;
+
+function rememberBucket<T>(store: Map<string, T[]>, url: string, cells: T[]) {
+  store.delete(url);
+  store.set(url, cells);
+  while (store.size > RETAINED_BUCKETS) {
+    const oldest = store.keys().next();
+    if (oldest.done) break;
+    store.delete(oldest.value);
+  }
 }
 
 function findCell(cells: Iterable<PredictionMapCell>, longitude: number, latitude: number) {
@@ -479,6 +511,16 @@ export function RegionMap({
   const basemapChangeId = useRef(0);
   const activeRequestKey = useRef<string | null>(null);
   const completedRequestKey = useRef<string | null>(null);
+  // Responses keyed by their own bucket request, so panning back over ground
+  // already covered repaints from memory instead of refetching. The viewport
+  // maps below are rebuilt from these, and still describe only what is on
+  // screen.
+  const bucketCells = useRef(new Map<string, PredictionMapCell[]>());
+  const habitatBucketCells = useRef(new Map<string, PotentialHabitatMapCell[]>());
+  // Requests in progress, shared across overlapping viewports so a pan never
+  // asks for a bucket another pan is already fetching.
+  const inFlightBuckets = useRef(new Map<string, Promise<void>>());
+  const batchId = useRef(0);
   const cellsById = useRef(new Map<string, PredictionMapCell>());
   const habitatCellsById = useRef(new Map<string, PotentialHabitatMapCell>());
   const corroboratedHabitatCellIds = useRef(new Set<string>());
@@ -505,6 +547,7 @@ export function RegionMap({
     excluded: 0,
     withheld: 0,
     truncated: false,
+    incomplete: false,
     gridSizeM: 250,
   });
   const [habitatEvidenceState, setHabitatEvidenceState] =
@@ -746,76 +789,104 @@ export function RegionMap({
       excluded: 0,
       withheld: 0,
       truncated: false,
+      incomplete: false,
       gridSizeM: visibleGridSize(localMap),
     });
+    // One controller for the whole species/layer run; see the prediction
+    // effect for why superseded viewports keep their requests.
+    const controller = new AbortController();
+    request.current = controller;
 
     const loadHabitat = async () => {
       const gridSizeM = visibleGridSize(localMap);
-      const params = visibleGridParams(localMap, speciesId, gridSizeM, {
-        v: HABITAT_MODEL_VERSION,
-        view: "map",
-      });
-      const requestKey = `habitat:${params}`;
+      const buckets = bucketsForBounds(
+        visibleSpatialBounds(localMap),
+        gridSizeM,
+        cataloniaSpatialBounds,
+      );
+      const urls = buckets.map((bucket) =>
+        habitatBucketUrl(bucket, speciesId, gridSizeM),
+      );
+      const requestKey = `habitat:${urls.join("|")}`;
       if (
         requestKey === activeRequestKey.current ||
         requestKey === completedRequestKey.current
       )
         return;
-      request.current?.abort();
       evidenceRequest.current?.abort();
-      const controller = new AbortController();
-      request.current = controller;
       activeRequestKey.current = requestKey;
+      batchId.current += 1;
+      const batch = batchId.current;
+      const isCurrent = () => batchId.current === batch && !controller.signal.aborted;
       setCellState((current) => ({ ...current, status: "loading", gridSizeM }));
-      try {
-        const payload = await fetchJsonWithRetry<{
-          cells: PotentialHabitatMapCell[];
-          truncated: boolean;
-        }>(`/api/habitat?${params}`, controller.signal, 1);
-        if (request.current !== controller || controller.signal.aborted) return;
+
+      const repaint = () => {
         habitatCellsById.current = new Map(
-          payload.cells.map((cell) => [cell.cellId, cell]),
+          urls.flatMap((url) => habitatBucketCells.current.get(url) ?? [])
+            .map((cell) => [cell.cellId, cell] as const),
         );
-        corroboratedHabitatCellIds.current = new Set();
-        completedRequestKey.current = requestKey;
         scheduleDrawHabitat();
-        setCellState({
-          status: payload.cells.length ? "ready" : "empty",
-          published: payload.cells.length,
-          excluded: 0,
-          withheld: 0,
-          truncated: payload.truncated,
-          gridSizeM,
-        });
-        void loadHistoricalEvidence();
-      } catch (error) {
-        if (
-          request.current !== controller ||
-          (error instanceof DOMException && error.name === "AbortError")
-        )
-          return;
-        completedRequestKey.current = null;
-        if (!habitatCellsById.current.size)
+      };
+      corroboratedHabitatCellIds.current = new Set();
+      repaint();
+
+      const missing = buckets.filter((_, index) => !habitatBucketCells.current.has(urls[index]));
+      const truncatedBuckets = { any: false };
+      try {
+        await loadBucketedCells<PotentialHabitatMapCell>(
+          missing,
+          (bucket) => habitatBucketUrl(bucket, speciesId, gridSizeM),
+          controller.signal,
+          (payload, bucket) => {
+            if (payload.truncated) truncatedBuckets.any = true;
+            rememberBucket(
+              habitatBucketCells.current,
+              habitatBucketUrl(bucket, speciesId, gridSizeM),
+              payload.cells,
+            );
+            corroboratedHabitatCellIds.current = new Set();
+            if (isCurrent()) repaint();
+          },
+          // A viewport is many small requests now, so one unlucky bucket must
+          // not leave a hole: give each the same bounded retry as predictions.
+          { inFlight: inFlightBuckets.current },
+        );
+        if (!isCurrent()) return;
+
+        const stillMissing = urls.filter((url) => !habitatBucketCells.current.has(url)).length;
+        if (stillMissing === urls.length && urls.length > 0) {
+          completedRequestKey.current = null;
           setHabitatEvidenceState({
             available: null,
             cells: 0,
             habitatCells: 0,
             records: 0,
           });
-        setCellState((current) =>
-          habitatCellsById.current.size
-            ? { ...current, status: "ready" }
-            : {
-                status: "error",
-                published: 0,
-                excluded: 0,
-                withheld: 0,
-                truncated: false,
-                gridSizeM,
-              },
-        );
+          setCellState({
+            status: "error",
+            published: 0,
+            excluded: 0,
+            withheld: 0,
+            truncated: false,
+            incomplete: true,
+            gridSizeM,
+          });
+        } else {
+          completedRequestKey.current = requestKey;
+          setCellState({
+            status: habitatCellsById.current.size ? "ready" : "empty",
+            published: habitatCellsById.current.size,
+            excluded: 0,
+            withheld: 0,
+            truncated: truncatedBuckets.any,
+            incomplete: stillMissing > 0,
+            gridSizeM,
+          });
+          // Evidence is a whole-viewport context layer, so it runs once the
+          // batch has settled rather than once per bucket.
+          void loadHistoricalEvidence();
+        }
       } finally {
-        if (request.current === controller) request.current = null;
         if (activeRequestKey.current === requestKey)
           activeRequestKey.current = null;
       }
@@ -1009,6 +1080,10 @@ export function RegionMap({
     // A species change must not leave the previous species painted while the
     // replacement request is in flight. Clear it immediately and keep the
     // loading state active until the new cells have been drawn.
+    // Only the viewport view is cleared. The bucket store and the in-flight
+    // registry survive re-runs on purpose: their keys already carry species,
+    // resolution and model version, so nothing can cross-contaminate, and a
+    // request in progress must stay visible to the run that supersedes it.
     cellsById.current = new Map();
     completedRequestKey.current = null;
     drawCells();
@@ -1018,84 +1093,105 @@ export function RegionMap({
       excluded: 0,
       withheld: 0,
       truncated: false,
+      incomplete: false,
       gridSizeM: visibleGridSize(localMap, minimumGridSizeM),
     });
+    // One controller for the whole species/layer run. Superseded viewports are
+    // not cancelled: their buckets are already paid for and stay useful the
+    // moment the user pans back.
+    const controller = new AbortController();
+    request.current = controller;
 
     const loadCells = async () => {
       const gridSizeM = visibleGridSize(localMap, minimumGridSizeM);
-      const params = visibleGridParams(localMap, speciesId, gridSizeM, {
-        view: "map",
-        v: PREDICTION_CACHE_VERSION,
-      });
-      const requestKey = params.toString();
+      const buckets = bucketsForBounds(
+        visibleSpatialBounds(localMap),
+        gridSizeM,
+        cataloniaSpatialBounds,
+      );
+      const urls = buckets.map((bucket) =>
+        predictionBucketUrl(bucket, speciesId, gridSizeM),
+      );
+      const requestKey = urls.join("|");
       if (
         requestKey === activeRequestKey.current ||
         requestKey === completedRequestKey.current
       )
         return;
-      request.current?.abort();
-      const controller = new AbortController();
-      request.current = controller;
       activeRequestKey.current = requestKey;
+      batchId.current += 1;
+      const batch = batchId.current;
+      const isCurrent = () => batchId.current === batch && !controller.signal.aborted;
       setCellState((current) => ({ ...current, status: "loading", gridSizeM }));
-      try {
-        const payload = await fetchJsonWithRetry<{
-          cells: PredictionMapCell[];
-          truncated: boolean;
-        }>(`/api/predictions?${params}`, controller.signal);
-        if (request.current !== controller || controller.signal.aborted) return;
+
+      // Repaint from the buckets already held so ground the user has panned
+      // over stays on screen while only the newly exposed buckets load.
+      const repaint = () => {
         cellsById.current = new Map(
-          payload.cells.map((cell) => [cell.cellId, cell]),
+          urls.flatMap((url) => bucketCells.current.get(url) ?? [])
+            .map((cell) => [cell.cellId, cell] as const),
         );
-        completedRequestKey.current = requestKey;
-        if (
-          selectedCellIdRef.current &&
-          !cellsById.current.has(selectedCellIdRef.current)
-        ) {
-          selectedCellIdRef.current = null;
-          onCellSelect?.(undefined);
-          onCellDetailStateChange?.({ status: "idle" });
-        }
         drawCells();
-        const published = payload.cells.filter(
-          (cell) => cell.score !== null && cell.score > 0,
-        ).length;
-        const excluded = payload.cells.filter(
-          (cell) => cell.score === 0,
-        ).length;
-        const withheld = payload.cells.length - published - excluded;
-        setCellState({
-          status: predictionViewportStatus({ published, excluded, withheld }),
-          published,
-          excluded,
-          withheld,
-          truncated: payload.truncated,
-          gridSizeM,
-        });
-      } catch (error) {
-        if (
-          request.current !== controller ||
-          (error instanceof DOMException && error.name === "AbortError")
-        )
-          return;
-        completedRequestKey.current = null;
-        setCellState((current) =>
-          cellsById.current.size
-            ? {
-                ...current,
-                status: predictionViewportStatus(current),
-              }
-            : {
-                status: "error",
-                published: 0,
-                excluded: 0,
-                withheld: 0,
-                truncated: false,
-                gridSizeM,
-              },
+      };
+      repaint();
+
+      const missing = buckets.filter((_, index) => !bucketCells.current.has(urls[index]));
+      const truncatedBuckets = { any: false };
+      try {
+        const { failed } = await loadBucketedCells<PredictionMapCell>(
+          missing,
+          (bucket) => predictionBucketUrl(bucket, speciesId, gridSizeM),
+          controller.signal,
+          (payload, bucket) => {
+            if (payload.truncated) truncatedBuckets.any = true;
+            rememberBucket(
+              bucketCells.current,
+              predictionBucketUrl(bucket, speciesId, gridSizeM),
+              payload.cells,
+            );
+            if (isCurrent()) repaint();
+          },
+          { inFlight: inFlightBuckets.current },
         );
+        if (!isCurrent()) return;
+
+        const stillMissing = urls.filter((url) => !bucketCells.current.has(url)).length;
+        // A viewport that resolved nothing at all is an error; one that
+        // resolved in part is honestly reported as incomplete.
+        if (stillMissing === urls.length && urls.length > 0) {
+          completedRequestKey.current = null;
+          setCellState({
+            status: "error",
+            published: 0,
+            excluded: 0,
+            withheld: 0,
+            truncated: false,
+            incomplete: true,
+            gridSizeM,
+          });
+        } else {
+          completedRequestKey.current = requestKey;
+          if (
+            selectedCellIdRef.current &&
+            !cellsById.current.has(selectedCellIdRef.current)
+          ) {
+            selectedCellIdRef.current = null;
+            onCellSelect?.(undefined);
+            onCellDetailStateChange?.({ status: "idle" });
+          }
+          const coverage = summarizeBucketCoverage(cellsById.current.values(), {
+            truncated: truncatedBuckets.any,
+            failed: stillMissing || failed,
+          });
+          setCellState({
+            ...coverage,
+            status: predictionViewportStatus(coverage),
+            gridSizeM,
+          });
+        }
       } finally {
-        if (request.current === controller) request.current = null;
+        // A superseded batch must still release the key, or the viewport it
+        // was replaced by matches it and never loads.
         if (activeRequestKey.current === requestKey)
           activeRequestKey.current = null;
       }

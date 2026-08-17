@@ -47,6 +47,51 @@ export function cacheAlignedMapBounds(
   };
 }
 
+/**
+ * Enumerates every request bucket that intersects the given bounds. The bucket
+ * lattice is anchored at zero and depends only on the resolution, so the same
+ * ground area always resolves to the same rectangles whatever the viewport
+ * shape. That makes a request URL reproducible ahead of time, which is what
+ * lets a downloaded offline zone answer the map's own live requests.
+ */
+export function bucketsForBounds(
+  bounds: SpatialBounds,
+  resolution: SpatialGridSizeM,
+  clamp: SpatialBounds,
+): SpatialBounds[] {
+  const bucket = requestBucketDegrees[resolution];
+  const stable = (value: number) => Math.round(value * 1_000_000) / 1_000_000;
+  const west = Math.max(clamp.west, bounds.west);
+  const south = Math.max(clamp.south, bounds.south);
+  const east = Math.min(clamp.east, bounds.east);
+  const north = Math.min(clamp.north, bounds.north);
+  if (west >= east || south >= north) return [];
+
+  const buckets: SpatialBounds[] = [];
+  const firstColumn = Math.floor(west / bucket);
+  const lastColumn = Math.ceil(east / bucket) - 1;
+  const firstRow = Math.floor(south / bucket);
+  const lastRow = Math.ceil(north / bucket) - 1;
+  for (let column = firstColumn; column <= lastColumn; column += 1) {
+    for (let row = firstRow; row <= lastRow; row += 1) {
+      const bucketWest = Math.max(clamp.west, stable(column * bucket));
+      const bucketEast = Math.min(clamp.east, stable((column + 1) * bucket));
+      const bucketSouth = Math.max(clamp.south, stable(row * bucket));
+      const bucketNorth = Math.min(clamp.north, stable((row + 1) * bucket));
+      // The clamp can collapse an edge bucket that only overlapped the service
+      // boundary by a sliver. Such a bucket has no cells to request.
+      if (bucketWest >= bucketEast || bucketSouth >= bucketNorth) continue;
+      buckets.push({
+        west: bucketWest,
+        south: bucketSouth,
+        east: bucketEast,
+        north: bucketNorth,
+      });
+    }
+  }
+  return buckets;
+}
+
 const numberParam = (params: URLSearchParams, name: string) => {
   const value = params.get(name);
   return value?.trim() ? Number(value) : Number.NaN;

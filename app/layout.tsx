@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Nunito_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import "./seo-content.css";
+import { RegisterServiceWorker } from "@/components/register-service-worker";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { JsonLd } from "@/components/json-ld";
@@ -20,8 +21,26 @@ const nunitoSans = Nunito_Sans({
   display: "swap"
 });
 
+export const viewport: Viewport = {
+  // The installed app is edge to edge, so the map must be able to paint under
+  // the notch while the interface keeps clear of it through safe-area insets.
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f2ebd5" },
+    { media: "(prefers-color-scheme: dark)", color: "#3b3b3b" },
+  ],
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  appleWebApp: {
+    capable: true,
+    title: SITE_NAME,
+    statusBarStyle: "black-translucent",
+  },
+  icons: {
+    apple: "/icons/apple-touch-icon.png",
+  },
   title: {
     default: "Predicció de bolets a Catalunya: mapa i condicions avui",
     template: `%s | ${SITE_NAME}`,
@@ -79,5 +98,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="ca" className={nunitoSans.variable} data-scroll-behavior="smooth"><body><JsonLd data={{ "@context": "https://schema.org", "@graph": [{ "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: SITE_URL, name: SITE_NAME, description: DEFAULT_DESCRIPTION, inLanguage: "ca" }, { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon.svg` }, { "@type": "Organization", "@id": `${SITE_URL}/#editorial-team`, name: "Equip editorial de Bolets Atles", url: `${SITE_URL}/equip-editorial`, parentOrganization: { "@id": `${SITE_URL}/#organization` } }] }} /><SiteHeader /><main>{children}</main><SiteFooter /><Analytics /><SpeedInsights /></body></html>;
+  return <html lang="ca" className={nunitoSans.variable} data-scroll-behavior="smooth"><body><JsonLd data={{ "@context": "https://schema.org", "@graph": [{ "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: SITE_URL, name: SITE_NAME, description: DEFAULT_DESCRIPTION, inLanguage: "ca" }, { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon.svg` }, { "@type": "Organization", "@id": `${SITE_URL}/#editorial-team`, name: "Equip editorial de Bolets Atles", url: `${SITE_URL}/equip-editorial`, parentOrganization: { "@id": `${SITE_URL}/#organization` } }] }} /><SiteHeader /><main>{children}</main><SiteFooter /><RegisterServiceWorker /><Analytics /><SpeedInsights /></body></html>;
 }

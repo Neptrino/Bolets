@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "test:terrain-live": "vitest run tests/terrain-thermal.live.test.ts --reporter=verbose --disableConsoleIntercept",
     "test:e2e": "playwright test",
+    "pwa:icons": "node scripts/build-pwa-icons.mjs",
     "spatial:build": "node scripts/build-spatial-cells.mjs",
     "spatial:build-geology": "node scripts/build-spatial-geology.mjs",
     "spatial:update-geology-mapping": "node scripts/update-icgc-geology-mapping.mjs",

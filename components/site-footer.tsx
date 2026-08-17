@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CurrentSeasonGuideLink } from "@/components/current-season-guide-link";
+import { InstallApp } from "@/components/install-app";
 import { seasonGuides } from "@/src/lib/season-guides";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 
@@ -32,6 +33,7 @@ export function SiteFooter() {
           <Link href="/parts-dun-bolet">Parts d’un bolet</Link>
           <Link href="/equip-editorial">Equip editorial</Link>
         </nav>
+        <InstallApp />
       </div>
     </footer>
   );

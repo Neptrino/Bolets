@@ -10415,3 +10415,95 @@ body {
     gap: 8px;
   }
 }
+
+/* Offline-capable app: pending service-worker update prompt. */
+.update-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 12px 10px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: var(--on-dark);
+  font-size: 13px;
+  box-shadow: 0 10px 30px rgba(23, 35, 25, 0.28);
+}
+.update-banner button {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--pumpkin);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Offline fallback page. */
+.offline-note {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  margin: 0 0 32px;
+  padding: 21px 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface-warm);
+}
+.offline-note svg { flex: 0 0 auto; color: var(--clay); }
+.offline-note p { max-width: 860px; margin: 0; color: var(--muted); line-height: 1.65; }
+.offline-note strong { color: var(--ink); }
+.offline-actions { margin: 0 0 96px; }
+
+/* Install offer in the site footer. Its own row, so it never competes with
+   the footer's three columns at any width. */
+.install-app {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 247, 232, 0.14);
+}
+.install-app-reason {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  max-width: 52ch;
+}
+.install-app-reason strong { color: var(--on-dark); font-size: 13px; }
+.install-app-reason span { color: var(--on-dark-muted); font-size: 13px; line-height: 1.5; }
+.install-app-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--pumpkin);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.install-app-steps {
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0;
+  color: var(--on-dark-muted);
+  font-size: 13px;
+}
+.install-app-steps strong { color: var(--on-dark); }
