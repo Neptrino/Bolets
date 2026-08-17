@@ -43,17 +43,27 @@ describe("ceps territory guide model", () => {
     }
   });
 
-  it("reuses the ten existing local cep guides", () => {
+  it("reuses the sixteen existing local cep guides", () => {
     const localGuides = speciesLocationPages.filter((page) =>
       cepSpeciesIds.some((speciesId) => speciesId === page.speciesId),
     );
 
-    expect(localGuides).toHaveLength(10);
+    expect(localGuides).toHaveLength(16);
     expect(new Set(localGuides.map(({ areaSlug }) => areaSlug))).toEqual(
-      new Set(["ripolles", "bergueda", "montseny", "cerdanya"]),
+      new Set([
+        "ripolles",
+        "bergueda",
+        "montseny",
+        "cerdanya",
+        "prades",
+        "solsones",
+        "guilleries",
+        "montnegre-corredor",
+        "garrotxa",
+      ]),
     );
     expect(
       new Set(localGuides.map(({ speciesId }) => speciesId)),
-    ).toEqual(new Set(["boletus-edulis", "boletus-pinophilus"]));
+    ).toEqual(new Set(["boletus-edulis", "boletus-pinophilus", "boletus-aereus"]));
   });
 });

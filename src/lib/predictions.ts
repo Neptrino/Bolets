@@ -13,6 +13,7 @@ import {
   opportunityLabel,
 } from "@/src/lib/scoring";
 import type {
+  AreaPredictionSummary,
   ConditionSnapshot,
   CoordinateBounds,
   EvidenceConfidence,
@@ -527,6 +528,20 @@ export function summariseRegionalPredictions(
   const compatibleCells = cells.filter(
     (cell) => cell.regionId === regionId && habitatWeight(cell) > 0,
   );
+  return summariseCompatibleCells(species, regionId, compatibleCells);
+}
+
+/**
+ * Aggregate an already-selected set of habitat-compatible cells. Regional
+ * summaries select by the cells' own regionId; area summaries select by the
+ * hub's bounds, so the shared aggregation must not assume how the cells were
+ * chosen.
+ */
+function summariseCompatibleCells(
+  species: SpeciesProfile,
+  regionId: RegionId,
+  compatibleCells: PredictionCell[],
+): RegionalPredictionSummary | null {
   const scoredCells = compatibleCells.filter(
     (cell): cell is PredictionCell & { score: number } => cell.score !== null,
   );
@@ -632,4 +647,35 @@ export async function getRegionalPredictionSummary(
     regionId,
     result.cells as PredictionCell[],
   );
+}
+
+/**
+ * Same aggregation as the regional summary, but over an area hub's own bounds
+ * (massís or comarca scale). A hub window is far smaller than its parent
+ * region, so the median stops mixing valleys 100 km apart — the reading a
+ * boletaire actually wants for "com està el Port del Comte".
+ */
+export async function getAreaPredictionSummary(
+  speciesId: string,
+  area: { slug: string; regionId: RegionId; bounds: SpatialBounds },
+): Promise<AreaPredictionSummary | null> {
+  const species = getSpecies(speciesId);
+  if (!species) throw new Error("Unknown species");
+  const result = await getPredictionCells(
+    speciesId,
+    area.bounds,
+    1000,
+    10000,
+    false,
+    false,
+    true,
+  );
+  if (result.truncated) {
+    throw new Error(`Area prediction response was truncated for ${speciesId} in ${area.slug}`);
+  }
+  const compatibleCells = (result.cells as PredictionCell[]).filter(
+    (cell) => habitatWeight(cell) > 0,
+  );
+  const summary = summariseCompatibleCells(species, area.regionId, compatibleCells);
+  return summary ? { ...summary, areaSlug: area.slug } : null;
 }

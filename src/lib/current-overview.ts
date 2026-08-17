@@ -1,13 +1,25 @@
+import {
+  areaBounds,
+  areaPath,
+  areaProfiles,
+  placeBounds,
+  placePath,
+  placeProfiles,
+  speciesLocationPages,
+  type AreaProfile,
+} from "@/data/location-pages";
 import { regionLabels, regionSelectItems } from "@/data/regions";
 import { getSpecies, speciesProfiles } from "@/data/species";
 import { monthInTimeZone } from "@/src/lib/seasonality";
-import { getRegionalPredictionSummary } from "@/src/lib/predictions";
+import { getAreaPredictionSummary, getRegionalPredictionSummary } from "@/src/lib/predictions";
 import { compareSpeciesDiscoveryPriority } from "@/src/lib/species-discovery";
 import type {
+  AreaPredictionSummary,
   Month,
   RegionId,
   RegionalPredictionSummary,
   SeasonalActivity,
+  SpatialBounds,
 } from "@/src/lib/types";
 
 export interface CurrentOverviewTarget {
@@ -124,12 +136,12 @@ type SummaryLoader = (
   regionId: RegionId,
 ) => Promise<RegionalPredictionSummary | null>;
 
-async function settleTargets(
-  targets: CurrentOverviewTarget[],
-  loader: SummaryLoader,
+async function settleTargets<Target, Result>(
+  targets: Target[],
+  loader: (target: Target) => Promise<Result>,
   concurrency = CURRENT_OVERVIEW_CONCURRENCY,
 ) {
-  const results = new Array<PromiseSettledResult<RegionalPredictionSummary | null>>(targets.length);
+  const results = new Array<PromiseSettledResult<Result>>(targets.length);
   let nextIndex = 0;
   const workers = Array.from(
     { length: Math.min(concurrency, targets.length) },
@@ -140,7 +152,7 @@ async function settleTargets(
         try {
           results[index] = {
             status: "fulfilled",
-            value: await loader(target.speciesId, target.regionId),
+            value: await loader(target),
           };
         } catch (reason) {
           results[index] = { status: "rejected", reason };
@@ -152,23 +164,31 @@ async function settleTargets(
   return results;
 }
 
+/** A summary is publishable when scored, complete and current. */
+function publishableSummary(summary: RegionalPredictionSummary | null) {
+  return Boolean(
+    summary &&
+    summary.result.score !== null &&
+    summary.result.missingComponents.length === 0 &&
+    !summary.snapshot.stale,
+  );
+}
+
 export async function loadCurrentOverview(
   loader: SummaryLoader = getRegionalPredictionSummary,
   month: Month = monthInTimeZone(),
 ): Promise<CurrentOverviewItem[]> {
   const targets = currentOverviewTargetsForMonth(month);
-  const settled = await settleTargets(targets, loader);
+  const settled = await settleTargets(
+    targets,
+    (target) => loader(target.speciesId, target.regionId),
+  );
 
   return targets.map((target, index) => {
     const result = settled[index]!;
     const species = getSpecies(target.speciesId);
     const summary = result.status === "fulfilled" ? result.value : null;
-    const publishable = Boolean(
-      summary &&
-      summary.result.score !== null &&
-      summary.result.missingComponents.length === 0 &&
-      !summary.snapshot.stale,
-    );
+    const publishable = publishableSummary(summary);
 
     return {
       ...target,
@@ -182,6 +202,176 @@ export async function loadCurrentOverview(
       summary: publishable ? summary : null,
     };
   });
+}
+
+/**
+ * A territorial hub the overview reads: an area (massís or comarca) or a
+ * paratge place promoted to hub level. Paratges qualify when their parent is
+ * a comarca — the same rule /zones uses to give them their own card.
+ */
+export interface OverviewHub {
+  slug: string;
+  name: string;
+  typeLabel: AreaProfile["typeLabel"] | "paratge";
+  prepositionalName: string;
+  regionId: RegionId;
+  bounds: SpatialBounds;
+  path: string;
+  guides: typeof speciesLocationPages;
+}
+
+export function overviewHubs(): OverviewHub[] {
+  const areaHubs = areaProfiles.map((area) => ({
+    slug: area.slug,
+    name: area.name,
+    typeLabel: area.typeLabel,
+    prepositionalName: area.prepositionalName,
+    regionId: area.regionId,
+    bounds: areaBounds(area),
+    path: areaPath(area),
+    guides: speciesLocationPages.filter((page) => page.areaSlug === area.slug),
+  }));
+  const paratgeHubs = placeProfiles
+    .filter((place) =>
+      place.typeLabel === "paratge" &&
+      areaProfiles.some((area) => area.slug === place.areaSlug && area.typeLabel === "comarca"),
+    )
+    .map((place) => {
+      const parent = areaProfiles.find((area) => area.slug === place.areaSlug)!;
+      return {
+        slug: `${place.areaSlug}/${place.slug}`,
+        name: place.name,
+        typeLabel: "paratge" as const,
+        prepositionalName: place.prepositionalName,
+        regionId: parent.regionId,
+        bounds: placeBounds(place),
+        path: placePath(place),
+        guides: speciesLocationPages.filter(
+          (page) => page.areaSlug === place.areaSlug && page.placeSlug === place.slug,
+        ),
+      };
+    });
+  return [...areaHubs, ...paratgeHubs];
+}
+
+export interface AreaOverviewTarget {
+  hub: OverviewHub;
+  speciesId: string;
+  seasonalActivity: SeasonalActivity;
+}
+
+export interface AreaOverviewItem {
+  areaSlug: string;
+  areaName: string;
+  areaTypeLabel: OverviewHub["typeLabel"];
+  prepositionalName: string;
+  regionId: RegionId;
+  path: string;
+  speciesId: string;
+  speciesName: string;
+  seasonalActivity: SeasonalActivity;
+  status: CurrentOverviewStatus;
+  summary: AreaPredictionSummary | null;
+}
+
+/**
+ * One candidate per hub: the strongest in-season edible species among those
+ * with a published local guide there. Hubs read like the regional overview,
+ * but over the massís, paratge or comarca window a searcher actually means.
+ */
+export function areaOverviewTargetsForMonth(month: Month): AreaOverviewTarget[] {
+  return overviewHubs().flatMap((hub) => {
+    const localSpeciesIds = new Set(hub.guides.map((page) => page.speciesId));
+    const candidate = [...localSpeciesIds]
+      .flatMap((speciesId) => {
+        const profile = getSpecies(speciesId);
+        return profile &&
+            profile.predictionMode === "current" &&
+            edibleStatuses.has(profile.identity.edibility) &&
+            profile.ecologicalConfig.regions.includes(hub.regionId) &&
+            profile.ecologicalConfig.seasonality[month] !== "inactive"
+          ? [profile]
+          : [];
+      })
+      .sort((left, right) => {
+        const activityDifference = seasonalActivityRank[right.ecologicalConfig.seasonality[month]] -
+          seasonalActivityRank[left.ecologicalConfig.seasonality[month]];
+        return activityDifference || compareSpeciesDiscoveryPriority(left, right);
+      })[0];
+
+    return candidate
+      ? [{
+        hub,
+        speciesId: candidate.speciesId,
+        seasonalActivity: candidate.ecologicalConfig.seasonality[month],
+      }]
+      : [];
+  });
+}
+
+type AreaSummaryLoader = (
+  speciesId: string,
+  hub: OverviewHub,
+) => Promise<AreaPredictionSummary | null>;
+
+const defaultAreaSummaryLoader: AreaSummaryLoader = (speciesId, hub) =>
+  getAreaPredictionSummary(speciesId, {
+    slug: hub.slug,
+    regionId: hub.regionId,
+    bounds: hub.bounds,
+  });
+
+export async function loadAreaOverview(
+  loader: AreaSummaryLoader = defaultAreaSummaryLoader,
+  month: Month = monthInTimeZone(),
+): Promise<AreaOverviewItem[]> {
+  const targets = areaOverviewTargetsForMonth(month);
+  const settled = await settleTargets(
+    targets,
+    (target) => loader(target.speciesId, target.hub),
+  );
+
+  return targets.map((target, index) => {
+    const result = settled[index]!;
+    const species = getSpecies(target.speciesId);
+    const summary = result.status === "fulfilled" ? result.value : null;
+    const publishable = publishableSummary(summary);
+
+    return {
+      areaSlug: target.hub.slug,
+      areaName: target.hub.name,
+      areaTypeLabel: target.hub.typeLabel,
+      prepositionalName: target.hub.prepositionalName,
+      regionId: target.hub.regionId,
+      path: target.hub.path,
+      speciesId: target.speciesId,
+      speciesName: species?.identity.commonName ?? target.speciesId,
+      seasonalActivity: target.seasonalActivity,
+      status: result.status === "rejected"
+        ? "unavailable"
+        : publishable
+          ? "available"
+          : "insufficient",
+      summary: publishable ? summary : null,
+    };
+  });
+}
+
+const catalanAreaCollator = new Intl.Collator("ca", { sensitivity: "base" });
+
+/** Publishable hubs first, best score first; withheld hubs stay visible. */
+export function rankAreaOverviewItems(items: AreaOverviewItem[]) {
+  const statusRank: Record<CurrentOverviewStatus, number> = {
+    available: 0,
+    insufficient: 1,
+    unavailable: 2,
+  };
+  return [...items].sort((left, right) =>
+    (statusRank[left.status] - statusRank[right.status]) ||
+    ((right.summary?.result.score ?? -1) - (left.summary?.result.score ?? -1)) ||
+    ((right.summary?.bestCell.score ?? -1) - (left.summary?.bestCell.score ?? -1)) ||
+    catalanAreaCollator.compare(left.areaName, right.areaName)
+  );
 }
 
 /** Sort publishable readings by score while keeping withheld states visible. */

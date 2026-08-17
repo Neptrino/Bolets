@@ -16,7 +16,9 @@ import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout
 import { editorialArticleFields, environmentalSources } from "@/data/editorial";
 import {
   dominantLimitingComponent,
+  loadAreaOverview,
   loadCurrentOverview,
+  rankAreaOverviewItems,
   topCurrentOverviewItems,
   type CurrentOverviewItem,
 } from "@/src/lib/current-overview";
@@ -102,8 +104,12 @@ function monthlyActivityLabel(activity: CurrentOverviewItem["seasonalActivity"])
 }
 
 export default async function MushroomsTodayPage() {
-  const allItems = await loadCurrentOverview();
+  const [allItems, areaItems] = await Promise.all([
+    loadCurrentOverview(),
+    loadAreaOverview(),
+  ]);
   const items = topCurrentOverviewItems(allItems);
+  const rankedAreaItems = rankAreaOverviewItems(areaItems);
   const leader = items[0];
   const observedWindow = observationWindow(items);
   const overviewSources = [...new Set(
@@ -237,6 +243,57 @@ export default async function MushroomsTodayPage() {
           </ol>
         </> : <div className="current-board-empty"><strong>Cap combinació publicable ara mateix</strong><p>Les dades insuficients o temporalment no disponibles no reben cap puntuació substitutiva.</p></div>}
       </section>
+
+      {rankedAreaItems.length > 0 ? (
+        <section className="current-board" aria-labelledby="area-board-title">
+          <header className="current-board-heading">
+            <div>
+              <p className="eyebrow">Massissos, paratges i comarques</p>
+              <h2 id="area-board-title">La mateixa lectura, a escala de massís, paratge i comarca</h2>
+            </div>
+          </header>
+          <p className="current-board-updated">Cada hub territorial es llegeix sobre la seva pròpia finestra — el massís o la comarca que un boletaire diu en veu alta — amb l’espècie de calendari més fort d’entre les guies locals publicades. Una tempesta que mulla una vall puntua aquí sense diluir-se en una regió de cent quilòmetres.</p>
+          <ol className="current-overview-grid" aria-label="Lectura actual per massís i comarca">
+            {rankedAreaItems.map((item, index) => {
+              const summary = item.summary;
+              const score = summary?.result.opportunityIndex;
+              const isAvailable = item.status === "available" && summary !== null && score !== null && score !== undefined;
+              const bestCellScore = summary?.bestCell.score;
+              return (
+                <li className={`current-overview-card is-${item.status}`} key={item.areaSlug}>
+                  <span className="current-row-rank" aria-label={isAvailable ? `Posició ${index + 1}` : "Sense posició"}>{isAvailable ? String(index + 1).padStart(2, "0") : "—"}</span>
+                  <div className="current-overview-card-heading">
+                    <h3><Link href={item.path} className="current-row-species-link">{item.areaName}<ArrowUpRight size={13} /></Link></h3>
+                    <p className="current-row-species"><span>{item.areaTypeLabel} · {item.speciesName} · {monthlyActivityLabel(item.seasonalActivity)}</span></p>
+                  </div>
+                  {isAvailable && summary && score !== null && score !== undefined ? (
+                    <div className="current-score" aria-label={`Puntuació del hub ${score} sobre 100, ${summary.result.label}`}>
+                      <div><strong>{score}</strong><span>/100 · {summary.result.label}</span></div>
+                      <span className="current-score-track" aria-hidden="true"><span style={{ width: `${score}%` }} /></span>
+                    </div>
+                  ) : (
+                    <div className="current-unavailable">
+                      <strong>{item.status === "unavailable" ? "Temporalment no disponible" : "Dades insuficients"}</strong>
+                      <span>{item.status === "unavailable" ? "La font ambiental no ha respost" : "Resultat retingut pels controls"}</span>
+                    </div>
+                  )}
+                  {typeof bestCellScore === "number" && bestCellScore > 0 ? (
+                    <dl className="current-row-signals">
+                      <div><dt>Millor cel·la de 10 km</dt><dd>{scoreMetric(bestCellScore)}</dd></div>
+                    </dl>
+                  ) : (
+                    <p className="current-row-signals-empty">{bestCellScore === 0 ? "Cap àrea destaca" : "—"}</p>
+                  )}
+                  <Link href={`/map?species=${item.speciesId}&region=${item.regionId}`} className="current-row-map" aria-label={`Veure al mapa: ${item.speciesName} ${item.prepositionalName}`}>
+                    <Map size={15} /><span>Veure mapa</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ol>
+          <p className="prediction-zone-note">Les finestres territorials es construeixen al voltant dels indrets documentats de cada hub i es calculen amb les mateixes dades i controls que la resta de lectures. No confirmen presència ni garanteixen trobar bolets.</p>
+        </section>
+      ) : null}
 
       {overviewSources.length > 0 ? (
         <aside className="current-overview-provenance" aria-label="Procedència de les dades">

@@ -12,6 +12,14 @@ export function RegisterServiceWorker() {
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
+    // In development the worker's shell/asset caches serve stale builds and
+    // mask every edit; the offline mode only matters on the deployed site.
+    if (process.env.NODE_ENV !== "production") {
+      navigator.serviceWorker.getRegistrations()
+        .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
+        .catch(() => undefined);
+      return;
+    }
     let cancelled = false;
 
     const watch = (registration: ServiceWorkerRegistration) => {

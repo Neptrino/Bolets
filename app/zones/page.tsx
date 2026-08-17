@@ -10,27 +10,91 @@ import {
   SectionHeader,
 } from "@/components/page-layout";
 import { speciesAlphabetical } from "@/data/species";
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, speciesPath } from "@/src/lib/seo";
+import {
+  areaPath,
+  areaProfiles,
+  locationPagePath,
+  placePath,
+  placeProfiles,
+  speciesLocationPages,
+  type AreaProfile,
+} from "@/data/location-pages";
+import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
+import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
 import { predictionZoneDirectory } from "@/src/lib/zone-directory";
 
 const predictionZones = predictionZoneDirectory();
+const massisAreas = areaProfiles.filter((area) => area.typeLabel === "massís");
+const comarcaAreas = areaProfiles.filter((area) => area.typeLabel === "comarca");
+// Paratges surfaced next to the massís cards: only those buried inside a
+// comarca hub — a paratge whose parent is a massís already shows in its card.
+const paratgePlaces = placeProfiles.filter((place) =>
+  place.typeLabel === "paratge" &&
+  areaProfiles.some((area) => area.slug === place.areaSlug && area.typeLabel === "comarca"),
+);
 
 function habitatDisplayName(habitat: string) {
   return habitat.charAt(0).toLocaleUpperCase("ca") + habitat.slice(1);
 }
 
+function guideCountForArea(areaSlug: string) {
+  return speciesLocationPages.filter((page) => page.areaSlug === areaSlug).length;
+}
+
+function placesSummary(areaSlug: string) {
+  return placeProfiles.filter((place) => place.areaSlug === areaSlug);
+}
+
+function guidesForArea(areaSlug: string) {
+  return speciesLocationPages.filter((page) => page.areaSlug === areaSlug);
+}
+
 export const metadata: Metadata = {
-  title: "Zones de bolets de Catalunya: 9 regions",
+  title: "Zones de bolets de Catalunya: massissos i comarques",
   description:
-    "Exploreu les nou regions generals de predicció de bolets de Catalunya, amb espècies destacades i accés directe al mapa de cada zona.",
+    "Directori territorial de bolets de Catalunya: massissos, paratges i comarques boletaires amb guies locals, més les regions generals del mapa de predicció.",
   alternates: { canonical: "/zones" },
   openGraph: {
     url: "/zones",
-    title: "9 zones de bolets de Catalunya",
-    description: "Regions generals de predicció, perfils compatibles i accés al mapa, sense revelar localitzacions sensibles.",
+    title: "Zones de bolets de Catalunya",
+    description: "Massissos, paratges i comarques boletaires amb guies locals i accés al mapa de predicció, sense revelar localitzacions sensibles.",
     images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
   },
 };
+
+function AreaCardGrid({ areas, listLabel }: { areas: AreaProfile[]; listLabel: string }) {
+  return (
+    <ol className="prediction-zone-grid" aria-label={listLabel}>
+      {areas.map((area, index) => {
+        const places = placesSummary(area.slug);
+        const guideCount = guideCountForArea(area.slug);
+        return (
+          <li className="prediction-zone-card" key={area.slug}>
+            <header>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <h3>{area.name}</h3>
+            </header>
+            <p className="prediction-zone-count">
+              <strong>{guideCount} guies locals</strong> · {places.length} {places.length === 1 ? "indret documentat" : "indrets documentats"}
+            </p>
+            <div className="prediction-zone-species">
+              <ul aria-label="Guies locals">
+                {guidesForArea(area.slug).map((page) => (
+                  <li key={`${page.placeSlug}/${page.speciesSlug}`}>
+                    <Link href={locationPagePath(page)}>{page.titlePhrase}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <Link href={areaPath(area)} className="prediction-zone-map">
+              Bolets {area.prepositionalName} <ArrowUpRight size={16} />
+            </Link>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
 
 export default function ZonesPage() {
   const habitatCounts = new Map<string, number>();
@@ -50,76 +114,154 @@ export default function ZonesPage() {
         data={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",
-          name: "Bolets per zones de Catalunya",
+          name: "Zones de bolets de Catalunya",
           url: absoluteUrl("/zones"),
           inLanguage: "ca",
           mainEntity: {
             "@type": "ItemList",
-            numberOfItems: predictionZones.length,
-            itemListElement: predictionZones.map((zone, index) => ({
+            numberOfItems: areaProfiles.length,
+            itemListElement: areaProfiles.map((area, index) => ({
               "@type": "ListItem",
               position: index + 1,
-              name: `Bolets a ${zone.label}`,
-              description: zone.species.map((species) => species.identity.commonName).join(", "),
-              url: absoluteUrl(`/map?species=${zone.species[0]?.speciesId}&region=${zone.regionId}`),
+              name: `Bolets ${area.prepositionalName}`,
+              url: absoluteUrl(areaPath(area)),
             })),
           },
         }}
       />
       <PageHeader
-        eyebrow={<><MapPinned size={15} /> 9 regions de predicció</>}
+        eyebrow={<><MapPinned size={15} /> Massissos, comarques i regions</>}
         title={<>Zones de bolets<br /><PageTitleAccent>de Catalunya.</PageTitleAccent></>}
-        description="Una lectura territorial comuna per al mapa i les condicions d’avui. Cada zona agrupa perfils ecològicament compatibles, sense convertir el bosc en una llista de coordenades."
+        description="Els territoris que els boletaires busquen pel seu nom: massissos, paratges i comarques amb guies locals d’hàbitat i temporada, i les regions generals que estructuren el mapa de predicció."
         tone="forest"
       />
       <Link href="/bolets-avui" className="location-species-feature location-current-feature">
         <span><Gauge size={18} /> Predicció territorial</span>
-        <div><h2>Quines són les millors combinacions avui?</h2><p>Compareu el top 10 entre les candidates estacionals més rellevants de cada zona, sense revelar punts sensibles.</p></div>
-        <strong>Comparar 9 zones <ArrowUpRight size={17} /></strong>
+        <div><h2>Quines són les millors combinacions avui?</h2><p>Compareu les millors lectures d’avui per massís, comarca i regió, sense revelar punts sensibles.</p></div>
+        <strong>Veure les condicions d’avui <ArrowUpRight size={17} /></strong>
       </Link>
-      <section className="prediction-zone-directory" aria-labelledby="prediction-zone-directory-title">
+
+      <section
+        className="guides-species-module"
+        aria-labelledby="species-guides-title"
+        data-species-guide-list
+      >
+        <p className="guides-species-module-label" id="species-guides-title">
+          <BookOpenText size={18} aria-hidden="true" /> On trobar cada bolet
+        </p>
+        <div className="guides-species-module-list">
+          {speciesTerritoryGuides.map((guide) => (
+            <Link href={guide.path} className="guides-species-row" key={guide.path}>
+              <div><h2>{guide.title}</h2><p>{guide.description}</p></div>
+              <strong>Obrir la guia <ArrowUpRight size={17} aria-hidden="true" /></strong>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="prediction-zone-directory" aria-labelledby="massis-directory-title">
         <SectionHeader
-          meta="9 regions generals"
-          title="Zones de predicció"
-          titleId="prediction-zone-directory-title"
-          description="Són les mateixes zones que fem servir al mapa i a la lectura d’avui. En cadascuna hi destaquem cinc perfils comestibles coneguts i indiquem quants perfils actuals hi són compatibles."
+          meta={`${massisAreas.length} massissos · ${paratgePlaces.length} paratges`}
+          title="Massissos i paratges"
+          titleId="massis-directory-title"
+          description="La unitat que un boletaire diu en veu alta: el massís o el paratge on aparca. Cada hub agrupa guies d’hàbitat i temporada per espècie."
         />
-        <ol className="prediction-zone-grid" data-prediction-zone-list>
-          {predictionZones.map((zone, index) => {
-            const featuredSpecies = zone.species[0];
+        <ol className="prediction-zone-grid" aria-label="Massissos i paratges amb guies locals">
+          {massisAreas.map((area, index) => {
+            const places = placesSummary(area.slug);
             return (
-              <li className="prediction-zone-card" data-region={zone.regionId} key={zone.regionId}>
+              <li className="prediction-zone-card" key={area.slug}>
                 <header>
                   <span>{String(index + 1).padStart(2, "0")}</span>
-                  <h3>{zone.label}</h3>
+                  <h3>{area.name}</h3>
                 </header>
                 <p className="prediction-zone-count">
-                  <strong>{zone.species.length} destacades</strong> de {zone.compatibleSpeciesCount} perfils compatibles
+                  <strong>{guideCountForArea(area.slug)} guies locals</strong> · {places.length} {places.length === 1 ? "indret documentat" : "indrets documentats"}
                 </p>
                 <div className="prediction-zone-species">
-                  <span>Espècies destacades</span>
-                  <ul>
-                    {zone.species.map((species) => (
-                      <li key={species.speciesId}>
-                        <Link href={speciesPath(species)}>{species.identity.commonName}</Link>
+                  <ul aria-label="Guies locals">
+                    {guidesForArea(area.slug).map((page) => (
+                      <li key={`${page.placeSlug}/${page.speciesSlug}`}>
+                        <Link href={locationPagePath(page)}>{page.titlePhrase}</Link>
                       </li>
                     ))}
                   </ul>
                 </div>
-                {featuredSpecies ? (
-                  <Link
-                    href={`/map?species=${featuredSpecies.speciesId}&region=${zone.regionId}`}
-                    className="prediction-zone-map"
-                  >
-                    Veure la zona al mapa <MapIcon size={16} />
-                  </Link>
-                ) : null}
+                <Link href={areaPath(area)} className="prediction-zone-map">
+                  Bolets {area.prepositionalName} <ArrowUpRight size={16} />
+                </Link>
+              </li>
+            );
+          })}
+          {paratgePlaces.map((place, index) => {
+            const parentArea = areaProfiles.find((area) => area.slug === place.areaSlug)!;
+            const guides = speciesLocationPages.filter(
+              (page) => page.areaSlug === place.areaSlug && page.placeSlug === place.slug,
+            );
+            return (
+              <li className="prediction-zone-card" key={`${place.areaSlug}/${place.slug}`}>
+                <header>
+                  <span>{String(massisAreas.length + index + 1).padStart(2, "0")}</span>
+                  <h3>{place.name}</h3>
+                </header>
+                <p className="prediction-zone-count">
+                  <strong>{guides.length} guies locals</strong> · paratge {parentArea.prepositionalName}
+                </p>
+                <div className="prediction-zone-species">
+                  <ul aria-label="Guies locals">
+                    {guides.map((page) => (
+                      <li key={page.speciesSlug}>
+                        <Link href={locationPagePath(page)}>{page.titlePhrase}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Link href={placePath(place)} className="prediction-zone-map">
+                  Bolets {place.prepositionalName} <ArrowUpRight size={16} />
+                </Link>
               </li>
             );
           })}
         </ol>
-        <p className="prediction-zone-note">Les destacades prioritzen interès de cerca i rellevància editorial dins dels perfils ecològicament compatibles. No són un recompte d’abundància i no confirmen presència ni fructificació actual.</p>
       </section>
+
+      <section className="prediction-zone-directory" aria-labelledby="comarca-directory-title">
+        <SectionHeader
+          meta={`${comarcaAreas.length} comarques boletaires`}
+          title="Comarques boletaires"
+          titleId="comarca-directory-title"
+          description="Les comarques amb més tradició i cerca boletaire, amb els seus indrets documentats. Només hi publiquem comarques amb contingut territorial propi."
+        />
+        <AreaCardGrid areas={comarcaAreas} listLabel="Comarques amb guies locals" />
+      </section>
+
+      <section className="prediction-zone-directory" aria-labelledby="prediction-zone-directory-title">
+        <SectionHeader
+          meta={`${predictionZones.length} regions generals`}
+          title="Regions del mapa de predicció"
+          titleId="prediction-zone-directory-title"
+          description="Les regions amples que estructuren el mapa i la lectura d’avui. Són unitats de model, no de cerca: per a la lectura local, feu servir els massissos i les comarques."
+        />
+        <ol className="region-map-link-list" data-prediction-zone-list>
+          {predictionZones.map((zone) => {
+            const featuredSpecies = zone.species[0];
+            return (
+              <li data-region={zone.regionId} key={zone.regionId}>
+                <Link
+                  href={featuredSpecies ? `/map?species=${featuredSpecies.speciesId}&region=${zone.regionId}` : `/map?region=${zone.regionId}`}
+                  aria-label={`Veure ${zone.label} al mapa`}
+                >
+                  <span className="region-map-link-name">{zone.label}</span>
+                  <span className="region-map-link-count">{zone.compatibleSpeciesCount} espècies</span>
+                  <MapIcon size={15} aria-hidden="true" />
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+        <p className="prediction-zone-note">La compatibilitat regional no és un recompte d’abundància i no confirma presència ni fructificació actual.</p>
+      </section>
+
       <section className="catalogue-habitats" aria-labelledby="zone-habitats-title">
         <header>
           <p className="eyebrow"><Trees size={15} /> Hàbitats</p>
@@ -144,11 +286,11 @@ export default function ZonesPage() {
       </section>
       <aside className="location-safety-note">
         <Trees size={22} />
-        <div><strong>Regions generals, no una coordenada.</strong><p>Aquest directori organitza la lectura territorial del model. Les condicions ambientals i l’hàbitat decideixen si una combinació concreta es pot publicar al mapa.</p></div>
+        <div><strong>Territoris, no coordenades.</strong><p>Aquest directori organitza la lectura territorial per massís, comarca i regió. Les condicions ambientals i l’hàbitat decideixen si una combinació concreta es pot publicar al mapa, i cap pàgina revela punts de recol·lecció.</p></div>
       </aside>
       <Link href="/guies" className="location-species-feature zones-guides-feature">
         <span><BookOpenText size={18} /> Lectura local</span>
-        <div><h2>Busques una comarca o un massís?</h2><p>Les guies locals baixen de les nou regions generals a territoris documentats, amb context d’hàbitat, temporada i fonts.</p></div>
+        <div><h2>Totes les guies locals</h2><p>El directori complet de guies per indret i espècie, amb context d’hàbitat, temporada i fonts territorials.</p></div>
         <strong>Veure les guies <ArrowUpRight size={17} /></strong>
       </Link>
     </PageShell>

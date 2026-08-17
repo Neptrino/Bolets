@@ -459,6 +459,15 @@ export interface RegionalPredictionSummary {
   snapshot: ConditionSnapshot;
 }
 
+/**
+ * A regional summary recomputed over an area hub's own bounds (massís or
+ * comarca scale) instead of the parent region's cells. The parent regionId is
+ * kept for map links and snapshot labelling.
+ */
+export interface AreaPredictionSummary extends RegionalPredictionSummary {
+  areaSlug: string;
+}
+
 export type SpatialGridSizeM = 250 | 1000 | 2500 | 5000 | 10000;
 
 export interface SpatialBounds {

@@ -2,21 +2,59 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, BookOpen, Layers3, MapPinned, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, BookOpen, BookOpenText, Gauge, Layers3, Map as MapIcon, MapPinned, ShieldCheck } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
+import { regionLabels } from "@/data/regions";
 import { getSpecies } from "@/data/species";
 import {
+  areaBounds,
   areaPath,
   areaProfiles,
   areasBySlug,
   displaySearchName,
+  locationPagesForArea,
   locationPagesForPlace,
   placePath,
   placesForArea,
 } from "@/data/location-pages";
+import { getAreaPredictionSummary } from "@/src/lib/predictions";
+import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
+import type { AreaPredictionSummary } from "@/src/lib/types";
+
+export const revalidate = 300;
 
 type Props = { params: Promise<{ place: string }> };
+
+/** Live hub readings for every species with a local guide in the area. */
+async function loadAreaConditions(areaSlug: string) {
+  const area = areasBySlug[areaSlug];
+  const speciesIds = [...new Set(locationPagesForArea(areaSlug).map((page) => page.speciesId))]
+    .filter((speciesId) => {
+      const species = getSpecies(speciesId);
+      return species?.predictionMode === "current" &&
+        species.ecologicalConfig.regions.includes(area.regionId);
+    });
+  const bounds = areaBounds(area);
+  const summaries = await Promise.all(speciesIds.map(async (speciesId) => {
+    try {
+      const summary = await getAreaPredictionSummary(speciesId, {
+        slug: area.slug,
+        regionId: area.regionId,
+        bounds,
+      });
+      return summary && summary.result.score !== null &&
+          summary.result.missingComponents.length === 0 && !summary.snapshot.stale
+        ? { speciesId, summary }
+        : null;
+    } catch {
+      return null;
+    }
+  }));
+  return summaries
+    .filter((item): item is { speciesId: string; summary: AreaPredictionSummary } => item !== null)
+    .sort((left, right) => (right.summary.result.score ?? 0) - (left.summary.result.score ?? 0));
+}
 
 export function generateStaticParams() {
   return areaProfiles.map((area) => ({ place: area.slug }));
@@ -48,6 +86,14 @@ export default async function AreaPage({ params }: Props) {
   const heroSpecies = cards.find((card) => card.species)?.species;
   const heroImage = heroSpecies?.media.find((asset) => asset.identificationReference) ?? heroSpecies?.media[0];
   const guideCount = cards.reduce((total, card) => total + card.pages.length, 0);
+  const conditions = await loadAreaConditions(areaSlug);
+  const territoryGuides = [...new Map(
+    locationPagesForArea(areaSlug)
+      .flatMap((page) => {
+        const guide = territoryGuideForSpecies(page.speciesId);
+        return guide ? [[guide.path, guide] as const] : [];
+      }),
+  ).values()];
 
   return (
     <div className="location-hub">
@@ -70,10 +116,74 @@ export default async function AreaPage({ params }: Props) {
 
       <div className="page-width location-hub-body">
         <section className="location-hub-facts" aria-label="Resum de la col·lecció">
-          <div><Layers3 size={19} /><span>Àmbit ambiental</span><strong>{area.regionId === "montseny" ? "Massís del Montseny" : area.regionId === "prepirineus" ? "Prepirineus" : "Pirineus"}</strong></div>
+          <div><Layers3 size={19} /><span>Àmbit ambiental</span><strong>{regionLabels[area.regionId]}</strong></div>
           <div><BookOpen size={19} /><span>Col·lecció</span><strong>{guideCount} {guideCount === 1 ? "guia ecològica" : "guies ecològiques"}</strong></div>
           <div><ShieldCheck size={19} /><span>Precisió pública</span><strong>Sense punts de recol·lecció</strong></div>
         </section>
+
+        {conditions.length > 0 ? (
+          <section className="current-board" aria-labelledby="area-conditions-title">
+            <header className="current-board-heading">
+              <div>
+                <p className="eyebrow"><Gauge size={15} /> Condicions ara</p>
+                <h2 id="area-conditions-title">Lectura actual {area.prepositionalName}</h2>
+              </div>
+            </header>
+            <ol className="current-overview-grid" aria-label={`Lectures actuals per espècie ${area.prepositionalName}`}>
+              {conditions.map(({ speciesId, summary }, index) => {
+                const species = getSpecies(speciesId)!;
+                const score = summary.result.opportunityIndex;
+                const bestCellScore = summary.bestCell.score;
+                return (
+                  <li className="current-overview-card is-available" key={speciesId}>
+                    <span className="current-row-rank">{String(index + 1).padStart(2, "0")}</span>
+                    <div className="current-overview-card-heading">
+                      <h3>{species.identity.commonName}</h3>
+                      <p className="current-row-species"><span>Finestra {area.typeLabel === "massís" ? "del massís" : "de la comarca"} · cel·les de 10 km</span></p>
+                    </div>
+                    {score !== null && score !== undefined ? (
+                      <div className="current-score" aria-label={`Puntuació ${score} sobre 100, ${summary.result.label}`}>
+                        <div><strong>{score}</strong><span>/100 · {summary.result.label}</span></div>
+                        <span className="current-score-track" aria-hidden="true"><span style={{ width: `${score}%` }} /></span>
+                      </div>
+                    ) : null}
+                    {typeof bestCellScore === "number" && bestCellScore > 0 ? (
+                      <dl className="current-row-signals">
+                        <div><dt>Millor cel·la de 10 km</dt><dd>{Math.round(bestCellScore)}/100</dd></div>
+                      </dl>
+                    ) : (
+                      <p className="current-row-signals-empty">{bestCellScore === 0 ? "Cap àrea destaca" : "—"}</p>
+                    )}
+                    <Link href={`/map?species=${speciesId}&region=${area.regionId}`} className="current-row-map" aria-label={`Veure al mapa: ${species.identity.commonName} ${area.prepositionalName}`}>
+                      <MapIcon size={15} /><span>Veure mapa</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ol>
+            <p className="prediction-zone-note">Mediana i millor cel·la calculades només dins la finestra territorial {area.prepositionalName}, amb les mateixes dades i controls que el mapa. No confirma presència ni garanteix trobar bolets.</p>
+          </section>
+        ) : null}
+
+        {territoryGuides.length > 0 ? (
+          <section
+            className="guides-species-module"
+            aria-labelledby="area-species-guides-title"
+            data-species-guide-list
+          >
+            <p className="guides-species-module-label" id="area-species-guides-title">
+              <BookOpenText size={18} aria-hidden="true" /> Guies d’espècie i territori
+            </p>
+            <div className="guides-species-module-list">
+              {territoryGuides.map((guide) => (
+                <Link href={guide.path} className="guides-species-row" key={guide.path}>
+                  <div><h2>{guide.profileLinkTitle}</h2><p>{guide.description}</p></div>
+                  <strong>Obrir la guia <ArrowUpRight size={17} aria-hidden="true" /></strong>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section className="location-guide-gallery" aria-labelledby="places-title">
           <header><div><p className="eyebrow">Indrets documentats</p><h2 id="places-title">Boscos, valls i municipis</h2></div><p>Cada indret agrupa només les espècies amb una relació ecològica defensable i contingut territorial propi.</p></header>

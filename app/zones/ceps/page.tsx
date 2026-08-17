@@ -15,6 +15,7 @@ import { JsonLd } from "@/components/json-ld";
 import { SpeciesCard } from "@/components/species-card";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import {
+  areaPath,
   areaProfiles,
   locationPagePath,
   speciesLocationPages,
@@ -76,6 +77,9 @@ const ceps = cepSpeciesIds.map(requiredSpecies);
 const cepSpeciesIdSet = new Set<string>(cepSpeciesIds);
 const publishedGuides = speciesLocationPages.filter((page) =>
   cepSpeciesIdSet.has(page.speciesId),
+);
+const publishedAreas = areaProfiles.filter((area) =>
+  publishedGuides.some((guide) => guide.areaSlug === area.slug),
 );
 
 const comparisonLinks = [
@@ -364,12 +368,15 @@ export default function CepsTerritoryPage() {
           <div>
             <p className="eyebrow">Guies locals publicades</p>
             <h2 id="ceps-published-title">
-              Deu lectures locals, quatre territoris.
+              {publishedGuides.length} lectures locals, {publishedAreas.length} territoris.
             </h2>
             <p>
-              Les guies existents baixen al detall del Ripollès, el Berguedà,
-              el Montseny i la Cerdanya. Descriuen context ecològic sense revelar
-              punts de recol·lecció.
+              Les guies baixen al detall de {publishedAreas.map((area, index) => (
+                <span key={area.slug}>
+                  {index > 0 && (index === publishedAreas.length - 1 ? " i " : ", ")}
+                  <Link href={areaPath(area)}>{area.nameWithArticle}</Link>
+                </span>
+              ))}. Cada enllaç obre el hub territorial amb les condicions actuals; cap pàgina revela punts de recol·lecció.
             </p>
           </div>
           <div data-cep-local-guides>

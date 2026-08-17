@@ -13,6 +13,7 @@ import {
 import { JsonLd } from "@/components/json-ld";
 import { SpeciesCard } from "@/components/species-card";
 import {
+  areaPath,
   areaProfiles,
   locationPagePath,
   speciesLocationPages,
@@ -131,6 +132,9 @@ const lactariusSpeciesIds = new Set([
 ]);
 const publishedGuides = speciesLocationPages.filter((page) =>
   lactariusSpeciesIds.has(page.speciesId),
+);
+const publishedAreas = areaProfiles.filter((area) =>
+  publishedGuides.some((guide) => guide.areaSlug === area.slug),
 );
 
 export default function RovellonsTerritoryPage() {
@@ -260,7 +264,14 @@ export default function RovellonsTerritoryPage() {
           <div>
             <p className="eyebrow">Guies locals publicades</p>
             <h2 id="rovellons-published-title">Del Pirineu als Ports, amb més detall.</h2>
-            <p>Ripollès, Cerdanya, Berguedà i els Ports tenen lectures pròpies per al rovelló, el pinetell o tots dos, sempre sense publicar punts de recol·lecció.</p>
+            <p>
+              {publishedAreas.map((area, index) => (
+                <span key={area.slug}>
+                  {index > 0 && (index === publishedAreas.length - 1 ? " i " : ", ")}
+                  <Link href={areaPath(area)}>{area.nameWithArticle}</Link>
+                </span>
+              ))} tenen lectures pròpies per al rovelló, el pinetell o tots dos, sempre sense publicar punts de recol·lecció. Cada enllaç obre el hub territorial, amb les condicions actuals de la zona.
+            </p>
           </div>
           <div data-rovello-local-guides>
             {publishedGuides.map((guide) => {

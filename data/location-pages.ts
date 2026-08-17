@@ -1,4 +1,4 @@
-import type { RegionId } from "@/src/lib/types";
+import type { RegionId, SpatialBounds } from "@/src/lib/types";
 
 interface TerritorialSource {
   title: string;
@@ -12,6 +12,12 @@ export interface AreaProfile {
   prepositionalName: string;
   typeLabel: "comarca" | "massís";
   regionId: RegionId;
+  /**
+   * Aggregation window for the area's live conditions. Tighter than the parent
+   * prediction region on purpose: the hub reads the massís or comarca, not the
+   * 200 km strip around it.
+   */
+  bounds: SpatialBounds;
   description: string;
   landscape: string;
   source: TerritorialSource;
@@ -50,6 +56,7 @@ export const areaProfiles: AreaProfile[] = [
     prepositionalName: "al Ripollès",
     typeLabel: "comarca",
     regionId: "pirineus",
+    bounds: { west: 1.95, south: 42.05, east: 2.5, north: 42.45 },
     description: "Comarca pirinenca de valls, boscos montans, prats i cursos d’aigua, amb una temporada molt condicionada per l’altitud.",
     landscape: "Els canvis ràpids de cota desplacen el calendari entre els fons de vall i l’alta muntanya. Camprodon, Setcases i les Lloses ofereixen tres lectures forestals diferents dins la mateixa comarca.",
     source: { title: "Turisme del Ripollès", url: "https://ripollesturisme.cat/" },
@@ -61,6 +68,7 @@ export const areaProfiles: AreaProfile[] = [
     prepositionalName: "al Berguedà",
     typeLabel: "comarca",
     regionId: "prepirineus",
+    bounds: { west: 1.6, south: 41.9, east: 2.1, north: 42.35 },
     description: "Comarca prepirinenca de gran tradició boletaire, amb pinedes, boscos mixtos i relleus que pugen cap al Cadí-Moixeró.",
     landscape: "La temporada de bolets forma part de la cultura gastronòmica local. El tipus de pi, el sòl, l’orientació i la persistència de la humitat canvien entre les valls i els relleus de l’Alt Berguedà.",
     source: { title: "Visit Pirineus — Berguedà", url: "https://visitpirineus.com/ca/destinations/bergueda" },
@@ -72,6 +80,7 @@ export const areaProfiles: AreaProfile[] = [
     prepositionalName: "al Montseny",
     typeLabel: "massís",
     regionId: "montseny",
+    bounds: { west: 2.25, south: 41.7, east: 2.55, north: 41.9 },
     description: "Massís amb un fort gradient climàtic, des de boscos mediterranis fins a fagedes i formacions humides de muntanya.",
     landscape: "La recol·lecció de bolets forma part del patrimoni cultural del massís. Santa Fe, el Brull i Viladrau representen ambients diferents, i la temporada pot variar notablement entre vessants.",
     source: { title: "Patrimoni cultural immaterial del Montseny — recol·lecció de bolets", url: "https://parcs.diba.cat/es/web/el-patrimoni-cultural-immaterial-del-montseny/inventari/detall/-/contingut/29193465/sabers-relacionats-amb-l-alimentacio-recol-leccio-i-consum-de-bolets" },
@@ -83,6 +92,7 @@ export const areaProfiles: AreaProfile[] = [
     prepositionalName: "a la Cerdanya",
     typeLabel: "comarca",
     regionId: "pirineus",
+    bounds: { west: 1.55, south: 42.25, east: 2.05, north: 42.5 },
     description: "Gran vall pirinenca envoltada de boscos submediterranis, pinedes montanes i prats alpins, amb un gradient altitudinal molt marcat.",
     landscape: "L’orientació est-oest de la vall crea contrastos entre solells, obagues i boscos de muntanya. Bellver permet llegir la transició entre el fons de vall i els vessants del Cadí-Moixeró.",
     source: { title: "Visit Pirineus — Cerdanya", url: "https://visitpirineus.com/en/destinations/cerdanya" },
@@ -94,9 +104,70 @@ export const areaProfiles: AreaProfile[] = [
     prepositionalName: "als Ports",
     typeLabel: "massís",
     regionId: "ports",
+    bounds: { west: 0.15, south: 40.7, east: 0.5, north: 41.05 },
     description: "Massís mediterrani de relleu calcari i fort gradient altitudinal, amb pinedes de pi blanc, pinassa i pi roig entre barrancs, cingles i sectors forestals.",
     landscape: "El canvi de cota separa les pinedes mediterrànies de les formacions montanes. Entorn d’Horta de Sant Joan, el tipus de pi, la reacció del sòl i la persistència de la humitat permeten distingir l’hàbitat del rovelló i el del pinetell.",
     source: { title: "Parc Natural dels Ports — ambients", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/ports/el-parc/patrimoni-natural-i-cultural/ambients/" },
+  },
+  {
+    slug: "prades",
+    name: "Muntanyes de Prades",
+    nameWithArticle: "les Muntanyes de Prades",
+    prepositionalName: "a les Muntanyes de Prades",
+    typeLabel: "massís",
+    regionId: "muntanyes-interiors",
+    bounds: { west: 0.85, south: 41.22, east: 1.15, north: 41.42 },
+    description: "Massís calcari elevat entre el Baix Camp, la Conca de Barberà i el Priorat, amb pinedes de pinassa i pi roig, rouredes i alzinars muntanyencs.",
+    landscape: "És un dels territoris boletaires més coneguts del sud de Catalunya, amb el rovelló com a protagonista cultural. L’altiplà de Prades i els vessants del bosc de Poblet ofereixen lectures forestals diferents dins del mateix relleu.",
+    source: { title: "Muntanyes de la Costa Daurada", url: "https://www.muntanyescostadaurada.cat/" },
+  },
+  {
+    slug: "solsones",
+    name: "Solsonès",
+    nameWithArticle: "el Solsonès",
+    prepositionalName: "al Solsonès",
+    typeLabel: "comarca",
+    regionId: "prepirineus",
+    bounds: { west: 1.3, south: 41.85, east: 1.75, north: 42.25 },
+    description: "Comarca prepirinenca de boscos extensos i poc fragmentats, amb pinedes de pi roig i pinassa que pugen des de l’altiplà central fins al Port del Comte.",
+    landscape: "La tradició boletaire hi és profunda i el mosaic de pinedes, rouredes i pastures canvia amb la cota. La vall de Lord i els vessants del Port del Comte concentren els gradients més marcats de la comarca.",
+    source: { title: "Turisme Solsonès", url: "https://turismesolsones.com/" },
+  },
+  {
+    slug: "guilleries",
+    name: "Guilleries",
+    nameWithArticle: "les Guilleries",
+    prepositionalName: "a les Guilleries",
+    typeLabel: "massís",
+    regionId: "montseny",
+    bounds: { west: 2.4, south: 41.85, east: 2.65, north: 42.05 },
+    description: "Massís humit de la Serralada Transversal, entre Osona i la Selva, cobert de castanyedes, alzinars frescals, pinedes i clapes de fageda.",
+    landscape: "És un dels territoris amb més cultura boletaire del país, amb Sant Hilari Sacalm com a capital de les Guilleries. La humitat persistent i el relleu enclotat mantenen actius els boscos quan altres sectors ja s’han assecat.",
+    source: { title: "Espai Natural de les Guilleries-Savassona", url: "https://parcs.diba.cat/web/guilleries" },
+  },
+  {
+    slug: "montnegre-corredor",
+    name: "Montnegre i el Corredor",
+    nameWithArticle: "el Montnegre i el Corredor",
+    prepositionalName: "al Montnegre i el Corredor",
+    typeLabel: "massís",
+    regionId: "serralades-costeres",
+    bounds: { west: 2.4, south: 41.55, east: 2.75, north: 41.75 },
+    description: "Serralada litoral de boscos vora el mar, amb alzinars, suredes, pinedes i, als sectors culminants del Montnegre, rouredes i castanyedes humides.",
+    landscape: "És el territori boletaire més proper a l’àrea metropolitana de Barcelona. El contrast entre el vessant marítim i l’interior, i entre cotes baixes i culminants, desplaça les condicions en pocs quilòmetres.",
+    source: { title: "Parc del Montnegre i el Corredor", url: "https://parcs.diba.cat/web/montnegre" },
+  },
+  {
+    slug: "garrotxa",
+    name: "Garrotxa",
+    nameWithArticle: "la Garrotxa",
+    prepositionalName: "a la Garrotxa",
+    typeLabel: "comarca",
+    regionId: "prepirineus",
+    bounds: { west: 2.3, south: 42.05, east: 2.75, north: 42.35 },
+    description: "Comarca volcànica i humida, amb fagedes sobre colades de lava, rouredes, alzinars i pinedes que pugen cap al Puigsacalm i l’Alta Garrotxa.",
+    landscape: "El clima plujós i els sòls profunds mantenen boscos frescos bona part de la tardor. La fageda d’en Jordà i els vessants de la vall d’en Bas són dues lectures molt diferents de la mateixa comarca.",
+    source: { title: "OH! Garrotxa — turisme de la Garrotxa", url: "https://ohgarrotxa.com/" },
   },
 ];
 
@@ -170,6 +241,69 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi de la Terra Alta als peus dels Ports, amb accés a un paisatge de pinedes mediterrànies, pinasses, cingleres calcàries i un gradient de cota molt marcat.",
     landscape: "Les pinedes de pi blanc de les cotes baixes i les de pinassa dels sectors més alts ofereixen contextos diferents per als lactaris. El substrat i la humitat efectiva són imprescindibles per separar compatibilitat ecològica de simple presència de pins.",
     source: { title: "Parc Natural dels Ports — Horta de Sant Joan", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/ports/gaudeix-del-parc/guia-de-visita/pobles/" },
+  },
+  {
+    areaSlug: "prades", slug: "prades", name: "Prades", nameWithArticle: "Prades", prepositionalName: "a Prades", typeLabel: "municipi",
+    mapCentre: [0.9866, 41.3123],
+    description: "Vila vermella de l’altiplà de les Muntanyes de Prades, envoltada de pinedes de pi roig i pinassa sobre relleus calcaris d’entre 900 i 1.200 metres.",
+    landscape: "L’altiplà combina pinedes obertes, rouredes i pastures on la tradició del rovelló és part de la identitat local. La cota alta suavitza les temperatures de tardor, però el vent hi asseca ràpidament la capa superficial del sòl.",
+    source: { title: "Ajuntament de Prades", url: "https://www.prades.cat/" },
+  },
+  {
+    areaSlug: "prades", slug: "bosc-de-poblet", name: "Bosc de Poblet", nameWithArticle: "el bosc de Poblet", prepositionalName: "al bosc de Poblet", typeLabel: "paratge",
+    mapCentre: [1.06, 41.36],
+    description: "Vessant nord de les Muntanyes de Prades protegit com a paratge natural, amb rouredes, alzinars muntanyencs i pinedes que conserven bé la humitat.",
+    landscape: "L’obaga del massís acumula fondalades frescos i sòls profunds, amb l’única roureda de roure reboll de Catalunya. Els ambients ombrívols allarguen les finestres de tardor respecte de l’altiplà veí.",
+    source: { title: "Paratge Natural d’Interès Nacional de Poblet", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/poblet/" },
+  },
+  {
+    areaSlug: "solsones", slug: "port-del-comte", name: "Port del Comte", nameWithArticle: "el Port del Comte", prepositionalName: "al Port del Comte", typeLabel: "paratge",
+    mapCentre: [1.558, 42.176],
+    description: "Massís calcari del nord del Solsonès que s’enfila per sobre dels 2.300 metres, amb pinedes extenses de pi roig i pi negre a les cotes mitjanes i altes.",
+    landscape: "És un dels sectors boletaires més coneguts del Prepirineu. Les pinedes montanes conserven humitat a les obagues, però la cota i el vent poden tancar la temporada d’un dia per l’altre a la tardor avançada.",
+    source: { title: "Port del Comte — estació de muntanya", url: "https://www.portdelcomte.net/" },
+  },
+  {
+    areaSlug: "solsones", slug: "sant-llorenc-de-morunys", name: "Sant Llorenç de Morunys", nameWithArticle: "Sant Llorenç de Morunys", prepositionalName: "a Sant Llorenç de Morunys", typeLabel: "municipi",
+    mapCentre: [1.5936, 42.1394],
+    description: "Municipi de la vall de Lord, entre serres calcàries i pinedes de pi roig i pinassa que pugen des del pantà de la Llosa del Cavall cap al Port del Comte.",
+    landscape: "La vall tancada concentra contrastos forts entre solells i obagues. Les pinedes fresques de la capçalera responen millor a les pluges de tardor que els vessants oberts i ventejats de l’altiplà solsoní.",
+    source: { title: "Turisme Solsonès", url: "https://turismesolsones.com/" },
+  },
+  {
+    areaSlug: "guilleries", slug: "sant-hilari-sacalm", name: "Sant Hilari Sacalm", nameWithArticle: "Sant Hilari Sacalm", prepositionalName: "a Sant Hilari Sacalm", typeLabel: "municipi",
+    mapCentre: [2.5044, 41.8781],
+    description: "Capital de les Guilleries, envoltada de castanyedes, alzinars frescals i pinedes humides sobre sòls granítics d’entre 600 i 1.000 metres.",
+    landscape: "La vila de les cent fonts concentra una de les cultures boletaires més vives del país. Les castanyedes i els boscos enclotats mantenen humitat persistent i allarguen la temporada quan la tardor és regular.",
+    source: { title: "Les Guilleries km0 — turisme de Sant Hilari Sacalm", url: "https://lesguillerieskm0.cat/" },
+  },
+  {
+    areaSlug: "guilleries", slug: "osor", name: "Osor", nameWithArticle: "Osor", prepositionalName: "a Osor", typeLabel: "municipi",
+    mapCentre: [2.547, 41.945],
+    description: "Municipi de la vall de la riera d’Osor, al cor forestal de les Guilleries, entre castanyedes, alzinars i vessants enclotats que baixen cap a Susqueda.",
+    landscape: "És un dels racons més humits i boscosos del massís. Les fondalades ombrívoles i la fullaraca profunda conserven l’aigua de les pluges de tardor força més temps que els vessants oberts.",
+    source: { title: "Espai Natural de les Guilleries-Savassona", url: "https://parcs.diba.cat/web/guilleries" },
+  },
+  {
+    areaSlug: "montnegre-corredor", slug: "vallgorguina", name: "Vallgorguina", nameWithArticle: "Vallgorguina", prepositionalName: "a Vallgorguina", typeLabel: "municipi",
+    mapCentre: [2.5106, 41.6467],
+    description: "Municipi del Vallès Oriental a cavall del Montnegre i el Corredor, amb alzinars, suredes i pinedes mediterrànies que pugen dels fondals cap a les carenes.",
+    landscape: "El parc hi manté un mosaic forestal dens a tocar de l’àrea metropolitana. Les obagues del Montnegre conserven humitat més temps que els vessants marítims, i la tardor hi arriba abans que a la costa.",
+    source: { title: "Parc del Montnegre i el Corredor", url: "https://parcs.diba.cat/web/montnegre" },
+  },
+  {
+    areaSlug: "garrotxa", slug: "vall-den-bas", name: "Vall d’en Bas", nameWithArticle: "la Vall d’en Bas", prepositionalName: "a la Vall d’en Bas", typeLabel: "vall",
+    mapCentre: [2.4333, 42.1167],
+    description: "Vall agrícola i forestal del sud-oest de la Garrotxa, tancada per les fagedes i pinedes que pugen cap al Puigsacalm i el collsacabra.",
+    landscape: "Els vessants humits que envolten el pla combinen fagedes, rouredes i pinedes de pi roig. La pluja abundant de la comarca hi manté sòls profunds i frescos que responen bé a les tardors regulars.",
+    source: { title: "OH! Garrotxa — turisme de la Garrotxa", url: "https://ohgarrotxa.com/" },
+  },
+  {
+    areaSlug: "garrotxa", slug: "santa-pau", name: "Santa Pau", nameWithArticle: "Santa Pau", prepositionalName: "a Santa Pau", typeLabel: "municipi",
+    mapCentre: [2.5702, 42.1447],
+    description: "Municipi medieval del cor de la zona volcànica, entre la fageda d’en Jordà, els volcans coberts de bosc i les rouredes humides de la vall de Ser.",
+    landscape: "Les fagedes sobre colades de lava i els sòls volcànics profunds retenen la humitat de manera excepcional. És un dels paisatges forestals més estables de la comarca davant els episodis secs curts.",
+    source: { title: "Parc Natural de la Zona Volcànica de la Garrotxa", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/garrotxa/" },
   },
 ];
 
@@ -354,6 +488,156 @@ export const speciesLocationPages: SpeciesLocationPage[] = [
     habitatNote: "El pinetell necessita pins, pinassa humida, bon drenatge i sòls àcids o neutres. En un massís calcari, la presència d’una pineda no basta: només els sectors on el sòl i la humitat encaixen amb aquest perfil són potencialment compatibles.",
     seasonNote: "La finestra general va de setembre a novembre i acostuma a culminar a l’octubre. Les pluges han de mantenir la pinassa humida durant dies; el vent, una represa de la sequera o una baixada brusca de temperatura poden interrompre el desenvolupament.",
   },
+  {
+    areaSlug: "prades", placeSlug: "prades", speciesSlug: "rovellons", speciesId: "lactarius-sanguifluus", searchName: "rovellons", titlePhrase: "Rovellons a Prades",
+    introduction: "El rovelló és el bolet més buscat de les Muntanyes de Prades i forma part de la identitat gastronòmica de la vila. Les pinedes calcàries de l’altiplà poden ser compatibles amb la seva ecologia, però aquesta guia descriu hàbitat potencial i no confirma presència ni assenyala cap punt de recol·lecció.",
+    habitatNote: "El rovelló vinós s’associa als pins sobre sòls calcaris o neutres, ben drenats i amb humitat moderada: exactament el perfil dominant de l’altiplà de Prades. Les pinedes de pinassa i pi roig obertes encaixen millor que els sectors densos, i l’orientació separa molt els vessants que conserven l’aigua dels que l’evaporen.",
+    seasonNote: "La tardor concentra la finestra principal, habitualment entre octubre i novembre. A la cota de l’altiplà, les nits fresques afavoreixen la resposta després d’una pluja efectiva, però el vent persistent o una gelada primerenca poden escurçar-la de manera brusca.",
+  },
+  {
+    areaSlug: "prades", placeSlug: "prades", speciesSlug: "pinetells", speciesId: "lactarius-deliciosus", searchName: "pinetells i rovellons", titlePhrase: "Pinetells (rovellons) a Prades",
+    introduction: "A les Muntanyes de Prades, una part del que popularment es ven i es cerca com a rovelló correspon al pinetell de làtex taronja. Les pinedes montanes de l’altiplà poden oferir hàbitat compatible, però la guia no garanteix presència ni revela localitzacions sensibles.",
+    habitatNote: "El pinetell necessita pins i prefereix pinassa humida sobre sòls ben drenats, dels àcids als neutres. A Prades, els sectors on la pinassa es manté humida uns quants dies —fondalades, marges protegits, obagues suaus— són els que encaixen millor amb el seu perfil.",
+    seasonNote: "El potencial va de setembre a novembre, amb un màxim general a l’octubre. La pluja ha d’humitejar la pinassa en profunditat; el vent de l’altiplà i les primeres gelades poden aturar la resposta encara que el sòl hagi quedat moll.",
+  },
+  {
+    areaSlug: "prades", placeSlug: "prades", speciesSlug: "carlets", speciesId: "hygrophorus-russula", searchName: "carlets", titlePhrase: "Carlets a Prades",
+    introduction: "El carlet és un clàssic de la cultura boletaire de les muntanyes tarragonines i pot trobar hàbitat compatible als boscos de l’entorn de Prades. Aquesta lectura ecològica descriu compatibilitat d’ambient, no presència confirmada ni cap indicació de lloc.",
+    habitatNote: "El carlet s’associa sobretot a alzinars i rouredes sobre sòls calcaris, ben drenats i encara temperats a la tardor. A l’altiplà i els vessants de Prades, els boscos de planifolis amb fullaraca fina i sòl eixut en superfície però fresc en fondària són els més compatibles.",
+    seasonNote: "La finestra habitual va d’octubre a desembre, més tardana que la del rovelló. Tolera bé la tardor avançada mentre no arribin gelades fortes, però necessita que el sòl mantingui una humitat de fons real.",
+  },
+  {
+    areaSlug: "prades", placeSlug: "bosc-de-poblet", speciesSlug: "ceps", speciesId: "boletus-edulis", searchName: "ceps", titlePhrase: "Ceps al bosc de Poblet",
+    introduction: "L’obaga del bosc de Poblet combina rouredes, castanyedes i pinedes fresques que poden encaixar amb l’ecologia del cep. La guia descriu potencial d’hàbitat dins d’un paratge protegit i no confirma presència ni assenyala cap indret concret.",
+    habitatNote: "El cep prefereix boscos madurs sobre sòls àcids o descarbonatats, frescos i ben drenats. Al vessant nord de les Muntanyes de Prades, les rouredes ombrívoles i els sòls silícics del paratge ofereixen el perfil més compatible, lluny dels sectors calcaris i assolellats de l’altiplà.",
+    seasonNote: "El potencial principal va de finals d’estiu fins al novembre, amb un màxim habitual a l’octubre. L’obaga allarga la finestra respecte dels solells, però cal pluja repartida i nits fresques perquè la resposta arribi a produir-se.",
+  },
+  {
+    areaSlug: "prades", placeSlug: "bosc-de-poblet", speciesSlug: "trompetes-de-la-mort", speciesId: "craterellus-cornucopioides", searchName: "trompetes de la mort", titlePhrase: "Trompetes de la mort al bosc de Poblet",
+    introduction: "La fullaraca profunda de les rouredes i castanyedes del bosc de Poblet pot coincidir amb l’ecologia de la trompeta de la mort. La seva distribució és irregular i críptica, i aquesta guia no confirma presència ni revela sectors concrets del paratge.",
+    habitatNote: "La trompeta busca boscos ombrívols de planifolis amb fullaraca humida i sòls frescos, sense entollaments. Les fondalades i els peus de vessant de l’obaga, on la humitat es conserva dies després de la pluja, són els ambients potencialment més compatibles del paratge.",
+    seasonNote: "La tardor plujosa és la seva finestra, sobretot entre octubre i novembre. Necessita humitat mantinguda: una represa de la sequera o un episodi de vent sec poden tallar l’activitat encara que el bosc sembli fresc.",
+  },
+  {
+    areaSlug: "prades", placeSlug: "bosc-de-poblet", speciesSlug: "camagrocs", speciesId: "craterellus-lutescens", searchName: "camagrocs", titlePhrase: "Camagrocs al bosc de Poblet",
+    introduction: "Els racons més humits del bosc de Poblet poden contenir microhàbitats compatibles amb el camagroc, especialment sota les pinedes fresques de l’obaga. La guia expressa compatibilitat ecològica i no garanteix fructificació ni identifica indrets.",
+    habitatNote: "El camagroc encaixa en sòls molsosos i humits sota coníferes o boscos mixtos, amb humus ben format i ombra constant. Al paratge, les fondalades amb molsa i els marges de torrentera que no s’assequen entre pluges són el perfil més favorable.",
+    seasonNote: "El potencial es concentra a la tardor avançada, entre octubre i desembre si no arriben gelades fortes. La constància de la humitat pesa més que la quantitat de pluja d’un sol episodi.",
+  },
+  {
+    areaSlug: "solsones", placeSlug: "port-del-comte", speciesSlug: "ceps", speciesId: "boletus-edulis", searchName: "ceps", titlePhrase: "Ceps al Port del Comte",
+    introduction: "Les pinedes montanes del Port del Comte són un dels escenaris boletaires més coneguts del Prepirineu i poden encaixar amb l’ecologia del cep. Aquesta guia llegeix el potencial d’hàbitat del massís i no confirma presència ni assenyala cap sector concret.",
+    habitatNote: "El cep prefereix pinedes de pi roig i pi negre fresques, amb sòl profund i ben drenat que conservi la humitat de fons. A la muntanya calcària, els sectors amb sòls descarbonatats i molsa a les obagues encaixen millor que les carenes primes i ventejades.",
+    seasonNote: "La finestra sol començar a finals d’estiu a les cotes altes i baixa amb la tardor. Les nits fresques després d’una pluja ben repartida són el senyal més favorable; les gelades fermes de novembre acostumen a tancar la temporada.",
+  },
+  {
+    areaSlug: "solsones", placeSlug: "port-del-comte", speciesSlug: "pinetells", speciesId: "lactarius-deliciosus", searchName: "rovellons i pinetells", titlePhrase: "Pinetells (rovellons) al Port del Comte",
+    introduction: "Al Solsonès, la cerca popular de rovellons correspon en gran part al pinetell de làtex taronja, i el Port del Comte n’és un dels territoris amb més tradició. Les pinedes del massís poden ser-hi compatibles, però la guia no confirma presència ni revela punts sensibles.",
+    habitatNote: "El pinetell s’associa als pins i respon millor on la pinassa es manté humida amb bon drenatge. Als vessants del Port del Comte, les pinedes mitjanes i les fondalades protegides conserven la humitat més temps que les clarianes altes exposades al vent.",
+    seasonNote: "El potencial va de setembre a novembre segons la cota, amb el màxim habitual a l’octubre. A la part alta la temporada s’avança i s’escurça; les primeres gelades fermes n’aturen la resposta.",
+  },
+  {
+    areaSlug: "solsones", placeSlug: "port-del-comte", speciesSlug: "fredolics", speciesId: "tricholoma-terreum", searchName: "fredolics", titlePhrase: "Fredolics al Port del Comte",
+    introduction: "Les pinedes fresques del Port del Comte poden coincidir amb l’ecologia del fredolic quan la tardor ja és freda. La semblança amb tricolomes tòxics exigeix identificació experta, i aquesta guia no confirma presència ni indica llocs de recol·lecció.",
+    habitatNote: "El fredolic fructifica en sòls de pineda amb pinassa fina i bon drenatge, tolerant sòls més pobres que altres espècies. Als vessants del massís, els marges de pineda i els sectors oberts poden respondre si el vent no els asseca immediatament després de la pluja.",
+    seasonNote: "És espècie de tardor avançada: la finestra habitual va d’octubre a desembre, amb màxim al novembre. El fred moderat la manté activa, però les gelades contínues i la neu primerenca de la cota alta la tanquen.",
+  },
+  {
+    areaSlug: "solsones", placeSlug: "sant-llorenc-de-morunys", speciesSlug: "ceps", speciesId: "boletus-edulis", searchName: "ceps", titlePhrase: "Ceps a Sant Llorenç de Morunys",
+    introduction: "Les pinedes que envolten la vall de Lord poden oferir hàbitat compatible amb el cep, sobretot als vessants frescos que pugen cap al Port del Comte. La guia descriu compatibilitat ecològica i no confirma presència ni cap indret concret.",
+    habitatNote: "El cep encaixa en pinedes i boscos mixtos madurs amb sòl fresc, profund i ben drenat. A la vall tancada, les obagues i fondalades conserven la humitat de les pluges força més temps que els solells oberts de l’altiplà solsoní.",
+    seasonNote: "El potencial s’estén de finals d’estiu fins al novembre, amb el màxim habitual a l’octubre. La pluja repartida i les nits fresques de la vall afavoreixen la resposta; el vent sec o una gelada ferma la interrompen.",
+  },
+  {
+    areaSlug: "solsones", placeSlug: "sant-llorenc-de-morunys", speciesSlug: "llenegues", speciesId: "hygrophorus-latitabundus", searchName: "llenegues", titlePhrase: "Llenegues a Sant Llorenç de Morunys",
+    introduction: "La llenega negra és un dels bolets més apreciats de la cuina solsonina i les pinedes calcàries de la vall de Lord poden encaixar amb la seva ecologia. Aquesta lectura descriu hàbitat potencial i no confirma presència ni revela sectors concrets.",
+    habitatNote: "La llenega negra s’associa als pins sobre sòls calcaris o neutres, un perfil molt present als vessants de la vall. Els sectors de pinassa i pi roig amb sòl fresc i bon drenatge encaixen millor, especialment on la humitat de fons persisteix entre pluges.",
+    seasonNote: "És espècie de tardor plena i avançada, habitualment d’octubre a desembre. Tolera el fred moderat millor que altres espècies, però necessita pluges prèvies generoses i pateix amb el vent assecant de la vall.",
+  },
+  {
+    areaSlug: "solsones", placeSlug: "sant-llorenc-de-morunys", speciesSlug: "pinetells", speciesId: "lactarius-deliciosus", searchName: "rovellons i pinetells", titlePhrase: "Pinetells (rovellons) a Sant Llorenç de Morunys",
+    introduction: "A la vall de Lord, els rovellons que centren la temporada boletaire corresponen majoritàriament al pinetell de làtex taronja. Les pinedes de la vall poden ser-hi compatibles, però la guia no garanteix presència ni assenyala localitzacions sensibles.",
+    habitatNote: "El pinetell necessita pins amb pinassa humida i bon drenatge, dels sòls àcids als neutres. A la vall, els marges de pineda protegits del vent i les fondalades que no s’entollen són els sectors amb el perfil més favorable.",
+    seasonNote: "La finestra general va de setembre a novembre amb màxim a l’octubre. La pinassa ha de conservar la humitat uns quants dies seguits; una represa seca o les primeres gelades fermes n’aturen el desenvolupament.",
+  },
+  {
+    areaSlug: "guilleries", placeSlug: "sant-hilari-sacalm", speciesSlug: "ceps", speciesId: "boletus-edulis", searchName: "ceps", titlePhrase: "Ceps a Sant Hilari Sacalm",
+    introduction: "Les castanyedes i els boscos frescos que envolten Sant Hilari Sacalm poden encaixar amb l’ecologia del cep, en un dels territoris amb més cultura boletaire del país. La guia descriu potencial d’hàbitat i no confirma presència ni indica cap bosc concret.",
+    habitatNote: "El cep prefereix boscos madurs sobre sòls àcids —castanyedes, rouredes, pinedes humides— amb humitat de fons i bon drenatge. El substrat granític de les Guilleries i el relleu enclotat que reté la humitat componen un perfil especialment compatible.",
+    seasonNote: "El potencial s’estén de finals d’estiu fins al novembre, amb màxim habitual a l’octubre. La humitat persistent del massís allarga les finestres respecte de territoris més secs, sempre que la tardor porti pluges regulars.",
+  },
+  {
+    areaSlug: "guilleries", placeSlug: "sant-hilari-sacalm", speciesSlug: "rossinyols", speciesId: "cantharellus-cibarius", searchName: "rossinyols", titlePhrase: "Rossinyols a Sant Hilari Sacalm",
+    introduction: "Els boscos humits de l’entorn de Sant Hilari Sacalm poden coincidir amb l’ecologia del rossinyol, un dels bolets més constants de les Guilleries. Aquesta lectura expressa compatibilitat ambiental i no garanteix presència ni fructificació actual.",
+    habitatNote: "El rossinyol encaixa en castanyedes, rouredes i pinedes fresques sobre sòls àcids amb humus ben format. Les obagues i els fondals molsosos del massís, on la capa superficial no s’asseca entre pluges, són els ambients potencialment més favorables.",
+    seasonNote: "La finestra és llarga: de finals de primavera fins a la tardor en anys humits, amb el gruix entre setembre i novembre. Les pluges regulars el mantenen actiu; els episodis secs curts el frenen sense tancar-lo del tot.",
+  },
+  {
+    areaSlug: "guilleries", placeSlug: "sant-hilari-sacalm", speciesSlug: "camagrocs", speciesId: "craterellus-lutescens", searchName: "camagrocs", titlePhrase: "Camagrocs a Sant Hilari Sacalm",
+    introduction: "Les pinedes humides i els racons molsosos de les Guilleries poden contenir microhàbitats compatibles amb el camagroc a l’entorn de Sant Hilari Sacalm. La guia descriu aquesta compatibilitat i no assenyala indrets ni confirma presència.",
+    habitatNote: "El camagroc busca sòls àcids coberts de molsa sota coníferes o boscos mixtos, amb ombra i humitat constants. Els fondals enclotats del massís, que conserven l’aigua durant setmanes, ofereixen el perfil més compatible del territori.",
+    seasonNote: "És bolet de tardor avançada: el potencial va d’octubre a desembre mentre no gelí amb força. La constància de la humitat compta més que la intensitat d’una sola pluja.",
+  },
+  {
+    areaSlug: "guilleries", placeSlug: "osor", speciesSlug: "trompetes-de-la-mort", speciesId: "craterellus-cornucopioides", searchName: "trompetes de la mort", titlePhrase: "Trompetes de la mort a Osor",
+    introduction: "Les castanyedes i els alzinars ombrívols de la vall d’Osor poden coincidir amb l’ecologia de la trompeta de la mort. El seu color fosc la fa difícil de veure i la distribució és irregular: la guia no confirma presència ni revela sectors concrets.",
+    habitatNote: "La trompeta prefereix boscos de planifolis amb fullaraca profunda i humida, en obagues i fondals que no s’assequen. Els vessants enclotats de la riera d’Osor, amb ombra contínua i sòls frescos, són el perfil més compatible del municipi.",
+    seasonNote: "La tardor plujosa concentra la finestra, sobretot entre octubre i novembre. Necessita humitat sostinguda durant setmanes; el vent sec o una represa de la sequera aturen l’activitat ràpidament.",
+  },
+  {
+    areaSlug: "guilleries", placeSlug: "osor", speciesSlug: "camagrocs", speciesId: "craterellus-lutescens", searchName: "camagrocs", titlePhrase: "Camagrocs a Osor",
+    introduction: "Els fondals humits i molsosos de la vall d’Osor poden oferir microhàbitats compatibles amb el camagroc, en ple cor forestal de les Guilleries. Aquesta lectura ecològica no garanteix fructificació ni identifica cap indret de recol·lecció.",
+    habitatNote: "El camagroc encaixa en sòls àcids amb molsa i humus, sota pinedes humides o boscos mixtos ombrívols. Els marges de torrentera i les fondalades que conserven aigua entre pluges componen el perfil més favorable de la vall.",
+    seasonNote: "El potencial es concentra entre octubre i desembre, mentre les gelades no siguin persistents. La humitat contínua és el factor decisiu, per davant de la quantitat de pluja d’un episodi concret.",
+  },
+  {
+    areaSlug: "montnegre-corredor", placeSlug: "vallgorguina", speciesSlug: "rovellons", speciesId: "lactarius-sanguifluus", searchName: "rovellons", titlePhrase: "Rovellons a Vallgorguina",
+    introduction: "Les pinedes mediterrànies del Montnegre i el Corredor poden coincidir amb l’ecologia del rovelló vinós a l’entorn de Vallgorguina, el territori boletaire més proper a Barcelona. La guia descriu hàbitat potencial i no confirma presència ni assenyala punts de recol·lecció.",
+    habitatNote: "El rovelló s’associa als pins sobre sòls ben drenats amb humitat moderada. Al parc, les pinedes de pi pinyer i pi blanc dels vessants baixos i mitjans encaixen millor on el sòl no és massa àcid, i les obagues conserven la humitat més temps que el vessant marítim.",
+    seasonNote: "La tardor és la finestra principal, sovint més tardana que a la muntanya interior: d’octubre fins a principis de desembre en anys suaus. Cal pluja efectiva de tardor; la calor residual i el vent de mar poden retardar o interrompre la resposta.",
+  },
+  {
+    areaSlug: "montnegre-corredor", placeSlug: "vallgorguina", speciesSlug: "ceps-negres", speciesId: "boletus-aereus", searchName: "ceps negres", titlePhrase: "Ceps negres a Vallgorguina",
+    introduction: "Els alzinars i suredes del Montnegre poden encaixar amb l’ecologia del cep negre, el bolet mediterrani de la família dels ceps. Aquesta lectura descriu compatibilitat d’hàbitat a l’entorn de Vallgorguina i no confirma presència ni indica cap sector concret.",
+    habitatNote: "El cep negre prefereix boscos esclerofil·les temperats —alzinars, suredes i rouredes seques— sobre sòls àcids i ben drenats. Els vessants silícics del parc en són un perfil clàssic, especialment als sectors amb sòl profund i ombra parcial.",
+    seasonNote: "És més termòfil que el cep de muntanya: la finestra va de finals d’estiu a la tardor, amb màxims entre setembre i octubre. Respon a pluges càlides seguides de temps temperat i s’atura amb el fred humit persistent.",
+  },
+  {
+    areaSlug: "montnegre-corredor", placeSlug: "vallgorguina", speciesSlug: "ous-de-reig", speciesId: "amanita-caesarea", searchName: "ous de reig", titlePhrase: "Ous de reig a Vallgorguina",
+    introduction: "Els alzinars i suredes assolellats del Montnegre i el Corredor poden contenir hàbitat compatible amb l’ou de reig. Els exemplars tancats es poden confondre amb amanites mortals: la identificació ha de ser experta i aquesta guia no confirma presència ni llocs.",
+    habitatNote: "L’ou de reig prefereix boscos clars i temperats de planifolis mediterranis sobre sòls àcids i ben drenats. Al parc, els solells d’alzinar i sureda amb sòl silícic i clarianes hi encaixen millor que les obagues fresques del Montnegre alt.",
+    seasonNote: "El potencial va de finals d’estiu a mitjan tardor, amb màxim habitual al setembre. Necessita pluja seguida de temperatures suaus; les nits fredes de la tardor avançada tanquen la finestra abans que la d’altres espècies.",
+  },
+  {
+    areaSlug: "garrotxa", placeSlug: "vall-den-bas", speciesSlug: "ceps", speciesId: "boletus-edulis", searchName: "ceps", titlePhrase: "Ceps a la Vall d’en Bas",
+    introduction: "Les fagedes i pinedes que pugen de la vall d’en Bas cap al Puigsacalm poden encaixar amb l’ecologia del cep en una de les comarques més plujoses del país. La guia llegeix potencial d’hàbitat i no confirma presència ni assenyala boscos concrets.",
+    habitatNote: "El cep prefereix boscos madurs i frescos amb sòl profund i ben drenat. Els vessants humits de fageda i pi roig que tanquen la vall, amb sòls descarbonatats i fullaraca espessa, ofereixen un perfil molt més compatible que el fons agrícola del pla.",
+    seasonNote: "El potencial s’estén de finals d’estiu fins al novembre, amb màxim habitual a l’octubre. La pluviometria alta de la comarca hi allarga les finestres, però les gelades primerenques dels vessants alts poden tancar-les abans que a cotes baixes.",
+  },
+  {
+    areaSlug: "garrotxa", placeSlug: "vall-den-bas", speciesSlug: "rossinyols", speciesId: "cantharellus-cibarius", searchName: "rossinyols", titlePhrase: "Rossinyols a la Vall d’en Bas",
+    introduction: "Els boscos humits que envolten la vall d’en Bas poden coincidir amb l’ecologia del rossinyol durant bona part de l’any. Aquesta lectura expressa compatibilitat ambiental de la vall i no garanteix presència ni fructificació en cap sector determinat.",
+    habitatNote: "El rossinyol encaixa en fagedes, rouredes i pinedes fresques amb sòl àcid o descarbonatat i humus ben format. Les obagues del Puigsacalm i els marges de bosc amb molsa, on la humitat persisteix entre pluges, en són el perfil més favorable.",
+    seasonNote: "La finestra és llarga en clima humit: de la primavera avançada fins al novembre en anys regulars, amb el gruix entre setembre i octubre. Els episodis secs el frenen temporalment sense tancar la temporada sencera.",
+  },
+  {
+    areaSlug: "garrotxa", placeSlug: "vall-den-bas", speciesSlug: "camagrocs", speciesId: "craterellus-lutescens", searchName: "camagrocs", titlePhrase: "Camagrocs a la Vall d’en Bas",
+    introduction: "Les pinedes i els boscos mixtos humits dels vessants de la vall d’en Bas poden contenir microhàbitats compatibles amb el camagroc. La distribució és irregular i aquesta guia no confirma presència ni revela localitzacions de recol·lecció.",
+    habitatNote: "El camagroc busca sòls molsosos i frescos sota coníferes o boscos mixtos ombrívols. A la vall, les fondalades i els peus de vessant on la molsa es manté xopa setmanes senceres componen el perfil potencialment més compatible.",
+    seasonNote: "El potencial es concentra a la tardor avançada, d’octubre a desembre si no gela amb persistència. La constància d’humitat que caracteritza la comarca juga a favor de finestres llargues.",
+  },
+  {
+    areaSlug: "garrotxa", placeSlug: "santa-pau", speciesSlug: "trompetes-de-la-mort", speciesId: "craterellus-cornucopioides", searchName: "trompetes de la mort", titlePhrase: "Trompetes de la mort a Santa Pau",
+    introduction: "La fageda d’en Jordà i les rouredes humides de Santa Pau poden coincidir amb l’ecologia de la trompeta de la mort. El seu color la camufla entre la fullaraca i la distribució és irregular: la guia no confirma presència ni assenyala sectors del parc.",
+    habitatNote: "La trompeta prefereix boscos de planifolis ombrívols amb fullaraca profunda i sòl fresc. La fageda sobre colada de lava, amb sòl volcànic que reté la humitat de manera excepcional, ofereix un dels perfils més compatibles de la comarca.",
+    seasonNote: "La tardor plujosa és la seva finestra, sobretot entre octubre i novembre. Necessita humitat mantinguda durant setmanes; en un any de tardor regular, la fageda pot allargar l’activitat fins a les primeres gelades fermes.",
+  },
+  {
+    areaSlug: "garrotxa", placeSlug: "santa-pau", speciesSlug: "rossinyols", speciesId: "cantharellus-cibarius", searchName: "rossinyols", titlePhrase: "Rossinyols a Santa Pau",
+    introduction: "Els boscos humits que cobreixen els volcans de Santa Pau poden encaixar amb l’ecologia del rossinyol. Aquesta lectura descriu compatibilitat d’ambient dins d’un espai natural protegit i no confirma presència ni indica cap indret concret.",
+    habitatNote: "El rossinyol encaixa en fagedes, rouredes i boscos mixtos frescos amb humus ben format i sòl que no s’entolla. Els vessants volcànics boscosos, amb sòls profunds i drenatge excel·lent, ofereixen exactament aquest equilibri d’humitat i aireig.",
+    seasonNote: "La finestra va de finals de primavera fins al novembre en anys humits, amb el màxim entre setembre i octubre. Les pluges regulars de la comarca l’afavoreixen; els episodis secs curts només el pausen.",
+  },
 ];
 
 export const areasBySlug = Object.fromEntries(areaProfiles.map((area) => [area.slug, area])) as Record<string, AreaProfile>;
@@ -379,6 +663,10 @@ export function locationPagesForSpecies(speciesId: string) {
   return speciesLocationPages.filter((page) => page.speciesId === speciesId);
 }
 
+export function locationPagesForArea(areaSlug: string) {
+  return speciesLocationPages.filter((page) => page.areaSlug === areaSlug);
+}
+
 export function areaPath(area: AreaProfile) {
   return `/zones/${area.slug}`;
 }
@@ -393,4 +681,41 @@ export function locationPagePath(page: SpeciesLocationPage) {
 
 export function displaySearchName(searchName: string) {
   return searchName.charAt(0).toLocaleUpperCase("ca") + searchName.slice(1);
+}
+
+/**
+ * Window the area summary reads over. ~12 km beyond the union of the area's
+ * documented places keeps the window at massís/comarca scale — the whole point
+ * of hub-level readings is not to dilute a storm across a 200 km region.
+ */
+const AREA_BOUNDS_BUFFER_DEGREES = 0.14;
+
+const cataloniaClamp: SpatialBounds = {
+  west: 0.05,
+  south: 40.48,
+  east: 3.32,
+  north: 42.92,
+};
+
+/** Same buffered window, centred on a single place (paratge-scale hubs). */
+export function placeBounds(place: PlaceProfile): SpatialBounds {
+  const [longitude, latitude] = place.mapCentre;
+  return {
+    west: Math.max(longitude - AREA_BOUNDS_BUFFER_DEGREES, cataloniaClamp.west),
+    south: Math.max(latitude - AREA_BOUNDS_BUFFER_DEGREES, cataloniaClamp.south),
+    east: Math.min(longitude + AREA_BOUNDS_BUFFER_DEGREES, cataloniaClamp.east),
+    north: Math.min(latitude + AREA_BOUNDS_BUFFER_DEGREES, cataloniaClamp.north),
+  };
+}
+
+export function areaBounds(area: AreaProfile): SpatialBounds {
+  const centres = placesForArea(area.slug).map((place) => place.mapCentre);
+  const longitudes = centres.map(([longitude]) => longitude);
+  const latitudes = centres.map(([, latitude]) => latitude);
+  return {
+    west: Math.max(Math.min(...longitudes) - AREA_BOUNDS_BUFFER_DEGREES, cataloniaClamp.west),
+    south: Math.max(Math.min(...latitudes) - AREA_BOUNDS_BUFFER_DEGREES, cataloniaClamp.south),
+    east: Math.min(Math.max(...longitudes) + AREA_BOUNDS_BUFFER_DEGREES, cataloniaClamp.east),
+    north: Math.min(Math.max(...latitudes) + AREA_BOUNDS_BUFFER_DEGREES, cataloniaClamp.north),
+  };
 }
