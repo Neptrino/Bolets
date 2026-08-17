@@ -295,7 +295,7 @@ speciesProfiles.push(
       soil: { texture: "Arenosa a franca", reaction: "Àcida a alcalina", phRange: [4.5, 8.5], substrate: "Silícic o calcari", organicMatter: "Baixa a moderada", drainage: "Bo", waterRetention: "Baixa a mitjana", depth: "Variable", humus: "Mull de pineda", evidence: "limited" },
       climate: { temperatureRange: [9, 22], nightPreference: "Fresca a suau", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana", rainfall: "Pluges de primavera i tardor", drought: "Desfavorable", heat: "Tolera calidesa si el sòl resta humit", frost: "Atura la fructificació", wind: "Dessecant", snow: "No rellevant" },
       rainfall: { preferredAccumulation: "Pluja efectiva sobre sòl de pineda", fruitingDelay: "Pocs dies a setmanes", priorMoisture: "Important", temperatureAfterRain: "Fresca a temperada", interruption: "Sequera, vent sec o gelada", uncertainty: "La fructificació és oportunista i les repoblacions joves no sempre queden ben representades a la coberta forestal." },
-      seasonality: season({ abr: "possible", mai: "moderate", jun: "possible", set: "moderate", oct: "peak", nov: "good", des: "possible" }),
+      seasonality: season({ abr: "possible", mai: "moderate", jun: "possible", jul: "possible", ago: "possible", set: "moderate", oct: "peak", nov: "good", des: "possible" }),
       regions: ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"]
     },
     idealConditions: ["Pinedes joves i obertes", "9–22 °C després de pluja", "Pelar la cutícula i retirar els porus tous", "Consum moderat i sempre ben cuinat"]
