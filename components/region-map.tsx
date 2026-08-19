@@ -505,6 +505,10 @@ export function RegionMap({
   const previousRegion = useRef(selectedRegion);
   const previousSpeciesId = useRef(speciesId);
   const initialGeolocationTriggered = useRef(false);
+  // map.loaded() reports false whenever tiles are still streaming in, and the
+  // "load" event only ever fires once, so effects that re-run after it must
+  // consult this ref instead of waiting for a second "load" that never comes.
+  const mapLoaded = useRef(false);
   const request = useRef<AbortController | null>(null);
   const evidenceRequest = useRef<AbortController | null>(null);
   const detailRequest = useRef<AbortController | null>(null);
@@ -639,14 +643,14 @@ export function RegionMap({
       ? new GeolocateControl({
           positionOptions: {
             enableHighAccuracy: !initialHabitat.current,
-            maximumAge: 300_000,
+            maximumAge: 30_000,
             timeout: initialHabitat.current ? 3_000 : 8_000,
           },
           fitBoundsOptions: {
             maxZoom: initialHabitat.current ? 11.2 : 14,
             duration: 650,
           },
-          trackUserLocation: false,
+          trackUserLocation: true,
           showAccuracyCircle: true,
           showUserLocation: true,
         })
@@ -654,6 +658,7 @@ export function RegionMap({
     geolocateControl.current = geolocate ?? null;
     if (geolocate) localMap.addControl(geolocate, "top-right");
     localMap.once("load", () => {
+      mapLoaded.current = true;
       localMap.resize();
       if (isPredictionMap && initialRegion.current)
         fitRegion(localMap, initialRegion.current, false);
@@ -672,6 +677,7 @@ export function RegionMap({
       localMap.remove();
       map.current = null;
       geolocateControl.current = null;
+      mapLoaded.current = false;
     };
   }, []);
 
@@ -693,7 +699,7 @@ export function RegionMap({
 
     const focusRegion = () => fitRegion(localMap, selectedRegion);
 
-    if (localMap.loaded()) focusRegion();
+    if (mapLoaded.current || localMap.loaded()) focusRegion();
     else localMap.once("load", focusRegion);
 
     return () => {
@@ -1013,10 +1019,15 @@ export function RegionMap({
       locator.on("error", handleLocationUnavailable);
       locator.on("outofmaxbounds", handleLocationUnavailable);
       locationFallback = window.setTimeout(focusFallback, 750);
-      locator.trigger();
+      // trigger() toggles location tracking, so it must only be called once;
+      // re-runs of this effect keep the existing watch and rely on its events.
+      if (!initialGeolocationTriggered.current) {
+        initialGeolocationTriggered.current = true;
+        locator.trigger();
+      }
     };
 
-    if (localMap.loaded()) activate();
+    if (mapLoaded.current || localMap.loaded()) activate();
     else localMap.once("load", activate);
     return () => {
       const controller = request.current;
@@ -1310,7 +1321,7 @@ export function RegionMap({
       }
     };
 
-    if (localMap.loaded()) activate();
+    if (mapLoaded.current || localMap.loaded()) activate();
     else localMap.once("load", activate);
     localMap.on("moveend", loadCells);
     return () => {

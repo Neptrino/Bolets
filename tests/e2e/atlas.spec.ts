@@ -865,30 +865,34 @@ test("starts a zone habitat map at its selected zone", async ({
   const currentLocation = { longitude: 2.15, latitude: 41.39 };
   await context.grantPermissions(["geolocation"]);
   await context.setGeolocation(currentLocation);
-  await page.route("**/api/habitat?*", (route) =>
-    route.fulfill({
+  const habitatRequests: URL[] = [];
+  await page.route("**/api/habitat?*", (route) => {
+    habitatRequests.push(new URL(route.request().url()));
+    return route.fulfill({
       json: {
         cells: [],
         truncated: false,
         occurrenceEvidence: { available: true, cells: [] },
       },
-    }),
-  );
+    });
+  });
 
   await page.goto("/bolets/boletus-edulis?region=pirineus");
-  const habitatRequest = page.waitForRequest("**/api/habitat?*");
   await page.locator("#distribució").scrollIntoViewIfNeeded();
 
-  const requestUrl = new URL((await habitatRequest).url());
-  const west = Number(requestUrl.searchParams.get("west"));
-  const south = Number(requestUrl.searchParams.get("south"));
-  const east = Number(requestUrl.searchParams.get("east"));
-  const north = Number(requestUrl.searchParams.get("north"));
-  expect(west).toBeLessThanOrEqual(0.1);
-  expect(east).toBeGreaterThanOrEqual(2.72);
-  expect(south).toBeLessThanOrEqual(42.25);
-  expect(north).toBeGreaterThanOrEqual(42.92);
-  expect(requestUrl.searchParams.get("resolution")).toBe("10000");
+  // Requests arrive as cache-aligned buckets, so the initial zone load is a
+  // batch of tiles whose union must cover the region.
+  await expect.poll(() => {
+    const initial = habitatRequests.filter(
+      (url) => url.searchParams.get("resolution") === "10000",
+    );
+    if (initial.length === 0) return false;
+    const west = Math.min(...initial.map((url) => Number(url.searchParams.get("west"))));
+    const east = Math.max(...initial.map((url) => Number(url.searchParams.get("east"))));
+    const south = Math.min(...initial.map((url) => Number(url.searchParams.get("south"))));
+    const north = Math.max(...initial.map((url) => Number(url.searchParams.get("north"))));
+    return west <= 0.1 && east >= 2.72 && south <= 42.25 && north >= 42.92;
+  }, { timeout: 12_000 }).toBe(true);
   const locationRequest = page.waitForRequest((request) => {
     if (!request.url().includes("/api/habitat?")) return false;
     const url = new URL(request.url());
@@ -902,31 +906,33 @@ test("starts a zone habitat map at its selected zone", async ({
 });
 
 test("starts a local guide habitat map at its local area", async ({ page }) => {
-  await page.route("**/api/habitat?*", (route) =>
-    route.fulfill({
+  const habitatRequests: URL[] = [];
+  await page.route("**/api/habitat?*", (route) => {
+    habitatRequests.push(new URL(route.request().url()));
+    return route.fulfill({
       json: {
         cells: [],
         truncated: false,
         occurrenceEvidence: { available: true, cells: [] },
       },
-    }),
-  );
+    });
+  });
 
   await page.goto("/zones/ripolles/les-lloses/ceps");
-  const habitatRequest = page.waitForRequest("**/api/habitat?*");
   await page.getByRole("heading", { name: /On podria créixer a les Lloses/i }).scrollIntoViewIfNeeded();
 
-  const requestUrl = new URL((await habitatRequest).url());
-  const west = Number(requestUrl.searchParams.get("west"));
-  const south = Number(requestUrl.searchParams.get("south"));
-  const east = Number(requestUrl.searchParams.get("east"));
-  const north = Number(requestUrl.searchParams.get("north"));
-  expect(west).toBeLessThan(2.1167);
-  expect(east).toBeGreaterThan(2.1167);
-  expect(south).toBeLessThan(42.1506);
-  expect(north).toBeGreaterThan(42.1506);
-  expect(east - west).toBeLessThan(0.5);
-  expect(north - south).toBeLessThan(0.5);
+  // The initial view loads as a batch of cache-aligned buckets; the guide's
+  // local area must be among them, requested at a local (sub-half-degree)
+  // resolution.
+  await expect.poll(() => habitatRequests.some((url) => {
+    const west = Number(url.searchParams.get("west"));
+    const east = Number(url.searchParams.get("east"));
+    const south = Number(url.searchParams.get("south"));
+    const north = Number(url.searchParams.get("north"));
+    return west < 2.1167 && east > 2.1167 &&
+      south < 42.1506 && north > 42.1506 &&
+      east - west < 0.5 && north - south < 0.5;
+  }), { timeout: 12_000 }).toBe(true);
 });
 
 test("keeps ecologically excluded cells clickable after changing species", async ({
@@ -1163,6 +1169,38 @@ test("keeps the user's location when changing species", async ({
   await expect(page).toHaveURL(/species=lactarius-deliciosus/);
   await expect(locationDot).toBeVisible();
   await expect.poll(distanceFromMapCentre).toBeLessThan(80);
+
+  await context.close();
+});
+
+test("follows the user's location as they move", async ({ browser }) => {
+  const context = await browser.newContext({
+    geolocation: { longitude: 2.1734, latitude: 41.3851 },
+    permissions: ["geolocation"],
+  });
+  const page = await context.newPage();
+  const predictionRequests: URL[] = [];
+  await page.route("**/api/predictions?*", async (route) => {
+    predictionRequests.push(new URL(route.request().url()));
+    await route.fulfill({ json: { cells: [], truncated: false } });
+  });
+
+  await page.goto("/map?species=boletus-edulis");
+  const locationDot = page.locator(".maplibregl-user-location-dot");
+  await expect(locationDot).toBeVisible({ timeout: 12_000 });
+
+  const nextLocation = { longitude: 2.4, latitude: 41.6 };
+  await context.setGeolocation(nextLocation);
+  await expect.poll(() => predictionRequests.some((request) => {
+    const west = Number(request.searchParams.get("west"));
+    const south = Number(request.searchParams.get("south"));
+    const east = Number(request.searchParams.get("east"));
+    const north = Number(request.searchParams.get("north"));
+    return west <= nextLocation.longitude && east >= nextLocation.longitude &&
+      south <= nextLocation.latitude && north >= nextLocation.latitude &&
+      Math.abs((west + east) / 2 - nextLocation.longitude) < 0.1 &&
+      Math.abs((south + north) / 2 - nextLocation.latitude) < 0.1;
+  }), { timeout: 12_000 }).toBe(true);
 
   await context.close();
 });
