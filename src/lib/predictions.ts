@@ -1,11 +1,13 @@
 import { getSpecies } from "@/data/species";
-import { regionBounds } from "@/data/regions";
+import { cataloniaSpatialBounds, regionBounds } from "@/data/regions";
 import { altitudeHabitatEnvelope } from "@/src/lib/altitude";
+import { getCandidatePredictionCells } from "@/src/lib/global-predictions";
 import { habitatForestTerms, habitatProfileKey } from "@/src/lib/habitat";
 import { getOccurrenceSupport } from "@/src/lib/occurrences";
 import { boundsCentre, boundsContain } from "@/src/lib/map-grid";
 import { correctForecastValues, FORECAST_CORRECTION_METHOD } from "@/src/lib/forecast-correction";
 import { PREDICTION_CACHE_VERSION, predictionModelVersion } from "@/src/lib/model-versions";
+import { bucketsForBounds } from "@/src/lib/map-query";
 import { spatialEnvironmentHistorySchema, spatialEnvironmentResponseSchema } from "@/src/lib/schema";
 import {
   calculateSuitability,
@@ -34,6 +36,9 @@ import type {
 } from "@/src/lib/types";
 
 const MAX_FORECAST_ANCHOR_GAP_MS = 8 * 60 * 60 * 1000;
+export const AREA_SUMMARY_GRID_SIZE_M = 1000;
+export const TERRITORIAL_SCORE_THRESHOLD = 20;
+const AREA_BUCKET_CONCURRENCY = 4;
 
 export async function getPredictionCellHistory(
   speciesId: string,
@@ -528,7 +533,7 @@ export function summariseRegionalPredictions(
   const compatibleCells = cells.filter(
     (cell) => cell.regionId === regionId && habitatWeight(cell) > 0,
   );
-  return summariseCompatibleCells(species, regionId, compatibleCells);
+  return summariseCompatibleCells(species, regionId, compatibleCells, 10000);
 }
 
 /**
@@ -541,6 +546,7 @@ function summariseCompatibleCells(
   species: SpeciesProfile,
   regionId: RegionId,
   compatibleCells: PredictionCell[],
+  gridSizeM: SpatialGridSizeM,
 ): RegionalPredictionSummary | null {
   const scoredCells = compatibleCells.filter(
     (cell): cell is PredictionCell & { score: number } => cell.score !== null,
@@ -551,6 +557,10 @@ function summariseCompatibleCells(
   // Equal cell area therefore avoids applying that coverage a second time.
   const scores = scoredCells.map((cell) => ({ value: cell.score, weight: 1 }));
   const score = Math.round(weightedQuantile(scores, 0.5));
+  const positiveCellCount = scoredCells.filter((cell) => cell.score > 0).length;
+  const score20CellCount = scoredCells.filter(
+    (cell) => cell.score >= TERRITORIAL_SCORE_THRESHOLD,
+  ).length;
   const components = scoredCells[0].components.map((template) => {
     const componentValues = scoredCells.flatMap((cell) => {
       const componentScore = cell.components.find((item) => item.id === template.id)?.score;
@@ -597,8 +607,12 @@ function summariseCompatibleCells(
 
   return {
     regionId,
-    gridSizeM: 10000,
+    gridSizeM,
     scoredCellCount: scoredCells.length,
+    positiveCellCount,
+    score20CellCount,
+    positiveCellShare: positiveCellCount / scoredCells.length,
+    score20CellShare: score20CellCount / scoredCells.length,
     scoreRange: [
       Math.round(weightedQuantile(scores, 0.25)),
       Math.round(weightedQuantile(scores, 0.75)),
@@ -628,25 +642,38 @@ export async function getRegionalPredictionSummary(
   speciesId: string,
   regionId: RegionId,
 ) {
-  const species = getSpecies(speciesId);
-  if (!species) throw new Error("Unknown species");
-  const result = await getPredictionCells(
-    speciesId,
+  const summaries = await getRegionalPredictionSummaries([speciesId], regionId);
+  return summaries[speciesId] ?? null;
+}
+
+/** Scores all regional candidates from one shared 10 km environment read. */
+export async function getRegionalPredictionSummaries(
+  speciesIds: string[],
+  regionId: RegionId,
+): Promise<Record<string, RegionalPredictionSummary | null>> {
+  const uniqueSpeciesIds = [...new Set(speciesIds)];
+  const species = uniqueSpeciesIds.map((speciesId) => {
+    const profile = getSpecies(speciesId);
+    if (!profile) throw new Error(`Unknown species: ${speciesId}`);
+    return profile;
+  });
+  const result = await getCandidatePredictionCells(
     regionBounds[regionId],
+    uniqueSpeciesIds,
     1000,
     10000,
-    false,
-    false,
-    true,
   );
   if (result.truncated) {
-    throw new Error(`Regional prediction response was truncated for ${speciesId} in ${regionId}`);
+    throw new Error(`Regional prediction response was truncated in ${regionId}`);
   }
-  return summariseRegionalPredictions(
-    species,
-    regionId,
-    result.cells as PredictionCell[],
-  );
+  return Object.fromEntries(species.map((profile) => [
+    profile.speciesId,
+    summariseRegionalPredictions(
+      profile,
+      regionId,
+      result.cellsBySpecies[profile.speciesId] ?? [],
+    ),
+  ]));
 }
 
 /**
@@ -659,23 +686,95 @@ export async function getAreaPredictionSummary(
   speciesId: string,
   area: { slug: string; regionId: RegionId; bounds: SpatialBounds },
 ): Promise<AreaPredictionSummary | null> {
-  const species = getSpecies(speciesId);
-  if (!species) throw new Error("Unknown species");
-  const result = await getPredictionCells(
-    speciesId,
+  const summaries = await getAreaPredictionSummaries([speciesId], area);
+  return summaries[speciesId] ?? null;
+}
+
+function centreFallsWithinArea(cell: PredictionCell, bounds: SpatialBounds) {
+  const [longitude, latitude] = boundsCentre(cell.cellBounds);
+  return longitude >= bounds.west && longitude <= bounds.east &&
+    latitude >= bounds.south && latitude <= bounds.north;
+}
+
+export function summariseAreaPredictions(
+  species: SpeciesProfile,
+  area: { slug: string; regionId: RegionId; bounds: SpatialBounds },
+  cells: PredictionCell[],
+): AreaPredictionSummary | null {
+  const compatibleCells = cells.filter((cell) =>
+    centreFallsWithinArea(cell, area.bounds) && habitatWeight(cell) > 0
+  );
+  const summary = summariseCompatibleCells(
+    species,
+    area.regionId,
+    compatibleCells,
+    AREA_SUMMARY_GRID_SIZE_M,
+  );
+  return summary
+    ? { ...summary, areaSlug: area.slug, gridSizeM: AREA_SUMMARY_GRID_SIZE_M }
+    : null;
+}
+
+/**
+ * Loads the fixed 1 km bucket lattice once and scores every requested local
+ * species from the shared environment payload. Every bucket must resolve and
+ * remain untruncated; a partial comarca is never presented as complete.
+ */
+export async function getAreaPredictionSummaries(
+  speciesIds: string[],
+  area: { slug: string; regionId: RegionId; bounds: SpatialBounds },
+): Promise<Record<string, AreaPredictionSummary | null>> {
+  const uniqueSpeciesIds = [...new Set(speciesIds)];
+  const species = uniqueSpeciesIds.map((speciesId) => {
+    const profile = getSpecies(speciesId);
+    if (!profile) throw new Error(`Unknown species: ${speciesId}`);
+    return profile;
+  });
+  const cellsBySpecies = Object.fromEntries(
+    uniqueSpeciesIds.map((speciesId) => [speciesId, new Map<string, PredictionCell>()]),
+  ) as Record<string, Map<string, PredictionCell>>;
+  const buckets = bucketsForBounds(
     area.bounds,
-    1000,
-    10000,
-    false,
-    false,
-    true,
+    AREA_SUMMARY_GRID_SIZE_M,
+    cataloniaSpatialBounds,
   );
-  if (result.truncated) {
-    throw new Error(`Area prediction response was truncated for ${speciesId} in ${area.slug}`);
-  }
-  const compatibleCells = (result.cells as PredictionCell[]).filter(
-    (cell) => habitatWeight(cell) > 0,
+  let nextBucket = 0;
+
+  const loadWorker = async () => {
+    while (nextBucket < buckets.length) {
+      const bucket = buckets[nextBucket++]!;
+      const payload = await getCandidatePredictionCells(
+        bucket,
+        uniqueSpeciesIds,
+        1000,
+        AREA_SUMMARY_GRID_SIZE_M,
+      );
+      if (payload.truncated) {
+        throw new Error(`Area prediction bucket was truncated in ${area.slug}`);
+      }
+      for (const speciesId of uniqueSpeciesIds) {
+        for (const cell of payload.cellsBySpecies[speciesId] ?? []) {
+          if (centreFallsWithinArea(cell, area.bounds)) {
+            cellsBySpecies[speciesId]!.set(cell.cellId, cell);
+          }
+        }
+      }
+    }
+  };
+
+  await Promise.all(
+    Array.from(
+      { length: Math.min(AREA_BUCKET_CONCURRENCY, buckets.length) },
+      loadWorker,
+    ),
   );
-  const summary = summariseCompatibleCells(species, area.regionId, compatibleCells);
-  return summary ? { ...summary, areaSlug: area.slug } : null;
+
+  return Object.fromEntries(species.map((profile) => {
+    const summary = summariseAreaPredictions(
+      profile,
+      area,
+      [...cellsBySpecies[profile.speciesId]!.values()],
+    );
+    return [profile.speciesId, summary];
+  }));
 }

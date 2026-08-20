@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { getSpecies, speciesProfiles } from "@/data/species";
 import {
-  CURRENT_OVERVIEW_CANDIDATES_PER_REGION,
   CURRENT_OVERVIEW_CONCURRENCY,
-  CURRENT_OVERVIEW_MONTANE_REACH_M,
+  areaOverviewTargetsForMonth,
   currentOverviewTargetsForMonth,
   dominantLimitingComponent,
+  loadAreaOverview,
   loadCurrentOverview,
   rankCurrentOverviewItems,
   seasonalActivityRank,
   topCurrentOverviewItems,
 } from "@/src/lib/current-overview";
-import type { RegionId, RegionalPredictionSummary } from "@/src/lib/types";
+import type { AreaPredictionSummary, RegionId, RegionalPredictionSummary } from "@/src/lib/types";
 
 function summary(regionId: RegionId, options: { stale?: boolean; completeness?: number; score?: number; bestCellScore?: number } = {}): RegionalPredictionSummary {
   const incomplete = (options.completeness ?? 1) < 1;
@@ -20,6 +20,10 @@ function summary(regionId: RegionId, options: { stale?: boolean; completeness?: 
     regionId,
     gridSizeM: 10000,
     scoredCellCount: 4,
+    positiveCellCount: opportunityIndex && opportunityIndex > 0 ? 3 : 0,
+    score20CellCount: opportunityIndex && opportunityIndex >= 20 ? 2 : 0,
+    positiveCellShare: opportunityIndex && opportunityIndex > 0 ? 0.75 : 0,
+    score20CellShare: opportunityIndex && opportunityIndex >= 20 ? 0.5 : 0,
     scoreRange: [58, 72],
     bestCell: {
       cellId: "epsg25831:10000:40:468",
@@ -58,27 +62,6 @@ function summary(regionId: RegionId, options: { stale?: boolean; completeness?: 
 }
 
 describe("current-condition overview", () => {
-  it("guarantees a montane-reach candidate wherever one is in season", () => {
-    const targets = currentOverviewTargetsForMonth("ago");
-    for (const regionId of new Set(targets.map((target) => target.regionId))) {
-      const hasEligibleMontane = speciesProfiles.some((species) =>
-        species.predictionMode === "current" &&
-        ["excellent_edible", "edible", "edible_with_conditions"].includes(species.identity.edibility) &&
-        species.ecologicalConfig.regions.includes(regionId) &&
-        species.ecologicalConfig.seasonality.ago !== "inactive" &&
-        species.ecologicalConfig.habitat.altitude[1] >= CURRENT_OVERVIEW_MONTANE_REACH_M
-      );
-      if (!hasEligibleMontane) continue;
-      const selectedMontane = targets
-        .filter((target) => target.regionId === regionId)
-        .some((target) =>
-          getSpecies(target.speciesId)!.ecologicalConfig.habitat.altitude[1] >=
-            CURRENT_OVERVIEW_MONTANE_REACH_M
-        );
-      expect(selectedMontane, regionId).toBe(true);
-    }
-  });
-
   it("names the component that limits most publishable readings", () => {
     const lowWater = summary("pirineus", { score: 0 });
     lowWater.result.components.find((c) => c.id === "water")!.score = 5;
@@ -97,7 +80,7 @@ describe("current-condition overview", () => {
   });
 
 
-  it("selects up to three priority in-season edible species for every region", () => {
+  it("selects every in-season edible species for every region", () => {
     const targets = currentOverviewTargetsForMonth("ago");
 
     expect(new Set(targets.map((target) => target.regionId))).toHaveLength(9);
@@ -112,13 +95,7 @@ describe("current-condition overview", () => {
         species.ecologicalConfig.regions.includes(regionId) &&
         species.ecologicalConfig.seasonality.ago !== "inactive"
       ).length;
-      // The montane-reach guarantee may append one extra candidate.
-      expect(regionTargets.length).toBeGreaterThanOrEqual(
-        Math.min(CURRENT_OVERVIEW_CANDIDATES_PER_REGION, eligibleCount),
-      );
-      expect(regionTargets.length).toBeLessThanOrEqual(
-        Math.min(CURRENT_OVERVIEW_CANDIDATES_PER_REGION + 1, eligibleCount),
-      );
+      expect(regionTargets).toHaveLength(eligibleCount);
 
       for (const target of regionTargets) {
         const species = getSpecies(target.speciesId);
@@ -142,23 +119,29 @@ describe("current-condition overview", () => {
 
     expect(octoberSpecies).toContain("lactarius-deliciosus");
     expect(octoberSpecies).toContain("lactarius-sanguifluus");
-    expect(currentOverviewTargetsForMonth("oct").length).toBeLessThanOrEqual(27);
+    expect(currentOverviewTargetsForMonth("oct").length).toBeGreaterThan(27);
   });
 
   it("bounds concurrency and distinguishes incomplete, stale, null and rejected sources", async () => {
     const firstTarget = currentOverviewTargetsForMonth("ago")[0]!;
     let activeRequests = 0;
     let maximumConcurrency = 0;
-    const items = await loadCurrentOverview(async (speciesId, regionId) => {
+    const items = await loadCurrentOverview(async (speciesIds, regionId) => {
       activeRequests += 1;
       maximumConcurrency = Math.max(maximumConcurrency, activeRequests);
       await new Promise((resolve) => setTimeout(resolve, 1));
       activeRequests -= 1;
-      if (speciesId === firstTarget.speciesId && regionId === firstTarget.regionId) throw new Error("provider failed");
-      if (regionId === "prepirineus") return null;
-      if (regionId === "catalunya-central") return summary(regionId, { stale: true });
-      if (regionId === "montseny") return summary(regionId, { completeness: 0.5 });
-      return summary(regionId);
+      if (regionId === firstTarget.regionId) throw new Error("provider failed");
+      return Object.fromEntries(speciesIds.map((speciesId) => [
+        speciesId,
+        regionId === "prepirineus"
+          ? null
+          : regionId === "catalunya-central"
+            ? summary(regionId, { stale: true })
+            : regionId === "montseny"
+              ? summary(regionId, { completeness: 0.5 })
+              : summary(regionId),
+      ]));
     }, "ago");
 
     expect(maximumConcurrency).toBeLessThanOrEqual(CURRENT_OVERVIEW_CONCURRENCY);
@@ -175,9 +158,11 @@ describe("current-condition overview", () => {
       prepirineus: 83,
       "catalunya-central": 71,
     };
-    const items = await loadCurrentOverview(async (_speciesId, regionId) => {
-      if (regionId === "emporda") return null;
-      return summary(regionId, { score: scores[regionId] ?? 49 });
+    const items = await loadCurrentOverview(async (speciesIds, regionId) => {
+      return Object.fromEntries(speciesIds.map((speciesId) => [
+        speciesId,
+        regionId === "emporda" ? null : summary(regionId, { score: scores[regionId] ?? 49 }),
+      ]));
     }, "ago");
     const ranked = rankCurrentOverviewItems(items);
     const topTen = topCurrentOverviewItems(items);
@@ -185,21 +170,52 @@ describe("current-condition overview", () => {
     expect(ranked[0]?.regionId).toBe("prepirineus");
     expect(topTen).toHaveLength(10);
     expect(topTen.every((item) => item.status === "available" && item.summary !== null)).toBe(true);
-    expect(topTen.every((item, index) => index === 0 || (topTen[index - 1]?.summary?.result.score ?? 0) >= (item.summary?.result.score ?? 0))).toBe(true);
+    expect(topTen.every((item, index) => index === 0 || (topTen[index - 1]?.summary?.bestCell.score ?? 0) >= (item.summary?.bestCell.score ?? 0))).toBe(true);
     expect(topTen.some((item) => item.regionId === "emporda")).toBe(false);
     expect(ranked.at(-1)).toMatchObject({ regionId: "emporda", status: "insufficient", summary: null });
   });
 
   it("surfaces a localized best-cell pocket ahead of uniformly flat regions", async () => {
-    const items = await loadCurrentOverview(async (speciesId, regionId) =>
-      summary(regionId, {
-        score: 0,
-        bestCellScore: regionId === "pirineus" && speciesId === "boletus-edulis" ? 16 : 0,
-      }), "ago");
+    const items = await loadCurrentOverview(async (speciesIds, regionId) =>
+      Object.fromEntries(speciesIds.map((speciesId) => [speciesId, summary(regionId, {
+          score: 0,
+          bestCellScore: regionId === "pirineus" && speciesId === "boletus-edulis" ? 16 : 0,
+        })])), "ago");
     const ranked = rankCurrentOverviewItems(items);
 
     expect(ranked[0]).toMatchObject({ regionId: "pirineus", speciesId: "boletus-edulis" });
     expect(ranked[0]?.summary?.bestCell.score).toBe(16);
+  });
+
+  it("lets current 1 km scores choose a hub species instead of the calendar tie-break", async () => {
+    const ripollesTargets = areaOverviewTargetsForMonth("ago")
+      .filter((target) => target.hub.slug === "ripolles");
+    expect(ripollesTargets.map((target) => target.speciesId)).toContain("cantharellus-cibarius");
+    expect(ripollesTargets.map((target) => target.speciesId)).toContain("boletus-edulis");
+
+    const items = await loadAreaOverview(async (speciesIds, hub) =>
+      Object.fromEntries(speciesIds.map((speciesId) => {
+        const bestCellScore = hub.slug === "ripolles"
+          ? speciesId === "boletus-edulis" ? 48 : speciesId === "cantharellus-cibarius" ? 22 : 12
+          : 10;
+        const regional = summary(hub.regionId, { score: 0, bestCellScore });
+        const areaSummary: AreaPredictionSummary = {
+          ...regional,
+          areaSlug: hub.slug,
+          gridSizeM: 1000,
+          positiveCellCount: bestCellScore > 0 ? 5 : 0,
+          score20CellCount: bestCellScore >= 20 ? 2 : 0,
+          positiveCellShare: bestCellScore > 0 ? 0.25 : 0,
+          score20CellShare: bestCellScore >= 20 ? 0.1 : 0,
+        };
+        return [speciesId, areaSummary];
+      })), "ago");
+
+    expect(items.find((item) => item.areaSlug === "ripolles")).toMatchObject({
+      speciesId: "boletus-edulis",
+      speciesName: "Cep",
+      summary: { gridSizeM: 1000, bestCell: { score: 48 } },
+    });
   });
 
   it("returns an honest empty top ten when every environmental read fails", async () => {

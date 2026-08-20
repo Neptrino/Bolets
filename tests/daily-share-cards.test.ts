@@ -6,6 +6,7 @@ const publishable = {
   status: "available",
   summary: {
     snapshot: { observedAt: "2026-08-14T08:00:00.000Z" },
+    bestCell: { score: 74 },
     result: { opportunityIndex: 74, label: "favorable" },
   },
 } as const;
@@ -22,7 +23,7 @@ describe("daily share cards", () => {
     const montseny = cards.find((card) => card.slug === "montseny");
 
     expect(cards).toHaveLength(10);
-    expect(catalunya?.readings).toEqual([{ speciesId: "boletus-edulis", regionName: "Pirineus", speciesName: "Cep", score: 74, label: "favorable" }]);
+    expect(catalunya?.readings).toEqual([{ speciesId: "boletus-edulis", regionName: "Pirineus", speciesName: "Cep", score: 74, label: "alta" }]);
     expect(catalunya?.shareText).toContain("no confirma presència");
     expect(catalunya?.shareText).toContain("https://bolets.app/bolets-avui");
     expect(cards.find((card) => card.slug === "pirineus")?.shareText).toContain("https://bolets.app/map?species=boletus-edulis&region=pirineus");
@@ -32,7 +33,7 @@ describe("daily share cards", () => {
   });
 
   it("uses a plain no-conditions message when every published reading is zero", () => {
-    const zeroReading = { ...publishable, summary: { snapshot: { observedAt: "2026-08-14T08:00:00.000Z" }, result: { opportunityIndex: 0, label: "molt baixa" } } };
+    const zeroReading = { ...publishable, summary: { snapshot: { observedAt: "2026-08-14T08:00:00.000Z" }, bestCell: { score: 0 }, result: { opportunityIndex: 0, label: "molt baixa" } } };
     const items = [
       { speciesId: "boletus-edulis", regionId: "pirineus", speciesName: "Cep", regionName: "Pirineus", seasonalActivity: "good", ...zeroReading },
     ] as unknown as CurrentOverviewItem[];

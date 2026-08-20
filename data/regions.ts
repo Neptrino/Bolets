@@ -8,7 +8,7 @@ export const regionLabels = Object.fromEntries(regions.map((region) => [region.i
 export const regionCentres = Object.fromEntries(regions.map((region) => [region.id, region.centre])) as Record<RegionId, [number, number]>;
 export const regionSelectItems = regions.map((region) => ({ value: region.id, label: region.label }));
 
-const cataloniaBounds: SpatialBounds = {
+export const cataloniaSpatialBounds: SpatialBounds = {
   west: 0.05,
   south: 40.48,
   east: 3.32,
@@ -17,7 +17,7 @@ const cataloniaBounds: SpatialBounds = {
 
 export const regionBounds = Object.fromEntries(
   regions.map((region) => {
-    if (!region.coordinates.length) return [region.id, cataloniaBounds];
+    if (!region.coordinates.length) return [region.id, cataloniaSpatialBounds];
     const longitudes = region.coordinates.map(([longitude]) => longitude);
     const latitudes = region.coordinates.map(([, latitude]) => latitude);
     return [region.id, {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getSpecies } from "@/data/species";
 import { predictionModelVersion } from "@/src/lib/model-versions";
-import { summariseRegionalPredictions } from "@/src/lib/predictions";
+import { summariseAreaPredictions, summariseRegionalPredictions } from "@/src/lib/predictions";
 import { opportunityLabel } from "@/src/lib/scoring";
 import type {
   ConditionSnapshot,
@@ -51,6 +51,8 @@ function predictionCell({
   effectiveHabitatCoverage,
   temperatureC,
   phenologyScore = 100,
+  gridSizeM = 10000,
+  cellBounds = [[1, 42], [1.1, 42.1]],
 }: {
   cellId: string;
   regionId?: RegionId;
@@ -58,6 +60,8 @@ function predictionCell({
   effectiveHabitatCoverage: number;
   temperatureC: number;
   phenologyScore?: number;
+  gridSizeM?: PredictionCell["gridSizeM"];
+  cellBounds?: PredictionCell["cellBounds"];
 }): PredictionCell {
   const opportunityIndex = fruitingConditionsScore === null
     ? null
@@ -67,8 +71,8 @@ function predictionCell({
     cellId,
     regionId,
     observedAt: "2026-10-15T00:00:00Z",
-    gridSizeM: 10000,
-    cellBounds: [[1, 42], [1.1, 42.1]],
+    gridSizeM,
+    cellBounds,
     score: opportunityIndex,
     fruitingConditionsScore,
     opportunityIndex,
@@ -149,6 +153,10 @@ describe("regional prediction summaries", () => {
     );
     expect(summary?.scoreRange).toEqual([9, 20]);
     expect(summary?.scoredCellCount).toBe(3);
+    expect(summary?.positiveCellCount).toBe(3);
+    expect(summary?.score20CellCount).toBe(2);
+    expect(summary?.positiveCellShare).toBe(1);
+    expect(summary?.score20CellShare).toBeCloseTo(2 / 3);
     expect(summary?.bestCell).toMatchObject({ cellId: "small-high-f-1", score: 20 });
     expect(summary?.snapshot.values.temperatureC).toBeCloseTo(19.2 / 1.3);
   });
@@ -183,5 +191,62 @@ describe("regional prediction summaries", () => {
     ]);
 
     expect(summary).toBeNull();
+  });
+});
+
+describe("1 km area prediction summaries", () => {
+  it("keeps fine cells, excludes the bucket fringe and reports prevalence", () => {
+    const area = {
+      slug: "ripolles",
+      regionId: "pirineus" as const,
+      bounds: { west: 1, south: 42, east: 1.04, north: 42.04 },
+    };
+    const cells = [
+      predictionCell({
+        cellId: "best",
+        fruitingConditionsScore: 50,
+        effectiveHabitatCoverage: 1,
+        temperatureC: 14,
+        gridSizeM: 1000,
+        cellBounds: [[1, 42], [1.01, 42.01]],
+      }),
+      predictionCell({
+        cellId: "positive",
+        fruitingConditionsScore: 30,
+        effectiveHabitatCoverage: 1,
+        temperatureC: 14,
+        gridSizeM: 1000,
+        cellBounds: [[1.01, 42], [1.02, 42.01]],
+      }),
+      predictionCell({
+        cellId: "zero",
+        fruitingConditionsScore: 0,
+        effectiveHabitatCoverage: 1,
+        temperatureC: 14,
+        gridSizeM: 1000,
+        cellBounds: [[1.02, 42], [1.03, 42.01]],
+      }),
+      predictionCell({
+        cellId: "bucket-fringe",
+        fruitingConditionsScore: 90,
+        effectiveHabitatCoverage: 1,
+        temperatureC: 14,
+        gridSizeM: 1000,
+        cellBounds: [[1.08, 42], [1.09, 42.01]],
+      }),
+    ];
+
+    const summary = summariseAreaPredictions(species, area, cells);
+
+    expect(summary).toMatchObject({
+      areaSlug: "ripolles",
+      gridSizeM: 1000,
+      scoredCellCount: 3,
+      positiveCellCount: 2,
+      score20CellCount: 2,
+      bestCell: { cellId: "best", score: 50 },
+    });
+    expect(summary?.positiveCellShare).toBeCloseTo(2 / 3);
+    expect(summary?.score20CellShare).toBeCloseTo(2 / 3);
   });
 });

@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getPredictionCells, getRegionalPredictionSummary } from "@/src/lib/predictions";
 import { PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
+import { getSpecies } from "@/data/species";
+import { habitatProfileKey } from "@/src/lib/habitat";
 import type { ConditionSnapshot, PredictionCell } from "@/src/lib/types";
 
 const bounds = { west: 1, south: 41, east: 2, north: 42 };
@@ -35,6 +37,35 @@ function stubSpatialFeeds(coverage?: number | "unavailable", truncated = false) 
         cells: [],
         truncated: false,
         bounds
+      });
+    }
+    if (url.searchParams.get("includeHabitat") === "all") {
+      const species = getSpecies("marasmius-oreades")!;
+      const habitatCoverage = coverage === "unavailable" ? 0 : coverage ?? 0;
+      return Response.json({
+        cells: [{
+          cellId,
+          regionId: "catalunya-central",
+          gridSizeM: 10000,
+          bounds: [[1.1, 41.1], [1.2, 41.2]],
+          observedAt: "2026-10-11T12:00:00Z",
+          source: ["ICGC", "SoilGrids", "Open-Meteo"],
+          sourceResolutionM: 9000,
+          confidence: "limited",
+          stale: false,
+          unavailableFields: [],
+          values: { ...completeHydrothermalValues, altitudeM: 900, soilPh: 6.5 },
+          habitatCoverages: [habitatCoverage],
+          habitatWeightedCoverages: [habitatCoverage * 0.5],
+        }],
+        truncated,
+        bounds,
+        habitatProfiles: [{
+          speciesId: species.speciesId,
+          slot: 1,
+          profileKey: habitatProfileKey(species),
+          complete: true,
+        }],
       });
     }
     return Response.json({

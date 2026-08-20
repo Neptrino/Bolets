@@ -23,10 +23,15 @@ describe("ordinal opportunity scale", () => {
   });
 
   it("uses the same qualitative colours for prediction-map cells", () => {
+    expect(predictionMapCellColour(0)).toBe("rgba(112, 103, 88, 0.1)");
     expect(predictionMapCellColour(4)).toBe("rgba(201, 94, 53, 0.68)");
     expect(predictionMapCellColour(34)).toBe("rgba(221, 135, 60, 0.68)");
     expect(predictionMapCellColour(80)).toBe("rgba(79, 138, 91, 0.68)");
     expect(predictionMapCellColour(null)).toBe("rgba(150, 149, 142, 0.24)");
+  });
+
+  it("does not paint a verified zero like a positive low score", () => {
+    expect(predictionMapCellColour(0)).not.toBe(predictionMapCellColour(1));
   });
 
   it("uses one colour for every score in the same rating band", () => {

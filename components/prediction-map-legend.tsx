@@ -1,4 +1,4 @@
-import { suitabilityScale } from "@/src/lib/suitability-scale";
+import { predictionMapCellColour, suitabilityScale } from "@/src/lib/suitability-scale";
 
 /**
  * Band-swatch legend for the prediction map. The bands and colours come from
@@ -9,6 +9,11 @@ export function PredictionMapLegend() {
     <div className="prediction-map-legend">
       <strong>Escala de puntuació</strong>
       <ol>
+        <li>
+          <i className="is-zero" style={{ backgroundColor: predictionMapCellColour(0) }} aria-hidden />
+          <span>Zero</span>
+          <small>0</small>
+        </li>
         {suitabilityScale.map((band, index) => {
           const maximum = suitabilityScale[index + 1]
             ? suitabilityScale[index + 1].minimum - 1
@@ -18,7 +23,7 @@ export function PredictionMapLegend() {
               <i style={{ backgroundColor: band.color }} aria-hidden />
               <span>{band.label}</span>
               <small>
-                {band.minimum}–{maximum}
+                {index === 0 ? 1 : band.minimum}–{maximum}
               </small>
             </li>
           );

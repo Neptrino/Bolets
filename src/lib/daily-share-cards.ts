@@ -4,6 +4,7 @@ import {
   rankCurrentOverviewItems,
   type CurrentOverviewItem,
 } from "@/src/lib/current-overview";
+import { opportunityLabel } from "@/src/lib/scoring";
 import type { RegionId } from "@/src/lib/types";
 
 export type DailyShareSlug = "catalunya" | Exclude<RegionId, "altres">;
@@ -40,8 +41,8 @@ const cardTime = new Intl.DateTimeFormat("ca-ES", {
 });
 
 function availableReading(item: CurrentOverviewItem): DailyShareReading | null {
-  const result = item.summary?.result;
-  if (item.status !== "available" || result?.opportunityIndex === null || result?.opportunityIndex === undefined) {
+  const score = item.summary?.bestCell.score;
+  if (item.status !== "available" || score === null || score === undefined) {
     return null;
   }
 
@@ -49,8 +50,8 @@ function availableReading(item: CurrentOverviewItem): DailyShareReading | null {
     speciesId: item.speciesId,
     regionName: item.regionName,
     speciesName: item.speciesName,
-    score: result.opportunityIndex,
-    label: result.label,
+    score,
+    label: opportunityLabel(score),
   };
 }
 

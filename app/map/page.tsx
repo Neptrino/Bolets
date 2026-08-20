@@ -17,6 +17,7 @@ import {
 } from "@/src/lib/global-predictions";
 import { calculateSuitability } from "@/src/lib/scoring";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
+import { territorialBoundsFromQuery } from "@/src/lib/territorial-map";
 import type { MapViewMode, RegionId, SuitabilityResult } from "@/src/lib/types";
 
 export const metadata: Metadata = {
@@ -55,8 +56,17 @@ const withheldRegionalResult: SuitabilityResult = {
   missingComponents: [],
 };
 
-export default async function MapPage({ searchParams }: { searchParams: Promise<{ species?: string; region?: string; mode?: string }> }) {
+export default async function MapPage({ searchParams }: { searchParams: Promise<{
+  species?: string;
+  region?: string;
+  mode?: string;
+  west?: string;
+  south?: string;
+  east?: string;
+  north?: string;
+}> }) {
   const query = await searchParams;
+  const territorialBounds = territorialBoundsFromQuery(query);
   const requestedSpeciesId = query.species ?? GLOBAL_SPECIES_ID;
   // Unknown species ids fall back to the combined map, the page's default view.
   const species = requestedSpeciesId === GLOBAL_SPECIES_ID
@@ -140,7 +150,8 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
     <MapExplorer
       species={species}
       region={region}
-      autoGeolocate={!isRegionId(query.region)}
+      autoGeolocate={!isRegionId(query.region) && !territorialBounds}
+      territorialBounds={territorialBounds ?? undefined}
       mode={mode}
       regionalSnapshot={snapshot}
       regionalResult={result}

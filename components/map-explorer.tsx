@@ -19,6 +19,7 @@ import type {
   MapViewMode,
   PredictionCell,
   RegionId,
+  SpatialBounds,
   SpatialGridSizeM,
   SpeciesProfile,
   SuitabilityResult,
@@ -58,6 +59,7 @@ export function MapExplorer({
   species,
   region,
   autoGeolocate,
+  territorialBounds,
   mode,
   regionalSnapshot,
   regionalResult,
@@ -70,6 +72,7 @@ export function MapExplorer({
   species: SpeciesProfile | null;
   region: RegionId;
   autoGeolocate: boolean;
+  territorialBounds?: SpatialBounds;
   mode: MapViewMode;
   regionalSnapshot: ConditionSnapshot;
   regionalResult: SuitabilityResult;
@@ -177,6 +180,7 @@ export function MapExplorer({
       <RegionMap
         activeRegions={species?.ecologicalConfig.regions ?? allRegionIds}
         autoGeolocate={autoGeolocate}
+        focusBounds={territorialBounds}
         selectedRegion={region}
         speciesId={speciesKey}
         mode={mode}
@@ -201,7 +205,9 @@ export function MapExplorer({
           <div className="map-floating-card-label">
             <MapIcon size={17} aria-hidden="true" />
             <span>{selectedGridSizeM ? `Cel·la ${formatGridDimensions(selectedGridSizeM)}` : regionLabels[region]}</span>
-            {!emptySelection && hasPrediction && resultBand ? <i style={{ backgroundColor: resultBand.color }} aria-hidden="true" /> : null}
+            {!emptySelection && hasPrediction && resultBand && (result.score ?? 0) > 0
+              ? <i style={{ backgroundColor: resultBand.color }} aria-hidden="true" />
+              : null}
           </div>
           {isLoadingCell || isLoadedCell || hasCellLoadError ? (
             <span

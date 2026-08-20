@@ -17,9 +17,12 @@ import {
   placePath,
   placesForArea,
 } from "@/data/location-pages";
-import { getAreaPredictionSummary } from "@/src/lib/predictions";
+import { getAreaPredictionSummaries } from "@/src/lib/predictions";
+import { opportunityLabel } from "@/src/lib/scoring";
+import { monthInTimeZone } from "@/src/lib/seasonality";
 import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
+import { territorialMapPath } from "@/src/lib/territorial-map";
 import type { AreaPredictionSummary } from "@/src/lib/types";
 
 export const revalidate = 300;
@@ -29,31 +32,45 @@ type Props = { params: Promise<{ place: string }> };
 /** Live hub readings for every species with a local guide in the area. */
 async function loadAreaConditions(areaSlug: string) {
   const area = areasBySlug[areaSlug];
+  const month = monthInTimeZone();
   const speciesIds = [...new Set(locationPagesForArea(areaSlug).map((page) => page.speciesId))]
     .filter((speciesId) => {
       const species = getSpecies(speciesId);
       return species?.predictionMode === "current" &&
-        species.ecologicalConfig.regions.includes(area.regionId);
+        species.ecologicalConfig.regions.includes(area.regionId) &&
+        species.ecologicalConfig.seasonality[month] !== "inactive";
     });
   const bounds = areaBounds(area);
-  const summaries = await Promise.all(speciesIds.map(async (speciesId) => {
-    try {
-      const summary = await getAreaPredictionSummary(speciesId, {
-        slug: area.slug,
-        regionId: area.regionId,
-        bounds,
-      });
+  try {
+    const summaries = await getAreaPredictionSummaries(speciesIds, {
+      slug: area.slug,
+      regionId: area.regionId,
+      bounds,
+    });
+    return speciesIds.flatMap((speciesId) => {
+      const summary = summaries[speciesId];
       return summary && summary.result.score !== null &&
           summary.result.missingComponents.length === 0 && !summary.snapshot.stale
-        ? { speciesId, summary }
-        : null;
-    } catch {
-      return null;
-    }
-  }));
-  return summaries
-    .filter((item): item is { speciesId: string; summary: AreaPredictionSummary } => item !== null)
-    .sort((left, right) => (right.summary.result.score ?? 0) - (left.summary.result.score ?? 0));
+        ? [{ speciesId, summary }]
+        : [];
+    }).sort((left, right) =>
+      (right.summary.bestCell.score - left.summary.bestCell.score) ||
+      (right.summary.score20CellShare - left.summary.score20CellShare) ||
+      (right.summary.positiveCellShare - left.summary.positiveCellShare)
+    );
+  } catch {
+    return [] as Array<{ speciesId: string; summary: AreaPredictionSummary }>;
+  }
+}
+
+function areaExtent(summary: AreaPredictionSummary) {
+  if (summary.score20CellCount > 0) {
+    return `${summary.score20CellCount} ${summary.score20CellCount === 1 ? "cel·la" : "cel·les"} amb 20 o més · ${Math.round(summary.score20CellShare * 100)}%`;
+  }
+  if (summary.positiveCellCount > 0) {
+    return `${summary.positiveCellCount} ${summary.positiveCellCount === 1 ? "cel·la positiva" : "cel·les positives"} · ${Math.round(summary.positiveCellShare * 100)}%`;
+  }
+  return "Cap cel·la positiva";
 }
 
 export function generateStaticParams() {
@@ -132,36 +149,31 @@ export default async function AreaPage({ params }: Props) {
             <ol className="current-overview-grid" aria-label={`Lectures actuals per espècie ${area.prepositionalName}`}>
               {conditions.map(({ speciesId, summary }, index) => {
                 const species = getSpecies(speciesId)!;
-                const score = summary.result.opportunityIndex;
-                const bestCellScore = summary.bestCell.score;
+                const score = summary.bestCell.score;
                 return (
                   <li className="current-overview-card is-available" key={speciesId}>
                     <span className="current-row-rank">{String(index + 1).padStart(2, "0")}</span>
                     <div className="current-overview-card-heading">
                       <h3>{species.identity.commonName}</h3>
-                      <p className="current-row-species"><span>Finestra {area.typeLabel === "massís" ? "del massís" : "de la comarca"} · cel·les de 10 km</span></p>
+                      <p className="current-row-species"><span>Finestra {area.typeLabel === "massís" ? "del massís" : "de la comarca"} · cel·les d’1 km</span></p>
                     </div>
                     {score !== null && score !== undefined ? (
-                      <div className="current-score" aria-label={`Puntuació ${score} sobre 100, ${summary.result.label}`}>
-                        <div><strong>{score}</strong><span>/100 · {summary.result.label}</span></div>
+                      <div className="current-score" aria-label={`Millor cel·la d’1 km ${score} sobre 100, ${opportunityLabel(score)}`}>
+                        <div><strong>{score}</strong><span>/100 · {opportunityLabel(score)}</span></div>
                         <span className="current-score-track" aria-hidden="true"><span style={{ width: `${score}%` }} /></span>
                       </div>
                     ) : null}
-                    {typeof bestCellScore === "number" && bestCellScore > 0 ? (
-                      <dl className="current-row-signals">
-                        <div><dt>Millor cel·la de 10 km</dt><dd>{Math.round(bestCellScore)}/100</dd></div>
-                      </dl>
-                    ) : (
-                      <p className="current-row-signals-empty">{bestCellScore === 0 ? "Cap àrea destaca" : "—"}</p>
-                    )}
-                    <Link href={`/map?species=${speciesId}&region=${area.regionId}`} className="current-row-map" aria-label={`Veure al mapa: ${species.identity.commonName} ${area.prepositionalName}`}>
+                    <dl className="current-row-signals">
+                      <div><dt>Extensió compatible</dt><dd>{areaExtent(summary)}</dd></div>
+                    </dl>
+                    <Link href={territorialMapPath(speciesId, area.regionId, areaBounds(area))} className="current-row-map" aria-label={`Veure al mapa: ${species.identity.commonName} ${area.prepositionalName}`}>
                       <MapIcon size={15} /><span>Veure mapa</span>
                     </Link>
                   </li>
                 );
               })}
             </ol>
-            <p className="prediction-zone-note">Mediana i millor cel·la calculades només dins la finestra territorial {area.prepositionalName}, amb les mateixes dades i controls que el mapa. No confirma presència ni garanteix trobar bolets.</p>
+            <p className="prediction-zone-note">Espècies ordenades per la millor cel·la d’1 km dins la finestra territorial {area.prepositionalName}; l’extensió indica quantes cel·les compatibles també responen. No confirma presència ni garanteix trobar bolets.</p>
           </section>
         ) : null}
 

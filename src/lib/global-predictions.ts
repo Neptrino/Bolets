@@ -9,6 +9,7 @@ import type {
   ConditionSnapshot,
   GlobalPredictionMapCell,
   GlobalSpeciesScore,
+  PredictionCell,
   SpatialBounds,
   SpeciesProfile,
   SuitabilityResult,
@@ -99,11 +100,12 @@ type CandidateSlot = { species: SpeciesProfile; slot: number };
  */
 export function resolveCandidateSlots(
   habitatProfiles: GlobalEnvironmentPayload["habitatProfiles"],
+  speciesSet: SpeciesProfile[] = globalCandidateSpecies,
 ): CandidateSlot[] {
   const profilesBySpecies = new Map(
     habitatProfiles.map((profile) => [profile.speciesId, profile]),
   );
-  return globalCandidateSpecies.map((species) => {
+  return speciesSet.map((species) => {
     const profile = profilesBySpecies.get(species.speciesId);
     if (!profile || !profile.complete || profile.profileKey !== habitatProfileKey(species)) {
       throw new Error(
@@ -114,10 +116,10 @@ export function resolveCandidateSlots(
   });
 }
 
-function scoreCandidate(
+function scoreCandidateCell(
   cell: GlobalEnvironmentCell,
   { species, slot }: CandidateSlot,
-): SuitabilityResult {
+): { result: SuitabilityResult; values: ConditionSnapshot["values"]; unavailableFields: string[] } {
   const coverage = cell.habitatCoverages ? cell.habitatCoverages[slot - 1] : 0;
   const weighted = cell.habitatWeightedCoverages
     ? cell.habitatWeightedCoverages[slot - 1]
@@ -143,7 +145,7 @@ function scoreCandidate(
   values.habitatAltitudeSuitability = summary.habitatAltitudeSuitability;
   const missingFields = missingModelFields(species, values);
   const unavailableFields = [...new Set([...cell.unavailableFields, ...missingFields])];
-  return calculateSuitability(species, {
+  const result = calculateSuitability(species, {
     regionId: cell.regionId,
     observedAt: cell.observedAt,
     source: cell.source,
@@ -152,6 +154,45 @@ function scoreCandidate(
     unavailableFields,
     values,
   });
+  return { result, values, unavailableFields };
+}
+
+function scoreCandidate(
+  cell: GlobalEnvironmentCell,
+  candidate: CandidateSlot,
+): SuitabilityResult {
+  return scoreCandidateCell(cell, candidate).result;
+}
+
+function toCandidatePredictionCell(
+  cell: GlobalEnvironmentCell,
+  candidate: CandidateSlot,
+): PredictionCell {
+  const { species } = candidate;
+  const { result, values, unavailableFields } = scoreCandidateCell(cell, candidate);
+  return {
+    speciesId: species.speciesId,
+    cellId: cell.cellId,
+    regionId: cell.regionId,
+    observedAt: cell.observedAt,
+    gridSizeM: cell.gridSizeM,
+    cellBounds: cell.bounds,
+    score: result.score,
+    fruitingConditionsScore: result.fruitingConditionsScore,
+    opportunityIndex: result.opportunityIndex,
+    effectiveHabitatCoverage: result.effectiveHabitatCoverage,
+    label: result.label,
+    sourceResolutionM: cell.sourceResolutionM,
+    confidence: cell.confidence,
+    stale: cell.stale,
+    source: cell.source,
+    unavailableFields,
+    values,
+    modelVersion: result.modelVersion,
+    components: result.components,
+    occurrenceEvidence: null,
+    occurrenceEvidenceStatus: "unavailable",
+  };
 }
 
 export function rankGlobalSpeciesScores(
@@ -210,6 +251,42 @@ export async function getGlobalPredictionCells(
   const candidates = resolveCandidateSlots(payload.habitatProfiles);
   const cells = payload.cells.map((cell) => combineCell(cell, candidates).mapCell);
   return { cells, truncated: payload.truncated };
+}
+
+/**
+ * Scores a requested subset of edible live-model species from one shared
+ * environment payload. Territorial summaries use this to avoid fetching the
+ * same 1 km weather cell once per local species.
+ */
+export async function getCandidatePredictionCells(
+  bounds: SpatialBounds,
+  speciesIds: string[],
+  limit = 1000,
+  gridSizeM: GlobalGridSizeM = 1000,
+) {
+  const requestedIds = new Set(speciesIds);
+  const requestedSpecies = globalCandidateSpecies.filter((species) =>
+    requestedIds.has(species.speciesId)
+  );
+  if (requestedSpecies.length !== requestedIds.size) {
+    throw new Error("Territorial candidate set contains an unsupported species");
+  }
+
+  const payload = await fetchGlobalEnvironment(bounds, limit, gridSizeM);
+  const candidates = resolveCandidateSlots(payload.habitatProfiles, requestedSpecies);
+  const cellsBySpecies = Object.fromEntries(
+    candidates.map((candidate) => [candidate.species.speciesId, [] as PredictionCell[]]),
+  ) as Record<string, PredictionCell[]>;
+
+  for (const cell of payload.cells) {
+    for (const candidate of candidates) {
+      cellsBySpecies[candidate.species.speciesId]!.push(
+        toCandidatePredictionCell(cell, candidate),
+      );
+    }
+  }
+
+  return { cellsBySpecies, truncated: payload.truncated };
 }
 
 export async function getGlobalCellRanking(

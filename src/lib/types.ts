@@ -446,8 +446,14 @@ export interface SuitabilityResult {
 
 export interface RegionalPredictionSummary {
   regionId: RegionId;
-  gridSizeM: 10000;
+  gridSizeM: SpatialGridSizeM;
   scoredCellCount: number;
+  /** Compatible scored cells with a value above zero. */
+  positiveCellCount: number;
+  /** Compatible scored cells reaching the public "baixa" band (20+). */
+  score20CellCount: number;
+  positiveCellShare: number;
+  score20CellShare: number;
   scoreRange: [number, number];
   /**
    * Highest-scoring cell in the region. A localized pocket (for example a
@@ -466,6 +472,7 @@ export interface RegionalPredictionSummary {
  */
 export interface AreaPredictionSummary extends RegionalPredictionSummary {
   areaSlug: string;
+  gridSizeM: 1000;
 }
 
 export type SpatialGridSizeM = 250 | 1000 | 2500 | 5000 | 10000;

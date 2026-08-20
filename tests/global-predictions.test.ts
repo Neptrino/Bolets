@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   GLOBAL_SPECIES_ID,
   bestRegionalSuitability,
+  getCandidatePredictionCells,
   getGlobalCellRanking,
   getGlobalPredictionCells,
   globalCandidateSpecies,
@@ -234,6 +235,40 @@ describe("getGlobalPredictionCells", () => {
     expect(url.searchParams.get("view")).toBe("score");
     expect(url.searchParams.get("resolution")).toBe("1000");
     expect(url.searchParams.get("setVersion")).toBe(globalSpeciesSetKey);
+  });
+});
+
+describe("getCandidatePredictionCells", () => {
+  it("scores several territorial species from one shared environment request", async () => {
+    const profiles = habitatProfiles();
+    const speciesIds = ["boletus-edulis", "cantharellus-cibarius"];
+    const coverages = profiles.map(() => 0);
+    for (const speciesId of speciesIds) {
+      coverages[profiles.findIndex((profile) => profile.speciesId === speciesId)] = 0.7;
+    }
+    const fetchMock = stubGlobalFeed({
+      cells: [environmentCell({
+        habitatCoverages: coverages,
+        habitatWeightedCoverages: coverages,
+      })],
+      truncated: false,
+      bounds,
+      habitatProfiles: profiles,
+    });
+
+    const result = await getCandidatePredictionCells(bounds, speciesIds, 1000, 5000);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(Object.keys(result.cellsBySpecies).sort()).toEqual([...speciesIds].sort());
+    for (const speciesId of speciesIds) {
+      expect(result.cellsBySpecies[speciesId]).toHaveLength(1);
+      expect(result.cellsBySpecies[speciesId]![0]).toMatchObject({
+        speciesId,
+        cellId,
+        gridSizeM: 5000,
+        occurrenceEvidenceStatus: "unavailable",
+      });
+    }
   });
 });
 

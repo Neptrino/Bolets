@@ -220,6 +220,45 @@ const fitRegion = (map: MapLibreMap, region: RegionId, animate = true) => {
   );
 };
 
+const fitSpatialBounds = (
+  map: MapLibreMap,
+  bounds: SpatialBounds,
+  animate = true,
+) => {
+  map.fitBounds(
+    [
+      [bounds.west, bounds.south],
+      [bounds.east, bounds.north],
+    ],
+    {
+      padding: { top: 54, right: 54, bottom: 54, left: 54 },
+      duration: animate ? 650 : 0,
+      maxZoom: 11.5,
+    },
+  );
+};
+
+function drawTerritorialWindow(
+  context: CanvasRenderingContext2D,
+  map: MapLibreMap,
+  bounds: SpatialBounds | undefined,
+) {
+  if (!bounds) return;
+  const topLeft = map.project([bounds.west, bounds.north]);
+  const bottomRight = map.project([bounds.east, bounds.south]);
+  const width = Math.max(bottomRight.x - topLeft.x, 1);
+  const height = Math.max(bottomRight.y - topLeft.y, 1);
+  context.save();
+  context.setLineDash([]);
+  context.strokeStyle = "rgba(255, 250, 240, 0.9)";
+  context.lineWidth = 5;
+  context.strokeRect(topLeft.x, topLeft.y, width, height);
+  context.strokeStyle = "rgba(45, 62, 49, 0.94)";
+  context.lineWidth = 2;
+  context.strokeRect(topLeft.x, topLeft.y, width, height);
+  context.restore();
+}
+
 function formatCellCount(count: number) {
   return `${count} ${count === 1 ? "cel·la" : "cel·les"}`;
 }
@@ -456,6 +495,7 @@ export function RegionMap({
   compactLegend = false,
   initialCentre,
   initialZoom,
+  focusBounds,
   selectedRegion,
   speciesId,
   habitat = false,
@@ -472,6 +512,7 @@ export function RegionMap({
   compactLegend?: boolean;
   initialCentre?: [number, number];
   initialZoom?: number;
+  focusBounds?: SpatialBounds;
   selectedRegion?: RegionId;
   speciesId?: string;
   habitat?: boolean;
@@ -499,6 +540,7 @@ export function RegionMap({
   const initialAutoGeolocate = useRef(autoGeolocate);
   const initialMapCentre = useRef(initialCentre);
   const initialMapZoom = useRef(initialZoom);
+  const initialFocusBounds = useRef(focusBounds);
   const initialRegion = useRef(selectedRegion);
   const initialActiveRegions = useRef(activeRegions);
   const initialFullscreenTarget = useRef(fullscreenTarget);
@@ -599,11 +641,16 @@ export function RegionMap({
       center:
         initialMapCentre.current
           ? initialMapCentre.current
+          : initialFocusBounds.current
+          ? [
+              (initialFocusBounds.current.west + initialFocusBounds.current.east) / 2,
+              (initialFocusBounds.current.south + initialFocusBounds.current.north) / 2,
+            ]
           : isPredictionMap && initialRegion.current
           ? regionCentres[initialRegion.current]
           : distributionCentre(initialActiveRegions.current),
       zoom:
-        initialMapCentre.current
+        initialMapCentre.current || initialFocusBounds.current
           ? (initialMapZoom.current ?? 10.8)
           : isPredictionMap && initialRegion.current
             ? 9.8
@@ -660,7 +707,9 @@ export function RegionMap({
     localMap.once("load", () => {
       mapLoaded.current = true;
       localMap.resize();
-      if (isPredictionMap && initialRegion.current)
+      if (initialFocusBounds.current)
+        fitSpatialBounds(localMap, initialFocusBounds.current, false);
+      else if (isPredictionMap && initialRegion.current)
         fitRegion(localMap, initialRegion.current, false);
       else if (!initialMapCentre.current) fitCatalonia(localMap, false);
       drawCellsRef.current();
@@ -768,6 +817,7 @@ export function RegionMap({
           );
         }
       });
+      drawTerritorialWindow(context, localMap, initialFocusBounds.current);
     };
 
     const scheduleDrawHabitat = () => {
@@ -1085,6 +1135,7 @@ export function RegionMap({
           context.setLineDash([]);
         }
       });
+      drawTerritorialWindow(context, localMap, initialFocusBounds.current);
     };
     drawCellsRef.current = drawCells;
 
@@ -1417,7 +1468,7 @@ export function RegionMap({
           title: "Resultats mixtos a la vista",
           detail:
             `${cellState.published ? `Amb puntuació publicada: ${formatCellCount(cellState.published)}; ` : ""}` +
-            `puntuació 0, en vermell: ${formatCellCount(cellState.excluded)}; ` +
+            `puntuació 0, amb contorn discontinu: ${formatCellCount(cellState.excluded)}; ` +
             `sense puntuació, en gris: ${formatCellCount(cellState.withheld)} perquè hi falten components requerits, dades vigents o evidència estàtica verificada.`,
         }
       : cellState.status === "ready"
@@ -1431,7 +1482,7 @@ export function RegionMap({
           ? {
             title: `${cellState.excluded} cel·les amb puntuació 0`,
             detail:
-              "Es mostren en vermell: ara no tenen hàbitat compatible o l’espècie queda fora de la temporada activa.",
+              "Es mostren sense farciment de color i amb contorn discontinu: ara no tenen hàbitat compatible o l’espècie queda fora de la temporada activa.",
           }
         : cellState.status === "withheld"
           ? {

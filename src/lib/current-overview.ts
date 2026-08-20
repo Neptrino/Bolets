@@ -11,7 +11,7 @@ import {
 import { regionLabels, regionSelectItems } from "@/data/regions";
 import { getSpecies, speciesProfiles } from "@/data/species";
 import { monthInTimeZone } from "@/src/lib/seasonality";
-import { getAreaPredictionSummary, getRegionalPredictionSummary } from "@/src/lib/predictions";
+import { getAreaPredictionSummaries, getRegionalPredictionSummaries } from "@/src/lib/predictions";
 import { compareSpeciesDiscoveryPriority } from "@/src/lib/species-discovery";
 import type {
   AreaPredictionSummary,
@@ -51,23 +51,14 @@ export const seasonalActivityRank: Record<SeasonalActivity, number> = {
   peak: 4,
 };
 
-export const CURRENT_OVERVIEW_CANDIDATES_PER_REGION = 3;
 export const CURRENT_OVERVIEW_CONCURRENCY = 6;
-/**
- * A calendar-only top-3 can fill up with lowland species whose season reads
- * stronger on paper, leaving high-mountain conditions unevaluated exactly when
- * they are the only favourable ones (high summer). Every region therefore
- * guarantees one candidate whose habitat reaches at least this altitude when
- * an in-season one exists.
- */
-export const CURRENT_OVERVIEW_MONTANE_REACH_M = 1600;
 
 const catalanCollator = new Intl.Collator("ca", { sensitivity: "base" });
 
 /**
- * Select the most relevant in-season edible candidates in every region.
- * Calendar strength takes precedence, followed by search/editorial demand and
- * culinary relevance. None of these priorities changes the prediction score.
+ * Select every in-season edible candidate in every region. Calendar strength
+ * and discovery priority only make the request order deterministic; neither
+ * can exclude a species that might lead on current conditions.
  */
 export function currentOverviewTargetsForMonth(month: Month): CurrentOverviewTarget[] {
   return regionSelectItems
@@ -86,19 +77,7 @@ export function currentOverviewTargetsForMonth(month: Month): CurrentOverviewTar
           return activityDifference || compareSpeciesDiscoveryPriority(left, right);
         });
 
-      const selected = eligible.slice(0, CURRENT_OVERVIEW_CANDIDATES_PER_REGION);
-      const reachesMontane = (profile: (typeof eligible)[number]) =>
-        profile.ecologicalConfig.habitat.altitude[1] >= CURRENT_OVERVIEW_MONTANE_REACH_M;
-      // Appending the first montane-reach candidate from the same sorted list
-      // preserves the descending-activity order of the selection.
-      if (!selected.some(reachesMontane)) {
-        const montane = eligible
-          .slice(CURRENT_OVERVIEW_CANDIDATES_PER_REGION)
-          .find(reachesMontane);
-        if (montane) selected.push(montane);
-      }
-
-      return selected.map((profile) => ({
+      return eligible.map((profile) => ({
         speciesId: profile.speciesId,
         regionId,
         seasonalActivity: profile.ecologicalConfig.seasonality[month],
@@ -132,9 +111,9 @@ export function dominantLimitingComponent(items: CurrentOverviewItem[]) {
 }
 
 type SummaryLoader = (
-  speciesId: string,
+  speciesIds: string[],
   regionId: RegionId,
-) => Promise<RegionalPredictionSummary | null>;
+) => Promise<Record<string, RegionalPredictionSummary | null>>;
 
 async function settleTargets<Target, Result>(
   targets: Target[],
@@ -175,32 +154,43 @@ function publishableSummary(summary: RegionalPredictionSummary | null) {
 }
 
 export async function loadCurrentOverview(
-  loader: SummaryLoader = getRegionalPredictionSummary,
+  loader: SummaryLoader = getRegionalPredictionSummaries,
   month: Month = monthInTimeZone(),
 ): Promise<CurrentOverviewItem[]> {
   const targets = currentOverviewTargetsForMonth(month);
+  const targetsByRegion = new Map<RegionId, CurrentOverviewTarget[]>();
+  for (const target of targets) {
+    const group = targetsByRegion.get(target.regionId) ?? [];
+    group.push(target);
+    targetsByRegion.set(target.regionId, group);
+  }
+  const groups = [...targetsByRegion.values()];
   const settled = await settleTargets(
-    targets,
-    (target) => loader(target.speciesId, target.regionId),
+    groups,
+    (group) => loader(group.map((target) => target.speciesId), group[0]!.regionId),
   );
 
-  return targets.map((target, index) => {
+  return groups.flatMap((group, index) => {
     const result = settled[index]!;
-    const species = getSpecies(target.speciesId);
-    const summary = result.status === "fulfilled" ? result.value : null;
-    const publishable = publishableSummary(summary);
+    return group.map((target) => {
+      const species = getSpecies(target.speciesId);
+      const summary = result.status === "fulfilled"
+        ? result.value[target.speciesId] ?? null
+        : null;
+      const publishable = publishableSummary(summary);
 
-    return {
-      ...target,
-      speciesName: species?.identity.commonName ?? target.speciesId,
-      regionName: regionLabels[target.regionId],
-      status: result.status === "rejected"
-        ? "unavailable"
-        : publishable
-          ? "available"
-          : "insufficient",
-      summary: publishable ? summary : null,
-    };
+      return {
+        ...target,
+        speciesName: species?.identity.commonName ?? target.speciesId,
+        regionName: regionLabels[target.regionId],
+        status: result.status === "rejected"
+          ? "unavailable" as const
+          : publishable
+            ? "available" as const
+            : "insufficient" as const,
+        summary: publishable ? summary : null,
+      };
+    });
   });
 }
 
@@ -266,6 +256,7 @@ export interface AreaOverviewItem {
   areaTypeLabel: OverviewHub["typeLabel"];
   prepositionalName: string;
   regionId: RegionId;
+  bounds: SpatialBounds;
   path: string;
   speciesId: string;
   speciesName: string;
@@ -275,14 +266,14 @@ export interface AreaOverviewItem {
 }
 
 /**
- * One candidate per hub: the strongest in-season edible species among those
- * with a published local guide there. Hubs read like the regional overview,
- * but over the massís, paratge or comarca window a searcher actually means.
+ * Every in-season edible species with a published local guide is eligible.
+ * Current 1 km scores choose the hub's representative only after all of them
+ * have been evaluated.
  */
 export function areaOverviewTargetsForMonth(month: Month): AreaOverviewTarget[] {
   return overviewHubs().flatMap((hub) => {
     const localSpeciesIds = new Set(hub.guides.map((page) => page.speciesId));
-    const candidate = [...localSpeciesIds]
+    const candidates = [...localSpeciesIds]
       .flatMap((speciesId) => {
         const profile = getSpecies(speciesId);
         return profile &&
@@ -297,25 +288,23 @@ export function areaOverviewTargetsForMonth(month: Month): AreaOverviewTarget[] 
         const activityDifference = seasonalActivityRank[right.ecologicalConfig.seasonality[month]] -
           seasonalActivityRank[left.ecologicalConfig.seasonality[month]];
         return activityDifference || compareSpeciesDiscoveryPriority(left, right);
-      })[0];
+      });
 
-    return candidate
-      ? [{
-        hub,
-        speciesId: candidate.speciesId,
-        seasonalActivity: candidate.ecologicalConfig.seasonality[month],
-      }]
-      : [];
+    return candidates.map((candidate) => ({
+      hub,
+      speciesId: candidate.speciesId,
+      seasonalActivity: candidate.ecologicalConfig.seasonality[month],
+    }));
   });
 }
 
 type AreaSummaryLoader = (
-  speciesId: string,
+  speciesIds: string[],
   hub: OverviewHub,
-) => Promise<AreaPredictionSummary | null>;
+) => Promise<Record<string, AreaPredictionSummary | null>>;
 
-const defaultAreaSummaryLoader: AreaSummaryLoader = (speciesId, hub) =>
-  getAreaPredictionSummary(speciesId, {
+const defaultAreaSummaryLoader: AreaSummaryLoader = (speciesIds, hub) =>
+  getAreaPredictionSummaries(speciesIds, {
     slug: hub.slug,
     regionId: hub.regionId,
     bounds: hub.bounds,
@@ -326,16 +315,43 @@ export async function loadAreaOverview(
   month: Month = monthInTimeZone(),
 ): Promise<AreaOverviewItem[]> {
   const targets = areaOverviewTargetsForMonth(month);
+  const groupedTargets = new Map<string, AreaOverviewTarget[]>();
+  for (const target of targets) {
+    const group = groupedTargets.get(target.hub.slug) ?? [];
+    group.push(target);
+    groupedTargets.set(target.hub.slug, group);
+  }
+  const targetsByHub = [...groupedTargets.values()];
   const settled = await settleTargets(
-    targets,
-    (target) => loader(target.speciesId, target.hub),
+    targetsByHub,
+    (hubTargets) => loader(
+      hubTargets.map((target) => target.speciesId),
+      hubTargets[0]!.hub,
+    ),
   );
 
-  return targets.map((target, index) => {
+  return targetsByHub.map((hubTargets, index) => {
+    const fallback = hubTargets[0]!;
     const result = settled[index]!;
+    const candidates = result.status === "fulfilled"
+      ? hubTargets.flatMap((target) => {
+          const summary = result.value[target.speciesId] ?? null;
+          return publishableSummary(summary) ? [{ target, summary: summary! }] : [];
+        })
+      : [];
+    const selected = candidates.sort((left, right) =>
+      (right.summary.bestCell.score - left.summary.bestCell.score) ||
+      (right.summary.score20CellShare - left.summary.score20CellShare) ||
+      (right.summary.positiveCellShare - left.summary.positiveCellShare) ||
+      ((right.summary.result.score ?? -1) - (left.summary.result.score ?? -1)) ||
+      catalanCollator.compare(
+        getSpecies(left.target.speciesId)?.identity.commonName ?? left.target.speciesId,
+        getSpecies(right.target.speciesId)?.identity.commonName ?? right.target.speciesId,
+      )
+    )[0];
+    const target = selected?.target ?? fallback;
+    const summary = selected?.summary ?? null;
     const species = getSpecies(target.speciesId);
-    const summary = result.status === "fulfilled" ? result.value : null;
-    const publishable = publishableSummary(summary);
 
     return {
       areaSlug: target.hub.slug,
@@ -343,23 +359,24 @@ export async function loadAreaOverview(
       areaTypeLabel: target.hub.typeLabel,
       prepositionalName: target.hub.prepositionalName,
       regionId: target.hub.regionId,
+      bounds: target.hub.bounds,
       path: target.hub.path,
       speciesId: target.speciesId,
       speciesName: species?.identity.commonName ?? target.speciesId,
       seasonalActivity: target.seasonalActivity,
       status: result.status === "rejected"
         ? "unavailable"
-        : publishable
+        : selected
           ? "available"
           : "insufficient",
-      summary: publishable ? summary : null,
+      summary,
     };
   });
 }
 
 const catalanAreaCollator = new Intl.Collator("ca", { sensitivity: "base" });
 
-/** Publishable hubs first, best score first; withheld hubs stay visible. */
+/** Publishable hubs first, best 1 km cell first; withheld hubs stay visible. */
 export function rankAreaOverviewItems(items: AreaOverviewItem[]) {
   const statusRank: Record<CurrentOverviewStatus, number> = {
     available: 0,
@@ -368,8 +385,9 @@ export function rankAreaOverviewItems(items: AreaOverviewItem[]) {
   };
   return [...items].sort((left, right) =>
     (statusRank[left.status] - statusRank[right.status]) ||
-    ((right.summary?.result.score ?? -1) - (left.summary?.result.score ?? -1)) ||
     ((right.summary?.bestCell.score ?? -1) - (left.summary?.bestCell.score ?? -1)) ||
+    ((right.summary?.score20CellShare ?? -1) - (left.summary?.score20CellShare ?? -1)) ||
+    ((right.summary?.positiveCellShare ?? -1) - (left.summary?.positiveCellShare ?? -1)) ||
     catalanAreaCollator.compare(left.areaName, right.areaName)
   );
 }
@@ -386,15 +404,16 @@ export function rankCurrentOverviewItems(items: CurrentOverviewItem[]) {
     const statusDifference = statusRank[left.status] - statusRank[right.status];
     if (statusDifference) return statusDifference;
 
-    const scoreDifference = (right.summary?.result.score ?? -1) -
-      (left.summary?.result.score ?? -1);
-    // Equal medians are common out of season; a nonzero best cell means a
-    // localized pocket worth surfacing ahead of uniformly flat regions.
     const bestCellDifference = (right.summary?.bestCell.score ?? -1) -
       (left.summary?.bestCell.score ?? -1);
+    const score20ShareDifference = (right.summary?.score20CellShare ?? -1) -
+      (left.summary?.score20CellShare ?? -1);
+    const positiveShareDifference = (right.summary?.positiveCellShare ?? -1) -
+      (left.summary?.positiveCellShare ?? -1);
     const activityDifference = seasonalActivityRank[right.seasonalActivity] -
       seasonalActivityRank[left.seasonalActivity];
-    return scoreDifference || bestCellDifference || activityDifference ||
+    return bestCellDifference || score20ShareDifference || positiveShareDifference ||
+      activityDifference ||
       catalanCollator.compare(left.speciesName, right.speciesName) ||
       catalanCollator.compare(left.regionName, right.regionName);
   });

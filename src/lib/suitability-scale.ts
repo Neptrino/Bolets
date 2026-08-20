@@ -25,6 +25,10 @@ export function getSuitabilityBand(score: number): SuitabilityBand {
 
 export function predictionMapCellColour(score: number | null) {
   if (score === null) return "rgba(150, 149, 142, 0.24)";
+  // A verified zero is available evidence, but it must not look like a
+  // positive low score. Keep the terrain visible and let the dashed outline
+  // carry the zero state.
+  if (score === 0) return "rgba(112, 103, 88, 0.1)";
   const color = getSuitabilityBand(score).color;
   const red = Number.parseInt(color.slice(1, 3), 16);
   const green = Number.parseInt(color.slice(3, 5), 16);
