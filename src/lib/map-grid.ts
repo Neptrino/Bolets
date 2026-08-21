@@ -5,14 +5,16 @@ import type {
 } from "@/src/lib/types";
 
 export const spatialGridSizes = [250, 1000, 2500, 5000, 10000] as const satisfies readonly SpatialGridSizeM[];
-export const maximumVisibleGridCells = 600;
+// At 1,200 cells the 250 m grid remains comfortably interactive while a user
+// can assess a useful local area before needing to zoom further in.
+export const maximumVisibleGridCells = 1200;
 
 export function isSpatialGridSize(value: number): value is SpatialGridSizeM {
   return spatialGridSizes.some((size) => size === value);
 }
 
 export function gridSizeForZoom(zoom: number): SpatialGridSizeM {
-  if (zoom >= 14.2) return 250;
+  if (zoom >= 13.4) return 250;
   if (zoom >= 11.8) return 1000;
   if (zoom >= 9.4) return 2500;
   if (zoom >= 8.2) return 5000;

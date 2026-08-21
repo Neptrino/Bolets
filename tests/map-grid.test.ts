@@ -8,7 +8,7 @@ import {
 
 describe("zoom-adaptive spatial grid", () => {
   it.each([
-    [14.2, 250], [14.1, 1000], [13.2, 1000], [13.1, 1000], [12.8, 1000],
+    [13.4, 250], [13.3, 1000], [13.2, 1000], [13.1, 1000], [12.8, 1000],
     [11.8, 1000], [11.7, 2500], [9, 5000], [6.2, 10000]
   ])("uses %i m cells at zoom %s", (zoom, expected) => {
     expect(gridSizeForZoom(zoom)).toBe(expected);
@@ -41,11 +41,11 @@ describe("zoom-adaptive spatial grid", () => {
       east: 2.25,
       north: 42.28,
     })).toBe(1000);
-    expect(gridSizeForViewport(14.5, {
+    expect(gridSizeForViewport(13.4, {
       west: 2.17,
       south: 42.22,
-      east: 2.18,
-      north: 42.23,
+      east: 2.27,
+      north: 42.3,
     })).toBe(250);
   });
 
