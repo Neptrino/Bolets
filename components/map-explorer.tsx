@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { ArrowUpRight, CheckCircle2, LoaderCircle, Map as MapIcon } from "lucide-react";
 import Link from "next/link";
 import { ConditionComparison } from "@/components/condition-comparison";
-import { CellScoreHistory } from "@/components/cell-score-history";
 import { RegionMap, type PredictionCellDetailState } from "@/components/region-map";
 import { QuerySelect, type QuerySelectItem } from "@/components/ui/query-select";
 import { regionLabels } from "@/data/regions";
@@ -165,6 +164,17 @@ export function MapExplorer({
   const topSpeciesId = selectedTopSpecies[0]?.speciesId;
   // The floating card stays compact; the full ranking renders below the map.
   const runnersUp = selectedTopSpecies.slice(1, 3);
+  const [CellScoreHistory, setCellScoreHistory] = useState<
+    (typeof import("@/components/cell-score-history"))["CellScoreHistory"]
+  >();
+  useEffect(() => {
+    if (!selectedCell) return;
+    let cancelled = false;
+    void import("@/components/cell-score-history").then((module) => {
+      if (!cancelled) setCellScoreHistory(() => module.CellScoreHistory);
+    });
+    return () => { cancelled = true; };
+  }, [selectedCell]);
   const unavailableCopy = isLoadingCell
     ? "Actualitzant el model d’aquesta cel·la amb les seves dades ambientals…"
     : hasCellLoadError
@@ -262,7 +272,7 @@ export function MapExplorer({
             cellGridSizeM={selectedCell?.gridSizeM}
             cellBounds={selectedCell?.cellBounds}
           />
-          {selectedCell ? <CellScoreHistory key={`${species!.speciesId}:${selectedCell.cellId}`} speciesId={species!.speciesId} cell={selectedCell} /> : null}
+          {selectedCell && CellScoreHistory ? <CellScoreHistory key={`${species!.speciesId}:${selectedCell.cellId}`} speciesId={species!.speciesId} cell={selectedCell} /> : null}
         </>
       ) : null}
       {globalMode && selectedCell && topSpeciesId ? (
@@ -291,11 +301,11 @@ export function MapExplorer({
               Veure el mapa complet de {speciesName(topSpeciesId)} <ArrowUpRight size={15} />
             </Link>
           </p>
-          <CellScoreHistory
+          {CellScoreHistory ? <CellScoreHistory
             key={`${topSpeciesId}:${selectedCell.cellId}`}
             speciesId={topSpeciesId}
             cell={selectedCell}
-          />
+          /> : null}
         </section>
       ) : null}
       {info}
