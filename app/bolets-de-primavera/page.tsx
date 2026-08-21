@@ -64,6 +64,25 @@ export default function SpringMushroomsPage() {
 
       <aside className="intent-safety-note spring-safety-note"><CircleAlert size={22} /><div><strong>La primavera també té confusions de risc.</strong><p>Identifiqueu exemplars complets, reviseu tots els trets i no decidiu el consum amb una fotografia. En cas d’ingestió sospitosa, truqueu al 061.</p></div></aside>
 
+      <section className="intent-reading-section" aria-labelledby="spring-reading-title">
+        <SectionHeader
+          meta="Temporada, no promesa"
+          title="Com interpretar els bolets de primavera"
+          titleId="spring-reading-title"
+        />
+        <div className="intent-reading-grid">
+          <div>
+            <p>La selecció de bolets de primavera es basa en el calendari ecològic de cada espècie. La data orienta, però la pluja acumulada, la temperatura, l’altitud i el bosc decideixen si pot fructificar en un lloc concret.</p>
+            <p>Per preparar una sortida, consulteu les <Link href="/bolets-avui">condicions actuals</Link> i el <Link href="/map">mapa de predicció</Link>; després contrasteu sempre l’exemplar amb la seva fitxa.</p>
+          </div>
+          <ol>
+            <li>Comenceu per espècies que encaixin amb el mes i l’hàbitat.</li>
+            <li>Comproveu si les condicions recents són favorables a la zona.</li>
+            <li>Reviseu les confusions abans de collir o consumir.</li>
+          </ol>
+        </div>
+      </section>
+
       {toxicLookalikes.length > 0 && <section className="spring-lookalikes"><div><p className="eyebrow">Mereixen una lectura separada</p><h2>Semblants tòxics presents al catàleg</h2></div><div>{toxicLookalikes.map((species) => <Link key={species.speciesId} href={speciesPath(species)}>{species.identity.commonName}<ArrowUpRight size={15} /></Link>)}</div></section>}
 
       <section aria-labelledby="spring-catalogue-title">

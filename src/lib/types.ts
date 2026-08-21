@@ -314,6 +314,12 @@ export interface SpeciesProfile {
   speciesId: string;
   predictionMode: SpeciesPredictionMode;
   predictionCaveat?: string;
+  /** Editorial search copy for a species whose common names need clarification. */
+  seo?: {
+    title?: string;
+    description?: string;
+    keywords?: string[];
+  };
   identity: {
     commonName: string;
     alternateNames: string[];

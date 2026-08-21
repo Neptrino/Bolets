@@ -54,6 +54,32 @@ export function SeasonalGuidePage({ guide }: { guide: SeasonGuide }) {
         <article><CircleAlert size={21} aria-hidden="true" /><div><h2>Calendari no vol dir presència</h2><p>No consumiu cap bolet sense una identificació experta. El calendari descriu potencial estacional i no confirma que una espècie estigui fructificant.</p></div></article>
       </section>
 
+      <section className="intent-reading-section" aria-labelledby={`${guide.id}-reading-title`}>
+        <SectionHeader
+          meta="Temporada, no promesa"
+          title={guide.reading.title}
+          titleId={`${guide.id}-reading-title`}
+        />
+        <div className="intent-reading-grid">
+          <div>
+            <p>{guide.reading.summary}</p>
+            <p>{guide.reading.detail}</p>
+          </div>
+          <ol>
+            {guide.reading.steps.map((step) => <li key={step}>{step}</li>)}
+          </ol>
+        </div>
+        <nav className="species-topic-links seasonal-guide-topic-links" aria-label={`Guies relacionades amb els bolets ${guide.id}`}>
+          {guide.reading.links.map((link) => (
+            <Link href={link.href} key={link.href}>
+              <SeasonIcon size={18} />
+              <span><strong>{link.label}</strong><small>{link.description}</small></span>
+              <ArrowUpRight size={16} />
+            </Link>
+          ))}
+        </nav>
+      </section>
+
       <section aria-labelledby={`${guide.id}-catalogue-title`}>
         <SectionHeader
           meta={<div className="seasonal-calendar-controls"><span><CalendarDays size={14} /> {guide.rangeLabel}</span><SeasonGuideSwitcher current={guide.id} /></div>}

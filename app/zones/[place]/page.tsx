@@ -204,7 +204,7 @@ export default async function AreaPage({ params }: Props) {
               const image = species?.media.find((asset) => asset.identificationReference) ?? species?.media[0];
               return (
                 <Link href={placePath(place)} className="location-guide-card" key={place.slug}>
-                  <div className={`location-guide-card-media${image ? " has-image" : ""}`}>{image && <Image src={image.localPath ?? image.imageUrl ?? image.sourceUrl} alt="" fill sizes="(max-width: 760px) calc(100vw - 48px), 50vw" />}<span>{place.typeLabel} · {pages.length} {pages.length === 1 ? "guia" : "guies"}</span></div>
+                  <div className={`location-guide-card-media${image ? " has-image" : ""}`}>{image && <Image src={image.localPath ?? image.imageUrl ?? image.sourceUrl} alt={image.alt} fill sizes="(max-width: 760px) calc(100vw - 48px), 50vw" />}<span>{place.typeLabel} · {pages.length} {pages.length === 1 ? "guia" : "guies"}</span></div>
                   <div className="location-guide-card-copy"><div className="location-guide-card-title"><h3>{place.name}</h3><ArrowUpRight size={20} /></div><p>{place.description} {place.landscape}</p><div className="location-guide-card-facts"><span><MapPinned size={15} /> {area.name}</span><span><BookOpen size={15} /> {pages.map((page) => displaySearchName(page.searchName)).join(", ")}</span></div></div>
                 </Link>
               );

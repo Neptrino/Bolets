@@ -135,6 +135,24 @@ const defaultMetadata: EditorialMetadata = {
 };
 
 const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
+  "bolets": {
+    updatedAt: "2026-08-21",
+  },
+  "bolets-verinosos": {
+    updatedAt: "2026-08-21",
+  },
+  "bolets-de-primavera": {
+    updatedAt: "2026-08-21",
+  },
+  "bolets-d-estiu": {
+    updatedAt: "2026-08-21",
+  },
+  "bolets-de-tardor": {
+    updatedAt: "2026-08-21",
+  },
+  "bolets-d-hivern": {
+    updatedAt: "2026-08-21",
+  },
   "bolets-avui": {
     updatedAt: "2026-08-14",
   },

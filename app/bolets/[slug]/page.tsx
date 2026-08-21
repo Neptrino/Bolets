@@ -110,9 +110,9 @@ export async function generateMetadata({
   if (!species) notFound();
 
   const path = speciesPath(species);
-  const description = speciesDescription(species);
+  const description = species.seo?.description ?? speciesDescription(species);
   const image = speciesImage(species);
-  const title = `${species.identity.commonName} (${species.identity.scientificName})`;
+  const title = species.seo?.title ?? `${species.identity.commonName} (${species.identity.scientificName})`;
 
   return {
     title,
@@ -122,6 +122,7 @@ export async function generateMetadata({
       species.identity.commonName,
       species.identity.scientificName,
       ...species.identity.alternateNames,
+      ...(species.seo?.keywords ?? []),
       `hàbitat ${species.identity.commonName}`,
       `temporada ${species.identity.commonName}`,
     ],

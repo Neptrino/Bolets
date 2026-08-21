@@ -61,6 +61,25 @@ export default function PoisonousMushroomsPage() {
         <div><strong>Davant una ingestió sospitosa, actueu de seguida.</strong><p>Seguiu la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a>, truqueu al 061 Salut Respon i conserveu restes del bolet. No espereu que apareguin símptomes ni apliqueu remeis casolans.</p></div>
       </aside>
 
+      <section className="intent-reading-section" aria-labelledby="poisonous-reading-title">
+        <SectionHeader
+          meta="Identificació responsable"
+          title="Com llegir una guia de bolets verinosos"
+          titleId="poisonous-reading-title"
+        />
+        <div className="intent-reading-grid">
+          <div>
+            <p>Una fotografia, el color o el lloc on creix no basten per decidir que un bolet és segur. Aquesta guia de bolets verinosos de Catalunya serveix per reconèixer trets i confusions, no per confirmar el consum.</p>
+            <p>Abans de cuinar un bolet, contrasteu-lo amb la fitxa d’identificació, reviseu els semblants i, davant de qualsevol dubte, demaneu una identificació experta.</p>
+          </div>
+          <ol>
+            <li>Observeu un exemplar complet, inclosa la base del peu.</li>
+            <li>Compareu làmines, porus, anell, volva, olor i canvi de color.</li>
+            <li>Obriu la fitxa de les espècies semblants abans de prendre cap decisió.</li>
+          </ol>
+        </div>
+      </section>
+
       <SectionHeader
         meta={`${toxicSpecies.length} espècies`}
         title="Fitxes de bolets tòxics"

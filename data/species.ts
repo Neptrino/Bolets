@@ -448,6 +448,11 @@ speciesProfiles.push(
   }),
   profile({
     speciesId: "lactarius-deliciosus",
+    seo: {
+      title: "Pinetell o rovelló (Lactarius deliciosus)",
+      description: "Pinetell (Lactarius deliciosus), sovint cercat com a rovelló: làtex taronja, pinedes, temporada i diferències per identificar-lo.",
+      keywords: ["pinetells", "pinetell i rovelló", "pinetells i rovellons"],
+    },
     identity: { commonName: "Pinetell", alternateNames: ["rovelló"], scientificName: "Lactarius deliciosus", family: "Russulaceae", genus: "Lactarius", edibility: "excellent_edible", identificationDifficulty: "Baixa a mitjana", typicalSize: "Barret de 4–15 cm", shortDescription: "Lactari taronja de làmines decurrents i làtex color pastanaga, associat als pins." },
     morphology: { cap: "Ataronjat, amb cercles concèntrics, sovint deprimit al centre.", hymenium: "Làmines ataronjades, decurrents, amb taques verdes per pressió.", stem: "Cilíndric, ataronjat, sovint amb clotets.", flesh: "Taronja pàl·lid; exsuda làtex taronja.", colour: "Taronja viu amb verds a la maduresa.", smell: "Afruitat suau.", texture: "Ferm de jove, fràgil amb l’edat.", typicalAppearance: "Bolet taronja de pineda amb làtex color pastanaga.", keyFeatures: ["Làtex taronja", "Cercles al barret", "Verdeja en tocar-lo"], variation: "La humitat i l’edat accentuen les taques verdes i la fragilitat." },
     similarSpecies: [{ scientificName: "Lactarius sanguifluus", commonName: "Rovelló", mainDifferences: "Làtex vermell vinós i tons més apagats.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda." }, { scientificName: "Lactarius torminosus", commonName: "Lleterola de cama rosada", mainDifferences: "Barret rosat i pelut, làtex blanc; pot causar trastorns digestius.", edibility: "not_recommended", toxicity: "Pot ser irritant gastrointestinal.", warning: true }],
