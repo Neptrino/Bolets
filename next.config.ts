@@ -29,6 +29,17 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "bolets.neptrino.com",
+          },
+        ],
+        destination: "https://bolets.app/:path*",
+        permanent: true,
+      },
+      {
         source: "/species",
         destination: "/bolets",
         permanent: true,
@@ -43,7 +54,7 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/webp"],
     deviceSizes: [390, 512, 576, 640, 750, 828, 1080, 1200, 1440, 1920, 2048, 3840],
-    qualities: [75, 78, 85],
+    qualities: [60, 65, 75, 78, 85],
     remotePatterns: [
       { protocol: "https", hostname: "commons.wikimedia.org" },
       { protocol: "https", hostname: "upload.wikimedia.org" },

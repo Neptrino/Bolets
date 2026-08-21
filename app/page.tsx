@@ -34,9 +34,10 @@ export default function HomePage() {
             src={homeHero}
             alt=""
             fill
-            preload
+            fetchPriority="high"
+            loading="eager"
             sizes="100vw"
-            quality={85}
+            quality={65}
           />
         </div>
         <div className="hero-copy"><p className="eyebrow light"><Sparkles size={14} /> Bolets · hàbitats · temporada</p><h1>On viuen els bolets<br /><i>abans de trobar-los.</i></h1><p className="hero-lede">Exploreu la relació entre cada espècie, el sòl, la pluja, els arbres i les estacions.</p><div className="hero-actions"><Link href="/map" className="button light-button">Mapa de predicció <ArrowUpRight size={17} /></Link><Link href="/bolets" className="text-link">Exploreu el catàleg <Trees size={16} /></Link></div></div>

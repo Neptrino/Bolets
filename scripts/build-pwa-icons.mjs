@@ -16,6 +16,7 @@ import sharp from "sharp";
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const sourceIcon = join(projectRoot, "app", "icon.svg");
 const outputDirectory = join(projectRoot, "public", "icons");
+const faviconPath = join(projectRoot, "public", "favicon.ico");
 
 // The share of the maskable canvas a launcher may crop away. 20% padding on
 // every side keeps the mark inside the guaranteed-visible circle.
@@ -40,6 +41,26 @@ async function renderMaskable(source, size) {
     .toBuffer();
 }
 
+// ICO files can contain PNG data directly. Keeping this tiny wrapper here
+// means the traditional /favicon.ico stays derived from the same source mark
+// without introducing a platform-specific image-conversion dependency.
+function icoFromPng(png, size) {
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(1, 4);
+
+  const directory = Buffer.alloc(16);
+  directory.writeUInt8(size === 256 ? 0 : size, 0);
+  directory.writeUInt8(size === 256 ? 0 : size, 1);
+  directory.writeUInt16LE(1, 4);
+  directory.writeUInt16LE(32, 6);
+  directory.writeUInt32LE(png.length, 8);
+  directory.writeUInt32LE(header.length + directory.length, 12);
+
+  return Buffer.concat([header, directory, png]);
+}
+
 async function main() {
   const source = await readFile(sourceIcon);
   await mkdir(outputDirectory, { recursive: true });
@@ -57,6 +78,10 @@ async function main() {
     await writeFile(join(outputDirectory, name), buffer);
     console.log(`wrote public/icons/${name} (${buffer.length} bytes)`);
   }
+
+  const favicon = icoFromPng(await renderAny(source, 32), 32);
+  await writeFile(faviconPath, favicon);
+  console.log(`wrote public/favicon.ico (${favicon.length} bytes)`);
 }
 
 await main();

@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Keep MapLibre's control stack in the root CSS. Deferring it with the client
+   map component lets the prediction canvas cover its controls and gestures. */
 @import "maplibre-gl/dist/maplibre-gl.css";
 
 :root {

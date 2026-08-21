@@ -34,6 +34,7 @@ export function SpeciesCard({
             alt=""
             fill
             sizes="(max-width: 580px) calc(100vw - 48px), (max-width: 1000px) calc(50vw - 37px), (max-width: 1228px) calc(33.333vw - 33px), 377px"
+            quality={60}
           />
         )}
         <CulinaryRating
