@@ -1,4 +1,4 @@
-export const HABITAT_MODEL_VERSION = "habitat-static-v8-ph-taper";
+export const HABITAT_MODEL_VERSION = "habitat-static-v9-edge-floor";
 export const PREDICTION_SCORING_VERSION = "hydrothermal-v2";
 export const HYDROTHERMAL_PRIOR_VERSION = "hydrothermal-v1-priors-2026-08b";
 export const HYDROTHERMAL_V2_PRIOR_VERSION = "hydrothermal-v2-priors-2026-08e";
