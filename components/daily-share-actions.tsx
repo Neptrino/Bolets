@@ -1,13 +1,13 @@
 "use client";
 
-import { Download, Link2, MessageCircle, Share2 } from "lucide-react";
+import { Download, Link2, Share2 } from "lucide-react";
 import { useState } from "react";
 
 type DailyShareActionsProps = {
   title: string;
-  imagePath: string;
+  feedImagePath: string;
+  storyImagePath: string;
   shareText: string;
-  shareUrl: string;
   disabled?: boolean;
 };
 
@@ -23,27 +23,19 @@ async function downloadImage(imagePath: string, filename: string) {
   URL.revokeObjectURL(href);
 }
 
-function socialCaption(shareText: string, shareUrl: string) {
-  return `${shareText.replace(/\nhttps:\/\/bolets\.app\/\S+$/, "")}\n\n${shareUrl}`;
-}
-
-export function DailyShareActions({ title, imagePath, shareText, shareUrl, disabled = false }: DailyShareActionsProps) {
+export function DailyShareActions({ title, feedImagePath, storyImagePath, shareText, disabled = false }: DailyShareActionsProps) {
   const [message, setMessage] = useState<string | null>(null);
-  const caption = socialCaption(shareText, shareUrl);
-  const xShareUrl = `https://x.com/intent/post?text=${encodeURIComponent(caption)}`;
-  const linkedInShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
-  const whatsAppShareUrl = `https://wa.me/?text=${encodeURIComponent(caption)}`;
 
   async function copyText() {
     await navigator.clipboard.writeText(shareText);
     setMessage("Text copiat");
   }
 
-  async function shareCard() {
+  async function shareCard(imagePath: string, format: "feed" | "story") {
     try {
       const response = await fetch(imagePath);
       if (!response.ok) throw new Error("No s'ha pogut generar la imatge");
-      const file = new File([await response.blob()], `bolets-${title.toLocaleLowerCase("ca").replaceAll(" ", "-")}.png`, { type: "image/png" });
+      const file = new File([await response.blob()], `bolets-${title.toLocaleLowerCase("ca").replaceAll(" ", "-")}-${format}.png`, { type: "image/png" });
       const payload = { title: `Bolets avui · ${title}`, text: shareText, files: [file] };
 
       if (navigator.canShare?.(payload)) {
@@ -51,7 +43,7 @@ export function DailyShareActions({ title, imagePath, shareText, shareUrl, disab
       } else {
         await downloadImage(imagePath, file.name);
         await navigator.clipboard.writeText(shareText);
-        setMessage("Imatge descarregada i text copiat");
+        setMessage(`PNG ${format === "feed" ? "del feed" : "per a Story/Reel"} descarregat i text copiat`);
       }
     } catch (error) {
       if ((error as Error).name !== "AbortError") setMessage("No s'ha pogut preparar la compartició");
@@ -60,15 +52,18 @@ export function DailyShareActions({ title, imagePath, shareText, shareUrl, disab
 
   return (
     <div className={`daily-share-actions${disabled ? " is-disabled" : ""}`}>
-      <button type="button" disabled={disabled} onClick={() => void shareCard()}><Share2 size={16} /> Compartir</button>
-      <div className="daily-share-socials" aria-label="Publica a les xarxes socials">
-        <a href={disabled ? undefined : xShareUrl} target={disabled ? undefined : "_blank"} rel={disabled ? undefined : "noreferrer"} aria-disabled={disabled} aria-label={`Publica la targeta de ${title} a X`}><span aria-hidden="true">𝕏</span></a>
-        <a href={disabled ? undefined : linkedInShareUrl} target={disabled ? undefined : "_blank"} rel={disabled ? undefined : "noreferrer"} aria-disabled={disabled} aria-label={`Publica la targeta de ${title} a LinkedIn`}><span aria-hidden="true">in</span></a>
-        <a href={disabled ? undefined : whatsAppShareUrl} target={disabled ? undefined : "_blank"} rel={disabled ? undefined : "noreferrer"} aria-disabled={disabled} aria-label={`Envia la targeta de ${title} per WhatsApp`}><MessageCircle size={16} aria-hidden="true" /></a>
+      <div className="daily-share-action-group">
+        <span>Feed · 4:5</span>
+        <button className="is-primary" type="button" disabled={disabled} onClick={() => void shareCard(feedImagePath, "feed")}><Share2 size={16} /> Compartir</button>
+        <button type="button" disabled={disabled} onClick={() => void downloadImage(feedImagePath, `bolets-${title.toLocaleLowerCase("ca").replaceAll(" ", "-")}-feed.png`).then(() => setMessage("PNG del feed descarregat")).catch(() => setMessage("No s'ha pogut descarregar la imatge"))}><Download size={16} /> Baixar</button>
       </div>
-      <button type="button" disabled={disabled} onClick={() => void downloadImage(imagePath, `bolets-${title.toLocaleLowerCase("ca").replaceAll(" ", "-")}.png`).then(() => setMessage("Imatge descarregada")).catch(() => setMessage("No s'ha pogut descarregar la imatge"))}><Download size={16} /> Baixar PNG</button>
-      <button type="button" disabled={disabled} onClick={() => void copyText().catch(() => setMessage("No s'ha pogut copiar el text"))}><Link2 size={16} /> Copiar text</button>
-      <span aria-live="polite">{message}</span>
+      <div className="daily-share-action-group">
+        <span>Story · 9:16</span>
+        <button className="is-primary" type="button" disabled={disabled} onClick={() => void shareCard(storyImagePath, "story")}><Share2 size={16} /> Compartir</button>
+        <button type="button" disabled={disabled} onClick={() => void downloadImage(storyImagePath, `bolets-${title.toLocaleLowerCase("ca").replaceAll(" ", "-")}-story.png`).then(() => setMessage("PNG de Story descarregat")).catch(() => setMessage("No s'ha pogut descarregar la imatge"))}><Download size={16} /> Baixar</button>
+      </div>
+      <button className="daily-share-copy" type="button" disabled={disabled} onClick={() => void copyText().catch(() => setMessage("No s'ha pogut copiar el text"))}><Link2 size={16} /> Copiar text</button>
+      <span className="daily-share-status" aria-live="polite">{message}</span>
     </div>
   );
 }

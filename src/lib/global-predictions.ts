@@ -33,6 +33,11 @@ export const globalCandidateSpecies = edibleSpecies.filter(
   (species) => species.predictionMode === "current",
 );
 
+// A stalled environment read must not hold a server-rendered territory page
+// open forever. Callers treat an aborted read as unavailable rather than
+// manufacturing a prediction.
+const GLOBAL_ENVIRONMENT_TIMEOUT_MS = 5_000;
+
 function hashKey(input: string) {
   let hash = 5381;
   for (let index = 0; index < input.length; index += 1) {
@@ -84,6 +89,7 @@ async function fetchGlobalEnvironment(
       },
       cache: "force-cache",
       next: { revalidate: 300 },
+      signal: AbortSignal.timeout(GLOBAL_ENVIRONMENT_TIMEOUT_MS),
     },
   );
   if (!response.ok) throw new Error(`Spatial environment service returned ${response.status}`);

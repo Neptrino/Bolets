@@ -15,9 +15,30 @@ export function RegisterServiceWorker() {
     // In development the worker's shell/asset caches serve stale builds and
     // mask every edit; the offline mode only matters on the deployed site.
     if (process.env.NODE_ENV !== "production") {
-      navigator.serviceWorker.getRegistrations()
-        .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
-        .catch(() => undefined);
+      const clearDevelopmentWorker = async () => {
+        const controlledByWorker = Boolean(navigator.serviceWorker.controller);
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+
+        if ("caches" in window) {
+          const names = await window.caches.keys();
+          await Promise.all(
+            names
+              .filter((name) => name.startsWith("bolets-"))
+              .map((name) => window.caches.delete(name)),
+          );
+        }
+
+        // Unregistering does not release an already-controlled document. One
+        // reload creates a clean development client; the session flag prevents
+        // a loop in browsers that keep the old controller until the tab closes.
+        if (controlledByWorker && !window.sessionStorage.getItem("bolets-dev-worker-cleared")) {
+          window.sessionStorage.setItem("bolets-dev-worker-cleared", "1");
+          window.location.reload();
+        }
+      };
+
+      void clearDevelopmentWorker().catch(() => undefined);
       return;
     }
     let cancelled = false;
