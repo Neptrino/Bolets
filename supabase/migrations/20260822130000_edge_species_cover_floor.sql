@@ -16,7 +16,9 @@ create or replace function public.habitat_edge_floor(
 returns double precision
 language sql
 immutable
-set search_path = ''
+-- No SET clause: a configuration setting prevents inlining, and this is pure
+-- arithmetic over its parameters, so it must stay inlineable to preserve the
+-- index-only plans of the readers that call it per row.
 as $edge$
   select case
     when p_matched_fraction >= 0.15 then p_matched_fraction
