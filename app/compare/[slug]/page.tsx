@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRightLeft, ArrowUpRight, CircleAlert } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
+import { MediaImage } from "@/components/media-image";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
@@ -93,7 +93,7 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
         {[{ species: left, image: leftImage }, { species: right, image: rightImage }].map((item) => (
           <figure key={item.species.speciesId}>
             <div className="comparison-reference-frame">
-              {item.image ? <Image src={item.image.localPath ?? item.image.imageUrl ?? item.image.sourceUrl} alt={item.image.alt} fill sizes="(max-width: 700px) calc(100vw - 48px), 50vw" /> : <span>Sense fotografia de referència verificada</span>}
+              {item.image ? <MediaImage asset={item.image} alt={item.image.alt} fill sizes="(max-width: 700px) calc(100vw - 48px), 50vw" /> : <span>Sense fotografia de referència verificada</span>}
             </div>
             <figcaption><strong>{item.species.identity.commonName}</strong><em>{item.species.identity.scientificName}</em>{item.image && <a href={item.image.sourceUrl} target="_blank" rel="noreferrer">{item.image.attribution}</a>}</figcaption>
           </figure>

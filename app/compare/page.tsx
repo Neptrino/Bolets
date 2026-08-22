@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import {
@@ -13,6 +12,7 @@ import {
   Trees
 } from "lucide-react";
 import { CulinaryRating } from "@/components/culinary-rating";
+import { MediaImage } from "@/components/media-image";
 import { PageHeader, PageShell } from "@/components/page-layout";
 import { SeasonIndicator } from "@/components/season-indicator";
 import { QuerySelect } from "@/components/ui/query-select";
@@ -118,7 +118,6 @@ function ComparisonProfileCard({
   const image = species.media.find((asset) => asset.identificationReference && asset.localPath)
     ?? species.media.find((asset) => asset.localPath);
   const sideLetter = side === "left" ? "A" : "B";
-  const imageSource = image?.localPath ?? image?.imageUrl ?? image?.sourceUrl;
 
   return (
     <article className={`compare-profile-card compare-profile-card-${side}`}>
@@ -132,12 +131,12 @@ function ComparisonProfileCard({
           aria-label={`Seleccioneu l’espècie ${side === "left" ? "esquerra" : "dreta"}`}
         />
       </div>
-      <div className={`compare-profile-visual${imageSource ? " has-image" : ""}`}>
-        {imageSource ? (
-          <Image
+      <div className={`compare-profile-visual${image ? " has-image" : ""}`}>
+        {image ? (
+          <MediaImage
+            asset={image}
             className="compare-profile-photo"
-            src={imageSource}
-            alt={image?.alt ?? ""}
+            alt={image.alt}
             fill
             loading={side === "left" ? "eager" : "lazy"}
             fetchPriority={side === "left" ? "high" : "auto"}

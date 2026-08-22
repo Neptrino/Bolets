@@ -1,17 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { MediaImage } from "@/components/media-image";
 import type { MediaAsset } from "@/src/lib/types";
 
 interface SpeciesGalleryProps {
   images: MediaAsset[];
   speciesName: string;
-}
-
-function imageSource(asset: MediaAsset) {
-  return asset.localPath ?? asset.imageUrl ?? asset.sourceUrl;
 }
 
 export function SpeciesGallery({ images, speciesName }: SpeciesGalleryProps) {
@@ -62,9 +58,9 @@ export function SpeciesGallery({ images, speciesName }: SpeciesGalleryProps) {
           onClick={() => setLightboxOpen(true)}
           aria-label={`Amplia la fotografia ${activeIndex + 1} de ${speciesName}`}
         >
-          <Image
+          <MediaImage
+            asset={activeImage}
             className="specimen-photo"
-            src={imageSource(activeImage)}
             alt={activeImage.alt}
             fill
             preload={activeIndex === 0}
@@ -133,8 +129,8 @@ export function SpeciesGallery({ images, speciesName }: SpeciesGalleryProps) {
               aria-current={index === activeIndex ? "true" : undefined}
               key={asset.id}
             >
-              <Image
-                src={imageSource(asset)}
+              <MediaImage
+                asset={asset}
                 alt=""
                 fill
                 sizes="72px"
@@ -157,8 +153,8 @@ export function SpeciesGallery({ images, speciesName }: SpeciesGalleryProps) {
         {lightboxOpen && (
           <div className="species-lightbox-content">
             <div className="species-lightbox-image">
-              <Image
-                src={imageSource(activeImage)}
+              <MediaImage
+                asset={activeImage}
                 alt={activeImage.alt}
                 fill
                 sizes="100vw"

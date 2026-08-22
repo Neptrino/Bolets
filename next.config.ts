@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
           { key: "Content-Type", value: "application/javascript; charset=utf-8" },
         ],
       },
+      {
+        source: "/media/optimized/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
     ];
   },
   async redirects() {
@@ -53,8 +59,10 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ["image/webp"],
-    deviceSizes: [390, 512, 576, 640, 750, 828, 1080, 1200, 1440, 1920, 2048, 3840],
-    qualities: [60, 65, 75, 78, 85],
+    deviceSizes: [384, 640, 960, 1280, 1920],
+    imageSizes: [64, 96, 192, 256],
+    qualities: [65, 75],
+    minimumCacheTTL: 2678400,
     remotePatterns: [
       { protocol: "https", hostname: "commons.wikimedia.org" },
       { protocol: "https", hostname: "upload.wikimedia.org" },

@@ -1,5 +1,6 @@
 node_modules/
 .next/
+public/media/optimized/
 next-env.d.ts
 coverage/
 playwright-report/

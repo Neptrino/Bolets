@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight, Mountain, Trees } from "lucide-react";
 import { CulinaryRating } from "@/components/culinary-rating";
+import { MediaImage } from "@/components/media-image";
 import { SeasonIndicator } from "@/components/season-indicator";
 import { speciesPath } from "@/src/lib/seo";
 import type { SpeciesCardProfile } from "@/src/lib/species-card-profile";
@@ -28,13 +28,12 @@ export function SpeciesCard({
     >
       <div className={`species-card-illustration${referenceImage ? " has-photo" : ""}`}>
         {referenceImage && (
-          <Image
+          <MediaImage
+            asset={referenceImage}
             className="species-card-photo"
-            src={referenceImage.localPath ?? referenceImage.imageUrl ?? referenceImage.sourceUrl}
             alt={referenceImage.alt}
             fill
             sizes="(max-width: 580px) calc(100vw - 48px), (max-width: 1000px) calc(50vw - 37px), (max-width: 1228px) calc(33.333vw - 33px), 377px"
-            quality={60}
           />
         )}
         <CulinaryRating

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, CalendarDays, MapPinned, Mountain, ShieldAlert, Sprout, Trees } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
+import { MediaImage } from "@/components/media-image";
 import { LazyHabitatMap } from "@/components/lazy-habitat-map";
 import { SeasonCalendar } from "@/components/season-calendar";
 import { getSpecies } from "@/data/species";
@@ -58,7 +58,7 @@ export default async function SpeciesLocationPage({ params }: Props) {
             <p className="eyebrow light"><MapPinned size={15} /> {area.name} · guia ecològica local</p>
             <h1>{page.titlePhrase}</h1><em>{species.identity.scientificName}</em><p>{page.introduction}</p>
           </div>
-          {referenceImage && <div className="local-species-image"><Image src={referenceImage.localPath ?? referenceImage.imageUrl ?? referenceImage.sourceUrl} alt={referenceImage.alt} fill preload sizes="(max-width: 760px) calc(100vw - 48px), 42vw" /></div>}
+          {referenceImage && <div className="local-species-image"><MediaImage asset={referenceImage} alt={referenceImage.alt} fill preload sizes="(max-width: 760px) calc(100vw - 48px), 42vw" /></div>}
         </div>
       </header>
       <div className="page-width local-species-content">
