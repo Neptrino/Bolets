@@ -17,9 +17,9 @@ const loader = await createServer({
 
 let profiles;
 try {
-  const { speciesProfiles } = await loader.ssrLoadModule("/data/species.ts");
+  const { globalCandidateSpecies } = await loader.ssrLoadModule("/src/lib/global-predictions.ts");
   const { habitatForestTerms, habitatProfileKey } = await loader.ssrLoadModule("/src/lib/habitat.ts");
-  profiles = speciesProfiles.map((species, index) => {
+  profiles = globalCandidateSpecies.map((species, index) => {
     const phRange = species.ecologicalConfig.soil.phRange;
     return {
       speciesId: species.speciesId,
@@ -58,8 +58,24 @@ async function buildBatch(minY, maxY, reset, complete) {
 
 const firstY = 17_960;
 const finalY = 19_000;
-for (let minY = firstY; minY < finalY; minY += 40) {
+const requestedStartY = Number(process.env.HABITAT_CACHE_START_Y ?? firstY);
+const skipReset = process.env.HABITAT_CACHE_SKIP_RESET === "true";
+if (
+  !Number.isInteger(requestedStartY) ||
+  requestedStartY < firstY ||
+  requestedStartY >= finalY ||
+  requestedStartY % 40 !== 0
+) {
+  throw new Error(`HABITAT_CACHE_START_Y must be a 40-row boundary from ${firstY} to ${finalY - 40}`);
+}
+
+for (let minY = requestedStartY; minY < finalY; minY += 40) {
   const maxY = Math.min(minY + 40, finalY);
-  const updated = await buildBatch(minY, maxY, minY === firstY, maxY === finalY);
+  const updated = await buildBatch(
+    minY,
+    maxY,
+    !skipReset && minY === firstY,
+    maxY === finalY,
+  );
   console.log(`Habitat cache ${minY}–${maxY}: ${updated} display cells`);
 }
