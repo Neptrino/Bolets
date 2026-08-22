@@ -83,5 +83,7 @@ export function predictionModelVersion(ecologyVersion: string) {
 // global variant with topSpeciesId and the all-slots habitat read.
 // v20: combined cell detail returns the full positive ranking (up to 8
 // species) instead of the top 3.
+// v21: the coarse habitat cache now follows the live edible candidate set;
+// invalidate server reads that retained the pre-rebuild empty/error payload.
 export const PREDICTION_CACHE_VERSION =
-  `prediction-map-v20-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;
+  `prediction-map-v21-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;
