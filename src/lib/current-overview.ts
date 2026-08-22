@@ -51,7 +51,10 @@ export const seasonalActivityRank: Record<SeasonalActivity, number> = {
   peak: 4,
 };
 
-export const CURRENT_OVERVIEW_CONCURRENCY = 6;
+// Each spatial Edge request performs three database reads in parallel. Keep
+// the regional fan-out below the production PostgREST pool ceiling so a cold
+// overview cannot starve its own requests or unrelated map traffic.
+export const CURRENT_OVERVIEW_CONCURRENCY = 3;
 
 const catalanCollator = new Intl.Collator("ca", { sensitivity: "base" });
 

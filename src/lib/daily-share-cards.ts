@@ -48,7 +48,7 @@ const cardTime = new Intl.DateTimeFormat("ca-ES", {
   timeZone: "Europe/Madrid",
 });
 
-const DAILY_SHARE_OVERVIEW_LOAD_TIMEOUT_MS = 5_500;
+const DAILY_SHARE_OVERVIEW_LOAD_TIMEOUT_MS = 8_000;
 
 async function loadWithin<T>(
   loader: () => Promise<T>,
