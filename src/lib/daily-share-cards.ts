@@ -1,8 +1,10 @@
 import { regionSelectItems } from "@/data/regions";
 import {
+  bestAreaOverviewItemsByHub,
   loadCachedAreaOverview,
   loadCachedCurrentOverview,
   overviewHubs,
+  rankAreaOverviewItems,
   rankCurrentOverviewItems,
   type AreaOverviewItem,
   type CurrentOverviewItem,
@@ -134,7 +136,7 @@ function regionalShareText(title: string, readings: DailyShareReading[], observe
   return `${heading}\n\n${highlight}\n\nLectura territorial: no confirma presència ni assenyala punts de recol·lecció.\nhttps://bolets.app${mapPath}`;
 }
 
-function latestObservation(items: CurrentOverviewItem[]) {
+function latestObservation(items: Array<CurrentOverviewItem | AreaOverviewItem>) {
   return items.reduce<string | null>((latest, item) => {
     const observedAt = item.summary?.snapshot.observedAt;
     if (!observedAt) return latest;
@@ -167,11 +169,19 @@ function topReadingsByZone(readings: DailyShareReading[], limit = 3) {
  * substitute score or a derived regional average.
  */
 export function createDailyShareCards(items: CurrentOverviewItem[], territoryItems: AreaOverviewItem[] = []): DailyShareCard[] {
-  const observedAt = latestObservation(items);
+  const observedAt = latestObservation([...items, ...territoryItems]);
   const rankedReadings = rankCurrentOverviewItems(items)
     .map(availableReading)
     .filter((reading): reading is DailyShareReading => reading !== null);
-  const globalReadings = topReadingsByZone(rankedReadings);
+  const territoryWinners = bestAreaOverviewItemsByHub(territoryItems);
+  const rankedTerritoryReadings = rankAreaOverviewItems(territoryWinners)
+    .map(availableTerritoryReading)
+    .filter((reading): reading is DailyShareReading => reading !== null);
+  const globalReadings = topReadingsByZone(
+    [...rankedReadings, ...rankedTerritoryReadings].sort((left, right) =>
+      right.score - left.score || left.regionName.localeCompare(right.regionName, "ca")
+    ),
+  );
   const globalMapPath = "/bolets-avui";
 
   const catalonia: DailyShareCard = {
@@ -211,7 +221,7 @@ export function createDailyShareCards(items: CurrentOverviewItem[], territoryIte
       } satisfies DailyShareCard;
     });
 
-  const territoryItemsBySlug = new Map(territoryItems.map((item) => [item.areaSlug, item]));
+  const territoryItemsBySlug = new Map(territoryWinners.map((item) => [item.areaSlug, item]));
   const territoryCards = overviewHubs().map((hub) => {
     const item = territoryItemsBySlug.get(hub.slug);
     const reading = item ? availableTerritoryReading(item) : null;

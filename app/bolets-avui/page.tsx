@@ -16,10 +16,11 @@ import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout
 import { editorialArticleFields, environmentalSources } from "@/data/editorial";
 import {
   dominantLimitingComponent,
+  isAreaOverviewItem,
   loadCachedAreaOverview,
   loadCachedCurrentOverview,
-  rankAreaOverviewItems,
-  topCurrentOverviewItems,
+  rankOverviewItems,
+  type RankedOverviewItem,
   type CurrentOverviewItem,
 } from "@/src/lib/current-overview";
 import { SEASONAL_ACTIVITY_LABELS } from "@/src/lib/seasonality";
@@ -35,7 +36,9 @@ import {
 import { territorialMapPath } from "@/src/lib/territorial-map";
 import type { RegionalPredictionSummary } from "@/src/lib/types";
 
-export const revalidate = 300;
+// The underlying environmental snapshot is daily. Rebuild the publication
+// view at most twice a day instead of re-reading the same scores every 5 min.
+export const revalidate = 43200;
 
 export const metadata: Metadata = {
   title: pageTitle("On trobar bolets avui a Catalunya"),
@@ -65,7 +68,7 @@ const timeOnly = new Intl.DateTimeFormat("ca-ES", {
   timeZone: "Europe/Madrid",
 });
 
-function limitingFactor(item: CurrentOverviewItem) {
+function limitingFactor(item: RankedOverviewItem) {
   return item.summary?.result.components
     .filter((factor) => factor.score !== null)
     .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0]?.label ?? "Sense factor limitant publicat";
@@ -81,7 +84,7 @@ function extentMetric(summary: RegionalPredictionSummary) {
   return "Cap cel·la positiva";
 }
 
-function observationWindow(items: CurrentOverviewItem[]) {
+function observationWindow(items: RankedOverviewItem[]) {
   const observations = items
     .flatMap((item) => item.summary ? [new Date(item.summary.snapshot.observedAt)] : [])
     .sort((left, right) => left.getTime() - right.getTime());
@@ -100,19 +103,31 @@ function monthlyActivityLabel(activity: CurrentOverviewItem["seasonalActivity"])
   return activity === "peak" || activity === "inactive" ? label : `activitat ${label}`;
 }
 
+function overviewLocationName(item: RankedOverviewItem) {
+  return isAreaOverviewItem(item) ? item.areaName : item.regionName;
+}
+
+function overviewMapPath(item: RankedOverviewItem) {
+  return isAreaOverviewItem(item)
+    ? territorialMapPath(item.speciesId, item.regionId, item.bounds)
+    : `/map?species=${item.speciesId}&region=${item.regionId}`;
+}
+
 export default async function MushroomsTodayPage() {
   const [allItems, areaItems] = await Promise.all([
     loadCachedCurrentOverview(),
     loadCachedAreaOverview(),
   ]);
-  const items = topCurrentOverviewItems(allItems);
-  const rankedAreaItems = rankAreaOverviewItems(areaItems);
-  const leader = items[0];
+  const items = rankOverviewItems([...allItems, ...areaItems]);
+  const leader = items.find((item) => item.status === "available" && item.summary);
   const leaderScore = leader?.summary?.bestCell.score;
   const observedWindow = observationWindow(items);
   const overviewSources = [...new Set(
-    allItems.flatMap((item) => item.summary?.snapshot.source ?? []),
+    items.flatMap((item) => item.summary?.snapshot.source ?? []),
   )];
+  const leaderName = leader ? overviewLocationName(leader) : null;
+  const leaderGridSizeKm = leader?.summary ? leader.summary.gridSizeM / 1000 : null;
+  const leaderMapPath = leader ? overviewMapPath(leader) : "/map";
 
   return (
     <PageShell as="article">
@@ -153,16 +168,16 @@ export default async function MushroomsTodayPage() {
         <section className="current-leader" aria-labelledby="current-leader-title">
           <div className="current-leader-copy">
             <p className="current-leader-eyebrow"><MapPinned size={15} /> Lectura més favorable ara</p>
-            <h2 id="current-leader-title">{leader.regionName}</h2>
+            <h2 id="current-leader-title">{leaderName}</h2>
             <p><Link href={speciesPath(leader)} className="current-leader-species-link"><strong>{leader.speciesName}</strong><ArrowUpRight size={14} /></Link> forma la combinació amb la puntuació més alta entre les parelles d’espècie i zona que han passat els controls de publicació.</p>
-            <Link href={`/map?species=${leader.speciesId}&region=${leader.regionId}`} className="current-leader-link">
+            <Link href={leaderMapPath} className="current-leader-link">
               <Map size={16} /> Veure al mapa <ArrowUpRight size={16} />
             </Link>
           </div>
           <div className="current-leader-score" aria-label={`Millor cel·la territorial ${leaderScore} sobre 100`}>
             <strong>{leaderScore}</strong>
             <span>/ 100</span>
-            <small>Millor cel·la de 10 km · {opportunityLabel(leaderScore)}</small>
+            <small>Millor cel·la de {leaderGridSizeKm} km · {opportunityLabel(leaderScore)}</small>
           </div>
           <dl className="current-leader-signals">
             <div><dt><MapPinned size={16} /> Extensió compatible</dt><dd>{extentMetric(leader.summary)}</dd></div>
@@ -186,7 +201,7 @@ export default async function MushroomsTodayPage() {
         <header className="current-board-heading">
           <div>
             <p className="eyebrow">Comparador territorial</p>
-            <h2 id="current-board-title">Top 10 de zones i espècies</h2>
+            <h2 id="current-board-title">Zones i espècies, de més a menys puntuació</h2>
           </div>
           {observedWindow ? (
             <div>
@@ -199,22 +214,29 @@ export default async function MushroomsTodayPage() {
           <div className="current-board-columns" aria-hidden="true">
             <span>Posició</span><span>Zona i espècie</span><span>Millor cel·la</span><span>Extensió</span><span>Mapa</span>
           </div>
-          <ol className="current-overview-grid" aria-label="Top 10 de puntuacions actuals per espècie i zona">
+          <ol className="current-overview-grid" aria-label="Puntuacions actuals per espècie i territori, de més a menys">
             {items.map((item, index) => {
             const summary = item.summary;
             const score = summary?.bestCell.score;
             const isAvailable = item.status === "available" && summary !== null && score !== null && score !== undefined;
             const rank = isAvailable ? index + 1 : null;
+            const isArea = isAreaOverviewItem(item);
+            const locationName = isArea ? item.areaName : item.regionName;
+            const locationLabel = isArea ? item.areaTypeLabel : "regió de predicció";
+            const gridSizeKm = summary ? summary.gridSizeM / 1000 : isArea ? 1 : 10;
+            const mapPath = isArea
+              ? territorialMapPath(item.speciesId, item.regionId, item.bounds)
+              : `/map?species=${item.speciesId}&region=${item.regionId}`;
 
             return (
-              <li className={`current-overview-card is-${item.status}`} key={`${item.speciesId}-${item.regionId}`}>
+              <li className={`current-overview-card is-${item.status}`} key={`${isArea ? item.areaSlug : item.regionId}-${item.speciesId}`}>
                 <span className="current-row-rank" aria-label={rank ? `Posició ${rank}` : "Sense posició"}>{rank ? String(rank).padStart(2, "0") : "—"}</span>
                 <div className="current-overview-card-heading">
-                  <h3>{item.regionName}</h3>
-                  <p className="current-row-species"><Link href={speciesPath(item)} className="current-row-species-link">{item.speciesName}<ArrowUpRight size={13} /></Link><span>Calendari: {monthlyActivityLabel(item.seasonalActivity)}</span></p>
+                  <h3>{isArea ? <Link href={item.path} className="current-row-species-link">{locationName}<ArrowUpRight size={13} /></Link> : locationName}</h3>
+                  <p className="current-row-species"><Link href={speciesPath(item)} className="current-row-species-link">{item.speciesName}<ArrowUpRight size={13} /></Link><span>{locationLabel} · {monthlyActivityLabel(item.seasonalActivity)}</span></p>
                 </div>
                 {isAvailable && summary && score !== null && score !== undefined ? (
-                  <div className="current-score" aria-label={`Millor cel·la de 10 km ${score} sobre 100, ${opportunityLabel(score)}`}>
+                  <div className="current-score" aria-label={`Millor cel·la de ${gridSizeKm} km ${score} sobre 100, ${opportunityLabel(score)}`}>
                     <div><strong>{score}</strong><span>/100 · {opportunityLabel(score)}</span></div>
                     <span className="current-score-track" aria-hidden="true"><span style={{ width: `${score}%` }} /></span>
                   </div>
@@ -226,12 +248,12 @@ export default async function MushroomsTodayPage() {
                 )}
                 {summary ? (
                   <dl className="current-row-signals">
-                    <div><dt>Cel·les compatibles</dt><dd>{extentMetric(summary)}</dd></div>
+                    <div><dt>Cel·les compatibles de {gridSizeKm} km</dt><dd>{extentMetric(summary)}</dd></div>
                   </dl>
                 ) : (
                   <p className="current-row-signals-empty">—</p>
                 )}
-                <Link href={`/map?species=${item.speciesId}&region=${item.regionId}`} className="current-row-map" aria-label={`Veure al mapa: ${item.regionName}, ${item.speciesName}`}>
+                <Link href={mapPath} className="current-row-map" aria-label={`Veure al mapa: ${locationName}, ${item.speciesName}`}>
                   <Map size={15} /><span>Veure mapa</span>
                 </Link>
               </li>
@@ -241,55 +263,7 @@ export default async function MushroomsTodayPage() {
         </> : <div className="current-board-empty"><strong>Cap combinació publicable ara mateix</strong><p>Les dades insuficients o temporalment no disponibles no reben cap puntuació substitutiva.</p></div>}
       </section>
 
-      {rankedAreaItems.length > 0 ? (
-        <section className="current-board" aria-labelledby="area-board-title">
-          <header className="current-board-heading">
-            <div>
-              <p className="eyebrow">Massissos, paratges i comarques</p>
-              <h2 id="area-board-title">La mateixa lectura, a escala de massís, paratge i comarca</h2>
-            </div>
-          </header>
-          <p className="current-board-updated">Cada hub territorial avalua a 1 km totes les espècies locals documentades que són en temporada. Guanya la millor puntuació actual; el recompte de cel·les positives mostra si és una clapa aïllada o una resposta més estesa.</p>
-          <ol className="current-overview-grid" aria-label="Lectura actual per massís, paratge i comarca">
-            {rankedAreaItems.map((item, index) => {
-              const summary = item.summary;
-              const score = summary?.bestCell.score;
-              const isAvailable = item.status === "available" && summary !== null && score !== null && score !== undefined;
-              return (
-                <li className={`current-overview-card is-${item.status}`} key={item.areaSlug}>
-                  <span className="current-row-rank" aria-label={isAvailable ? `Posició ${index + 1}` : "Sense posició"}>{isAvailable ? String(index + 1).padStart(2, "0") : "—"}</span>
-                  <div className="current-overview-card-heading">
-                    <h3><Link href={item.path} className="current-row-species-link">{item.areaName}<ArrowUpRight size={13} /></Link></h3>
-                    <p className="current-row-species"><span>{item.areaTypeLabel} · {item.speciesName} · {monthlyActivityLabel(item.seasonalActivity)}</span></p>
-                  </div>
-                  {isAvailable && summary && score !== null && score !== undefined ? (
-                    <div className="current-score" aria-label={`Millor cel·la d’1 km ${score} sobre 100, ${opportunityLabel(score)}`}>
-                      <div><strong>{score}</strong><span>/100 · {opportunityLabel(score)}</span></div>
-                      <span className="current-score-track" aria-hidden="true"><span style={{ width: `${score}%` }} /></span>
-                    </div>
-                  ) : (
-                    <div className="current-unavailable">
-                      <strong>{item.status === "unavailable" ? "Temporalment no disponible" : "Dades insuficients"}</strong>
-                      <span>{item.status === "unavailable" ? "La font ambiental no ha respost" : "Resultat retingut pels controls"}</span>
-                    </div>
-                  )}
-                  {summary ? (
-                    <dl className="current-row-signals">
-                      <div><dt>Cel·les compatibles d’1 km</dt><dd>{extentMetric(summary)}</dd></div>
-                    </dl>
-                  ) : (
-                    <p className="current-row-signals-empty">—</p>
-                  )}
-                  <Link href={territorialMapPath(item.speciesId, item.regionId, item.bounds)} className="current-row-map" aria-label={`Veure al mapa: ${item.speciesName} ${item.prepositionalName}`}>
-                    <Map size={15} /><span>Veure mapa</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ol>
-          <p className="prediction-zone-note">La millor cel·la d’1 km és una comparació local, no una promesa sobre tot el territori. «Veure mapa» obre la mateixa espècie i emmarca exactament la finestra territorial avaluada. No confirma presència ni garanteix trobar bolets.</p>
-        </section>
-      ) : null}
+      <p className="prediction-zone-note">Les regions es comparen amb cel·les de 10 km i les comarques, massissos i paratges amb cel·les d’1 km. La millor cel·la és una comparació territorial, no una promesa sobre tota la zona. No confirma presència ni garanteix trobar bolets.</p>
 
       {overviewSources.length > 0 ? (
         <aside className="current-overview-provenance" aria-label="Procedència de les dades">

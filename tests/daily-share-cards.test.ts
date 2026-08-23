@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createDailyShareCards, createFavourableDailySharePreviewCards } from "@/src/lib/daily-share-cards";
-import type { CurrentOverviewItem } from "@/src/lib/current-overview";
+import type { AreaOverviewItem, CurrentOverviewItem } from "@/src/lib/current-overview";
 
 const publishable = {
   status: "available",
@@ -37,6 +37,36 @@ describe("daily share cards", () => {
       available: false,
       readings: [],
     });
+  });
+
+  it("lets the unified Catalunya card rank a territorial winner above a region", () => {
+    const items = [
+      { speciesId: "boletus-edulis", regionId: "pirineus", speciesName: "Cep", regionName: "Pirineus", seasonalActivity: "good", ...publishable },
+    ] as unknown as CurrentOverviewItem[];
+    const territoryItems = [
+      {
+        areaSlug: "ripolles",
+        areaName: "Ripollès",
+        areaTypeLabel: "comarca",
+        prepositionalName: "al Ripollès",
+        regionId: "pirineus",
+        bounds: { west: 2, south: 42, east: 2.5, north: 42.5 },
+        path: "/zones/ripolles",
+        speciesId: "boletus-edulis",
+        speciesName: "Cep",
+        seasonalActivity: "good",
+        status: "available",
+        summary: { ...publishable.summary, bestCell: { score: 91 } },
+      },
+    ] as unknown as AreaOverviewItem[];
+
+    const cards = createDailyShareCards(items, territoryItems);
+    expect(cards.find((card) => card.slug === "catalunya")?.readings[0]).toMatchObject({
+      regionName: "Ripollès",
+      speciesName: "Cep",
+      score: 91,
+    });
+    expect(cards.find((card) => card.slug === "zona-ripolles")?.readings[0]?.score).toBe(91);
   });
 
   it("uses a plain no-conditions message when every published reading is zero", () => {

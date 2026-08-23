@@ -59,6 +59,7 @@ export const seasonalActivityRank: Record<SeasonalActivity, number> = {
 // the regional fan-out below the production PostgREST pool ceiling so a cold
 // overview cannot starve its own requests or unrelated map traffic.
 export const CURRENT_OVERVIEW_CONCURRENCY = 3;
+export const DAILY_OVERVIEW_REVALIDATE_SECONDS = 12 * 60 * 60;
 
 const catalanCollator = new Intl.Collator("ca", { sensitivity: "base" });
 
@@ -272,6 +273,12 @@ export interface AreaOverviewItem {
   summary: AreaPredictionSummary | null;
 }
 
+export type RankedOverviewItem = CurrentOverviewItem | AreaOverviewItem;
+
+export function isAreaOverviewItem(item: RankedOverviewItem): item is AreaOverviewItem {
+  return "areaSlug" in item;
+}
+
 /**
  * Every in-season edible species with a published local guide is eligible.
  * Current 1 km scores choose the hub's representative only after all of them
@@ -338,63 +345,50 @@ export async function loadAreaOverview(
         };
       }));
 
-  return targetsByHub.map((hubTargets, index) => {
-    const fallback = hubTargets[0]!;
+  return targetsByHub.flatMap((hubTargets, index) => {
     const result = settled[index]!;
-    const candidates = result.status === "fulfilled"
-      ? hubTargets.flatMap((target) => {
-          const summary = result.value[target.speciesId] ?? null;
-          return publishableSummary(summary) ? [{ target, summary: summary! }] : [];
-        })
-      : [];
-    const selected = candidates.sort((left, right) =>
-      (right.summary.bestCell.score - left.summary.bestCell.score) ||
-      (right.summary.score20CellShare - left.summary.score20CellShare) ||
-      (right.summary.positiveCellShare - left.summary.positiveCellShare) ||
-      ((right.summary.result.score ?? -1) - (left.summary.result.score ?? -1)) ||
-      catalanCollator.compare(
-        getSpecies(left.target.speciesId)?.identity.commonName ?? left.target.speciesId,
-        getSpecies(right.target.speciesId)?.identity.commonName ?? right.target.speciesId,
-      )
-    )[0];
-    const target = selected?.target ?? fallback;
-    const summary = selected?.summary ?? null;
-    const species = getSpecies(target.speciesId);
+    return hubTargets.map((target) => {
+      const candidate = result.status === "fulfilled"
+        ? result.value[target.speciesId] ?? null
+        : null;
+      const summary = publishableSummary(candidate) ? candidate : null;
+      const species = getSpecies(target.speciesId);
 
-    return {
-      areaSlug: target.hub.slug,
-      areaName: target.hub.name,
-      areaTypeLabel: target.hub.typeLabel,
-      prepositionalName: target.hub.prepositionalName,
-      regionId: target.hub.regionId,
-      bounds: target.hub.bounds,
-      path: target.hub.path,
-      speciesId: target.speciesId,
-      speciesName: species?.identity.commonName ?? target.speciesId,
-      seasonalActivity: target.seasonalActivity,
-      status: result.status === "rejected"
-        ? "unavailable"
-        : selected
-          ? "available"
-          : "insufficient",
-      summary,
-    };
+      return {
+        areaSlug: target.hub.slug,
+        areaName: target.hub.name,
+        areaTypeLabel: target.hub.typeLabel,
+        prepositionalName: target.hub.prepositionalName,
+        regionId: target.hub.regionId,
+        bounds: target.hub.bounds,
+        path: target.hub.path,
+        speciesId: target.speciesId,
+        speciesName: species?.identity.commonName ?? target.speciesId,
+        seasonalActivity: target.seasonalActivity,
+        status: result.status === "rejected"
+          ? "unavailable" as const
+          : summary
+            ? "available" as const
+            : "insufficient" as const,
+        summary,
+      };
+    });
   });
 }
 
 const loadCachedCurrentOverviewData = unstable_cache(
   () => loadCurrentOverview(),
-  ["current-overview-v2"],
-  { revalidate: 300, tags: ["current-overview"] },
+  ["current-overview-v3"],
+  { revalidate: DAILY_OVERVIEW_REVALIDATE_SECONDS, tags: ["current-overview"] },
 );
 
 const loadCachedAreaOverviewData = unstable_cache(
   () => loadAreaOverview(),
-  ["area-overview-v2"],
-  { revalidate: 300, tags: ["area-overview"] },
+  ["area-overview-v3"],
+  { revalidate: DAILY_OVERVIEW_REVALIDATE_SECONDS, tags: ["area-overview"] },
 );
 
-/** Shared five-minute snapshots for pages that render the same daily board. */
+/** Shared twice-daily snapshots for Avui, Compartir and generated images. */
 export async function loadCachedCurrentOverview() {
   return loadCachedCurrentOverviewData();
 }
@@ -405,15 +399,34 @@ export async function loadCachedAreaOverview() {
 
 const catalanAreaCollator = new Intl.Collator("ca", { sensitivity: "base" });
 
+const overviewStatusRank: Record<CurrentOverviewStatus, number> = {
+  available: 0,
+  insufficient: 1,
+  unavailable: 2,
+};
+
+/**
+ * One ranking for regions, comarques, massissos and paratges. Scale remains
+ * visible as context, but never creates a separate leaderboard.
+ */
+export function rankOverviewItems(items: RankedOverviewItem[]) {
+  return [...items].sort((left, right) => {
+    const locationLeft = isAreaOverviewItem(left) ? left.areaName : left.regionName;
+    const locationRight = isAreaOverviewItem(right) ? right.areaName : right.regionName;
+    return (overviewStatusRank[left.status] - overviewStatusRank[right.status]) ||
+      ((right.summary?.bestCell.score ?? -1) - (left.summary?.bestCell.score ?? -1)) ||
+      ((right.summary?.score20CellShare ?? -1) - (left.summary?.score20CellShare ?? -1)) ||
+      ((right.summary?.positiveCellShare ?? -1) - (left.summary?.positiveCellShare ?? -1)) ||
+      (seasonalActivityRank[right.seasonalActivity] - seasonalActivityRank[left.seasonalActivity]) ||
+      catalanAreaCollator.compare(locationLeft, locationRight) ||
+      catalanAreaCollator.compare(left.speciesName, right.speciesName);
+  });
+}
+
 /** Publishable hubs first, best 1 km cell first; withheld hubs stay visible. */
 export function rankAreaOverviewItems(items: AreaOverviewItem[]) {
-  const statusRank: Record<CurrentOverviewStatus, number> = {
-    available: 0,
-    insufficient: 1,
-    unavailable: 2,
-  };
   return [...items].sort((left, right) =>
-    (statusRank[left.status] - statusRank[right.status]) ||
+    (overviewStatusRank[left.status] - overviewStatusRank[right.status]) ||
     ((right.summary?.bestCell.score ?? -1) - (left.summary?.bestCell.score ?? -1)) ||
     ((right.summary?.score20CellShare ?? -1) - (left.summary?.score20CellShare ?? -1)) ||
     ((right.summary?.positiveCellShare ?? -1) - (left.summary?.positiveCellShare ?? -1)) ||
@@ -421,16 +434,21 @@ export function rankAreaOverviewItems(items: AreaOverviewItem[]) {
   );
 }
 
+/** Select one winning species per local hub for its individual share card. */
+export function bestAreaOverviewItemsByHub(items: AreaOverviewItem[]) {
+  const grouped = new Map<string, AreaOverviewItem[]>();
+  for (const item of items) {
+    const group = grouped.get(item.areaSlug) ?? [];
+    group.push(item);
+    grouped.set(item.areaSlug, group);
+  }
+  return [...grouped.values()].map((group) => rankAreaOverviewItems(group)[0]!);
+}
+
 /** Sort publishable readings by score while keeping withheld states visible. */
 export function rankCurrentOverviewItems(items: CurrentOverviewItem[]) {
-  const statusRank: Record<CurrentOverviewStatus, number> = {
-    available: 0,
-    insufficient: 1,
-    unavailable: 2,
-  };
-
   return [...items].sort((left, right) => {
-    const statusDifference = statusRank[left.status] - statusRank[right.status];
+    const statusDifference = overviewStatusRank[left.status] - overviewStatusRank[right.status];
     if (statusDifference) return statusDifference;
 
     const bestCellDifference = (right.summary?.bestCell.score ?? -1) -

@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { DAILY_OVERVIEW_REVALIDATE_SECONDS } from "@/src/lib/current-overview";
 import { isLocalFavourablePreview, loadDailyShareCard, loadFavourableDailySharePreviewCard, type DailyShareCard, type DailyShareFormat } from "@/src/lib/daily-share-cards";
 import { getSuitabilityBand, suitabilityScale } from "@/src/lib/suitability-scale";
 
@@ -290,7 +291,10 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
         : <PortraitShareCard card={card} format={format} homeHeroUrl={homeHeroUrl} isPreview={isPreview} />,
       dimensions,
     );
-    image.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=300");
+    image.headers.set(
+      "Cache-Control",
+      `public, s-maxage=${DAILY_OVERVIEW_REVALIDATE_SECONDS}, stale-while-revalidate=${DAILY_OVERVIEW_REVALIDATE_SECONDS}`,
+    );
     return image;
   }
 
@@ -379,6 +383,9 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
     { width: 1200, height: 675 },
   );
 
-  image.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=300");
+  image.headers.set(
+    "Cache-Control",
+    `public, s-maxage=${DAILY_OVERVIEW_REVALIDATE_SECONDS}, stale-while-revalidate=${DAILY_OVERVIEW_REVALIDATE_SECONDS}`,
+  );
   return image;
 }

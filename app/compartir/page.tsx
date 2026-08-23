@@ -13,7 +13,8 @@ import {
   type DailyShareCard,
 } from "@/src/lib/daily-share-cards";
 
-export const revalidate = 300;
+// Keep the publication kit on the same twice-daily snapshot as /bolets-avui.
+export const revalidate = 43200;
 
 export const metadata: Metadata = {
   title: "Targetes diàries per compartir",

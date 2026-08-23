@@ -2,13 +2,16 @@ import { describe, expect, it } from "vitest";
 import { getSpecies, speciesProfiles } from "@/data/species";
 import {
   CURRENT_OVERVIEW_CONCURRENCY,
+  DAILY_OVERVIEW_REVALIDATE_SECONDS,
   areaOverviewTargetsForMonth,
+  bestAreaOverviewItemsByHub,
   currentOverviewTargetsForMonth,
   dominantLimitingComponent,
   loadAreaOverview,
   loadCurrentOverview,
   overviewHubs,
   rankCurrentOverviewItems,
+  rankOverviewItems,
   seasonalActivityRank,
   topCurrentOverviewItems,
 } from "@/src/lib/current-overview";
@@ -68,6 +71,10 @@ function summary(regionId: RegionId, options: { stale?: boolean; completeness?: 
 }
 
 describe("current-condition overview", () => {
+  it("keeps publication data on a twice-daily cache", () => {
+    expect(DAILY_OVERVIEW_REVALIDATE_SECONDS).toBe(12 * 60 * 60);
+  });
+
   it("consolidates territorial hubs into bounded shared 1 km summary buckets", () => {
     const buckets = overviewHubs().flatMap((hub) => areaSummaryBucketsForBounds(hub.bounds));
     const uniqueBuckets = new Set(
@@ -208,7 +215,7 @@ describe("current-condition overview", () => {
     expect(ranked[0]?.summary?.bestCell.score).toBe(16);
   });
 
-  it("lets current 1 km scores choose a hub species instead of the calendar tie-break", async () => {
+  it("returns every territorial combination and lets current 1 km scores choose each hub card", async () => {
     const ripollesTargets = areaOverviewTargetsForMonth("ago")
       .filter((target) => target.hub.slug === "ripolles");
     expect(ripollesTargets.map((target) => target.speciesId)).toContain("cantharellus-cibarius");
@@ -232,11 +239,40 @@ describe("current-condition overview", () => {
         return [speciesId, areaSummary];
       })), "ago");
 
-    expect(items.find((item) => item.areaSlug === "ripolles")).toMatchObject({
+    const ripollesItems = items.filter((item) => item.areaSlug === "ripolles");
+    expect(ripollesItems).toHaveLength(ripollesTargets.length);
+    expect(ripollesItems.map((item) => item.speciesId)).toEqual(
+      expect.arrayContaining(ripollesTargets.map((target) => target.speciesId)),
+    );
+    expect(bestAreaOverviewItemsByHub(items).find((item) => item.areaSlug === "ripolles")).toMatchObject({
       speciesId: "boletus-edulis",
       speciesName: "Cep",
       summary: { gridSizeM: 1000, bestCell: { score: 48 } },
     });
+  });
+
+  it("uses one score order across regions and territorial types", async () => {
+    const regional = await loadCurrentOverview(async (speciesIds, regionId) =>
+      Object.fromEntries(speciesIds.map((speciesId) => [
+        speciesId,
+        summary(regionId, { score: 0, bestCellScore: regionId === "pirineus" ? 45 : 12 }),
+      ])), "ago");
+    const territorial = await loadAreaOverview(async (speciesIds, hub) =>
+      Object.fromEntries(speciesIds.map((speciesId) => {
+        const regionalSummary = summary(hub.regionId, {
+          score: 0,
+          bestCellScore: hub.slug === "ripolles" && speciesId === "boletus-edulis" ? 78 : 8,
+        });
+        return [speciesId, { ...regionalSummary, areaSlug: hub.slug, gridSizeM: 1000 }];
+      })), "ago");
+
+    const ranked = rankOverviewItems([...regional, ...territorial]);
+    expect(ranked[0]).toMatchObject({ areaSlug: "ripolles", speciesId: "boletus-edulis" });
+    expect(ranked.every((item, index) =>
+      index === 0 ||
+      item.status !== "available" ||
+      (ranked[index - 1]?.summary?.bestCell.score ?? -1) >= (item.summary?.bestCell.score ?? -1)
+    )).toBe(true);
   });
 
   it("returns an honest empty top ten when every environmental read fails", async () => {
