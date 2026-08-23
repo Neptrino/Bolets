@@ -9,7 +9,7 @@
     "build": "next build",
     "start": "next start --port 3101",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:terrain-live": "vitest run tests/terrain-thermal.live.test.ts --reporter=verbose --disableConsoleIntercept",
