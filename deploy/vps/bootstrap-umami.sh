@@ -53,6 +53,17 @@ if [ -z "$token" ]; then
   token=$(login "$UMAMI_ADMIN_PASSWORD")
 fi
 
+auth_status=$(curl --silent --show-error \
+  --output "$response_file" \
+  --write-out '%{http_code}' \
+  --header "Authorization: Bearer $token" \
+  "$umami_api_url/api/me")
+
+if [ "$auth_status" != 200 ]; then
+  echo "The configured Umami administrator session could not be verified" >&2
+  exit 77
+fi
+
 status_code=$(curl --silent --show-error \
   --output "$response_file" \
   --write-out '%{http_code}' \
@@ -66,17 +77,26 @@ if [ "$status_code" = 200 ] &&
   exit 0
 fi
 
-if [ "$status_code" != 404 ] && ! jq -e '. == null' "$response_file" >/dev/null 2>&1; then
+# Umami intentionally responds with 401 instead of revealing whether an
+# inaccessible website UUID exists. The administrator session was verified
+# above, so 401 means this fixed website is not yet available to that account.
+if [ "$status_code" != 401 ] && [ "$status_code" != 404 ] &&
+   ! jq -e '. == null' "$response_file" >/dev/null 2>&1; then
   echo "Unexpected response while checking the Umami website: HTTP $status_code" >&2
   exit 69
 fi
 
 jq -nc --arg id "$UMAMI_WEBSITE_ID" --arg name Bolets --arg domain bolets.app \
   '{id: $id, name: $name, domain: $domain}' |
-  curl --fail-with-body --silent --show-error \
+  curl --fail-with-body --silent --show-error --output "$response_file" \
     --header 'Content-Type: application/json' \
     --header "Authorization: Bearer $token" \
-    --data-binary @- \
-    "$umami_api_url/api/websites" >/dev/null
+    --data-binary @- "$umami_api_url/api/websites"
+
+if ! jq -e --arg id "$UMAMI_WEBSITE_ID" --arg domain bolets.app \
+  '.id == $id and .domain == $domain' "$response_file" >/dev/null; then
+  echo "Umami returned an unexpected website after creation" >&2
+  exit 69
+fi
 
 echo "Umami administrator and Bolets website are configured"
