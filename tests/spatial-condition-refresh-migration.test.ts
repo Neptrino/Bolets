@@ -11,6 +11,15 @@ const migration = readFileSync(
   ),
   "utf8",
 );
+const replayRefreshMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260823180823_refresh_condition_caches_after_same_day_reingestion.sql",
+  ),
+  "utf8",
+);
 const atmospherePipeline = readFileSync(
   join(process.cwd(), "supabase", "functions", "refresh-spatial-environment", "index.ts"),
   "utf8",
@@ -36,6 +45,15 @@ describe("spatial condition refresh after ingestion", () => {
     );
     expect(soilPipeline).toMatch(
       /soilAlreadyComplete && forecastAlreadyComplete[\s\S]*refreshSpatialLevelConditionsAfterIngestion\(supabase, today\)/,
+    );
+  });
+
+  it("tracks the observed generation instead of skipping a same-day replay", () => {
+    expect(replayRefreshMigration).toContain("max(updated_at)");
+    expect(replayRefreshMigration).toContain("cache_generation_at >= observed_generation_at");
+    expect(replayRefreshMigration).toContain("'spatial-condition-coarse'");
+    expect(replayRefreshMigration).toContain(
+      "perform public.refresh_spatial_level_conditions(10000, p_snapshot_date)",
     );
   });
 

@@ -6,6 +6,15 @@ const migration = readFileSync(
   join(process.cwd(), "supabase", "migrations", "20260823093000_cache_1km_territorial_conditions.sql"),
   "utf8",
 );
+const replayRefreshMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260823180823_refresh_condition_caches_after_same_day_reingestion.sql",
+  ),
+  "utf8",
+);
 const reader = readFileSync(
   join(process.cwd(), "supabase", "functions", "read-spatial-environment", "index.ts"),
   "utf8",
@@ -21,6 +30,15 @@ describe("territorial condition cache", () => {
     expect(migration).toContain("refresh_territorial_level_conditions_after_ingestion");
     expect(migration).toContain("pipeline in ('spatial-atmosphere', 'spatial-soil')");
     expect(migration).toContain("perform public.refresh_spatial_level_conditions(1000, p_snapshot_date)");
+  });
+
+  it("refreshes 1 km conditions after a newer same-day observed generation", () => {
+    expect(replayRefreshMigration).toContain("max(updated_at)");
+    expect(replayRefreshMigration).toContain("cache_generation_at >= observed_generation_at");
+    expect(replayRefreshMigration).toContain("'spatial-condition-territorial'");
+    expect(replayRefreshMigration).toContain(
+      "perform public.refresh_spatial_level_conditions(1000, p_snapshot_date)",
+    );
   });
 
   it("serves 1 km cells from the precomputed reader", () => {

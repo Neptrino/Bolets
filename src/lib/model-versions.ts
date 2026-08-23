@@ -85,5 +85,7 @@ export function predictionModelVersion(ecologyVersion: string) {
 // species) instead of the top 3.
 // v21: the coarse habitat cache now follows the live edible candidate set;
 // invalidate server reads that retained the pre-rebuild empty/error payload.
+// v22: invalidate 1 km responses materialized before a same-day observed
+// replay completed; generation cursors now prevent that stale cache state.
 export const PREDICTION_CACHE_VERSION =
-  `prediction-map-v21-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;
+  `prediction-map-v22-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;
