@@ -404,6 +404,11 @@ export default async function SpeciesPage({
                           || page.rightSpeciesId === relatedSpecies.speciesId
                         ))
                       : undefined;
+                    const comparisonHref = relatedSpecies
+                      ? comparison
+                        ? `/compare/${comparison.slug}`
+                        : `/compare?left=${species.speciesId}&right=${relatedSpecies.speciesId}`
+                      : undefined;
 
                     return (
                       <article key={item.scientificName}>
@@ -424,9 +429,9 @@ export default async function SpeciesPage({
                         <p>{item.mainDifferences}</p>
                         <div className="similar-card-footer">
                           <EdibilityBadge status={item.edibility} compact />
-                          {comparison && (
+                          {comparisonHref && (
                             <Link
-                              href={`/compare/${comparison.slug}`}
+                              href={comparisonHref}
                               className="similar-comparison-link"
                               aria-label={`Comparar ${species.identity.commonName} i ${item.commonName}`}
                             >
