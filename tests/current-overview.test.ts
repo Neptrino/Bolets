@@ -7,10 +7,16 @@ import {
   dominantLimitingComponent,
   loadAreaOverview,
   loadCurrentOverview,
+  overviewHubs,
   rankCurrentOverviewItems,
   seasonalActivityRank,
   topCurrentOverviewItems,
 } from "@/src/lib/current-overview";
+import {
+  AREA_BUCKET_CONCURRENCY,
+  AREA_SUMMARY_BUCKET_DEGREES,
+  areaSummaryBucketsForBounds,
+} from "@/src/lib/predictions";
 import type { AreaPredictionSummary, RegionId, RegionalPredictionSummary } from "@/src/lib/types";
 
 function summary(regionId: RegionId, options: { stale?: boolean; completeness?: number; score?: number; bestCellScore?: number } = {}): RegionalPredictionSummary {
@@ -62,6 +68,21 @@ function summary(regionId: RegionId, options: { stale?: boolean; completeness?: 
 }
 
 describe("current-condition overview", () => {
+  it("consolidates territorial hubs into bounded shared 1 km summary buckets", () => {
+    const buckets = overviewHubs().flatMap((hub) => areaSummaryBucketsForBounds(hub.bounds));
+    const uniqueBuckets = new Set(
+      buckets.map((bucket) => `${bucket.west}:${bucket.south}:${bucket.east}:${bucket.north}`),
+    );
+
+    expect(buckets).toHaveLength(68);
+    expect(uniqueBuckets.size).toBe(33);
+    expect(AREA_BUCKET_CONCURRENCY).toBeLessThanOrEqual(2);
+    expect(buckets.every((bucket) =>
+      bucket.east - bucket.west <= AREA_SUMMARY_BUCKET_DEGREES &&
+      bucket.north - bucket.south <= AREA_SUMMARY_BUCKET_DEGREES
+    )).toBe(true);
+  });
+
   it("names the component that limits most publishable readings", () => {
     const lowWater = summary("pirineus", { score: 0 });
     lowWater.result.components.find((c) => c.id === "water")!.score = 5;

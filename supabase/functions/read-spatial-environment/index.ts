@@ -437,7 +437,7 @@ Deno.serve(async (request) => {
 
     const rpc = resolution === 250
       ? "read_latest_cell_environment"
-      : resolution >= 2500
+      : resolution >= 1000
         ? "read_precomputed_cell_environment"
         : "read_aggregated_cell_environment";
     const rpcParams = {

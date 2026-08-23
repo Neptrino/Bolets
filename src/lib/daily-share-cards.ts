@@ -1,5 +1,6 @@
 import { regionSelectItems } from "@/data/regions";
 import {
+  loadAreaOverview,
   loadCurrentOverview,
   overviewHubs,
   rankCurrentOverviewItems,
@@ -49,6 +50,7 @@ const cardTime = new Intl.DateTimeFormat("ca-ES", {
 });
 
 const DAILY_SHARE_OVERVIEW_LOAD_TIMEOUT_MS = 8_000;
+const DAILY_SHARE_TERRITORY_LOAD_TIMEOUT_MS = 15_000;
 
 async function loadWithin<T>(
   loader: () => Promise<T>,
@@ -234,16 +236,19 @@ export function createDailyShareCards(items: CurrentOverviewItem[], territoryIte
 }
 
 export async function loadDailyShareCards() {
-  // The publication kit only generates imagery for the overview and top
-  // regional readings. Territory hubs remain in the compact directory below;
-  // loading every 1 km hub here would fan out slow reads before any card can
-  // appear and can starve the shared regional overview on a cold request.
-  const items = await loadWithin(
-    loadCurrentOverview,
-    [] as CurrentOverviewItem[],
-    DAILY_SHARE_OVERVIEW_LOAD_TIMEOUT_MS,
-  );
-  return createDailyShareCards(items);
+  const [items, territoryItems] = await Promise.all([
+    loadWithin(
+      loadCurrentOverview,
+      [] as CurrentOverviewItem[],
+      DAILY_SHARE_OVERVIEW_LOAD_TIMEOUT_MS,
+    ),
+    loadWithin(
+      loadAreaOverview,
+      [] as AreaOverviewItem[],
+      DAILY_SHARE_TERRITORY_LOAD_TIMEOUT_MS,
+    ),
+  ]);
+  return createDailyShareCards(items, territoryItems);
 }
 
 export async function loadDailyShareCard(slug: string) {

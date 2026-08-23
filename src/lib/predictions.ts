@@ -7,7 +7,6 @@ import { getOccurrenceSupport } from "@/src/lib/occurrences";
 import { boundsCentre, boundsContain } from "@/src/lib/map-grid";
 import { correctForecastValues, FORECAST_CORRECTION_METHOD } from "@/src/lib/forecast-correction";
 import { PREDICTION_CACHE_VERSION, predictionModelVersion } from "@/src/lib/model-versions";
-import { bucketsForBounds } from "@/src/lib/map-query";
 import { spatialEnvironmentHistorySchema, spatialEnvironmentResponseSchema } from "@/src/lib/schema";
 import {
   calculateSuitability,
@@ -38,7 +37,8 @@ import type {
 const MAX_FORECAST_ANCHOR_GAP_MS = 8 * 60 * 60 * 1000;
 export const AREA_SUMMARY_GRID_SIZE_M = 1000;
 export const TERRITORIAL_SCORE_THRESHOLD = 20;
-const AREA_BUCKET_CONCURRENCY = 4;
+export const AREA_SUMMARY_BUCKET_DEGREES = 0.25;
+export const AREA_BUCKET_CONCURRENCY = 2;
 
 export async function getPredictionCellHistory(
   speciesId: string,
@@ -715,48 +715,114 @@ export function summariseAreaPredictions(
     : null;
 }
 
-/**
- * Loads the fixed 1 km bucket lattice once and scores every requested local
- * species from the shared environment payload. Every bucket must resolve and
- * remain untruncated; a partial comarca is never presented as complete.
- */
-export async function getAreaPredictionSummaries(
-  speciesIds: string[],
-  area: { slug: string; regionId: RegionId; bounds: SpatialBounds },
-): Promise<Record<string, AreaPredictionSummary | null>> {
-  const uniqueSpeciesIds = [...new Set(speciesIds)];
-  const species = uniqueSpeciesIds.map((speciesId) => {
-    const profile = getSpecies(speciesId);
-    if (!profile) throw new Error(`Unknown species: ${speciesId}`);
-    return profile;
-  });
-  const cellsBySpecies = Object.fromEntries(
-    uniqueSpeciesIds.map((speciesId) => [speciesId, new Map<string, PredictionCell>()]),
-  ) as Record<string, Map<string, PredictionCell>>;
-  const buckets = bucketsForBounds(
-    area.bounds,
-    AREA_SUMMARY_GRID_SIZE_M,
-    cataloniaSpatialBounds,
-  );
-  let nextBucket = 0;
+export interface AreaPredictionBatchRequest {
+  speciesIds: string[];
+  area: { slug: string; regionId: RegionId; bounds: SpatialBounds };
+}
 
+/**
+ * Territorial summaries are server-only analytical reads, not map/offline
+ * requests. Use a coarser stable lattice than the interactive map so the 12
+ * overview hubs share 33 environment reads instead of issuing 240 tiny ones.
+ * Every response remains on the canonical 1 km cell lattice and fails closed
+ * if the service ever reports more than its 1,000-cell limit.
+ */
+export function areaSummaryBucketsForBounds(bounds: SpatialBounds) {
+  const stable = (value: number) => Math.round(value * 1_000_000) / 1_000_000;
+  const west = Math.max(cataloniaSpatialBounds.west, bounds.west);
+  const south = Math.max(cataloniaSpatialBounds.south, bounds.south);
+  const east = Math.min(cataloniaSpatialBounds.east, bounds.east);
+  const north = Math.min(cataloniaSpatialBounds.north, bounds.north);
+  if (west >= east || south >= north) return [];
+
+  const buckets: SpatialBounds[] = [];
+  const firstColumn = Math.floor(west / AREA_SUMMARY_BUCKET_DEGREES);
+  const lastColumn = Math.ceil(east / AREA_SUMMARY_BUCKET_DEGREES) - 1;
+  const firstRow = Math.floor(south / AREA_SUMMARY_BUCKET_DEGREES);
+  const lastRow = Math.ceil(north / AREA_SUMMARY_BUCKET_DEGREES) - 1;
+  for (let column = firstColumn; column <= lastColumn; column += 1) {
+    for (let row = firstRow; row <= lastRow; row += 1) {
+      const bucket = {
+        west: Math.max(
+          cataloniaSpatialBounds.west,
+          stable(column * AREA_SUMMARY_BUCKET_DEGREES),
+        ),
+        south: Math.max(
+          cataloniaSpatialBounds.south,
+          stable(row * AREA_SUMMARY_BUCKET_DEGREES),
+        ),
+        east: Math.min(
+          cataloniaSpatialBounds.east,
+          stable((column + 1) * AREA_SUMMARY_BUCKET_DEGREES),
+        ),
+        north: Math.min(
+          cataloniaSpatialBounds.north,
+          stable((row + 1) * AREA_SUMMARY_BUCKET_DEGREES),
+        ),
+      };
+      if (bucket.west < bucket.east && bucket.south < bucket.north) {
+        buckets.push(bucket);
+      }
+    }
+  }
+  return buckets;
+}
+
+function areaBucketKey(bounds: SpatialBounds) {
+  return `${bounds.west}:${bounds.south}:${bounds.east}:${bounds.north}`;
+}
+
+export async function getAreaPredictionSummaryBatches(
+  requests: AreaPredictionBatchRequest[],
+): Promise<Array<PromiseSettledResult<Record<string, AreaPredictionSummary | null>>>> {
+  const requestState = requests.map(({ speciesIds, area }) => ({
+    speciesIds: [...new Set(speciesIds)],
+    area,
+    cellsBySpecies: Object.fromEntries(
+      [...new Set(speciesIds)].map((speciesId) => [speciesId, new Map<string, PredictionCell>()]),
+    ) as Record<string, Map<string, PredictionCell>>,
+    failed: false,
+  }));
+  const allSpeciesIds = [...new Set(requestState.flatMap((request) => request.speciesIds))];
+  const bucketsByKey = new Map<string, { bounds: SpatialBounds; requestIndexes: number[] }>();
+
+  requestState.forEach((request, requestIndex) => {
+    for (const bounds of areaSummaryBucketsForBounds(request.area.bounds)) {
+      const key = areaBucketKey(bounds);
+      const bucket = bucketsByKey.get(key) ?? { bounds, requestIndexes: [] };
+      bucket.requestIndexes.push(requestIndex);
+      bucketsByKey.set(key, bucket);
+    }
+  });
+
+  const buckets = [...bucketsByKey.values()];
+  let nextBucket = 0;
   const loadWorker = async () => {
     while (nextBucket < buckets.length) {
       const bucket = buckets[nextBucket++]!;
-      const payload = await getCandidatePredictionCells(
-        bucket,
-        uniqueSpeciesIds,
-        1000,
-        AREA_SUMMARY_GRID_SIZE_M,
-      );
-      if (payload.truncated) {
-        throw new Error(`Area prediction bucket was truncated in ${area.slug}`);
-      }
-      for (const speciesId of uniqueSpeciesIds) {
-        for (const cell of payload.cellsBySpecies[speciesId] ?? []) {
-          if (centreFallsWithinArea(cell, area.bounds)) {
-            cellsBySpecies[speciesId]!.set(cell.cellId, cell);
+      try {
+        const payload = await getCandidatePredictionCells(
+          bucket.bounds,
+          allSpeciesIds,
+          1000,
+          AREA_SUMMARY_GRID_SIZE_M,
+        );
+        if (payload.truncated) {
+          throw new Error("Territorial overview bucket was truncated");
+        }
+        for (const requestIndex of bucket.requestIndexes) {
+          const request = requestState[requestIndex]!;
+          for (const speciesId of request.speciesIds) {
+            for (const cell of payload.cellsBySpecies[speciesId] ?? []) {
+              if (centreFallsWithinArea(cell, request.area.bounds)) {
+                request.cellsBySpecies[speciesId]!.set(cell.cellId, cell);
+              }
+            }
           }
+        }
+      } catch {
+        for (const requestIndex of bucket.requestIndexes) {
+          requestState[requestIndex]!.failed = true;
         }
       }
     }
@@ -769,12 +835,39 @@ export async function getAreaPredictionSummaries(
     ),
   );
 
-  return Object.fromEntries(species.map((profile) => {
-    const summary = summariseAreaPredictions(
-      profile,
-      area,
-      [...cellsBySpecies[profile.speciesId]!.values()],
-    );
-    return [profile.speciesId, summary];
-  }));
+  return requestState.map((request) => {
+    if (request.failed) {
+      return { status: "rejected", reason: new Error(`Area prediction failed in ${request.area.slug}`) };
+    }
+    try {
+      const summaries = Object.fromEntries(request.speciesIds.map((speciesId) => {
+        const profile = getSpecies(speciesId);
+        if (!profile) throw new Error(`Unknown species: ${speciesId}`);
+        return [speciesId, summariseAreaPredictions(
+          profile,
+          request.area,
+          [...request.cellsBySpecies[speciesId]!.values()],
+        )];
+      }));
+      return { status: "fulfilled", value: summaries };
+    } catch (reason) {
+      return { status: "rejected", reason };
+    }
+  });
+}
+
+/**
+ * Scores every requested local species from the shared 1 km environment
+ * payload. Every stable summary bucket must resolve and remain untruncated; a
+ * partial comarca is never presented as complete.
+ */
+export async function getAreaPredictionSummaries(
+  speciesIds: string[],
+  area: { slug: string; regionId: RegionId; bounds: SpatialBounds },
+): Promise<Record<string, AreaPredictionSummary | null>> {
+  const [result] = await getAreaPredictionSummaryBatches([{ speciesIds, area }]);
+  if (!result || result.status === "rejected") {
+    throw result?.reason ?? new Error(`Area prediction failed in ${area.slug}`);
+  }
+  return result.value;
 }

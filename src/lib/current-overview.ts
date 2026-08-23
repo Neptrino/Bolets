@@ -11,7 +11,10 @@ import {
 import { regionLabels, regionSelectItems } from "@/data/regions";
 import { getSpecies, speciesProfiles } from "@/data/species";
 import { monthInTimeZone } from "@/src/lib/seasonality";
-import { getAreaPredictionSummaries, getRegionalPredictionSummaries } from "@/src/lib/predictions";
+import {
+  getAreaPredictionSummaryBatches,
+  getRegionalPredictionSummaries,
+} from "@/src/lib/predictions";
 import { compareSpeciesDiscoveryPriority } from "@/src/lib/species-discovery";
 import type {
   AreaPredictionSummary,
@@ -306,15 +309,8 @@ type AreaSummaryLoader = (
   hub: OverviewHub,
 ) => Promise<Record<string, AreaPredictionSummary | null>>;
 
-const defaultAreaSummaryLoader: AreaSummaryLoader = (speciesIds, hub) =>
-  getAreaPredictionSummaries(speciesIds, {
-    slug: hub.slug,
-    regionId: hub.regionId,
-    bounds: hub.bounds,
-  });
-
 export async function loadAreaOverview(
-  loader: AreaSummaryLoader = defaultAreaSummaryLoader,
+  loader: AreaSummaryLoader | undefined = undefined,
   month: Month = monthInTimeZone(),
 ): Promise<AreaOverviewItem[]> {
   const targets = areaOverviewTargetsForMonth(month);
@@ -325,13 +321,21 @@ export async function loadAreaOverview(
     groupedTargets.set(target.hub.slug, group);
   }
   const targetsByHub = [...groupedTargets.values()];
-  const settled = await settleTargets(
-    targetsByHub,
-    (hubTargets) => loader(
-      hubTargets.map((target) => target.speciesId),
-      hubTargets[0]!.hub,
-    ),
-  );
+  const settled = loader
+    ? await settleTargets(
+        targetsByHub,
+        (hubTargets) => loader(
+          hubTargets.map((target) => target.speciesId),
+          hubTargets[0]!.hub,
+        ),
+      )
+    : await getAreaPredictionSummaryBatches(targetsByHub.map((hubTargets) => {
+        const hub = hubTargets[0]!.hub;
+        return {
+          speciesIds: hubTargets.map((target) => target.speciesId),
+          area: { slug: hub.slug, regionId: hub.regionId, bounds: hub.bounds },
+        };
+      }));
 
   return targetsByHub.map((hubTargets, index) => {
     const fallback = hubTargets[0]!;
