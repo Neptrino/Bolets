@@ -16,10 +16,15 @@ Use these paths on the VPS:
 
 ```text
 /opt/bolets/app       this repository
+/opt/bolets/releases  immutable application releases keyed by Git commit
 /opt/bolets/supabase  official Supabase self-hosted files
 /opt/bolets/secrets   root-readable function environment files
 /var/backups/bolets   short-lived local backups copied off the VPS
 ```
+
+After GitHub deployment is enabled, `/opt/bolets/app` is an atomic symlink to
+the active release. Supabase configuration, database volumes, function secrets
+and backups remain outside the application release tree.
 
 The Supabase deployment is deliberately not vendored here. It is pinned to an
 official `self-hosted/v*` release and updated with Supabase's `update.sh`. The
@@ -34,8 +39,10 @@ official repository, the Compose plugin, Git, `jq`, `curl`, `openssl`, and
 updates, and allow only SSH, TCP 80, TCP/UDP 443 through both the provider
 firewall and the host firewall. Do not expose 5432, 6543 or 8000 publicly.
 
-Create a non-root deployment user that belongs to the `docker` group and owns
-`/opt/bolets`. Treat membership in the Docker group as root-equivalent.
+Use a non-root administrative user that belongs to the `docker` group and owns
+`/opt/bolets` for initial setup and manual maintenance. Treat membership in the
+Docker group as root-equivalent. The automated deployment identity configured
+later is separate and can invoke only the root-owned release receiver.
 
 After confirming that a second public-key SSH session works, install the
 supplied SSH policy and validate it before reloading the daemon:
@@ -229,6 +236,51 @@ The script validates the merged Compose model, builds the standalone Next.js
 image, waits for healthy services, and restarts the function runtime. The app
 uses the internal gateway URL; its server credentials never travel through
 public DNS.
+
+## 8. Deploy `main` automatically
+
+`.github/workflows/deploy-vps.yaml` runs unit tests, linting, type checks and a
+production build for every push to `main`. It then sends an archive of that
+exact commit to a forced-command SSH identity. The receiver builds and checks
+the candidate release before atomically updating `/opt/bolets/app`; a failed
+rollout restores the preceding application and function release. Concurrent
+production deployments are serialized on both GitHub and the VPS.
+
+Create a dedicated Ed25519 key locally. Do not reuse a personal SSH key:
+
+```bash
+ssh-keygen -t ed25519 -f ./bolets-github-actions -N '' \
+  -C 'github-actions:bolets.app'
+scp ./bolets-github-actions.pub ubuntu@51.255.40.179:/tmp/
+scp deploy/vps/install-github-deploy.sh deploy/vps/receive-release.sh \
+  ubuntu@51.255.40.179:/tmp/
+ssh ubuntu@51.255.40.179 \
+  'sudo /tmp/install-github-deploy.sh /tmp/bolets-github-actions.pub'
+```
+
+Store the private key and the VPS's independently verified Ed25519 host-key
+line as GitHub Actions repository or `production` environment secrets:
+
+```bash
+gh secret set VPS_SSH_PRIVATE_KEY < ./bolets-github-actions
+ssh-keyscan -t ed25519 51.255.40.179 > ./bolets-known-hosts
+# Verify this fingerprint through the provider console or an existing trusted
+# SSH session before storing it; ssh-keyscan alone does not authenticate it.
+ssh-keygen -lf ./bolets-known-hosts
+gh secret set VPS_KNOWN_HOSTS < ./bolets-known-hosts
+```
+
+Delete the local private-key copy after GitHub has accepted it. To rotate the
+identity, rerun the installer with a new public key and replace the GitHub
+secret. Reinstall the root-owned receiver manually after reviewing any future
+change to `receive-release.sh`; application releases cannot modify it.
+
+This workflow has no managed Supabase token, project reference or deployment
+step. It deploys the Next.js app and version-controlled Edge Functions only to
+the pinned self-hosted stack. Keep the old managed project intact during the
+rollback window, but disable its scheduled writers once the self-hosted cron
+cycle and restore procedure have been verified. Project deletion is a separate,
+irreversible retirement operation.
 
 Before changing production DNS, verify:
 

@@ -16,6 +16,11 @@ if [ ! -f "$app_dir/Dockerfile" ] || [ ! -f "$supabase_dir/docker-compose.yml" ]
   exit 66
 fi
 
+# The official stack reads its default from /opt/bolets/supabase/.env. Override
+# it per release so a candidate can be built and health-checked before the
+# stable /opt/bolets/app symlink moves.
+export BOLETS_APP_DIR=$app_dir
+
 "$app_dir/deploy/vps/sync-functions.sh" "$app_dir" "$supabase_dir"
 
 cd "$supabase_dir"
@@ -27,4 +32,3 @@ docker compose -f docker-compose.yml -f "$override_file" up -d --wait
 docker compose -f docker-compose.yml -f "$override_file" restart functions
 
 echo "Bolets rollout completed"
-

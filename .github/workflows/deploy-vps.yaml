@@ -1,0 +1,76 @@
+name: Deploy production VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-vps
+  cancel-in-progress: false
+
+jobs:
+  verify-and-deploy:
+    name: Verify and deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: production
+
+    steps:
+      - name: Check out the release
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run lint checks
+        run: npm run lint
+
+      - name: Run type checks
+        run: npm run typecheck
+
+      - name: Build the production application
+        run: npm run build
+
+      - name: Create the immutable release archive
+        run: git archive --format=tar.gz --output="$RUNNER_TEMP/bolets-release.tar.gz" "$GITHUB_SHA"
+
+      - name: Configure the deployment identity
+        env:
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          VPS_SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+        run: |
+          set -eu
+          test -n "$VPS_KNOWN_HOSTS"
+          test -n "$VPS_SSH_PRIVATE_KEY"
+          install -m 700 -d "$HOME/.ssh"
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          printf '%s\n' "$VPS_SSH_PRIVATE_KEY" > "$HOME/.ssh/bolets-deploy"
+          chmod 600 "$HOME/.ssh/known_hosts" "$HOME/.ssh/bolets-deploy"
+          ssh-keygen -y -f "$HOME/.ssh/bolets-deploy" >/dev/null
+
+      - name: Deploy the tested commit
+        run: |
+          set -eu
+          {
+            printf '%s\n' "$GITHUB_SHA"
+            cat "$RUNNER_TEMP/bolets-release.tar.gz"
+          } | ssh \
+            -i "$HOME/.ssh/bolets-deploy" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            bolets-deploy@51.255.40.179
