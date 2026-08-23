@@ -378,13 +378,13 @@ export async function loadAreaOverview(
 
 const loadCachedCurrentOverviewData = unstable_cache(
   () => loadCurrentOverview(),
-  ["current-overview-v3"],
+  ["current-overview-v4"],
   { revalidate: DAILY_OVERVIEW_REVALIDATE_SECONDS, tags: ["current-overview"] },
 );
 
 const loadCachedAreaOverviewData = unstable_cache(
   () => loadAreaOverview(),
-  ["area-overview-v3"],
+  ["area-overview-v4"],
   { revalidate: DAILY_OVERVIEW_REVALIDATE_SECONDS, tags: ["area-overview"] },
 );
 
