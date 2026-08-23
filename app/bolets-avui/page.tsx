@@ -16,8 +16,8 @@ import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout
 import { editorialArticleFields, environmentalSources } from "@/data/editorial";
 import {
   dominantLimitingComponent,
-  loadAreaOverview,
-  loadCurrentOverview,
+  loadCachedAreaOverview,
+  loadCachedCurrentOverview,
   rankAreaOverviewItems,
   topCurrentOverviewItems,
   type CurrentOverviewItem,
@@ -102,8 +102,8 @@ function monthlyActivityLabel(activity: CurrentOverviewItem["seasonalActivity"])
 
 export default async function MushroomsTodayPage() {
   const [allItems, areaItems] = await Promise.all([
-    loadCurrentOverview(),
-    loadAreaOverview(),
+    loadCachedCurrentOverview(),
+    loadCachedAreaOverview(),
   ]);
   const items = topCurrentOverviewItems(allItems);
   const rankedAreaItems = rankAreaOverviewItems(areaItems);

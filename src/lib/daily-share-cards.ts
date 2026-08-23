@@ -1,7 +1,7 @@
 import { regionSelectItems } from "@/data/regions";
 import {
-  loadAreaOverview,
-  loadCurrentOverview,
+  loadCachedAreaOverview,
+  loadCachedCurrentOverview,
   overviewHubs,
   rankCurrentOverviewItems,
   type AreaOverviewItem,
@@ -238,12 +238,12 @@ export function createDailyShareCards(items: CurrentOverviewItem[], territoryIte
 export async function loadDailyShareCards() {
   const [items, territoryItems] = await Promise.all([
     loadWithin(
-      loadCurrentOverview,
+      loadCachedCurrentOverview,
       [] as CurrentOverviewItem[],
       DAILY_SHARE_OVERVIEW_LOAD_TIMEOUT_MS,
     ),
     loadWithin(
-      loadAreaOverview,
+      loadCachedAreaOverview,
       [] as AreaOverviewItem[],
       DAILY_SHARE_TERRITORY_LOAD_TIMEOUT_MS,
     ),

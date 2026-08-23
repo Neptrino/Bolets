@@ -24,6 +24,7 @@ import type {
   SeasonalActivity,
   SpatialBounds,
 } from "@/src/lib/types";
+import { unstable_cache } from "next/cache";
 
 export interface CurrentOverviewTarget {
   speciesId: string;
@@ -379,6 +380,27 @@ export async function loadAreaOverview(
       summary,
     };
   });
+}
+
+const loadCachedCurrentOverviewData = unstable_cache(
+  () => loadCurrentOverview(),
+  ["current-overview-v2"],
+  { revalidate: 300, tags: ["current-overview"] },
+);
+
+const loadCachedAreaOverviewData = unstable_cache(
+  () => loadAreaOverview(),
+  ["area-overview-v2"],
+  { revalidate: 300, tags: ["area-overview"] },
+);
+
+/** Shared five-minute snapshots for pages that render the same daily board. */
+export async function loadCachedCurrentOverview() {
+  return loadCachedCurrentOverviewData();
+}
+
+export async function loadCachedAreaOverview() {
+  return loadCachedAreaOverviewData();
 }
 
 const catalanAreaCollator = new Intl.Collator("ca", { sensitivity: "base" });
