@@ -279,6 +279,10 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
   const card = isPreview ? await loadFavourableDailySharePreviewCard(slug) : await loadDailyShareCard(slug);
 
   if (!card) return new Response("Not found", { status: 404 });
+  // An unavailable card usually means the overview snapshot was cold or the
+  // load timed out; caching that render for the full publication window would
+  // pin a blank image at the CDN long after the data recovers.
+  const cacheSeconds = card.available ? DAILY_OVERVIEW_REVALIDATE_SECONDS : 300;
   const hasNoFavourableConditions = card.readings.length > 0 && card.readings.every((reading) => reading.score === 0);
   const homeHero = await readFile(join(process.cwd(), "public/media/generated/home-hero-boletus-v2-share.jpg"));
   const homeHeroUrl = `data:image/jpeg;base64,${homeHero.toString("base64")}`;
@@ -293,7 +297,7 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
     );
     image.headers.set(
       "Cache-Control",
-      `public, s-maxage=${DAILY_OVERVIEW_REVALIDATE_SECONDS}, stale-while-revalidate=${DAILY_OVERVIEW_REVALIDATE_SECONDS}`,
+      `public, s-maxage=${cacheSeconds}, stale-while-revalidate=${cacheSeconds}`,
     );
     return image;
   }
@@ -385,7 +389,7 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
 
   image.headers.set(
     "Cache-Control",
-    `public, s-maxage=${DAILY_OVERVIEW_REVALIDATE_SECONDS}, stale-while-revalidate=${DAILY_OVERVIEW_REVALIDATE_SECONDS}`,
+    `public, s-maxage=${cacheSeconds}, stale-while-revalidate=${cacheSeconds}`,
   );
   return image;
 }
