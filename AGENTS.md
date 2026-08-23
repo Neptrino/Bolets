@@ -32,6 +32,7 @@
 - Ensure the prediction engine consumes the same ecological configuration used by species pages.
 - Clip ecological and prediction grids to the version-controlled ICGC Catalonia land boundary before rendering.
 - Keep Supabase access server-side and protect database boundaries appropriately.
+- Deploy production self-hosting as a thin Bolets Compose override on a pinned official Supabase `self-hosted/v*` release. Keep the API gateway, database pooler and Studio loopback-only behind the shared TLS proxy; preserve the upstream Edge Function router when synchronizing repository functions; and rehearse every Supabase update against a verified off-host restore before production.
 - Treat external environmental data as normalized, timestamped snapshots with provenance and uncertainty.
 - Keep terrain-aware temperature replays as explicitly versioned, limited-confidence shadow comparisons: replay both the stored representative elevation and the selected cell elevation on the same atmospheric model, native grid and valid hour; withhold when the representative control does not reproduce the stored thermal fields; replace only the long-window thermal response and heat/frost exposure; and leave the unified water calculation unchanged. Never present this as finer observed weather.
 - Do not expose exact sensitive ecological locations in public maps or interfaces.

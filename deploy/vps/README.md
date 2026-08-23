@@ -1,0 +1,301 @@
+# Bolets VPS deployment
+
+This deployment runs the Next.js application and the official self-hosted
+Supabase stack on one VPS. Caddy is the only public ingress. The Supabase API
+gateway and database pooler bind to loopback, and Studio is not exposed through
+the public API hostname.
+
+The target is the VPS-2 class discussed for this project: 4 vCPU, 8 GB RAM and
+at least 75 GB NVMe. Supabase currently recommends 4 cores, 8 GB RAM and 80 GB
+SSD for the full small-to-medium production stack. Keep at least 15 GB free for
+image updates, temporary dumps and database maintenance.
+
+## Layout
+
+Use these paths on the VPS:
+
+```text
+/opt/bolets/app       this repository
+/opt/bolets/supabase  official Supabase self-hosted files
+/opt/bolets/secrets   root-readable function environment files
+/var/backups/bolets   short-lived local backups copied off the VPS
+```
+
+The Supabase deployment is deliberately not vendored here. It is pinned to an
+official `self-hosted/v*` release and updated with Supabase's `update.sh`. The
+Bolets Compose file is a narrow override, which keeps upstream upgrades
+reviewable.
+
+## 1. Prepare the host
+
+Use a current Ubuntu or Debian LTS release. Install Docker Engine from Docker's
+official repository, the Compose plugin, Git, `jq`, `curl`, `openssl`, and
+`rclone`. Require SSH keys, disable password login, enable unattended security
+updates, and allow only SSH, TCP 80, TCP/UDP 443 through both the provider
+firewall and the host firewall. Do not expose 5432, 6543 or 8000 publicly.
+
+Create a non-root deployment user that belongs to the `docker` group and owns
+`/opt/bolets`. Treat membership in the Docker group as root-equivalent.
+
+After confirming that a second public-key SSH session works, install the
+supplied SSH policy and validate it before reloading the daemon:
+
+```bash
+sudo install -m 644 deploy/vps/sshd-hardening.conf \
+  /etc/ssh/sshd_config.d/00-bolets-hardening.conf
+sudo sshd -t
+sudo systemctl reload ssh
+sshd -T | grep -E 'passwordauthentication|permitrootlogin|pubkeyauthentication'
+```
+
+Keep the existing SSH session open until a fresh key-only login succeeds.
+
+Point these DNS records at the VPS before starting Caddy:
+
+```text
+bolets.app      A/AAAA -> VPS
+www.bolets.app  A/AAAA -> VPS
+api.bolets.app  A/AAAA -> VPS
+```
+
+## 2. Install a pinned Supabase release
+
+The version below matches the official documentation reviewed when this
+deployment was added. Check the self-hosted changelog before changing it.
+
+```bash
+git clone --depth 1 --branch self-hosted/v0.8.0 \
+  https://github.com/supabase/supabase /tmp/supabase-source
+mkdir -p /opt/bolets/supabase /opt/bolets/secrets
+cp -a /tmp/supabase-source/docker/. /opt/bolets/supabase/
+printf 'ref=self-hosted/v0.8.0\n' > /opt/bolets/supabase/.supabase-version
+cd /opt/bolets/supabase
+cp .env.example .env
+sh utils/generate-keys.sh
+sh utils/add-new-auth-keys.sh
+```
+
+Inspect the two key-generation scripts before running them. Confirm that every
+placeholder credential in `.env` was replaced. Do not commit `.env`, signing
+keys, database dumps or `/opt/bolets/secrets`.
+
+Merge the settings from `deploy/vps/bolets.env.example` into the generated
+Supabase `.env`; do not replace the generated file with the example. Set a real
+TLS email and domains. Keep `COMPOSE_FILE=docker-compose.yml`: the optional
+Logflare/Vector stack is intentionally disabled on the initial 8 GB host.
+
+If direct AROME shadow staging is enabled, copy
+`deploy/vps/functions.env.example` to
+`/opt/bolets/secrets/functions.env`, populate it, and run `chmod 600` on the
+file. The published prediction pipeline works without that optional credential.
+
+## 3. Check out Bolets and validate Compose
+
+```bash
+git clone <BOLETS_REPOSITORY_URL> /opt/bolets/app
+cd /opt/bolets/app
+git switch codex/self-hosted-supabase-vps
+cd /opt/bolets/supabase
+docker compose \
+  -f docker-compose.yml \
+  -f /opt/bolets/app/deploy/vps/compose.yaml \
+  config --quiet
+```
+
+The override uses Compose's `!override` tag, so Docker Compose 2.24.4 or newer
+is required. Its rendered configuration must show ports 5432, 6543 and 8000
+bound only to `127.0.0.1`.
+
+## 4. Restore the managed project
+
+Keep the hosted project live while rehearsing this step. Follow Supabase's
+platform-to-self-hosted procedure: use `supabase db dump`, not raw `pg_dump`, to
+create separate roles, schema and data SQL files. Restore them into a disposable
+self-hosted instance first and compare extensions, table counts, functions,
+cron jobs, and representative prediction reads.
+
+The project and the self-hosted image both target PostgreSQL 17. Check the live
+project's exact major version and enabled extensions before the final dump.
+
+The official shape of the export is:
+
+```bash
+supabase db dump --db-url "$MANAGED_DATABASE_URL" -f roles.sql --role-only
+supabase db dump --db-url "$MANAGED_DATABASE_URL" -f schema.sql
+supabase db dump --db-url "$MANAGED_DATABASE_URL" -f data.sql --use-copy --data-only
+```
+
+Restore with `ON_ERROR_STOP` and a single transaction as described by the
+official guide. Never place database URLs or dumps in the repository. A managed
+restore includes schema, rows, RLS, RPCs, triggers and Auth rows; it does not
+carry over working JWT keys, service configuration, function files or object
+bytes. Existing login tokens become invalid after the key change, which is
+currently harmless because Bolets has no public account flow.
+
+For a deliberately fresh database instead, start Supabase and apply the
+version-controlled migrations with the current Supabase CLI against the
+loopback pooler. Do not do both a full managed schema restore and a fresh replay
+into the same database.
+
+The August 2026 rehearsal found a narrow version skew between the managed
+project and `self-hosted/v0.8.0`: one newer Auth column, newer Storage columns,
+and two platform-only role settings. After generating a dump, prepare the
+restore copies with:
+
+```bash
+deploy/vps/prepare-platform-restore.sh /secure/path/to/dump
+```
+
+The script writes `roles.restore.sql` and `data.restore.sql`. It skips the
+incompatible Auth/Storage blocks only when all eight affected blocks contain
+zero rows, as they did in the rehearsal; it fails rather than dropping data if
+that assumption changes. Start the pinned Supabase services once before the
+restore so their release-owned roles and internal schemas are initialized, then
+stop every service except `db` and restore `roles.restore.sql`, `schema.sql` and
+`data.restore.sql` in one transaction. Re-check the official restore guide and
+self-hosted changelog before relying on this compatibility step for a later
+release.
+
+## 5. Copy Storage correctly
+
+Do not download managed objects and place them directly under
+`volumes/storage`; the internal layout differs. Use Supabase's S3-to-S3 `rclone`
+procedure. The database restore supplies bucket definitions, and `rclone copy`
+transfers object bytes through the Storage API. Verify byte and object counts on
+both sides. The `environment-shadow` bucket must remain private.
+
+## 6. Install functions and configure scheduled ingestion
+
+Start the stack once, copy the Bolets functions while preserving Supabase's
+release-owned `main` router, and apply the database-specific Vault values:
+
+```bash
+/opt/bolets/app/deploy/vps/sync-functions.sh \
+  /opt/bolets/app /opt/bolets/supabase
+
+cd /opt/bolets/supabase
+docker compose \
+  -f docker-compose.yml \
+  -f /opt/bolets/app/deploy/vps/compose.yaml \
+  up -d --wait
+
+anon_key=$(sed -n 's/^ANON_KEY=//p' .env)
+ingestion_token=$(openssl rand -hex 32)
+docker exec -i supabase-db psql --username postgres --dbname postgres \
+  --variable project_url=http://api-gw:8000 \
+  --variable anon_key="$anon_key" \
+  --variable ingestion_token="$ingestion_token" \
+  < /opt/bolets/app/deploy/vps/configure-vault.sql
+```
+
+Run the last command from a shell where the generated Supabase `.env` has been
+loaded and store `ingestion_token` in the external secret manager before the
+shell exits. This rotates the Vault values after restore because managed Vault
+ciphertext must not be assumed decryptable with the new host's encryption key.
+It also updates the independent hash checked by ingestion functions.
+
+Rotate any optional named maintenance tokens (`spatial-import`,
+`clms-soil-import`, `arome-shadow-stage`) separately before using those paths.
+Service-role imports remain available to controlled maintenance workers.
+
+The platform dump excludes the `cron` schema. Recreate the final versioned job
+definitions after the restore:
+
+```bash
+docker exec -i supabase-db psql --username postgres --dbname postgres \
+  < /opt/bolets/app/deploy/vps/configure-cron.sql
+```
+
+This installs ten jobs but leaves them inactive so the managed project remains
+the sole writer during rehearsal. After the final synchronized restore and
+immediately before cutover, enable them explicitly:
+
+```bash
+docker exec -i supabase-db psql --username postgres --dbname postgres \
+  < /opt/bolets/app/deploy/vps/enable-cron.sql
+```
+
+Verify `cron.job` contains exactly ten active Bolets jobs and inspect
+`cron.job_run_details` plus `ingestion_runs` after the first cycle.
+
+## 7. Roll out the app
+
+```bash
+/opt/bolets/app/deploy/vps/rollout.sh \
+  /opt/bolets/app /opt/bolets/supabase
+```
+
+The script validates the merged Compose model, builds the standalone Next.js
+image, waits for healthy services, and restarts the function runtime. The app
+uses the internal gateway URL; its server credentials never travel through
+public DNS.
+
+Before changing production DNS, verify:
+
+```bash
+curl --fail https://bolets.app/api/health
+curl --head https://api.bolets.app/functions/v1/read-environment
+curl --fail --header "apikey: $ANON_KEY" \
+  --header "Authorization: Bearer $anon_key" \
+  "https://api.bolets.app/functions/v1/read-environment?region=prepirineus"
+```
+
+The unauthenticated function probe normally returns 401; that confirms TLS and
+routing. The public proxy intentionally does not expose Auth, Realtime, GraphQL
+or Studio. Verify map bucket reads, one occurrence read, current conditions,
+scheduled pipeline audit rows and `pipeline_sources` before cutover. Lower DNS
+TTL ahead of time, take a final dump during a short write freeze, restore it,
+rerun the checks, then switch DNS. Keep the hosted project intact until at
+least one complete ingestion cycle and a tested rollback window have passed.
+
+## Studio and database access
+
+Both services are loopback-only. Reach Studio through an SSH tunnel:
+
+```bash
+ssh -L 8000:127.0.0.1:8000 deploy@your-vps
+```
+
+Then open `http://127.0.0.1:8000` and use the generated dashboard credentials.
+Forward 5432 similarly for temporary database maintenance; never change the
+firewall to expose it globally.
+
+## Backups and recovery
+
+The provider's one-day VPS snapshot is useful but is not the database backup.
+Run `deploy/vps/backup.sh` daily into `/var/backups/bolets`, encrypt and copy the
+result off-host, and enforce retention in the off-host system. The script stores
+a PostgreSQL custom-format dump, local Storage bytes, and checksums. If Storage
+is moved to external S3, replace the local Storage archive with bucket
+versioning and a second-region/object-lock policy.
+
+Install the supplied systemd units for the local daily copy:
+
+```bash
+sudo install -m 644 deploy/vps/bolets-backup.service /etc/systemd/system/
+sudo install -m 644 deploy/vps/bolets-backup.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now bolets-backup.timer
+sudo systemctl start bolets-backup.service
+sudo systemctl status bolets-backup.service bolets-backup.timer
+```
+
+The timer runs once a day around 03:17 UTC with a randomized delay and catches
+up after downtime. It deliberately does not delete local copies: configure
+retention only after the encrypted off-host destination is working and tested.
+
+At least monthly, restore the latest database dump and Storage archive into an
+isolated Supabase instance, run migrations, invoke the read functions, and load
+a prediction map. A backup without a successful restore drill is not considered
+valid.
+
+Before every Supabase update:
+
+1. Read the self-hosted changelog and breaking changes.
+2. Take and verify an off-host backup.
+3. Run `sh update.sh --dry-run` in `/opt/bolets/supabase`.
+4. Test the update against a restored copy.
+5. Update production, rerun the smoke checks, and record the deployed release.
+
+Supabase's `update.sh` preserves `.env` and data but does not back up PostgreSQL
+or Storage.

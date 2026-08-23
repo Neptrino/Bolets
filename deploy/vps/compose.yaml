@@ -1,0 +1,68 @@
+services:
+  # The upstream stack publishes these ports on every interface. Keep them on
+  # loopback: Caddy is the only public ingress and Studio is reached by SSH
+  # forwarding when needed. !override requires Docker Compose 2.24.4 or newer.
+  api-gw:
+    ports: !override
+      - "127.0.0.1:${API_GW_HTTP_PORT:-8000}:8000"
+
+  supavisor:
+    ports: !override
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+      - "127.0.0.1:${POOLER_PROXY_PORT_TRANSACTION:-6543}:6543"
+
+  functions:
+    env_file:
+      - path: ${BOLETS_FUNCTIONS_ENV_FILE:-/opt/bolets/secrets/functions.env}
+        required: false
+
+  app:
+    build:
+      context: ${BOLETS_APP_DIR:?Set BOLETS_APP_DIR to the checked-out Bolets repository}
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      SUPABASE_URL: http://api-gw:8000
+      # The existing server-to-function contract uses the legacy signed anon
+      # JWT in both apikey and Authorization headers.
+      SUPABASE_ANON_KEY: ${ANON_KEY:?Generate the Supabase keys before starting}
+    depends_on:
+      api-gw:
+        condition: service_healthy
+      functions:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+
+  caddy:
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?Set APP_DOMAIN}
+      API_DOMAIN: ${API_DOMAIN:?Set API_DOMAIN}
+      TLS_EMAIL: ${TLS_EMAIL:?Set TLS_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ${BOLETS_APP_DIR}/deploy/vps/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+
+volumes:
+  caddy_data:
+  caddy_config:

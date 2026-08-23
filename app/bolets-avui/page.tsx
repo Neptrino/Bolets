@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import {
   ArrowUpRight,
   Clock3,
@@ -35,10 +36,6 @@ import {
 } from "@/src/lib/seo";
 import { territorialMapPath } from "@/src/lib/territorial-map";
 import type { RegionalPredictionSummary } from "@/src/lib/types";
-
-// The underlying environmental snapshot is daily. Rebuild the publication
-// view at most twice a day instead of re-reading the same scores every 5 min.
-export const revalidate = 43200;
 
 export const metadata: Metadata = {
   title: pageTitle("On trobar bolets avui a Catalunya"),
@@ -114,6 +111,10 @@ function overviewMapPath(item: RankedOverviewItem) {
 }
 
 export default async function MushroomsTodayPage() {
+  // VPS builds intentionally receive no database credentials. Wait for a real
+  // request so the runtime-only internal Supabase URL is available; the two
+  // overview loaders retain their shared twice-daily data cache.
+  await connection();
   const [allItems, areaItems] = await Promise.all([
     loadCachedCurrentOverview(),
     loadCachedAreaOverview(),

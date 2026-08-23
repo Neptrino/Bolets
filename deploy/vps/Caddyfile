@@ -1,0 +1,38 @@
+{
+	email {$TLS_EMAIL}
+	admin off
+}
+
+{$APP_DOMAIN}, www.{$APP_DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	reverse_proxy app:3000
+}
+
+{$API_DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	@public_api path \
+ /functions/v1* \
+ /rest/v1* \
+ /storage/v1*
+
+	handle @public_api {
+		reverse_proxy api-gw:8000
+	}
+
+	handle {
+		respond "Not found" 404
+	}
+}

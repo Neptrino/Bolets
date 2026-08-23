@@ -1,0 +1,12 @@
+[Unit]
+Description=Run the Bolets Supabase backup every day
+
+[Timer]
+OnCalendar=*-*-* 03:17:00 UTC
+RandomizedDelaySec=30m
+Persistent=true
+Unit=bolets-backup.service
+
+[Install]
+WantedBy=timers.target
+
