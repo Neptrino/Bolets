@@ -1,9 +1,9 @@
 # Bolets VPS deployment
 
-This deployment runs the Next.js application and the official self-hosted
-Supabase stack on one VPS. Caddy is the only public ingress. The Supabase API
-gateway and database pooler bind to loopback, and Studio is not exposed through
-the public API hostname.
+This deployment runs the Next.js application, the official self-hosted
+Supabase stack and Umami analytics on one VPS. Caddy is the only public ingress.
+The Supabase API gateway, database pooler, Studio and direct Umami port bind to
+loopback.
 
 The target is the VPS-2 class discussed for this project: 4 vCPU, 8 GB RAM and
 at least 75 GB NVMe. Supabase currently recommends 4 cores, 8 GB RAM and 80 GB
@@ -18,7 +18,7 @@ Use these paths on the VPS:
 /opt/bolets/app       this repository
 /opt/bolets/releases  immutable application releases keyed by Git commit
 /opt/bolets/supabase  official Supabase self-hosted files
-/opt/bolets/secrets   root-readable function environment files
+/opt/bolets/secrets   root-readable function and Umami environment files
 /var/backups/bolets   short-lived local backups copied off the VPS
 ```
 
@@ -37,7 +37,8 @@ Use a current Ubuntu or Debian LTS release. Install Docker Engine from Docker's
 official repository, the Compose plugin, Git, `jq`, `curl`, `openssl`, and
 `rclone`. Require SSH keys, disable password login, enable unattended security
 updates, and allow only SSH, TCP 80, TCP/UDP 443 through both the provider
-firewall and the host firewall. Do not expose 5432, 6543 or 8000 publicly.
+firewall and the host firewall. Do not expose 3001, 5432, 6543 or 8000
+publicly.
 
 Use a non-root administrative user that belongs to the `docker` group and owns
 `/opt/bolets` for initial setup and manual maintenance. Treat membership in the
@@ -64,6 +65,10 @@ bolets.app      A/AAAA -> VPS
 www.bolets.app  A/AAAA -> VPS
 api.bolets.app  A/AAAA -> VPS
 ```
+
+Create `analytics.bolets.app` only after the first rollout has changed Umami's
+default administrator password. Keep it DNS-only when Cloudflare proxy IPs are
+not suitable for the site's network path.
 
 ## 2. Install a pinned Supabase release
 
@@ -96,13 +101,23 @@ If direct AROME shadow staging is enabled, copy
 `/opt/bolets/secrets/functions.env`, populate it, and run `chmod 600` on the
 file. The published prediction pipeline works without that optional credential.
 
+Copy `deploy/vps/umami.env.example` to
+`/opt/bolets/secrets/umami.env`, generate the three service secrets and the
+administrator password independently with `openssl rand -hex 32`, replace every
+placeholder, and run `chmod 600` on the file. The website UUID is public and
+versioned so the application and idempotent Umami bootstrap agree before the
+first request is collected.
+
 ## 3. Check out Bolets and validate Compose
 
 ```bash
 git clone <BOLETS_REPOSITORY_URL> /opt/bolets/app
 cd /opt/bolets/app
-git switch codex/self-hosted-supabase-vps
+git switch main
 cd /opt/bolets/supabase
+set -a
+. /opt/bolets/secrets/umami.env
+set +a
 docker compose \
   -f docker-compose.yml \
   -f /opt/bolets/app/deploy/vps/compose.yaml \
@@ -110,8 +125,8 @@ docker compose \
 ```
 
 The override uses Compose's `!override` tag, so Docker Compose 2.24.4 or newer
-is required. Its rendered configuration must show ports 5432, 6543 and 8000
-bound only to `127.0.0.1`.
+is required. Its rendered configuration must show ports 3001, 5432, 6543 and
+8000 bound only to `127.0.0.1`.
 
 ## 4. Restore the managed project
 
@@ -232,10 +247,20 @@ Verify `cron.job` contains exactly ten active Bolets jobs and inspect
   /opt/bolets/app /opt/bolets/supabase
 ```
 
-The script validates the merged Compose model, builds the standalone Next.js
-image, waits for healthy services, and restarts the function runtime. The app
-uses the internal gateway URL; its server credentials never travel through
-public DNS.
+The script loads the root-only Umami environment, validates the merged Compose
+model, builds the standalone Next.js image, waits for healthy services,
+replaces Umami's default administrator password, creates the fixed Bolets
+website record idempotently, and restarts the function runtime. The app uses
+the internal gateway URL; its server credentials never travel through public
+DNS.
+
+After this first rollout succeeds, add the DNS-only
+`analytics.bolets.app -> 51.255.40.179` record. Verify
+`https://analytics.bolets.app/api/heartbeat`, sign in with `admin` and the
+password stored in `/opt/bolets/secrets/umami.env`, then enable two-factor
+authentication. The application loads Umami once from its root layout, accepts
+only the production Bolets hostnames, respects Do Not Track, and excludes query
+strings and fragments so map state is not collected.
 
 ## 8. Deploy `main` automatically
 
@@ -317,9 +342,9 @@ firewall to expose it globally.
 The provider's one-day VPS snapshot is useful but is not the database backup.
 Run `deploy/vps/backup.sh` daily into `/var/backups/bolets`, encrypt and copy the
 result off-host, and enforce retention in the off-host system. The script stores
-a PostgreSQL custom-format dump, local Storage bytes, and checksums. If Storage
-is moved to external S3, replace the local Storage archive with bucket
-versioning and a second-region/object-lock policy.
+custom-format dumps for Supabase and Umami, local Storage bytes, and checksums.
+If Storage is moved to external S3, replace the local Storage archive with
+bucket versioning and a second-region/object-lock policy.
 
 Install the supplied systemd units for the local daily copy:
 
@@ -336,10 +361,11 @@ The timer runs once a day around 03:17 UTC with a randomized delay and catches
 up after downtime. It deliberately does not delete local copies: configure
 retention only after the encrypted off-host destination is working and tested.
 
-At least monthly, restore the latest database dump and Storage archive into an
-isolated Supabase instance, run migrations, invoke the read functions, and load
-a prediction map. A backup without a successful restore drill is not considered
-valid.
+At least monthly, restore the latest Supabase database dump and Storage archive
+into an isolated Supabase instance, and restore `umami.dump` into a disposable
+PostgreSQL 15 instance. Run migrations, invoke the read functions, load a
+prediction map and verify the Umami website and pageview counts. A backup
+without a successful restore drill is not considered valid.
 
 Before every Supabase update:
 

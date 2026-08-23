@@ -43,6 +43,9 @@ jobs:
         run: npm run typecheck
 
       - name: Build the production application
+        env:
+          # This identifier is public and must match the VPS Umami bootstrap.
+          NEXT_PUBLIC_UMAMI_WEBSITE_ID: ce97249f-b2de-44bd-899c-56f8fc05cb54
         run: npm run build
 
       - name: Create the immutable release archive

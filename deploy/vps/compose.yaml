@@ -20,6 +20,8 @@ services:
     build:
       context: ${BOLETS_APP_DIR:?Set BOLETS_APP_DIR to the checked-out Bolets repository}
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID:?Set the public Umami website ID}
     restart: unless-stopped
     init: true
     environment:
@@ -44,12 +46,51 @@ services:
       retries: 3
       start_period: 45s
 
+  umami-db:
+    image: postgres:15-alpine@sha256:fe0737ba566a2c5b2a28f34433c0a423261900ec17b9bf7ad115e1aae7e57f1b
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: ${UMAMI_DATABASE_PASSWORD:?Set a strong Umami database password}
+      TZ: UTC
+    volumes:
+      - umami_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami -d umami"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  umami:
+    image: ghcr.io/umami-software/umami:3.3.1@sha256:fa32d116cf20cad52cbc3fad9a63b46e7fa02299d8f967168eb453d49c476b4a
+    restart: unless-stopped
+    init: true
+    ports:
+      - "127.0.0.1:${UMAMI_HTTP_PORT:-3001}:3000"
+    environment:
+      DATABASE_URL: postgresql://umami:${UMAMI_DATABASE_PASSWORD:?Set a strong Umami database password}@umami-db:5432/umami
+      APP_SECRET: ${UMAMI_APP_SECRET:?Set a random Umami application secret}
+      TWO_FACTOR_ENCRYPTION_KEY: ${UMAMI_TWO_FACTOR_ENCRYPTION_KEY:?Set a random Umami two-factor key}
+      CLIENT_IP_HEADER: X-Forwarded-For
+      DISABLE_TELEMETRY: "1"
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://127.0.0.1:3000/api/heartbeat || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
   caddy:
     image: caddy:2.10.2-alpine
     restart: unless-stopped
     environment:
       APP_DOMAIN: ${APP_DOMAIN:?Set APP_DOMAIN}
       API_DOMAIN: ${API_DOMAIN:?Set API_DOMAIN}
+      ANALYTICS_DOMAIN: ${ANALYTICS_DOMAIN:?Set ANALYTICS_DOMAIN}
       TLS_EMAIL: ${TLS_EMAIL:?Set TLS_EMAIL}
     ports:
       - "80:80"
@@ -62,7 +103,10 @@ services:
     depends_on:
       app:
         condition: service_healthy
+      umami:
+        condition: service_healthy
 
 volumes:
   caddy_data:
   caddy_config:
+  umami_db_data:
