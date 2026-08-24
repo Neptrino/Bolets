@@ -13,7 +13,7 @@
  * forbids it.
  */
 
-const VERSION = "v1";
+const VERSION = "v2";
 const SHELL_CACHE = `bolets-shell-${VERSION}`;
 const ASSET_CACHE = `bolets-assets-${VERSION}`;
 const DATA_CACHE = `bolets-data-${VERSION}`;
@@ -152,6 +152,9 @@ self.addEventListener("fetch", (event) => {
 
   // Everything else this worker handles is same-origin.
   if (url.origin !== self.location.origin) return;
+
+  // Private operational pages and sessions must never enter an offline cache.
+  if (url.pathname === "/admin" || url.pathname.startsWith("/admin/")) return;
 
   if (request.mode === "navigate") {
     event.respondWith(navigate(request));

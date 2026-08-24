@@ -12,17 +12,15 @@
 		-Server
 	}
 
-	@operational_status path /admin/status /admin/status/*
-	handle @operational_status {
-		basic_auth {
-			{$STATUS_USERNAME} {$STATUS_PASSWORD_HASH}
-		}
+	@admin path /admin /admin/*
+	handle @admin {
 		header {
 			Cache-Control "private, no-store"
 			X-Robots-Tag "noindex, nofollow, noarchive"
 		}
 		reverse_proxy app:3000 {
-			header_up X-Bolets-Status-Auth {$STATUS_INTERNAL_TOKEN}
+			# Never trust a client-supplied copy of the private metrics header.
+			header_up -X-Bolets-Status-Auth
 		}
 	}
 

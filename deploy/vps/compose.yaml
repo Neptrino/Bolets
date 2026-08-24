@@ -31,6 +31,9 @@ services:
       # internal Prometheus endpoint. It is never compiled as a public value.
       SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY:?Generate the Supabase keys before starting}
       STATUS_INTERNAL_TOKEN: ${STATUS_INTERNAL_TOKEN:?Set the private status ingress token}
+      STATUS_USERNAME: ${STATUS_USERNAME:?Set the private status username}
+      STATUS_PASSWORD_HASH: ${STATUS_PASSWORD_HASH:?Set the private status password hash}
+      STATUS_SESSION_SECRET: ${STATUS_SESSION_SECRET:?Set the private status session secret}
       # The existing server-to-function contract uses the legacy signed anon
       # JWT in both apikey and Authorization headers.
       SUPABASE_ANON_KEY: ${ANON_KEY:?Generate the Supabase keys before starting}
@@ -96,9 +99,6 @@ services:
       API_DOMAIN: ${API_DOMAIN:?Set API_DOMAIN}
       ANALYTICS_DOMAIN: ${ANALYTICS_DOMAIN:?Set ANALYTICS_DOMAIN}
       TLS_EMAIL: ${TLS_EMAIL:?Set TLS_EMAIL}
-      STATUS_USERNAME: ${STATUS_USERNAME:?Set the private status username}
-      STATUS_PASSWORD_HASH: ${STATUS_PASSWORD_HASH:?Set the Caddy password hash}
-      STATUS_INTERNAL_TOKEN: ${STATUS_INTERNAL_TOKEN:?Set the private status ingress token}
     ports:
       - "80:80"
       - "443:443"

@@ -317,11 +317,13 @@ only the production Bolets hostnames, respects Do Not Track, and excludes query
 strings and fragments so map state is not collected.
 
 The private operational dashboard is available at
-`https://bolets.app/admin/status`. Caddy requires the username and plaintext
-password represented by `status.env`; Next.js then requires the separate
-header Caddy injects after successful authentication. The page is not linked
-from the public site, returns private/no-store and noindex headers, and is
-excluded from Umami. It reads one service-role-only, `security invoker` RPC and
+`https://bolets.app/admin/status`. The application presents a normal login page
+and checks the username and bcrypt password hash in `status.env`. A successful
+login creates a signed, HttpOnly, SameSite session cookie that expires after
+seven days; the separate internal token remains reserved for the private
+Prometheus endpoint. The page is not linked from the public site, returns
+private/no-store and noindex headers, is excluded from Umami and is never cached
+by the offline worker. It reads one service-role-only, `security invoker` RPC and
 shows the latest published weather generation, rolling-state coverage, current
 shards and lanes, shared provider budget, source health, generation cursors and
 sanitized recent ingestion errors. It does not expose raw run metadata, Vault,

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import {
   Activity,
   AlertTriangle,
@@ -9,6 +9,7 @@ import {
   CloudCog,
   Database,
   History,
+  LogOut,
   RefreshCw,
   Route,
   ServerCog,
@@ -24,9 +25,12 @@ import {
   type OperationalState,
 } from "@/src/lib/operational-status";
 import {
-  isOperationalRequestAuthorized,
   readOperationalStatus,
 } from "@/src/lib/operational-status-server";
+import {
+  isOperationalSessionAuthorized,
+  OPERATIONAL_SESSION_COOKIE,
+} from "@/src/lib/operational-status-auth";
 
 import styles from "./status.module.css";
 
@@ -108,8 +112,12 @@ function statusLabel(status: string) {
 }
 
 export default async function OperationalStatusPage() {
-  const requestHeaders = await headers();
-  if (!isOperationalRequestAuthorized(requestHeaders)) notFound();
+  const cookieStore = await cookies();
+  if (!await isOperationalSessionAuthorized(
+    cookieStore.get(OPERATIONAL_SESSION_COOKIE)?.value,
+  )) {
+    redirect("/admin/login");
+  }
 
   let status;
   try {
@@ -171,7 +179,12 @@ export default async function OperationalStatusPage() {
         <div className={styles.stateTimestamp}>
           <span>Comprovat</span>
           <time dateTime={status.generatedAt}>{formatDateTime(status.generatedAt)}</time>
-          <a href="/admin/status"><RefreshCw aria-hidden="true" /> Actualitza</a>
+          <div className={styles.stateActions}>
+            <a href="/admin/status"><RefreshCw aria-hidden="true" /> Actualitza</a>
+            <form action="/admin/session/logout" method="post">
+              <button type="submit"><LogOut aria-hidden="true" /> Surt</button>
+            </form>
+          </div>
         </div>
       </section>
 

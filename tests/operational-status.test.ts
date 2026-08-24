@@ -159,14 +159,17 @@ describe("operational status", () => {
       "utf8",
     );
     const caddy = readFileSync("deploy/vps/Caddyfile", "utf8");
+    const serviceWorker = readFileSync("public/sw.js", "utf8");
 
     expect(migration).toMatch(/security invoker/i);
     expect(migration).toMatch(/revoke all on function public\.read_operational_status\(\)[\s\S]*from public, anon, authenticated/i);
     expect(migration).toMatch(/grant execute[\s\S]*to service_role/i);
     expect(migration).not.toMatch(/metadata'\s*,\s*recent\.metadata/i);
-    expect(caddy).toContain("basic_auth");
-    expect(caddy).toContain("header_up X-Bolets-Status-Auth");
+    expect(caddy).not.toContain("basic_auth");
+    expect(caddy).toMatch(/@admin path \/admin \/admin\/\*/);
+    expect(caddy).not.toContain("header_up X-Bolets-Status-Auth");
     expect(caddy).toContain("header_up -X-Bolets-Status-Auth");
     expect(caddy).toMatch(/@internal_api[\s\S]*respond "Not found" 404/);
+    expect(serviceWorker).toMatch(/pathname === "\/admin"[\s\S]*startsWith\("\/admin\/"\)[\s\S]*return/);
   });
 });

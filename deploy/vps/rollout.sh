@@ -45,6 +45,7 @@ set +a
 : "${STATUS_USERNAME:?Set STATUS_USERNAME in the status environment file}"
 : "${STATUS_PASSWORD_HASH:?Set STATUS_PASSWORD_HASH in the status environment file}"
 : "${STATUS_INTERNAL_TOKEN:?Set STATUS_INTERNAL_TOKEN in the status environment file}"
+: "${STATUS_SESSION_SECRET:?Set STATUS_SESSION_SECRET in the status environment file}"
 
 compose_files="-f docker-compose.yml -f $override_file"
 if [ -f "$observability_env_file" ]; then
