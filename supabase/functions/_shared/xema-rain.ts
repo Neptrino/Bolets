@@ -316,10 +316,11 @@ export function buildStationCorrectedPrecipitation(
   let gaugeHours = 0;
   const series = hourlyTimes.map((time, index) => {
     const fallback = finiteNumber(fallbackPrecipitation[index]) ?? null;
-    if (typeof time !== "string" || candidates.length < settings.minStations) return fallback;
+    const hourKey = typeof time === "number" ? madridHourKey(time) : typeof time === "string" ? time : undefined;
+    if (!hourKey || candidates.length < settings.minStations) return fallback;
     const samples: StationRainSample[] = [];
     for (const candidate of candidates) {
-      const value = candidate.station.hours[time];
+      const value = candidate.station.hours[hourKey];
       if (value !== undefined) {
         samples.push({
           station_code: candidate.station.station_code,

@@ -8,8 +8,8 @@ Supabase stores normalized environmental evidence and exposes it only through se
 | --- | --- | --- |
 | `refresh-environment` | Daily at 05:15 UTC | Refreshes Open-Meteo conditions for the 10 ecological macro-regions. |
 | `import-spatial-cells` | Trusted offline/CI worker | Validates and upserts reviewed 250 m terrain, land-cover, and soil evidence. |
-| `refresh-spatial-environment` | Every 2 minutes | Refreshes the shared 2.5 km atmosphere grid once per day in resumable batches: AROME thermal/humidity/wind fields plus `station-rain-v1` past precipitation (XEMA gauge IDW where the network allows, seamless Météo-France blend elsewhere), with per-point gauge-coverage provenance. |
-| `refresh-spatial-soil` | Every 5 minutes until complete | Refreshes the independent 9 km soil-moisture grid and its separate horizon-zero plus five-day environmental forecast once per day in rate-limited batches. If both observed streams are refreshed later and move more than 8 hours beyond the stored baseline, the same-day issue is invalidated and rebuilt automatically. Independent cursors let a transient forecast failure retry without blocking current soil ingestion. |
+| `refresh-spatial-environment` | Every minute, three leased lanes | Refreshes the shared 2.5 km atmosphere grid once per day as stable 50-point shards. Invocations leave through the VPS, one authenticated Cloudflare Worker, and one authenticated AWS Lambda Function URL. The database allows only one running shard per lane, fallback shards finish before atmosphere can start, and only the last successful shard publishes the generation cursor. If a provider update lands between phases, the atmosphere shard refreshes only its linked coarse fallback points before scoring. The exact 720-hour AROME state is retained privately, so normal runs fetch only a 72-hour overlap. `station-rain-v1` uses XEMA gauge IDW where the network allows and a separately retained seamless Météo-France fallback sampled on the existing 500-point / 9 km lattice elsewhere. |
+| `refresh-spatial-soil` | Every 5 minutes until complete | Refreshes the independent 9 km soil-moisture grid and its separate horizon-zero plus five-day environmental forecast once per day in rate-limited batches. Its four independent provider reads are split two per egress lane, keeping concurrent requests below four per source IP. If both observed streams are refreshed later and move more than 8 hours beyond the stored baseline, the same-day issue is invalidated and rebuilt automatically. Independent cursors let a transient forecast failure retry without blocking current soil ingestion. |
 | `import-clms-soil` | Trusted raster-staging worker | Validates and imports Copernicus CLMS 1 km surface-soil-moisture and soil-water-index samples on the existing 2.5 km atmosphere lattice. This is a private hot evaluation stream and cannot alter published scores. |
 | `stage-arome-shadow` | Named-token maintenance request | Probes one authenticated Météo-France WCS field contract or stages one bounded 0.01-degree response after a single-message GRIB2 container check. Semantics remain unverified, the source stays blocked, and it cannot alter production weather or scores. |
 | `import-xema-rain` | Every 3 h at minute 50 (23:50 UTC run precedes the daily refresh) | Imports a trailing 12 h of Meteocat XEMA semi-hourly gauge precipitation collapsed to station hours with completeness counts, keeping a 60-day rolling window. Each hour is covered by four runs, so a six-hour provider outage self-heals. These hours feed the promoted `station-rain-v1` past-precipitation correction in the spatial refresh. `npm run weather:backfill-xema-rain` refills the window through the same function; `npm run weather:compare-station-rain` re-runs the station-versus-model validation. |
@@ -22,6 +22,24 @@ Supabase stores normalized environmental evidence and exposes it only through se
 
 Every write run is audited in `ingestion_runs`. `pipeline_sources` records source health, `pipeline_cursors` makes large refreshes resumable, and all application tables have RLS enabled without browser table grants.
 
+Every Open-Meteo request first reserves a conservative weighted estimate from
+one private PostgreSQL ledger shared by the VPS, Worker, and Lambda egress lanes. The
+global ceilings are 550 estimated units/minute, 4,500/hour and 10,300/day.
+The estimator adds 5% before reserving, so the daily ceiling represents at most
+about 9,810 provider units before request rounding and remains below the
+published 10,000-unit provider limit while fitting the measured 5,128-point
+atmosphere and 500-point forecast workload plus a full fallback realignment at
+an hour seam. Atmospheric work has a 6,500-unit consumer ceiling,
+soil plus forecasts 3,600, and regional ingestion 200. Those scheduled caps
+sum to 10,300, so a multi-day atmosphere bootstrap cannot consume the regional
+or forecast allowance; the global ceiling still
+wins if manual backfill or another consumer is active. One provider attempt is
+made per reservation, and quota exhaustion defers a leased shard rather than
+silently exceeding the allowance. The Worker is an HMAC-authenticated
+allowlist relay for Open-Meteo only; it carries no database credentials, does
+not cache provider responses and must not be cloned into extra zones to evade
+provider accounting.
+
 ## Resolution and source of truth
 
 - Display grid: 250 × 250 m in EPSG:25831.
@@ -30,7 +48,7 @@ Every write run is audited in `ingestion_runs`. `pipeline_sources` records sourc
 - Soil: ISRIC SoilGrids WCS at 250 m for pH, clay, sand, and silt. These inputs support pH and texture evidence, but do not identify geological substrate; species substrate remains ecological reference data unless a separately verified substrate source is imported.
 - Geological context: ICGC Mapa geològic de Catalunya 1:50.000 v3r0, sampled across each canonical 250 m cell and stored in compact side tables with mapped/class/unit coverage. It is display-only evidence, is area-weighted from 250 m at coarse zooms, and never enters soil readiness, habitat gates, or suitability scoring.
 - Potential habitat: every recognized ICGC cover fraction sampled within each 250 m cell is retained. The database sums only fractions compatible with the selected species, then preserves raw cover/altitude/pH-compatible coverage `C` and the compatible-cover-weighted altitude response `A`. Both are normalized to 0–1 before the distribution map and `hydrothermal-v1` derive effective habitat as `H = C × A`.
-- Atmosphere: Météo-France AROME through Open-Meteo at 2.5 km native resolution, sampled on aligned 2.5 km model tiles and statistically adjusted to each tile's median terrain elevation. Temperature, air humidity, precipitation, reference evapotranspiration (ET₀) and wind use this model.
+- Atmosphere: Météo-France AROME through Open-Meteo at 2.5 km native resolution, sampled on aligned 2.5 km model tiles and statistically adjusted to each tile's median terrain elevation. Temperature, air humidity, reference evapotranspiration (ET₀) and wind use this model. Past precipitation remains `station-rain-v1`: complete XEMA gauge hours are interpolated at each 2.5 km point, while uncovered hours use the seamless Météo-France blend sampled at 9 km. The coarser fallback resolution is published explicitly and never relabelled as 2.5 km rain.
 - Direct atmosphere shadow: authenticated Météo-France AROME WCS metadata is checked against the pinned 0.01-degree grid, level, unit, run, forecast-lead and extent contract. At most one temperature, relative-humidity or wind request and one 0.25° × 0.25° Catalonia subset may be staged per named-token call. Returned bytes must contain exactly one complete GRIB2 message, but container framing does not prove its field, level, grid, bounds or valid time; semantic verification remains pending. Private bytes do not enter production weather or scoring.
 - Soil moisture: Open-Meteo's available land model at 9 km. It remains an explicitly coarser input and is never labelled as 2.5 km data. The 7-day mean and minimum are normalized as relative extractable water inside unified water state `W`; soil moisture is not a separate final factor.
 - Satellite soil shadow: Copernicus CLMS SSM v1 and SWI v2 are 1/112° daily rasters (about 1 km sampling) with explicit noise, QFLAG, mask, and surface-state fields. Raw values are sampled only at the existing 2.5 km AROME point centres to bound database size. SSM/SWI are relative percentages rather than 3–9 cm volumetric moisture, can be biased or masked in forests and steep terrain, and remain outside `hydrothermal-v1` until a versioned calibration proves a safe single-water-source bridge. PostgreSQL keeps only a four-date hot preview; seasonal calibration requires an external raster/archive backfill or sufficient-statistics export rather than pretending this window is training history.

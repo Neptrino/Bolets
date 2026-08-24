@@ -12,6 +12,10 @@ import {
   type OpenMeteoLocation,
 } from "../_shared/open-meteo.ts";
 import {
+  estimateOpenMeteoRequestUnits,
+  reserveOpenMeteoBudget,
+} from "../_shared/provider-budget.ts";
+import {
   buildStationCorrectedPrecipitation,
   madridHourKey,
   normalizeStationMatrixRow,
@@ -122,6 +126,7 @@ type HistoricalSnapshot = {
 const PROVIDER_BATCH_SIZE = 50;
 const COMPLETE_CURSOR = "__complete__";
 const MAX_BACKFILL_AGE_DAYS = 7;
+const OPEN_METEO_BACKFILL_DAILY_BUDGET_UNITS = 1_000;
 const LEGACY_ATMOSPHERE_KEYS = [
   "frostHours7d",
   "frostHours10d",
@@ -180,6 +185,7 @@ function errorMessage(error: unknown) {
 }
 
 async function fetchHistoricalWeather(
+  supabase: ReturnType<typeof createAdminClient>,
   points: WeatherPoint[],
   profile: HistoricalProfile,
   earliestTargetAt: string,
@@ -198,7 +204,16 @@ async function fetchHistoricalWeather(
     }
     if (profile === "atmosphere") url.searchParams.set("models", "arome_france");
     configureOpenMeteoHistoricalRequest(url, profile, earliestTargetAt, referenceAt);
-    results.push(...await fetchOpenMeteoLocations(url, `${profile} historical backfill`));
+    await reserveOpenMeteoBudget(
+      supabase,
+      "spatial-history-backfill",
+      estimateOpenMeteoRequestUnits(url, batch.length),
+      OPEN_METEO_BACKFILL_DAILY_BUDGET_UNITS,
+    );
+    results.push(...await fetchOpenMeteoLocations(url, `${profile} historical backfill`, {
+      attempts: 1,
+      egressLane: "direct",
+    }));
   }
   if (results.length !== points.length) {
     throw new Error(`Open-Meteo returned ${results.length} of ${points.length} historical locations`);
@@ -288,7 +303,13 @@ Deno.serve(async (request) => {
     const earliestTargetAt = targets.reduce((earliest, candidate) =>
       Date.parse(candidate) < Date.parse(earliest) ? candidate : earliest);
     const referenceAt = new Date().toISOString();
-    const locations = await fetchHistoricalWeather(points, profile, earliestTargetAt, referenceAt);
+    const locations = await fetchHistoricalWeather(
+      supabase,
+      points,
+      profile,
+      earliestTargetAt,
+      referenceAt,
+    );
     // station-rain-v1: historical model precipitation is replaced with gauge
     // hours before renormalization, so backfilled days carry the same rain
     // source as freshly ingested ones instead of a mixed-source seam.

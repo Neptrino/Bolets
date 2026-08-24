@@ -95,7 +95,7 @@ describe("spatial forecast storage", () => {
 
   it("builds rolling forecast windows from AROME history and ECMWF future hours", () => {
     expect(refreshPipeline).toContain("configureOpenMeteoForecastHistoryRequest");
-    expect(refreshPipeline).toContain("fetchAtmosphericForecastHistory(forecastPoints)");
+    expect(refreshPipeline).toContain("fetchAtmosphericForecastHistory(supabase, forecastPoints)");
     expect(refreshPipeline).toContain("atmosphericHistoryLocation");
     expect(refreshPipeline).toContain(
       '"Météo-France AROME history via Open-Meteo"',

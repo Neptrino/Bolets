@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
+import { Suspense } from "react";
 import {
   ArrowUpRight,
   Clock3,
@@ -110,7 +111,19 @@ function overviewMapPath(item: RankedOverviewItem) {
     : `/map?species=${item.speciesId}&region=${item.regionId}`;
 }
 
-export default async function MushroomsTodayPage() {
+function CurrentOverviewLoading() {
+  return (
+    <section className="current-board current-board-loading" aria-busy="true" aria-live="polite">
+      <Clock3 size={22} aria-hidden="true" />
+      <div>
+        <strong>Preparant la lectura d’avui…</strong>
+        <p>La pàgina ja és disponible mentre comprovem les condicions vigents de cada territori.</p>
+      </div>
+    </section>
+  );
+}
+
+async function CurrentOverview() {
   // VPS builds intentionally receive no database credentials. Wait for a real
   // request so the runtime-only internal Supabase URL is available; the two
   // overview loaders retain their shared twice-daily data cache.
@@ -131,24 +144,7 @@ export default async function MushroomsTodayPage() {
   const leaderMapPath = leader ? overviewMapPath(leader) : "/map";
 
   return (
-    <PageShell as="article">
-      <JsonLd data={{
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: "Bolets avui: millors zones i condicions a Catalunya",
-        description: metadata.description,
-        url: absoluteUrl("/bolets-avui"),
-        inLanguage: "ca",
-        publisher: { "@id": `${SITE_URL}/#organization` },
-        ...editorialArticleFields("bolets-avui"),
-      }} />
-      <PageHeader
-        eyebrow={<><Map size={15} /> Predicció amb les últimes dades disponibles</>}
-        title={<>Bolets avui<br /><PageTitleAccent>a Catalunya.</PageTitleAccent></>}
-        description="Comparem totes les espècies comestibles en temporada i destaquem la millor cel·la de cada territori. La puntuació combina l’hàbitat adequat amb les condicions per fructificar-hi; no confirma presència ni garanteix trobar bolets."
-        layout="split"
-      />
-
+    <>
       <Link href="/compartir" className="daily-share-entry"><Share2 size={16} /> Prepara targetes per compartir la lectura d’avui <ArrowUpRight size={16} /></Link>
 
       {leader?.summary && leaderScore === 0 ? (
@@ -274,6 +270,32 @@ export default async function MushroomsTodayPage() {
       ) : null}
 
       <EditorialAttribution contentId="bolets-avui" sources={environmentalSources} />
+    </>
+  );
+}
+
+export default function MushroomsTodayPage() {
+  return (
+    <PageShell as="article">
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: "Bolets avui: millors zones i condicions a Catalunya",
+        description: metadata.description,
+        url: absoluteUrl("/bolets-avui"),
+        inLanguage: "ca",
+        publisher: { "@id": `${SITE_URL}/#organization` },
+        ...editorialArticleFields("bolets-avui"),
+      }} />
+      <PageHeader
+        eyebrow={<><Map size={15} /> Predicció amb les últimes dades disponibles</>}
+        title={<>Bolets avui<br /><PageTitleAccent>a Catalunya.</PageTitleAccent></>}
+        description="Comparem totes les espècies comestibles en temporada i destaquem la millor cel·la de cada territori. La puntuació combina l’hàbitat adequat amb les condicions per fructificar-hi; no confirma presència ni garanteix trobar bolets."
+        layout="split"
+      />
+      <Suspense fallback={<CurrentOverviewLoading />}>
+        <CurrentOverview />
+      </Suspense>
     </PageShell>
   );
 }

@@ -13,6 +13,7 @@ umami_env_file=${BOLETS_UMAMI_ENV_FILE:-/opt/bolets/secrets/umami.env}
 
 if [ ! -f "$app_dir/Dockerfile" ] || [ ! -f "$supabase_dir/docker-compose.yml" ] ||
    [ ! -f "$supabase_dir/.env" ] || [ ! -f "$override_file" ] ||
+   [ ! -x "$app_dir/deploy/vps/apply-database-migrations.sh" ] ||
    [ ! -f "$umami_env_file" ]; then
   echo "Bolets or Supabase deployment directory is invalid" >&2
   exit 66
@@ -37,11 +38,11 @@ set +a
 # stable /opt/bolets/app symlink moves.
 export BOLETS_APP_DIR=$app_dir
 
-"$app_dir/deploy/vps/sync-functions.sh" "$app_dir" "$supabase_dir"
-
 cd "$supabase_dir"
 docker compose -f docker-compose.yml -f "$override_file" config --quiet
 docker compose -f docker-compose.yml -f "$override_file" build app
+"$app_dir/deploy/vps/apply-database-migrations.sh" "$app_dir"
+"$app_dir/deploy/vps/sync-functions.sh" "$app_dir" "$supabase_dir"
 docker compose -f docker-compose.yml -f "$override_file" up -d --wait
 "$app_dir/deploy/vps/bootstrap-umami.sh"
 # Function code is mounted and loaded per request, but restart once so no old

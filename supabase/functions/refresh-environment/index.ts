@@ -1,6 +1,9 @@
 import { createAdminClient, finishRun, json, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
-import { configureOpenMeteoRequest, normalizeOpenMeteo, type OpenMeteoLocation } from "../_shared/open-meteo.ts";
+import { configureOpenMeteoRequest, fetchOpenMeteoLocations, normalizeOpenMeteo } from "../_shared/open-meteo.ts";
+import { estimateOpenMeteoRequestUnits, reserveOpenMeteoBudget } from "../_shared/provider-budget.ts";
 import { regions } from "../_shared/regions.ts";
+
+const OPEN_METEO_REGIONAL_DAILY_BUDGET_UNITS = 200;
 
 Deno.serve(async (request) => {
   let runId: string | undefined;
@@ -22,10 +25,16 @@ Deno.serve(async (request) => {
     weatherUrl.searchParams.set("elevation", regions.map((region) => region.altitudeM).join(","));
     configureOpenMeteoRequest(weatherUrl);
 
-    const response = await fetch(weatherUrl, { headers: { "User-Agent": "Bolets-Atles/1.0" } });
-    if (!response.ok) throw new Error(`Open-Meteo returned ${response.status}`);
-    const payload = await response.json() as OpenMeteoLocation | OpenMeteoLocation[];
-    const locations = Array.isArray(payload) ? payload : [payload];
+    await reserveOpenMeteoBudget(
+      supabase,
+      "regional-environment",
+      estimateOpenMeteoRequestUnits(weatherUrl, regions.length),
+      OPEN_METEO_REGIONAL_DAILY_BUDGET_UNITS,
+    );
+    const locations = await fetchOpenMeteoLocations(weatherUrl, "regional environment", {
+      attempts: 1,
+      egressLane: "direct",
+    });
     if (locations.length !== regions.length) throw new Error(`Open-Meteo returned ${locations.length} of ${regions.length} requested locations`);
 
     const observedAt = new Date().toISOString();

@@ -1,13 +1,19 @@
 import { describe, expect, it } from "vitest";
 import {
+  alignOpenMeteoHourlySeries,
   configureOpenMeteoForecastHistoryRequest,
   configureOpenMeteoForecastRequest,
   configureOpenMeteoHistoricalRequest,
   configureOpenMeteoRequest,
+  configureOpenMeteoRollingAtmosphereRequest,
+  configureOpenMeteoRollingSeamlessPrecipitationRequest,
   configureOpenMeteoTerrainThermalRequest,
+  mergeOpenMeteoHourlyHistory,
   normalizeOpenMeteo,
   normalizeOpenMeteoAt,
   normalizeOpenMeteoForecast,
+  openMeteoRollingHistoryNeedsBootstrap,
+  ROLLING_SEAMLESS_VARIABLES,
   type OpenMeteoLocation,
 } from "@/supabase/functions/_shared/open-meteo";
 
@@ -54,6 +60,81 @@ describe("Open-Meteo profiles", () => {
     expect(soil.searchParams.get("past_hours")).toBe("168");
     expect(soil.searchParams.get("current")).toBe("soil_moisture_3_to_9cm");
     expect(soil.searchParams.get("hourly")).toBe("soil_moisture_3_to_9cm");
+  });
+
+  it("uses a short UTC overlap after the rolling atmosphere bootstrap", () => {
+    const bootstrap = new URL("https://api.open-meteo.com/v1/meteofrance");
+    configureOpenMeteoRollingAtmosphereRequest(bootstrap, true);
+    expect(bootstrap.searchParams.get("past_hours")).toBe("720");
+    expect(bootstrap.searchParams.has("current")).toBe(false);
+    expect(bootstrap.searchParams.get("models")).toBe("arome_france");
+    expect(bootstrap.searchParams.get("timeformat")).toBe("unixtime");
+
+    const incremental = new URL("https://api.open-meteo.com/v1/meteofrance");
+    configureOpenMeteoRollingAtmosphereRequest(incremental, false);
+    expect(incremental.searchParams.get("past_hours")).toBe("72");
+    expect(incremental.searchParams.get("hourly")).toContain("et0_fao_evapotranspiration");
+
+    const fallback = new URL("https://api.open-meteo.com/v1/meteofrance");
+    configureOpenMeteoRollingSeamlessPrecipitationRequest(fallback, false);
+    expect(fallback.searchParams.get("past_hours")).toBe("72");
+    expect(fallback.searchParams.get("hourly")).toBe("precipitation");
+    expect(fallback.searchParams.get("models")).toBe("meteofrance_seamless");
+  });
+
+  it("merges revised overlap hours into one exact bounded 30-day state", () => {
+    const base = Math.floor(Date.parse("2026-08-23T06:00:00Z") / 1000);
+    const oldTimes = Array.from({ length: 720 }, (_, index) => base - (719 - index) * 3600);
+    const newTimes = Array.from({ length: 73 }, (_, index) => base - 48 * 3600 + index * 3600);
+    const previous: OpenMeteoLocation = {
+      hourly: { time: oldTimes, precipitation: Array(720).fill(1) },
+    };
+    const incoming: OpenMeteoLocation = {
+      latitude: 42,
+      longitude: 2,
+      hourly: { time: newTimes, precipitation: Array(73).fill(2) },
+    };
+
+    const merged = mergeOpenMeteoHourlyHistory(
+      previous,
+      incoming,
+      ROLLING_SEAMLESS_VARIABLES,
+    );
+    const mergedTimes = merged.hourly!.time as number[];
+    const rain = merged.hourly!.precipitation as number[];
+    expect(mergedTimes).toHaveLength(720);
+    expect(mergedTimes.at(-1)).toBe(base + 24 * 3600);
+    expect(mergedTimes[0]).toBe(oldTimes[24]);
+    expect(rain.at(-1)).toBe(2);
+    expect(merged.current).toEqual({ time: base + 24 * 3600, precipitation: 2 });
+    expect(openMeteoRollingHistoryNeedsBootstrap(
+      merged,
+      ROLLING_SEAMLESS_VARIABLES,
+      "2026-08-24T06:30:00Z",
+    )).toBe(false);
+    expect(openMeteoRollingHistoryNeedsBootstrap(
+      merged,
+      ROLLING_SEAMLESS_VARIABLES,
+      "2026-08-28T06:30:00Z",
+    )).toBe(true);
+  });
+
+  it("fails a rolling merge rather than shortening a window across a gap", () => {
+    const base = Math.floor(Date.parse("2026-08-23T06:00:00Z") / 1000);
+    const times = Array.from({ length: 719 }, (_, index) => base - (719 - index) * 3600);
+    expect(() => mergeOpenMeteoHourlyHistory(
+      undefined,
+      { hourly: { time: times, precipitation: Array(719).fill(1) } },
+      ROLLING_SEAMLESS_VARIABLES,
+    )).toThrow(/incomplete/);
+  });
+
+  it("aligns coarse precipitation to the atmospheric UTC axis", () => {
+    const coarse: OpenMeteoLocation = {
+      hourly: { time: [1000, 4600], precipitation: [1.2, 3.4] },
+    };
+    expect(alignOpenMeteoHourlySeries(coarse, "precipitation", [1000, 2800, 4600]))
+      .toEqual([1.2, null, 3.4]);
   });
 
   it("requests enough UTC-safe hourly data to reach the fifth projection", () => {

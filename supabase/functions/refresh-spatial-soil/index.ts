@@ -8,6 +8,10 @@ import {
   normalizeOpenMeteoForecast,
   type OpenMeteoLocation,
 } from "../_shared/open-meteo.ts";
+import {
+  estimateOpenMeteoRequestUnits,
+  reserveOpenMeteoBudget,
+} from "../_shared/provider-budget.ts";
 
 type SoilPoint = {
   point_id: string;
@@ -22,6 +26,10 @@ const PROVIDER_BATCH_SIZE = 50;
 const COMPLETE_CURSOR = "__complete__";
 const SOIL_CURSOR_PIPELINE = "spatial-soil";
 const FORECAST_CURSOR_PIPELINE = "spatial-forecast-v2";
+// Atmosphere owns most of the free daily allowance. This consumer cap leaves
+// a small reserve for regional ingestion while the shared provider ledger is
+// still the final authority across every function and egress lane.
+const OPEN_METEO_SOIL_FORECAST_DAILY_BUDGET_UNITS = 3_600;
 
 type Settled<T> = { data: T; error?: undefined } | { data?: undefined; error: string };
 
@@ -164,7 +172,10 @@ async function pruneForecastIssues(
   return data;
 }
 
-async function fetchSoil(points: SoilPoint[]) {
+async function fetchSoil(
+  supabase: ReturnType<typeof createAdminClient>,
+  points: SoilPoint[],
+) {
   const results: OpenMeteoLocation[] = [];
   for (let start = 0; start < points.length; start += PROVIDER_BATCH_SIZE) {
     const batch = points.slice(start, start + PROVIDER_BATCH_SIZE);
@@ -175,13 +186,26 @@ async function fetchSoil(points: SoilPoint[]) {
       url.searchParams.set("elevation", batch.map((point) => point.requested_elevation_m).join(","));
     }
     configureOpenMeteoRequest(url, "soil");
-    results.push(...await fetchOpenMeteoLocations(url, "soil"));
+    await reserveOpenMeteoBudget(
+      supabase,
+      "spatial-soil-forecast",
+      estimateOpenMeteoRequestUnits(url, batch.length),
+      OPEN_METEO_SOIL_FORECAST_DAILY_BUDGET_UNITS,
+    );
+    results.push(...await fetchOpenMeteoLocations(url, "soil", {
+      attempts: 1,
+      egressLane: "direct",
+    }));
   }
   if (results.length !== points.length) throw new Error(`Open-Meteo returned ${results.length} of ${points.length} soil locations`);
   return results;
 }
 
-async function fetchForecast(points: SoilPoint[], profile: "atmosphere" | "soil") {
+async function fetchForecast(
+  supabase: ReturnType<typeof createAdminClient>,
+  points: SoilPoint[],
+  profile: "atmosphere" | "soil",
+) {
   const results: OpenMeteoLocation[] = [];
   for (let start = 0; start < points.length; start += PROVIDER_BATCH_SIZE) {
     const batch = points.slice(start, start + PROVIDER_BATCH_SIZE);
@@ -194,7 +218,16 @@ async function fetchForecast(points: SoilPoint[], profile: "atmosphere" | "soil"
       url.searchParams.set("elevation", batch.map((point) => point.requested_elevation_m).join(","));
     }
     configureOpenMeteoForecastRequest(url, profile);
-    results.push(...await fetchOpenMeteoLocations(url, `${profile} forecast`));
+    await reserveOpenMeteoBudget(
+      supabase,
+      "spatial-soil-forecast",
+      estimateOpenMeteoRequestUnits(url, batch.length),
+      OPEN_METEO_SOIL_FORECAST_DAILY_BUDGET_UNITS,
+    );
+    results.push(...await fetchOpenMeteoLocations(url, `${profile} forecast`, {
+      attempts: 1,
+      egressLane: "cloudflare",
+    }));
   }
   if (results.length !== points.length) {
     throw new Error(`Open-Meteo returned ${results.length} of ${points.length} ${profile} forecast locations`);
@@ -202,7 +235,10 @@ async function fetchForecast(points: SoilPoint[], profile: "atmosphere" | "soil"
   return results;
 }
 
-async function fetchAtmosphericForecastHistory(points: SoilPoint[]) {
+async function fetchAtmosphericForecastHistory(
+  supabase: ReturnType<typeof createAdminClient>,
+  points: SoilPoint[],
+) {
   const results: OpenMeteoLocation[] = [];
   for (let start = 0; start < points.length; start += PROVIDER_BATCH_SIZE) {
     const batch = points.slice(start, start + PROVIDER_BATCH_SIZE);
@@ -213,7 +249,16 @@ async function fetchAtmosphericForecastHistory(points: SoilPoint[]) {
       url.searchParams.set("elevation", batch.map((point) => point.requested_elevation_m).join(","));
     }
     configureOpenMeteoForecastHistoryRequest(url);
-    results.push(...await fetchOpenMeteoLocations(url, "AROME forecast history"));
+    await reserveOpenMeteoBudget(
+      supabase,
+      "spatial-soil-forecast",
+      estimateOpenMeteoRequestUnits(url, batch.length),
+      OPEN_METEO_SOIL_FORECAST_DAILY_BUDGET_UNITS,
+    );
+    results.push(...await fetchOpenMeteoLocations(url, "AROME forecast history", {
+      attempts: 1,
+      egressLane: "direct",
+    }));
   }
   if (results.length !== points.length) {
     throw new Error(`Open-Meteo returned ${results.length} of ${points.length} AROME history locations`);
@@ -337,16 +382,16 @@ Deno.serve(async (request) => {
       : new Date().toISOString();
     const [currentSoil, forecastAtmosphere, forecastAtmosphereHistory, forecastSoil] = await Promise.all([
       soilPoints.length
-        ? settle(fetchSoil(soilPoints))
+        ? settle(fetchSoil(supabase, soilPoints))
         : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
       forecastPoints.length
-        ? settle(fetchForecast(forecastPoints, "atmosphere"))
+        ? settle(fetchForecast(supabase, forecastPoints, "atmosphere"))
         : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
       forecastPoints.length
-        ? settle(fetchAtmosphericForecastHistory(forecastPoints))
+        ? settle(fetchAtmosphericForecastHistory(supabase, forecastPoints))
         : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
       forecastPoints.length
-        ? settle(fetchForecast(forecastPoints, "soil"))
+        ? settle(fetchForecast(supabase, forecastPoints, "soil"))
         : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
     ]);
     soilErrorMessage ??= currentSoil.error;

@@ -41,7 +41,7 @@ describe("spatial condition refresh after ingestion", () => {
 
   it("retries the idempotent refresh after ingestion cursors are already complete", () => {
     expect(atmospherePipeline).toMatch(
-      /lastCellId === COMPLETE_CURSOR[\s\S]*refreshSpatialLevelConditionsAfterIngestion\(supabase, today\)/,
+      /cursor\.last_cell_id === COMPLETE_CURSOR[\s\S]*refreshSpatialLevelConditionsAfterIngestion\(supabase, today\)/,
     );
     expect(soilPipeline).toMatch(
       /soilAlreadyComplete && forecastAlreadyComplete[\s\S]*refreshSpatialLevelConditionsAfterIngestion\(supabase, today\)/,

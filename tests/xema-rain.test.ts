@@ -228,6 +228,23 @@ describe("station-rain-v1 corrected precipitation", () => {
     expect(corrected.gaugeHours).toBe(0);
   });
 
+  it("matches UTC epoch provider hours to Madrid-local gauge keys", () => {
+    const epoch = 1786881600;
+    const corrected = buildStationCorrectedPrecipitation(
+      [epoch],
+      [5],
+      [
+        matrixStation("A", 42.41, 2.3, { "2026-08-16T14:00": 1 }),
+        matrixStation("B", 42.39, 2.3, { "2026-08-16T14:00": 3 }),
+      ],
+      42.4,
+      2.3,
+    );
+    expect(corrected.gaugeHours).toBe(1);
+    expect(corrected.series[0]).toBeGreaterThan(1);
+    expect(corrected.series[0]).toBeLessThan(3);
+  });
+
   it("preserves fallback nulls so completeness guards still see missing hours", () => {
     const corrected = buildStationCorrectedPrecipitation(["T00"], [null], [], 42.4, 2.3);
     expect(corrected.series).toEqual([null]);

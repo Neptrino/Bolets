@@ -12,8 +12,12 @@ supabase/.branches/
 .env.local
 .env*.local
 .vercel
+lambda/**/dist/
 .DS_Store
 .env*
 !.env.example
 !.env.spatial.example
+**/.dev.vars
+!**/.dev.vars.example
+workers/**/worker-configuration.d.ts
 .claude/

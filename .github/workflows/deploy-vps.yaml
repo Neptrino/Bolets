@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: production-vps
@@ -42,11 +43,61 @@ jobs:
       - name: Run type checks
         run: npm run typecheck
 
+      - name: Validate the Open-Meteo relay runtimes
+        run: |
+          npm run worker:check
+          npm run lambda:check
+
       - name: Build the production application
         env:
           # This identifier is public and must match the VPS Umami bootstrap.
           NEXT_PUBLIC_UMAMI_WEBSITE_ID: ce97249f-b2de-44bd-899c-56f8fc05cb54
         run: npm run build
+
+      - name: Deploy the Open-Meteo relay Worker
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -eu
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          npm run worker:deploy
+
+      - name: Configure temporary AWS deployment credentials
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        with:
+          aws-region: ${{ vars.AWS_LAMBDA_REGION }}
+          role-to-assume: ${{ vars.AWS_LAMBDA_DEPLOY_ROLE_ARN }}
+
+      - name: Deploy an immutable Open-Meteo Lambda relay version
+        env:
+          AWS_LAMBDA_RELAY_BASE_URL: ${{ vars.AWS_LAMBDA_RELAY_BASE_URL }}
+        run: |
+          set -eu
+          test -n "$AWS_LAMBDA_RELAY_BASE_URL"
+          relay_archive="$RUNNER_TEMP/bolets-open-meteo-relay.zip"
+          (cd lambda/open-meteo-relay/dist && zip -q "$relay_archive" index.js)
+          aws lambda update-function-code \
+            --function-name bolets-open-meteo-relay-aws \
+            --zip-file "fileb://$relay_archive" \
+            --architectures arm64 \
+            >/dev/null
+          aws lambda wait function-updated \
+            --function-name bolets-open-meteo-relay-aws
+          relay_version="$(aws lambda publish-version \
+            --function-name bolets-open-meteo-relay-aws \
+            --description "GitHub ${GITHUB_SHA}" \
+            --query Version \
+            --output text)"
+          aws lambda update-alias \
+            --function-name bolets-open-meteo-relay-aws \
+            --name live \
+            --function-version "$relay_version" \
+            >/dev/null
+          curl --fail --silent --show-error --retry 3 \
+            "${AWS_LAMBDA_RELAY_BASE_URL}health" \
+            | jq -e '.ok == true' >/dev/null
 
       - name: Create the immutable release archive
         run: git archive --format=tar.gz --output="$RUNNER_TEMP/bolets-release.tar.gz" "$GITHUB_SHA"

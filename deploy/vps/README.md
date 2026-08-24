@@ -96,10 +96,39 @@ Supabase `.env`; do not replace the generated file with the example. Set a real
 TLS email and domains. Keep `COMPOSE_FILE=docker-compose.yml`: the optional
 Logflare/Vector stack is intentionally disabled on the initial 8 GB host.
 
-If direct AROME shadow staging is enabled, copy
-`deploy/vps/functions.env.example` to
-`/opt/bolets/secrets/functions.env`, populate it, and run `chmod 600` on the
-file. The published prediction pipeline works without that optional credential.
+Copy `deploy/vps/functions.env.example` to
+`/opt/bolets/secrets/functions.env`, populate the required Open-Meteo relay
+values, and run `chmod 600` on the file. The direct AROME shadow credential is
+still optional, but the parallel ingestion lanes require both relay URLs and
+their distinct HMAC secrets.
+
+Deploy one Cloudflare Worker zone before enabling the self-hosted cron jobs.
+It is a narrow authenticated egress relay, not a cache or public proxy, and it
+contains no Supabase credentials:
+
+```bash
+npm ci
+npx --yes wrangler@4.125.0 login
+relay_secret=$(openssl rand -hex 32)
+printf '%s' "$relay_secret" | npx --yes wrangler@4.125.0 secret put RELAY_HMAC_SECRET \
+  --config workers/open-meteo-relay/wrangler.jsonc
+npm run worker:check
+npm run worker:deploy
+```
+
+Copy the exact `https://...workers.dev/v1/fetch` URL printed by the deployment
+and `relay_secret` into `/opt/bolets/secrets/functions.env`. Do not create more
+Worker zones: the database deliberately coordinates one Cloudflare lane, one
+AWS Lambda lane, and one VPS lane under one global provider budget. Rotate the relay secret by
+installing the new Worker secret and updating the VPS file in the same
+maintenance window, then restart the `functions` service.
+
+Bootstrap `lambda/open-meteo-relay` once with the short-lived local AWS session,
+then let the production GitHub environment assume the narrowly scoped OIDC
+deployment role. Copy the stack's Function URL with `/v1/fetch` and its distinct
+HMAC secret into `/opt/bolets/secrets/functions.env`. The Lambda has reserved
+concurrency four, but PostgreSQL still leases only one shard to the AWS lane at
+a time.
 
 Copy `deploy/vps/umami.env.example` to
 `/opt/bolets/secrets/umami.env`, generate the three service secrets and the
@@ -248,11 +277,16 @@ Verify `cron.job` contains exactly ten active Bolets jobs and inspect
 ```
 
 The script loads the root-only Umami environment, validates the merged Compose
-model, builds the standalone Next.js image, waits for healthy services,
-replaces Umami's default administrator password, creates the fixed Bolets
-website record idempotently, and restarts the function runtime. The app uses
-the internal gateway URL; its server credentials never travel through public
-DNS.
+model, builds the standalone Next.js image, transactionally installs the
+additive rolling-ingestion and parallel-job database schemas when their marker tables are absent,
+and synchronizes Edge Functions only after that schema is ready. It then waits
+for healthy services, replaces Umami's default administrator password, creates
+the fixed Bolets website record idempotently, and restarts the function
+runtime. The restored managed project has no local Supabase migration ledger,
+so this post-restore migration is guarded by its own new table rather than
+replaying historical migrations over an already-populated database. The app
+uses the internal gateway URL; its server credentials never travel through
+public DNS.
 
 After this first rollout succeeds, add the DNS-only
 `analytics.bolets.app -> 51.255.40.179` record. Verify
@@ -264,9 +298,10 @@ strings and fragments so map state is not collected.
 
 ## 8. Deploy `main` automatically
 
-`.github/workflows/deploy-vps.yaml` runs unit tests, linting, type checks and a
-production build for every push to `main`. It then sends an archive of that
-exact commit to a forced-command SSH identity. The receiver builds and checks
+`.github/workflows/deploy-vps.yaml` runs unit tests, linting, application and
+Worker type checks, a Worker dry-run bundle, and a production build for every
+push to `main`. It deploys the tested Worker bundle, then sends an archive of
+that exact commit to a forced-command SSH identity. The receiver builds and checks
 the candidate release before atomically updating `/opt/bolets/app`; a failed
 rollout restores the preceding application and function release. Concurrent
 production deployments are serialized on both GitHub and the VPS.
@@ -295,14 +330,20 @@ ssh-keygen -lf ./bolets-known-hosts
 gh secret set VPS_KNOWN_HOSTS < ./bolets-known-hosts
 ```
 
+Also create production secrets `CLOUDFLARE_ACCOUNT_ID` and
+`CLOUDFLARE_API_TOKEN`. Scope the token to Workers Scripts: Edit for only the
+account that owns this Worker. The HMAC relay secret is intentionally not in
+GitHub; Wrangler preserves the separately installed encrypted Worker secret
+across code deployments.
+
 Delete the local private-key copy after GitHub has accepted it. To rotate the
 identity, rerun the installer with a new public key and replace the GitHub
 secret. Reinstall the root-owned receiver manually after reviewing any future
 change to `receive-release.sh`; application releases cannot modify it.
 
-This workflow has no managed Supabase token, project reference or deployment
-step. It deploys the Next.js app and version-controlled Edge Functions only to
-the pinned self-hosted stack. Keep the old managed project intact during the
+This workflow has no managed Supabase token or project reference. It deploys
+the relay to Cloudflare and the Next.js app plus version-controlled Edge
+Functions to the pinned self-hosted stack. Keep the old managed project intact during the
 rollback window, but disable its scheduled writers once the self-hosted cron
 cycle and restore procedure have been verified. Project deletion is a separate,
 irreversible retirement operation.

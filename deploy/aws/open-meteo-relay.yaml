@@ -1,0 +1,180 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: HMAC-authenticated Open-Meteo Lambda relay and its GitHub OIDC deployment role.
+
+Parameters:
+  ArtifactBucket:
+    Type: String
+  ArtifactKey:
+    Type: String
+  GitHubEnvironment:
+    Type: String
+    Default: production
+  GitHubOidcProviderArn:
+    Type: String
+  GitHubOwner:
+    Type: String
+    Default: Neptrino
+  GitHubRepository:
+    Type: String
+    Default: Bolets
+  RelayFunctionName:
+    Type: String
+    Default: bolets-open-meteo-relay-aws
+
+Resources:
+  RelaySecret:
+    Type: AWS::SecretsManager::Secret
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Description: HMAC secret shared only by the Bolets ingestion service and AWS relay.
+      GenerateSecretString:
+        ExcludePunctuation: true
+        PasswordLength: 64
+      Name: bolets/open-meteo-relay/aws-hmac
+      Tags:
+        - Key: Project
+          Value: Bolets
+
+  RelayLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${RelayFunctionName}
+      RetentionInDays: 14
+      Tags:
+        - Key: Project
+          Value: Bolets
+
+  RelayExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: bolets-open-meteo-relay-execution
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: WriteRelayLogs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub ${RelayLogGroup.Arn}:*
+      Tags:
+        - Key: Project
+          Value: Bolets
+
+  RelayFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: RelayLogGroup
+    Properties:
+      Architectures:
+        - arm64
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      Description: Narrow authenticated Open-Meteo egress relay for Bolets ingestion.
+      Environment:
+        Variables:
+          RELAY_HMAC_SECRET: !Sub "{{resolve:secretsmanager:${RelaySecret}:SecretString}}"
+      FunctionName: !Ref RelayFunctionName
+      Handler: index.handler
+      MemorySize: 256
+      ReservedConcurrentExecutions: 4
+      Role: !GetAtt RelayExecutionRole.Arn
+      Runtime: nodejs24.x
+      Timeout: 60
+      TracingConfig:
+        Mode: PassThrough
+      Tags:
+        - Key: Project
+          Value: Bolets
+
+  InitialRelayVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      Description: Initial tested Bolets relay release.
+      FunctionName: !Ref RelayFunction
+
+  LiveRelayAlias:
+    Type: AWS::Lambda::Alias
+    Properties:
+      Description: Production relay release selected by GitHub Actions.
+      FunctionName: !Ref RelayFunction
+      FunctionVersion: !GetAtt InitialRelayVersion.Version
+      Name: live
+
+  RelayUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      AuthType: NONE
+      InvokeMode: BUFFERED
+      TargetFunctionArn: !Ref LiveRelayAlias
+
+  RelayUrlInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunctionUrl
+      FunctionName: !Ref LiveRelayAlias
+      FunctionUrlAuthType: NONE
+      Principal: "*"
+
+  RelayFunctionInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref LiveRelayAlias
+      InvokedViaFunctionUrl: true
+      Principal: "*"
+
+  GitHubDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: bolets-production-lambda-deploy
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GitHubOidcProviderArn
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOwner}/${GitHubRepository}:environment:${GitHubEnvironment}
+      Policies:
+        - PolicyName: DeployBoletsRelayVersions
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:GetAlias
+                  - lambda:GetFunction
+                  - lambda:GetFunctionConfiguration
+                  - lambda:ListVersionsByFunction
+                  - lambda:PublishVersion
+                  - lambda:UpdateAlias
+                  - lambda:UpdateFunctionCode
+                Resource:
+                  - !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:${RelayFunctionName}
+                  - !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:${RelayFunctionName}:live
+      Tags:
+        - Key: Project
+          Value: Bolets
+
+Outputs:
+  FunctionName:
+    Value: !Ref RelayFunction
+  FunctionUrl:
+    Value: !GetAtt RelayUrl.FunctionUrl
+  GitHubDeployRoleArn:
+    Value: !GetAtt GitHubDeployRole.Arn
+  RelaySecretArn:
+    Value: !Ref RelaySecret

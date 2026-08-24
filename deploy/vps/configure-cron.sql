@@ -33,7 +33,6 @@ begin
     select *
     from (values
       ('refresh-environment-daily', '15 5 * * *', '/functions/v1/refresh-environment', '{"trigger":"cron"}', 30000),
-      ('refresh-spatial-environment', '5-59/2 * * * *', '/functions/v1/refresh-spatial-environment', '{"trigger":"cron"}', 120000),
       ('refresh-spatial-soil', '6-59/5 * * * *', '/functions/v1/refresh-spatial-soil', '{"trigger":"cron"}', 120000),
       ('refresh-species-occurrences-monthly', '15,25,35,45,55 3 1 * *', '/functions/v1/refresh-species-occurrences', '{"trigger":"cron","maxSpecies":9}', 120000),
       ('refresh-species-occurrences-monthly-tail', '5,15 4 1 * *', '/functions/v1/refresh-species-occurrences', '{"trigger":"cron","maxSpecies":9}', 120000),
@@ -63,6 +62,29 @@ begin
       )
     );
   end loop;
+
+  -- One scheduler tick dispatches all leased lanes. Postgres decides which
+  -- shard each lane may claim, so overlapping cron ticks cannot duplicate a
+  -- shard and atmosphere waits until every precipitation-fallback shard has
+  -- completed.
+  perform cron.schedule(
+    'refresh-spatial-environment',
+    '* * * * *',
+    $command$
+      select net.http_post(
+        url := (select decrypted_secret from vault.decrypted_secrets where name = 'bolets_project_url') || '/functions/v1/refresh-spatial-environment',
+        headers := jsonb_build_object(
+          'Content-Type', 'application/json',
+          'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'bolets_legacy_anon_key'),
+          'apikey', (select decrypted_secret from vault.decrypted_secrets where name = 'bolets_legacy_anon_key'),
+          'x-ingestion-token', (select decrypted_secret from vault.decrypted_secrets where name = 'bolets_ingestion_token')
+        ),
+        body := jsonb_build_object('trigger', 'cron', 'lane', lane),
+        timeout_milliseconds := 120000
+      )
+      from (values ('direct'), ('cloudflare'), ('aws')) as lanes(lane);
+    $command$
+  );
 end
 $$;
 

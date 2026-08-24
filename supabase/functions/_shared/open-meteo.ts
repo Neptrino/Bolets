@@ -8,6 +8,12 @@ export type OpenMeteoLocation = {
 };
 
 export type RequestProfile = "complete" | "atmosphere" | "soil";
+export type OpenMeteoEgressLane = "aws" | "cloudflare" | "direct";
+
+export type FetchOpenMeteoOptions = {
+  attempts?: number;
+  egressLane?: OpenMeteoEgressLane;
+};
 
 export const FORECAST_HORIZON_HOURS = [24, 48, 72, 96, 120] as const;
 export const FORECAST_BASELINE_HOURS = 0 as const;
@@ -27,13 +33,85 @@ const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resol
 // connections onto the provider's per-IP guard.
 const OPEN_METEO_REQUEST_TIMEOUT_MS = 45_000;
 
-export async function fetchOpenMeteoLocations(url: URL, context: string, attempts = 3) {
+function bytesToHex(bytes: ArrayBuffer) {
+  return Array.from(new Uint8Array(bytes), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function signRelayRequest(secret: string, timestamp: string, upstreamUrl: string) {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  return bytesToHex(await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(`${timestamp}\n${upstreamUrl}`),
+  ));
+}
+
+function edgeEnvironmentValue(name: string) {
+  const deno = Reflect.get(globalThis, "Deno");
+  if (!deno || typeof deno !== "object") return undefined;
+  const environment = Reflect.get(deno, "env");
+  if (!environment || typeof environment !== "object") return undefined;
+  const get = Reflect.get(environment, "get");
+  if (typeof get !== "function") return undefined;
+  const value: unknown = Reflect.apply(get, environment, [name]);
+  return typeof value === "string" ? value : undefined;
+}
+
+async function fetchOpenMeteoResponse(url: URL, egressLane: OpenMeteoEgressLane) {
+  if (egressLane === "direct") {
+    return fetch(url, {
+      headers: { "User-Agent": "Bolets-Atles/1.0" },
+      signal: AbortSignal.timeout(OPEN_METEO_REQUEST_TIMEOUT_MS),
+    });
+  }
+
+  const relayUrlName = egressLane === "aws"
+    ? "OPEN_METEO_AWS_RELAY_URL"
+    : "OPEN_METEO_CF_RELAY_URL";
+  const relaySecretName = egressLane === "aws"
+    ? "OPEN_METEO_AWS_RELAY_HMAC_SECRET"
+    : "OPEN_METEO_RELAY_HMAC_SECRET";
+  const relayUrl = edgeEnvironmentValue(relayUrlName);
+  const relaySecret = edgeEnvironmentValue(relaySecretName);
+  if (!relayUrl || !relaySecret) {
+    throw new Error(`${egressLane} Open-Meteo relay is not configured`);
+  }
+  const relayTarget = new URL(relayUrl);
+  if (relayTarget.protocol !== "https:") {
+    throw new Error(`${egressLane} Open-Meteo relay must use HTTPS`);
+  }
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  const upstreamUrl = url.toString();
+  const signature = await signRelayRequest(relaySecret, timestamp, upstreamUrl);
+  return fetch(relayTarget, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Bolets-Relay-Timestamp": timestamp,
+      "X-Bolets-Relay-Signature": signature,
+    },
+    body: JSON.stringify({ url: upstreamUrl }),
+    signal: AbortSignal.timeout(OPEN_METEO_REQUEST_TIMEOUT_MS),
+  });
+}
+
+export async function fetchOpenMeteoLocations(
+  url: URL,
+  context: string,
+  options: FetchOpenMeteoOptions = {},
+) {
+  const attempts = options.attempts ?? 3;
+  const egressLane = options.egressLane ?? "direct";
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
-      const response = await fetch(url, {
-        headers: { "User-Agent": "Bolets-Atles/1.0" },
-        signal: AbortSignal.timeout(OPEN_METEO_REQUEST_TIMEOUT_MS),
-      });
+      const response = await fetchOpenMeteoResponse(url, egressLane);
       if (response.ok) {
         const payload = await response.json() as OpenMeteoLocation | OpenMeteoLocation[];
         return Array.isArray(payload) ? payload : [payload];
@@ -63,7 +141,7 @@ const atmosphericCurrentVariables = [
   "wind_gusts_10m"
 ];
 
-const atmosphericHourlyVariables = [
+export const atmosphericHourlyVariables = [
   "temperature_2m",
   "relative_humidity_2m",
   "wind_speed_10m",
@@ -73,6 +151,10 @@ const atmosphericHourlyVariables = [
 ];
 
 const soilVariables = ["soil_moisture_3_to_9cm"];
+
+export const ROLLING_ATMOSPHERE_HISTORY_HOURS = 720;
+export const ROLLING_PROVIDER_OVERLAP_HOURS = 72;
+export const ROLLING_SEAMLESS_VARIABLES = ["precipitation"] as const;
 
 const requiredAtmosphericFields = [
   "temperatureC",
@@ -141,6 +223,42 @@ export function configureOpenMeteoRequest(url: URL, profile: RequestProfile = "c
   url.searchParams.set("current", currentVariables.join(","));
   url.searchParams.set("hourly", hourlyVariables.join(","));
   url.searchParams.set("timezone", "Europe/Madrid");
+}
+
+/**
+ * The observed spatial stream persists its complete 30-day hourly history in
+ * Postgres. Normal requests therefore need only a three-day overlap, which is
+ * enough to repair two missed daily runs while remaining in Open-Meteo's
+ * unweighted (at most two-week) quota tier. A missing or stale state
+ * bootstraps the full window.
+ * Current values are derived from the last complete hourly sample so the same
+ * variables are not charged twice.
+ */
+export function configureOpenMeteoRollingAtmosphereRequest(url: URL, bootstrap: boolean) {
+  url.searchParams.set(
+    "past_hours",
+    String(bootstrap ? ROLLING_ATMOSPHERE_HISTORY_HOURS : ROLLING_PROVIDER_OVERLAP_HOURS),
+  );
+  url.searchParams.set("forecast_hours", "1");
+  url.searchParams.set("hourly", atmosphericHourlyVariables.join(","));
+  url.searchParams.set("models", "arome_france");
+  url.searchParams.set("timezone", "Europe/Madrid");
+  url.searchParams.set("timeformat", "unixtime");
+}
+
+export function configureOpenMeteoRollingSeamlessPrecipitationRequest(
+  url: URL,
+  bootstrap: boolean,
+) {
+  url.searchParams.set(
+    "past_hours",
+    String(bootstrap ? ROLLING_ATMOSPHERE_HISTORY_HOURS : ROLLING_PROVIDER_OVERLAP_HOURS),
+  );
+  url.searchParams.set("forecast_hours", "1");
+  url.searchParams.set("hourly", ROLLING_SEAMLESS_VARIABLES.join(","));
+  url.searchParams.set("models", "meteofrance_seamless");
+  url.searchParams.set("timezone", "Europe/Madrid");
+  url.searchParams.set("timeformat", "unixtime");
 }
 
 export function configureOpenMeteoForecastRequest(url: URL, profile: "atmosphere" | "soil") {
@@ -246,7 +364,11 @@ export function configureOpenMeteoTerrainThermalRequest(
 }
 
 function validTime(location: OpenMeteoLocation) {
-  const localTime = typeof location.current?.time === "string" ? location.current.time : undefined;
+  const rawTime = location.current?.time;
+  if (typeof rawTime === "number" && Number.isInteger(rawTime)) {
+    return new Date(rawTime * 1000).toISOString();
+  }
+  const localTime = typeof rawTime === "string" ? rawTime : undefined;
   const offsetSeconds = finiteNumber(location.utc_offset_seconds);
   if (!localTime || offsetSeconds === undefined) return undefined;
   const sign = offsetSeconds < 0 ? "-" : "+";
@@ -258,11 +380,14 @@ function validTime(location: OpenMeteoLocation) {
 
 function lastHourlyIndex(location: OpenMeteoLocation) {
   const times = Array.isArray(location.hourly?.time) ? location.hourly.time : [];
-  const currentTime = typeof location.current?.time === "string" ? location.current.time : undefined;
+  const currentTime = location.current?.time;
   if (!times.length) return -1;
-  if (!currentTime) return times.length - 1;
+  if (typeof currentTime !== "string" && typeof currentTime !== "number") return times.length - 1;
   for (let index = times.length - 1; index >= 0; index -= 1) {
-    if (typeof times[index] === "string" && times[index] <= currentTime) return index;
+    if (
+      (typeof currentTime === "number" && typeof times[index] === "number" && times[index] <= currentTime) ||
+      (typeof currentTime === "string" && typeof times[index] === "string" && times[index] <= currentTime)
+    ) return index;
   }
   return -1;
 }
@@ -456,6 +581,124 @@ function epochSecond(value: unknown) {
   if (typeof value !== "string" || !/(?:Z|[+-]\d{2}:?\d{2})$/.test(value)) return undefined;
   const milliseconds = Date.parse(value);
   return Number.isFinite(milliseconds) ? Math.floor(milliseconds / 1000) : undefined;
+}
+
+function latestHourlyEpoch(location: OpenMeteoLocation) {
+  const times = Array.isArray(location.hourly?.time) ? location.hourly.time : [];
+  let latest: number | undefined;
+  for (const rawTime of times) {
+    const time = epochSecond(rawTime);
+    if (time !== undefined && (latest === undefined || time > latest)) latest = time;
+  }
+  return latest;
+}
+
+/**
+ * A state is incremental-safe only when it contains every exact retained hour
+ * and its newest hour still overlaps the next short provider request. Invalid
+ * or older states deliberately trigger a full bootstrap instead of allowing a
+ * silent hole to shorten any ecological window.
+ */
+export function openMeteoRollingHistoryNeedsBootstrap(
+  location: OpenMeteoLocation | undefined,
+  variables: readonly string[],
+  referenceAt = new Date().toISOString(),
+  historyHours = ROLLING_ATMOSPHERE_HISTORY_HOURS,
+  overlapHours = ROLLING_PROVIDER_OVERLAP_HOURS,
+) {
+  if (!location?.hourly || !Array.isArray(location.hourly.time)) return true;
+  const times = location.hourly.time as unknown[];
+  if (times.length !== historyHours) return true;
+  if (variables.some((key) => !Array.isArray(location.hourly?.[key]) ||
+    (location.hourly?.[key] as unknown[]).length !== historyHours)) return true;
+  const latest = latestHourlyEpoch(location);
+  const referenceMilliseconds = Date.parse(referenceAt);
+  if (latest === undefined || !Number.isFinite(referenceMilliseconds)) return true;
+  const referenceHour = Math.floor(referenceMilliseconds / 3_600_000) * 3600;
+  if (latest < referenceHour - (overlapHours - 2) * 3600) return true;
+  for (let index = 0; index < times.length; index += 1) {
+    const time = epochSecond(times[index]);
+    if (time === undefined || time !== latest - (historyHours - 1 - index) * 3600) return true;
+    if (variables.some((key) => finiteNumber((location.hourly?.[key] as unknown[])[index]) === undefined)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Merges an incremental provider response into one exact, bounded hourly
+ * history. Incoming values win so revised recent model hours are retained.
+ * The merge fails closed unless every variable has all required samples.
+ */
+export function mergeOpenMeteoHourlyHistory(
+  previous: OpenMeteoLocation | undefined,
+  incoming: OpenMeteoLocation,
+  variables: readonly string[],
+  historyHours = ROLLING_ATMOSPHERE_HISTORY_HOURS,
+): OpenMeteoLocation {
+  const combined = new Map<number, Record<string, number>>();
+  const mergeLocation = (location: OpenMeteoLocation | undefined) => {
+    const times = Array.isArray(location?.hourly?.time) ? location.hourly.time as unknown[] : [];
+    for (let index = 0; index < times.length; index += 1) {
+      const time = epochSecond(times[index]);
+      if (time === undefined) continue;
+      const values = combined.get(time) ?? {};
+      for (const key of variables) {
+        const source = Array.isArray(location?.hourly?.[key])
+          ? location.hourly[key] as unknown[]
+          : [];
+        const value = finiteNumber(source[index]);
+        if (value !== undefined) values[key] = value;
+      }
+      combined.set(time, values);
+    }
+  };
+  mergeLocation(previous);
+  mergeLocation(incoming);
+
+  const candidateTimes = [...combined.entries()]
+    .filter(([, values]) => variables.every((key) => values[key] !== undefined))
+    .map(([time]) => time)
+    .sort((left, right) => right - left);
+  const latest = candidateTimes[0];
+  if (latest === undefined) throw new Error("Rolling Open-Meteo response has no complete hourly sample");
+  const times = Array.from(
+    { length: historyHours },
+    (_, index) => latest - (historyHours - 1 - index) * 3600,
+  );
+  for (const time of times) {
+    const values = combined.get(time);
+    if (!values || variables.some((key) => values[key] === undefined)) {
+      throw new Error(`Rolling Open-Meteo history is incomplete at ${new Date(time * 1000).toISOString()}`);
+    }
+  }
+
+  const hourly: Record<string, unknown> = { time: times };
+  for (const key of variables) hourly[key] = times.map((time) => combined.get(time)![key]);
+  const current: Record<string, unknown> = { time: latest };
+  for (const key of variables) current[key] = combined.get(latest)![key];
+  return {
+    latitude: finiteNumber(incoming.latitude) ?? finiteNumber(previous?.latitude),
+    longitude: finiteNumber(incoming.longitude) ?? finiteNumber(previous?.longitude),
+    elevation: finiteNumber(incoming.elevation) ?? finiteNumber(previous?.elevation),
+    utc_offset_seconds: finiteNumber(incoming.utc_offset_seconds) ?? finiteNumber(previous?.utc_offset_seconds),
+    current,
+    hourly,
+  };
+}
+
+/** Aligns a coarse provider series to another location's exact UTC axis. */
+export function alignOpenMeteoHourlySeries(
+  location: OpenMeteoLocation,
+  key: string,
+  targetTimes: unknown[],
+) {
+  const series = hourlySeries(location, key);
+  return targetTimes.map((rawTime) => {
+    const time = epochSecond(rawTime);
+    return time === undefined ? null : series.get(time) ?? null;
+  });
 }
 
 function hourlySeries(location: OpenMeteoLocation, key: string): HourlySeries {

@@ -178,6 +178,10 @@
 .current-overview-method svg { flex: 0 0 auto; margin-top: .18rem; color: #52664a; }
 .current-overview-method p { margin: 0; color: #485148; font-size: var(--text-base); line-height: 1.55; }
 .current-board { margin: 0 0 1.5rem; }
+.current-board-loading { display: flex; align-items: flex-start; gap: .8rem; color: #485148; }
+.current-board-loading svg { flex: 0 0 auto; margin-top: .15rem; color: #52664a; }
+.current-board-loading strong { display: block; color: #283d2e; font-size: var(--text-lg); }
+.current-board-loading p { margin: .2rem 0 0; font-size: var(--text-base); line-height: 1.55; }
 .current-board-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(17rem, .7fr); gap: 3rem; align-items: end; margin-bottom: 1.4rem; }
 .current-board-heading .eyebrow { margin-bottom: .4rem; }
 .current-board-heading h2 { margin: 0; font-size: var(--display-sm); letter-spacing: -.035em; }

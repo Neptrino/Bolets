@@ -81,7 +81,8 @@ describe("station-rain-v1 promotion", () => {
   it("corrects past precipitation in the refresh while keeping AROME thermal fields", () => {
     expect(refresh).toContain("buildStationCorrectedPrecipitation");
     expect(refresh).toContain("get_xema_rain_matrix");
-    expect(refresh).toContain('"models", "arome_france"');
+    expect(refresh).toContain("configureOpenMeteoRollingAtmosphereRequest");
+    expect(refresh).toContain('atmosphericModel: "arome_france"');
     expect(refresh).toContain("meteofrance_seamless");
     expect(refresh).toContain("precipitationSource: STATION_RAIN_SOURCE_VERSION");
     expect(refresh).toContain("precipitationGaugeCoverage");
