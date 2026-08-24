@@ -151,9 +151,19 @@ as $$
         order by recent.started_at desc
       )
       from (
-        select run.*
-        from public.ingestion_runs run
-        order by run.started_at desc
+        select ranked.*
+        from (
+          select
+            run.*,
+            row_number() over (
+              partition by run.pipeline, run.status
+              order by run.started_at desc
+            ) as status_rank
+          from public.ingestion_runs run
+          where run.started_at >= statement_timestamp() - interval '30 days'
+        ) ranked
+        where ranked.status_rank <= 3
+        order by ranked.started_at desc
         limit 40
       ) recent
     ), '[]'::jsonb)
@@ -166,4 +176,4 @@ grant execute on function public.read_operational_status()
   to service_role;
 
 comment on function public.read_operational_status() is
-  'Private, service-role-only operational summary v2 for the Bolets status page and metrics collector.';
+  'Private, service-role-only operational summary v3 for the Bolets status page and metrics collector.';
