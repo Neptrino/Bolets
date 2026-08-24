@@ -10,9 +10,10 @@ app_dir=$1
 rolling_migration="$app_dir/supabase/migrations/20260824061712_add_open_meteo_rolling_history.sql"
 parallel_migration="$app_dir/supabase/migrations/20260824074556_parallel_spatial_ingestion.sql"
 aws_lane_migration="$app_dir/supabase/migrations/20260824113000_add_aws_ingestion_lane.sql"
+operational_status_migration="$app_dir/supabase/migrations/20260824143000_add_operational_status_reader.sql"
 
 if [ ! -f "$rolling_migration" ] || [ ! -f "$parallel_migration" ] ||
-   [ ! -f "$aws_lane_migration" ]; then
+   [ ! -f "$aws_lane_migration" ] || [ ! -f "$operational_status_migration" ]; then
   echo "A required ingestion migration is missing" >&2
   exit 66
 fi
@@ -74,3 +75,22 @@ case "$aws_lane_installed" in
     echo "Applied AWS ingestion-lane database migration"
     ;;
 esac
+
+operational_status_installed=$(docker exec supabase-db psql \
+  --username postgres \
+  --dbname postgres \
+  --tuples-only \
+  --no-align \
+  --command "select coalesce(to_regprocedure('public.read_operational_status()')::text, '');")
+
+if [ "$operational_status_installed" = "read_operational_status()" ]; then
+  echo "Operational-status database migration is already installed"
+else
+  docker exec -i supabase-db psql \
+    --username postgres \
+    --dbname postgres \
+    --set ON_ERROR_STOP=1 \
+    --single-transaction \
+    < "$operational_status_migration"
+  echo "Applied operational-status database migration"
+fi

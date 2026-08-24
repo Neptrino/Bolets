@@ -18,6 +18,7 @@ Supabase stores normalized environmental evidence and exposes it only through se
 | `read-environment` | Next.js server request | Returns the latest regional snapshot. |
 | `read-spatial-environment` | Next.js server request | Returns verified cells in a bounded local map view. |
 | `read-occurrence-support` | Next.js server request | Returns privacy-safe historical record counts and provenance for one species in a bounded view. |
+| `read_operational_status` | Private Next.js/Grafana service-role request | Returns a bounded, read-only summary of source health, generation cursors, recent audited runs, rolling-state completeness, shard progress and provider-budget reservations. The `security invoker` RPC is revoked from browser roles and omits run metadata and secrets. |
 | retention job | Daily at 00:00 UTC | Retains 45 days of regional weather, four complete dates of observed grid weather, the newest completed five-day issue plus any newer in-progress replacement, 24 hours of completed `pg_cron` history, and 90 days of ingestion runs. CLMS shadow imports retain the newest four completed product dates, so provider gaps do not silently shorten the hot preview. Snapshot and cron-log vacuums run at 00:02/00:03 before the observed pipelines restart at 00:05/00:06; the forecast-table vacuum remains at 06:40. |
 
 Every write run is audited in `ingestion_runs`. `pipeline_sources` records source health, `pipeline_cursors` makes large refreshes resumable, and all application tables have RLS enabled without browser table grants.

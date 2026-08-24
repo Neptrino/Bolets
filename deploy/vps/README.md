@@ -18,7 +18,7 @@ Use these paths on the VPS:
 /opt/bolets/app       this repository
 /opt/bolets/releases  immutable application releases keyed by Git commit
 /opt/bolets/supabase  official Supabase self-hosted files
-/opt/bolets/secrets   root-readable function and Umami environment files
+/opt/bolets/secrets   root-readable function, status, Umami and optional observability environment files
 /var/backups/bolets   short-lived local backups copied off the VPS
 ```
 
@@ -137,6 +137,22 @@ placeholder, and run `chmod 600` on the file. The website UUID is public and
 versioned so the application and idempotent Umami bootstrap agree before the
 first request is collected.
 
+Create the independent private-status credential before the first rollout that
+contains the operations page:
+
+```bash
+cp deploy/vps/status.env.example /opt/bolets/secrets/status.env
+docker run --rm caddy:2.10.2-alpine \
+  caddy hash-password --plaintext 'A-NEW-LONG-PASSWORD'
+openssl rand -hex 32
+```
+
+Put the Caddy hash (quoted so its dollar signs remain literal) and the unrelated
+random internal token in `status.env`, then run `chmod 600` on it. Keep the
+plaintext Basic Auth password in the password manager; the internal token is
+only a Caddy-to-Next.js and Alloy-to-Next.js credential and should never be used
+in a browser. Caddy strips any client-supplied copy of that internal header.
+
 ## 3. Check out Bolets and validate Compose
 
 ```bash
@@ -146,6 +162,7 @@ git switch main
 cd /opt/bolets/supabase
 set -a
 . /opt/bolets/secrets/umami.env
+. /opt/bolets/secrets/status.env
 set +a
 docker compose \
   -f docker-compose.yml \
@@ -276,7 +293,7 @@ Verify `cron.job` contains exactly ten active Bolets jobs and inspect
   /opt/bolets/app /opt/bolets/supabase
 ```
 
-The script loads the root-only Umami environment, validates the merged Compose
+The script loads the root-only Umami and private-status environments, validates the merged Compose
 model, builds the standalone Next.js image, transactionally installs the
 additive rolling-ingestion and parallel-job database schemas when their marker tables are absent,
 and synchronizes Edge Functions only after that schema is ready. It then waits
@@ -298,6 +315,61 @@ password stored in `/opt/bolets/secrets/umami.env`, then enable two-factor
 authentication. The application loads Umami once from its root layout, accepts
 only the production Bolets hostnames, respects Do Not Track, and excludes query
 strings and fragments so map state is not collected.
+
+The private operational dashboard is available at
+`https://bolets.app/admin/status`. Caddy requires the username and plaintext
+password represented by `status.env`; Next.js then requires the separate
+header Caddy injects after successful authentication. The page is not linked
+from the public site, returns private/no-store and noindex headers, and is
+excluded from Umami. It reads one service-role-only, `security invoker` RPC and
+shows the latest published weather generation, rolling-state coverage, current
+shards and lanes, shared provider budget, source health, generation cursors and
+sanitized recent ingestion errors. It does not expose raw run metadata, Vault,
+service keys or container logs.
+
+## Optional Grafana Cloud observability
+
+The repository includes a digest-pinned Grafana Alloy collector. It stays off
+until `/opt/bolets/secrets/observability.env` exists, so a missing external
+Grafana account cannot break deployments. Create a Grafana Cloud Free stack and
+an access-policy token with only `MetricsPublisher` and `LogsPublisher`, copy
+`deploy/vps/observability.env.example` to that root-readable path, fill in the
+Prometheus and Loki endpoints/instance IDs shown by Grafana, and set mode 0600.
+The next normal rollout detects the file and starts Alloy automatically.
+
+Alloy has no public listener and no Docker socket. It sends an allowlisted set
+of host CPU, memory, load and network metrics; the authenticated bounded Bolets
+pipeline metrics; and only new Docker JSON log lines. Its filesystem is
+read-only and the image runs without Linux capabilities. Existing log history
+is not uploaded during first boot.
+
+Validate after enabling:
+
+```bash
+cd /opt/bolets/supabase
+set -a
+. /opt/bolets/secrets/umami.env
+. /opt/bolets/secrets/status.env
+. /opt/bolets/secrets/observability.env
+set +a
+docker compose -f docker-compose.yml \
+  -f /opt/bolets/app/deploy/vps/compose.yaml \
+  -f /opt/bolets/app/deploy/vps/compose.observability.yaml \
+  ps alloy
+docker compose -f docker-compose.yml \
+  -f /opt/bolets/app/deploy/vps/compose.yaml \
+  -f /opt/bolets/app/deploy/vps/compose.observability.yaml \
+  logs --tail 100 alloy
+```
+
+Start with alerts for `up{job="bolets-operations"} == 0` for 5 minutes,
+`bolets_operational_status{state="critical"} == 1` for 5 minutes,
+`bolets_operational_status{state="attention"} == 1` for 30 minutes, host free
+memory below 10%, and disk usage from the provider/VPS monitor. Add an external
+synthetic check for `https://bolets.app/api/health`; do not use the Basic Auth
+dashboard URL as a public check. Grafana's official Alloy component references
+remain the source of truth for future upgrades:
+<https://grafana.com/docs/alloy/latest/reference/components/>.
 
 ## 8. Deploy `main` automatically
 

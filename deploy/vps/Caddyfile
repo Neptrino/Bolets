@@ -11,7 +11,27 @@
 		Referrer-Policy "strict-origin-when-cross-origin"
 		-Server
 	}
-	reverse_proxy app:3000
+
+	@operational_status path /admin/status /admin/status/*
+	handle @operational_status {
+		basic_auth {
+			{$STATUS_USERNAME} {$STATUS_PASSWORD_HASH}
+		}
+		header {
+			Cache-Control "private, no-store"
+			X-Robots-Tag "noindex, nofollow, noarchive"
+		}
+		reverse_proxy app:3000 {
+			header_up X-Bolets-Status-Auth {$STATUS_INTERNAL_TOKEN}
+		}
+	}
+
+	handle {
+		reverse_proxy app:3000 {
+			# Never trust a client-supplied copy of the private ingress header.
+			header_up -X-Bolets-Status-Auth
+		}
+	}
 }
 
 {$API_DOMAIN} {

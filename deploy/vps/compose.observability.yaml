@@ -1,0 +1,35 @@
+services:
+  alloy:
+    image: grafana/alloy:v1.18.1@sha256:0f4434c92b3e6cdac38bb129b344e1790c246f7b6e2eaffcc16a5fa363240e33
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    command:
+      - run
+      - --storage.path=/var/lib/alloy/data
+      - --server.http.listen-addr=127.0.0.1:12345
+      - /etc/alloy/config.alloy
+    environment:
+      GRAFANA_CLOUD_PROMETHEUS_URL: ${GRAFANA_CLOUD_PROMETHEUS_URL:?Set the Grafana Cloud Prometheus URL}
+      GRAFANA_CLOUD_PROMETHEUS_USERNAME: ${GRAFANA_CLOUD_PROMETHEUS_USERNAME:?Set the Grafana Cloud Prometheus username}
+      GRAFANA_CLOUD_LOKI_URL: ${GRAFANA_CLOUD_LOKI_URL:?Set the Grafana Cloud Loki URL}
+      GRAFANA_CLOUD_LOKI_USERNAME: ${GRAFANA_CLOUD_LOKI_USERNAME:?Set the Grafana Cloud Loki username}
+      GRAFANA_CLOUD_API_TOKEN: ${GRAFANA_CLOUD_API_TOKEN:?Set the Grafana Cloud access policy token}
+      BOLETS_OBSERVABILITY_INSTANCE: ${BOLETS_OBSERVABILITY_INSTANCE:-bolets-vps-1}
+      STATUS_INTERNAL_TOKEN: ${STATUS_INTERNAL_TOKEN:?Set the private status ingress token}
+    volumes:
+      - ${BOLETS_APP_DIR}/deploy/vps/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - alloy_data:/var/lib/alloy/data
+    depends_on:
+      app:
+        condition: service_healthy
+
+volumes:
+  alloy_data:
