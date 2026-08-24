@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import {
   OPERATIONAL_SESSION_COOKIE,
@@ -7,8 +7,11 @@ import {
 
 export const runtime = "nodejs";
 
-export function POST(request: NextRequest) {
-  const response = NextResponse.redirect(new URL("/admin/login", request.url), 303);
+export function POST() {
+  const response = new NextResponse(null, {
+    status: 303,
+    headers: { Location: "/admin/login" },
+  });
   response.cookies.set(OPERATIONAL_SESSION_COOKIE, "", {
     ...OPERATIONAL_SESSION_COOKIE_OPTIONS,
     maxAge: 0,

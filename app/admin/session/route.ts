@@ -50,9 +50,10 @@ function recordFailure(key: string, now: number) {
 }
 
 function loginRedirect(request: NextRequest, error: "auth" | "rate") {
-  const location = new URL("/admin/login", request.url);
-  location.searchParams.set("error", error);
-  const response = NextResponse.redirect(location, 303);
+  const response = new NextResponse(null, {
+    status: 303,
+    headers: { Location: `/admin/login?error=${error}` },
+  });
   response.headers.set("Cache-Control", "private, no-store");
   return response;
 }
@@ -89,7 +90,10 @@ export async function POST(request: NextRequest) {
 
   loginAttempts.delete(key);
   const session = await createOperationalSession();
-  const response = NextResponse.redirect(new URL("/admin/status", request.url), 303);
+  const response = new NextResponse(null, {
+    status: 303,
+    headers: { Location: "/admin/status" },
+  });
   response.cookies.set(
     OPERATIONAL_SESSION_COOKIE,
     session,
