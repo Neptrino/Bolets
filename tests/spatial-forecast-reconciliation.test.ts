@@ -11,12 +11,12 @@ const migration = readFileSync(
   ),
   "utf8",
 );
-const preservationMigration = readFileSync(
+const latestAlignmentMigration = readFileSync(
   join(
     process.cwd(),
     "supabase",
     "migrations",
-    "20260814131500_preserve_completed_forecast_during_observation_refresh.sql",
+    "20260824145507_use_latest_observed_completion_for_forecast_alignment.sql",
   ),
   "utf8",
 );
@@ -38,7 +38,7 @@ function functionDefinition(name: string, source = migration) {
 
 const reconciliationFunction = functionDefinition(
   "reconcile_weather_forecast_issue",
-  preservationMigration,
+  latestAlignmentMigration,
 );
 const completionFunction = functionDefinition("complete_weather_forecast_issue");
 const pruningFunction = functionDefinition("prune_weather_forecast_issues");
@@ -57,6 +57,12 @@ describe("same-day spatial forecast reconciliation", () => {
     expect(reconciliationFunction).toContain("select generated_at, completed_at");
     expect(reconciliationFunction).toContain("issue_completed_at is null");
     expect(reconciliationFunction).toMatch(/last_cell_id\s*=\s*'__complete__'/);
+    expect(reconciliationFunction).toMatch(
+      /select count\(\*\), max\(updated_at\)[\s\S]*into observed_streams, observed_cycle_completed_at/,
+    );
+    expect(reconciliationFunction).not.toMatch(
+      /select count\(\*\), min\(updated_at\)/,
+    );
     expect(reconciliationFunction).toMatch(/8\s*(?:hours?|\*\s*interval\s*'1 hour')/i);
     expect(reconciliationFunction).toMatch(
       /observed_streams <> 2[\s\S]*'issueComplete', issue_completed_at is not null/,
