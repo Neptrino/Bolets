@@ -55,10 +55,11 @@ type SpatialJob = {
   attemptCount: number;
 };
 
-// One primary provider batch keeps each leased invocation inside pg_net's
-// 120-second timeout even if it also needs one fallback-alignment repair.
-// Two simultaneous bootstrap shards remain well below the minute cap.
-const JOB_SHARD_SIZE = 50;
+// Lease enough work to amortize queue and cold-start overhead while retaining
+// the provider's proven 50-location request size below. A normal lease makes
+// two sequential provider requests and stays comfortably inside pg_net's
+// 120-second boundary; a failed second batch retries at most 100 points.
+const JOB_SHARD_SIZE = 100;
 const PROVIDER_BATCH_SIZE = 50;
 const STATE_WRITE_BATCH_SIZE = 25;
 const JOB_LEASE_SECONDS = 180;
@@ -481,7 +482,9 @@ Deno.serve(async (request) => {
         metadata: {
           jobId: job.jobId,
           jobKind: job.jobKind,
+          attempt: job.attemptCount,
           egressLane,
+          shardSize: JOB_SHARD_SIZE,
           rollingStatesWritten: points.length,
           precipitationFallbackModel: "meteofrance_seamless",
           precipitationFallbackResolutionM: 9000,
@@ -609,7 +612,9 @@ Deno.serve(async (request) => {
         metadata: {
           jobId: job.jobId,
           jobKind: job.jobKind,
+          attempt: job.attemptCount,
           egressLane,
+          shardSize: JOB_SHARD_SIZE,
           firstPointId: points[0].point_id,
           lastPointId: points.at(-1)?.point_id,
           atmosphericModel: "arome_france",
@@ -682,7 +687,9 @@ Deno.serve(async (request) => {
           metadata: {
             jobId: job?.jobId,
             jobKind: job?.jobKind,
+            attempt: job?.attemptCount,
             egressLane,
+            shardSize: JOB_SHARD_SIZE,
             reason: isEgressRateLimited ? "egress-rate-limit" : "job-failed",
             ...(isEgressRateLimited
               ? {

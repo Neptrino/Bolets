@@ -90,10 +90,16 @@ function egressLaneLabel(lane: "direct" | "cloudflare" | "aws") {
 }
 
 function runDescription(run: IngestionRunStatus) {
+  if (run.reason === "superseded-retry") return "Omesa perquè un reintent posterior ha completat el mateix fragment.";
   if (run.errorMessage) return run.errorMessage;
   if (run.reason === "provider-budget") return "Ajornada pel pressupost compartit d’Open-Meteo; no s’ha fet cap petició nova.";
   if (run.reason === "egress-rate-limit") return "La sortida ha rebut un 429 i ha quedat pausada; les altres sortides poden continuar.";
   return `${numberFormatter.format(run.rowsWritten)} files escrites sense error registrat.`;
+}
+
+function shardLabel(run: IngestionRunStatus) {
+  if (run.shardNumber === null || run.shardTotal === null) return null;
+  return `Fragment ${numberFormatter.format(run.shardNumber)}/${numberFormatter.format(run.shardTotal)}`;
 }
 
 function statusLabel(status: string) {
@@ -356,6 +362,7 @@ export default async function OperationalStatusPage() {
                   <strong>{run.pipeline}</strong>
                   <span className={styles.statusBadge}>{statusLabel(run.status)}</span>
                   {run.egressLane ? <span className={styles.statusBadge}>{egressLaneLabel(run.egressLane)}</span> : null}
+                  {shardLabel(run) ? <span className={styles.statusBadge}>{shardLabel(run)}</span> : null}
                 </div>
                 <p>{runDescription(run)}</p>
               </div>

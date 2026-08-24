@@ -100,6 +100,12 @@ function fixture(overrides: Partial<OperationalStatus> = {}): OperationalStatus 
       errorMessage: null,
       egressLane: "aws",
       reason: null,
+      jobId: 12,
+      jobKind: "atmosphere",
+      shardNumber: 8,
+      shardTotal: 52,
+      expectedPoints: 100,
+      attempt: 1,
     }],
     ...overrides,
   };

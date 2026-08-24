@@ -79,7 +79,13 @@ export type IngestionRunStatus = {
   rowsWritten: number;
   errorMessage: string | null;
   egressLane: "direct" | "cloudflare" | "aws" | null;
-  reason: "provider-budget" | "egress-rate-limit" | "job-failed" | null;
+  reason: "provider-budget" | "egress-rate-limit" | "job-failed" | "superseded-retry" | null;
+  jobId: number | null;
+  jobKind: "precipitation-fallback" | "atmosphere" | null;
+  shardNumber: number | null;
+  shardTotal: number | null;
+  expectedPoints: number | null;
+  attempt: number | null;
 };
 
 export type OperationalStatus = {

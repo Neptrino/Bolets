@@ -47,6 +47,15 @@ const unlimitedUsageMigration = readFileSync(
   ),
   "utf8",
 );
+const auditReconciliationMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260824135419_reconcile_spatial_job_audits.sql",
+  ),
+  "utf8",
+);
 const refresh = readFileSync(
   join(process.cwd(), "supabase", "functions", "refresh-spatial-environment", "index.ts"),
   "utf8",
@@ -128,8 +137,19 @@ describe("rolling observed-weather ingestion", () => {
     expect(cron).toContain("jsonb_build_object('trigger', 'cron', 'lane', lane)");
     expect(refresh).toContain('egressLane = body.lane ?? "direct"');
     expect(refresh).toContain('egressLane !== "aws"');
-    expect(refresh).toContain("const JOB_SHARD_SIZE = 50");
+    expect(refresh).toContain("const JOB_SHARD_SIZE = 100");
+    expect(refresh).toContain("const PROVIDER_BATCH_SIZE = 50");
     expect(refresh).toContain("alignFallbacksForAtmosphere");
+  });
+
+  it("closes abandoned audit attempts when a shard retry succeeds", () => {
+    expect(auditReconciliationMigration).toContain(
+      "create or replace function public.complete_spatial_atmosphere_job",
+    );
+    expect(auditReconciliationMigration).toContain("superseded-retry");
+    expect(auditReconciliationMigration).toContain("run.status = 'running'");
+    expect(auditReconciliationMigration).toContain("job.status = 'succeeded'");
+    expect(auditReconciliationMigration).toContain("to service_role");
   });
 
   it("pauses only the egress lane that Open-Meteo rate-limits", () => {
@@ -156,6 +176,8 @@ describe("rolling observed-weather ingestion", () => {
     expect(migrationInstaller).toContain("20260824125832_disable_local_open_meteo_limits.sql");
     expect(migrationInstaller).toContain("record_provider_usage(text,text,integer)");
     expect(migrationInstaller).toContain("spatial_atmosphere_jobs_egress_lane_check");
+    expect(migrationInstaller).toContain("20260824135419_reconcile_spatial_job_audits.sql");
+    expect(migrationInstaller).toContain("Applied spatial audit reconciliation");
     expect(migrationInstaller).toContain("*\"'aws'\"*");
     const migrationPosition = rollout.lastIndexOf("apply-database-migrations.sh");
     const functionPosition = rollout.indexOf("sync-functions.sh");

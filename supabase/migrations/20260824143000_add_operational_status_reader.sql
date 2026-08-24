@@ -172,8 +172,18 @@ as $$
             else null
           end,
           'reason', case
-            when recent.metadata ->> 'reason' in ('provider-budget', 'egress-rate-limit', 'job-failed')
+            when recent.metadata ->> 'reason' in ('provider-budget', 'egress-rate-limit', 'job-failed', 'superseded-retry')
               then recent.metadata ->> 'reason'
+            else null
+          end,
+          'jobId', job.id,
+          'jobKind', job.job_kind,
+          'shardNumber', job.shard_index + 1,
+          'shardTotal', job_generation.shard_total,
+          'expectedPoints', job.expected_points,
+          'attempt', case
+            when recent.metadata ->> 'attempt' ~ '^[0-9]{1,9}$'
+              then (recent.metadata ->> 'attempt')::integer
             else null
           end
         )
@@ -195,6 +205,18 @@ as $$
         order by ranked.started_at desc
         limit 40
       ) recent
+      left join public.spatial_atmosphere_jobs job
+        on job.id = case
+          when recent.metadata ->> 'jobId' ~ '^[0-9]{1,18}$'
+            then (recent.metadata ->> 'jobId')::bigint
+          else null
+        end
+      left join lateral (
+        select count(*)::integer as shard_total
+        from public.spatial_atmosphere_jobs sibling
+        where sibling.snapshot_date = job.snapshot_date
+          and sibling.job_kind = job.job_kind
+      ) job_generation on job.id is not null
     ), '[]'::jsonb)
   );
 $$;
@@ -205,4 +227,4 @@ grant execute on function public.read_operational_status()
   to service_role;
 
 comment on function public.read_operational_status() is
-  'Private, service-role-only operational summary v4 for the Bolets status page and metrics collector.';
+  'Private, service-role-only operational summary v5 for the Bolets status page and metrics collector.';
