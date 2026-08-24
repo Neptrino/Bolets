@@ -33,6 +33,7 @@ import {
 } from "@/src/lib/operational-status-auth";
 
 import styles from "./status.module.css";
+import { ResyncControls } from "./resync-controls";
 
 export const metadata: Metadata = {
   title: "Estat operatiu",
@@ -147,6 +148,15 @@ export default async function OperationalStatusPage() {
             <span>{message}</span>
           </div>
         </section>
+        <section className={`${styles.section} ${styles.commandSection}`} aria-labelledby="manual-commands">
+          <SectionHeader
+            meta="Comandes manuals"
+            title="Resincronització selectiva"
+            titleId="manual-commands"
+            description="La telemetria no està disponible, però encara pots demanar al servidor que reprengui o refaci una ingestió."
+          />
+          <ResyncControls />
+        </section>
       </PageShell>
     );
   }
@@ -192,6 +202,16 @@ export default async function OperationalStatusPage() {
             </form>
           </div>
         </div>
+      </section>
+
+      <section className={`${styles.section} ${styles.commandSection}`} aria-labelledby="manual-commands">
+        <SectionHeader
+          meta="Comandes manuals"
+          title="Resincronització selectiva"
+          titleId="manual-commands"
+          description="Posa una ingestió a la cua o reinicia només una generació ja completada. Les credencials operatives es queden al servidor."
+        />
+        <ResyncControls />
       </section>
 
       <section className={styles.section} aria-labelledby="published-data">

@@ -329,6 +329,15 @@ shards and lanes, shared provider budget, source health, generation cursors and
 sanitized recent ingestion errors. It does not expose raw run metadata, Vault,
 service keys or container logs.
 
+The same signed session exposes allowlisted manual controls for the complete
+daily cycle, spatial atmosphere, soil plus forecast, regional summaries, XEMA
+rain and condition caches. Commands cross a same-origin Next.js route and a
+service-role-only database dispatcher; the browser never receives the ingestion
+token. An incomplete generation resumes from its cursor, while a completed
+selected generation is reset before it is queued again. The previous complete
+observed condition cache remains published during reconstruction; a forecast
+resync can temporarily withhold the forecast until all horizons are complete.
+
 ## Optional Grafana Cloud observability
 
 The repository includes a digest-pinned Grafana Alloy collector. It stays off

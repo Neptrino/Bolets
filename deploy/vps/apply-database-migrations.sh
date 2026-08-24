@@ -16,12 +16,13 @@ operational_status_migration="$app_dir/supabase/migrations/20260824143000_add_op
 audit_reconciliation_migration="$app_dir/supabase/migrations/20260824135419_reconcile_spatial_job_audits.sql"
 condition_cache_cron_migration="$app_dir/supabase/migrations/20260824141111_schedule_condition_cache_publication.sql"
 forecast_alignment_migration="$app_dir/supabase/migrations/20260824145507_use_latest_observed_completion_for_forecast_alignment.sql"
+operational_resync_migration="$app_dir/supabase/migrations/20260824151551_add_operational_resync_dispatcher.sql"
 
 if [ ! -f "$rolling_migration" ] || [ ! -f "$parallel_migration" ] ||
    [ ! -f "$aws_lane_migration" ] || [ ! -f "$egress_circuit_migration" ] ||
    [ ! -f "$unlimited_usage_migration" ] || [ ! -f "$operational_status_migration" ] ||
    [ ! -f "$audit_reconciliation_migration" ] || [ ! -f "$condition_cache_cron_migration" ] ||
-   [ ! -f "$forecast_alignment_migration" ]; then
+   [ ! -f "$forecast_alignment_migration" ] || [ ! -f "$operational_resync_migration" ]; then
   echo "A required ingestion migration is missing" >&2
   exit 66
 fi
@@ -135,6 +136,16 @@ docker exec -i supabase-db psql \
   --single-transaction \
   < "$forecast_alignment_migration"
 echo "Applied forecast alignment reconciliation"
+
+# This private dispatcher is an idempotent CREATE OR REPLACE boundary. Reapply
+# it because the restored database intentionally has no local migration ledger.
+docker exec -i supabase-db psql \
+  --username postgres \
+  --dbname postgres \
+  --set ON_ERROR_STOP=1 \
+  --single-transaction \
+  < "$operational_resync_migration"
+echo "Applied operational resync dispatcher"
 
 # This migration is deliberately idempotent and contains only CREATE OR
 # REPLACE plus grants. Reapply it so query-shape and redaction improvements are
