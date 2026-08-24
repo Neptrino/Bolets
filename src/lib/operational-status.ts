@@ -31,6 +31,16 @@ export type AtmosphereJobStatus = {
   updatedAt: string;
 };
 
+export type ProviderEgressLaneStatus = {
+  lane: "direct" | "cloudflare" | "aws";
+  blockedUntil: string | null;
+  consecutiveRateLimits: number;
+  lastHttpStatus: number | null;
+  lastRateLimitedAt: string | null;
+  lastSuccessAt: string | null;
+  updatedAt: string;
+};
+
 export type ProviderBudgetStatus = {
   provider: string;
   consumer: string;
@@ -68,6 +78,8 @@ export type IngestionRunStatus = {
   rowsRead: number;
   rowsWritten: number;
   errorMessage: string | null;
+  egressLane: "direct" | "cloudflare" | "aws" | null;
+  reason: "provider-budget" | "egress-rate-limit" | "job-failed" | null;
 };
 
 export type OperationalStatus = {
@@ -76,6 +88,7 @@ export type OperationalStatus = {
   sources: PipelineSourceStatus[];
   cursors: PipelineCursorStatus[];
   jobs: AtmosphereJobStatus[];
+  egressLanes: ProviderEgressLaneStatus[];
   budgets: ProviderBudgetStatus[];
   rollingStates: RollingStateStatus[];
   weatherSnapshot: WeatherSnapshotStatus;
@@ -235,6 +248,12 @@ export function operationalStatusPrometheus(status: OperationalStatus) {
       `bolets_spatial_job_points${labels({ snapshot_date: job.snapshotDate, kind: job.jobKind, status: job.status, lane: job.egressLane ?? "unassigned", measure: "expected" })} ${job.expectedPoints}`,
       `bolets_spatial_job_points${labels({ snapshot_date: job.snapshotDate, kind: job.jobKind, status: job.status, lane: job.egressLane ?? "unassigned", measure: "written" })} ${job.rowsWritten}`,
     ]),
+    "# HELP bolets_open_meteo_egress_blocked Whether an approved Open-Meteo egress lane is currently paused.",
+    "# TYPE bolets_open_meteo_egress_blocked gauge",
+    ...status.egressLanes.map((lane) => `bolets_open_meteo_egress_blocked${labels({ lane: lane.lane })} ${lane.blockedUntil && Date.parse(lane.blockedUntil) > Date.parse(status.generatedAt) ? 1 : 0}`),
+    "# HELP bolets_open_meteo_egress_rate_limits Consecutive rate-limit responses on an approved egress lane.",
+    "# TYPE bolets_open_meteo_egress_rate_limits gauge",
+    ...status.egressLanes.map((lane) => `bolets_open_meteo_egress_rate_limits${labels({ lane: lane.lane })} ${lane.consecutiveRateLimits}`),
     "# HELP bolets_provider_budget_units Conservatively reserved provider request units.",
     "# TYPE bolets_provider_budget_units gauge",
     ...status.budgets.map((budget) => `bolets_provider_budget_units${labels({ provider: budget.provider, consumer: budget.consumer, window: budget.windowKind })} ${budget.estimatedUnits}`),

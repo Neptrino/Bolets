@@ -15,6 +15,7 @@ import {
   fetchOpenMeteoLocations,
   mergeOpenMeteoHourlyHistory,
   normalizeOpenMeteo,
+  OpenMeteoRequestError,
   openMeteoRollingHistoryNeedsBootstrap,
   ROLLING_SEAMLESS_VARIABLES,
   type OpenMeteoEgressLane,
@@ -191,6 +192,12 @@ async function fetchRollingProvider(
         mergeOpenMeteoHourlyHistory(previous.get(point.point_id), locations[index], variables),
       );
     });
+  }
+  const { error: laneSuccessError } = await supabase.rpc("record_open_meteo_egress_success", {
+    p_lane: egressLane,
+  });
+  if (laneSuccessError) {
+    throw new Error(`Unable to record ${egressLane} Open-Meteo egress success: ${laneSuccessError.message}`);
   }
   await writeRollingStates(
     supabase,
@@ -402,6 +409,7 @@ Deno.serve(async (request) => {
   let runId: string | undefined;
   let job: SpatialJob | undefined;
   let supabase: ReturnType<typeof createAdminClient> | undefined;
+  let egressLane: OpenMeteoEgressLane = "direct";
   try {
     if (request.method !== "POST") {
       return json({ error: "Method not allowed" }, 405, { Allow: "POST" });
@@ -415,7 +423,7 @@ Deno.serve(async (request) => {
       trigger?: "cron" | "manual";
       lane?: OpenMeteoEgressLane;
     };
-    const egressLane = body.lane ?? "direct";
+    egressLane = body.lane ?? "direct";
     if (egressLane !== "direct" && egressLane !== "cloudflare" && egressLane !== "aws") {
       return json({ error: "Invalid Open-Meteo egress lane" }, 400);
     }
@@ -649,11 +657,32 @@ Deno.serve(async (request) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     const isBudgetDeferred = error instanceof ProviderBudgetDeferredError;
+    const isEgressRateLimited = error instanceof OpenMeteoRequestError && error.status === 429;
+    let laneBlockedUntil: string | undefined;
+    if (isEgressRateLimited && supabase) {
+      try {
+        const { data, error: laneError } = await supabase.rpc("defer_open_meteo_egress_lane", {
+          p_lane: error.egressLane,
+          p_http_status: error.status,
+          p_retry_after_seconds: error.retryAfterSeconds ?? null,
+          p_error: message,
+        });
+        if (laneError) throw laneError;
+        if (typeof data === "string") laneBlockedUntil = data;
+      } catch (laneError) {
+        console.error("Unable to pause rate-limited Open-Meteo egress lane", {
+          egressLane: error.egressLane,
+          message: laneError instanceof Error ? laneError.message : "Unknown lane deferral error",
+        });
+      }
+    }
     if (job && supabase) {
       try {
         const delay = isBudgetDeferred
           ? budgetRetryDelay(error.scope)
-          : Math.min(900, 30 * (2 ** Math.min(job.attemptCount - 1, 5)));
+          : isEgressRateLimited
+            ? 5
+            : Math.min(900, 30 * (2 ** Math.min(job.attemptCount - 1, 5)));
         await deferJob(supabase, job, message, delay);
       } catch (deferError) {
         console.error("Unable to defer spatial atmosphere job", {
@@ -669,9 +698,21 @@ Deno.serve(async (request) => {
           metadata: {
             jobId: job?.jobId,
             jobKind: job?.jobKind,
-            reason: isBudgetDeferred ? "provider-budget" : "job-failed",
+            egressLane,
+            reason: isBudgetDeferred
+              ? "provider-budget"
+              : isEgressRateLimited
+                ? "egress-rate-limit"
+                : "job-failed",
             ...(isBudgetDeferred
               ? { budgetScope: error.scope, requestedEstimatedUnits: error.estimatedUnits }
+              : {}),
+            ...(isEgressRateLimited
+              ? {
+                providerStatus: error.status,
+                retryAfterSeconds: error.retryAfterSeconds,
+                laneBlockedUntil,
+              }
               : {}),
           },
         });
@@ -690,7 +731,24 @@ Deno.serve(async (request) => {
         budgetScope: error.scope,
       }, 202);
     }
-    console.error("Spatial environmental refresh failed", { runId, jobId: job?.jobId, message });
+    if (isEgressRateLimited) {
+      return json({
+        runId,
+        jobId: job?.jobId,
+        refreshed: 0,
+        complete: false,
+        deferred: true,
+        reason: "egress-rate-limit",
+        egressLane: error.egressLane,
+        laneBlockedUntil,
+      }, 202);
+    }
+    console.error("Spatial environmental refresh failed", {
+      runId,
+      jobId: job?.jobId,
+      egressLane,
+      message,
+    });
     return json({ error: "Spatial environmental refresh failed", runId, jobId: job?.jobId }, 500);
   }
 });

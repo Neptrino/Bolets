@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   alignOpenMeteoHourlySeries,
   configureOpenMeteoForecastHistoryRequest,
@@ -8,10 +8,12 @@ import {
   configureOpenMeteoRollingAtmosphereRequest,
   configureOpenMeteoRollingSeamlessPrecipitationRequest,
   configureOpenMeteoTerrainThermalRequest,
+  fetchOpenMeteoLocations,
   mergeOpenMeteoHourlyHistory,
   normalizeOpenMeteo,
   normalizeOpenMeteoAt,
   normalizeOpenMeteoForecast,
+  OpenMeteoRequestError,
   openMeteoRollingHistoryNeedsBootstrap,
   ROLLING_SEAMLESS_VARIABLES,
   type OpenMeteoLocation,
@@ -47,6 +49,28 @@ function forecastFixture(generatedAt = "2026-08-10T12:34:00Z") {
 }
 
 describe("Open-Meteo profiles", () => {
+  it("preserves the lane and Retry-After value on a terminal 429", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(null, {
+      status: 429,
+      headers: { "Retry-After": "37" },
+    }));
+    const request = new URL("https://api.open-meteo.com/v1/meteofrance?latitude=42&longitude=2");
+
+    try {
+      await expect(fetchOpenMeteoLocations(request, "test", {
+        attempts: 1,
+        egressLane: "direct",
+      })).rejects.toMatchObject({
+        name: "OpenMeteoRequestError",
+        status: 429,
+        egressLane: "direct",
+        retryAfterSeconds: 37,
+      } satisfies Partial<OpenMeteoRequestError>);
+    } finally {
+      fetchMock.mockRestore();
+    }
+  });
+
   it("keeps AROME atmospheric requests separate from coarse soil moisture", () => {
     const atmosphere = new URL("https://api.open-meteo.com/v1/meteofrance");
     configureOpenMeteoRequest(atmosphere, "atmosphere");

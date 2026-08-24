@@ -10,10 +10,12 @@ app_dir=$1
 rolling_migration="$app_dir/supabase/migrations/20260824061712_add_open_meteo_rolling_history.sql"
 parallel_migration="$app_dir/supabase/migrations/20260824074556_parallel_spatial_ingestion.sql"
 aws_lane_migration="$app_dir/supabase/migrations/20260824113000_add_aws_ingestion_lane.sql"
+egress_circuit_migration="$app_dir/supabase/migrations/20260824114320_add_open_meteo_egress_circuit_breaker.sql"
 operational_status_migration="$app_dir/supabase/migrations/20260824143000_add_operational_status_reader.sql"
 
 if [ ! -f "$rolling_migration" ] || [ ! -f "$parallel_migration" ] ||
-   [ ! -f "$aws_lane_migration" ] || [ ! -f "$operational_status_migration" ]; then
+   [ ! -f "$aws_lane_migration" ] || [ ! -f "$egress_circuit_migration" ] ||
+   [ ! -f "$operational_status_migration" ]; then
   echo "A required ingestion migration is missing" >&2
   exit 66
 fi
@@ -75,6 +77,8 @@ case "$aws_lane_installed" in
     echo "Applied AWS ingestion-lane database migration"
     ;;
 esac
+
+apply_if_missing open_meteo_egress_lanes "$egress_circuit_migration" egress-circuit-breaker
 
 # This migration is deliberately idempotent and contains only CREATE OR
 # REPLACE plus grants. Reapply it so query-shape and redaction improvements are

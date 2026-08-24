@@ -29,6 +29,15 @@ const awsLaneMigration = readFileSync(
   ),
   "utf8",
 );
+const egressCircuitMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260824114320_add_open_meteo_egress_circuit_breaker.sql",
+  ),
+  "utf8",
+);
 const refresh = readFileSync(
   join(process.cwd(), "supabase", "functions", "refresh-spatial-environment", "index.ts"),
   "utf8",
@@ -108,10 +117,23 @@ describe("rolling observed-weather ingestion", () => {
     expect(awsLaneMigration).toContain("p_egress_lane not in ('direct', 'cloudflare', 'aws')");
     expect(cron).toContain("from (values ('direct'), ('cloudflare'), ('aws')) as lanes(lane)");
     expect(cron).toContain("jsonb_build_object('trigger', 'cron', 'lane', lane)");
-    expect(refresh).toContain('const egressLane = body.lane ?? "direct"');
+    expect(refresh).toContain('egressLane = body.lane ?? "direct"');
     expect(refresh).toContain('egressLane !== "aws"');
     expect(refresh).toContain("const JOB_SHARD_SIZE = 50");
     expect(refresh).toContain("alignFallbacksForAtmosphere");
+  });
+
+  it("pauses only the egress lane that Open-Meteo rate-limits", () => {
+    expect(egressCircuitMigration).toContain("create table public.open_meteo_egress_lanes");
+    expect(egressCircuitMigration).toContain("consecutive_rate_limits");
+    expect(egressCircuitMigration).toContain("defer_open_meteo_egress_lane");
+    expect(egressCircuitMigration).toContain("record_open_meteo_egress_success");
+    expect(egressCircuitMigration).toContain("blocked_until > statement_timestamp()");
+    expect(egressCircuitMigration).toContain("claim_spatial_atmosphere_job_without_egress_guard");
+    expect(egressCircuitMigration).toContain("enable row level security");
+    expect(refresh).toContain("error instanceof OpenMeteoRequestError && error.status === 429");
+    expect(refresh).toContain('reason: "egress-rate-limit"');
+    expect(refresh).toContain("egressLane,");
   });
 
   it("installs the additive schema before synchronizing the new VPS function", () => {
@@ -120,6 +142,8 @@ describe("rolling observed-weather ingestion", () => {
     expect(migrationInstaller).toContain("open_meteo_hourly_states");
     expect(migrationInstaller).toContain("spatial_atmosphere_jobs");
     expect(migrationInstaller).toContain("20260824113000_add_aws_ingestion_lane.sql");
+    expect(migrationInstaller).toContain("20260824114320_add_open_meteo_egress_circuit_breaker.sql");
+    expect(migrationInstaller).toContain("apply_if_missing open_meteo_egress_lanes");
     expect(migrationInstaller).toContain("spatial_atmosphere_jobs_egress_lane_check");
     expect(migrationInstaller).toContain("*\"'aws'\"*");
     const migrationPosition = rollout.lastIndexOf("apply-database-migrations.sh");

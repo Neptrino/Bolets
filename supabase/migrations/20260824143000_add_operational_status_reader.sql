@@ -78,6 +78,25 @@ as $$
         group by job.snapshot_date, job.job_kind, job.status, job.egress_lane
       ) grouped
     ), '[]'::jsonb),
+    'egressLanes', coalesce((
+      select jsonb_agg(
+        jsonb_build_object(
+          'lane', lane_state.lane,
+          'blockedUntil', lane_state.blocked_until,
+          'consecutiveRateLimits', lane_state.consecutive_rate_limits,
+          'lastHttpStatus', lane_state.last_http_status,
+          'lastRateLimitedAt', lane_state.last_rate_limited_at,
+          'lastSuccessAt', lane_state.last_success_at,
+          'updatedAt', lane_state.updated_at
+        )
+        order by case lane_state.lane
+          when 'direct' then 1
+          when 'cloudflare' then 2
+          when 'aws' then 3
+        end
+      )
+      from public.open_meteo_egress_lanes lane_state
+    ), '[]'::jsonb),
     'budgets', coalesce((
       select jsonb_agg(
         jsonb_build_object(
@@ -146,7 +165,17 @@ as $$
           'completedAt', recent.completed_at,
           'rowsRead', recent.rows_read,
           'rowsWritten', recent.rows_written,
-          'errorMessage', left(recent.error_message, 500)
+          'errorMessage', left(recent.error_message, 500),
+          'egressLane', case
+            when recent.metadata ->> 'egressLane' in ('direct', 'cloudflare', 'aws')
+              then recent.metadata ->> 'egressLane'
+            else null
+          end,
+          'reason', case
+            when recent.metadata ->> 'reason' in ('provider-budget', 'egress-rate-limit', 'job-failed')
+              then recent.metadata ->> 'reason'
+            else null
+          end
         )
         order by recent.started_at desc
       )
@@ -176,4 +205,4 @@ grant execute on function public.read_operational_status()
   to service_role;
 
 comment on function public.read_operational_status() is
-  'Private, service-role-only operational summary v3 for the Bolets status page and metrics collector.';
+  'Private, service-role-only operational summary v4 for the Bolets status page and metrics collector.';

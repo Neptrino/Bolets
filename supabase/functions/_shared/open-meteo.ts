@@ -15,6 +15,25 @@ export type FetchOpenMeteoOptions = {
   egressLane?: OpenMeteoEgressLane;
 };
 
+export class OpenMeteoRequestError extends Error {
+  readonly status: number;
+  readonly egressLane: OpenMeteoEgressLane;
+  readonly retryAfterSeconds?: number;
+
+  constructor(
+    context: string,
+    status: number,
+    egressLane: OpenMeteoEgressLane,
+    retryAfterSeconds?: number,
+  ) {
+    super(`Open-Meteo ${context} request returned ${status}`);
+    this.name = "OpenMeteoRequestError";
+    this.status = status;
+    this.egressLane = egressLane;
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
+}
+
 export const FORECAST_HORIZON_HOURS = [24, 48, 72, 96, 120] as const;
 export const FORECAST_BASELINE_HOURS = 0 as const;
 const FORECAST_OUTPUT_HOURS = [FORECAST_BASELINE_HOURS, ...FORECAST_HORIZON_HOURS] as const;
@@ -26,6 +45,15 @@ export const HEAT_HOUR_THRESHOLD_C = 27;
 const finiteNumber = (value: unknown) => typeof value === "number" && Number.isFinite(value) ? value : undefined;
 
 const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+function parseRetryAfterSeconds(value: string | null) {
+  if (!value) return undefined;
+  const seconds = Number(value);
+  if (Number.isFinite(seconds) && seconds > 0) return Math.min(86_400, Math.ceil(seconds));
+  const date = Date.parse(value);
+  if (!Number.isFinite(date)) return undefined;
+  return Math.min(86_400, Math.max(1, Math.ceil((date - Date.now()) / 1_000)));
+}
 
 // A stalled provider connection must fail fast: without a deadline, a hung
 // request keeps its worker alive until the platform kills it, the run stays
@@ -117,13 +145,15 @@ export async function fetchOpenMeteoLocations(
         return Array.isArray(payload) ? payload : [payload];
       }
       const retryable = response.status === 429 || response.status >= 500;
-      if (!retryable || attempt === attempts) throw new Error(`Open-Meteo ${context} request returned ${response.status}`);
-      const retryAfterSeconds = Number(response.headers.get("retry-after"));
-      await wait(Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
+      const retryAfterSeconds = parseRetryAfterSeconds(response.headers.get("retry-after"));
+      if (!retryable || attempt === attempts) {
+        throw new OpenMeteoRequestError(context, response.status, egressLane, retryAfterSeconds);
+      }
+      await wait(retryAfterSeconds !== undefined
         ? Math.min(retryAfterSeconds * 1000, 15_000)
         : attempt * 1500);
     } catch (error) {
-      if (error instanceof Error && error.message.startsWith("Open-Meteo")) throw error;
+      if (error instanceof OpenMeteoRequestError) throw error;
       if (attempt === attempts) {
         const reason = error instanceof Error ? error.message : "unknown transport error";
         throw new Error(`Open-Meteo ${context} request failed: ${reason}`);

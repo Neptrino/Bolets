@@ -39,6 +39,31 @@ function fixture(overrides: Partial<OperationalStatus> = {}): OperationalStatus 
       lastError: null,
       updatedAt: "2026-08-24T10:00:00.000Z",
     }],
+    egressLanes: [{
+      lane: "direct",
+      blockedUntil: null,
+      consecutiveRateLimits: 0,
+      lastHttpStatus: 200,
+      lastRateLimitedAt: null,
+      lastSuccessAt: "2026-08-24T10:00:00.000Z",
+      updatedAt: "2026-08-24T10:00:00.000Z",
+    }, {
+      lane: "cloudflare",
+      blockedUntil: null,
+      consecutiveRateLimits: 0,
+      lastHttpStatus: 200,
+      lastRateLimitedAt: null,
+      lastSuccessAt: "2026-08-24T10:00:00.000Z",
+      updatedAt: "2026-08-24T10:00:00.000Z",
+    }, {
+      lane: "aws",
+      blockedUntil: null,
+      consecutiveRateLimits: 0,
+      lastHttpStatus: 200,
+      lastRateLimitedAt: null,
+      lastSuccessAt: "2026-08-24T10:00:00.000Z",
+      updatedAt: "2026-08-24T10:00:00.000Z",
+    }],
     budgets: [{
       provider: "open-meteo",
       consumer: "*",
@@ -73,6 +98,8 @@ function fixture(overrides: Partial<OperationalStatus> = {}): OperationalStatus 
       rowsRead: 5128,
       rowsWritten: 5128,
       errorMessage: null,
+      egressLane: "aws",
+      reason: null,
     }],
     ...overrides,
   };
@@ -122,6 +149,7 @@ describe("operational status", () => {
     expect(metrics).toContain('bolets_operational_status{state="healthy"} 1');
     expect(metrics).toContain('bolets_provider_budget_units{provider="open-meteo",consumer="*",window="day"} 9579');
     expect(metrics).toContain('bolets_rolling_state_points{stream="arome-atmosphere"} 5128');
+    expect(metrics).toContain('bolets_open_meteo_egress_blocked{lane="direct"} 0');
     expect(metrics).not.toContain("secret-looking detail");
   });
 

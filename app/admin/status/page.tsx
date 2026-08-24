@@ -20,6 +20,7 @@ import {
   sourceAffectsPublishedData,
   summarizeOperationalStatus,
   type AtmosphereJobStatus,
+  type IngestionRunStatus,
   type OperationalState,
 } from "@/src/lib/operational-status";
 import {
@@ -78,6 +79,18 @@ function jobProgress(jobs: AtmosphereJobStatus[], kind: AtmosphereJobStatus["job
     .filter((job) => job.status === "succeeded")
     .reduce((sum, job) => sum + job.shards, 0);
   return { total, completed, percent: total > 0 ? Math.round((completed / total) * 100) : 0 };
+}
+
+function egressLaneLabel(lane: "direct" | "cloudflare" | "aws") {
+  if (lane === "direct") return "VPS";
+  return lane === "cloudflare" ? "Cloudflare" : "AWS Lambda";
+}
+
+function runDescription(run: IngestionRunStatus) {
+  if (run.errorMessage) return run.errorMessage;
+  if (run.reason === "provider-budget") return "Ajornada pel pressupost compartit d’Open-Meteo; no s’ha fet cap petició nova.";
+  if (run.reason === "egress-rate-limit") return "La sortida ha rebut un 429 i ha quedat pausada; les altres sortides poden continuar.";
+  return `${numberFormatter.format(run.rowsWritten)} files escrites sense error registrat.`;
 }
 
 function statusLabel(status: string) {
@@ -229,11 +242,15 @@ export default async function OperationalStatusPage() {
           {(["direct", "cloudflare", "aws"] as const).map((lane) => {
             const laneJobs = todayJobs.filter((job) => job.egressLane === lane);
             const shards = laneJobs.reduce((sum, job) => sum + job.shards, 0);
+            const laneState = status.egressLanes.find((candidate) => candidate.lane === lane);
+            const blocked = laneState?.blockedUntil
+              ? Date.parse(laneState.blockedUntil) > Date.parse(status.generatedAt)
+              : false;
             return (
               <div key={lane}>
                 <Route aria-hidden="true" />
-                <span>{lane === "direct" ? "VPS" : lane === "cloudflare" ? "Cloudflare" : "AWS Lambda"}</span>
-                <strong>{numberFormatter.format(shards)} fragments assignats</strong>
+                <span>{egressLaneLabel(lane)} · {numberFormatter.format(shards)} fragments</span>
+                <strong>{blocked ? `Pausada fins ${formatDateTime(laneState?.blockedUntil ?? null)}` : "Disponible"}</strong>
               </div>
             );
           })}
@@ -332,8 +349,9 @@ export default async function OperationalStatusPage() {
                 <div>
                   <strong>{run.pipeline}</strong>
                   <span className={styles.statusBadge}>{statusLabel(run.status)}</span>
+                  {run.egressLane ? <span className={styles.statusBadge}>{egressLaneLabel(run.egressLane)}</span> : null}
                 </div>
-                <p>{run.errorMessage ?? `${numberFormatter.format(run.rowsWritten)} files escrites sense error registrat.`}</p>
+                <p>{runDescription(run)}</p>
               </div>
               <div className={styles.runMeta}>
                 <time dateTime={run.startedAt}>{formatDateTime(run.startedAt)}</time>
