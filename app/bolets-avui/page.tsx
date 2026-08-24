@@ -126,7 +126,7 @@ function CurrentOverviewLoading() {
 async function CurrentOverview() {
   // VPS builds intentionally receive no database credentials. Wait for a real
   // request so the runtime-only internal Supabase URL is available; the two
-  // overview loaders retain their shared twice-daily data cache.
+  // overview loaders share one generation-bound data cache.
   await connection();
   const [allItems, areaItems] = await Promise.all([
     loadCachedCurrentOverview(),

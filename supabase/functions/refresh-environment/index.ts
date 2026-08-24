@@ -1,7 +1,76 @@
 import { createAdminClient, finishRun, json, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
-import { configureOpenMeteoRequest, fetchOpenMeteoLocations, normalizeOpenMeteo } from "../_shared/open-meteo.ts";
+import {
+  configureOpenMeteoRequest,
+  fetchOpenMeteoLocations,
+  normalizeOpenMeteo,
+  OpenMeteoRequestError,
+  type OpenMeteoEgressLane,
+  type OpenMeteoLocation,
+} from "../_shared/open-meteo.ts";
 import { estimateOpenMeteoRequestUnits, recordOpenMeteoUsage } from "../_shared/provider-budget.ts";
 import { regions } from "../_shared/regions.ts";
+
+const REGIONAL_EGRESS_LANES = ["cloudflare", "aws"] as const;
+
+async function fetchRegionalLocations(
+  supabase: ReturnType<typeof createAdminClient>,
+  weatherUrl: URL,
+): Promise<{ locations: OpenMeteoLocation[]; egressLane: OpenMeteoEgressLane }> {
+  let lastError: unknown;
+  for (const egressLane of REGIONAL_EGRESS_LANES) {
+    const { data: laneState, error: laneStateError } = await supabase
+      .from("open_meteo_egress_lanes")
+      .select("blocked_until")
+      .eq("lane", egressLane)
+      .maybeSingle();
+    if (laneStateError) {
+      throw new Error(`Unable to read ${egressLane} egress state: ${laneStateError.message}`);
+    }
+    if (
+      laneState?.blocked_until
+      && Date.parse(laneState.blocked_until) > Date.now()
+    ) continue;
+
+    await recordOpenMeteoUsage(
+      supabase,
+      "regional-environment",
+      estimateOpenMeteoRequestUnits(weatherUrl, regions.length),
+    );
+    try {
+      const locations = await fetchOpenMeteoLocations(weatherUrl, "regional environment", {
+        attempts: 1,
+        egressLane,
+      });
+      if (locations.length !== regions.length) {
+        throw new Error(
+          `Open-Meteo returned ${locations.length} of ${regions.length} requested regional locations`,
+        );
+      }
+      const { error: successError } = await supabase.rpc("record_open_meteo_egress_success", {
+        p_lane: egressLane,
+      });
+      if (successError) {
+        throw new Error(`Unable to record ${egressLane} egress success: ${successError.message}`);
+      }
+      return { locations, egressLane };
+    } catch (error) {
+      lastError = error;
+      if (error instanceof OpenMeteoRequestError && error.status === 429) {
+        const { error: deferError } = await supabase.rpc("defer_open_meteo_egress_lane", {
+          p_lane: egressLane,
+          p_http_status: error.status,
+          p_retry_after_seconds: error.retryAfterSeconds ?? null,
+          p_error: error.message,
+        });
+        if (deferError) {
+          throw new Error(`Unable to defer ${egressLane} egress: ${deferError.message}`);
+        }
+      }
+    }
+  }
+  if (lastError instanceof Error) throw lastError;
+  throw new Error("No regional Open-Meteo relay lane is currently available");
+}
 
 Deno.serve(async (request) => {
   let runId: string | undefined;
@@ -23,16 +92,7 @@ Deno.serve(async (request) => {
     weatherUrl.searchParams.set("elevation", regions.map((region) => region.altitudeM).join(","));
     configureOpenMeteoRequest(weatherUrl);
 
-    await recordOpenMeteoUsage(
-      supabase,
-      "regional-environment",
-      estimateOpenMeteoRequestUnits(weatherUrl, regions.length),
-    );
-    const locations = await fetchOpenMeteoLocations(weatherUrl, "regional environment", {
-      attempts: 1,
-      egressLane: "direct",
-    });
-    if (locations.length !== regions.length) throw new Error(`Open-Meteo returned ${locations.length} of ${regions.length} requested locations`);
+    const { locations, egressLane } = await fetchRegionalLocations(supabase, weatherUrl);
 
     const observedAt = new Date().toISOString();
     const rows = locations.map((location, index) => {
@@ -62,7 +122,11 @@ Deno.serve(async (request) => {
     await finishRun(supabase, runId, rows.some((row) => row.unavailable_fields.length) ? "partial" : "succeeded", {
       rowsRead: locations.length,
       rowsWritten: rows.length,
-      metadata: { observedAt, unavailableRegions: rows.filter((row) => row.unavailable_fields.length).map((row) => row.region_id) }
+      metadata: {
+        observedAt,
+        egressLane,
+        unavailableRegions: rows.filter((row) => row.unavailable_fields.length).map((row) => row.region_id),
+      },
     });
     return json({ runId, refreshed: rows.length, observedAt, snapshotDate });
   } catch (error) {

@@ -12,6 +12,7 @@ begin
     'refresh-environment-daily',
     'refresh-spatial-environment',
     'refresh-spatial-soil',
+    'refresh-spatial-condition-caches',
     'refresh-spatial-level-conditions',
     'refresh-species-occurrences-monthly',
     'refresh-species-occurrences-monthly-tail',
@@ -89,6 +90,15 @@ end
 $$;
 
 select cron.schedule(
+  'refresh-spatial-condition-caches',
+  '* * * * *',
+  $command$
+    select public.refresh_spatial_level_conditions_after_ingestion(current_date);
+    select public.refresh_territorial_level_conditions_after_ingestion(current_date);
+  $command$
+);
+
+select cron.schedule(
   'bolets-pipeline-retention',
   '0 0 * * *',
   'select public.run_environment_retention();'
@@ -121,6 +131,7 @@ begin
       'refresh-environment-daily',
       'refresh-spatial-environment',
       'refresh-spatial-soil',
+      'refresh-spatial-condition-caches',
       'refresh-species-occurrences-monthly',
       'refresh-species-occurrences-monthly-tail',
       'bolets-pipeline-retention',
@@ -129,8 +140,8 @@ begin
       'vacuum-cron-job-run-details',
       'import-xema-rain-3h'
     )
-  ) <> 10 then
-    raise exception 'Expected ten Bolets cron jobs';
+  ) <> 11 then
+    raise exception 'Expected eleven Bolets cron jobs';
   end if;
 end
 $$;
@@ -148,6 +159,7 @@ begin
       'refresh-environment-daily',
       'refresh-spatial-environment',
       'refresh-spatial-soil',
+      'refresh-spatial-condition-caches',
       'refresh-species-occurrences-monthly',
       'refresh-species-occurrences-monthly-tail',
       'bolets-pipeline-retention',

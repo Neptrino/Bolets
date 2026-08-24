@@ -274,7 +274,7 @@ docker exec -i supabase-db psql --username postgres --dbname postgres \
   < /opt/bolets/app/deploy/vps/configure-cron.sql
 ```
 
-This installs ten jobs but leaves them inactive so the managed project remains
+This installs eleven jobs but leaves them inactive so the managed project remains
 the sole writer during rehearsal. After the final synchronized restore and
 immediately before cutover, enable them explicitly:
 
@@ -283,7 +283,7 @@ docker exec -i supabase-db psql --username postgres --dbname postgres \
   < /opt/bolets/app/deploy/vps/enable-cron.sql
 ```
 
-Verify `cron.job` contains exactly ten active Bolets jobs and inspect
+Verify `cron.job` contains exactly eleven active Bolets jobs and inspect
 `cron.job_run_details` plus `ingestion_runs` after the first cycle.
 
 ## 7. Roll out the app
@@ -295,7 +295,7 @@ Verify `cron.job` contains exactly ten active Bolets jobs and inspect
 
 The script loads the root-only Umami and private-status environments, validates the merged Compose
 model, builds the standalone Next.js image, transactionally installs the
-additive rolling-ingestion and parallel-job database schemas when their marker tables are absent,
+additive rolling-ingestion, parallel-job and condition-publication database schemas,
 and synchronizes Edge Functions only after that schema is ready. It then waits
 for healthy services, replaces Umami's default administrator password, creates
 the fixed Bolets website record idempotently, and restarts the function

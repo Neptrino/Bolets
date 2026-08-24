@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { getSpecies, speciesProfiles } from "@/data/species";
 import {
@@ -73,6 +74,22 @@ function summary(regionId: RegionId, options: { stale?: boolean; completeness?: 
 describe("current-condition overview", () => {
   it("keeps publication data on a twice-daily cache", () => {
     expect(DAILY_OVERVIEW_REVALIDATE_SECONDS).toBe(12 * 60 * 60);
+  });
+
+  it("keys the long-lived overview cache by both published condition generations", () => {
+    const overviewSource = readFileSync("src/lib/current-overview.ts", "utf8");
+    const generationSource = readFileSync(
+      "src/lib/current-overview-generation-server.ts",
+      "utf8",
+    );
+
+    expect(overviewSource).toContain("readCurrentOverviewGeneration");
+    expect(overviewSource).toContain("loadCachedCurrentOverviewData(await readCurrentOverviewGeneration())");
+    expect(overviewSource).toContain("loadCachedAreaOverviewData(await readCurrentOverviewGeneration())");
+    expect(generationSource).toContain('import "server-only"');
+    expect(generationSource).toContain('"spatial-condition-coarse"');
+    expect(generationSource).toContain('"spatial-condition-territorial"');
+    expect(generationSource).toContain('cache: "no-store"');
   });
 
   it("consolidates territorial hubs into bounded shared 1 km summary buckets", () => {

@@ -56,6 +56,15 @@ const auditReconciliationMigration = readFileSync(
   ),
   "utf8",
 );
+const conditionCacheCronMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260824141111_schedule_condition_cache_publication.sql",
+  ),
+  "utf8",
+);
 const refresh = readFileSync(
   join(process.cwd(), "supabase", "functions", "refresh-spatial-environment", "index.ts"),
   "utf8",
@@ -105,6 +114,17 @@ describe("rolling observed-weather ingestion", () => {
     expect(migration).not.toMatch(/where pipeline in \([^)]*'spatial-atmosphere'/);
   });
 
+  it("publishes condition caches outside the bounded Edge request", () => {
+    expect(conditionCacheCronMigration).toContain("refresh-spatial-condition-caches");
+    expect(conditionCacheCronMigration).toContain(
+      "refresh_spatial_level_conditions_after_ingestion(current_date)",
+    );
+    expect(conditionCacheCronMigration).toContain(
+      "refresh_territorial_level_conditions_after_ingestion(current_date)",
+    );
+    expect(cron).toContain("Expected eleven Bolets cron jobs");
+  });
+
   it("atomically records provider usage without applying local limits", () => {
     expect(parallelMigration).toContain("create table public.provider_budget_windows");
     expect(unlimitedUsageMigration).toContain("create or replace function public.record_provider_usage");
@@ -121,6 +141,11 @@ describe("rolling observed-weather ingestion", () => {
     expect(refresh).toContain("attempts: 1");
     expect(soilRefresh).toContain("recordOpenMeteoUsage");
     expect(regionalRefresh).toContain("recordOpenMeteoUsage");
+    expect(regionalRefresh).toContain('const REGIONAL_EGRESS_LANES = ["cloudflare", "aws"]');
+    expect(regionalRefresh).toContain("defer_open_meteo_egress_lane");
+    expect(regionalRefresh).toContain("record_open_meteo_egress_success");
+    expect(regionalRefresh).toContain("attempts: 1");
+    expect(regionalRefresh).not.toContain('egressLane: "direct"');
     expect(refresh).not.toContain("ProviderBudgetDeferredError");
   });
 
@@ -178,6 +203,8 @@ describe("rolling observed-weather ingestion", () => {
     expect(migrationInstaller).toContain("spatial_atmosphere_jobs_egress_lane_check");
     expect(migrationInstaller).toContain("20260824135419_reconcile_spatial_job_audits.sql");
     expect(migrationInstaller).toContain("Applied spatial audit reconciliation");
+    expect(migrationInstaller).toContain("20260824141111_schedule_condition_cache_publication.sql");
+    expect(migrationInstaller).toContain("Applied condition-cache publication schedule");
     expect(migrationInstaller).toContain("*\"'aws'\"*");
     const migrationPosition = rollout.lastIndexOf("apply-database-migrations.sh");
     const functionPosition = rollout.indexOf("sync-functions.sh");

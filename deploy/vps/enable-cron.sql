@@ -21,6 +21,7 @@ begin
       'refresh-environment-daily',
       'refresh-spatial-environment',
       'refresh-spatial-soil',
+      'refresh-spatial-condition-caches',
       'refresh-species-occurrences-monthly',
       'refresh-species-occurrences-monthly-tail',
       'bolets-pipeline-retention',
@@ -29,8 +30,8 @@ begin
       'vacuum-cron-job-run-details',
       'import-xema-rain-3h'
     )
-  ) <> 10 then
-    raise exception 'Expected ten Bolets cron jobs';
+  ) <> 11 then
+    raise exception 'Expected eleven Bolets cron jobs';
   end if;
 end
 $$;
@@ -46,6 +47,7 @@ begin
       'refresh-environment-daily',
       'refresh-spatial-environment',
       'refresh-spatial-soil',
+      'refresh-spatial-condition-caches',
       'refresh-species-occurrences-monthly',
       'refresh-species-occurrences-monthly-tail',
       'bolets-pipeline-retention',

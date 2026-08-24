@@ -377,24 +377,36 @@ export async function loadAreaOverview(
 }
 
 const loadCachedCurrentOverviewData = unstable_cache(
-  () => loadCurrentOverview(),
-  ["current-overview-v4"],
+  (generation: string) => {
+    void generation;
+    return loadCurrentOverview();
+  },
+  ["current-overview-v5"],
   { revalidate: DAILY_OVERVIEW_REVALIDATE_SECONDS, tags: ["current-overview"] },
 );
 
 const loadCachedAreaOverviewData = unstable_cache(
-  () => loadAreaOverview(),
-  ["area-overview-v4"],
+  (generation: string) => {
+    void generation;
+    return loadAreaOverview();
+  },
+  ["area-overview-v5"],
   { revalidate: DAILY_OVERVIEW_REVALIDATE_SECONDS, tags: ["area-overview"] },
 );
 
-/** Shared twice-daily snapshots for Avui, Compartir and generated images. */
+/** Shared generation-bound snapshots with a twelve-hour maximum lifetime. */
 export async function loadCachedCurrentOverview() {
-  return loadCachedCurrentOverviewData();
+  const { readCurrentOverviewGeneration } = await import(
+    "@/src/lib/current-overview-generation-server"
+  );
+  return loadCachedCurrentOverviewData(await readCurrentOverviewGeneration());
 }
 
 export async function loadCachedAreaOverview() {
-  return loadCachedAreaOverviewData();
+  const { readCurrentOverviewGeneration } = await import(
+    "@/src/lib/current-overview-generation-server"
+  );
+  return loadCachedAreaOverviewData(await readCurrentOverviewGeneration());
 }
 
 const catalanAreaCollator = new Intl.Collator("ca", { sensitivity: "base" });

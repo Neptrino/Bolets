@@ -147,6 +147,30 @@ export function summarizeOperationalStatus(
   const publishedAtmosphere = status.cursors.find(
     (cursor) => cursor.pipeline === "spatial-atmosphere" && cursor.lastCellId === "__complete__",
   );
+  const completedObservedCursors = ["spatial-atmosphere", "spatial-soil"].flatMap(
+    (pipeline) => {
+      const cursor = status.cursors.find((candidate) =>
+        candidate.pipeline === pipeline
+        && candidate.snapshotDate === status.currentDate
+        && candidate.lastCellId === "__complete__"
+      );
+      return cursor ? [cursor] : [];
+    },
+  );
+  const observedGenerationAt = completedObservedCursors.length === 2
+    ? Math.max(...completedObservedCursors.map((cursor) => Date.parse(cursor.updatedAt)))
+    : Number.NaN;
+  const laggingConditionCaches = !Number.isFinite(observedGenerationAt)
+    ? []
+    : ["spatial-condition-coarse", "spatial-condition-territorial"].filter((pipeline) => {
+      const cursor = status.cursors.find((candidate) => candidate.pipeline === pipeline);
+      const cacheGenerationAt = cursor ? Date.parse(cursor.updatedAt) : Number.NaN;
+      return !cursor
+        || cursor.snapshotDate !== status.currentDate
+        || cursor.lastCellId !== "__complete__"
+        || !Number.isFinite(cacheGenerationAt)
+        || cacheGenerationAt < observedGenerationAt;
+    });
   const recentWindow = now.getTime() - 24 * 60 * 60 * 1_000;
   const unresolvedFailures = status.recentRuns.filter((run) => {
     if (run.status !== "failed" && run.status !== "partial") {
@@ -164,7 +188,12 @@ export function summarizeOperationalStatus(
     status.currentDate,
   );
 
-  if (blockedSources.length > 0 || publishedAtmosphereAge > 1 || status.weatherSnapshot.staleCount > 0) {
+  if (
+    blockedSources.length > 0
+    || publishedAtmosphereAge > 1
+    || status.weatherSnapshot.staleCount > 0
+    || laggingConditionCaches.length > 0
+  ) {
     return {
       state: "critical",
       label: STATE_LABELS.critical,
@@ -172,7 +201,11 @@ export function summarizeOperationalStatus(
         ? `${blockedSources.length} font${blockedSources.length === 1 ? "" : "s"} habilitada${blockedSources.length === 1 ? "" : "s"} està bloquejada.`
         : publishedAtmosphereAge > 1
           ? "La darrera generació atmosfèrica completada té més d'un dia de retard."
-          : `${status.weatherSnapshot.staleCount} punts de l'última atmosfera estan marcats com a obsolets.`,
+          : status.weatherSnapshot.staleCount > 0
+            ? `${status.weatherSnapshot.staleCount} punts de l'última atmosfera estan marcats com a obsolets.`
+            : laggingConditionCaches.length === 1
+              ? "1 memòria cau de condicions encara no ha publicat la generació observada actual."
+              : `${laggingConditionCaches.length} memòries cau de condicions encara no han publicat la generació observada actual.`,
       unresolvedFailures,
       activeJobs,
     };

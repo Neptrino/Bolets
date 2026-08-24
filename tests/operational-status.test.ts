@@ -26,6 +26,21 @@ function fixture(overrides: Partial<OperationalStatus> = {}): OperationalStatus 
       snapshotDate: "2026-08-24",
       lastCellId: "__complete__",
       updatedAt: "2026-08-24T10:00:00.000Z",
+    }, {
+      pipeline: "spatial-soil",
+      snapshotDate: "2026-08-24",
+      lastCellId: "__complete__",
+      updatedAt: "2026-08-24T09:00:00.000Z",
+    }, {
+      pipeline: "spatial-condition-coarse",
+      snapshotDate: "2026-08-24",
+      lastCellId: "__complete__",
+      updatedAt: "2026-08-24T10:01:00.000Z",
+    }, {
+      pipeline: "spatial-condition-territorial",
+      snapshotDate: "2026-08-24",
+      lastCellId: "__complete__",
+      updatedAt: "2026-08-24T10:02:00.000Z",
     }],
     jobs: [{
       snapshotDate: "2026-08-24",
@@ -128,7 +143,14 @@ describe("operational status", () => {
       }],
     })).state).toBe("healthy");
     expect(summarizeOperationalStatus(fixture({
-      cursors: [{ ...fixture().cursors[0]!, snapshotDate: "2026-08-22" }],
+      cursors: fixture().cursors.map((cursor) => cursor.pipeline === "spatial-atmosphere"
+        ? { ...cursor, snapshotDate: "2026-08-22" }
+        : cursor),
+    })).state).toBe("critical");
+    expect(summarizeOperationalStatus(fixture({
+      cursors: fixture().cursors.map((cursor) => cursor.pipeline === "spatial-condition-territorial"
+        ? { ...cursor, snapshotDate: "2026-08-23" }
+        : cursor),
     })).state).toBe("critical");
   });
 

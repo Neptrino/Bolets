@@ -14,11 +14,12 @@ egress_circuit_migration="$app_dir/supabase/migrations/20260824114320_add_open_m
 unlimited_usage_migration="$app_dir/supabase/migrations/20260824125832_disable_local_open_meteo_limits.sql"
 operational_status_migration="$app_dir/supabase/migrations/20260824143000_add_operational_status_reader.sql"
 audit_reconciliation_migration="$app_dir/supabase/migrations/20260824135419_reconcile_spatial_job_audits.sql"
+condition_cache_cron_migration="$app_dir/supabase/migrations/20260824141111_schedule_condition_cache_publication.sql"
 
 if [ ! -f "$rolling_migration" ] || [ ! -f "$parallel_migration" ] ||
    [ ! -f "$aws_lane_migration" ] || [ ! -f "$egress_circuit_migration" ] ||
    [ ! -f "$unlimited_usage_migration" ] || [ ! -f "$operational_status_migration" ] ||
-   [ ! -f "$audit_reconciliation_migration" ]; then
+   [ ! -f "$audit_reconciliation_migration" ] || [ ! -f "$condition_cache_cron_migration" ]; then
   echo "A required ingestion migration is missing" >&2
   exit 66
 fi
@@ -111,6 +112,16 @@ docker exec -i supabase-db psql \
   --single-transaction \
   < "$audit_reconciliation_migration"
 echo "Applied spatial audit reconciliation"
+
+# Recreate this one cheap database-local job on every rollout so scheduling
+# changes are not hidden behind a restored cron catalogue.
+docker exec -i supabase-db psql \
+  --username postgres \
+  --dbname postgres \
+  --set ON_ERROR_STOP=1 \
+  --single-transaction \
+  < "$condition_cache_cron_migration"
+echo "Applied condition-cache publication schedule"
 
 # This migration is deliberately idempotent and contains only CREATE OR
 # REPLACE plus grants. Reapply it so query-shape and redaction improvements are
