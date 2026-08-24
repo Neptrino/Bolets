@@ -205,6 +205,10 @@ describe("rolling observed-weather ingestion", () => {
     expect(migrationInstaller).toContain("Applied spatial audit reconciliation");
     expect(migrationInstaller).toContain("20260824141111_schedule_condition_cache_publication.sql");
     expect(migrationInstaller).toContain("Applied condition-cache publication schedule");
+    expect(migrationInstaller).toContain(
+      "20260824145507_use_latest_observed_completion_for_forecast_alignment.sql",
+    );
+    expect(migrationInstaller).toContain("Applied forecast alignment reconciliation");
     expect(migrationInstaller).toContain("*\"'aws'\"*");
     const migrationPosition = rollout.lastIndexOf("apply-database-migrations.sh");
     const functionPosition = rollout.indexOf("sync-functions.sh");

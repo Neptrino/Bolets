@@ -106,6 +106,16 @@ describe("spatial forecast storage", () => {
     expect(refreshPipeline).toContain('forecastHistoryModel: "arome_france"');
   });
 
+  it("uses AWS first and falls back across the approved forecast egress lanes", () => {
+    expect(refreshPipeline).toMatch(
+      /FORECAST_EGRESS_LANES[^=]*=\s*\[\s*"aws",\s*"cloudflare",\s*"direct",?\s*\]/,
+    );
+    expect(refreshPipeline).toContain("for (const egressLane of FORECAST_EGRESS_LANES)");
+    expect(refreshPipeline).toContain("fetchForecastLocations(");
+    expect(refreshPipeline).toContain("estimateOpenMeteoRequestUnits(url, expectedLocations)");
+    expect(refreshPipeline).toContain("failed across approved egress lanes");
+  });
+
   it("atomically rebuilds a completed issue created by the previous normalizer", () => {
     expect(hybridForecastMigration).toContain("pg_advisory_xact_lock(91600348)");
     expect(hybridForecastMigration).toContain("completed_at is not null");

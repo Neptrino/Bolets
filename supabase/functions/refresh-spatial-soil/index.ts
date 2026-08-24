@@ -6,6 +6,7 @@ import {
   fetchOpenMeteoLocations,
   normalizeOpenMeteo,
   normalizeOpenMeteoForecast,
+  type OpenMeteoEgressLane,
   type OpenMeteoLocation,
 } from "../_shared/open-meteo.ts";
 import {
@@ -26,6 +27,11 @@ const PROVIDER_BATCH_SIZE = 50;
 const COMPLETE_CURSOR = "__complete__";
 const SOIL_CURSOR_PIPELINE = "spatial-soil";
 const FORECAST_CURSOR_PIPELINE = "spatial-forecast-v2";
+const FORECAST_EGRESS_LANES: readonly OpenMeteoEgressLane[] = [
+  "aws",
+  "cloudflare",
+  "direct",
+];
 type Settled<T> = { data: T; error?: undefined } | { data?: undefined; error: string };
 
 type ForecastReconciliation = {
@@ -195,6 +201,35 @@ async function fetchSoil(
   return results;
 }
 
+async function fetchForecastLocations(
+  supabase: ReturnType<typeof createAdminClient>,
+  url: URL,
+  context: string,
+  expectedLocations: number,
+) {
+  const failures: string[] = [];
+  for (const egressLane of FORECAST_EGRESS_LANES) {
+    await recordOpenMeteoUsage(
+      supabase,
+      "spatial-soil-forecast",
+      estimateOpenMeteoRequestUnits(url, expectedLocations),
+    );
+    try {
+      const locations = await fetchOpenMeteoLocations(url, context, {
+        attempts: 1,
+        egressLane,
+      });
+      if (locations.length !== expectedLocations) {
+        throw new Error(`returned ${locations.length} of ${expectedLocations} locations`);
+      }
+      return locations;
+    } catch (error) {
+      failures.push(`${egressLane}: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  }
+  throw new Error(`Open-Meteo ${context} failed across approved egress lanes (${failures.join("; ")})`);
+}
+
 async function fetchForecast(
   supabase: ReturnType<typeof createAdminClient>,
   points: SoilPoint[],
@@ -212,15 +247,12 @@ async function fetchForecast(
       url.searchParams.set("elevation", batch.map((point) => point.requested_elevation_m).join(","));
     }
     configureOpenMeteoForecastRequest(url, profile);
-    await recordOpenMeteoUsage(
+    results.push(...await fetchForecastLocations(
       supabase,
-      "spatial-soil-forecast",
-      estimateOpenMeteoRequestUnits(url, batch.length),
-    );
-    results.push(...await fetchOpenMeteoLocations(url, `${profile} forecast`, {
-      attempts: 1,
-      egressLane: "cloudflare",
-    }));
+      url,
+      `${profile} forecast`,
+      batch.length,
+    ));
   }
   if (results.length !== points.length) {
     throw new Error(`Open-Meteo returned ${results.length} of ${points.length} ${profile} forecast locations`);
@@ -242,15 +274,12 @@ async function fetchAtmosphericForecastHistory(
       url.searchParams.set("elevation", batch.map((point) => point.requested_elevation_m).join(","));
     }
     configureOpenMeteoForecastHistoryRequest(url);
-    await recordOpenMeteoUsage(
+    results.push(...await fetchForecastLocations(
       supabase,
-      "spatial-soil-forecast",
-      estimateOpenMeteoRequestUnits(url, batch.length),
-    );
-    results.push(...await fetchOpenMeteoLocations(url, "AROME forecast history", {
-      attempts: 1,
-      egressLane: "direct",
-    }));
+      url,
+      "AROME forecast history",
+      batch.length,
+    ));
   }
   if (results.length !== points.length) {
     throw new Error(`Open-Meteo returned ${results.length} of ${points.length} AROME history locations`);
