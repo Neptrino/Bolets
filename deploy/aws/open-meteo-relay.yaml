@@ -8,7 +8,7 @@ Parameters:
     Type: String
   GitHubEnvironment:
     Type: String
-    Default: production
+    Default: Production
   GitHubOidcProviderArn:
     Type: String
   GitHubOwner:

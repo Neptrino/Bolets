@@ -13,7 +13,7 @@ AWS_REGION=eu-south-2 deploy/aws/bootstrap-open-meteo-relay.sh
 The stack creates an ARM64 Node.js 24 Lambda, a retained generated HMAC secret,
 a versioned `live` alias, a public Function URL protected by application HMAC,
 14-day logs, reserved concurrency four, and a GitHub OIDC role restricted to
-the `Neptrino/Bolets` production environment. It stores build archives in a
+the `Neptrino/Bolets` `Production` environment. It stores build archives in a
 private, encrypted, versioned S3 bucket. The GitHub role can update code,
 publish a version, and move only the `live` alias; it cannot change IAM,
 secrets, concurrency, or the Function URL policy.

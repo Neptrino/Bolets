@@ -5,6 +5,7 @@ aws_region="${AWS_REGION:-eu-south-2}"
 stack_name="bolets-open-meteo-relay"
 github_owner="Neptrino"
 github_repository="Bolets"
+github_environment="Production"
 
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repository_root"
@@ -70,6 +71,7 @@ aws cloudformation deploy \
   --parameter-overrides \
     "ArtifactBucket=${artifact_bucket}" \
     "ArtifactKey=${artifact_key}" \
+    "GitHubEnvironment=${github_environment}" \
     "GitHubOidcProviderArn=${github_oidc_arn}" \
     "GitHubOwner=${github_owner}" \
     "GitHubRepository=${github_repository}"
