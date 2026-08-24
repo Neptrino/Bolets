@@ -102,6 +102,41 @@ function fixture(overrides: Partial<OperationalStatus> = {}): OperationalStatus 
       observedAt: "2026-08-24T11:00:00.000Z",
       createdAt: "2026-08-24T11:30:00.000Z",
     },
+    observedPublications: [{
+      stream: "atmosphere",
+      snapshotDate: "2026-08-24",
+      complete: true,
+      pointCount: 5128,
+      expectedPointCount: 5128,
+      staleCount: 0,
+      observedAt: "2026-08-24T11:00:00.000Z",
+      createdAt: "2026-08-24T11:30:00.000Z",
+      completedAt: "2026-08-24T10:00:00.000Z",
+    }, {
+      stream: "soil",
+      snapshotDate: "2026-08-24",
+      complete: true,
+      pointCount: 500,
+      expectedPointCount: 500,
+      staleCount: 0,
+      observedAt: "2026-08-24T10:00:00.000Z",
+      createdAt: "2026-08-24T10:05:00.000Z",
+      completedAt: "2026-08-24T10:10:00.000Z",
+    }],
+    forecastPublication: {
+      snapshotDate: "2026-08-24",
+      complete: true,
+      rowCount: 3000,
+      pointCount: 500,
+      expectedPointCount: 500,
+      horizonCount: 6,
+      futureHorizonCount: 5,
+      generatedAt: "2026-08-24T10:15:00.000Z",
+      completedAt: "2026-08-24T10:25:00.000Z",
+      baselineValidAt: "2026-08-24T10:00:00.000Z",
+      validFrom: "2026-08-25T10:00:00.000Z",
+      validThrough: "2026-08-29T10:00:00.000Z",
+    },
     recentRuns: [{
       id: "run-1",
       pipeline: "spatial-environment",
@@ -152,6 +187,11 @@ describe("operational status", () => {
         ? { ...cursor, snapshotDate: "2026-08-23" }
         : cursor),
     })).state).toBe("critical");
+    expect(summarizeOperationalStatus(fixture({
+      observedPublications: fixture().observedPublications.map((publication) =>
+        publication.stream === "soil" ? { ...publication, complete: false } : publication
+      ),
+    })).state).toBe("critical");
   });
 
   it("treats a later successful run as recovery from an earlier failure", () => {
@@ -168,6 +208,26 @@ describe("operational status", () => {
     expect(summarizeOperationalStatus(fixture({ recentRuns: [failed] })).state).toBe("attention");
   });
 
+  it("distinguishes a forecast being built from a missing forecast", () => {
+    expect(summarizeOperationalStatus(fixture({ forecastPublication: null })).state).toBe("attention");
+    expect(summarizeOperationalStatus(fixture({
+      forecastPublication: {
+        ...fixture().forecastPublication!,
+        snapshotDate: "2026-08-23",
+      },
+    })).state).toBe("healthy");
+    expect(summarizeOperationalStatus(fixture({
+      forecastPublication: null,
+      recentRuns: [{
+        ...fixture().recentRuns[0]!,
+        pipeline: "spatial-soil",
+        status: "running",
+        startedAt: "2026-08-24T11:55:00.000Z",
+        completedAt: null,
+      }],
+    })).state).toBe("running");
+  });
+
   it("exports bounded operational metrics without error text", () => {
     const status = fixture({
       recentRuns: [{ ...fixture().recentRuns[0]!, errorMessage: "secret-looking detail" }],
@@ -177,6 +237,9 @@ describe("operational status", () => {
     expect(metrics).toContain('bolets_operational_status{state="healthy"} 1');
     expect(metrics).toContain('bolets_provider_budget_units{provider="open-meteo",consumer="*",window="day"} 9579');
     expect(metrics).toContain('bolets_rolling_state_points{stream="arome-atmosphere"} 5128');
+    expect(metrics).toContain('bolets_observed_publication_points{stream="atmosphere",measure="published",complete="true"} 5128');
+    expect(metrics).toContain('bolets_forecast_publication_points{measure="published",complete="true"} 500');
+    expect(metrics).toContain("bolets_forecast_valid_through_timestamp_seconds 1787997600");
     expect(metrics).toContain('bolets_open_meteo_egress_blocked{lane="direct"} 0');
     expect(metrics).not.toContain("secret-looking detail");
   });
@@ -194,6 +257,9 @@ describe("operational status", () => {
     expect(migration).toMatch(/security invoker/i);
     expect(migration).toMatch(/revoke all on function public\.read_operational_status\(\)[\s\S]*from public, anon, authenticated/i);
     expect(migration).toMatch(/grant execute[\s\S]*to service_role/i);
+    expect(migration).toContain("'observedPublications'");
+    expect(migration).toContain("'forecastPublication'");
+    expect(migration).toContain("future_horizon_count");
     expect(migration).not.toMatch(/metadata'\s*,\s*recent\.metadata/i);
     expect(caddy).not.toContain("basic_auth");
     expect(caddy).toMatch(/@admin path \/admin \/admin\/\*/);

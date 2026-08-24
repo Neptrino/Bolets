@@ -329,6 +329,13 @@ shards and lanes, shared provider budget, source health, generation cursors and
 sanitized recent ingestion errors. It does not expose raw run metadata, Vault,
 service keys or container logs.
 
+The publication section separates the user-visible products: observed
+atmosphere, observed soil moisture, the latest complete five-day forecast and
+the score-map caches. It reports expected versus available point counts and the
+forecast validity edge. Rolling AROME and rain state is kept in an explicitly
+technical disclosure because it is input continuity for incremental ingestion,
+not another published map product.
+
 The same signed session exposes allowlisted manual controls for the complete
 daily cycle, spatial atmosphere, soil plus forecast, regional summaries, XEMA
 rain and condition caches. Commands cross a same-origin Next.js route and a

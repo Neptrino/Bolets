@@ -10,7 +10,104 @@ stable
 security invoker
 set search_path = ''
 as $$
-  with latest_weather as (
+  with product_models(model, stream, cursor_pipeline) as (
+    values
+      ('arome_france'::text, 'atmosphere'::text, 'spatial-atmosphere'::text),
+      ('best_match'::text, 'soil'::text, 'spatial-soil'::text)
+  ), product_dates as materialized (
+    select
+      product.model,
+      product.stream,
+      product.cursor_pipeline,
+      (
+        select max(snapshot.snapshot_date)
+        from public.weather_grid_snapshots snapshot
+        join public.weather_grid_points point
+          on point.point_id = snapshot.point_id
+        where point.model = product.model
+      ) as snapshot_date
+    from product_models product
+  ), observed_publications as (
+    select
+      product.stream,
+      product.snapshot_date,
+      count(point.point_id)::integer as expected_point_count,
+      count(snapshot.id)::integer as point_count,
+      count(snapshot.id) filter (where snapshot.stale)::integer as stale_count,
+      max(snapshot.observed_at) as observed_at,
+      max(snapshot.created_at) as created_at,
+      cursor.updated_at as completed_at,
+      (
+        product.snapshot_date is not null
+        and cursor.snapshot_date = product.snapshot_date
+        and cursor.last_cell_id = '__complete__'
+        and count(point.point_id) > 0
+        and count(snapshot.id) = count(point.point_id)
+        and count(snapshot.id) filter (where snapshot.stale) = 0
+      ) as complete
+    from product_dates product
+    left join public.weather_grid_points point
+      on point.model = product.model
+    left join public.weather_grid_snapshots snapshot
+      on snapshot.point_id = point.point_id
+      and snapshot.snapshot_date = product.snapshot_date
+    left join public.pipeline_cursors cursor
+      on cursor.pipeline = product.cursor_pipeline
+    group by
+      product.stream,
+      product.snapshot_date,
+      cursor.snapshot_date,
+      cursor.last_cell_id,
+      cursor.updated_at
+  ), latest_forecast_issue as (
+    select issue.snapshot_date, issue.generated_at, issue.completed_at
+    from public.weather_forecast_issues issue
+    order by issue.generated_at desc
+    limit 1
+  ), forecast_publication as (
+    select
+      issue.snapshot_date,
+      issue.generated_at,
+      issue.completed_at,
+      count(forecast.point_id)::integer as row_count,
+      count(distinct forecast.point_id)::integer as point_count,
+      expected.point_count as expected_point_count,
+      count(distinct forecast.horizon_hours)::integer as horizon_count,
+      count(distinct forecast.horizon_hours)
+        filter (where forecast.horizon_hours > 0)::integer as future_horizon_count,
+      min(forecast.valid_at)
+        filter (where forecast.horizon_hours = 0) as baseline_valid_at,
+      min(forecast.valid_at)
+        filter (where forecast.horizon_hours > 0) as valid_from,
+      max(forecast.valid_at) as valid_through,
+      (
+        issue.completed_at is not null
+        and cursor.snapshot_date = issue.snapshot_date
+        and cursor.last_cell_id = '__complete__'
+        and expected.point_count > 0
+        and count(forecast.point_id) = expected.point_count * 6
+        and count(distinct forecast.point_id) = expected.point_count
+        and count(distinct forecast.horizon_hours) = 6
+      ) as complete
+    from latest_forecast_issue issue
+    left join public.weather_grid_forecasts forecast
+      on forecast.snapshot_date = issue.snapshot_date
+      and forecast.generated_at = issue.generated_at
+    left join public.pipeline_cursors cursor
+      on cursor.pipeline = 'spatial-forecast-v2'
+    cross join lateral (
+      select count(*)::integer as point_count
+      from public.weather_grid_points point
+      where point.model = 'best_match'
+    ) expected
+    group by
+      issue.snapshot_date,
+      issue.generated_at,
+      issue.completed_at,
+      cursor.snapshot_date,
+      cursor.last_cell_id,
+      expected.point_count
+  ), latest_weather as (
     select max(snapshot_date) as snapshot_date
     from public.weather_grid_snapshots
   )
@@ -153,6 +250,40 @@ as $$
         on snapshot.snapshot_date = latest.snapshot_date
       group by latest.snapshot_date
     ), '{}'::jsonb),
+    'observedPublications', coalesce((
+      select jsonb_agg(
+        jsonb_build_object(
+          'stream', publication.stream,
+          'snapshotDate', publication.snapshot_date,
+          'complete', publication.complete,
+          'pointCount', publication.point_count,
+          'expectedPointCount', publication.expected_point_count,
+          'staleCount', publication.stale_count,
+          'observedAt', publication.observed_at,
+          'createdAt', publication.created_at,
+          'completedAt', publication.completed_at
+        )
+        order by case publication.stream when 'atmosphere' then 1 else 2 end
+      )
+      from observed_publications publication
+    ), '[]'::jsonb),
+    'forecastPublication', coalesce((
+      select jsonb_build_object(
+        'snapshotDate', publication.snapshot_date,
+        'complete', publication.complete,
+        'rowCount', publication.row_count,
+        'pointCount', publication.point_count,
+        'expectedPointCount', publication.expected_point_count,
+        'horizonCount', publication.horizon_count,
+        'futureHorizonCount', publication.future_horizon_count,
+        'generatedAt', publication.generated_at,
+        'completedAt', publication.completed_at,
+        'baselineValidAt', publication.baseline_valid_at,
+        'validFrom', publication.valid_from,
+        'validThrough', publication.valid_through
+      )
+      from forecast_publication publication
+    ), 'null'::jsonb),
     'recentRuns', coalesce((
       select jsonb_agg(
         jsonb_build_object(
@@ -227,4 +358,4 @@ grant execute on function public.read_operational_status()
   to service_role;
 
 comment on function public.read_operational_status() is
-  'Private, service-role-only operational summary v5 for the Bolets status page and metrics collector.';
+  'Private, service-role-only operational summary v6 for the Bolets status page and metrics collector, including explicit observed and forecast publication readiness.';

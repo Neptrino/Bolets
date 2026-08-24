@@ -4,11 +4,14 @@ import { redirect } from "next/navigation";
 import {
   Activity,
   AlertTriangle,
+  CalendarRange,
   CheckCircle2,
   CircleGauge,
   CloudCog,
-  Database,
+  CloudSun,
+  Droplets,
   History,
+  Layers3,
   LogOut,
   RefreshCw,
   Route,
@@ -164,9 +167,6 @@ export default async function OperationalStatusPage() {
   const summary = summarizeOperationalStatus(status);
   const StateIcon = stateIcons[summary.state];
   const todayJobs = status.jobs.filter((job) => job.snapshotDate === status.currentDate);
-  const publishedAtmosphere = status.cursors.find(
-    (cursor) => cursor.pipeline === "spatial-atmosphere" && cursor.lastCellId === "__complete__",
-  );
   const precipitationProgress = jobProgress(todayJobs, "precipitation-fallback");
   const atmosphereProgress = jobProgress(todayJobs, "atmosphere");
   const dayUsage = status.budgets.find(
@@ -174,6 +174,37 @@ export default async function OperationalStatusPage() {
   );
   const enabledSources = status.sources.filter((source) => source.enabled);
   const recentRuns = status.recentRuns.slice(0, 14);
+  const atmospherePublication = status.observedPublications.find(
+    (publication) => publication.stream === "atmosphere",
+  );
+  const soilPublication = status.observedPublications.find(
+    (publication) => publication.stream === "soil",
+  );
+  const observedCursorTimes = ["spatial-atmosphere", "spatial-soil"].flatMap((pipeline) => {
+    const cursor = status.cursors.find((candidate) =>
+      candidate.pipeline === pipeline
+      && candidate.snapshotDate === status.currentDate
+      && candidate.lastCellId === "__complete__"
+    );
+    return cursor ? [Date.parse(cursor.updatedAt)] : [];
+  });
+  const observedGenerationAt = observedCursorTimes.length === 2
+    ? Math.max(...observedCursorTimes)
+    : Number.NaN;
+  const conditionCacheCursors = ["spatial-condition-coarse", "spatial-condition-territorial"]
+    .map((pipeline) => status.cursors.find((cursor) => cursor.pipeline === pipeline));
+  const conditionCachesComplete = Number.isFinite(observedGenerationAt)
+    && conditionCacheCursors.every((cursor) =>
+      cursor?.snapshotDate === status.currentDate
+      && cursor.lastCellId === "__complete__"
+      && Date.parse(cursor.updatedAt) >= observedGenerationAt
+    );
+  const conditionCachesCompletedAt = conditionCachesComplete
+    ? new Date(Math.max(...conditionCacheCursors.map((cursor) => Date.parse(cursor!.updatedAt)))).toISOString()
+    : null;
+  const forecastAvailable = status.forecastPublication?.complete === true
+    && status.forecastPublication.validThrough !== null
+    && Date.parse(status.forecastPublication.validThrough) > Date.parse(status.generatedAt);
 
   return (
     <PageShell as="article" className={styles.shell}>
@@ -216,33 +247,117 @@ export default async function OperationalStatusPage() {
 
       <section className={styles.section} aria-labelledby="published-data">
         <SectionHeader
-          meta="La veritat publicada"
-          title="Publicació i escriptura"
+          meta="Què veu la web"
+          title="Dades publicades ara"
           titleId="published-data"
-          description="El cursor complet és la generació segura per a les memòries cau. Les files noves d'una ingestió parcial es mostren a part i no es presenten com a publicades."
+          description="Cada bloc és un producte que la web pot utilitzar. «Publicada» vol dir que han arribat tots els punts esperats i que la generació ja és segura per als visitants."
         />
-        <div className={styles.factGrid}>
-          <article className={styles.factCard}>
-            <Database aria-hidden="true" />
-            <span>Generació atmosfèrica publicada</span>
-            <strong>{publishedAtmosphere?.snapshotDate ?? "Sense cursor"}</strong>
-            <small>{publishedAtmosphere ? `Completada ${formatDateTime(publishedAtmosphere.updatedAt)}` : "Cap generació completa disponible"}</small>
+        <div className={styles.publicationGrid}>
+          <article className={styles.publicationCard} data-complete={atmospherePublication?.complete === true}>
+            <div className={styles.publicationCardTop}>
+              <CloudSun aria-hidden="true" />
+              <span>{atmospherePublication?.complete ? "Publicada" : "Incompleta"}</span>
+            </div>
+            <div className={styles.publicationCopy}>
+              <span>Atmosfera observada</span>
+              <strong>
+                {numberFormatter.format(atmospherePublication?.pointCount ?? 0)} / {numberFormatter.format(atmospherePublication?.expectedPointCount ?? 0)} punts
+              </strong>
+              <small>Temperatura, humitat i vent AROME que alimenten la lectura actual.</small>
+            </div>
+            <p>
+              {atmospherePublication?.observedAt
+                ? `Dades fins ${formatDateTime(atmospherePublication.observedAt)}`
+                : "Encara no hi ha una observació atmosfèrica completa."}
+              {atmospherePublication?.completedAt
+                ? ` · publicada ${formatDateTime(atmospherePublication.completedAt)}`
+                : ""}
+            </p>
           </article>
-          <article className={styles.factCard}>
-            <History aria-hidden="true" />
-            <span>Darrera escriptura normalitzada</span>
-            <strong>{status.weatherSnapshot.latestDate ?? "Sense dades"}</strong>
-            <small>{numberFormatter.format(status.weatherSnapshot.rowCount)} punts · observats {formatDateTime(status.weatherSnapshot.observedAt)}</small>
+
+          <article className={styles.publicationCard} data-complete={soilPublication?.complete === true}>
+            <div className={styles.publicationCardTop}>
+              <Droplets aria-hidden="true" />
+              <span>{soilPublication?.complete ? "Publicada" : "Incompleta"}</span>
+            </div>
+            <div className={styles.publicationCopy}>
+              <span>Humitat del sòl observada</span>
+              <strong>
+                {numberFormatter.format(soilPublication?.pointCount ?? 0)} / {numberFormatter.format(soilPublication?.expectedPointCount ?? 0)} punts
+              </strong>
+              <small>Graella de sòl que completa el balanç d’aigua de la lectura actual.</small>
+            </div>
+            <p>
+              {soilPublication?.observedAt
+                ? `Dades fins ${formatDateTime(soilPublication.observedAt)}`
+                : "Encara no hi ha una observació de sòl completa."}
+              {soilPublication?.completedAt
+                ? ` · publicada ${formatDateTime(soilPublication.completedAt)}`
+                : ""}
+            </p>
           </article>
-          {status.rollingStates.map((rolling) => (
-            <article className={styles.factCard} key={rolling.stream}>
-              <Activity aria-hidden="true" />
-              <span>{rolling.stream === "arome-atmosphere" ? "Memòria AROME" : "Memòria de pluja"}</span>
-              <strong>{numberFormatter.format(rolling.stateCount)} punts</strong>
-              <small>Hora comuna més antiga: {formatDateTime(rolling.oldestLastHour)}</small>
-            </article>
-          ))}
+
+          <article className={styles.publicationCard} data-complete={forecastAvailable}>
+            <div className={styles.publicationCardTop}>
+              <CalendarRange aria-hidden="true" />
+              <span>{forecastAvailable ? "Publicada" : "No disponible"}</span>
+            </div>
+            <div className={styles.publicationCopy}>
+              <span>Previsió de cinc dies</span>
+              <strong>
+                {status.forecastPublication
+                  ? `${numberFormatter.format(status.forecastPublication.pointCount)} / ${numberFormatter.format(status.forecastPublication.expectedPointCount)} punts · ${numberFormatter.format(status.forecastPublication.futureHorizonCount)} / 5 dies`
+                  : "Sense previsió completa"}
+              </strong>
+              <small>Projecció diària de les condicions, ancorada a l’observació publicada.</small>
+            </div>
+            <p>
+              {forecastAvailable && status.forecastPublication?.validThrough
+                ? `Vigent fins ${formatDateTime(status.forecastPublication.validThrough)}`
+                : "Es mostrarà quan tots els punts i horitzons estiguin complets."}
+              {status.forecastPublication?.completedAt
+                ? ` · publicada ${formatDateTime(status.forecastPublication.completedAt)}`
+                : ""}
+            </p>
+          </article>
+
+          <article className={styles.publicationCard} data-complete={conditionCachesComplete}>
+            <div className={styles.publicationCardTop}>
+              <Layers3 aria-hidden="true" />
+              <span>{conditionCachesComplete ? "Publicades" : "Actualitzant"}</span>
+            </div>
+            <div className={styles.publicationCopy}>
+              <span>Mapes de puntuació</span>
+              <strong>1 · 2,5 · 5 · 10 km</strong>
+              <small>Capes generals i lectures territorials calculades amb les observacions completes.</small>
+            </div>
+            <p>
+              {conditionCachesCompletedAt
+                ? `Última publicació ${formatDateTime(conditionCachesCompletedAt)}`
+                : "La web manté l'última generació completa mentre calcula la nova."}
+            </p>
+          </article>
         </div>
+
+        <details className={styles.memoryDisclosure}>
+          <summary>
+            <Activity aria-hidden="true" />
+            <span><strong>Memòria tècnica de les fonts</strong> · no és un producte publicat</span>
+          </summary>
+          <div className={styles.memoryBody}>
+            <p>Aquests historials permeten que la sincronització següent només descarregui les hores noves i reconstrueixi les finestres de fins a 30 dies.</p>
+            <div>
+              {status.rollingStates.map((rolling) => (
+                <article key={rolling.stream}>
+                  <History aria-hidden="true" />
+                  <span>{rolling.stream === "arome-atmosphere" ? "Historial AROME" : "Historial de pluja"}</span>
+                  <strong>{numberFormatter.format(rolling.stateCount)} punts</strong>
+                  <small>Tots arriben com a mínim fins {formatDateTime(rolling.oldestLastHour)}</small>
+                </article>
+              ))}
+            </div>
+          </div>
+        </details>
       </section>
 
       <section className={styles.section} aria-labelledby="ingestion-progress">

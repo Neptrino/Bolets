@@ -67,6 +67,33 @@ export type WeatherSnapshotStatus = {
   createdAt: string | null;
 };
 
+export type ObservedPublicationStatus = {
+  stream: "atmosphere" | "soil";
+  snapshotDate: string | null;
+  complete: boolean;
+  pointCount: number;
+  expectedPointCount: number;
+  staleCount: number;
+  observedAt: string | null;
+  createdAt: string | null;
+  completedAt: string | null;
+};
+
+export type ForecastPublicationStatus = {
+  snapshotDate: string;
+  complete: boolean;
+  rowCount: number;
+  pointCount: number;
+  expectedPointCount: number;
+  horizonCount: number;
+  futureHorizonCount: number;
+  generatedAt: string;
+  completedAt: string | null;
+  baselineValidAt: string | null;
+  validFrom: string | null;
+  validThrough: string | null;
+};
+
 export type IngestionRunStatus = {
   id: string;
   pipeline: string;
@@ -98,6 +125,8 @@ export type OperationalStatus = {
   budgets: ProviderBudgetStatus[];
   rollingStates: RollingStateStatus[];
   weatherSnapshot: WeatherSnapshotStatus;
+  observedPublications: ObservedPublicationStatus[];
+  forecastPublication: ForecastPublicationStatus | null;
   recentRuns: IngestionRunStatus[];
 };
 
@@ -143,6 +172,19 @@ export function summarizeOperationalStatus(
   const degradedSources = publishingSources.filter((source) => source.status === "degraded");
   const activeJobs = status.jobs.filter(
     (job) => job.snapshotDate === status.currentDate && job.status !== "succeeded",
+  );
+  const activeForecastRun = status.recentRuns.some((run) =>
+    run.pipeline === "spatial-soil"
+    && run.snapshotDate === status.currentDate
+    && run.status === "running"
+    && run.completedAt === null
+    && Date.parse(run.startedAt) >= now.getTime() - 30 * 60 * 1_000
+  );
+  const forecastAvailable = status.forecastPublication?.complete === true
+    && status.forecastPublication.validThrough !== null
+    && Date.parse(status.forecastPublication.validThrough) > now.getTime();
+  const incompleteObservedPublications = status.observedPublications.filter(
+    (publication) => !publication.complete,
   );
   const publishedAtmosphere = status.cursors.find(
     (cursor) => cursor.pipeline === "spatial-atmosphere" && cursor.lastCellId === "__complete__",
@@ -191,6 +233,7 @@ export function summarizeOperationalStatus(
   if (
     blockedSources.length > 0
     || publishedAtmosphereAge > 1
+    || incompleteObservedPublications.length > 0
     || status.weatherSnapshot.staleCount > 0
     || laggingConditionCaches.length > 0
   ) {
@@ -201,11 +244,13 @@ export function summarizeOperationalStatus(
         ? `${blockedSources.length} font${blockedSources.length === 1 ? "" : "s"} habilitada${blockedSources.length === 1 ? "" : "s"} està bloquejada.`
         : publishedAtmosphereAge > 1
           ? "La darrera generació atmosfèrica completada té més d'un dia de retard."
-          : status.weatherSnapshot.staleCount > 0
-            ? `${status.weatherSnapshot.staleCount} punts de l'última atmosfera estan marcats com a obsolets.`
-            : laggingConditionCaches.length === 1
-              ? "1 memòria cau de condicions encara no ha publicat la generació observada actual."
-              : `${laggingConditionCaches.length} memòries cau de condicions encara no han publicat la generació observada actual.`,
+          : incompleteObservedPublications.length > 0
+            ? `${incompleteObservedPublications.length} producte${incompleteObservedPublications.length === 1 ? " observat no està complet" : "s observats no estan complets"}.`
+            : status.weatherSnapshot.staleCount > 0
+              ? `${status.weatherSnapshot.staleCount} punts de l'última observació estan marcats com a obsolets.`
+              : laggingConditionCaches.length === 1
+                ? "1 memòria cau de condicions encara no ha publicat la generació observada actual."
+                : `${laggingConditionCaches.length} memòries cau de condicions encara no han publicat la generació observada actual.`,
       unresolvedFailures,
       activeJobs,
     };
@@ -223,11 +268,23 @@ export function summarizeOperationalStatus(
     };
   }
 
-  if (activeJobs.length > 0) {
+  if (activeJobs.length > 0 || activeForecastRun) {
     return {
       state: "running",
       label: STATE_LABELS.running,
-      detail: "La generació d'avui està en curs i encara té fragments pendents.",
+      detail: activeJobs.length > 0
+        ? "La generació observada d'avui està en curs i encara té fragments pendents."
+        : "La previsió de cinc dies encara s'està generant.",
+      unresolvedFailures,
+      activeJobs,
+    };
+  }
+
+  if (!forecastAvailable) {
+    return {
+      state: "attention",
+      label: STATE_LABELS.attention,
+      detail: "Les observacions estan publicades, però la previsió de cinc dies encara no està disponible.",
       unresolvedFailures,
       activeJobs,
     };
@@ -302,6 +359,19 @@ export function operationalStatusPrometheus(status: OperationalStatus) {
     "# HELP bolets_rolling_state_oldest_hour_timestamp_seconds Oldest last-hour cursor across rolling points.",
     "# TYPE bolets_rolling_state_oldest_hour_timestamp_seconds gauge",
     ...status.rollingStates.map((rolling) => `bolets_rolling_state_oldest_hour_timestamp_seconds${labels({ stream: rolling.stream })} ${timestampSeconds(rolling.oldestLastHour)}`),
+    "# HELP bolets_observed_publication_points Expected and published points for each observed product.",
+    "# TYPE bolets_observed_publication_points gauge",
+    ...status.observedPublications.flatMap((publication) => [
+      `bolets_observed_publication_points${labels({ stream: publication.stream, measure: "expected", complete: String(publication.complete) })} ${publication.expectedPointCount}`,
+      `bolets_observed_publication_points${labels({ stream: publication.stream, measure: "published", complete: String(publication.complete) })} ${publication.pointCount}`,
+    ]),
+    "# HELP bolets_forecast_publication_points Expected and published points in the latest forecast issue.",
+    "# TYPE bolets_forecast_publication_points gauge",
+    `bolets_forecast_publication_points${labels({ measure: "expected", complete: String(status.forecastPublication?.complete === true) })} ${status.forecastPublication?.expectedPointCount ?? 0}`,
+    `bolets_forecast_publication_points${labels({ measure: "published", complete: String(status.forecastPublication?.complete === true) })} ${status.forecastPublication?.pointCount ?? 0}`,
+    "# HELP bolets_forecast_valid_through_timestamp_seconds Last valid hour in the published forecast issue.",
+    "# TYPE bolets_forecast_valid_through_timestamp_seconds gauge",
+    `bolets_forecast_valid_through_timestamp_seconds ${timestampSeconds(status.forecastPublication?.validThrough ?? null)}`,
     "# HELP bolets_weather_snapshot_rows Rows in the latest normalized weather snapshot.",
     "# TYPE bolets_weather_snapshot_rows gauge",
     `bolets_weather_snapshot_rows${labels({ snapshot_date: status.weatherSnapshot.latestDate ?? "missing", state: "total" })} ${status.weatherSnapshot.rowCount}`,
