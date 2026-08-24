@@ -4,8 +4,10 @@ set -euo pipefail
 aws_region="${AWS_REGION:-eu-south-2}"
 stack_name="bolets-open-meteo-relay"
 github_owner="Neptrino"
+github_owner_id="309513834"
 github_repository="Bolets"
-github_environment="Production"
+github_repository_id="1331144723"
+github_environment="production"
 
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repository_root"
@@ -74,7 +76,9 @@ aws cloudformation deploy \
     "GitHubEnvironment=${github_environment}" \
     "GitHubOidcProviderArn=${github_oidc_arn}" \
     "GitHubOwner=${github_owner}" \
-    "GitHubRepository=${github_repository}"
+    "GitHubOwnerId=${github_owner_id}" \
+    "GitHubRepository=${github_repository}" \
+    "GitHubRepositoryId=${github_repository_id}"
 
 aws cloudformation describe-stacks \
   --region "$aws_region" \

@@ -8,15 +8,21 @@ Parameters:
     Type: String
   GitHubEnvironment:
     Type: String
-    Default: Production
+    Default: production
   GitHubOidcProviderArn:
     Type: String
   GitHubOwner:
     Type: String
     Default: Neptrino
+  GitHubOwnerId:
+    Type: String
+    Default: "309513834"
   GitHubRepository:
     Type: String
     Default: Bolets
+  GitHubRepositoryId:
+    Type: String
+    Default: "1331144723"
   RelayFunctionName:
     Type: String
     Default: bolets-open-meteo-relay-aws
@@ -147,7 +153,7 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOwner}/${GitHubRepository}:environment:${GitHubEnvironment}
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOwner}@${GitHubOwnerId}/${GitHubRepository}@${GitHubRepositoryId}:environment:${GitHubEnvironment}
       Policies:
         - PolicyName: DeployBoletsRelayVersions
           PolicyDocument:
