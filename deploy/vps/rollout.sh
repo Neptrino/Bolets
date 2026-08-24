@@ -49,4 +49,21 @@ docker compose -f docker-compose.yml -f "$override_file" up -d --wait
 # worker remains alive across a rollout.
 docker compose -f docker-compose.yml -f "$override_file" restart functions
 
+# The daily overview combines 33 bounded territorial reads on a cold Next.js
+# data cache. Prime it in the candidate container so the first visitor after a
+# deployment receives the ready board instead of paying that rebuild cost.
+echo "Warming the daily overview cache"
+docker compose -f docker-compose.yml -f "$override_file" exec -T app node -e '
+  const signal = AbortSignal.timeout(90_000);
+  fetch("http://127.0.0.1:3000/bolets-avui", { signal })
+    .then(async (response) => {
+      if (!response.ok) throw new Error(`Daily overview returned ${response.status}`);
+      await response.text();
+    })
+    .catch((error) => {
+      console.error(`Daily overview cache warm failed: ${error.message}`);
+      process.exit(1);
+    });
+'
+
 echo "Bolets rollout completed"

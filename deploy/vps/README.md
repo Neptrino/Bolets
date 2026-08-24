@@ -282,7 +282,10 @@ additive rolling-ingestion and parallel-job database schemas when their marker t
 and synchronizes Edge Functions only after that schema is ready. It then waits
 for healthy services, replaces Umami's default administrator password, creates
 the fixed Bolets website record idempotently, and restarts the function
-runtime. The restored managed project has no local Supabase migration ledger,
+runtime. Before completing, it warms the server-side daily overview cache from
+inside the candidate app container, so the first visitor after a rollout does
+not wait for its bounded territorial aggregation. A failed warm is a failed
+rollout and restores the previous application. The restored managed project has no local Supabase migration ledger,
 so this post-restore migration is guarded by its own new table rather than
 replaying historical migrations over an already-populated database. The app
 uses the internal gateway URL; its server credentials never travel through
