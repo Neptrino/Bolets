@@ -26,7 +26,15 @@ services:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
-      - alloy_data:/var/lib/alloy/data
+      # Mount the parent directory, not /var/lib/alloy/data: the image's parent
+      # is owned by UID 473 and Alloy runs as root with every capability
+      # dropped so it can read Docker's root-owned JSON logs. `nocopy` gives
+      # Alloy a writable state directory without inheriting that ownership.
+      - type: volume
+        source: alloy_data
+        target: /var/lib/alloy
+        volume:
+          nocopy: true
     depends_on:
       app:
         condition: service_healthy
