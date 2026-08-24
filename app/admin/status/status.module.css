@@ -279,6 +279,7 @@
 .sourceList article[data-status="degraded"] { border-top-color: var(--status-amber); }
 .sourceList article[data-status="blocked"] { border-top-color: var(--status-red); }
 .sourceList article[data-enabled="false"] { border-top-color: var(--stone); opacity: 0.75; }
+.sourceList article[data-publishing="false"] { border-top-color: var(--stone); }
 
 .sourceIdentity { display: flex; gap: 11px; align-items: flex-start; }
 .sourceIdentity svg { flex: 0 0 auto; width: 21px; height: 21px; color: var(--forest-panel); }
@@ -299,6 +300,7 @@
 .sourceList article[data-status="active"] .statusBadge { color: var(--status-green); }
 .sourceList article[data-status="degraded"] .statusBadge { color: var(--status-amber); }
 .sourceList article[data-status="blocked"] .statusBadge { color: var(--status-red); }
+.sourceList article[data-publishing="false"] .statusBadge { color: var(--muted); }
 .sourceList p { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: var(--text-xs); line-height: 1.45; }
 .sourceList time { grid-column: 1 / -1; color: var(--stone); font-size: var(--text-xs); }
 

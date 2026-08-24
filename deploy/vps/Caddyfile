@@ -26,6 +26,11 @@
 		}
 	}
 
+	@internal_api path /api/internal/*
+	handle @internal_api {
+		respond "Not found" 404
+	}
+
 	handle {
 		reverse_proxy app:3000 {
 			# Never trust a client-supplied copy of the private ingress header.

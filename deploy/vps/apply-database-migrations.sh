@@ -76,21 +76,13 @@ case "$aws_lane_installed" in
     ;;
 esac
 
-operational_status_installed=$(docker exec supabase-db psql \
+# This migration is deliberately idempotent and contains only CREATE OR
+# REPLACE plus grants. Reapply it so query-shape and redaction improvements are
+# not hidden behind the function's existence on restored databases.
+docker exec -i supabase-db psql \
   --username postgres \
   --dbname postgres \
-  --tuples-only \
-  --no-align \
-  --command "select coalesce(to_regprocedure('public.read_operational_status()')::text, '');")
-
-if [ "$operational_status_installed" = "read_operational_status()" ]; then
-  echo "Operational-status database migration is already installed"
-else
-  docker exec -i supabase-db psql \
-    --username postgres \
-    --dbname postgres \
-    --set ON_ERROR_STOP=1 \
-    --single-transaction \
-    < "$operational_status_migration"
-  echo "Applied operational-status database migration"
-fi
+  --set ON_ERROR_STOP=1 \
+  --single-transaction \
+  < "$operational_status_migration"
+echo "Applied operational-status database boundary"

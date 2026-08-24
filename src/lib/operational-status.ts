@@ -97,6 +97,15 @@ const STATE_LABELS: Record<OperationalState, string> = {
   critical: "Intervenció necessària",
 };
 
+const NON_PUBLISHING_SOURCE_IDS = new Set([
+  "copernicus-clms-ssm-1km-v1",
+  "copernicus-clms-swi-1km-v2",
+]);
+
+export function sourceAffectsPublishedData(source: PipelineSourceStatus) {
+  return source.enabled && !NON_PUBLISHING_SOURCE_IDS.has(source.sourceId);
+}
+
 function startOfUtcDate(date: string) {
   return Date.parse(`${date}T00:00:00.000Z`);
 }
@@ -110,9 +119,9 @@ export function summarizeOperationalStatus(
   status: OperationalStatus,
   now = new Date(status.generatedAt),
 ): OperationalSummary {
-  const enabledSources = status.sources.filter((source) => source.enabled);
-  const blockedSources = enabledSources.filter((source) => source.status === "blocked");
-  const degradedSources = enabledSources.filter((source) => source.status === "degraded");
+  const publishingSources = status.sources.filter(sourceAffectsPublishedData);
+  const blockedSources = publishingSources.filter((source) => source.status === "blocked");
+  const degradedSources = publishingSources.filter((source) => source.status === "degraded");
   const activeJobs = status.jobs.filter(
     (job) => job.snapshotDate === status.currentDate && job.status !== "succeeded",
   );

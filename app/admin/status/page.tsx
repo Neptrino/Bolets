@@ -17,6 +17,7 @@ import {
 
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import {
+  sourceAffectsPublishedData,
   summarizeOperationalStatus,
   type AtmosphereJobStatus,
   type OperationalState,
@@ -273,7 +274,7 @@ export default async function OperationalStatusPage() {
         />
         <div className={styles.sourceList}>
           {status.sources.map((source) => (
-            <article key={source.sourceId} data-status={source.status} data-enabled={source.enabled}>
+            <article key={source.sourceId} data-status={source.status} data-enabled={source.enabled} data-publishing={sourceAffectsPublishedData(source)}>
               <div className={styles.sourceIdentity}>
                 <ShieldCheck aria-hidden="true" />
                 <div>
@@ -281,7 +282,7 @@ export default async function OperationalStatusPage() {
                   <span>{source.sourceKind} · {source.refreshCadence}</span>
                 </div>
               </div>
-              <span className={styles.statusBadge}>{statusLabel(source.status)}</span>
+              <span className={styles.statusBadge}>{sourceAffectsPublishedData(source) ? statusLabel(source.status) : `Ombra · ${statusLabel(source.status)}`}</span>
               <p>{source.statusDetail ?? "Sense detall operatiu."}</p>
               <time dateTime={source.checkedAt}>{formatDateTime(source.checkedAt)}</time>
             </article>

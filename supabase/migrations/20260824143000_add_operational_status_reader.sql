@@ -91,7 +91,11 @@ as $$
         order by budget.window_kind, budget.consumer
       )
       from public.provider_budget_windows budget
-      where budget.window_start >= date_trunc('day', statement_timestamp())
+      where budget.window_start = case budget.window_kind
+        when 'minute' then date_trunc('minute', statement_timestamp())
+        when 'hour' then date_trunc('hour', statement_timestamp())
+        when 'day' then date_trunc('day', statement_timestamp())
+      end
     ), '[]'::jsonb),
     'rollingStates', coalesce((
       select jsonb_agg(
@@ -162,4 +166,4 @@ grant execute on function public.read_operational_status()
   to service_role;
 
 comment on function public.read_operational_status() is
-  'Private, service-role-only operational summary for the Bolets status page and metrics collector.';
+  'Private, service-role-only operational summary v2 for the Bolets status page and metrics collector.';

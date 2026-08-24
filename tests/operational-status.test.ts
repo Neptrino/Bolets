@@ -88,6 +88,13 @@ describe("operational status", () => {
       sources: [{ ...fixture().sources[0]!, status: "degraded" }],
     })).state).toBe("attention");
     expect(summarizeOperationalStatus(fixture({
+      sources: [{
+        ...fixture().sources[0]!,
+        sourceId: "copernicus-clms-ssm-1km-v1",
+        status: "blocked",
+      }],
+    })).state).toBe("healthy");
+    expect(summarizeOperationalStatus(fixture({
       weatherSnapshot: { ...fixture().weatherSnapshot, latestDate: "2026-08-22" },
     })).state).toBe("critical");
   });
@@ -132,5 +139,6 @@ describe("operational status", () => {
     expect(caddy).toContain("basic_auth");
     expect(caddy).toContain("header_up X-Bolets-Status-Auth");
     expect(caddy).toContain("header_up -X-Bolets-Status-Auth");
+    expect(caddy).toMatch(/@internal_api[\s\S]*respond "Not found" 404/);
   });
 });
