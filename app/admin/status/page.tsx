@@ -128,6 +128,9 @@ export default async function OperationalStatusPage() {
   const summary = summarizeOperationalStatus(status);
   const StateIcon = stateIcons[summary.state];
   const todayJobs = status.jobs.filter((job) => job.snapshotDate === status.currentDate);
+  const publishedAtmosphere = status.cursors.find(
+    (cursor) => cursor.pipeline === "spatial-atmosphere" && cursor.lastCellId === "__complete__",
+  );
   const precipitationProgress = jobProgress(todayJobs, "precipitation-fallback");
   const atmosphereProgress = jobProgress(todayJobs, "atmosphere");
   const dayBudget = status.budgets.find(
@@ -167,22 +170,22 @@ export default async function OperationalStatusPage() {
       <section className={styles.section} aria-labelledby="published-data">
         <SectionHeader
           meta="La veritat publicada"
-          title="Dades que veu el mapa"
+          title="Publicació i escriptura"
           titleId="published-data"
-          description="Aquesta fila resumeix l'últim snapshot normalitzat; no confon una cua en curs amb dades ja publicades."
+          description="El cursor complet és la generació segura per a les memòries cau. Les files noves d'una ingestió parcial es mostren a part i no es presenten com a publicades."
         />
         <div className={styles.factGrid}>
           <article className={styles.factCard}>
             <Database aria-hidden="true" />
-            <span>Snapshot atmosfèric</span>
-            <strong>{status.weatherSnapshot.latestDate ?? "Sense dades"}</strong>
-            <small>{numberFormatter.format(status.weatherSnapshot.rowCount)} punts · {numberFormatter.format(status.weatherSnapshot.staleCount)} obsolets</small>
+            <span>Generació atmosfèrica publicada</span>
+            <strong>{publishedAtmosphere?.snapshotDate ?? "Sense cursor"}</strong>
+            <small>{publishedAtmosphere ? `Completada ${formatDateTime(publishedAtmosphere.updatedAt)}` : "Cap generació completa disponible"}</small>
           </article>
           <article className={styles.factCard}>
             <History aria-hidden="true" />
-            <span>Observació més recent</span>
-            <strong>{formatDateTime(status.weatherSnapshot.observedAt)}</strong>
-            <small>Escrit {formatDateTime(status.weatherSnapshot.createdAt)}</small>
+            <span>Darrera escriptura normalitzada</span>
+            <strong>{status.weatherSnapshot.latestDate ?? "Sense dades"}</strong>
+            <small>{numberFormatter.format(status.weatherSnapshot.rowCount)} punts · observats {formatDateTime(status.weatherSnapshot.observedAt)}</small>
           </article>
           {status.rollingStates.map((rolling) => (
             <article className={styles.factCard} key={rolling.stream}>

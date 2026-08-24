@@ -95,7 +95,7 @@ describe("operational status", () => {
       }],
     })).state).toBe("healthy");
     expect(summarizeOperationalStatus(fixture({
-      weatherSnapshot: { ...fixture().weatherSnapshot, latestDate: "2026-08-22" },
+      cursors: [{ ...fixture().cursors[0]!, snapshotDate: "2026-08-22" }],
     })).state).toBe("critical");
   });
 

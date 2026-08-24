@@ -125,6 +125,9 @@ export function summarizeOperationalStatus(
   const activeJobs = status.jobs.filter(
     (job) => job.snapshotDate === status.currentDate && job.status !== "succeeded",
   );
+  const publishedAtmosphere = status.cursors.find(
+    (cursor) => cursor.pipeline === "spatial-atmosphere" && cursor.lastCellId === "__complete__",
+  );
   const recentWindow = now.getTime() - 24 * 60 * 60 * 1_000;
   const unresolvedFailures = status.recentRuns.filter((run) => {
     if (run.status !== "failed" && run.status !== "partial") {
@@ -137,16 +140,19 @@ export function summarizeOperationalStatus(
         && Date.parse(later.startedAt) > Date.parse(run.startedAt),
     );
   });
-  const snapshotAge = ageInDays(status.weatherSnapshot.latestDate, status.currentDate);
+  const publishedAtmosphereAge = ageInDays(
+    publishedAtmosphere?.snapshotDate ?? null,
+    status.currentDate,
+  );
 
-  if (blockedSources.length > 0 || snapshotAge > 1 || status.weatherSnapshot.staleCount > 0) {
+  if (blockedSources.length > 0 || publishedAtmosphereAge > 1 || status.weatherSnapshot.staleCount > 0) {
     return {
       state: "critical",
       label: STATE_LABELS.critical,
       detail: blockedSources.length > 0
         ? `${blockedSources.length} font${blockedSources.length === 1 ? "" : "s"} habilitada${blockedSources.length === 1 ? "" : "s"} està bloquejada.`
-        : snapshotAge > 1
-          ? "L'última atmosfera publicada té més d'un dia de retard."
+        : publishedAtmosphereAge > 1
+          ? "La darrera generació atmosfèrica completada té més d'un dia de retard."
           : `${status.weatherSnapshot.staleCount} punts de l'última atmosfera estan marcats com a obsolets.`,
       unresolvedFailures,
       activeJobs,
@@ -215,6 +221,11 @@ export function operationalStatusPrometheus(status: OperationalStatus) {
     "# HELP bolets_pipeline_cursor_updated_timestamp_seconds Last cursor update as a Unix timestamp.",
     "# TYPE bolets_pipeline_cursor_updated_timestamp_seconds gauge",
     ...status.cursors.map((cursor) => `bolets_pipeline_cursor_updated_timestamp_seconds${labels({ pipeline: cursor.pipeline, snapshot_date: cursor.snapshotDate, complete: String(cursor.lastCellId === "__complete__") })} ${timestampSeconds(cursor.updatedAt)}`),
+    "# HELP bolets_pipeline_generation_age_days Age in UTC days of each completed pipeline generation.",
+    "# TYPE bolets_pipeline_generation_age_days gauge",
+    ...status.cursors
+      .filter((cursor) => cursor.lastCellId === "__complete__")
+      .map((cursor) => `bolets_pipeline_generation_age_days${labels({ pipeline: cursor.pipeline })} ${Math.max(0, ageInDays(cursor.snapshotDate, status.currentDate))}`),
     "# HELP bolets_spatial_jobs Number of atmosphere shards by status and egress lane.",
     "# TYPE bolets_spatial_jobs gauge",
     ...status.jobs.map((job) => `bolets_spatial_jobs${labels({ snapshot_date: job.snapshotDate, kind: job.jobKind, status: job.status, lane: job.egressLane ?? "unassigned" })} ${job.shards}`),
