@@ -11,11 +11,12 @@ rolling_migration="$app_dir/supabase/migrations/20260824061712_add_open_meteo_ro
 parallel_migration="$app_dir/supabase/migrations/20260824074556_parallel_spatial_ingestion.sql"
 aws_lane_migration="$app_dir/supabase/migrations/20260824113000_add_aws_ingestion_lane.sql"
 egress_circuit_migration="$app_dir/supabase/migrations/20260824114320_add_open_meteo_egress_circuit_breaker.sql"
+unlimited_usage_migration="$app_dir/supabase/migrations/20260824125832_disable_local_open_meteo_limits.sql"
 operational_status_migration="$app_dir/supabase/migrations/20260824143000_add_operational_status_reader.sql"
 
 if [ ! -f "$rolling_migration" ] || [ ! -f "$parallel_migration" ] ||
    [ ! -f "$aws_lane_migration" ] || [ ! -f "$egress_circuit_migration" ] ||
-   [ ! -f "$operational_status_migration" ]; then
+   [ ! -f "$unlimited_usage_migration" ] || [ ! -f "$operational_status_migration" ]; then
   echo "A required ingestion migration is missing" >&2
   exit 66
 fi
@@ -79,6 +80,25 @@ case "$aws_lane_installed" in
 esac
 
 apply_if_missing open_meteo_egress_lanes "$egress_circuit_migration" egress-circuit-breaker
+
+usage_recorder_installed=$(docker exec supabase-db psql \
+  --username postgres \
+  --dbname postgres \
+  --tuples-only \
+  --no-align \
+  --command "select coalesce(to_regprocedure('public.record_provider_usage(text,text,integer)')::text, '');")
+
+if [ "$usage_recorder_installed" = "record_provider_usage(text,text,integer)" ]; then
+  echo "Unlimited provider-usage recorder is already installed"
+else
+  docker exec -i supabase-db psql \
+    --username postgres \
+    --dbname postgres \
+    --set ON_ERROR_STOP=1 \
+    --single-transaction \
+    < "$unlimited_usage_migration"
+  echo "Applied unlimited provider-usage recorder"
+fi
 
 # This migration is deliberately idempotent and contains only CREATE OR
 # REPLACE plus grants. Reapply it so query-shape and redaction improvements are

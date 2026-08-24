@@ -38,6 +38,15 @@ const egressCircuitMigration = readFileSync(
   ),
   "utf8",
 );
+const unlimitedUsageMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260824125832_disable_local_open_meteo_limits.sql",
+  ),
+  "utf8",
+);
 const refresh = readFileSync(
   join(process.cwd(), "supabase", "functions", "refresh-spatial-environment", "index.ts"),
   "utf8",
@@ -87,23 +96,23 @@ describe("rolling observed-weather ingestion", () => {
     expect(migration).not.toMatch(/where pipeline in \([^)]*'spatial-atmosphere'/);
   });
 
-  it("atomically caps every egress lane below shared minute, hour, and day quotas", () => {
+  it("atomically records provider usage without applying local limits", () => {
     expect(parallelMigration).toContain("create table public.provider_budget_windows");
-    expect(parallelMigration).toContain("create or replace function public.reserve_provider_budget");
-    expect(parallelMigration).toContain("pg_advisory_xact_lock");
-    expect(parallelMigration).toContain("return 'minute'");
-    expect(parallelMigration).toContain("return 'hour'");
-    expect(parallelMigration).toContain("return 'day'");
-    expect(parallelMigration).toContain("security definer");
+    expect(unlimitedUsageMigration).toContain("create or replace function public.record_provider_usage");
+    expect(unlimitedUsageMigration).toContain("pg_advisory_xact_lock");
+    expect(unlimitedUsageMigration).toContain("Limit arguments are ignored");
+    expect(unlimitedUsageMigration).not.toContain("return 'minute'");
+    expect(unlimitedUsageMigration).not.toContain("return 'hour'");
+    expect(unlimitedUsageMigration).not.toContain("return 'day'");
+    expect(unlimitedUsageMigration).toContain("security definer");
     expect(parallelMigration).toContain(
       "revoke all on table public.provider_budget_windows from public, anon, authenticated",
     );
-    expect(refresh).toContain("OPEN_METEO_SPATIAL_DAILY_BUDGET_UNITS = 6_500");
-    expect(soilRefresh).toContain("OPEN_METEO_SOIL_FORECAST_DAILY_BUDGET_UNITS = 3_600");
-    expect(refresh).toContain("reserveOpenMeteoBudget");
+    expect(refresh).toContain("recordOpenMeteoUsage");
     expect(refresh).toContain("attempts: 1");
-    expect(soilRefresh).toContain("reserveOpenMeteoBudget");
-    expect(regionalRefresh).toContain("reserveOpenMeteoBudget");
+    expect(soilRefresh).toContain("recordOpenMeteoUsage");
+    expect(regionalRefresh).toContain("recordOpenMeteoUsage");
+    expect(refresh).not.toContain("ProviderBudgetDeferredError");
   });
 
   it("leases stable shards to direct, Cloudflare, and AWS lanes without duplicates", () => {
@@ -144,6 +153,8 @@ describe("rolling observed-weather ingestion", () => {
     expect(migrationInstaller).toContain("20260824113000_add_aws_ingestion_lane.sql");
     expect(migrationInstaller).toContain("20260824114320_add_open_meteo_egress_circuit_breaker.sql");
     expect(migrationInstaller).toContain("apply_if_missing open_meteo_egress_lanes");
+    expect(migrationInstaller).toContain("20260824125832_disable_local_open_meteo_limits.sql");
+    expect(migrationInstaller).toContain("record_provider_usage(text,text,integer)");
     expect(migrationInstaller).toContain("spatial_atmosphere_jobs_egress_lane_check");
     expect(migrationInstaller).toContain("*\"'aws'\"*");
     const migrationPosition = rollout.lastIndexOf("apply-database-migrations.sh");

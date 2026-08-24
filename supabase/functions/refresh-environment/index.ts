@@ -1,9 +1,7 @@
 import { createAdminClient, finishRun, json, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
 import { configureOpenMeteoRequest, fetchOpenMeteoLocations, normalizeOpenMeteo } from "../_shared/open-meteo.ts";
-import { estimateOpenMeteoRequestUnits, reserveOpenMeteoBudget } from "../_shared/provider-budget.ts";
+import { estimateOpenMeteoRequestUnits, recordOpenMeteoUsage } from "../_shared/provider-budget.ts";
 import { regions } from "../_shared/regions.ts";
-
-const OPEN_METEO_REGIONAL_DAILY_BUDGET_UNITS = 200;
 
 Deno.serve(async (request) => {
   let runId: string | undefined;
@@ -25,11 +23,10 @@ Deno.serve(async (request) => {
     weatherUrl.searchParams.set("elevation", regions.map((region) => region.altitudeM).join(","));
     configureOpenMeteoRequest(weatherUrl);
 
-    await reserveOpenMeteoBudget(
+    await recordOpenMeteoUsage(
       supabase,
       "regional-environment",
       estimateOpenMeteoRequestUnits(weatherUrl, regions.length),
-      OPEN_METEO_REGIONAL_DAILY_BUDGET_UNITS,
     );
     const locations = await fetchOpenMeteoLocations(weatherUrl, "regional environment", {
       attempts: 1,

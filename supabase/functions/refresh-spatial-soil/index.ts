@@ -10,7 +10,7 @@ import {
 } from "../_shared/open-meteo.ts";
 import {
   estimateOpenMeteoRequestUnits,
-  reserveOpenMeteoBudget,
+  recordOpenMeteoUsage,
 } from "../_shared/provider-budget.ts";
 
 type SoilPoint = {
@@ -26,11 +26,6 @@ const PROVIDER_BATCH_SIZE = 50;
 const COMPLETE_CURSOR = "__complete__";
 const SOIL_CURSOR_PIPELINE = "spatial-soil";
 const FORECAST_CURSOR_PIPELINE = "spatial-forecast-v2";
-// Atmosphere owns most of the free daily allowance. This consumer cap leaves
-// a small reserve for regional ingestion while the shared provider ledger is
-// still the final authority across every function and egress lane.
-const OPEN_METEO_SOIL_FORECAST_DAILY_BUDGET_UNITS = 3_600;
-
 type Settled<T> = { data: T; error?: undefined } | { data?: undefined; error: string };
 
 type ForecastReconciliation = {
@@ -186,11 +181,10 @@ async function fetchSoil(
       url.searchParams.set("elevation", batch.map((point) => point.requested_elevation_m).join(","));
     }
     configureOpenMeteoRequest(url, "soil");
-    await reserveOpenMeteoBudget(
+    await recordOpenMeteoUsage(
       supabase,
       "spatial-soil-forecast",
       estimateOpenMeteoRequestUnits(url, batch.length),
-      OPEN_METEO_SOIL_FORECAST_DAILY_BUDGET_UNITS,
     );
     results.push(...await fetchOpenMeteoLocations(url, "soil", {
       attempts: 1,
@@ -218,11 +212,10 @@ async function fetchForecast(
       url.searchParams.set("elevation", batch.map((point) => point.requested_elevation_m).join(","));
     }
     configureOpenMeteoForecastRequest(url, profile);
-    await reserveOpenMeteoBudget(
+    await recordOpenMeteoUsage(
       supabase,
       "spatial-soil-forecast",
       estimateOpenMeteoRequestUnits(url, batch.length),
-      OPEN_METEO_SOIL_FORECAST_DAILY_BUDGET_UNITS,
     );
     results.push(...await fetchOpenMeteoLocations(url, `${profile} forecast`, {
       attempts: 1,
@@ -249,11 +242,10 @@ async function fetchAtmosphericForecastHistory(
       url.searchParams.set("elevation", batch.map((point) => point.requested_elevation_m).join(","));
     }
     configureOpenMeteoForecastHistoryRequest(url);
-    await reserveOpenMeteoBudget(
+    await recordOpenMeteoUsage(
       supabase,
       "spatial-soil-forecast",
       estimateOpenMeteoRequestUnits(url, batch.length),
-      OPEN_METEO_SOIL_FORECAST_DAILY_BUDGET_UNITS,
     );
     results.push(...await fetchOpenMeteoLocations(url, "AROME forecast history", {
       attempts: 1,

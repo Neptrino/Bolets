@@ -27,7 +27,6 @@ import {
   isOperationalRequestAuthorized,
   readOperationalStatus,
 } from "@/src/lib/operational-status-server";
-import { OPEN_METEO_GLOBAL_DAILY_LIMIT } from "@/supabase/functions/_shared/provider-budget";
 
 import styles from "./status.module.css";
 
@@ -146,12 +145,8 @@ export default async function OperationalStatusPage() {
   );
   const precipitationProgress = jobProgress(todayJobs, "precipitation-fallback");
   const atmosphereProgress = jobProgress(todayJobs, "atmosphere");
-  const dayBudget = status.budgets.find(
+  const dayUsage = status.budgets.find(
     (budget) => budget.windowKind === "day" && budget.consumer === "*",
-  );
-  const budgetPercent = Math.min(
-    100,
-    Math.round(((dayBudget?.estimatedUnits ?? 0) / OPEN_METEO_GLOBAL_DAILY_LIMIT) * 100),
   );
   const enabledSources = status.sources.filter((source) => source.enabled);
   const recentRuns = status.recentRuns.slice(0, 14);
@@ -161,7 +156,7 @@ export default async function OperationalStatusPage() {
       <PageHeader
         eyebrow="Sala de màquines · accés privat"
         title={<>Estat <PageTitleAccent>operatiu</PageTitleAccent></>}
-        description="Una lectura en viu de l'atmosfera publicada, les ingestes en curs, la quota compartida i les incidències recents."
+        description="Una lectura en viu de l'atmosfera publicada, les ingestes en curs, l'ús del proveïdor i les incidències recents."
         layout="split"
         tone="forest"
       />
@@ -257,21 +252,19 @@ export default async function OperationalStatusPage() {
         </div>
       </section>
 
-      <section className={styles.section} aria-labelledby="provider-budget">
+      <section className={styles.section} aria-labelledby="provider-usage">
         <SectionHeader
-          meta="Límit compartit"
-          title="Pressupost Open-Meteo"
-          titleId="provider-budget"
-          description="Comptabilitat conservadora: les reserves fallides també queden carregades per evitar excedir el sostre del projecte."
+          meta="Comptabilitat"
+          title="Ús Open-Meteo"
+          titleId="provider-usage"
+          description="Estimació conservadora per entendre el consum. No s'aplica cap límit local: cada sortida continua fins que el proveïdor respon amb 429."
         />
         <div className={styles.budgetPanel}>
           <CircleGauge aria-hidden="true" />
           <div className={styles.budgetReading}>
-            <span>Reservat avui</span>
-            <strong>{numberFormatter.format(dayBudget?.estimatedUnits ?? 0)} <small>/ {numberFormatter.format(OPEN_METEO_GLOBAL_DAILY_LIMIT)} unitats</small></strong>
+            <span>Ús estimat avui</span>
+            <strong>{numberFormatter.format(dayUsage?.estimatedUnits ?? 0)} <small>unitats comptabilitzades</small></strong>
           </div>
-          <progress max="100" value={budgetPercent}>{budgetPercent}%</progress>
-          <span className={styles.budgetPercent}>{budgetPercent}%</span>
         </div>
         <div className={styles.budgetConsumers}>
           {status.budgets

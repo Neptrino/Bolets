@@ -254,7 +254,7 @@ export function operationalStatusPrometheus(status: OperationalStatus) {
     "# HELP bolets_open_meteo_egress_rate_limits Consecutive rate-limit responses on an approved egress lane.",
     "# TYPE bolets_open_meteo_egress_rate_limits gauge",
     ...status.egressLanes.map((lane) => `bolets_open_meteo_egress_rate_limits${labels({ lane: lane.lane })} ${lane.consecutiveRateLimits}`),
-    "# HELP bolets_provider_budget_units Conservatively reserved provider request units.",
+    "# HELP bolets_provider_budget_units Conservatively estimated provider request units recorded for observability.",
     "# TYPE bolets_provider_budget_units gauge",
     ...status.budgets.map((budget) => `bolets_provider_budget_units${labels({ provider: budget.provider, consumer: budget.consumer, window: budget.windowKind })} ${budget.estimatedUnits}`),
     "# HELP bolets_rolling_state_points Number of provider points with a complete rolling state.",

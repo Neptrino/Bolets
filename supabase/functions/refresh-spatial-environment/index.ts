@@ -23,8 +23,7 @@ import {
 } from "../_shared/open-meteo.ts";
 import {
   estimateOpenMeteoRequestUnits,
-  ProviderBudgetDeferredError,
-  reserveOpenMeteoBudget,
+  recordOpenMeteoUsage,
 } from "../_shared/provider-budget.ts";
 import {
   buildStationCorrectedPrecipitation,
@@ -67,10 +66,6 @@ const COMPLETE_CURSOR = "__complete__";
 const CURSOR_PIPELINE = "spatial-atmosphere";
 const ATMOSPHERE_STREAM: RollingStream = "arome-atmosphere";
 const FALLBACK_STREAM: RollingStream = "seamless-precipitation";
-// The remaining shared daily allowance is reserved for the soil, forecast and
-// small regional jobs through the global provider budget ledger.
-const OPEN_METEO_SPATIAL_DAILY_BUDGET_UNITS = 6_500;
-
 function statePayload(value: unknown) {
   return value && typeof value === "object" && !Array.isArray(value)
     ? value as OpenMeteoLocation
@@ -168,11 +163,10 @@ async function fetchRollingProvider(
     (total, plan) => total + estimateOpenMeteoRequestUnits(plan.url, plan.batch.length),
     0,
   );
-  await reserveOpenMeteoBudget(
+  await recordOpenMeteoUsage(
     supabase,
     "spatial-atmosphere",
     estimatedUnits,
-    OPEN_METEO_SPATIAL_DAILY_BUDGET_UNITS,
   );
 
   const merged = new Map<string, OpenMeteoLocation>();
@@ -396,13 +390,6 @@ async function fetchGaugeMatrix(supabase: ReturnType<typeof createAdminClient>) 
   return (Array.isArray(data) ? data : [])
     .map(normalizeStationMatrixRow)
     .filter((station): station is StationHourSeries => station !== undefined);
-}
-
-function budgetRetryDelay(scope: string) {
-  const now = new Date();
-  if (scope === "minute") return 65;
-  if (scope === "hour") return Math.min(3_600, 3_605 - now.getUTCMinutes() * 60 - now.getUTCSeconds());
-  return 3_600;
 }
 
 Deno.serve(async (request) => {
@@ -656,7 +643,6 @@ Deno.serve(async (request) => {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    const isBudgetDeferred = error instanceof ProviderBudgetDeferredError;
     const isEgressRateLimited = error instanceof OpenMeteoRequestError && error.status === 429;
     let laneBlockedUntil: string | undefined;
     if (isEgressRateLimited && supabase) {
@@ -678,11 +664,9 @@ Deno.serve(async (request) => {
     }
     if (job && supabase) {
       try {
-        const delay = isBudgetDeferred
-          ? budgetRetryDelay(error.scope)
-          : isEgressRateLimited
-            ? 5
-            : Math.min(900, 30 * (2 ** Math.min(job.attemptCount - 1, 5)));
+        const delay = isEgressRateLimited
+          ? 5
+          : Math.min(900, 30 * (2 ** Math.min(job.attemptCount - 1, 5)));
         await deferJob(supabase, job, message, delay);
       } catch (deferError) {
         console.error("Unable to defer spatial atmosphere job", {
@@ -693,20 +677,13 @@ Deno.serve(async (request) => {
     }
     if (runId && supabase) {
       try {
-        await finishRun(supabase, runId, isBudgetDeferred ? "skipped" : "failed", {
-          errorMessage: isBudgetDeferred ? undefined : message,
+        await finishRun(supabase, runId, "failed", {
+          errorMessage: message,
           metadata: {
             jobId: job?.jobId,
             jobKind: job?.jobKind,
             egressLane,
-            reason: isBudgetDeferred
-              ? "provider-budget"
-              : isEgressRateLimited
-                ? "egress-rate-limit"
-                : "job-failed",
-            ...(isBudgetDeferred
-              ? { budgetScope: error.scope, requestedEstimatedUnits: error.estimatedUnits }
-              : {}),
+            reason: isEgressRateLimited ? "egress-rate-limit" : "job-failed",
             ...(isEgressRateLimited
               ? {
                 providerStatus: error.status,
@@ -719,17 +696,6 @@ Deno.serve(async (request) => {
       } catch (finishError) {
         console.error("Unable to record failed spatial refresh", finishError);
       }
-    }
-    if (isBudgetDeferred) {
-      return json({
-        runId,
-        jobId: job?.jobId,
-        refreshed: 0,
-        complete: false,
-        deferred: true,
-        reason: "provider-budget",
-        budgetScope: error.scope,
-      }, 202);
     }
     if (isEgressRateLimited) {
       return json({

@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  estimateOpenMeteoRequestUnits,
-  OPEN_METEO_GLOBAL_DAILY_LIMIT,
-} from "@/supabase/functions/_shared/provider-budget";
+import { estimateOpenMeteoRequestUnits } from "@/supabase/functions/_shared/provider-budget";
 import {
   configureOpenMeteoForecastHistoryRequest,
   configureOpenMeteoForecastRequest,
@@ -39,7 +36,7 @@ describe("Open-Meteo budget estimates", () => {
     expect(() => estimateOpenMeteoRequestUnits(request(72), 0)).toThrow(RangeError);
   });
 
-  it("fits the measured normal production grid below the guarded daily ceiling", () => {
+  it("keeps the measured normal production workload observable", () => {
     const batchedEstimate = (locations: number, configure: (url: URL) => void) => {
       let total = 0;
       for (let start = 0; start < locations; start += 50) {
@@ -69,7 +66,6 @@ describe("Open-Meteo budget estimates", () => {
 
     expect(normalDay).toBe(9_579);
     expect(fallback).toBe(530);
-    expect(normalDay + fallback).toBeLessThanOrEqual(OPEN_METEO_GLOBAL_DAILY_LIMIT);
-    expect(OPEN_METEO_GLOBAL_DAILY_LIMIT / 1.05).toBeLessThan(10_000);
+    expect(normalDay + fallback).toBe(10_109);
   });
 });

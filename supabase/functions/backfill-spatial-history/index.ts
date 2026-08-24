@@ -13,7 +13,7 @@ import {
 } from "../_shared/open-meteo.ts";
 import {
   estimateOpenMeteoRequestUnits,
-  reserveOpenMeteoBudget,
+  recordOpenMeteoUsage,
 } from "../_shared/provider-budget.ts";
 import {
   buildStationCorrectedPrecipitation,
@@ -126,7 +126,6 @@ type HistoricalSnapshot = {
 const PROVIDER_BATCH_SIZE = 50;
 const COMPLETE_CURSOR = "__complete__";
 const MAX_BACKFILL_AGE_DAYS = 7;
-const OPEN_METEO_BACKFILL_DAILY_BUDGET_UNITS = 1_000;
 const LEGACY_ATMOSPHERE_KEYS = [
   "frostHours7d",
   "frostHours10d",
@@ -204,11 +203,10 @@ async function fetchHistoricalWeather(
     }
     if (profile === "atmosphere") url.searchParams.set("models", "arome_france");
     configureOpenMeteoHistoricalRequest(url, profile, earliestTargetAt, referenceAt);
-    await reserveOpenMeteoBudget(
+    await recordOpenMeteoUsage(
       supabase,
       "spatial-history-backfill",
       estimateOpenMeteoRequestUnits(url, batch.length),
-      OPEN_METEO_BACKFILL_DAILY_BUDGET_UNITS,
     );
     results.push(...await fetchOpenMeteoLocations(url, `${profile} historical backfill`, {
       attempts: 1,

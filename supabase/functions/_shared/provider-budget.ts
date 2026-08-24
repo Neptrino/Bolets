@@ -1,21 +1,3 @@
-export const OPEN_METEO_GLOBAL_MINUTE_LIMIT = 550;
-export const OPEN_METEO_GLOBAL_HOURLY_LIMIT = 4_500;
-// Estimates already include a five-percent safety multiplier. A 10,300-unit
-// ledger ceiling therefore represents at most roughly 9,810 provider units
-// before per-batch rounding. It fits the measured 9,579-unit normal workload
-// plus one complete 500-point fallback realignment at a provider-hour seam.
-export const OPEN_METEO_GLOBAL_DAILY_LIMIT = 10_300;
-
-export class ProviderBudgetDeferredError extends Error {
-  constructor(
-    readonly scope: string,
-    readonly estimatedUnits: number,
-  ) {
-    super(`Open-Meteo ${scope} budget is exhausted`);
-    this.name = "ProviderBudgetDeferredError";
-  }
-}
-
 type ProviderBudgetClient = {
   rpc(
     functionName: string,
@@ -54,26 +36,15 @@ export function estimateOpenMeteoRequestUnits(url: URL, locations: number) {
   return Math.ceil(locations * timeWeight * variableWeight * modelWeight * 1.05);
 }
 
-export async function reserveOpenMeteoBudget(
+export async function recordOpenMeteoUsage(
   supabase: ProviderBudgetClient,
   consumer: string,
   estimatedUnits: number,
-  consumerDailyLimit: number,
 ) {
-  const { data, error } = await supabase.rpc("reserve_provider_budget", {
+  const { error } = await supabase.rpc("record_provider_usage", {
     p_provider: "open-meteo",
     p_consumer: consumer,
     p_estimated_units: estimatedUnits,
-    p_minute_limit: OPEN_METEO_GLOBAL_MINUTE_LIMIT,
-    p_hour_limit: OPEN_METEO_GLOBAL_HOURLY_LIMIT,
-    p_day_limit: OPEN_METEO_GLOBAL_DAILY_LIMIT,
-    p_consumer_day_limit: consumerDailyLimit,
   });
   if (error) throw error;
-  if (data !== "reserved") {
-    throw new ProviderBudgetDeferredError(
-      typeof data === "string" ? data : "unknown",
-      estimatedUnits,
-    );
-  }
 }

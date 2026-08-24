@@ -176,8 +176,7 @@
   font-size: var(--text-xl);
 }
 
-.progressCard progress,
-.budgetPanel progress {
+.progressCard progress {
   width: 100%;
   height: 9px;
   margin-top: 17px;
@@ -188,12 +187,9 @@
   color: var(--clay);
 }
 
-.progressCard progress::-webkit-progress-bar,
-.budgetPanel progress::-webkit-progress-bar { background: #ded6c4; }
-.progressCard progress::-webkit-progress-value,
-.budgetPanel progress::-webkit-progress-value { background: var(--clay); }
-.progressCard progress::-moz-progress-bar,
-.budgetPanel progress::-moz-progress-bar { background: var(--clay); }
+.progressCard progress::-webkit-progress-bar { background: #ded6c4; }
+.progressCard progress::-webkit-progress-value { background: var(--clay); }
+.progressCard progress::-moz-progress-bar { background: var(--clay); }
 
 .laneStrip {
   display: grid;
@@ -220,7 +216,7 @@
 
 .budgetPanel {
   display: grid;
-  grid-template-columns: auto minmax(230px, 0.5fr) minmax(240px, 1fr) auto;
+  grid-template-columns: auto minmax(230px, 1fr);
   gap: 20px;
   align-items: center;
   padding: 26px 28px;
@@ -233,12 +229,6 @@
 .budgetReading > span { color: var(--on-dark-muted); }
 .budgetReading strong { display: block; margin-top: 3px; font-size: var(--text-2xl); }
 .budgetReading strong small { color: var(--on-dark-muted); font-size: var(--text-xs); }
-.budgetPanel progress { margin: 0; background: rgba(255, 255, 255, 0.17); }
-.budgetPanel progress::-webkit-progress-bar { background: rgba(255, 255, 255, 0.17); }
-.budgetPanel progress::-webkit-progress-value { background: var(--apricot); }
-.budgetPanel progress::-moz-progress-bar { background: var(--apricot); }
-.budgetPercent { color: var(--apricot); font-size: var(--text-base); font-weight: 900; }
-
 .budgetConsumers {
   display: flex;
   flex-wrap: wrap;
@@ -354,8 +344,7 @@
   .factGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .factCard:nth-child(2) { border-right: 0; }
   .factCard:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
-  .budgetPanel { grid-template-columns: auto minmax(0, 1fr) auto; }
-  .budgetPanel progress { grid-column: 1 / -1; }
+  .budgetPanel { grid-template-columns: auto minmax(0, 1fr); }
 }
 
 @media (max-width: 760px) {
@@ -375,5 +364,4 @@
   .factCard { border-right: 0; border-bottom: 1px solid var(--line); }
   .factCard:last-child { border-bottom: 0; }
   .budgetPanel { grid-template-columns: auto minmax(0, 1fr); padding: 22px; }
-  .budgetPercent { grid-column: 2; }
 }
