@@ -61,6 +61,8 @@ describe("descriptive catalogue species", () => {
     expect(catalogue).toContain(`"numberOfItems":${catalogueSpecies.length}`);
     expect(catalogue).toContain('href="/bolets/hygrophoropsis-aurantiaca"');
     expect(catalogue).toContain('href="/bolets/infografia"');
+    expect(catalogue).toContain("catalogue-title-infographic-link");
+    expect(catalogue).not.toContain("catalogue-infographic-entry");
     expect(catalogue).not.toContain('id="infografia"');
 
     const infographicPage = renderToStaticMarkup(createElement(MushroomInfographicPage));

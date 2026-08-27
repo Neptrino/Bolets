@@ -45,6 +45,11 @@ export default function SpeciesIndexPage() {
       <PageHeader
         eyebrow="Catàleg viu"
         title={<>Tipus de bolets<br />de Catalunya.</>}
+        actions={
+          <Link href="/bolets/infografia" className="button catalogue-title-infographic-link">
+            <Images size={18} aria-hidden="true" /> Veure la infografia <ArrowUpRight size={16} aria-hidden="true" />
+          </Link>
+        }
         description={<>{speciesAlphabetical.length} fitxes per explorar noms comuns i científics, comestibilitat, hàbitat, temporada i espècies semblants. Les agrupacions es generen des de les mateixes dades ecològiques de cada fitxa.</>}
       />
       <nav className="species-topic-links species-topic-links-primary" aria-label="Tipus i calendari de bolets">
@@ -80,14 +85,6 @@ export default function SpeciesIndexPage() {
         </nav>
       </section>
       <SpeciesDirectory species={speciesAlphabetical.map(toSpeciesCardProfile)} currentMonth={monthInTimeZone()} />
-      <Link href="/bolets/infografia" className="catalogue-infographic-entry">
-        <span className="catalogue-infographic-entry-icon"><Images size={21} aria-hidden="true" /></span>
-        <span>
-          <strong>Infografia de les {speciesAlphabetical.length} espècies</strong>
-          <small>Obriu o descarregueu el pòster amb noms, millors mesos, hàbitat i altitud.</small>
-        </span>
-        <span className="catalogue-infographic-entry-action">Veure el pòster <ArrowUpRight size={17} aria-hidden="true" /></span>
-      </Link>
       <EditorialAttribution contentId="bolets" sources={coreEditorialSources} />
     </PageShell>
   );

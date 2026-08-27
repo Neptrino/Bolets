@@ -32,6 +32,20 @@
   min-width: 0;
 }
 
+.pageTitleRow {
+  display: flex;
+  gap: 28px;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.pageActions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  padding-bottom: 5px;
+}
+
 .pageHeader .eyebrow {
   color: var(--page-title-accent);
 }
@@ -119,6 +133,16 @@
 
   .pageTitle {
     font-size: var(--display-lg);
+  }
+
+  .pageTitleRow {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+  }
+
+  .pageActions {
+    padding-bottom: 0;
   }
 
   .split .pageDescription {

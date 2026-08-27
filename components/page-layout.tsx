@@ -11,6 +11,7 @@ type PageShellProps = {
 type PageHeaderProps = {
   eyebrow: ReactNode;
   title: ReactNode;
+  actions?: ReactNode;
   description?: ReactNode;
   layout?: "stacked" | "split";
   tone?: "clay" | "forest" | "danger";
@@ -52,6 +53,7 @@ export function PageShell({
 export function PageHeader({
   eyebrow,
   title,
+  actions,
   description,
   layout = "stacked",
   tone = "clay",
@@ -70,7 +72,12 @@ export function PageHeader({
     >
       <div className={styles.pageHeading}>
         <p className={joinClassNames("eyebrow", styles.eyebrow)}>{eyebrow}</p>
-        <h1 className={styles.pageTitle}>{title}</h1>
+        <div className={styles.pageTitleRow}>
+          <h1 className={styles.pageTitle}>{title}</h1>
+          {actions !== undefined && actions !== null ? (
+            <div className={styles.pageActions}>{actions}</div>
+          ) : null}
+        </div>
       </div>
       {description !== undefined && description !== null ? (
         <p className={styles.pageDescription}>{description}</p>
