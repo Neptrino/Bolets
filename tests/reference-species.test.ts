@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import SpeciesPage, { generateMetadata, generateStaticParams } from "@/app/bolets/[slug]/page";
 import SpeciesIndexPage from "@/app/bolets/page";
+import MushroomInfographicPage from "@/app/bolets/infografia/page";
 import sitemap from "@/app/sitemap";
 import { catalogueSpecies } from "@/data/catalogue";
 import { getReferenceSpecies, getReferenceSpeciesByScientificName, referenceSpeciesProfiles } from "@/data/reference-species";
@@ -13,6 +14,7 @@ import { globalCandidateSpecies } from "@/src/lib/global-predictions";
 import { referenceSpeciesProfileSchema } from "@/src/lib/reference-species-schema";
 import { speciesProfileSchema } from "@/src/lib/schema";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
+import { toSpeciesFieldCardProfile } from "@/src/lib/species-field-card";
 import { speciesInSeason } from "@/src/lib/species-collections";
 import { SpeciesCard } from "@/components/species-card";
 
@@ -58,6 +60,21 @@ describe("descriptive catalogue species", () => {
     const catalogue = renderToStaticMarkup(createElement(SpeciesIndexPage));
     expect(catalogue).toContain(`"numberOfItems":${catalogueSpecies.length}`);
     expect(catalogue).toContain('href="/bolets/hygrophoropsis-aurantiaca"');
+    expect(catalogue).toContain('href="/bolets/infografia"');
+    expect(catalogue).not.toContain('id="infografia"');
+
+    const infographicPage = renderToStaticMarkup(createElement(MushroomInfographicPage));
+    expect(infographicPage).toContain('id="infografia"');
+    expect(infographicPage).toContain('/downloads/infografies/bolets-catalunya-infografia.png');
+    expect(infographicPage).toContain(`Infografia vertical “Bolets de Catalunya” amb ${catalogueSpecies.length} espècies fotografiades`);
+    expect(sitemap().some(item => item.url.endsWith("/bolets/infografia"))).toBe(true);
+
+    const fieldCard = toSpeciesFieldCardProfile(species);
+    expect(fieldCard.altitude).toBeNull();
+    expect(fieldCard.seasonality).toBeNull();
+    expect(fieldCard.bestMonths).toEqual([]);
+    expect(fieldCard.bestMonthsLabel).toBe("Tardor");
+    expect(fieldCard.habitatTypes).toEqual(["Pinedes i rouredes", "Boscos de coníferes"]);
   });
 
   it("keeps attributed source photographs locally, with no generated substitutes", () => {
@@ -93,6 +110,12 @@ describe("descriptive catalogue species", () => {
     expect(html).not.toContain('href="/map?');
     expect(html).not.toContain("Mapa actual");
     expect(html).toContain('href="/fals-rossinyol"');
+    expect(html).toContain('id="targeta-de-camp"');
+    expect(html).toContain('src="/bolets/hygrophoropsis-aurantiaca/targeta"');
+    expect(html).toContain('href="/bolets/hygrophoropsis-aurantiaca/targeta" target="_blank"');
+    expect(html).toContain("1080 × 1350 px · Format 4:5");
+    expect(html).not.toContain("Instagram");
+    expect(html).toContain("Infografia vertical del Fals rossinyol amb fotografia, comestibilitat, trets d’identificació, temporada, hàbitat i advertiment de confusió.");
     expect(sitemap().find(item => item.url.endsWith(`/bolets/${slug}`))).toMatchObject({
       lastModified: new Date("2026-08-27T00:00:00+02:00"),
       images: ["https://bolets.app/media/wikimedia/hygrophoropsis-aurantiaca.webp"],

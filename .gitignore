@@ -3,6 +3,7 @@ node_modules/
 public/media/optimized/
 next-env.d.ts
 coverage/
+artifacts/
 playwright-report/
 test-results/
 *.tsbuildinfo

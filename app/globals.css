@@ -11,6 +11,7 @@
 @import "./styles/site-components.css";
 @import "./styles/theme-foundations.css";
 @import "./styles/species-field-guide.css";
+@import "./styles/species-field-card.css";
 @import "./styles/comparison-guides.css";
 @import "./styles/search-guides.css";
 @import "./styles/location-guides-foundation.css";
@@ -25,6 +26,7 @@
 @import "./styles/catalogue-foundation.css";
 @import "./styles/catalogue-components.css";
 @import "./styles/catalogue-responsive.css";
+@import "./styles/catalogue-infographic.css";
 @import "./styles/map-workspace.css";
 @import "./styles/culinary-dossier.css";
 @import "./styles/offline.css";

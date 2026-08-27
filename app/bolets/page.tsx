@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, CookingPot, Leaf, ShieldAlert, Snowflake, Sprout, Sun } from "lucide-react";
+import { ArrowUpRight, CalendarDays, CookingPot, Images, Leaf, ShieldAlert, Snowflake, Sprout, Sun } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { PageHeader, PageShell, SectionHeader } from "@/components/page-layout";
 import { SpeciesDirectory } from "@/components/species-directory";
@@ -80,6 +80,14 @@ export default function SpeciesIndexPage() {
         </nav>
       </section>
       <SpeciesDirectory species={speciesAlphabetical.map(toSpeciesCardProfile)} currentMonth={monthInTimeZone()} />
+      <Link href="/bolets/infografia" className="catalogue-infographic-entry">
+        <span className="catalogue-infographic-entry-icon"><Images size={21} aria-hidden="true" /></span>
+        <span>
+          <strong>Infografia de les {speciesAlphabetical.length} espècies</strong>
+          <small>Obriu o descarregueu el pòster amb noms, millors mesos, hàbitat i altitud.</small>
+        </span>
+        <span className="catalogue-infographic-entry-action">Veure el pòster <ArrowUpRight size={17} aria-hidden="true" /></span>
+      </Link>
       <EditorialAttribution contentId="bolets" sources={coreEditorialSources} />
     </PageShell>
   );

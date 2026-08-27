@@ -30,6 +30,12 @@ describe("static media variants", () => {
     );
   });
 
+  it("maps editorial infographics to the same versioned media tree", () => {
+    expect(staticMediaVariantPath("/media/editorial/bolets-catalunya-infografia.webp", 1280)).toBe(
+      `/media/optimized/${STATIC_MEDIA_VERSION}/editorial/bolets-catalunya-infografia.w1280.webp`,
+    );
+  });
+
   it("rejects remote and non-WebP sources", () => {
     expect(() => staticMediaVariantPath("https://example.com/image.webp", 640)).toThrow();
     expect(() => staticMediaVariantPath("/media/example.jpg", 640)).toThrow();

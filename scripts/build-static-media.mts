@@ -12,6 +12,7 @@ const mediaDirectory = join(publicDirectory, "media");
 const outputDirectory = join(mediaDirectory, "optimized");
 const sourceDirectories = [
   join(mediaDirectory, "boletus-edulis"),
+  join(mediaDirectory, "editorial"),
   join(mediaDirectory, "generated"),
   join(mediaDirectory, "wikimedia"),
 ];

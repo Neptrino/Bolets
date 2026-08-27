@@ -5,10 +5,12 @@ import {
   comparisonPages,
   comparisonPagesForSpecies,
 } from "@/data/comparison-pages";
+import { catalogueSpecies } from "@/data/catalogue";
 import { getSpecies, speciesProfiles } from "@/data/species";
 import { seasonMonthPath, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { seasonGuides } from "@/src/lib/season-guides";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
+import { toSpeciesFieldCardProfile } from "@/src/lib/species-field-card";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 
 describe("search-intent species collections", () => {
@@ -43,6 +45,23 @@ describe("search-intent species collections", () => {
     expect(JSON.stringify(compactProfiles).length).toBeLessThan(
       JSON.stringify(speciesProfiles).length / 3,
     );
+  });
+
+  it("derives shareable field-card facts from the species profile", () => {
+    const cards = catalogueSpecies.map(toSpeciesFieldCardProfile);
+    expect(cards).toHaveLength(catalogueSpecies.length);
+    expect(new Set(cards.map((card) => card.speciesId)).size).toBe(catalogueSpecies.length);
+
+    const species = getSpecies("boletus-edulis")!;
+    const card = toSpeciesFieldCardProfile(species);
+
+    expect(card.bestMonths).toEqual(["oct"]);
+    expect(card.bestMonthsLabel).toBe("OCT");
+    expect(card.habitatTypes).toEqual(["Fagedes", "avetanoses"]);
+    expect(card.altitude).toEqual([400, 1900]);
+    expect(card.keyFeatures).toHaveLength(3);
+    expect(card.lookalike?.commonName).toBe("Matagent");
+    expect(card.imagePath).toBe("/media/wikimedia/boletus-edulis.webp");
   });
 
   it("includes all intent landing pages in the sitemap", () => {

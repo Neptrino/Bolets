@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/json-ld";
 import { SpeciesCulinarySection } from "@/components/species-profile/culinary-section";
 import { SpeciesDistributionSection } from "@/components/species-profile/distribution-section";
 import { SpeciesEcologySection } from "@/components/species-profile/ecology-section";
+import { SpeciesFieldCardSection } from "@/components/species-profile/field-card-section";
 import { SpeciesIdentificationSection } from "@/components/species-profile/identification-section";
 import { SpeciesHero } from "@/components/species-hero";
 import { ReferenceSpeciesPage } from "@/components/reference-species-page";
@@ -23,7 +24,7 @@ import {
 } from "@/src/lib/seo";
 import type { Month, RegionId, SeasonalActivity } from "@/src/lib/types";
 
-const sections = ["Identificació", "Cuina", "Ecologia", "Distribució"];
+const sections = ["Identificació", "Cuina", "Ecologia", "Distribució", "Targeta de camp"];
 const catalanList = new Intl.ListFormat("ca-ES", {
   style: "long",
   type: "conjunction",
@@ -222,6 +223,7 @@ export default async function SpeciesPage({
             region={region}
             species={species}
           />
+          <SpeciesFieldCardSection species={species} />
           <EditorialAttribution
             contentId={`species:${species.speciesId}`}
             sources={[...species.references, officialSafetySource]}

@@ -6,6 +6,7 @@ import { EdibilityBadge } from "@/components/edibility-badge";
 import { JsonLd } from "@/components/json-ld";
 import { SectionHeader } from "@/components/page-layout";
 import { SpeciesHero } from "@/components/species-hero";
+import { SpeciesFieldCardSection } from "@/components/species-profile/field-card-section";
 import { editorialArticleFields } from "@/data/editorial";
 import { getSpeciesByScientificName } from "@/data/species";
 import { absoluteUrl, SITE_URL, speciesDescription, speciesImage, speciesPath } from "@/src/lib/seo";
@@ -16,6 +17,7 @@ const sections = [
   ["comestibilitat", "Comestibilitat"],
   ["habitat", "Hàbitat i temporada"],
   ["confusions", "Espècies semblants"],
+  ["targeta-de-camp", "Targeta de camp"],
 ] as const;
 
 export function ReferenceSpeciesPage({ species }: { species: ReferenceSpeciesProfile }) {
@@ -101,6 +103,7 @@ export function ReferenceSpeciesPage({ species }: { species: ReferenceSpeciesPro
               <Link href="/fals-rossinyol" className="text-link">Guia de confusions del fals rossinyol <ArrowUpRight size={16} aria-hidden="true" /></Link>
             </div>
           </section>
+          <SpeciesFieldCardSection species={species} />
           <EditorialAttribution contentId={`species:${species.speciesId}`} sources={species.references} />
         </div>
       </div>
