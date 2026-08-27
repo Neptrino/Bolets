@@ -1,3 +1,4 @@
+import type { z } from "zod";
 import { getSpecies } from "@/data/species";
 import { altitudeHabitatEnvelope } from "@/src/lib/altitude";
 import { getOccurrenceSupport } from "@/src/lib/occurrences";
@@ -7,6 +8,28 @@ import {
 } from "@/src/lib/model-versions";
 import { spatialHabitatResponseSchema } from "@/src/lib/schema";
 import type { PotentialHabitatCell, SpatialBounds, SpatialGridSizeM, SpeciesProfile } from "@/src/lib/types";
+
+type SpatialHabitatResponse = z.infer<typeof spatialHabitatResponseSchema>;
+
+function toPotentialHabitatResponse(
+  speciesId: string,
+  response: SpatialHabitatResponse,
+) {
+  const cells: PotentialHabitatCell[] = response.cells.map((cell) => ({
+    speciesId,
+    cellId: cell.cellId,
+    regionId: cell.regionId,
+    gridSizeM: cell.gridSizeM,
+    cellBounds: cell.bounds,
+    coverage: cell.coverage,
+    altitudeWeightedCoverage: cell.altitudeWeightedCoverage ?? cell.coverage,
+    eligibleCellCount: cell.eligibleCellCount,
+    sourceResolutionM: cell.sourceResolutionM,
+    confidence: cell.confidence,
+    source: cell.source,
+  }));
+  return { cells, truncated: response.truncated, modelVersion: HABITAT_MODEL_VERSION };
+}
 
 function normaliseTerm(value: string) {
   return value
@@ -107,20 +130,7 @@ export async function getPotentialHabitatCoverage(
       });
       if (assetResponse.ok) {
         const asset = spatialHabitatResponseSchema.parse(await assetResponse.json());
-        const cells: PotentialHabitatCell[] = asset.cells.map((cell) => ({
-          speciesId,
-          cellId: cell.cellId,
-          regionId: cell.regionId,
-          gridSizeM: cell.gridSizeM,
-          cellBounds: cell.bounds,
-          coverage: cell.coverage,
-          altitudeWeightedCoverage: cell.altitudeWeightedCoverage ?? cell.coverage,
-          eligibleCellCount: cell.eligibleCellCount,
-          sourceResolutionM: cell.sourceResolutionM,
-          confidence: cell.confidence,
-          source: cell.source,
-        }));
-        return { cells, truncated: asset.truncated, modelVersion: HABITAT_MODEL_VERSION };
+        return toPotentialHabitatResponse(speciesId, asset);
       }
     } catch (error) {
       console.error("Unable to read the configured habitat asset cache", error);
@@ -140,18 +150,5 @@ export async function getPotentialHabitatCoverage(
   });
   if (!response.ok) throw new Error(`Spatial habitat service returned ${response.status}`);
   const payload = spatialHabitatResponseSchema.parse(await response.json());
-  const cells: PotentialHabitatCell[] = payload.cells.map((cell) => ({
-    speciesId,
-    cellId: cell.cellId,
-    regionId: cell.regionId,
-    gridSizeM: cell.gridSizeM,
-    cellBounds: cell.bounds,
-    coverage: cell.coverage,
-    altitudeWeightedCoverage: cell.altitudeWeightedCoverage ?? cell.coverage,
-    eligibleCellCount: cell.eligibleCellCount,
-    sourceResolutionM: cell.sourceResolutionM,
-    confidence: cell.confidence,
-    source: cell.source
-  }));
-  return { cells, truncated: payload.truncated, modelVersion: HABITAT_MODEL_VERSION };
+  return toPotentialHabitatResponse(speciesId, payload);
 }

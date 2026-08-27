@@ -14,7 +14,7 @@ const BUCKET_CELL_LIMIT = "1000";
  * that identity is what lets the cache answer the map's own requests with no
  * offline-specific read path.
  */
-export function bucketRequestParams(
+function bucketRequestParams(
   bucket: SpatialBounds,
   speciesId: string,
   gridSizeM: SpatialGridSizeM,

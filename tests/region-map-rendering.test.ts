@@ -1,13 +1,18 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { predictionViewportStatus } from "@/src/lib/prediction-map-status";
 
 describe("prediction map rendering", () => {
-  const source = readFileSync(
+  const regionMapSources = [
     join(process.cwd(), "components", "region-map.tsx"),
-    "utf8",
-  );
+    ...readdirSync(join(process.cwd(), "components", "region-map"))
+      .filter((file) => /\.tsx?$/.test(file))
+      .map((file) => join(process.cwd(), "components", "region-map", file)),
+  ];
+  const source = regionMapSources
+    .map((file) => readFileSync(file, "utf8"))
+    .join("\n");
 
   it("paints zero-score cells instead of leaving the map apparently empty", () => {
     expect(source).toContain("context.fillStyle = predictionMapCellColour(cell.score)");

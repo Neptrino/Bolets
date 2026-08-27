@@ -5,6 +5,7 @@
 - Prefer existing standard components, utilities, and project patterns before creating custom abstractions.
 - Follow best practices for accessibility, maintainability, performance, security, responsive behavior, and clear naming.
 - Keep changes focused and avoid unnecessary dependencies or unrelated refactors.
+- Treat 500 lines as a review threshold and 1,000 lines as the hard limit for maintained runtime source files. Prefer cohesive domain extractions over mechanical slicing; keep reviewed exceptions and their reasons in `scripts/check-source-size.mjs`. Declarative version-controlled catalogues, immutable migrations, focused tests and ordered CSS may exceed the review threshold, but only the explicit catalogue exceptions may exceed the hard limit.
 - Preserve the single source of truth for species ecology and prediction-model configuration.
 - Reserve mathematical symbols such as `H`, `F`, `O`, `P`, `W`, `T`, and `E` for the technical method and internal documentation. In normal product interfaces, use complete plain-language labels and explain the relationship without requiring users to decode a formula.
 - Build standard light content pages with `PageShell`, `PageHeader`, and `SectionHeader`; extend their narrow layout/tone variants instead of adding page-specific title, gutter, or vertical-spacing rules. Keep full-bleed home, species, map, method, and territorial heroes explicit when their composition is genuinely different.

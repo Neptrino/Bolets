@@ -1,0 +1,47 @@
+:root {
+  --ink: #3b3b3b;
+  --moss: #6e3d25;
+  --paper: #f2ebd5;
+  --clay: #bd592a;
+  --gold: #a8471f;
+  --line: #d1c5aa;
+  --muted: #706d66;
+  --stone: #96958e;
+  --pumpkin: #f28a2e;
+  --apricot: #f2a766;
+  --bark: #593525;
+  --surface: #fbf7e9;
+  --surface-muted: #f8f5ed;
+  --surface-warm: #fff9ed;
+  --forest-panel: #34483a;
+  --warning-surface: #f4e1bb;
+  --danger-surface: #f5d9cf;
+  --danger-ink: #8b3d2f;
+  --on-dark: #fff7e8;
+  --on-dark-muted: #c7d0ba;
+  --radius-pill: 999px;
+  --layout-max: 1180px;
+  --layout-gutter: 24px;
+
+  /* Type scale: the only font sizes used on the site.
+     Fixed steps for text, fluid steps for display titles.
+     (Exceptions: OG/share image generators and a few decorative
+     watermark numerals sized to their containers.) */
+  --text-xs: 0.875rem; /* 14px: eyebrows, badges, fine print, dense UI */
+  --text-base: 1.125rem; /* 18px: body copy */
+  --text-lg: 1.3125rem; /* 21px: ledes */
+  --text-xl: 1.5rem; /* 24px: card titles */
+  --text-2xl: 1.75rem; /* 28px: panel headings */
+  --text-3xl: 2.125rem; /* 34px: large stats, sub-section titles */
+  --display-xs: clamp(24px, 2.5vw, 32px);
+  --display-sm: clamp(30px, 3.5vw, 44px);
+  --display-md: clamp(38px, 4.5vw, 58px);
+  --display-lg: clamp(51px, 6vw, 78px);
+  --display-xl: clamp(64px, 8vw, 104px);
+
+  --content-page-space-start: 66px;
+  --content-page-space-end: 120px;
+  --content-page-title-size: var(--display-lg);
+  --content-page-title-leading: 0.94;
+  --content-page-title-tracking: -0.035em;
+}

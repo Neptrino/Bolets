@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, MapPinned, ShieldAlert } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
@@ -6,19 +5,13 @@ import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { collectingSources } from "@/data/field-guide-sources";
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, metaDescription, pageTitle, SITE_URL } from "@/src/lib/seo";
+import { absoluteUrl, articleMetadata, metaDescription, pageTitle, SITE_URL } from "@/src/lib/seo";
 
 const path = "/normativa-bolets";
 const title = pageTitle("Permisos per collir bolets a Catalunya");
 const description = metaDescription("Permisos per collir bolets: Aigüestortes, Virós, Esterri de Cardós, Poblet, Cadí i els Ports. Tiquets, límits i accés amb fonts oficials datades.");
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: path },
-  openGraph: { type: "article", url: path, title, description, images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }] },
-  twitter: { card: "summary_large_image", title, description, images: [DEFAULT_SOCIAL_IMAGE] },
-};
+export const metadata = articleMetadata(path, title, description);
 
 export default function CollectingRulesGuidePage() {
   const url = absoluteUrl(path);

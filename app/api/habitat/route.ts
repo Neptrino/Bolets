@@ -3,8 +3,7 @@ import {
   getPotentialHabitatCells,
   getPotentialHabitatCoverage,
 } from "@/src/lib/habitat";
-import { isSpatialGridSize } from "@/src/lib/map-grid";
-import { mapBoundsFitResolution, parseMapQuery } from "@/src/lib/map-query";
+import { parseSpatialMapQuery } from "@/src/lib/map-query";
 import { toPotentialHabitatMapCell } from "@/src/lib/habitat-map";
 import { jsonResponse } from "@/src/lib/json-response";
 import { withoutInternalModelVersion } from "@/src/lib/public-response";
@@ -14,16 +13,11 @@ export async function GET(request: Request) {
   const speciesId = params.get("species") ?? "";
   const compact = params.get("view") === "map";
   if (!getSpecies(speciesId)) return Response.json({ error: "Unknown species" }, { status: 400 });
-  const query = parseMapQuery(params, 5000);
-  if (!query) {
-    return Response.json({ error: "Invalid or excessive bounding box" }, { status: 400 });
+  const parsedQuery = parseSpatialMapQuery(params, 5000);
+  if ("error" in parsedQuery) {
+    return Response.json({ error: parsedQuery.error }, { status: 400 });
   }
-  if (!isSpatialGridSize(query.resolution)) {
-    return Response.json({ error: "Invalid map resolution" }, { status: 400 });
-  }
-  if (!mapBoundsFitResolution(query.bounds, query.resolution)) {
-    return Response.json({ error: "Bounding box is too large for this resolution" }, { status: 400 });
-  }
+  const { query } = parsedQuery;
 
   try {
     // Historical occurrence support is an optional context layer. Map reads

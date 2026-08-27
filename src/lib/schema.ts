@@ -393,6 +393,17 @@ export const spatialGlobalEnvironmentResponseSchema = z.object({
   })),
 });
 
+const spatialForecastSnapshotFields = {
+  // Optional only for deployment skew with the legacy five-row reader.
+  // A calibrated forecast is withheld unless every count is present.
+  pointCount: z.number().int().positive().optional(),
+  source: z.array(z.string()),
+  sourceResolutionM: z.number().int().positive(),
+  confidence,
+  unavailableFields: z.array(z.string()),
+  values: conditionSnapshotSchema.shape.values,
+};
+
 export const spatialEnvironmentHistorySchema = z.object({
   cellId: z.string(),
   regionId: region,
@@ -401,26 +412,14 @@ export const spatialEnvironmentHistorySchema = z.object({
     baseline: z.object({
       validAt: z.string().datetime({ offset: true }),
       horizonHours: z.literal(0),
-      // Optional only for deployment skew with the legacy five-row reader.
-      // A calibrated forecast is withheld unless every count is present.
-      pointCount: z.number().int().positive().optional(),
-      source: z.array(z.string()),
-      sourceResolutionM: z.number().int().positive(),
-      confidence,
-      unavailableFields: z.array(z.string()),
-      values: conditionSnapshotSchema.shape.values,
+      ...spatialForecastSnapshotFields,
     }).optional(),
     snapshots: z.array(z.object({
       validAt: z.string().datetime({ offset: true }),
       horizonHours: z.union([
         z.literal(24), z.literal(48), z.literal(72), z.literal(96), z.literal(120),
       ]),
-      pointCount: z.number().int().positive().optional(),
-      source: z.array(z.string()),
-      sourceResolutionM: z.number().int().positive(),
-      confidence,
-      unavailableFields: z.array(z.string()),
-      values: conditionSnapshotSchema.shape.values,
+      ...spatialForecastSnapshotFields,
     })).length(5),
   }).nullable().optional(),
   snapshots: z.array(z.object({

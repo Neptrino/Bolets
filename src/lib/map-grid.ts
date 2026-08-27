@@ -4,10 +4,10 @@ import type {
   SpatialGridSizeM,
 } from "@/src/lib/types";
 
-export const spatialGridSizes = [250, 1000, 2500, 5000, 10000] as const satisfies readonly SpatialGridSizeM[];
+const spatialGridSizes = [250, 1000, 2500, 5000, 10000] as const satisfies readonly SpatialGridSizeM[];
 // At 1,200 cells the 250 m grid remains comfortably interactive while a user
 // can assess a useful local area before needing to zoom further in.
-export const maximumVisibleGridCells = 1200;
+const maximumVisibleGridCells = 1200;
 
 export function isSpatialGridSize(value: number): value is SpatialGridSizeM {
   return spatialGridSizes.some((size) => size === value);

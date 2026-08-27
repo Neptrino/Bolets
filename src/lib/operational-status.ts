@@ -11,7 +11,7 @@ export type PipelineSourceStatus = {
   checkedAt: string;
 };
 
-export type PipelineCursorStatus = {
+type PipelineCursorStatus = {
   pipeline: string;
   snapshotDate: string;
   lastCellId: string | null;
@@ -31,7 +31,7 @@ export type AtmosphereJobStatus = {
   updatedAt: string;
 };
 
-export type ProviderEgressLaneStatus = {
+type ProviderEgressLaneStatus = {
   lane: "direct" | "cloudflare" | "aws";
   blockedUntil: string | null;
   consecutiveRateLimits: number;
@@ -41,7 +41,7 @@ export type ProviderEgressLaneStatus = {
   updatedAt: string;
 };
 
-export type ProviderBudgetStatus = {
+type ProviderBudgetStatus = {
   provider: string;
   consumer: string;
   windowKind: "minute" | "hour" | "day";
@@ -50,7 +50,7 @@ export type ProviderBudgetStatus = {
   updatedAt: string;
 };
 
-export type RollingStateStatus = {
+type RollingStateStatus = {
   stream: string;
   stateCount: number;
   coverageStart: string | null;
@@ -59,7 +59,7 @@ export type RollingStateStatus = {
   updatedAt: string | null;
 };
 
-export type WeatherSnapshotStatus = {
+type WeatherSnapshotStatus = {
   latestDate: string | null;
   rowCount: number;
   staleCount: number;
@@ -67,7 +67,7 @@ export type WeatherSnapshotStatus = {
   createdAt: string | null;
 };
 
-export type ObservedPublicationStatus = {
+type ObservedPublicationStatus = {
   stream: "atmosphere" | "soil";
   snapshotDate: string | null;
   complete: boolean;
@@ -79,7 +79,7 @@ export type ObservedPublicationStatus = {
   completedAt: string | null;
 };
 
-export type ForecastPublicationStatus = {
+type ForecastPublicationStatus = {
   snapshotDate: string;
   complete: boolean;
   rowCount: number;

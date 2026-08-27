@@ -3,7 +3,7 @@ export interface DistributionPolygon<Region extends string = string> {
   coordinates: [number, number][];
 }
 
-export interface DistributionGridCell<Region extends string = string> {
+interface DistributionGridCell<Region extends string = string> {
   regionId: Region;
   bounds: [[number, number], [number, number]];
 }

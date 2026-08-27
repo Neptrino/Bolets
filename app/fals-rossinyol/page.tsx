@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, ScanLine } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
@@ -11,7 +10,7 @@ import { falseChanterelleSources } from "@/data/field-guide-sources";
 import { getSpecies } from "@/data/species";
 import { getReferenceSpecies } from "@/data/reference-species";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, metaDescription, pageTitle, SITE_URL } from "@/src/lib/seo";
+import { absoluteUrl, articleMetadata, metaDescription, pageTitle, SITE_URL } from "@/src/lib/seo";
 
 const path = "/fals-rossinyol";
 const title = pageTitle("Fals rossinyol: trets i confusions");
@@ -22,13 +21,7 @@ const relatedSpecies = ["hygrophoropsis-aurantiaca", "cantharellus-cibarius", "o
   return toSpeciesCardProfile(species);
 });
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: path },
-  openGraph: { type: "article", url: path, title, description, images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }] },
-  twitter: { card: "summary_large_image", title, description, images: [DEFAULT_SOCIAL_IMAGE] },
-};
+export const metadata = articleMetadata(path, title, description);
 
 export default function FalseChanterelleGuidePage() {
   const url = absoluteUrl(path);

@@ -1,13 +1,13 @@
 import { readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
-import { isAbsolute, join, relative, resolve } from "node:path";
+import { join } from "node:path";
+import {
+  comparisonOrigin,
+  externalAbsolutePath,
+  parseCliArguments,
+} from "./lib/private-io.mjs";
 
-const argumentsByName = new Map(
-  process.argv.slice(2).filter((argument) => argument.startsWith("--")).map((argument) => {
-    const [name, ...value] = argument.slice(2).split("=");
-    return [name, value.length ? value.join("=") : "true"];
-  }),
-);
+const argumentsByName = parseCliArguments();
 
 function usage() {
   return [
@@ -36,18 +36,6 @@ if (argumentsByName.has("help")) {
   process.exit(0);
 }
 
-function externalAbsolutePath(value, label) {
-  if (typeof value !== "string" || !isAbsolute(value)) {
-    throw new Error(`${label} must be an absolute path outside the repository`);
-  }
-  const absolute = resolve(value);
-  const repositoryRelative = relative(process.cwd(), absolute);
-  if (!repositoryRelative.startsWith("..") && repositoryRelative !== "") {
-    throw new Error(`${label} must stay outside the repository`);
-  }
-  return absolute;
-}
-
 const pointsFile = argumentsByName.get("points-file") ??
   process.env.HISTORICAL_FINDINGS_COMPARE_FILE;
 const pointsJson = argumentsByName.get("points-json") ??
@@ -68,30 +56,6 @@ const appUrlInput = argumentsByName.get("app-url") ??
 const allowRemote = argumentsByName.has("allow-remote") ||
   process.env.HISTORICAL_FINDINGS_ALLOW_REMOTE === "1" ||
   process.env.HISTORICAL_FINDINGS_ALLOW_REMOTE === "true";
-
-function comparisonOrigin(value, remoteAllowed) {
-  let url;
-  try {
-    url = new URL(value);
-  } catch {
-    throw new Error("--app-url must be an absolute HTTP(S) URL");
-  }
-  if (
-    !["http:", "https:"].includes(url.protocol) ||
-    url.username ||
-    url.password ||
-    url.search ||
-    url.hash ||
-    (url.pathname !== "/" && url.pathname !== "")
-  ) {
-    throw new Error("--app-url must be a root HTTP(S) origin without credentials or parameters");
-  }
-  const loopback = new Set(["localhost", "127.0.0.1", "[::1]"]);
-  if (!loopback.has(url.hostname) && !remoteAllowed) {
-    throw new Error("Remote comparison origins require explicit --allow-remote opt-in");
-  }
-  return url.origin;
-}
 
 const appUrl = comparisonOrigin(appUrlInput, allowRemote);
 const vitestPath = join(process.cwd(), "node_modules", "vitest", "vitest.mjs");

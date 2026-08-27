@@ -2,30 +2,40 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import {
-  Eye,
-  EyeOff,
-  Grid3X3,
-  LoaderCircle,
-  SlidersHorizontal,
-  X,
-} from "lucide-react";
-import {
-  FullscreenControl,
-  GeolocateControl,
-  Map as MapLibre,
-  NavigationControl,
+  type GeolocateControl,
   type Map as MapLibreMap,
   type MapMouseEvent,
-  type StyleSpecification,
 } from "maplibre-gl";
-import { HabitatMapLegend } from "@/components/habitat-map-legend";
-import { MapModeControl } from "@/components/map-mode-control";
-import { cataloniaLandRings } from "@/data/catalonia-land";
+import { createRegionMap } from "@/components/region-map/map-instance";
 import {
-  cataloniaRegionsGeoJson,
-  regionBounds,
-  regionCentres,
-} from "@/data/regions";
+  habitatEvidenceCopy,
+  mapStatusCopy,
+} from "@/components/region-map/status";
+import {
+  basemapStyle,
+  cataloniaBounds,
+  cataloniaSpatialBounds,
+  createHistoricalEvidencePattern,
+  distributionCentre,
+  drawTerritorialWindow,
+  findCell,
+  fitCatalonia,
+  fitRegion,
+  fitSpatialBounds,
+  prepareCanvas,
+  rememberBucket,
+  visibleGridParams,
+  visibleGridSize,
+  visibleSpatialBounds,
+  withCataloniaLandClip,
+  type CellState,
+  type HabitatEvidenceState,
+} from "@/components/region-map/support";
+import type { RegionMapProps } from "@/components/region-map/types";
+import { useRegionBasemap } from "@/components/region-map/use-basemap";
+import { useCollapsibleMapControls } from "@/components/region-map/use-collapsible-controls";
+import { RegionMapView } from "@/components/region-map/view";
+import { regionCentres } from "@/data/regions";
 import { fetchJsonWithRetry } from "@/src/lib/fetch-json";
 import {
   GLOBAL_MINIMUM_GRID_SIZE_M,
@@ -39,7 +49,6 @@ import {
 import {
   boundsContain,
   formatGridDimensions,
-  gridSizeForViewport,
 } from "@/src/lib/map-grid";
 import { PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
 import {
@@ -48,8 +57,6 @@ import {
 } from "@/src/lib/bucket-loader";
 import {
   bucketsForBounds,
-  cacheAlignedMapBounds,
-  formatMapCoordinate,
 } from "@/src/lib/map-query";
 import {
   habitatBucketUrl,
@@ -57,437 +64,18 @@ import {
 } from "@/src/lib/map-request-url";
 import {
   predictionViewportStatus,
-  type PredictionViewportStatus,
 } from "@/src/lib/prediction-map-status";
 import { predictionMapCellColour } from "@/src/lib/suitability-scale";
 import type {
   OccurrenceSupportCell,
   GlobalSpeciesScore,
-  MapViewMode,
   PotentialHabitatMapCell,
   PredictionCell,
   PredictionMapCell,
-  RegionId,
-  SpatialBounds,
   SpatialGridSizeM,
 } from "@/src/lib/types";
 
-const cataloniaBounds: [[number, number], [number, number]] = [
-  [0.05, 40.48],
-  [3.32, 42.92],
-];
-const cataloniaSpatialBounds = {
-  west: cataloniaBounds[0][0],
-  south: cataloniaBounds[0][1],
-  east: cataloniaBounds[1][0],
-  north: cataloniaBounds[1][1],
-};
-const defaultBasemapId = "icgc-topographic";
-const basemapStorageKey = "bolets-basemap";
-const basemapOptions = [
-  {
-    id: defaultBasemapId,
-    label: "Topogràfic",
-    shortLabel: "Topo",
-    provider: "ICGC",
-    description: "Mapa general de l’ICGC",
-    preview: "topographic",
-  },
-  {
-    id: "open-map",
-    label: "Obert",
-    shortLabel: "OSM",
-    provider: "OpenStreetMap",
-    description: "Mapa estàndard d’OpenStreetMap",
-    preview: "open",
-  },
-  {
-    id: "icgc-aerial",
-    label: "Ortofoto",
-    shortLabel: "Aèria",
-    provider: "ICGC",
-    description: "Imatge aèria híbrida de l’ICGC",
-    preview: "aerial",
-  },
-  {
-    id: "icgc-muted",
-    label: "Gris",
-    shortLabel: "Gris",
-    provider: "ICGC",
-    description: "Mapa de l’ICGC amb menys contrast",
-    preview: "muted",
-  },
-] as const;
-type BasemapId = (typeof basemapOptions)[number]["id"];
-
-function isBasemapId(value: string | null): value is BasemapId {
-  return basemapOptions.some((option) => option.id === value);
-}
-
-function storedBasemapId(): BasemapId {
-  try {
-    const stored = window.localStorage.getItem(basemapStorageKey);
-    return isBasemapId(stored) ? stored : defaultBasemapId;
-  } catch {
-    return defaultBasemapId;
-  }
-}
-
-function icgcBasemapStyle(
-  wmsLayer: "estandard" | "estandard-gris" | "orto-hibrida",
-): StyleSpecification {
-  const sourceId = `icgc-${wmsLayer}`;
-  const background = wmsLayer === "estandard-gris" ? "0xEEEDE8" : "0xF2EBD5";
-  const tiles =
-    `https://geoserveis.icgc.cat/servei/catalunya/mapa-base/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=${wmsLayer}` +
-    `&STYLES=&FORMAT=image/jpeg&TRANSPARENT=FALSE&BGCOLOR=${background}&SRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256`;
-
-  return {
-    version: 8,
-    sources: {
-      [sourceId]: {
-        type: "raster",
-        tiles: [tiles],
-        tileSize: 256,
-        minzoom: 0,
-        maxzoom: 18,
-        attribution: "© Institut Cartogràfic i Geològic de Catalunya",
-      },
-    },
-    layers: [
-      {
-        id: sourceId,
-        type: "raster",
-        source: sourceId,
-        paint: { "raster-fade-duration": 0 },
-      },
-    ],
-  };
-}
-
-function openStreetMapStyle(): StyleSpecification {
-  const sourceId = "openstreetmap-standard";
-  return {
-    version: 8,
-    sources: {
-      [sourceId]: {
-        type: "raster",
-        tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-        tileSize: 256,
-        minzoom: 0,
-        maxzoom: 19,
-        attribution:
-          '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
-      },
-    },
-    layers: [
-      {
-        id: sourceId,
-        type: "raster",
-        source: sourceId,
-        paint: { "raster-fade-duration": 0 },
-      },
-    ],
-  };
-}
-
-function basemapStyle(id: BasemapId): StyleSpecification {
-  if (id === "open-map") return openStreetMapStyle();
-  if (id === "icgc-aerial") return icgcBasemapStyle("orto-hibrida");
-  if (id === "icgc-muted") return icgcBasemapStyle("estandard-gris");
-  return icgcBasemapStyle("estandard");
-}
-
-const fitCatalonia = (map: MapLibreMap, animate = true) => {
-  map.fitBounds(cataloniaBounds, {
-    padding: { top: 54, right: 54, bottom: 54, left: 54 },
-    duration: animate ? 650 : 0,
-  });
-};
-
-const fitRegion = (map: MapLibreMap, region: RegionId, animate = true) => {
-  const bounds = regionBounds[region];
-  map.fitBounds(
-    [
-      [bounds.west, bounds.south],
-      [bounds.east, bounds.north],
-    ],
-    {
-      padding: { top: 54, right: 54, bottom: 54, left: 54 },
-      duration: animate ? 650 : 0,
-      maxZoom: 11.5,
-    },
-  );
-};
-
-const fitSpatialBounds = (
-  map: MapLibreMap,
-  bounds: SpatialBounds,
-  animate = true,
-) => {
-  map.fitBounds(
-    [
-      [bounds.west, bounds.south],
-      [bounds.east, bounds.north],
-    ],
-    {
-      padding: { top: 54, right: 54, bottom: 54, left: 54 },
-      duration: animate ? 650 : 0,
-      maxZoom: 11.5,
-    },
-  );
-};
-
-function drawTerritorialWindow(
-  context: CanvasRenderingContext2D,
-  map: MapLibreMap,
-  bounds: SpatialBounds | undefined,
-) {
-  if (!bounds) return;
-  const topLeft = map.project([bounds.west, bounds.north]);
-  const bottomRight = map.project([bounds.east, bounds.south]);
-  const width = Math.max(bottomRight.x - topLeft.x, 1);
-  const height = Math.max(bottomRight.y - topLeft.y, 1);
-  context.save();
-  context.setLineDash([]);
-  context.strokeStyle = "rgba(255, 250, 240, 0.9)";
-  context.lineWidth = 5;
-  context.strokeRect(topLeft.x, topLeft.y, width, height);
-  context.strokeStyle = "rgba(45, 62, 49, 0.94)";
-  context.lineWidth = 2;
-  context.strokeRect(topLeft.x, topLeft.y, width, height);
-  context.restore();
-}
-
-function formatCellCount(count: number) {
-  return `${count} ${count === 1 ? "cel·la" : "cel·les"}`;
-}
-
-type CellState = {
-  status: "loading" | "error" | PredictionViewportStatus;
-  published: number;
-  excluded: number;
-  withheld: number;
-  truncated: boolean;
-  /**
-   * Part of the viewport never resolved. Offline this is how a partly
-   * downloaded zone presents, and the map must say so rather than passing a
-   * viewport with holes off as complete.
-   */
-  incomplete: boolean;
-  gridSizeM: SpatialGridSizeM;
-};
-type HabitatEvidenceState = {
-  available: boolean | null;
-  cells: number;
-  habitatCells: number;
-  records: number;
-};
-type MapLayerControlProps = {
-  id: string;
-  label: string;
-  controlName: string;
-  opacityLabel: string;
-  variant: "prediction" | "compatibility" | "history";
-  visible: boolean;
-  opacity: number;
-  onVisibilityChange: () => void;
-  onOpacityChange: (opacity: number) => void;
-};
-
-function MapLayerControl({
-  id,
-  label,
-  controlName,
-  opacityLabel,
-  variant,
-  visible,
-  opacity,
-  onVisibilityChange,
-  onOpacityChange,
-}: MapLayerControlProps) {
-  const toggleLabel = `${visible ? "Amaga" : "Mostra"} ${controlName}`;
-
-  return (
-    <div className={`map-cell-visibility-layer map-cell-visibility-layer-${variant}`}>
-      <div className="map-cell-visibility-heading">
-        <i className="map-cell-visibility-swatch" aria-hidden />
-        <label htmlFor={id}>{label}</label>
-        <output htmlFor={id}>{visible ? `${opacity}%` : "No visible"}</output>
-        <button
-          type="button"
-          className="map-cell-visibility-toggle"
-          onClick={onVisibilityChange}
-          aria-pressed={visible}
-          aria-label={toggleLabel}
-          title={toggleLabel}
-        >
-          {visible ? (
-            <Eye size={16} aria-hidden />
-          ) : (
-            <EyeOff size={16} aria-hidden />
-          )}
-        </button>
-      </div>
-      <input
-        id={id}
-        type="range"
-        min="20"
-        max="100"
-        step="10"
-        value={opacity}
-        disabled={!visible}
-        onChange={(event) => onOpacityChange(Number(event.currentTarget.value))}
-        aria-label={opacityLabel}
-      />
-    </div>
-  );
-}
-
-function visibleSpatialBounds(localMap: MapLibreMap): SpatialBounds {
-  const bounds = localMap.getBounds();
-  return {
-    west: Math.max(bounds.getWest(), cataloniaBounds[0][0]),
-    south: Math.max(bounds.getSouth(), cataloniaBounds[0][1]),
-    east: Math.min(bounds.getEast(), cataloniaBounds[1][0]),
-    north: Math.min(bounds.getNorth(), cataloniaBounds[1][1]),
-  };
-}
-
-function visibleGridSize(
-  localMap: MapLibreMap,
-  minimumGridSizeM: SpatialGridSizeM = 250,
-) {
-  const gridSizeM = gridSizeForViewport(
-    localMap.getZoom(),
-    visibleSpatialBounds(localMap),
-  );
-  // The combined map has no 250 m habitat cache, so it never requests finer
-  // than its coarse floor even when the zoom would allow it.
-  return gridSizeM < minimumGridSizeM
-    ? (minimumGridSizeM as SpatialGridSizeM)
-    : gridSizeM;
-}
-
-function visibleGridParams(localMap: MapLibreMap, speciesId: string, gridSizeM: SpatialGridSizeM, extras?: Record<string, string>) {
-  const cacheBounds = cacheAlignedMapBounds(
-    visibleSpatialBounds(localMap),
-    gridSizeM,
-    cataloniaSpatialBounds,
-  );
-  return new URLSearchParams({
-    species: speciesId,
-    west: formatMapCoordinate(cacheBounds.west),
-    south: formatMapCoordinate(cacheBounds.south),
-    east: formatMapCoordinate(cacheBounds.east),
-    north: formatMapCoordinate(cacheBounds.north),
-    limit: "1000",
-    resolution: String(gridSizeM),
-    ...extras,
-  });
-}
-
-/**
- * A long session pans over far more ground than it shows. Retaining every
- * bucket ever fetched would grow without bound, so the oldest are dropped once
- * the store passes a few screenfuls' worth; they are cheap to fetch again.
- */
-const RETAINED_BUCKETS = 240;
-
-function rememberBucket<T>(store: Map<string, T[]>, url: string, cells: T[]) {
-  store.delete(url);
-  store.set(url, cells);
-  while (store.size > RETAINED_BUCKETS) {
-    const oldest = store.keys().next();
-    if (oldest.done) break;
-    store.delete(oldest.value);
-  }
-}
-
-function findCell(cells: Iterable<PredictionMapCell>, longitude: number, latitude: number) {
-  for (const cell of cells) {
-    if (boundsContain(cell.cellBounds, longitude, latitude)) return cell;
-  }
-}
-
-function prepareCanvas(canvas: HTMLCanvasElement) {
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-  const pixelRatio = window.devicePixelRatio || 1;
-  if (
-    canvas.width !== Math.round(width * pixelRatio) ||
-    canvas.height !== Math.round(height * pixelRatio)
-  ) {
-    canvas.width = Math.round(width * pixelRatio);
-    canvas.height = Math.round(height * pixelRatio);
-  }
-  const context = canvas.getContext("2d");
-  if (!context) return null;
-  context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-  context.clearRect(0, 0, width, height);
-  return context;
-}
-
-function createHistoricalEvidencePattern(context: CanvasRenderingContext2D) {
-  const tile = document.createElement("canvas");
-  tile.width = 10;
-  tile.height = 10;
-  const tileContext = tile.getContext("2d");
-  if (!tileContext) return null;
-  tileContext.strokeStyle = "rgba(177, 42, 144, 0.88)";
-  tileContext.lineWidth = 2;
-  tileContext.beginPath();
-  tileContext.moveTo(-2, 10);
-  tileContext.lineTo(10, -2);
-  tileContext.moveTo(6, 12);
-  tileContext.lineTo(12, 6);
-  tileContext.stroke();
-  return context.createPattern(tile, "repeat");
-}
-
-function withCataloniaLandClip(
-  context: CanvasRenderingContext2D,
-  localMap: MapLibreMap,
-  draw: () => void,
-) {
-  context.save();
-  context.beginPath();
-  for (const ring of cataloniaLandRings) {
-    ring.forEach(([longitude, latitude], index) => {
-      const point = localMap.project([longitude, latitude]);
-      if (index === 0) context.moveTo(point.x, point.y);
-      else context.lineTo(point.x, point.y);
-    });
-    context.closePath();
-  }
-  context.clip();
-  draw();
-  context.restore();
-}
-
-function distributionCentre(activeRegions: RegionId[]): [number, number] {
-  const coordinates = cataloniaRegionsGeoJson.features.flatMap((feature) => {
-    const regionId = feature.properties?.id as RegionId | undefined;
-    return regionId &&
-      activeRegions.includes(regionId) &&
-      feature.geometry.type === "Polygon"
-      ? feature.geometry.coordinates[0]
-      : [];
-  });
-  if (!coordinates.length) return [1.7, 41.7];
-  const longitudes = coordinates.map(([longitude]) => longitude);
-  const latitudes = coordinates.map(([, latitude]) => latitude);
-  return [
-    (Math.min(...longitudes) + Math.max(...longitudes)) / 2,
-    (Math.min(...latitudes) + Math.max(...latitudes)) / 2,
-  ];
-}
-
-export type PredictionCellDetailState = {
-  status: "idle" | "loading" | "ready" | "error";
-  cellId?: string;
-  gridSizeM?: SpatialGridSizeM;
-};
+export type { PredictionCellDetailState } from "@/components/region-map/types";
 
 export function RegionMap({
   activeRegions = [],
@@ -506,28 +94,7 @@ export function RegionMap({
   fullscreenTarget = "viewport",
   onCellSelect,
   onCellDetailStateChange,
-}: {
-  activeRegions?: RegionId[];
-  autoGeolocate?: boolean;
-  compactLegend?: boolean;
-  initialCentre?: [number, number];
-  initialZoom?: number;
-  focusBounds?: SpatialBounds;
-  selectedRegion?: RegionId;
-  speciesId?: string;
-  habitat?: boolean;
-  mode?: MapViewMode;
-  predictionAvailable?: boolean;
-  selectedCellId?: string;
-  className?: string;
-  fullscreenTarget?: "viewport" | "parent";
-  onCellSelect?: (
-    cell?: PredictionCell,
-    topSpecies?: GlobalSpeciesScore[],
-    combined?: { score: number | null; cellId: string; gridSizeM: SpatialGridSizeM },
-  ) => void;
-  onCellDetailStateChange?: (state: PredictionCellDetailState) => void;
-}) {
+}: RegionMapProps) {
   const showCompatibility = habitat || mode === "compatibility";
   const globalPrediction = speciesId === GLOBAL_SPECIES_ID;
   const node = useRef<HTMLDivElement>(null);
@@ -554,7 +121,6 @@ export function RegionMap({
   const request = useRef<AbortController | null>(null);
   const evidenceRequest = useRef<AbortController | null>(null);
   const detailRequest = useRef<AbortController | null>(null);
-  const basemapChangeId = useRef(0);
   const activeRequestKey = useRef<string | null>(null);
   const completedRequestKey = useRef<string | null>(null);
   // Responses keyed by their own bucket request, so panning back over ground
@@ -576,11 +142,16 @@ export function RegionMap({
   const historicalEvidenceOpacityId = useId();
   const layerControlsId = useId();
   const basemapChoiceName = useId();
-  const [layerControlsExpanded, setLayerControlsExpanded] = useState(false);
-  const [selectedBasemapId, setSelectedBasemapId] =
-    useState<BasemapId>(defaultBasemapId);
-  const [basemapStatus, setBasemapStatus] =
-    useState<"idle" | "loading" | "error">("idle");
+  const {
+    expanded: layerControlsExpanded,
+    toggle: toggleLayerControls,
+  } = useCollapsibleMapControls();
+  const {
+    basemapStatus,
+    changeBasemap,
+    initializeBasemap,
+    selectedBasemapId,
+  } = useRegionBasemap(map, drawCellsRef);
   const [cellsVisible, setCellsVisible] = useState(true);
   const [cellOpacity, setCellOpacity] = useState(100);
   const [historicalEvidenceVisible, setHistoricalEvidenceVisible] =
@@ -605,25 +176,6 @@ export function RegionMap({
     });
 
   useEffect(() => {
-    const narrowMap = window.matchMedia("(max-width: 680px)");
-    let collapseFrame: number | undefined;
-    const collapseForNarrowMap = (event: MediaQueryListEvent) => {
-      if (event.matches) setLayerControlsExpanded(false);
-    };
-    if (narrowMap.matches) {
-      collapseFrame = window.requestAnimationFrame(() =>
-        setLayerControlsExpanded(false),
-      );
-    }
-    narrowMap.addEventListener("change", collapseForNarrowMap);
-    return () => {
-      if (collapseFrame !== undefined)
-        window.cancelAnimationFrame(collapseFrame);
-      narrowMap.removeEventListener("change", collapseForNarrowMap);
-    };
-  }, []);
-
-  useEffect(() => {
     if (!node.current || map.current) return;
 
     const mapRoot = node.current.closest<HTMLElement>(".region-map");
@@ -633,77 +185,33 @@ export function RegionMap({
     const isPredictionMap = Boolean(
       initialSpeciesId.current && !initialHabitat.current,
     );
-    const initialBasemapId = storedBasemapId();
-    setSelectedBasemapId(initialBasemapId);
-    const localMap = new MapLibre({
-      container: node.current,
-      style: basemapStyle(initialBasemapId),
-      center:
-        initialMapCentre.current
-          ? initialMapCentre.current
-          : initialFocusBounds.current
-          ? [
-              (initialFocusBounds.current.west + initialFocusBounds.current.east) / 2,
-              (initialFocusBounds.current.south + initialFocusBounds.current.north) / 2,
-            ]
-          : isPredictionMap && initialRegion.current
+    const initialBasemapId = initializeBasemap();
+    const center: [number, number] = initialMapCentre.current
+      ? initialMapCentre.current
+      : initialFocusBounds.current
+        ? [
+            (initialFocusBounds.current.west + initialFocusBounds.current.east) / 2,
+            (initialFocusBounds.current.south + initialFocusBounds.current.north) / 2,
+          ]
+        : isPredictionMap && initialRegion.current
           ? regionCentres[initialRegion.current]
-          : distributionCentre(initialActiveRegions.current),
-      zoom:
-        initialMapCentre.current || initialFocusBounds.current
-          ? (initialMapZoom.current ?? 10.8)
-          : isPredictionMap && initialRegion.current
-            ? 9.8
-            : 6.2,
-      attributionControl: { compact: true },
-      maplibreLogo: false,
-      maxBounds: [
-        [-0.5, 40.1],
-        [3.9, 43.2],
-      ],
-      interactive: true,
-      dragRotate: false,
-      pitchWithRotate: false,
-      touchPitch: false,
-      locale: {
-        "NavigationControl.ZoomIn": "Apropar",
-        "NavigationControl.ZoomOut": "Allunyar",
-        "FullscreenControl.Enter": "Veure el mapa a pantalla completa",
-        "FullscreenControl.Exit": "Sortir de pantalla completa",
-        "GeolocateControl.FindMyLocation": "Mostra la meva ubicació",
-        "GeolocateControl.LocationNotAvailable": "Ubicació no disponible",
-        "AttributionControl.ToggleAttribution": "Mostra l’atribució del mapa",
-      },
+          : distributionCentre(initialActiveRegions.current);
+    const zoom = initialMapCentre.current || initialFocusBounds.current
+      ? (initialMapZoom.current ?? 10.8)
+      : isPredictionMap && initialRegion.current
+        ? 9.8
+        : 6.2;
+    const { geolocate, map: localMap } = createRegionMap({
+      center,
+      container: node.current,
+      fullscreenContainer: fullscreenContainer ?? undefined,
+      habitat: initialHabitat.current,
+      style: basemapStyle(initialBasemapId),
+      useGeolocation: Boolean(initialSpeciesId.current),
+      zoom,
     });
     map.current = localMap;
-    localMap.addControl(
-      new NavigationControl({ showCompass: false }),
-      "top-right",
-    );
-    localMap.addControl(
-      new FullscreenControl(
-        fullscreenContainer ? { container: fullscreenContainer } : undefined,
-      ),
-      "top-right",
-    );
-    const geolocate = initialSpeciesId.current
-      ? new GeolocateControl({
-          positionOptions: {
-            enableHighAccuracy: !initialHabitat.current,
-            maximumAge: 30_000,
-            timeout: initialHabitat.current ? 3_000 : 8_000,
-          },
-          fitBoundsOptions: {
-            maxZoom: initialHabitat.current ? 11.2 : 14,
-            duration: 650,
-          },
-          trackUserLocation: true,
-          showAccuracyCircle: true,
-          showUserLocation: true,
-        })
-      : undefined;
     geolocateControl.current = geolocate ?? null;
-    if (geolocate) localMap.addControl(geolocate, "top-right");
     localMap.once("load", () => {
       mapLoaded.current = true;
       localMap.resize();
@@ -728,7 +236,7 @@ export function RegionMap({
       geolocateControl.current = null;
       mapLoaded.current = false;
     };
-  }, []);
+  }, [initializeBasemap]);
 
   useEffect(() => {
     const localMap = map.current;
@@ -1397,328 +905,54 @@ export function RegionMap({
     };
   }, [showCompatibility, speciesId, onCellSelect, onCellDetailStateChange]);
 
-  const changeBasemap = (nextBasemapId: BasemapId) => {
-    const localMap = map.current;
-    if (!localMap || nextBasemapId === selectedBasemapId) return;
-
-    const previousBasemapId = selectedBasemapId;
-    const changeId = basemapChangeId.current + 1;
-    basemapChangeId.current = changeId;
-    setSelectedBasemapId(nextBasemapId);
-    setBasemapStatus("loading");
-
-    try {
-      localMap.once("style.load", () => {
-        if (basemapChangeId.current !== changeId) return;
-        setBasemapStatus("idle");
-        drawCellsRef.current();
-      });
-      localMap.setStyle(basemapStyle(nextBasemapId));
-      try {
-        window.localStorage.setItem(basemapStorageKey, nextBasemapId);
-      } catch {
-        // The selected basemap still works when browser storage is unavailable.
-      }
-    } catch {
-      if (basemapChangeId.current !== changeId) return;
-      setSelectedBasemapId(previousBasemapId);
-      setBasemapStatus("error");
-    }
-  };
-
   const gridDimensions = formatGridDimensions(cellState.gridSizeM);
-  const habitatEvidenceCopy =
-    habitatEvidenceState.available === null
-      ? "Carregant registres…"
-      : habitatEvidenceState.available === false
-        ? "Registres de FungaCAT no disponibles."
-        : habitatEvidenceState.habitatCells
-          ? `${habitatEvidenceState.records} registres en ${habitatEvidenceState.cells} quadrícules de 10 km; ${habitatEvidenceState.habitatCells} sectors coincideixen.`
-          : habitatEvidenceState.cells
-            ? `${habitatEvidenceState.records} registres en ${habitatEvidenceState.cells} quadrícules de 10 km; cap coincidència visible.`
-            : "Cap registre visible; no implica absència.";
-  const statusCopy = showCompatibility
-    ? cellState.status === "ready"
-      ? {
-          title: "Coberta del sòl, altitud i pH compatibles",
-          detail: cellState.truncated
-            ? `Resolució actual: ${gridDimensions}. Apropeu-vos per carregar la resta.`
-            : cellState.gridSizeM > 250
-              ? `Resolució actual: ${gridDimensions}. Apropeu-vos per veure la graella de 250 m.`
-              : `Resolució actual: ${gridDimensions}.`,
-        }
-      : cellState.status === "loading"
-        ? {
-            title: "Comprovant coberta del sòl, altitud i pH…",
-            detail: `Comprovant coberta del sòl, altitud i pH a ${gridDimensions}.`,
-          }
-        : cellState.status === "error"
-          ? {
-              title: "No s’han pogut carregar les zones compatibles",
-              detail:
-                "La base cartogràfica continua disponible; torna-ho a provar movent el mapa.",
-            }
-          : {
-              title: "Cap zona compatible en aquesta vista",
-              detail:
-                "No hi ha cel·les on coincideixin la coberta del sòl, l’altitud i el pH requerits.",
-            }
-    : cellState.status === "mixed"
-      ? {
-          title: "Resultats mixtos a la vista",
-          detail:
-            `${cellState.published ? `Amb puntuació publicada: ${formatCellCount(cellState.published)}; ` : ""}` +
-            `puntuació 0, amb contorn discontinu: ${formatCellCount(cellState.excluded)}; ` +
-            `sense puntuació, en gris: ${formatCellCount(cellState.withheld)} perquè hi falten components requerits, dades vigents o evidència estàtica verificada.`,
-        }
-      : cellState.status === "ready"
-        ? {
-            title: "Predicció disponible",
-            detail: globalPrediction && cellState.gridSizeM === GLOBAL_MINIMUM_GRID_SIZE_M
-              ? `Resolució: ${gridDimensions}, la màxima del mapa combinat. Tria una espècie concreta per a la graella de 250 m.`
-              : `Resolució: ${gridDimensions}.`,
-          }
-        : cellState.status === "incompatible"
-          ? {
-            title: `${cellState.excluded} cel·les amb puntuació 0`,
-            detail:
-              "Es mostren sense farciment de color i amb contorn discontinu: ara no tenen hàbitat compatible o l’espècie queda fora de la temporada activa.",
-          }
-        : cellState.status === "withheld"
-          ? {
-              title: "Cel·les disponibles, predicció retinguda",
-              detail:
-                "Falten components requerits, les dades són antigues o la cobertura no supera el llindar mínim.",
-            }
-          : cellState.status === "loading"
-            ? {
-                title: `Carregant la graella de ${gridDimensions}…`,
-                detail:
-                  "Consultant l’última instantània ambiental per a aquesta vista.",
-              }
-            : cellState.status === "error"
-              ? {
-                  title: "No s’han pogut carregar les cel·les",
-                  detail:
-                    "La base cartogràfica continua disponible; torna-ho a provar movent el mapa.",
-                }
-              : {
-                  title: `Encara no hi ha cel·les de ${gridDimensions} publicades`,
-                  detail:
-                    "La predicció per cel·la s’activarà quan la ingestió espacial publiqui sòl, bosc, relleu i temps verificats.",
-                };
+  const evidenceCopy = habitatEvidenceCopy(habitatEvidenceState);
+  const statusCopy = mapStatusCopy({
+    cellState,
+    globalPrediction,
+    gridDimensions,
+    showCompatibility,
+  });
 
   return (
-    <div
-      className={`region-map${habitat ? " region-map-habitat" : ""}${showCompatibility ? " region-map-compatibility" : ""} ${className}`}
-      data-active-region-count={activeRegions.length}
-      data-selected-region={selectedRegion}
-      data-basemap={selectedBasemapId}
-      data-map-mode={showCompatibility ? "compatibility" : "prediction"}
-      aria-busy={cellState.status === "loading"}
-      aria-label="Mapa interactiu de Catalunya. Arrossega per desplaçar-te i utilitza els controls per canviar l’escala o el fons cartogràfic."
-      role="region"
-    >
-      <div className="region-map-viewport">
-        <div ref={node} className="region-map-surface" />
-        <canvas
-          ref={cellCanvas}
-          className="region-map-cells"
-          style={{ opacity: cellsVisible ? cellOpacity / 100 : 0 }}
-          aria-hidden
-        />
-        {showCompatibility ? (
-          <canvas
-            ref={historicalEvidenceCanvas}
-            className="region-map-history"
-            style={{
-              opacity: historicalEvidenceVisible
-                ? historicalEvidenceOpacity / 100
-                : 0,
-            }}
-            aria-hidden
-          />
-        ) : null}
-        {habitat && cellState.status === "loading" ? (
-          <div className="habitat-map-loading" aria-hidden="true">
-            <LoaderCircle size={16} />
-            <span>Carregant mapa i zones compatibles…</span>
-          </div>
-        ) : null}
-        {speciesId && !habitat && cellState.status === "loading" ? (
-          <div className="prediction-map-loading" role="status" aria-live="polite">
-            <div>
-              <LoaderCircle size={24} aria-hidden />
-              <strong>{showCompatibility ? "Actualitzant la compatibilitat…" : "Actualitzant la predicció…"}</strong>
-              <span>{showCompatibility
-                ? `Carregant les zones compatibles de ${gridDimensions} per a aquesta espècie.`
-                : `Carregant les cel·les de ${gridDimensions} per a aquesta espècie.`}</span>
-            </div>
-          </div>
-        ) : null}
-        {speciesId && !habitat && cellState.status !== "loading" ? (
-          <div className="map-data-state" aria-live="polite">
-            <Grid3X3 size={18} aria-hidden />
-            <div>
-              <strong>{statusCopy.title}</strong>
-              <span>{statusCopy.detail}</span>
-            </div>
-          </div>
-        ) : null}
-        {habitat && compactLegend && cellState.status === "ready" ? (
-          <div className="map-data-state map-resolution-state" aria-live="polite">
-            <Grid3X3 size={18} aria-hidden />
-            <div>
-              <strong>Resolució actual: {gridDimensions}</strong>
-            </div>
-          </div>
-        ) : null}
-        {speciesId ? (
-          <div
-            className={`map-cell-visibility${layerControlsExpanded ? "" : " is-collapsed"}`}
-          >
-            <div className="map-cell-visibility-header">
-              <strong className="map-cell-visibility-title">
-                Capes del mapa
-              </strong>
-              <button
-                type="button"
-                className="map-cell-visibility-panel-toggle"
-                aria-controls={layerControlsId}
-                aria-expanded={layerControlsExpanded}
-                aria-label={
-                  layerControlsExpanded
-                    ? "Amaga els controls del mapa"
-                    : "Mostra els controls del mapa"
-                }
-                title={
-                  layerControlsExpanded
-                    ? "Amaga els controls del mapa"
-                    : "Mostra els controls del mapa"
-                }
-                onClick={() =>
-                  setLayerControlsExpanded((expanded) => !expanded)
-                }
-              >
-                {layerControlsExpanded ? (
-                  <X size={16} aria-hidden />
-                ) : (
-                  <SlidersHorizontal size={16} aria-hidden />
-                )}
-              </button>
-            </div>
-            <div
-              id={layerControlsId}
-              className="map-cell-visibility-controls"
-              role="group"
-              aria-label="Capes del mapa"
-              hidden={!layerControlsExpanded}
-            >
-              {!habitat && !globalPrediction ? (
-                <MapModeControl
-                  mode={mode}
-                  predictionAvailable={predictionAvailable}
-                />
-              ) : null}
-              <fieldset
-                className="map-basemap-control"
-                disabled={basemapStatus === "loading"}
-                aria-busy={basemapStatus === "loading"}
-              >
-                <legend>Fons cartogràfic</legend>
-                <div className="map-basemap-options">
-                  {basemapOptions.map((option) => (
-                    <label
-                      key={option.id}
-                      className="map-basemap-option"
-                      title={option.description}
-                    >
-                      <input
-                        type="radio"
-                        name={basemapChoiceName}
-                        value={option.id}
-                        checked={selectedBasemapId === option.id}
-                        aria-label={`${option.label}: ${option.description}`}
-                        onChange={() => changeBasemap(option.id)}
-                      />
-                      <span
-                        className={`map-basemap-preview map-basemap-preview-${option.preview}`}
-                        aria-hidden
-                      />
-                      <span className="map-basemap-option-label">
-                        {option.shortLabel}
-                      </span>
-                      <span className="map-basemap-option-provider">
-                        {option.provider}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-                {basemapStatus !== "idle" ? (
-                  <p className="map-basemap-status" aria-live="polite">
-                    {basemapStatus === "loading"
-                      ? "Canviant el fons…"
-                      : "No s’ha pogut carregar aquest fons."}
-                  </p>
-                ) : null}
-              </fieldset>
-              <MapLayerControl
-                id={cellOpacityId}
-                label={showCompatibility ? "Zones compatibles" : "Predicció"}
-                controlName={
-                  showCompatibility ? "les zones compatibles" : "la predicció"
-                }
-                opacityLabel={
-                  showCompatibility
-                    ? "Opacitat de les zones compatibles"
-                    : "Opacitat de la predicció"
-                }
-                variant={showCompatibility ? "compatibility" : "prediction"}
-                visible={cellsVisible}
-                opacity={cellOpacity}
-                onVisibilityChange={() =>
-                  setCellsVisible((visible) => !visible)
-                }
-                onOpacityChange={setCellOpacity}
-              />
-              {showCompatibility ? (
-                <MapLayerControl
-                  id={historicalEvidenceOpacityId}
-                  label="Registres històrics"
-                  controlName="els registres històrics"
-                  opacityLabel="Opacitat dels registres històrics"
-                  variant="history"
-                  visible={historicalEvidenceVisible}
-                  opacity={historicalEvidenceOpacity}
-                  onVisibilityChange={() =>
-                    setHistoricalEvidenceVisible((visible) => !visible)
-                  }
-                  onOpacityChange={setHistoricalEvidenceOpacity}
-                />
-              ) : null}
-            </div>
-          </div>
-        ) : null}
-        <button
-          type="button"
-          className="map-reset-button"
-          onClick={() => {
-            if (!map.current) return;
-            fitCatalonia(map.current);
-          }}
-          aria-label="Veure tot Catalunya"
-        >
-          Tot Catalunya
-        </button>
-      </div>
-      {habitat ? (
-        <HabitatMapLegend
-          compact={compactLegend}
-          detail={statusCopy.detail}
-          historicalEvidenceDetail={habitatEvidenceCopy}
-          title={statusCopy.title}
-        />
-      ) : null}
-    </div>
+    <RegionMapView
+      activeRegionCount={activeRegions.length}
+      basemapChoiceName={basemapChoiceName}
+      basemapStatus={basemapStatus}
+      cellCanvas={cellCanvas}
+      cellOpacity={cellOpacity}
+      cellOpacityId={cellOpacityId}
+      cellsVisible={cellsVisible}
+      cellState={cellState}
+      className={className}
+      compactLegend={compactLegend}
+      evidenceCopy={evidenceCopy}
+      globalPrediction={globalPrediction}
+      gridDimensions={gridDimensions}
+      habitat={habitat}
+      historicalEvidenceCanvas={historicalEvidenceCanvas}
+      historicalEvidenceOpacity={historicalEvidenceOpacity}
+      historicalEvidenceOpacityId={historicalEvidenceOpacityId}
+      historicalEvidenceVisible={historicalEvidenceVisible}
+      layerControlsExpanded={layerControlsExpanded}
+      layerControlsId={layerControlsId}
+      map={map}
+      mode={mode}
+      node={node}
+      onBasemapChange={changeBasemap}
+      onCellOpacityChange={setCellOpacity}
+      onCellsVisibilityChange={() => setCellsVisible((visible) => !visible)}
+      onHistoricalEvidenceOpacityChange={setHistoricalEvidenceOpacity}
+      onHistoricalEvidenceVisibilityChange={() =>
+        setHistoricalEvidenceVisible((visible) => !visible)
+      }
+      onLayerControlsToggle={toggleLayerControls}
+      predictionAvailable={predictionAvailable}
+      selectedBasemapId={selectedBasemapId}
+      selectedRegion={selectedRegion}
+      showCompatibility={showCompatibility}
+      speciesId={speciesId}
+      statusCopy={statusCopy}
+    />
   );
 }

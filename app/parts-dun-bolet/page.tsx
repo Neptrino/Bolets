@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -22,7 +21,7 @@ import {
 } from "@/data/editorial";
 import {
   absoluteUrl,
-  DEFAULT_SOCIAL_IMAGE,
+  articleMetadata,
   metaDescription,
   pageTitle,
   SITE_URL,
@@ -32,24 +31,7 @@ const canonicalPath = "/parts-dun-bolet";
 const title = pageTitle("Parts d’un bolet: guia d’identificació");
 const description = metaDescription("Apreneu les parts d’un bolet —barret, himeni, peu, anell, volva, espores i miceli— per descriure’l millor, sense identificar-lo només per un tret.");
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: canonicalPath },
-  openGraph: {
-    type: "article",
-    url: canonicalPath,
-    title,
-    description,
-    images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title,
-    description,
-    images: [DEFAULT_SOCIAL_IMAGE],
-  },
-};
+export const metadata = articleMetadata(canonicalPath, title, description);
 
 export default function MushroomPartsGuidePage() {
   const canonicalUrl = absoluteUrl(canonicalPath);

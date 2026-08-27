@@ -206,7 +206,7 @@ const PHENOLOGY_SHIFT_MAX_DAYS = 45;
  * August-December and spring never rises above "moderate". Detected from the
  * anchors themselves so no per-species list can drift out of date.
  */
-export function isAutumnCalendar(anchors: MonthlyPhenologyAnchors) {
+function isAutumnCalendar(anchors: MonthlyPhenologyAnchors) {
   const strongest = anchors.indexOf(Math.max(...anchors));
   const springMax = Math.max(anchors[2], anchors[3], anchors[4], anchors[5]);
   return strongest >= 7 && springMax <= 0.5;

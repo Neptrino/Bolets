@@ -282,7 +282,7 @@ const MILLISECONDS_PER_DAY = 86_400_000;
  * the AROME points behind the montane cells implies 6.46-6.67 C/km, so this
  * constant reproduces per-cell provider downscaling without per-cell requests.
  */
-export const TERRAIN_LAPSE_C_PER_KM = 6.5;
+const TERRAIN_LAPSE_C_PER_KM = 6.5;
 const TERRAIN_LAPSE_MAX_DELTA_C = 6;
 
 /**

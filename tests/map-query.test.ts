@@ -4,6 +4,7 @@ import {
   cacheAlignedMapBounds,
   formatMapCoordinate,
   mapBoundsFitResolution,
+  parseSpatialMapQuery,
 } from "@/src/lib/map-query";
 
 const catalonia = { west: 0.05, south: 40.48, east: 3.32, north: 42.92 };
@@ -134,5 +135,32 @@ describe("resolution-aware map bounds", () => {
       { west: 2.2, south: 42.25, east: 2.45, north: 42.4 },
       1000,
     )).toBe(true);
+  });
+
+  it("parses and validates the complete spatial request contract", () => {
+    const valid = new URLSearchParams({
+      west: "2.2",
+      south: "42.25",
+      east: "2.6",
+      north: "42.4",
+      resolution: "1000",
+    });
+    expect(parseSpatialMapQuery(valid, 250)).toEqual({
+      query: {
+        bounds: { west: 2.2, south: 42.25, east: 2.6, north: 42.4 },
+        limit: null,
+        resolution: 1000,
+      },
+    });
+
+    valid.set("resolution", "750");
+    expect(parseSpatialMapQuery(valid, 250)).toEqual({
+      error: "Invalid map resolution",
+    });
+
+    valid.set("resolution", "250");
+    expect(parseSpatialMapQuery(valid, 250)).toEqual({
+      error: "Bounding box is too large for this resolution",
+    });
   });
 });

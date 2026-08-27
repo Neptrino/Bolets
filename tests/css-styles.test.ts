@@ -45,7 +45,10 @@ describe("shared styles", () => {
   });
 
   it("keeps the culinary dossier on shared palette tokens", () => {
-    const css = readFileSync(join(process.cwd(), "app", "globals.css"), "utf8");
+    const css = readFileSync(
+      join(process.cwd(), "app", "styles", "culinary-dossier.css"),
+      "utf8",
+    );
     const marker = "/* Culinary dossier:";
     const culinaryStyles = css.slice(css.indexOf(marker));
 

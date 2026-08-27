@@ -722,7 +722,7 @@ export const speciesLocationPages: SpeciesLocationPage[] = [
 ];
 
 export const areasBySlug = Object.fromEntries(areaProfiles.map((area) => [area.slug, area])) as Record<string, AreaProfile>;
-export const placesByPath = Object.fromEntries(placeProfiles.map((place) => [`${place.areaSlug}/${place.slug}`, place])) as Record<string, PlaceProfile>;
+const placesByPath = Object.fromEntries(placeProfiles.map((place) => [`${place.areaSlug}/${place.slug}`, place])) as Record<string, PlaceProfile>;
 
 export function getPlace(areaSlug: string, placeSlug: string) {
   return placesByPath[`${areaSlug}/${placeSlug}`];

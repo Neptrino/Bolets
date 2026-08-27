@@ -11,7 +11,7 @@ export const TERRAIN_THERMAL_PROVIDER_MODEL = "arome_france";
 export const TERRAIN_THERMAL_WEATHER_MODEL = "Météo-France AROME France";
 export const TERRAIN_THERMAL_SOURCE_RESOLUTION_M = 2500;
 
-export const TERRAIN_THERMAL_FIELDS = [
+const TERRAIN_THERMAL_FIELDS = [
   "temperatureAvg14dC",
   "temperatureAvg20dC",
   "frostHours14d",
@@ -20,8 +20,8 @@ export const TERRAIN_THERMAL_FIELDS = [
   "heatHours20d",
 ] as const satisfies readonly (keyof ConditionSnapshot["values"])[];
 
-export type TerrainThermalField = typeof TERRAIN_THERMAL_FIELDS[number];
-export type TerrainThermalValues = Record<TerrainThermalField, number>;
+type TerrainThermalField = typeof TERRAIN_THERMAL_FIELDS[number];
+type TerrainThermalValues = Record<TerrainThermalField, number>;
 
 const TERRAIN_THERMAL_HOUR_MAXIMUMS = {
   frostHours14d: 336,
@@ -46,7 +46,7 @@ export type TerrainThermalReplayPair = {
   local: TerrainThermalObservation;
 };
 
-export type TerrainThermalChangedField = {
+type TerrainThermalChangedField = {
   field: TerrainThermalField;
   baseline: number;
   representativeReplay: number;
@@ -54,7 +54,7 @@ export type TerrainThermalChangedField = {
   delta: number;
 };
 
-export type TerrainThermalUnavailableReason =
+type TerrainThermalUnavailableReason =
   | "unsupported-species-model"
   | "stale-baseline"
   | "missing-baseline-metadata"

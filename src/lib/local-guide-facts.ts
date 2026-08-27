@@ -4,7 +4,7 @@ import type { PotentialHabitatCell, SpatialBounds } from "@/src/lib/types";
 
 const confidenceSchema = z.enum(["high", "moderate", "limited", "unknown"]);
 
-export const localFactSchema = z.discriminatedUnion("kind", [
+const localFactSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("derived"),
     metric: z.enum([
@@ -36,7 +36,6 @@ export const localGuideFactsSchema = z.object({
   facts: z.array(localFactSchema).min(1),
 });
 
-export type LocalFact = z.infer<typeof localFactSchema>;
 export type LocalGuideFacts = z.infer<typeof localGuideFactsSchema>;
 
 const confidenceOrder = ["unknown", "limited", "moderate", "high"] as const;

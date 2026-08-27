@@ -1,6 +1,6 @@
 import type { EdibilityStatus } from "@/src/lib/types";
 
-export interface EdibilityPresentation {
+interface EdibilityPresentation {
   label: string;
 }
 

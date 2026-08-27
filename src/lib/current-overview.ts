@@ -32,7 +32,7 @@ export interface CurrentOverviewTarget {
   seasonalActivity: SeasonalActivity;
 }
 
-export type CurrentOverviewStatus = "available" | "insufficient" | "unavailable";
+type CurrentOverviewStatus = "available" | "insufficient" | "unavailable";
 
 export interface CurrentOverviewItem extends CurrentOverviewTarget {
   speciesName: string;

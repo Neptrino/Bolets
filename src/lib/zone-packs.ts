@@ -7,7 +7,7 @@ import type { SpatialBounds, SpatialGridSizeM } from "@/src/lib/types";
  * on once someone is close enough to walk the ground: the finer one for the
  * detail, the coarser one for the approach.
  */
-export const ZONE_PACK_RESOLUTIONS: SpatialGridSizeM[] = [250, 1000];
+const ZONE_PACK_RESOLUTIONS: SpatialGridSizeM[] = [250, 1000];
 
 export type ZonePackRequest = {
   url: string;

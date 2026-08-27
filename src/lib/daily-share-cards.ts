@@ -14,9 +14,9 @@ import type { RegionId } from "@/src/lib/types";
 
 export type DailyShareSlug = "catalunya" | Exclude<RegionId, "altres"> | `zona-${string}`;
 export type DailyShareFormat = "feed" | "story" | "landscape";
-export type DailyShareScope = "overview" | "region" | "territory";
+type DailyShareScope = "overview" | "region" | "territory";
 
-export interface DailyShareReading {
+interface DailyShareReading {
   speciesId: string;
   regionName: string;
   speciesName: string;

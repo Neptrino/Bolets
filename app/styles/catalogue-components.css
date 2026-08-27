@@ -1,0 +1,658 @@
+.species-lightbox {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 22px;
+  border: 0;
+  background: rgba(17, 14, 12, 0.92);
+  color: #fff8ec;
+}
+.species-lightbox::backdrop {
+  background: rgba(17, 14, 12, 0.92);
+  backdrop-filter: blur(12px);
+}
+.species-lightbox-content {
+  position: relative;
+  width: min(1440px, 100%);
+  height: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: #171412;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+}
+.species-lightbox-image {
+  position: absolute;
+  inset: 0 0 76px;
+}
+.species-lightbox-image img {
+  object-fit: contain;
+}
+.species-lightbox-caption {
+  position: absolute;
+  right: 24px;
+  bottom: 18px;
+  left: 24px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+}
+.species-lightbox-caption p {
+  margin: 0;
+  font-size: var(--text-base);
+}
+.species-lightbox-caption a {
+  overflow: hidden;
+  color: #e9b98f;
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.species-lightbox-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  width: 46px;
+  height: 46px;
+}
+.species-lightbox-arrow {
+  position: absolute;
+  top: calc(50% - 38px);
+  z-index: 2;
+  width: 54px;
+  height: 54px;
+  transform: translateY(-50%);
+}
+.species-gallery button:focus-visible,
+.species-lightbox button:focus-visible,
+.species-lightbox a:focus-visible {
+  outline: 3px solid #ffd2a8;
+  outline-offset: 3px;
+}
+.compact-species-page .species-content {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 58px;
+  padding-top: 58px;
+  padding-bottom: 70px;
+}
+.compact-species-page .species-aside {
+  position: sticky;
+  top: 96px;
+  height: fit-content;
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+  padding: 16px 14px 14px;
+  border: 1px solid rgba(89, 53, 37, 0.12);
+  border-top: 0;
+  border-radius: 14px;
+  background: rgba(255, 253, 247, 0.78);
+  box-shadow: 0 10px 30px rgba(89, 53, 37, 0.05);
+  counter-reset: species-toc;
+}
+.compact-species-page .species-aside::before {
+  content: "";
+  height: 3px;
+  margin: -16px -14px 14px;
+  background: var(--pumpkin);
+}
+.compact-species-page .species-aside p {
+  margin: 0 0 12px;
+  color: var(--bark);
+  font-size: var(--text-xs);
+  font-weight: 850;
+  letter-spacing: 0.13em;
+}
+.compact-species-page .species-aside > a:not(.aside-map-link) {
+  counter-increment: species-toc;
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 7px;
+  align-items: baseline;
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(89, 53, 37, 0.09);
+  color: #5c625b;
+  font-size: var(--text-base);
+  font-weight: 650;
+  line-height: 1.25;
+}
+.compact-species-page .species-aside > a:not(.aside-map-link)::before {
+  content: counter(species-toc, decimal-leading-zero);
+  color: #9a8c7e;
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+.compact-species-page .species-aside > a:hover,
+.compact-species-page .species-aside > a:focus-visible {
+  color: var(--gold);
+}
+.compact-species-page .species-aside .aside-map-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 8px 4px 2px;
+  color: var(--gold);
+  font-size: var(--text-base);
+  font-weight: 750;
+}
+.compact-species-page .content-section {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 22px;
+  padding: 0 0 36px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--line);
+}
+.compact-species-page .content-section .eyebrow {
+  margin-bottom: 10px;
+  font-size: var(--text-xs);
+}
+.compact-species-page .content-section h2 {
+  margin: 0 0 18px;
+  font-size: var(--display-sm);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+.compact-species-page .section-kicker {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  color: var(--moss);
+  font-family: var(--font-nunito-sans), sans-serif;
+  font-size: var(--text-base);
+  font-weight: 400;
+  line-height: normal;
+}
+.compact-species-page .section-kicker span {
+  color: #a3a59a;
+  font-size: var(--text-xs);
+  font-weight: 800;
+}
+.compact-species-page .morphology-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid rgba(74, 89, 65, 0.14);
+  border-radius: 12px;
+  background: var(--surface-muted);
+}
+.compact-species-page .morphology-grid article,
+.compact-species-page .morphology-grid article:nth-child(odd),
+.compact-species-page .morphology-grid article:nth-child(even) {
+  min-height: 110px;
+  padding: 15px 20px;
+  border: 0;
+  background: transparent;
+}
+.compact-species-page .morphology-grid article:nth-child(odd) {
+  border-right: 1px solid rgba(74, 89, 65, 0.12);
+}
+.compact-species-page .morphology-grid article:nth-child(-n + 2) {
+  border-bottom: 1px solid rgba(74, 89, 65, 0.12);
+}
+.compact-species-page .morphology-grid h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  color: #363a34;
+  font-size: var(--text-lg);
+}
+.compact-species-page .morphology-grid h3 svg {
+  flex: 0 0 auto;
+  color: var(--gold);
+}
+.compact-species-page .morphology-grid p {
+  margin: 0;
+  color: #5d625a;
+  font-size: var(--text-base);
+  line-height: 1.5;
+}
+.compact-species-page .field-notes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin-top: 13px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(89, 53, 37, 0.11);
+  border-radius: 12px;
+  background: var(--surface-muted);
+}
+.compact-species-page .field-notes div {
+  min-height: 76px;
+  padding: 11px 15px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.compact-species-page .field-notes div + div {
+  border-left: 1px solid rgba(89, 53, 37, 0.1);
+}
+.compact-species-page .field-notes p {
+  margin: 5px 0 0;
+  color: #4c574a;
+  font-size: var(--text-base);
+  line-height: 1.4;
+}
+.compact-species-page .fact-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #868d80;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.compact-species-page .fact-label svg {
+  flex: 0 0 auto;
+  color: var(--gold);
+}
+.compact-species-page .key-features {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding-top: 14px;
+  border-top: 0;
+}
+.compact-species-page .key-features > span {
+  margin-right: 4px;
+  color: #6f776c;
+  font-size: var(--text-base);
+}
+.compact-species-page .key-features b {
+  padding: 5px 8px;
+  border-radius: var(--radius-pill);
+  background: #e8ead9;
+  color: #4c5937;
+  font-size: var(--text-xs);
+}
+.lookalikes-subsection .similar-list article {
+  grid-template-columns: 1fr;
+  min-height: 0;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 253, 247, 0.72);
+}
+.lookalikes-subsection .similar-profile-link {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+.lookalikes-subsection .similar-profile-link svg {
+  flex: 0 0 auto;
+  color: var(--gold);
+}
+.lookalikes-subsection .similar-profile-link:hover,
+.lookalikes-subsection .similar-profile-link:focus-visible {
+  color: var(--clay);
+}
+.lookalikes-subsection .similar-card-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-top: 3px;
+}
+.lookalikes-subsection .similar-comparison-link {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 9px;
+  border: 1px solid rgba(69, 91, 59, 0.2);
+  border-radius: 999px;
+  background: rgba(232, 234, 217, 0.72);
+  color: var(--forest-panel);
+  font-size: var(--text-xs);
+  font-weight: 850;
+  line-height: 1;
+  text-decoration: none;
+}
+.lookalikes-subsection .similar-comparison-link:hover {
+  border-color: rgba(168, 71, 31, 0.4);
+  background: var(--surface);
+  color: var(--clay);
+}
+.lookalikes-subsection .similar-profile-link:focus-visible,
+.lookalikes-subsection .similar-comparison-link:focus-visible {
+  outline: 2px solid var(--pumpkin);
+  outline-offset: 2px;
+}
+.compact-species-page .habitat-hero {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  overflow: hidden;
+  border: 1px solid var(--forest-panel);
+  border-left: 5px solid #e18135;
+  border-radius: 15px;
+  background: var(--forest-panel);
+  box-shadow: 0 14px 34px rgba(48, 58, 43, 0.15);
+}
+.compact-species-page .habitat-hero > div {
+  padding: 23px 22px;
+  background:
+    radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.06), transparent 44%),
+    var(--forest-panel);
+}
+.compact-species-page .habitat-hero > div + div {
+  border-left: 1px solid rgba(255, 247, 229, 0.17);
+  background: #405344;
+}
+.compact-species-page .habitat-hero .fact-label {
+  color: var(--on-dark-muted);
+}
+.compact-species-page .habitat-hero .fact-label svg {
+  color: #f2a766;
+}
+.compact-species-page .habitat-hero b,
+.compact-species-page .habitat-hero strong {
+  color: var(--on-dark);
+}
+.compact-species-page .habitat-hero b {
+  display: inline-block;
+  margin: 7px 7px 0 0;
+  font-family: var(--font-nunito-sans), sans-serif;
+  font-size: var(--text-xl);
+  font-weight: 400;
+  line-height: 1.34;
+}
+.compact-species-page .habitat-hero strong {
+  display: block;
+  margin: 9px 0 0;
+  font-family: var(--font-nunito-sans), sans-serif;
+  font-size: var(--text-3xl);
+  font-weight: 400;
+  line-height: normal;
+}
+.compact-species-page .habitat-hero p {
+  margin: 7px 0 0;
+  color: #d9dfcf;
+  font-size: var(--text-base);
+  line-height: 1.45;
+}
+.ecology-section .tree-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding-top: 11px;
+}
+.ecology-section .tree-tags span {
+  display: block;
+  padding: 5px 8px;
+  border: 1px solid rgba(92, 79, 57, 0.2);
+  border-radius: var(--radius-pill);
+  background: var(--surface-warm);
+  color: #5d4a39;
+  font-family: var(--font-nunito-sans), sans-serif;
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: normal;
+  box-shadow: 0 3px 10px rgba(89, 53, 37, 0.05);
+}
+.ecology-detail-panels {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+  align-items: start;
+  margin-top: 25px;
+}
+.compact-species-page .ecology-detail-panel {
+  min-width: 0;
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid #d2bfa2;
+  border-radius: 16px;
+  background: #f3eadb;
+  box-shadow: 0 14px 34px rgba(89, 53, 37, 0.09);
+}
+.compact-species-page .climate-disclosure {
+  border-color: #bdc5ac;
+  background: #e9eddf;
+  box-shadow: 0 14px 34px rgba(55, 75, 48, 0.09);
+}
+.ecology-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 0 1px 15px;
+}
+.ecology-panel-heading > span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: #b9572d;
+  color: #fff8e9;
+}
+.soil-disclosure .ecology-panel-heading > span {
+  background: #6b4e3a;
+  color: #fff7e8;
+}
+.ecology-panel-heading h3 {
+  margin: 0;
+  color: #353b33;
+  font-size: var(--text-xl);
+  line-height: 1.15;
+}
+.ecology-panel-heading p {
+  margin: 3px 0 0;
+  color: #70695f;
+  font-size: var(--text-base);
+  line-height: 1.35;
+}
+.climate-disclosure .disclosure-content,
+.soil-disclosure .disclosure-content {
+  padding: 0;
+}
+.climate-overview,
+.soil-overview {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgba(74, 68, 56, 0.16);
+  border-radius: 12px;
+  background: #fffaf0;
+  box-shadow: 0 7px 18px rgba(68, 55, 42, 0.06);
+}
+.climate-temperature,
+.soil-primary {
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  min-height: 102px;
+  padding: 16px 18px;
+  background: #41543e;
+}
+.climate-temperature span,
+.soil-primary span,
+.climate-vitals dt,
+.soil-vitals dt,
+.rain-response small,
+.rainfall-facts dt,
+.soil-facts dt {
+  color: #7a8172;
+  font-size: var(--text-base);
+  font-weight: 850;
+  letter-spacing: 0.075em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+.climate-temperature strong {
+  color: #fff8e9;
+  font-size: var(--text-2xl);
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+.soil-primary {
+  background: #6b4e3a;
+}
+.soil-primary strong {
+  color: #fff8e9;
+  font-size: var(--text-lg);
+  line-height: 1.25;
+}
+.climate-temperature span,
+.soil-primary span {
+  color: #dce3cf;
+}
+.soil-primary span {
+  color: #ead9c7;
+}
+.climate-vitals,
+.soil-vitals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+.climate-vitals div,
+.soil-vitals div {
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 16px 18px;
+}
+.climate-vitals div + div,
+.soil-vitals div + div {
+  border-left: 1px solid rgba(74, 89, 65, 0.12);
+}
+.climate-vitals dd,
+.soil-vitals dd,
+.rainfall-facts dd,
+.soil-facts dd {
+  margin: 0;
+  color: #454b42;
+  font-size: var(--text-base);
+  line-height: 1.45;
+}
+.rain-response {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  margin: 16px 0 5px;
+  padding: 13px 14px;
+  border: 0;
+  border-left: 4px solid #c45c2b;
+  border-radius: 10px;
+  background: #f5dcc0;
+}
+.rain-response-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff4e3;
+  color: #b94f24;
+}
+.rain-response > span:last-child {
+  display: grid;
+  gap: 3px;
+}
+.rain-response strong {
+  color: #603622;
+  font-size: var(--text-base);
+  line-height: 1.4;
+}
+.rainfall-facts,
+.soil-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 24px;
+  margin: 0;
+}
+.rainfall-facts div,
+.soil-facts div {
+  display: grid;
+  gap: 5px;
+  padding: 13px 2px;
+  border-bottom: 1px solid rgba(89, 53, 37, 0.13);
+}
+.rainfall-uncertainty,
+.soil-evidence {
+  margin: 16px 0 0;
+  padding: 11px 13px;
+  border: 0;
+  border-left: 3px solid #a98b63;
+  border-radius: 0 9px 9px 0;
+  background: rgba(255, 250, 239, 0.63);
+  color: #6d675f;
+  font-size: var(--text-base);
+  font-style: italic;
+  line-height: 1.5;
+}
+.compact-species-page .habitat-map-explainer,
+.compact-species-page .region-map-habitat {
+  border-radius: 12px;
+}
+
+@media (max-width: 1000px) {
+  .species-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .compact-species-page .species-hero-grid {
+    grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
+    gap: 34px;
+  }
+  .compact-species-page .species-content {
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 34px;
+  }
+}
+
+@media (max-width: 900px) {
+  .compact-species-page .species-aside > a:not(.aside-map-link) {
+    grid-template-columns: 20px 1fr;
+    gap: 4px;
+    font-size: var(--text-xs);
+  }
+  .compact-species-page .field-notes {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .directory-controls {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 16px;
+  }
+  .search-field {
+    width: 100%;
+  }
+  .compact-species-page .species-hero-grid {
+    grid-template-columns: 1fr;
+  }
+  .compact-species-page .specimen-panel.has-photos {
+    min-height: 380px;
+  }
+  .compact-species-page .species-content {
+    grid-template-columns: 1fr;
+  }
+  .compact-species-page .species-aside {
+    position: static;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .compact-species-page .species-aside::before,
+  .compact-species-page .species-aside p,
+  .compact-species-page .species-aside .aside-map-link {
+    grid-column: 1 / -1;
+  }
+}

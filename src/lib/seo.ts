@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { MediaAsset, SpeciesProfile } from "@/src/lib/types";
 
 export const SITE_NAME = "Bolets Atles";
@@ -33,6 +34,31 @@ export function metaDescription(description: string) {
   return truncateSeoText(description, META_DESCRIPTION_MAX_LENGTH);
 }
 
+export function articleMetadata(
+  canonicalPath: string,
+  title: string,
+  description: string,
+): Metadata {
+  return {
+    title,
+    description,
+    alternates: { canonical: canonicalPath },
+    openGraph: {
+      type: "article",
+      url: canonicalPath,
+      title,
+      description,
+      images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [DEFAULT_SOCIAL_IMAGE],
+    },
+  };
+}
+
 function truncateSeoText(value: string, maxLength: number) {
   if (value.length <= maxLength) return value;
 
@@ -44,7 +70,7 @@ function truncateSeoText(value: string, maxLength: number) {
   return `${truncated}…`;
 }
 
-export function mediaUrl(media: MediaAsset | undefined) {
+function mediaUrl(media: MediaAsset | undefined) {
   if (!media) return undefined;
   return absoluteUrl(media.localPath ?? media.imageUrl ?? media.sourceUrl);
 }

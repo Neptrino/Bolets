@@ -1,0 +1,440 @@
+/* The map is the primary reading surface, so its condition panel uses a larger editorial scale. */
+.conditions-panel-expanded {
+  padding: 36px;
+}
+.conditions-panel-expanded .conditions-heading {
+  gap: 32px;
+}
+.conditions-panel-expanded .conditions-heading .eyebrow {
+  margin-bottom: 8px;
+  font-size: var(--text-base);
+}
+.conditions-panel-expanded .conditions-heading h3 {
+  font-size: var(--text-3xl);
+  line-height: 1.05;
+}
+.conditions-panel-expanded .suitability-score strong {
+  font-size: var(--display-md);
+}
+.conditions-panel-expanded .suitability-score span {
+  margin-top: 5px;
+  font-size: var(--text-base);
+}
+.conditions-panel-expanded .data-note {
+  margin-top: 18px;
+  padding: 12px 0;
+  font-size: var(--text-base);
+  line-height: 1.55;
+}
+.conditions-panel-expanded .condition-window-note {
+  gap: 12px;
+  margin-top: 22px;
+  padding: 15px 17px;
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+.conditions-panel-expanded .condition-window-note svg {
+  width: 18px;
+  height: 18px;
+}
+.conditions-panel-expanded .condition-list {
+  margin-top: 14px;
+}
+.conditions-panel-expanded .condition-list article {
+  min-height: 205px;
+  padding: 21px;
+}
+.conditions-panel-expanded .condition-list article > .condition-card-heading {
+  gap: 9px;
+  margin-bottom: 17px;
+}
+.conditions-panel-expanded .condition-card-heading svg {
+  width: 21px;
+  height: 21px;
+}
+.conditions-panel-expanded .condition-list .condition-card-heading .condition-card-label {
+  font-size: var(--text-base);
+}
+.conditions-panel-expanded .condition-list .condition-current {
+  font-size: var(--text-3xl);
+}
+.conditions-panel-expanded .condition-stats div {
+  padding: 11px 8px;
+}
+.conditions-panel-expanded .condition-stats dt {
+  font-size: var(--text-base);
+}
+.conditions-panel-expanded .condition-stats dd {
+  margin-top: 1px;
+  font-size: var(--text-base);
+}
+.conditions-panel-expanded .factor-chart {
+  margin-top: 32px;
+}
+.conditions-panel-expanded .chart-caption {
+  font-size: var(--text-base);
+}
+.conditions-panel-expanded .chart-caption strong {
+  font-size: var(--text-base);
+}
+.conditions-panel-expanded .factor-chart-explanation {
+  margin-bottom: 15px;
+  font-size: var(--text-base);
+}
+.conditions-panel-expanded .factor-bar-label {
+  font-size: var(--text-base);
+}
+.conditions-panel-expanded .factor-bar-meter {
+  height: 14px;
+}
+
+/* The panel also appears beside the species contents rail. Adapt to its own
+   width so readable type never has to squeeze into three narrow cards. */
+@container (max-width: 700px) {
+  .condition-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .condition-list article,
+  .condition-list article:nth-child(-n + 2) {
+    grid-column: auto;
+  }
+  .condition-list article:last-child {
+    grid-column: 1 / -1;
+  }
+  .factor-bars li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 7px 12px;
+    min-height: 30px;
+  }
+  .factor-bar-reading {
+    grid-column: 2;
+  }
+  .factor-bar-meter {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    height: 10px;
+  }
+}
+
+@container (max-width: 480px) {
+  .conditions-heading.score-withheld {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .conditions-heading.score-withheld .suitability-score {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: none;
+    text-align: left;
+  }
+  .conditions-heading.score-withheld .suitability-score span {
+    max-width: none;
+  }
+  .condition-list {
+    grid-template-columns: 1fr;
+  }
+  .condition-list article:last-child {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 1100px) {
+  .map-reading-guide {
+    grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1.3fr);
+    align-items: start;
+  }
+  .map-reading-guide .text-link {
+    grid-column: 1;
+    justify-self: start;
+  }
+  .map-reading-copy {
+    grid-row: span 2;
+  }
+}
+
+@media (max-width: 900px) {
+  .similar-list article {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+  .condition-list article,
+  .condition-list article:nth-child(-n + 2) {
+    grid-column: auto;
+  }
+  .conditions-panel-expanded {
+    padding: 28px;
+  }
+  .map-reading-guide {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding: 28px;
+  }
+  .map-reading-copy {
+    grid-row: auto;
+  }
+  .map-reading-guide .text-link {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 680px) {
+  .season-calendar {
+    padding: 18px 12px;
+  }
+  .factor-bar-label,
+  .conditions-panel-expanded .factor-bar-label {
+    font-size: var(--text-base);
+  }
+  .score-calculation {
+    grid-template-columns: 1fr;
+  }
+  .score-calculation li {
+    min-height: 0;
+    padding: 16px;
+  }
+  .score-calculation-step {
+    min-height: 0;
+  }
+  .unavailable-factor-list div {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+  .unavailable-factor-list dd {
+    text-align: left;
+  }
+  .conditions-panel-expanded {
+    padding: 22px 18px;
+  }
+  .conditions-panel-expanded .conditions-heading {
+    align-items: flex-start;
+  }
+  .conditions-panel-expanded .conditions-heading h3 {
+    font-size: var(--text-2xl);
+  }
+  .conditions-panel-expanded .suitability-score strong {
+    font-size: var(--display-md);
+  }
+  .conditions-panel-expanded .condition-window-note {
+    font-size: var(--text-base);
+  }
+  .conditions-panel-expanded .condition-list article {
+    min-height: 0;
+    padding: 18px;
+  }
+  .map-reading-guide {
+    padding: 24px 20px;
+    border-radius: 13px;
+  }
+  .map-reading-heading h2 {
+    font-size: var(--text-2xl);
+  }
+  .map-reading-copy {
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+@media (max-width: 680px) {
+  .habitat-map-explainer {
+    grid-template-columns: 1fr;
+  }
+  .habitat-map-link {
+    min-width: 0;
+  }
+  .region-map-habitat .region-map-viewport {
+    height: 360px;
+  }
+  .habitat-map-legend-items {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .habitat-map-legend-item + .habitat-map-legend-item {
+    padding-top: 12px;
+    padding-left: 0;
+    border-top: 1px solid rgba(89, 53, 37, 0.14);
+    border-left: 0;
+  }
+}
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes map-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 900px) {
+  .site-footer-inner {
+    grid-template-columns: minmax(170px, 0.7fr) minmax(0, 1.3fr);
+    gap: 24px 40px;
+  }
+  .site-footer-links {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, max-content);
+    justify-content: start;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 247, 232, 0.14);
+  }
+  .hero::after {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(15, 28, 20, 0.95) 0%,
+        rgba(15, 28, 20, 0.78) 52%,
+        rgba(15, 28, 20, 0.34) 100%
+      ),
+      linear-gradient(0deg, rgba(15, 28, 20, 0.46), transparent 52%);
+  }
+  .hero-media img {
+    object-position: 58% center;
+  }
+  .condition-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .home-map-callout .page-width {
+    grid-template-columns: 1fr;
+  }
+  .home-map-callout-action {
+    justify-self: start;
+  }
+  .home-map-callout-art {
+    display: none;
+  }
+  .specimen-panel {
+    min-height: 190px;
+  }
+}
+@media (max-width: 680px) {
+  .site-header {
+    height: 64px;
+    gap: 13px;
+  }
+  .primary-nav,
+  .header-map-link {
+    display: none;
+  }
+  .menu-button {
+    display: block;
+    margin-left: auto;
+  }
+  .site-footer-inner {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    min-height: 0;
+    padding: 30px 0 34px;
+  }
+  .site-footer-safety {
+    padding: 16px 0 0;
+    border-top: 1px solid rgba(255, 247, 232, 0.14);
+    border-left: 0;
+  }
+  .site-footer-links {
+    grid-template-columns: repeat(2, max-content);
+    justify-content: start;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 247, 232, 0.14);
+  }
+  .hero {
+    min-height: 650px;
+    padding-top: 75px;
+  }
+  .hero::after {
+    background: linear-gradient(
+      180deg,
+      rgba(15, 28, 20, 0.88) 0%,
+      rgba(15, 28, 20, 0.77) 57%,
+      rgba(15, 28, 20, 0.58) 100%
+    );
+  }
+  .hero-media img {
+    object-position: 66% center;
+  }
+  .hero h1 {
+    font-size: var(--display-xl);
+  }
+  .hero-lede {
+    font-size: var(--text-base);
+  }
+  .hero-actions {
+    display: grid;
+    justify-items: start;
+    gap: 15px;
+  }
+  .home-intro {
+    padding: 75px 0;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .home-intro h2,
+  .section-topline h2 {
+    font-size: var(--display-md);
+  }
+  .section-topline {
+    align-items: start;
+  }
+  .section-topline .text-link {
+    display: none;
+  }
+  .species-grid {
+    grid-template-columns: 1fr;
+  }
+  .home-map-callout {
+    padding: 68px 0;
+  }
+  .directory-controls {
+    display: grid;
+  }
+  .specimen-panel {
+    min-height: 160px;
+  }
+  .specimen-panel p {
+    margin-top: 87px;
+  }
+  .specimen-drawing {
+    transform: scale(0.75);
+    transform-origin: right top;
+  }
+  .similar-list article {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .season-grid {
+    gap: 3px;
+  }
+  .season-month span {
+    font-size: var(--text-xs);
+  }
+  .season-level {
+    height: 24px;
+  }
+  .conditions-heading h3 {
+    font-size: var(--text-xl);
+  }
+  .condition-list {
+    grid-template-columns: 1fr;
+  }
+  .condition-list article {
+    min-height: 0;
+  }
+  .condition-stats dd {
+    font-size: var(--text-base);
+  }
+}

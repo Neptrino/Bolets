@@ -1,0 +1,303 @@
+@media (max-width: 680px) {
+  .compact-species-page .species-content {
+    display: block;
+    padding-bottom: 50px;
+  }
+  .compact-species-page .species-aside {
+    display: none;
+  }
+  .compact-species-page .section-kicker {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .compact-species-page .field-notes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .compact-species-page .field-notes div:last-child {
+    grid-column: 1 / -1;
+  }
+  .content-subsection {
+    margin-top: 17px;
+    padding-top: 15px;
+  }
+  .content-subsection .subsection-title {
+    margin-bottom: 10px;
+    font-size: var(--text-xl);
+  }
+  .lookalikes-subsection .warning-callout {
+    padding: 10px 11px;
+  }
+  .lookalikes-subsection .similar-list article {
+    padding: 10px 11px;
+  }
+  .compact-species-page .habitat-hero {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+  .compact-species-page .habitat-hero > div + div {
+    border-top: 0;
+    border-left: 1px solid rgba(255, 247, 229, 0.17);
+  }
+  .compact-species-page .habitat-hero b {
+    margin: 5px 4px 0 0;
+  }
+  .compact-species-page .habitat-hero strong {
+    margin-top: 6px;
+  }
+  .compact-species-page .habitat-hero p {
+    font-size: var(--text-xs);
+    line-height: 1.35;
+  }
+  .compact-species-page .tree-tags {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .compact-species-page .tree-tags span {
+    flex: 0 0 auto;
+  }
+  .ecology-section .season-calendar {
+    padding: 10px 8px;
+  }
+  .ecology-section .season-calendar-label {
+    margin-bottom: 7px;
+  }
+  .ecology-section .season-level {
+    height: 21px;
+  }
+  .ecology-section .season-legend {
+    margin-top: 5px;
+  }
+  .compact-species-page .habitat-map-explainer {
+    gap: 8px;
+    padding: 10px;
+  }
+  .compact-species-page .habitat-map-explainer > p {
+    font-size: var(--text-xs);
+    line-height: 1.4;
+  }
+  .compact-species-page .habitat-map-link {
+    padding: 8px 10px;
+  }
+  .compact-species-page .distribution-section .region-map-habitat .region-map-viewport {
+    height: 340px;
+  }
+  .compact-species-page .distribution-section .habitat-map-legend {
+    padding: 10px;
+  }
+  .compact-species-page .distribution-section .habitat-map-legend-items {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    padding-top: 7px;
+  }
+  .compact-species-page .distribution-section .habitat-map-legend-item + .habitat-map-legend-item {
+    padding-top: 0;
+    padding-left: 7px;
+    border-top: 0;
+    border-left: 1px solid rgba(89, 53, 37, 0.14);
+  }
+  .compact-species-page .distribution-section .region-pill-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-top: 8px;
+    scrollbar-width: thin;
+  }
+  .compact-species-page .distribution-section .region-pill-row span {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 580px) {
+  .species-grid {
+    grid-template-columns: 1fr;
+  }
+  .species-card {
+    min-height: 485px;
+  }
+  .species-card-illustration,
+  .species-card-illustration.has-photo {
+    height: 220px;
+  }
+  .compact-species-page .species-hero {
+    padding-bottom: 30px;
+  }
+  .compact-species-page .species-hero-grid {
+    gap: 26px;
+    padding-top: 28px;
+  }
+  .compact-species-page .species-hero h1 {
+    font-size: var(--display-xl);
+  }
+  .compact-species-page .species-hero-facts {
+    margin-top: 20px;
+  }
+  .compact-species-page .specimen-panel.has-photos {
+    min-height: 325px;
+    border-radius: 17px;
+  }
+  .species-gallery-thumbnails {
+    min-height: 72px;
+    padding: 9px 12px;
+  }
+  .species-gallery-thumbnails button {
+    width: 62px;
+    min-width: 62px;
+  }
+  .species-gallery-toolbar button > span {
+    display: none;
+  }
+  .species-gallery-caption {
+    right: 16px;
+    bottom: 13px;
+    left: 16px;
+  }
+  .species-gallery-caption > span {
+    display: none;
+  }
+  .species-gallery-arrow {
+    width: 38px;
+    height: 38px;
+  }
+  .species-lightbox {
+    padding: 0;
+  }
+  .species-lightbox-content {
+    border: 0;
+    border-radius: 0;
+  }
+  .species-lightbox-image {
+    inset: 0 0 92px;
+  }
+  .species-lightbox-caption {
+    right: 18px;
+    bottom: 20px;
+    left: 18px;
+    display: block;
+  }
+  .species-lightbox-caption p {
+    margin-bottom: 5px;
+  }
+  .species-lightbox-arrow {
+    width: 46px;
+    height: 46px;
+  }
+  .compact-species-page .species-content {
+    padding-top: 34px;
+  }
+  .compact-species-page .content-section {
+    display: block;
+  }
+  .compact-species-page .section-kicker {
+    display: none;
+  }
+  .compact-species-page .content-section h2 {
+    font-size: var(--text-3xl);
+  }
+  .compact-species-page .morphology-grid {
+    grid-template-columns: 1fr;
+  }
+  .compact-species-page .morphology-grid article,
+  .compact-species-page .morphology-grid article:nth-child(odd),
+  .compact-species-page .morphology-grid article:nth-child(even) {
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid rgba(74, 89, 65, 0.12);
+  }
+  .compact-species-page .morphology-grid article:last-child {
+    border-bottom: 0;
+  }
+  .compact-species-page .field-notes,
+  .compact-species-page .disclosure-grid {
+    grid-template-columns: 1fr;
+  }
+  .compact-species-page .field-notes div + div {
+    border-top: 1px solid rgba(89, 53, 37, 0.1);
+    border-left: 0;
+  }
+  .compact-species-page .habitat-hero {
+    grid-template-columns: 1fr;
+  }
+  .compact-species-page .habitat-hero > div + div {
+    border-top: 1px solid rgba(255, 247, 229, 0.16);
+    border-left: 0;
+  }
+  .ecology-snapshot {
+    grid-template-columns: 1fr;
+  }
+  .ecology-snapshot > div {
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 3px 10px;
+    min-height: 58px;
+    padding: 9px 11px;
+  }
+  .ecology-snapshot > div + div {
+    border-top: 1px solid rgba(89, 53, 37, 0.1);
+    border-left: 0;
+  }
+  .ecology-snapshot-icon {
+    width: 30px;
+    height: 30px;
+    grid-row: 1 / span 2;
+  }
+  .ecology-snapshot dt {
+    align-self: center;
+  }
+  .ecology-snapshot dd {
+    align-self: center;
+    white-space: normal;
+  }
+  .ecology-detail-panels {
+    gap: 23px;
+    margin-top: 24px;
+  }
+  .ecology-panel-heading {
+    margin-bottom: 10px;
+  }
+  .climate-disclosure .disclosure-content,
+  .soil-disclosure .disclosure-content {
+    padding: 0;
+  }
+  .climate-overview,
+  .soil-overview {
+    grid-template-columns: 1fr;
+  }
+  .climate-temperature,
+  .soil-primary {
+    min-height: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px;
+  }
+  .climate-temperature strong {
+    flex: 0 0 auto;
+    font-size: var(--text-xl);
+  }
+  .soil-primary strong {
+    font-size: var(--text-lg);
+    text-align: right;
+  }
+  .climate-vitals,
+  .soil-vitals {
+    grid-template-columns: 1fr;
+  }
+  .climate-vitals div,
+  .soil-vitals div {
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 10px;
+    padding: 11px 14px;
+  }
+  .climate-vitals div + div,
+  .soil-vitals div + div {
+    border-top: 1px solid rgba(74, 89, 65, 0.12);
+    border-left: 0;
+  }
+  .rain-response {
+    margin-top: 15px;
+  }
+  .rainfall-facts,
+  .soil-facts {
+    grid-template-columns: 1fr;
+  }
+}

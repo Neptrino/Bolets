@@ -1,4 +1,5 @@
 import type { SpatialBounds, SpatialGridSizeM } from "@/src/lib/types";
+import { isSpatialGridSize } from "@/src/lib/map-grid";
 
 export function formatMapCoordinate(value: number) {
   return value.toFixed(4);
@@ -115,4 +116,20 @@ export function parseMapQuery(params: URLSearchParams, defaultResolution: number
     limit: Number.isFinite(limit) ? limit : null,
     resolution: Number.isFinite(resolution) ? resolution : defaultResolution
   };
+}
+
+export function parseSpatialMapQuery(
+  params: URLSearchParams,
+  defaultResolution: SpatialGridSizeM,
+) {
+  const query = parseMapQuery(params, defaultResolution);
+  if (!query) return { error: "Invalid or excessive bounding box" } as const;
+  const { resolution } = query;
+  if (!isSpatialGridSize(resolution)) {
+    return { error: "Invalid map resolution" } as const;
+  }
+  if (!mapBoundsFitResolution(query.bounds, resolution)) {
+    return { error: "Bounding box is too large for this resolution" } as const;
+  }
+  return { query: { ...query, resolution } } as const;
 }

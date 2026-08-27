@@ -1,5 +1,5 @@
 export const HABITAT_MODEL_VERSION = "habitat-static-v9-edge-floor";
-export const PREDICTION_SCORING_VERSION = "hydrothermal-v2";
+const PREDICTION_SCORING_VERSION = "hydrothermal-v2";
 export const HYDROTHERMAL_PRIOR_VERSION = "hydrothermal-v1-priors-2026-08b";
 // 08f: boletus flush lag — the four boletus species score rain fallen 15-26
 // days ago (recentWindowDays 14 + rainfallWindowDays 26) after two seasons
@@ -12,7 +12,7 @@ export const HYDROTHERMAL_V2_PRIOR_VERSION = "hydrothermal-v2-priors-2026-08f";
  * a species from this set reverts it to v1 scoring, and the truffle stays
  * habitat-only regardless.
  */
-export const HYDROTHERMAL_V2_SPECIES = new Set<string>([
+const HYDROTHERMAL_V2_SPECIES = new Set<string>([
   "agaricus-campestris",
   "amanita-caesarea",
   "amanita-muscaria",

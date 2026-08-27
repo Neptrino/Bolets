@@ -1,4 +1,4 @@
-export const ALTITUDE_MARGIN_M = 100;
+const ALTITUDE_MARGIN_M = 100;
 
 // The altitude suitability taper itself lives in SQL
 // (public.habitat_altitude_weight), where the prediction path executes it.

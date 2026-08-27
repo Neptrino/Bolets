@@ -40,7 +40,7 @@ export const editorialAuthors = {
   [editorialTeam.id]: editorialTeam,
 } as const;
 
-export function authorEntityId(authorId: EditorialAuthorId) {
+function authorEntityId(authorId: EditorialAuthorId) {
   return authorId === siteAuthor.id ? siteAuthor.entityId : `${SITE_URL}/#editorial-team`;
 }
 

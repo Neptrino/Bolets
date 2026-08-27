@@ -1,4 +1,4 @@
-export const OPERATIONAL_RESYNC_TARGETS = [
+const OPERATIONAL_RESYNC_TARGETS = [
   "all",
   "regional-environment",
   "station-rain",

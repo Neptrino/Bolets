@@ -1,7 +1,6 @@
 import { conditionSnapshotSchema } from "@/src/lib/schema";
 import type { ConditionSnapshot, RegionId } from "@/src/lib/types";
 
-const regions: RegionId[] = ["pirineus", "prepirineus", "catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors", "altres"];
 const environmentalFields = [
   "temperatureC", "temperatureMin24hC", "temperatureAvg24hC", "temperatureMax24hC",
   "temperatureAvg7dC", "temperatureAvg14dC", "temperatureAvg20dC",
@@ -30,8 +29,6 @@ function unavailableSnapshot(regionId: RegionId): ConditionSnapshot {
   };
 }
 
-export const localSnapshots = regions.map(unavailableSnapshot);
-
 function environmentFeedConfigured() {
   return Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
 }
@@ -59,8 +56,4 @@ export async function getConditionSnapshot(regionId: RegionId): Promise<Conditio
   } catch {
     return unavailable;
   }
-}
-
-export function normaliseSnapshot(input: unknown): ConditionSnapshot {
-  return conditionSnapshotSchema.parse(input);
 }

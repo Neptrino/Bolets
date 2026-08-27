@@ -226,7 +226,10 @@ async function CurrentOverview() {
               : `/map?species=${item.speciesId}&region=${item.regionId}`;
 
             return (
-              <li className={`current-overview-card is-${item.status}`} key={`${isArea ? item.areaSlug : item.regionId}-${item.speciesId}`}>
+              <li
+                className={`current-overview-card is-${item.status}`}
+                key={`${isArea ? `area:${item.areaSlug}` : `region:${item.regionId}`}:${item.speciesId}`}
+              >
                 <span className="current-row-rank" aria-label={rank ? `Posició ${rank}` : "Sense posició"}>{rank ? String(rank).padStart(2, "0") : "—"}</span>
                 <div className="current-overview-card-heading">
                   <h3>{isArea ? <Link href={item.path} className="current-row-species-link">{locationName}<ArrowUpRight size={13} /></Link> : locationName}</h3>
