@@ -289,7 +289,27 @@ export function parseObservedAt(dateCell: string, timeCell?: string) {
     if (hour > 23 || minute > 59) throw new Error(`Time "${time}" is out of range`);
   }
   const offset = madridOffset(date, hour);
-  return `${date}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00${offset}`;
+  const observedAt =
+    `${date}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00${offset}`;
+  // A row dated today is a find already made; the default-noon convention
+  // must not push it past the replay parser's in-the-past validation on the
+  // morning the user logs it. Clamp same-day defaults to the previous full
+  // hour; genuinely future dates keep their timestamp and still fail
+  // validation downstream.
+  if (!time && Date.parse(observedAt) >= Date.now()) {
+    const madridNow = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Madrid",
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", hour12: false,
+    }).formatToParts(new Date());
+    const part = (type: string) => madridNow.find((p) => p.type === type)!.value;
+    const today = `${part("year")}-${part("month")}-${part("day")}`;
+    const previousHour = Math.max(0, Number(part("hour")) - 1);
+    if (date === today) {
+      return `${date}T${String(previousHour).padStart(2, "0")}:00:00${madridOffset(date, previousHour)}`;
+    }
+  }
+  return observedAt;
 }
 
 export function parseCoordinates(
