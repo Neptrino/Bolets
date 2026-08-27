@@ -7,11 +7,11 @@ import { DailyShareActions } from "@/components/daily-share-actions";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import {
   createFavourableDailySharePreviewCards,
-  dailyShareImagePath,
   isLocalFavourablePreview,
   loadDailyShareCards,
   type DailyShareCard,
 } from "@/src/lib/daily-share-cards";
+import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
 
 // Keep the publication kit on the same twice-daily snapshot as /bolets-avui.
 export const revalidate = 43200;
@@ -27,8 +27,8 @@ type ShareSearchParams = Promise<{ preview?: string }>;
 
 function FeaturedCard({ card, isPreview }: { card: DailyShareCard; isPreview: boolean }) {
   const previewParam = isPreview ? "&preview=favorable" : "";
-  const feedImagePath = `${dailyShareImagePath(card.slug, "feed")}${previewParam}`;
-  const storyImagePath = `${dailyShareImagePath(card.slug, "story")}${previewParam}`;
+  const feedImagePath = `${signedDailyShareImagePath(card, "feed")}${previewParam}`;
+  const storyImagePath = `${signedDailyShareImagePath(card, "story")}${previewParam}`;
 
   return (
     <li>

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createDailyShareCards, createFavourableDailySharePreviewCards } from "@/src/lib/daily-share-cards";
+import { createSignedDailyShareImagePath, parseSignedDailyShareCard } from "@/src/lib/daily-share-image-payload";
 import type { AreaOverviewItem, CurrentOverviewItem } from "@/src/lib/current-overview";
 
 const publishable = {
@@ -94,5 +95,21 @@ describe("daily share cards", () => {
     expect(territoryCards.map((card) => card.slug)).toContain("zona-bergueda--rasos-de-peguera");
     expect(cards[0]?.eyebrow).toContain("Dades simulades");
     expect(cards[0]?.shareText).toContain("PREVISUALITZACIÓ LOCAL");
+  });
+
+  it("binds generated image URLs to the exact card reading", () => {
+    const secret = "daily-share-test-secret";
+    const card = createFavourableDailySharePreviewCards()[0]!;
+    const url = new URL(
+      createSignedDailyShareImagePath(card, "feed", secret),
+      "https://bolets.app",
+    );
+
+    expect(parseSignedDailyShareCard(url.searchParams, card.slug, secret)).toMatchObject({
+      slug: card.slug,
+      readings: card.readings,
+    });
+    url.searchParams.set("card", `${url.searchParams.get("card")}x`);
+    expect(parseSignedDailyShareCard(url.searchParams, card.slug, secret)).toBeNull();
   });
 });

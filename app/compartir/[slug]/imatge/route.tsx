@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { DAILY_OVERVIEW_REVALIDATE_SECONDS } from "@/src/lib/current-overview";
 import { isLocalFavourablePreview, loadDailyShareCard, loadFavourableDailySharePreviewCard, type DailyShareCard, type DailyShareFormat } from "@/src/lib/daily-share-cards";
+import { hasSignedDailySharePayload, readSignedDailyShareCard } from "@/src/lib/daily-share-image-payload-server";
 import { getSuitabilityBand, suitabilityScale } from "@/src/lib/suitability-scale";
 
 export const runtime = "nodejs";
@@ -275,8 +276,15 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
   const requestUrl = new URL(request.url);
   const requestedFormat = requestUrl.searchParams.get("format");
   const format: DailyShareFormat = requestedFormat === "story" || requestedFormat === "landscape" ? requestedFormat : "feed";
-  const isPreview = isLocalFavourablePreview(requestUrl.searchParams.get("preview") ?? undefined);
-  const card = isPreview ? await loadFavourableDailySharePreviewCard(slug) : await loadDailyShareCard(slug);
+  const signedCard = readSignedDailyShareCard(requestUrl.searchParams, slug);
+  if (hasSignedDailySharePayload(requestUrl.searchParams) && !signedCard) {
+    return new Response("Invalid card payload", { status: 400 });
+  }
+  const isPreview = signedCard?.isPreview === true ||
+    isLocalFavourablePreview(requestUrl.searchParams.get("preview") ?? undefined);
+  const card = signedCard ?? (isPreview
+    ? await loadFavourableDailySharePreviewCard(slug)
+    : await loadDailyShareCard(slug));
 
   if (!card) return new Response("Not found", { status: 404 });
   // An unavailable card usually means the overview snapshot was cold or the
