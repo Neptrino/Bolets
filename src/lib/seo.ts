@@ -19,7 +19,7 @@ export function speciesPath(species: Pick<SpeciesProfile, "speciesId">) {
   return `/bolets/${species.speciesId}`;
 }
 
-export function speciesDescription(species: SpeciesProfile) {
+export function speciesDescription(species: Pick<SpeciesProfile, "identity">) {
   const { commonName, scientificName, shortDescription } = species.identity;
   const description = `${commonName} (${scientificName}): ${shortDescription}`;
   return truncateSeoText(description, META_DESCRIPTION_MAX_LENGTH);
@@ -49,7 +49,7 @@ export function mediaUrl(media: MediaAsset | undefined) {
   return absoluteUrl(media.localPath ?? media.imageUrl ?? media.sourceUrl);
 }
 
-export function speciesImage(species: SpeciesProfile) {
+export function speciesImage(species: Pick<SpeciesProfile, "media">) {
   return mediaUrl(
     species.media.find((asset) => asset.identificationReference) ??
       species.media[0],

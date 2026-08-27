@@ -4,6 +4,7 @@ import type {
   Month,
   SeasonalActivity,
   SpeciesProfile,
+  CatalogueSpecies,
 } from "@/src/lib/types";
 
 export interface SpeciesCardProfile {
@@ -25,14 +26,15 @@ export interface SpeciesCardProfile {
   ecologicalConfig: {
     habitat: {
       forestTypes: string[];
-      altitude: [number, number];
+      altitude: [number, number] | null;
     };
-    seasonality: Record<Month, SeasonalActivity>;
+    seasonality: Record<Month, SeasonalActivity> | null;
   };
+  seasonLabel?: string;
   media: MediaAsset[];
 }
 
-export function toSpeciesCardProfile(species: SpeciesProfile): SpeciesCardProfile {
+export function toSpeciesCardProfile(species: CatalogueSpecies): SpeciesCardProfile {
   const referenceImage = species.media.find((asset) => asset.identificationReference);
 
   return {
@@ -53,11 +55,12 @@ export function toSpeciesCardProfile(species: SpeciesProfile): SpeciesCardProfil
     },
     ecologicalConfig: {
       habitat: {
-        forestTypes: species.ecologicalConfig.habitat.forestTypes,
-        altitude: species.ecologicalConfig.habitat.altitude,
+        forestTypes: "ecology" in species ? species.ecology.habitats : species.ecologicalConfig.habitat.forestTypes,
+        altitude: "ecology" in species ? null : species.ecologicalConfig.habitat.altitude,
       },
-      seasonality: species.ecologicalConfig.seasonality,
+      seasonality: "ecology" in species ? null : species.ecologicalConfig.seasonality,
     },
+    ...("ecology" in species ? { seasonLabel: species.ecology.season } : {}),
     media: referenceImage ? [referenceImage] : [],
   };
 }

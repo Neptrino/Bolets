@@ -2,12 +2,30 @@
 
 **Market:** Catalan-language searches in Catalonia, with Spain-wide Catalan spillover
 **Initial audit date:** 13 August 2026
-**Status refreshed:** 25 August 2026
+**Status refreshed:** 27 August 2026 (implementation update; latest quantitative audit remains 25–26 August)
 **Scope:** live technical crawl, repository/content inventory, public SERP sampling, Google autocomplete, competitor research, mobile Lighthouse test, domain/indexation checks, and current SE Ranking project review
 
 > The 13 August sections below remain the launch baseline. The current-status update takes precedence wherever a metric, gap or recommendation has since changed.
 
-## Current-status update — 25 August 2026
+## Implementation update — 27 August 2026
+
+The competitor comparison is recorded in [the 27 August report](docs/seo-competitor-comparison-2026-08-27.md). The following changes are implemented and locally verified, **not yet committed, pushed or deployed**:
+
+- `/normativa-bolets`: expanded from the initial checklist into a public-ready local guide covering Aigüestortes, Virós, Esterri de Cardós, Poblet, Cadí-Moixeró and Els Ports. It includes direct official sources, group-activity procedures, explicitly dated 2023 fees/quotas and an unresolved-status warning for Poblet's individual carnet. It does not assert a universal licence/quota or live access status. Canonical, Article/Breadcrumb metadata, sitemap and existing footer/guide links are included.
+- `/bolets-de-soca`: a broad wood-fungi guide, not a single-species profile. It now lists the four existing catalogue species—*Pleurotus ostreatus*, *Cyclocybe cylindracea*, *Omphalotus olearius* and *Galerina marginata*—using shared cards, photos and safety labels. This corrects the earlier narrow brief below.
+- `/fals-rossinyol`: a documentary guide distinguishing *Hygrophoropsis aurantiaca*, *Cantharellus cibarius* and *Omphalotus olearius*, now linking to all three profiles through full-size catalogue cards.
+- `/bolets/hygrophoropsis-aurantiaca`: a new descriptive profile with two attributed, licensed photographs, morphology, sourced habitat/season text, consumption warnings, lookalikes and truthful editorial metadata. It appears in catalogue search, related-species links and the sitemap. The local public catalogue now has **53 profiles: 52 model-supported and one descriptive-only**. No numerical ecology was invented: map candidates, habitat caches, prediction configuration and quantified monthly calendars remain unchanged. The profile and confusion guide retain separate, self-canonical purposes.
+- **Owner decision:** no independent expert review is planned for now. The earlier review-dependent publication gate is superseded. Both guides are indexable, linked from `/bolets` and included in the sitemap/public editorial list, with explicit safety limits and no independent-review claim. The shared attribution and editorial-policy page now state the absence of review without promising one is pending.
+- All **66 generic supplementary-photo descriptions across 33 species** have been replaced after inspecting the local images. Image bytes, licensing, provenance and `identificationReference: false` remain unchanged. This is caption improvement, not independent taxonomic verification or a new production crawl.
+- The [optional independent-review checklist](docs/mycological-review-checklist.md) is retained for a future policy change, not as an active publication dependency. No reviewer has been appointed or outreach sent.
+
+Verification after the follow-up: 671 unit tests passed (8 skipped); type checking, lint and production build passed. Thirteen browser tests passed: the three guides at desktop/tablet/mobile widths, catalogue navigation and three shared-layout regressions. They cover non-overlap, indexing/attribution, permissions section links and navigation to an existing species profile. The sitemap now includes all three guides (190 page URLs); production remains unchanged until deployment. Shared page layouts and typography were reused; no map loading/configuration was changed.
+
+Subsequent species-profile verification: 679 unit tests passed (8 skipped) and the production build passed. Fourteen browser tests passed across the three guides and the new profile, including mobile/tablet/desktop layout, the three guide-card destinations, gallery controls/lightbox, scientific/alternative-name search and absence of map-data requests from the descriptive profile. A narrow-column overflow in the shared editorial attribution was corrected using the panel's own available width. The local sitemap now has **191 page URLs**; these implementation totals do not describe production or Google's index coverage.
+
+SE Ranking again returned an OAuth reauthentication error on 27 August. Fresh competitor rankings, backlink metrics and search volumes remain unavailable; the figures below are historical snapshots. Reconnect SE Ranking, deploy the approved public changes, confirm production output, then measure recrawl and Search Console response rather than assuming a ranking gain.
+
+## Quantitative snapshot — 25 August 2026
 
 The project has progressed materially since launch. It is still too early to make a traffic forecast or claim a durable index-coverage outcome, but the original report should no longer be read as a list of uncompleted product or SEO tasks. The query data below comes through the connected Search Console report in SE Ranking and remains subject to Search Console's normal reporting lag.
 
@@ -23,10 +41,10 @@ The project has progressed materially since launch. It is still too early to mak
 | Local rank tracking | Both language configurations use the national database; no Catalonia or Barcelona region is configured yet. |
 | Fresh technical crawl | SE Ranking’s 25 August crawl scored **95/100** across 549 URLs: 0 errors, no slow-loading-page warnings and no missing-favicon warning. |
 
-### Priority actions now
+### Priority actions recorded on 25 August (see implementation update above)
 
 1. Add descriptive alt text to the identification/gallery images. The fresh crawl finds this on 206 pages; an inspected example is the unlabelled *Russula virescens* gallery images. This is the clearest remaining scalable on-page issue.
-2. Build the safety-reviewed *bolet de soca* and false-rossinyol content before assigning the three deliberately unowned high-intent terms; do not point them at a merely similar species page.
+2. The *bolet de soca* and false-rossinyol content is now implemented as source-backed editorial guides. After deployment and production verification, assign the matching canonical URLs to the three deliberately unowned terms; do not point them at a merely similar species page. Independent review is not currently planned.
 3. Set a Catalonia or Barcelona tracking location if SE Ranking supports it, while retaining the national view for comparison, and replace the stale `mapa bolets catalunya 2025` term with its 2026 equivalent.
 4. Use the native Google Search Console property for coverage, URL inspection and Core Web Vitals; keep Bing Webmaster Tools verified as a separate operational check. The connected report confirms query data, but it is not a substitute for property-level diagnosis.
 5. Check the six externally reported 4xx links individually before changing them. At least one is an ICGC service that returns 403 to the crawler, rather than a broken bolets.app URL.
@@ -49,7 +67,7 @@ This was the first complete demand-to-page mapping pass: SE Ranking’s similar-
 
 | Opportunity | Estimated monthly volume | Decision |
 |---|---:|---|
-| `bolet de soca` / `bolets de soca` | 390 each | Build an expert-reviewed profile and danger comparison with *Galerina marginata* before assigning a URL. |
+| `bolet de soca` / `bolets de soca` | 390 each | Corrected 27 August: `/bolets-de-soca` is a public-ready broad guide with four existing catalogue species. Assign it after deployment and production verification. The owner is not commissioning independent review now. The two estimates overlap and must not be summed as unique demand. |
 | `bolets comestible` | 590 | Track as a spelling/number variant of `/bolets-comestibles`; no duplicate page. |
 | `bolets no comestibles` | 140 | Target `/bolets-verinosos`; reinforce the page’s wording and internal links. |
 | `bolets toxics` | 90 | Target `/bolets-verinosos`; no separate page. |

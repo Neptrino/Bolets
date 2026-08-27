@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Mountain, Trees } from "lucide-react";
+import { ArrowRight, CalendarDays, Mountain, Trees } from "lucide-react";
 import { CulinaryRating } from "@/components/culinary-rating";
 import { MediaImage } from "@/components/media-image";
 import { SeasonIndicator } from "@/components/season-indicator";
@@ -11,10 +11,12 @@ export function SpeciesCard({
   species,
   index = 0,
   currentMonth,
+  sizes = "(max-width: 580px) calc(100vw - 48px), (max-width: 1000px) calc(50vw - 37px), (max-width: 1228px) calc(33.333vw - 33px), 377px",
 }: {
   species: SpeciesCardProfile;
   index?: number;
   currentMonth?: Month;
+  sizes?: string;
 }) {
   const palettes = [["#f28a2e", "#9f4d24"], ["#f2a766", "#6e3d25"], ["#96958e", "#bd592a"], ["#c86b32", "#3b3b3b"]] as const;
   const [toneA, toneB] = palettes[index % palettes.length];
@@ -33,7 +35,7 @@ export function SpeciesCard({
             className="species-card-photo"
             alt={referenceImage.alt}
             fill
-            sizes="(max-width: 580px) calc(100vw - 48px), (max-width: 1000px) calc(50vw - 37px), (max-width: 1228px) calc(33.333vw - 33px), 377px"
+            sizes={sizes}
           />
         )}
         <CulinaryRating
@@ -55,13 +57,17 @@ export function SpeciesCard({
             <dt>Hàbitat</dt>
             <dd>{species.ecologicalConfig.habitat.forestTypes[0]}</dd>
           </div>
-          <div>
+          {species.ecologicalConfig.habitat.altitude ? <div>
             <Mountain size={15} aria-hidden="true" />
             <dt>Altitud</dt>
             <dd>{species.ecologicalConfig.habitat.altitude[0]}–{species.ecologicalConfig.habitat.altitude[1]} m</dd>
-          </div>
+          </div> : species.seasonLabel ? <div>
+            <CalendarDays size={15} aria-hidden="true" />
+            <dt>Temporada</dt>
+            <dd>{species.seasonLabel}</dd>
+          </div> : null}
         </dl>
-        {currentMonth && (
+        {currentMonth && species.ecologicalConfig.seasonality && (
           <SeasonIndicator species={species} currentMonth={currentMonth} />
         )}
         <span className="card-link">Veure la fitxa <ArrowRight size={15} aria-hidden="true" /></span>

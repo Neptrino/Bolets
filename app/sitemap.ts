@@ -9,6 +9,7 @@ import {
   speciesLocationPages,
 } from "@/data/location-pages";
 import { speciesProfiles } from "@/data/species";
+import { catalogueSpecies } from "@/data/catalogue";
 import { seasonMonthPath, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { seasonGuides } from "@/src/lib/season-guides";
 import { absoluteUrl, speciesImage, speciesPath } from "@/src/lib/seo";
@@ -34,11 +35,14 @@ const poisonousGuideLastModified = new Date(
 export default function sitemap(): MetadataRoute.Sitemap {
   const pages: MetadataRoute.Sitemap = [
     { url: absoluteUrl(), lastModified, images: [absoluteUrl("/media/generated/home-hero-boletus-v2.webp")] },
-    { url: absoluteUrl("/bolets"), lastModified },
+    { url: absoluteUrl("/bolets"), lastModified: new Date(`${getEditorialMetadata("bolets").updatedAt}T00:00:00+02:00`) },
     { url: absoluteUrl("/bolets-avui"), lastModified: currentOverviewLastModified },
     ...seasonGuides.map((guide) => ({ url: absoluteUrl(guide.path), lastModified })),
     { url: absoluteUrl("/quan-surten-els-bolets-despres-de-ploure"), lastModified: rainGuideLastModified },
     { url: absoluteUrl("/parts-dun-bolet"), lastModified: mushroomPartsGuideLastModified },
+    { url: absoluteUrl("/bolets-de-soca"), lastModified: new Date(`${getEditorialMetadata("bolets-de-soca").updatedAt}T00:00:00+02:00`) },
+    { url: absoluteUrl("/fals-rossinyol"), lastModified: new Date(`${getEditorialMetadata("fals-rossinyol").updatedAt}T00:00:00+02:00`) },
+    { url: absoluteUrl("/normativa-bolets"), lastModified: new Date(`${getEditorialMetadata("normativa-bolets").updatedAt}T00:00:00+02:00`) },
     { url: absoluteUrl("/bolets-comestibles"), lastModified: edibleGuideLastModified },
     { url: absoluteUrl("/bolets-verinosos"), lastModified: poisonousGuideLastModified },
     { url: absoluteUrl("/temporada"), lastModified },
@@ -53,7 +57,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
     })),
     { url: absoluteUrl("/metode"), lastModified },
-    { url: absoluteUrl("/equip-editorial"), lastModified },
+    { url: absoluteUrl("/equip-editorial"), lastModified: new Date(`${getEditorialMetadata("equip-editorial").updatedAt}T00:00:00+02:00`) },
     { url: absoluteUrl("/avis-legal"), lastModified },
     { url: absoluteUrl("/zones"), lastModified },
     { url: absoluteUrl("/guies"), lastModified },
@@ -78,11 +82,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
         images: image ? [image] : undefined,
       };
     }),
-    ...speciesProfiles.map((species) => {
+    ...catalogueSpecies.map((species) => {
       const image = speciesImage(species);
       return {
         url: absoluteUrl(speciesPath(species)),
-        lastModified,
+        lastModified: new Date(`${getEditorialMetadata(`species:${species.speciesId}`).updatedAt}T00:00:00+02:00`),
         images: image ? [image] : undefined,
       };
     }),

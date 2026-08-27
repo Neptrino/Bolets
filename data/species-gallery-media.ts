@@ -12,7 +12,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Archenzo",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Rubroboletus satanas en el seu entorn.",
+      alt: "Rubroboletus satanas: Barret blanquinós irregular i peu vermell gruixut entre fulles seques.",
     },
     {
       id: "wikimedia-rubroboletus-satanas-gallery-3",
@@ -22,7 +22,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Irene Andersson",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Rubroboletus satanas en el seu entorn.",
+      alt: "Rubroboletus satanas: Exemplar capgirat amb porus grocs i ataronjats i peu vermell, al costat d’un altre barret.",
     },
   ],
   "tylopilus-felleus": [
@@ -34,7 +34,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Björn Sothmann",
       license: "CC BY-SA 2.0",
       identificationReference: false,
-      alt: "Vista addicional de Tylopilus felleus en el seu entorn.",
+      alt: "Tylopilus felleus: Vista inferior del barret clar i del peu amb reticle marró sobre fusta amb molsa.",
     },
     {
       id: "wikimedia-tylopilus-felleus-gallery-3",
@@ -44,7 +44,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "bernd gliwa / Ak ccm",
       license: "CC BY-SA 2.5",
       identificationReference: false,
-      alt: "Segona vista de Tylopilus felleus en el seu entorn.",
+      alt: "Tylopilus felleus: Tres exemplars amb barrets marrons, porus pàl·lids i peus reticulats entre branquillons.",
     },
   ],
   "amanita-muscaria": [
@@ -56,7 +56,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Onderwijsgek",
       license: "CC BY-SA 3.0 nl",
       identificationReference: false,
-      alt: "Vista addicional de Amanita muscaria en el seu entorn.",
+      alt: "Amanita muscaria: Tres exemplars de mides diferents amb barrets vermells, taques blanques i peus blancs a l’herba.",
     },
     {
       id: "wikimedia-amanita-muscaria-gallery-3",
@@ -66,7 +66,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Alberto Cemborain",
       license: "CC BY 3.0",
       identificationReference: false,
-      alt: "Segona vista de Amanita muscaria en el seu entorn.",
+      alt: "Amanita muscaria: Dos barrets vermells amb nombroses taques blanques, vistos des de dalt entre agulles de pi.",
     },
   ],
   "cortinarius-rubellus": [
@@ -78,7 +78,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Andreas Kunze",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Cortinarius rubellus en el seu entorn.",
+      alt: "Cortinarius rubellus: Dos exemplars sobre molsa; un mostra les làmines marrons i l’altre el barret amb centre elevat.",
     },
     {
       id: "wikimedia-cortinarius-rubellus-gallery-3",
@@ -88,7 +88,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Andreas Kunze",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Cortinarius rubellus en el seu entorn.",
+      alt: "Cortinarius rubellus: Dos exemplars ajaguts sobre molsa, amb el barret i les làmines rovellades visibles.",
     },
   ],
   "omphalotus-olearius": [
@@ -100,7 +100,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Henk Monster",
       license: "CC BY 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Omphalotus olearius en el seu entorn.",
+      alt: "Omphalotus olearius: Muntatge de diferents vistes de bolets ataronjats, amb barrets oberts i làmines visibles.",
     },
     {
       id: "wikimedia-omphalotus-olearius-gallery-3",
@@ -110,7 +110,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Papypierre1",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Omphalotus olearius en el seu entorn.",
+      alt: "Omphalotus olearius: Grup de bolets ataronjats a tocar d’un arbre, entre terra i lloses de pedra.",
     },
   ],
   "boletus-edulis": [
@@ -122,7 +122,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Holger Krisp",
       license: "CC BY 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Boletus edulis en el seu entorn.",
+      alt: "Boletus edulis: Dos exemplars amb barrets marrons i peus clars gruixuts, envoltats de vegetació.",
     },
     {
       id: "wikimedia-boletus-edulis-gallery-3",
@@ -132,7 +132,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Tocekas",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Boletus edulis en el seu entorn.",
+      alt: "Boletus edulis: Tres exemplars de mides diferents amb barrets marrons sobre la fullaraca del bosc.",
     },
   ],
   "boletus-pinophilus": [
@@ -144,7 +144,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Jukka Vauras",
       license: "CC BY-SA 4.0",
       identificationReference: false,
-      alt: "Vista addicional de Boletus pinophilus en el seu entorn.",
+      alt: "Boletus pinophilus: Dos exemplars sobre agulles de pi, amb barrets rogencs; un mostra el peu gruixut.",
     },
     {
       id: "wikimedia-boletus-pinophilus-gallery-3",
@@ -154,7 +154,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Irene Andersson",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Boletus pinophilus en el seu entorn.",
+      alt: "Boletus pinophilus: Dos exemplars recolzats sobre un fons blau, amb la cara inferior del barret i els peus visibles.",
     },
   ],
   "boletus-aereus": [
@@ -166,7 +166,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Emiliano Burzagli",
       license: "Domini públic",
       identificationReference: false,
-      alt: "Vista addicional de Boletus aereus en el seu entorn.",
+      alt: "Boletus aereus: Barret marró molt fosc i peu robust clar, parcialment envoltats d’herba i fulles.",
     },
     {
       id: "wikimedia-boletus-aereus-gallery-3",
@@ -176,7 +176,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Aereus646",
       license: "CC BY-SA 4.0",
       identificationReference: false,
-      alt: "Segona vista de Boletus aereus en el seu entorn.",
+      alt: "Boletus aereus: Exemplar de barret fosc i peu marró amb zones clares, entre fulles seques.",
     },
   ],
   "boletus-reticulatus": [
@@ -188,7 +188,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Archenzo / Ak ccm",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Boletus reticulatus en el seu entorn.",
+      alt: "Boletus reticulatus: Grup de diferents mides, amb barrets ocres i peus gruixuts, entre fulles seques.",
     },
     {
       id: "wikimedia-boletus-reticulatus-gallery-3",
@@ -198,7 +198,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Gerhard Koller",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Boletus reticulatus en el seu entorn.",
+      alt: "Boletus reticulatus: Exemplar inclinat amb barret ocre i peu molt ample i clar sobre la fullaraca.",
     },
   ],
   "lactarius-deliciosus": [
@@ -210,7 +210,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "furtwangl / Ak ccm",
       license: "CC BY 2.0",
       identificationReference: false,
-      alt: "Vista addicional de Lactarius deliciosus en el seu entorn.",
+      alt: "Lactarius deliciosus: Quatre barrets ataronjats vistos des de dalt, amb bandes circulars visibles.",
     },
     {
       id: "wikimedia-lactarius-deliciosus-gallery-3",
@@ -220,7 +220,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "zaca",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Lactarius deliciosus en el seu entorn.",
+      alt: "Lactarius deliciosus: Primer pla d’un barret amb centre deprimit i bandes concèntriques ataronjades.",
     },
   ],
   "lactarius-sanguifluus": [
@@ -232,7 +232,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Irene Andersson",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Lactarius sanguifluus en el seu entorn.",
+      alt: "Lactarius sanguifluus: Dos exemplars sobre herba; un mostra el barret amb zones verdoses i l’altre les làmines rosades.",
     },
     {
       id: "wikimedia-lactarius-sanguifluus-gallery-3",
@@ -242,7 +242,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "zaca",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Lactarius sanguifluus en el seu entorn.",
+      alt: "Lactarius sanguifluus: Vista inferior amb làmines rosades atapeïdes i peu amb taques més fosques.",
     },
   ],
   "cantharellus-cibarius": [
@@ -254,7 +254,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Andreas Kunze",
       license: "CC BY-SA 4.0",
       identificationReference: false,
-      alt: "Vista addicional de Cantharellus cibarius en el seu entorn.",
+      alt: "Cantharellus cibarius: Exemplars grocs sobre molsa, amb marges ondulats i plecs que baixen pel peu.",
     },
     {
       id: "wikimedia-cantharellus-cibarius-gallery-3",
@@ -264,7 +264,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Björn Sothmann",
       license: "CC BY-SA 2.0",
       identificationReference: false,
-      alt: "Segona vista de Cantharellus cibarius en el seu entorn.",
+      alt: "Cantharellus cibarius: Dos barrets grocs irregulars vistos des de dalt, entre branques i fullaraca.",
     },
   ],
   "craterellus-lutescens": [
@@ -276,7 +276,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Scott Darbey from Canada",
       license: "CC BY 2.0",
       identificationReference: false,
-      alt: "Vista addicional de Craterellus lutescens en el seu entorn.",
+      alt: "Craterellus lutescens: Grup de barrets marrons i peus grocs fins; la vista lateral mostra la cara inferior més clara.",
     },
     {
       id: "wikimedia-craterellus-lutescens-gallery-3",
@@ -286,7 +286,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Andreas Kunze",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Craterellus lutescens en el seu entorn.",
+      alt: "Craterellus lutescens: Primer pla de la cara inferior arrugada i del peu groc d’un exemplar ajagut sobre molsa.",
     },
   ],
   "craterellus-cornucopioides": [
@@ -298,7 +298,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Jean-Pol GRANDMONT",
       license: "CC BY 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Craterellus cornucopioides en el seu entorn.",
+      alt: "Craterellus cornucopioides: Vista lateral de trompetes fosques amb exterior grisenc entre fulles de tardor.",
     },
     {
       id: "wikimedia-craterellus-cornucopioides-gallery-3",
@@ -308,7 +308,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Jean-Pol GRANDMONT",
       license: "CC BY 3.0",
       identificationReference: false,
-      alt: "Segona vista de Craterellus cornucopioides en el seu entorn.",
+      alt: "Craterellus cornucopioides: Grup de trompetes fosques vist des de dalt, amb obertures profundes i marges ondulats.",
     },
   ],
   "hydnum-repandum": [
@@ -320,7 +320,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Scott Darbey from Canada",
       license: "CC BY 2.0",
       identificationReference: false,
-      alt: "Vista addicional de Hydnum repandum en el seu entorn.",
+      alt: "Hydnum repandum: Primer pla de les agulletes clares que pengen de sota el barret.",
     },
     {
       id: "wikimedia-hydnum-repandum-gallery-3",
@@ -330,7 +330,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Alan Rockefeller",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Hydnum repandum en el seu entorn.",
+      alt: "Hydnum repandum: Exemplars de color crema sobre fulles; un està capgirat i mostra les agulletes.",
     },
   ],
   "macrolepiota-procera": [
@@ -351,7 +351,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Chrumps",
       license: "CC BY-SA 4.0",
       identificationReference: false,
-      alt: "Vista addicional de Macrolepiota procera en el seu entorn.",
+      alt: "Macrolepiota procera: Dos exemplars alts entre herba: un amb barret tancat i l’altre obert, amb anell visible.",
     },
     {
       id: "wikimedia-macrolepiota-procera-gallery-3",
@@ -361,7 +361,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Fredy.00",
       license: "Domini públic",
       identificationReference: false,
-      alt: "Segona vista de Macrolepiota procera en el seu entorn.",
+      alt: "Macrolepiota procera: Conjunt d’exemplars recollits sobre una superfície de fusta, amb barrets oberts i tancats.",
     },
   ],
   "tricholoma-terreum": [
@@ -373,7 +373,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Pere Orga Esteve",
       license: "CC BY 4.0",
       identificationReference: false,
-      alt: "Vista addicional de Tricholoma terreum en el seu entorn.",
+      alt: "Tricholoma terreum: Cistell amb bolets grisos sobre el terra del bosc, al costat de barrets escampats.",
     },
     {
       id: "wikimedia-tricholoma-terreum-gallery-3",
@@ -383,7 +383,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Pere Orga Esteve",
       license: "CC BY 4.0",
       identificationReference: false,
-      alt: "Segona vista de Tricholoma terreum en el seu entorn.",
+      alt: "Tricholoma terreum: Grup de barrets grisos i irregulars entre agulles de pi i herba.",
     },
   ],
   "hygrophorus-latitabundus": [
@@ -395,7 +395,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Holger Krisp",
       license: "CC BY 4.0",
       identificationReference: false,
-      alt: "Vista addicional de Hygrophorus latitabundus en el seu entorn.",
+      alt: "Hygrophorus latitabundus: Dos exemplars ajaguts, amb peus blancs coberts de terra i làmines clares visibles.",
     },
     {
       id: "wikimedia-hygrophorus-latitabundus-gallery-3",
@@ -405,7 +405,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Pau Cabot",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Hygrophorus latitabundus en el seu entorn.",
+      alt: "Hygrophorus latitabundus: Exemplar capgirat sobre fullaraca, amb làmines blanques, marge marró i peu amb terra.",
     },
   ],
   "amanita-caesarea": [
@@ -417,7 +417,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Gerhard Koller",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Amanita caesarea en el seu entorn.",
+      alt: "Amanita caesarea: Barret taronja, peu groc i restes blanques a la base, entre fulles i herba.",
     },
     {
       id: "wikimedia-amanita-caesarea-gallery-3",
@@ -427,7 +427,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Murselin Guney",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Amanita caesarea en el seu entorn.",
+      alt: "Amanita caesarea: Un exemplar obert mostra làmines grogues al costat de dos exemplars encara envoltats de vel blanc.",
     },
   ],
   "marasmius-oreades": [
@@ -439,7 +439,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Strobilomyces",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Marasmius oreades en el seu entorn.",
+      alt: "Marasmius oreades: Dos exemplars entre herba; un mostra les làmines clares espaiades i l’altre el barret.",
     },
     {
       id: "wikimedia-marasmius-oreades-gallery-3",
@@ -449,7 +449,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Emőke Dénes",
       license: "CC BY-SA 4.0",
       identificationReference: false,
-      alt: "Segona vista de Marasmius oreades en el seu entorn.",
+      alt: "Marasmius oreades: Barrets clars de mides diferents entre brins d’herba alta.",
     },
   ],
   "calocybe-gambosa": [
@@ -461,7 +461,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Andreas Kunze",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Calocybe gambosa en el seu entorn.",
+      alt: "Calocybe gambosa: Exemplars blancs sobre molsa i agulles de pi; un està capgirat i mostra les làmines.",
     },
     {
       id: "wikimedia-calocybe-gambosa-gallery-3",
@@ -471,7 +471,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Björn Sothmann",
       license: "CC BY-SA 2.0",
       identificationReference: false,
-      alt: "Segona vista de Calocybe gambosa en el seu entorn.",
+      alt: "Calocybe gambosa: Grup de barrets crema sobre fullaraca, amb un exemplar ajagut que deixa veure les làmines.",
     },
   ],
   "hygrophorus-russula": [
@@ -483,7 +483,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Matt Sherman",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Hygrophorus russula en el seu entorn.",
+      alt: "Hygrophorus russula: Vista inferior de làmines clares amb tons rosats i peu tacat de vermell sobre molsa.",
     },
     {
       id: "wikimedia-hygrophorus-russula-gallery-3",
@@ -493,7 +493,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Matt Sherman",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Hygrophorus russula en el seu entorn.",
+      alt: "Hygrophorus russula: Dos exemplars entre molsa; un mostra les làmines i l’altre el barret rosat.",
     },
   ],
   "morchella-esculenta": [
@@ -505,7 +505,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Bernd Haynold",
       license: "CC BY-SA 2.5",
       identificationReference: false,
-      alt: "Vista addicional de Morchella esculenta en el seu entorn.",
+      alt: "Morchella esculenta: Exemplar amb barret allargat de cavitats brunes i peu clar entre tiges seques.",
     },
     {
       id: "wikimedia-morchella-esculenta-gallery-3",
@@ -515,7 +515,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Andreas Kunze",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Morchella esculenta en el seu entorn.",
+      alt: "Morchella esculenta: Dos exemplars amb barrets alveolats groguencs i peus clars sobre el sòl.",
     },
   ],
   "lepista-nuda": [
@@ -527,7 +527,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Nathan Wilson",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Lepista nuda en el seu entorn.",
+      alt: "Lepista nuda: Dos exemplars entre herba; un mostra el barret marró violaci i l’altre les làmines i el peu lilosos.",
     },
     {
       id: "wikimedia-lepista-nuda-gallery-3",
@@ -537,7 +537,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Jac. Janssen from Baarlo lb, NL",
       license: "CC BY 2.0",
       identificationReference: false,
-      alt: "Segona vista de Lepista nuda en el seu entorn.",
+      alt: "Lepista nuda: Vista lateral d’un exemplar amb barret estès i peu pàl·lid entre fulles seques.",
     },
   ],
   "suillus-luteus": [
@@ -549,7 +549,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Wilhelm Zimmerling PAR",
       license: "CC BY-SA 4.0",
       identificationReference: false,
-      alt: "Vista addicional de Suillus luteus en el seu entorn.",
+      alt: "Suillus luteus: Composició d’exemplars de mides diferents amb barrets marrons, porus grocs i restes d’anell.",
     },
     {
       id: "wikimedia-suillus-luteus-gallery-3",
@@ -559,7 +559,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Jerzy Opioła / Ak ccm",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Suillus luteus en el seu entorn.",
+      alt: "Suillus luteus: Tres exemplars sobre herba, amb barrets marrons lluents i una superfície de porus grocs visible.",
     },
   ],
   "chroogomphus-rutilus": [
@@ -571,7 +571,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Pere Orga Esteve",
       license: "CC BY-SA 4.0",
       identificationReference: false,
-      alt: "Vista addicional de Chroogomphus rutilus en el seu entorn.",
+      alt: "Chroogomphus rutilus: Dos exemplars de barret marró violaci i peu ocre entre herbes seques i fulles.",
     },
     {
       id: "wikimedia-chroogomphus-rutilus-gallery-3",
@@ -581,7 +581,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Pere Orga Esteve",
       license: "CC BY-SA 4.0",
       identificationReference: false,
-      alt: "Segona vista de Chroogomphus rutilus en el seu entorn.",
+      alt: "Chroogomphus rutilus: Un exemplar amb barret cònic marró entre branquillons i molsa.",
     },
   ],
   "ramaria-aurea": [
@@ -593,7 +593,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "DenesFeri",
       license: "CC BY-SA 4.0",
       identificationReference: false,
-      alt: "Vista addicional de Ramaria aurea en el seu entorn.",
+      alt: "Ramaria aurea: Vista vertical d’un cos ramificat ocre i d’una base clara sobre fons gris.",
     },
     {
       id: "wikimedia-ramaria-aurea-gallery-3",
@@ -603,7 +603,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "DenesFeri",
       license: "CC BY-SA 4.0",
       identificationReference: false,
-      alt: "Segona vista de Ramaria aurea en el seu entorn.",
+      alt: "Ramaria aurea: Enquadrament ampli d’un cos ramificat ocre, amb la base clara i el fons gris visibles.",
     },
   ],
   "agaricus-campestris": [
@@ -615,7 +615,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Christine Braaten",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Agaricus campestris en el seu entorn.",
+      alt: "Agaricus campestris: Primer pla d’exemplars blancs amb làmines rosades visibles sota el barret.",
     },
     {
       id: "wikimedia-agaricus-campestris-gallery-3",
@@ -625,7 +625,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Andreas Kunze",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Agaricus campestris en el seu entorn.",
+      alt: "Agaricus campestris: Tres exemplars a l’herba; un està capgirat i mostra làmines rosades i un anell blanc.",
     },
   ],
   "pleurotus-ostreatus": [
@@ -637,7 +637,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Charl de Mille-Isles from Mille-Isles, Canada",
       license: "CC BY 2.0",
       identificationReference: false,
-      alt: "Vista addicional de Pleurotus ostreatus en el seu entorn.",
+      alt: "Pleurotus ostreatus: Grup de barrets superposats en un tronc vertical, vist des de sota amb làmines clares.",
     },
     {
       id: "wikimedia-pleurotus-ostreatus-gallery-3",
@@ -647,7 +647,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Jac. Janssen from Baarlo lb, NL",
       license: "CC BY 2.0",
       identificationReference: false,
-      alt: "Segona vista de Pleurotus ostreatus en el seu entorn.",
+      alt: "Pleurotus ostreatus: Grups de barrets grisos sobre un tronc caigut, envoltat de fullaraca.",
     },
   ],
   "hygrophorus-eburneus": [
@@ -659,7 +659,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Ron Pastorino",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Hygrophorus eburneus en el seu entorn.",
+      alt: "Hygrophorus eburneus: Exemplars blancs junts, amb barrets lluents, peus allargats i làmines clares visibles.",
     },
     {
       id: "wikimedia-hygrophorus-eburneus-gallery-3",
@@ -669,7 +669,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Thomas Pruß",
       license: "CC BY-SA 3.0",
       identificationReference: false,
-      alt: "Segona vista de Hygrophorus eburneus en el seu entorn.",
+      alt: "Hygrophorus eburneus: Petits exemplars blancs de diferents alçades entre molsa i fulles.",
     },
   ],
   "craterellus-tubaeformis": [
@@ -681,7 +681,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Jerzy Opioła",
       license: "CC BY-SA 4.0",
       identificationReference: false,
-      alt: "Vista addicional de Craterellus tubaeformis en el seu entorn.",
+      alt: "Craterellus tubaeformis: Dos exemplars sobre molsa; un mostra els plecs clars i el peu groc, l’altre el barret marró enfonsat.",
     },
     {
       id: "wikimedia-craterellus-tubaeformis-gallery-3",
@@ -691,7 +691,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Tero Karppinen from Finland",
       license: "CC BY 2.0",
       identificationReference: false,
-      alt: "Segona vista de Craterellus tubaeformis en el seu entorn.",
+      alt: "Craterellus tubaeformis: Petit grup de barrets ondulats marrons, parcialment ocults darrere de molsa.",
     },
   ],
   "tuber-melanosporum": [
@@ -703,7 +703,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Wikimedia Commons contributor",
       license: "Domini públic",
       identificationReference: false,
-      alt: "Vista addicional de Tuber melanosporum en el seu entorn.",
+      alt: "Tuber melanosporum: Cos arrodonit i fosc, de superfície rugosa, sobre fons blanc.",
     },
     {
       id: "wikimedia-tuber-melanosporum-gallery-3",
@@ -713,7 +713,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "sgillies",
       license: "CC BY-SA 2.0",
       identificationReference: false,
-      alt: "Segona vista de Tuber melanosporum en el seu entorn.",
+      alt: "Tuber melanosporum: Cos irregular fosc amb relleu marcat i zones clares sobre un plat.",
     },
   ],
   "amanita-phalloides": [
@@ -725,7 +725,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Krzysztof Ślusarczyk (upload by Marek Ślusarczyk )",
       license: "CC BY 3.0",
       identificationReference: false,
-      alt: "Vista addicional de Amanita phalloides en el seu entorn.",
+      alt: "Amanita phalloides: Un exemplar de barret estès i altres de barret tancat, verdosos, entre fulles seques.",
     },
     {
       id: "wikimedia-amanita-phalloides-gallery-3",
@@ -735,7 +735,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
       attribution: "Krzysztof Ślusarczyk (upload by Marek Ślusarczyk )",
       license: "CC BY 3.0",
       identificationReference: false,
-      alt: "Segona vista de Amanita phalloides en el seu entorn.",
+      alt: "Amanita phalloides: Exemplar jove de barret verd olivaci i base blanca embolcallada, sobre fullaraca.",
     },
   ],
   "lepiota-brunneoincarnata": [

@@ -139,7 +139,7 @@ export default function GuidesPage() {
 
       <aside className="location-safety-note">
         <Trees size={22} />
-        <div><strong>Hàbitat potencial, no una coordenada.</strong><p>Les guies descriuen compatibilitat ecològica agregada. No demostren presència actual ni substitueixen una identificació experta.</p></div>
+        <div><strong>Hàbitat potencial, no una coordenada.</strong><p>Les guies descriuen compatibilitat ecològica agregada. No demostren presència actual ni substitueixen una identificació experta. Abans de sortir, <Link href="/normativa-bolets">comproveu els permisos i l’accés al bosc</Link>.</p></div>
       </aside>
       <EditorialAttribution contentId="guies" sources={coreEditorialSources} />
     </PageShell>

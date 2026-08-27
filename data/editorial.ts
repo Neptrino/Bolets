@@ -136,8 +136,27 @@ const defaultMetadata: EditorialMetadata = {
 };
 
 const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
+  "species:hygrophoropsis-aurantiaca": {
+    publishedAt: "2026-08-27",
+    updatedAt: "2026-08-27",
+  },
+  "normativa-bolets": {
+    publishedAt: "2026-08-27",
+    updatedAt: "2026-08-27",
+  },
+  "bolets-de-soca": {
+    publishedAt: "2026-08-27",
+    updatedAt: "2026-08-27",
+  },
+  "fals-rossinyol": {
+    publishedAt: "2026-08-27",
+    updatedAt: "2026-08-27",
+  },
   "bolets": {
-    updatedAt: "2026-08-21",
+    updatedAt: "2026-08-27",
+  },
+  "equip-editorial": {
+    updatedAt: "2026-08-27",
   },
   "bolets-comestibles": {
     updatedAt: "2026-08-26",
@@ -207,6 +226,9 @@ export const publicEditorialItems = [
   "bolets-d-hivern",
   "quan-surten-els-bolets-despres-de-ploure",
   "parts-dun-bolet",
+  "normativa-bolets",
+  "bolets-de-soca",
+  "fals-rossinyol",
   "zones-ceps",
   "equip-editorial",
 ] as const;

@@ -52,7 +52,7 @@ export default function EditorialTeamPage() {
 
       <aside className="intent-emergency-note">
         <CircleAlert size={23} aria-hidden="true" />
-        <div><strong>Revisió micològica independent pendent.</strong><p>El contingut actual ha passat revisió editorial, però no s’atribueix cap revisió científica o micològica externa. Ho indiquem a cada pàgina sensible.</p></div>
+        <div><strong>Sense revisió micològica independent.</strong><p>El contingut actual ha passat revisió editorial, però no té revisió científica o micològica externa i ara mateix no n’hi ha cap de prevista. Ho indiquem a cada pàgina sensible: les fonts citades no són una validació experta d’aquesta web.</p></div>
       </aside>
 
       <section className="seo-guide-section">

@@ -12,6 +12,8 @@ export function SeasonIndicator({
   species: SpeciesCardProfile;
   currentMonth: Month;
 }) {
+  const seasonality = species.ecologicalConfig.seasonality;
+  if (!seasonality) return null;
   return (
     <div
       className="card-season"
@@ -20,7 +22,7 @@ export function SeasonIndicator({
     >
       <ol className="card-season-grid" aria-label="Activitat potencial per mes">
         {SEASON_MONTHS.map(({ key, shortLabel, narrowLabel, label }) => {
-          const activity = species.ecologicalConfig.seasonality[key];
+          const activity = seasonality[key];
           const isCurrent = key === currentMonth;
 
           return (

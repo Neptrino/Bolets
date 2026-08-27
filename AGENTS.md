@@ -29,6 +29,8 @@
 ## Project-specific architecture
 
 - Keep species knowledge profiles in version-controlled, validated data files.
+- Keep descriptive species that lack a justified numerical ecology in `data/reference-species.ts`, separate from scored `SpeciesProfile` records. Merge them through `data/catalogue.ts` for public discovery, profile routes and the sitemap, but never include them in map selectors, condition/habitat caches or quantified monthly calendars. Show sourced habitat and season text, not fabricated altitude, pH, thermal ranges or phenology scores. Share the standard species hero, gallery and cards across both kinds of profile.
+- Publish source-backed identification guides as editorial information with explicit safety limits and truthful authorship. No independent mycological review is planned for now: state its absence without implying a pending review, and do not impose an expert-review indexing gate. Source checks and AI-assisted editing are not expert sign-off. If independent review is ever added, record the actual reviewer identity, scope, date and approval before claiming it; never add prediction ecology just to target a search term.
 - Ensure the prediction engine consumes the same ecological configuration used by species pages.
 - Clip ecological and prediction grids to the version-controlled ICGC Catalonia land boundary before rendering.
 - Keep Supabase access server-side and protect database boundaries appropriately.

@@ -6,7 +6,7 @@ import { PageHeader, PageShell, SectionHeader } from "@/components/page-layout";
 import { SpeciesDirectory } from "@/components/species-directory";
 import { JsonLd } from "@/components/json-ld";
 import { coreEditorialSources } from "@/data/editorial";
-import { speciesAlphabetical } from "@/data/species";
+import { catalogueSpecies as speciesAlphabetical } from "@/data/catalogue";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { seasonGuides, speciesForSeasonGuide, type SeasonGuideId } from "@/src/lib/season-guides";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
@@ -75,6 +75,8 @@ export default function SpeciesIndexPage() {
           <Link href="/bolets/craterellus-lutescens"><Leaf size={18} /><span><strong>Camagroc</strong><small>Identificació, bosc i confusions</small></span><ArrowUpRight size={16} /></Link>
           <Link href="/bolets/tricholoma-terreum"><CalendarDays size={18} /><span><strong>Fredolic</strong><small>Pinedes, tardor i identificació prudent</small></span><ArrowUpRight size={16} /></Link>
           <Link href="/bolets/hygrophorus-latitabundus"><Sprout size={18} /><span><strong>Llenega</strong><small>Pinedes calcàries i temporada</small></span><ArrowUpRight size={16} /></Link>
+          <Link href="/bolets-de-soca"><Leaf size={18} /><span><strong>Bolets de soca</strong><small>Espècies de la fusta i fitxes del catàleg</small></span><ArrowUpRight size={16} /></Link>
+          <Link href="/fals-rossinyol"><ShieldAlert size={18} /><span><strong>Fals rossinyol</strong><small>Noms, fonts i confusions</small></span><ArrowUpRight size={16} /></Link>
         </nav>
       </section>
       <SpeciesDirectory species={speciesAlphabetical.map(toSpeciesCardProfile)} currentMonth={monthInTimeZone()} />

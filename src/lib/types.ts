@@ -350,6 +350,22 @@ export interface SpeciesProfile {
   confidence: EvidenceConfidence;
 }
 
+/** Source-backed catalogue knowledge, deliberately not a scoring input. */
+export interface ReferenceSpeciesProfile extends Pick<SpeciesProfile,
+  "speciesId" | "seo" | "identity" | "morphology" | "similarSpecies" |
+  "safetyNotice" | "culinaryProfile" | "references" | "media" | "confidence"
+> {
+  scope: "reference-only";
+  ecology: {
+    habitats: string[];
+    season: string;
+    description: string;
+    limitations: string;
+  };
+}
+
+export type CatalogueSpecies = SpeciesProfile | ReferenceSpeciesProfile;
+
 export interface ConditionSnapshot {
   regionId: RegionId;
   observedAt: string;

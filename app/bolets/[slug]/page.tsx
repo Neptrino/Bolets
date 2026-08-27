@@ -2,11 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
-  ArrowLeft,
   ArrowRightLeft,
   ArrowUpRight,
   BookOpen,
-  CalendarDays,
   ChefHat,
   CircleDot,
   CircleHelp,
@@ -37,12 +35,14 @@ import { EdibilityBadge } from "@/components/edibility-badge";
 import { JsonLd } from "@/components/json-ld";
 import { LazyHabitatMap } from "@/components/lazy-habitat-map";
 import { SeasonCalendar } from "@/components/season-calendar";
-import { SpeciesGallery } from "@/components/species-gallery";
+import { SpeciesHero } from "@/components/species-hero";
+import { ReferenceSpeciesPage } from "@/components/reference-species-page";
+import { catalogueSpecies } from "@/data/catalogue";
+import { getReferenceSpecies, getReferenceSpeciesByScientificName } from "@/data/reference-species";
 import { comparisonPagesForSpecies } from "@/data/comparison-pages";
 import {
   getSpecies,
   getSpeciesByScientificName,
-  speciesProfiles,
 } from "@/data/species";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { isRegionId, regionLabels } from "@/data/regions";
@@ -97,7 +97,7 @@ function detailId(label: string) {
 }
 
 export function generateStaticParams() {
-  return speciesProfiles.map((species) => ({ slug: species.speciesId }));
+  return catalogueSpecies.map((species) => ({ slug: species.speciesId }));
 }
 
 export async function generateMetadata({
@@ -106,7 +106,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const species = getSpecies(slug);
+  const species = getSpecies(slug) ?? getReferenceSpecies(slug);
   if (!species) notFound();
 
   const path = speciesPath(species);
@@ -152,6 +152,8 @@ export default async function SpeciesPage({
   searchParams: Promise<{ region?: string }>;
 }) {
   const { slug } = await params;
+  const referenceSpecies = getReferenceSpecies(slug);
+  if (referenceSpecies) return <ReferenceSpeciesPage species={referenceSpecies} />;
   const query = await searchParams;
   const species = getSpecies(slug);
   if (!species) notFound();
@@ -160,7 +162,6 @@ export default async function SpeciesPage({
     ? query.region
     : species.ecologicalConfig.regions[0] ?? "prepirineus";
 
-  const displayImages = species.media;
   const hasToxicLookalike = species.similarSpecies.some(
     (item) => item.warning || item.edibility.includes("toxic"),
   );
@@ -234,83 +235,12 @@ export default async function SpeciesPage({
           ],
         }}
       />
-      <div className="species-hero">
-        <div className="page-width">
-          <Link href="/bolets" className="back-link">
-            <ArrowLeft size={15} />
-            Tots els bolets
-          </Link>
-          <div className="species-hero-grid">
-            <div className="species-hero-copy">
-              <p className="eyebrow light">
-                {species.identity.family} · {species.identity.genus}
-              </p>
-              <h1>{species.identity.commonName}</h1>
-              <em>{species.identity.scientificName}</em>
-              {species.identity.alternateNames.length > 0 && (
-                <p className="species-alternate-names">
-                  <span>Altres noms catalans:</span>{" "}
-                  {species.identity.alternateNames.join(", ")}
-                </p>
-              )}
-              <p className="species-dek">
-                {species.identity.shortDescription}
-              </p>
-              <div className="species-hero-status">
-                <CulinaryRating
-                  profile={species.culinaryProfile}
-                  status={species.identity.edibility}
-                />
-              </div>
-              <div className="species-hero-facts" aria-label="Dades principals">
-                <div>
-                  <Trees size={16} aria-hidden="true" />
-                  <span>Hàbitat</span>
-                  <strong>{habitat.forestTypes[0]}</strong>
-                </div>
-                <div>
-                  <Mountain size={16} aria-hidden="true" />
-                  <span>Altitud</span>
-                  <strong>{habitat.altitude[0]}–{habitat.altitude[1]} m</strong>
-                </div>
-                <div>
-                  <CalendarDays size={16} aria-hidden="true" />
-                  <span>Temporada</span>
-                  <strong>{season}</strong>
-                </div>
-                <div>
-                  <ScanLine size={16} aria-hidden="true" />
-                  <span>Identificació</span>
-                  <strong>{species.identity.identificationDifficulty}</strong>
-                </div>
-              </div>
-            </div>
-            <div
-              className={`specimen-panel${displayImages.length > 0 ? " has-photos" : ""}`}
-            >
-              {displayImages.length > 0 ? (
-                <SpeciesGallery
-                  images={displayImages}
-                  speciesName={species.identity.scientificName}
-                />
-              ) : (
-                <>
-                  <div className="specimen-drawing" aria-hidden="true">
-                    <span className="drawing-cap" />
-                    <span className="drawing-stem" />
-                    <span className="drawing-lines" />
-                  </div>
-                  <p>Sense fotografia verificada</p>
-                  <span>
-                    Les imatges d’identificació només s’afegeixen amb llicència,
-                    atribució i validació explícites.
-                  </span>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+      <SpeciesHero
+        species={species}
+        habitatLabel={habitat.forestTypes[0]}
+        altitudeLabel={`${habitat.altitude[0]}–${habitat.altitude[1]} m`}
+        seasonLabel={season}
+      />
 
       <div className="page-width species-content">
         <aside className="species-aside" aria-label="Contingut de la fitxa">
@@ -398,6 +328,7 @@ export default async function SpeciesPage({
                     const relatedSpecies = getSpeciesByScientificName(
                       item.scientificName,
                     );
+                    const relatedProfile = relatedSpecies ?? getReferenceSpeciesByScientificName(item.scientificName);
                     const comparison = relatedSpecies
                       ? speciesComparisons.find((page) => (
                           page.leftSpeciesId === relatedSpecies.speciesId
@@ -415,9 +346,9 @@ export default async function SpeciesPage({
                         <div>
                           <em>{item.scientificName}</em>
                           <h3>
-                            {relatedSpecies ? (
+                            {relatedProfile ? (
                               <Link
-                                href={speciesPath(relatedSpecies)}
+                                href={speciesPath(relatedProfile)}
                                 className="similar-profile-link"
                               >
                                 {item.commonName}
@@ -444,6 +375,13 @@ export default async function SpeciesPage({
                     );
                   })}
                 </div>
+                {species.speciesId === "cantharellus-cibarius" && (
+                  <p>
+                    <Link href="/fals-rossinyol" className="text-link">
+                      Guia del fals rossinyol <ArrowUpRight size={16} aria-hidden="true" />
+                    </Link>
+                  </p>
+                )}
               </div>
             </div>
           </section>

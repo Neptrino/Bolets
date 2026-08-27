@@ -1,6 +1,28 @@
 import type { MediaAsset } from "@/src/lib/types";
 
 export const speciesMedia: Record<string, MediaAsset[]> = {
+  "hygrophoropsis-aurantiaca": [
+    {
+      id: "wikimedia-hygrophoropsis-aurantiaca-anglars",
+      localPath: "/media/wikimedia/hygrophoropsis-aurantiaca.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b5/Hygrophoropsis_aurantiaca_anglars.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Hygrophoropsis_aurantiaca_anglars.jpg",
+      attribution: "Bubulcus",
+      license: "CC BY 3.0 · mida i format adaptats",
+      identificationReference: true,
+      alt: "Barret taronja i làmines bifurcades del fals rossinyol, amb un exemplar capgirat sobre la pinassa.",
+    },
+    {
+      id: "wikimedia-hygrophoropsis-aurantiaca-anneli-salo",
+      localPath: "/media/wikimedia/hygrophoropsis-aurantiaca-soca.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/d/d3/Hygrophoropsis_aurantiaca_Valevahvero_C_IMG_6188.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Hygrophoropsis_aurantiaca_Valevahvero_C_IMG_6188.jpg",
+      attribution: "Anneli Salo",
+      license: "CC BY-SA 3.0 · mida i format adaptats",
+      identificationReference: false,
+      alt: "Dos barrets ataronjats de fals rossinyol al costat d’una soca coberta de líquens.",
+    },
+  ],
   "boletus-edulis": [
     {
       id: "wikimedia-boletus-edulis-it",

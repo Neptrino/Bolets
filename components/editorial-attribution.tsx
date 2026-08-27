@@ -34,7 +34,7 @@ export function EditorialAttribution({
         <dl className="editorial-meta">
           <div><dt>Editor</dt><dd><Link href="/equip-editorial">{editorialTeam.name}</Link></dd></div>
           <div><dt>Actualitzat</dt><dd><time dateTime={editorial.updatedAt}>{formatEditorialDate(editorial.updatedAt)}</time></dd></div>
-          <div><dt>Revisió</dt><dd>{editorial.reviewStatus === "expert-reviewed" ? "Revisió micològica independent completada" : "Revisió editorial; revisió micològica independent pendent"}</dd></div>
+          <div><dt>Revisió</dt><dd>{editorial.reviewStatus === "expert-reviewed" ? "Revisió micològica independent completada" : "Revisió editorial; sense revisió micològica independent"}</dd></div>
         </dl>
       </div>
       {uniqueSources.length > 0 && (
