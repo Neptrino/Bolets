@@ -250,6 +250,85 @@ function laggedRainWindow(
  * modelled soil could not, before it earns a place in the model. The
  * 38-day lead-in doubles as spin-up, washing out the neutral initial state.
  */
+/**
+ * Surface-drying probe: the model's only short-term dryness brake is
+ * drySpellDays with a 1 mm/day reset, so a light sprinkle after a long dry
+ * stretch clears the counter while the topsoil is still dry. These features
+ * let the offline metrics test (a) higher reset thresholds, (b) a rolling
+ * rain − ET0 surface balance (ET0 is Penman-Monteith, so wind-driven drying
+ * is inside it), and (c) raw wind exposure, to see whether wind carries any
+ * signal beyond its ET0 contribution. Computed from the same span the
+ * production windows use, gauge-corrected when station rain is active.
+ */
+function surfaceProbesAt(location: OpenMeteoLocation, observedAt: string) {
+  const hourly = location.hourly as Record<string, unknown> | undefined;
+  const times = Array.isArray(hourly?.time) ? hourly.time as unknown[] : [];
+  const series = (key: string) =>
+    Array.isArray(hourly?.[key]) ? hourly[key] as unknown[] : [];
+  const rain = series("precipitation");
+  const evapotranspiration = series("et0_fao_evapotranspiration");
+  const wind = series("wind_speed_10m");
+  const gusts = series("wind_gusts_10m");
+  const byTime = (values: unknown[]) => {
+    const map = new Map<number, number>();
+    for (let index = 0; index < times.length; index += 1) {
+      const time = times[index];
+      if (typeof time === "number" && typeof values[index] === "number") {
+        map.set(time, values[index] as number);
+      }
+    }
+    return map;
+  };
+  const rainByTime = byTime(rain);
+  const etByTime = byTime(evapotranspiration);
+  const windByTime = byTime(wind);
+  const gustByTime = byTime(gusts);
+  const target = Math.floor(Date.parse(observedAt) / 3_600_000) * 3600;
+
+  const drySpellWithReset = (resetMm: number) => {
+    let dryDays = 0;
+    for (let binEnd = target; dryDays < 30; binEnd -= 24 * 3600) {
+      let binRain = 0;
+      let seen = 0;
+      for (let time = binEnd - 23 * 3600; time <= binEnd; time += 3600) {
+        const value = rainByTime.get(time);
+        if (value !== undefined) {
+          binRain += value;
+          seen += 1;
+        }
+      }
+      if (seen < 24 || binRain >= resetMm) break;
+      dryDays += 1;
+    }
+    return dryDays;
+  };
+
+  const windowSum = (map: Map<number, number>, hours: number) => {
+    let total = 0;
+    for (let time = target - (hours - 1) * 3600; time <= target; time += 3600) {
+      total += map.get(time) ?? 0;
+    }
+    return total;
+  };
+  const windowMax = (map: Map<number, number>, hours: number) => {
+    let max = 0;
+    for (let time = target - (hours - 1) * 3600; time <= target; time += 3600) {
+      max = Math.max(max, map.get(time) ?? 0);
+    }
+    return max;
+  };
+
+  return {
+    drySpellDays3mm: drySpellWithReset(3),
+    drySpellDays5mm: drySpellWithReset(5),
+    drySpellDays8mm: drySpellWithReset(8),
+    balance7Mm: windowSum(rainByTime, 168) - windowSum(etByTime, 168),
+    balance14Mm: windowSum(rainByTime, 336) - windowSum(etByTime, 336),
+    wind7dMeanKmh: windowSum(windByTime, 168) / 168,
+    wind7dGustMaxKmh: windowMax(gustByTime, 168),
+  };
+}
+
 const BUCKET_CAPACITY_MM = 100;
 const BUCKET_ET_COEFFICIENT = 0.7;
 const BUCKET_DRAINAGE_THRESHOLD_MM = 60;
@@ -338,6 +417,7 @@ it.skipIf(!inputPath || !artifactsDir)(
     // already-emerged bodies.
     const rainLagDays = Number(process.env.FINDING_EVAL_RAIN_LAG_DAYS ?? 0);
     const bucketProbe = process.env.FINDING_EVAL_BUCKET === "1";
+    const surfaceProbes = process.env.FINDING_EVAL_SURFACE_PROBES === "1";
     const scoringModel = process.env.FINDING_EVAL_MODEL === "v2" ? "v2" : "v1";
     // Parameter sweeps patch the v2 config so candidate values can be fitted
     // against the same events without editing shipped priors.
@@ -669,6 +749,9 @@ it.skipIf(!inputPath || !artifactsDir)(
                 : null,
               bucketLevel: bucketProbe
                 ? bucketLevelAt(atmosphereBySpan.get(spanIndex)!, target.observedAt)
+                : null,
+              surfaceProbes: surfaceProbes
+                ? surfaceProbesAt(atmosphereBySpan.get(spanIndex)!, target.observedAt)
                 : null,
             };
 
