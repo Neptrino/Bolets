@@ -226,6 +226,13 @@ export interface WaterModelParametersV2 extends Omit<
    * Fast saprotroph guilds sit high, slow ectomycorrhizal guilds low.
    */
   recentRainWeight: number;
+  /**
+   * Length of the "recent" exclusion window in days. The default 7 suits
+   * fast flushes (chanterelles fruit 7-12 days after rain); boletus flushes
+   * trail rain by roughly two weeks in both observed seasons, so their
+   * species override extends the exclusion to 14 days.
+   */
+  recentWindowDays: 7 | 14;
   /** Exponent on water in the fruiting product; temperature takes the rest. */
   waterExponent: number;
 }

@@ -41,6 +41,7 @@ function v2Profile(): SpeciesProfile {
     rainFloor: 0.1,
     // Full trailing window: these fixtures predate the matured-rain split.
     recentRainWeight: 1,
+    recentWindowDays: 7,
   };
   const modelConfig: FruitingModelConfig = {
     model: "hydrothermal-v2",

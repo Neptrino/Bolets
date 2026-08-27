@@ -1,7 +1,10 @@
 export const HABITAT_MODEL_VERSION = "habitat-static-v9-edge-floor";
 export const PREDICTION_SCORING_VERSION = "hydrothermal-v2";
 export const HYDROTHERMAL_PRIOR_VERSION = "hydrothermal-v1-priors-2026-08b";
-export const HYDROTHERMAL_V2_PRIOR_VERSION = "hydrothermal-v2-priors-2026-08e";
+// 08f: boletus flush lag — the four boletus species score rain fallen 15-26
+// days ago (recentWindowDays 14 + rainfallWindowDays 26) after two seasons
+// of field data showed cep flushes trail storms by ~2 weeks.
+export const HYDROTHERMAL_V2_PRIOR_VERSION = "hydrothermal-v2-priors-2026-08f";
 
 /**
  * Species scored by hydrothermal-v2. Full cutover 2026-08-16 after validation

@@ -24,7 +24,7 @@ type SupportedGuild = Exclude<FruitingGuild, "hypogeous">;
 type SupportedCatalogueEntry = {
   status: "supported";
   guild: SupportedGuild;
-  water?: Partial<WaterModelParameters>;
+  water?: Partial<WaterModelParametersV2>;
   temperature?: Partial<TemperatureModelParameters>;
   evidence?: {
     status: "expert-prior" | "species-literature";
@@ -269,7 +269,7 @@ function hydrothermalV2Config({
   guild: SupportedGuild;
   prior: { water: WaterModelParameters; temperature: TemperatureModelParameters };
   temperatureMidpoint: number;
-  waterOverrides?: Partial<WaterModelParameters>;
+  waterOverrides?: Partial<WaterModelParametersV2>;
   temperatureOverrides?: Partial<TemperatureModelParameters>;
   monthlyAnchors: MonthlyPhenologyAnchors;
   altitudeRange?: readonly [number, number];
@@ -367,6 +367,7 @@ function waterParametersV2(
     soilWetFloor: SOIL_WET_FLOOR,
     rainFloor: RAIN_FLOOR,
     recentRainWeight: RECENT_RAIN_WEIGHT_BY_GUILD[guild],
+    recentWindowDays: 7 as const,
   };
 }
 
@@ -416,7 +417,12 @@ const SPECIES_MODEL_CATALOGUE = {
   },
   "boletus-edulis": {
     status: "supported", guild: "ectomycorrhizal",
-    water: { rainfallWindowDays: 26 },
+    // The 14-day recent exclusion shifts the matured-rain window to rain
+    // fallen 15-26 days ago: cep flushes trailed the storms by ~2 weeks in
+    // both observed seasons (2025-09 peak, 2026-08 ramp), and the shifted
+    // window validated cross-set on the private findings + GBIF replay
+    // (2026-08-27, refit/q-blag-A).
+    water: { rainfallWindowDays: 26, recentWindowDays: 14 },
     temperature: {
       windowDays: 20,
       optimumC: 13.5,
@@ -432,14 +438,19 @@ const SPECIES_MODEL_CATALOGUE = {
       ],
     },
   },
+  // The other boletus species share edulis's slow flush: same shifted
+  // matured-rain window (rain 15-26 days ago).
   "boletus-pinophilus": {
     status: "supported", guild: "ectomycorrhizal",
+    water: { rainfallWindowDays: 26, recentWindowDays: 14 },
   },
   "boletus-aereus": {
     status: "supported", guild: "ectomycorrhizal",
+    water: { rainfallWindowDays: 26, recentWindowDays: 14 },
   },
   "boletus-reticulatus": {
     status: "supported", guild: "ectomycorrhizal",
+    water: { rainfallWindowDays: 26, recentWindowDays: 14 },
   },
   "lactarius-deliciosus": {
     status: "supported", guild: "ectomycorrhizal",

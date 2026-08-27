@@ -59,10 +59,14 @@ describe("compact prediction map cells", () => {
       rainfallDays26d: 5,
       drySpellDays: 0,
       evapotranspiration26dMm: 5,
-      // Matured rain: the trailing week is subtracted from the window.
+      // Matured rain: boletus excludes the trailing fortnight, so the 14 d
+      // fields are the load-bearing recent window alongside the 7 d ones.
       rainfall7dMm: 0,
       rainfallDays7d: 0,
       evapotranspiration7dMm: 0,
+      rainfall14dMm: 0,
+      rainfallDays14d: 0,
+      evapotranspiration14dMm: 0,
       altitudeM: 2040,
       habitatAltitudeSuitability: 50,
       habitatCoveragePercent: 51,

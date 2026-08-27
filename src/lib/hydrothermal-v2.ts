@@ -95,12 +95,23 @@ function rainfallWindow(
   if (!(weight >= 0 && weight <= 1)) {
     throw new RangeError("Recent-rain weight must be within [0, 1]");
   }
+  const recent = parameters.recentWindowDays === 14
+    ? {
+        rainfall: values.rainfall14dMm,
+        rainyDays: values.rainfallDays14d,
+        evapotranspiration: values.evapotranspiration14dMm,
+      }
+    : {
+        rainfall: values.rainfall7dMm,
+        rainyDays: values.rainfallDays7d,
+        evapotranspiration: values.evapotranspiration7dMm,
+      };
   return {
-    rainfall: maturedWindow(raw.rainfall, values.rainfall7dMm, weight),
-    rainyDays: maturedWindow(raw.rainyDays, values.rainfallDays7d, weight),
+    rainfall: maturedWindow(raw.rainfall, recent.rainfall, weight),
+    rainyDays: maturedWindow(raw.rainyDays, recent.rainyDays, weight),
     evapotranspiration: maturedWindow(
       raw.evapotranspiration,
-      values.evapotranspiration7dMm,
+      recent.evapotranspiration,
       weight,
     ),
   };
@@ -357,17 +368,19 @@ export function missingHydrothermalFieldsV2(
   const soilFields = water.soilWeight > 0
     ? ["soilTexture", "soilMoistureAvg7d", "soilMoistureMin7d"] as const
     : [] as const;
+  // The matured-rain exclusion subtracts the trailing window; its length is
+  // per-species (7 d default, 14 d for the slow boletus flush).
+  const recentFields = water.recentWindowDays === 14
+    ? ["rainfall14dMm", "rainfallDays14d", "evapotranspiration14dMm"] as const
+    : ["rainfall7dMm", "rainfallDays7d", "evapotranspiration7dMm"] as const;
   const required = [
     ...soilFields,
     "temperatureAvg7dC",
     "relativeHumidityAvg7d",
     "drySpellDays",
-    // The matured-rain exclusion subtracts the trailing week from the window.
-    "rainfall7dMm",
-    "rainfallDays7d",
-    "evapotranspiration7dMm",
+    ...recentFields,
     ...rainFields,
     ...temperatureFields,
   ] as const satisfies readonly (keyof EnvironmentValues)[];
-  return required.filter((field) => values[field] === undefined);
+  return [...new Set(required)].filter((field) => values[field] === undefined);
 }
