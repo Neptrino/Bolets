@@ -3,7 +3,6 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
 import { catalogueSpecies } from "@/data/catalogue";
-import { staticMediaVariantPath } from "@/src/lib/static-media";
 import {
   toSpeciesFieldCardProfile,
   type SpeciesFieldCardProfile,
@@ -196,9 +195,8 @@ export async function GET(
   if (!species) return new Response("Not found", { status: 404 });
 
   const card = toSpeciesFieldCardProfile(species);
-  const imagePath = staticMediaVariantPath(card.imagePath, 960);
-  const image = await readFile(join(process.cwd(), "public", imagePath.slice(1)));
-  // ImageResponse does not decode embedded WebP. Convert the local, versioned
+  const image = await readFile(join(process.cwd(), "public", card.imagePath.slice(1)));
+  // ImageResponse does not decode embedded WebP. Convert the version-controlled
   // catalogue source in memory; the completed card is cached at the response.
   const jpeg = await sharp(image).jpeg({ quality: 90, mozjpeg: true }).toBuffer();
   const imageDataUrl = `data:image/jpeg;base64,${jpeg.toString("base64")}`;

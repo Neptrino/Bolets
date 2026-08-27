@@ -14,7 +14,7 @@ describe("species routes", () => {
     );
   });
 
-  it("renders an Instagram-sized PNG field card and rejects unknown species", async () => {
+  it("renders a shareable PNG field card and rejects unknown species", async () => {
     const response = await fieldCardImage(
       new Request("https://bolets.app/bolets/boletus-edulis/targeta"),
       { params: Promise.resolve({ slug: "boletus-edulis" }) },
