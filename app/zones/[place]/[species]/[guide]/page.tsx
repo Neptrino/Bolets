@@ -310,13 +310,13 @@ export default async function SpeciesLocationPage({ params }: Props) {
         <div className="local-species-columns">
           <div className="local-current-slot"><Suspense fallback={<LocalConditionsLoading />}><LocalConditionsCard species={species} area={area} location={location} /></Suspense></div>
           <div className="local-species-main">
-            <section><p className="eyebrow">Lectura del paisatge</p><h2>Per què hi pot encaixar</h2><p>{location.landscape}</p><p>{page.habitatNote}</p></section>
-            <section><p className="eyebrow">Perfil ecològic general</p><h2>Quins factors compten</h2><p>Aquests són els criteris compartits amb la fitxa de l’espècie i el model. El text anterior n’explica l’encaix territorial concret.</p><div className="local-factor-grid">
+            <section className="local-landscape-section"><p className="eyebrow">Lectura del paisatge</p><h2>Per què hi pot encaixar</h2><p>{location.landscape}</p><p>{page.habitatNote}</p></section>
+            <section className="local-factors-section"><p className="eyebrow">Perfil ecològic general</p><h2>Quins factors compten</h2><p>Aquests són els criteris compartits amb la fitxa de l’espècie i el model. El text anterior n’explica l’encaix territorial concret.</p><div className="local-factor-grid">
               <article><Trees size={20} /><h3>Bosc i arbres</h3><p>{habitat.forestTypes.join(", ")}. Associacions principals: {habitat.treeAssociations.join(", ")}.</p></article>
               <article><Sprout size={20} /><h3>Sòl</h3><p>{habitat.soilPreference}. {soil.texture}, amb pH {soil.phRange ? `${soil.phRange[0]}–${soil.phRange[1]}` : "variable"} i drenatge {soil.drainage.toLocaleLowerCase("ca")}.</p></article>
               <article><Mountain size={20} /><h3>Relleu</h3><p>{habitat.altitude[0]}–{habitat.altitude[1]} m, {habitat.aspect.toLocaleLowerCase("ca")}; {habitat.landscapePosition.toLocaleLowerCase("ca")}.</p></article>
             </div></section>
-            <section>
+            <section className="local-habitat-section">
               <p className="eyebrow">Mapa de l’espècie</p>
               <h2>On podria créixer {location.prepositionalName}</h2>
               <p>El mapa de compatibilitat ecològica de {species.identity.commonName} mostra on coincideixen la coberta del sòl, l’altitud i el pH adequats per a l’espècie. No és una predicció de fructificació ni confirma que hi hagi bolets.</p>
@@ -330,7 +330,7 @@ export default async function SpeciesLocationPage({ params }: Props) {
                 speciesId={species.speciesId}
               />
             </section>
-            <section><p className="eyebrow">Calendari ecològic</p><h2>Quan és temporada</h2><p>{page.seasonNote}</p><SeasonCalendar species={species} /></section>
+            <section className="local-calendar-section"><p className="eyebrow">Calendari ecològic</p><h2>Quan és temporada</h2><p>{page.seasonNote}</p><SeasonCalendar species={species} /></section>
           </div>
           <aside className="local-species-aside">
             <div className="local-safety-card"><ShieldAlert size={20} /><div><strong>No és una guia de recol·lecció</strong><p>No publiquem coordenades ni presències exactes. No consumiu cap bolet sense una identificació experta.</p></div></div>

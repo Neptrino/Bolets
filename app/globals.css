@@ -5182,12 +5182,19 @@ body {
   grid-template-columns: minmax(0, 1fr) 330px;
   grid-template-areas:
     "current current"
-    "main secondary";
+    "landscape secondary"
+    "factors secondary"
+    "habitat habitat"
+    "calendar calendar";
   align-items: start;
-  gap: 48px 70px;
+  gap: 60px 70px;
   margin-top: 74px;
 }
-.local-species-main { grid-area: main; display: grid; gap: 60px; }
+.local-species-main { display: contents; }
+.local-landscape-section { grid-area: landscape; }
+.local-factors-section { grid-area: factors; }
+.local-habitat-section { grid-area: habitat; }
+.local-calendar-section { grid-area: calendar; }
 .local-species-main h2 { margin-bottom: 16px; color: var(--forest-panel); font-size: var(--text-3xl); }
 .local-species-main section > p:not(.eyebrow) { color: var(--muted); font-size: var(--text-base); line-height: 1.75; }
 .local-species-page .region-map-habitat .map-cell-visibility:not(.is-collapsed) {
@@ -5460,7 +5467,10 @@ body {
     grid-template-columns: 1fr;
     grid-template-areas:
       "current"
-      "main"
+      "landscape"
+      "factors"
+      "habitat"
+      "calendar"
       "secondary";
     gap: 48px;
   }
