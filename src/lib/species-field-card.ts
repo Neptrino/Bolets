@@ -1,4 +1,5 @@
 import { getEdibilityPresentation } from "@/src/lib/edibility-presentation";
+import { identificationDifficultyLabel } from "@/src/lib/identification-difficulty";
 import type {
   CatalogueSpecies,
   EdibilityStatus,
@@ -116,7 +117,7 @@ export function toSpeciesFieldCardProfile(
     scientificName: species.identity.scientificName,
     edibility: species.identity.edibility,
     edibilityLabel: getEdibilityPresentation(species.identity.edibility).label,
-    identificationDifficulty: species.identity.identificationDifficulty,
+    identificationDifficulty: identificationDifficultyLabel(species.identity.identificationDifficulty),
     typicalSize: species.identity.typicalSize,
     shortDescription: species.identity.shortDescription,
     keyFeatures: species.morphology.keyFeatures.slice(0, 3),

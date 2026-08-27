@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, CalendarDays, Mountain, MoveVertical, ScanLine, Trees } from "lucide-react";
 import { CulinaryRating } from "@/components/culinary-rating";
 import { SpeciesGallery } from "@/components/species-gallery";
+import { identificationDifficultyLabel } from "@/src/lib/identification-difficulty";
 import type { SpeciesProfile } from "@/src/lib/types";
 
 export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel }: {
@@ -30,7 +31,7 @@ export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel 
                 ? <div><Mountain size={16} aria-hidden="true" /><span>Altitud</span><strong>{altitudeLabel}</strong></div>
                 : <div><MoveVertical size={16} aria-hidden="true" /><span>Mida</span><strong>{species.identity.typicalSize}</strong></div>}
               <div><CalendarDays size={16} aria-hidden="true" /><span>Temporada</span><strong>{seasonLabel}</strong></div>
-              <div><ScanLine size={16} aria-hidden="true" /><span>Identificació</span><strong>{species.identity.identificationDifficulty}</strong></div>
+              <div><ScanLine size={16} aria-hidden="true" /><span>Identificació</span><strong>{identificationDifficultyLabel(species.identity.identificationDifficulty)}</strong></div>
             </div>
           </div>
           <div className={`specimen-panel${species.media.length > 0 ? " has-photos" : ""}`}>
