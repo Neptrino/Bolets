@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, BookOpenText, MapPinned, Trees } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
+import { GuideDirectory } from "@/components/guide-directory";
 import { JsonLd } from "@/components/json-ld";
 import {
   PageHeader,
@@ -10,13 +11,15 @@ import {
   SectionHeader,
 } from "@/components/page-layout";
 import {
-  areaPath,
   areaProfiles,
+  areasBySlug,
+  getPlace,
+  locationPagePath,
   placeProfiles,
-  placesForArea,
   speciesLocationPages,
 } from "@/data/location-pages";
 import { coreEditorialSources } from "@/data/editorial";
+import { getSpecies } from "@/data/species";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 
@@ -35,6 +38,29 @@ export const metadata: Metadata = {
 };
 
 export default function GuidesPage() {
+  const directoryItems = speciesLocationPages.flatMap((page) => {
+    const species = getSpecies(page.speciesId);
+    const area = areasBySlug[page.areaSlug];
+    const place = getPlace(page.areaSlug, page.placeSlug);
+    if (!species || !area || !place) return [];
+
+    return [{
+      href: locationPagePath(page),
+      title: page.titlePhrase,
+      introduction: page.introduction,
+      speciesId: species.speciesId,
+      speciesName: species.identity.commonName,
+      scientificName: species.identity.scientificName,
+      areaSlug: area.slug,
+      areaName: area.name,
+      areaType: area.typeLabel,
+      placeName: place.name,
+      placeType: place.typeLabel,
+      habitats: species.ecologicalConfig.habitat.forestTypes,
+      altitudeLabel: `${species.ecologicalConfig.habitat.altitude[0]}–${species.ecologicalConfig.habitat.altitude[1]} m`,
+    }];
+  });
+
   return (
     <PageShell className="guides-page">
       <JsonLd
@@ -46,7 +72,7 @@ export default function GuidesPage() {
           inLanguage: "ca",
           mainEntity: {
             "@type": "ItemList",
-            numberOfItems: areaProfiles.length + speciesTerritoryGuides.length,
+            numberOfItems: speciesLocationPages.length + speciesTerritoryGuides.length,
             itemListElement: [
               ...speciesTerritoryGuides.map((guide, index) => ({
                 "@type": "ListItem",
@@ -54,11 +80,11 @@ export default function GuidesPage() {
                 name: guide.title,
                 url: absoluteUrl(guide.path),
               })),
-              ...areaProfiles.map((area, index) => ({
+              ...speciesLocationPages.map((page, index) => ({
                 "@type": "ListItem",
                 position: index + speciesTerritoryGuides.length + 1,
-                name: `Bolets ${area.prepositionalName}`,
-                url: absoluteUrl(areaPath(area)),
+                name: page.titlePhrase,
+                url: absoluteUrl(locationPagePath(page)),
               })),
             ],
           },
@@ -67,7 +93,7 @@ export default function GuidesPage() {
       <PageHeader
         eyebrow={<><BookOpenText size={15} /> Guies locals publicades</>}
         title={<>Guies de bolets<br /><PageTitleAccent>per territori.</PageTitleAccent></>}
-        description="Baixa de la regió general a comarques, massissos i indrets documentats. Cada guia connecta espècie, hàbitat, temporada i fonts territorials sense publicar punts de recol·lecció."
+        description="Cerqueu directament una combinació d’espècie i indret. Cada guia connecta el perfil ecològic general amb el context territorial, la temporada i les fonts, sense publicar punts de recol·lecció."
         tone="forest"
       />
 
@@ -79,8 +105,8 @@ export default function GuidesPage() {
 
       <Link href="/zones" className="location-species-feature location-current-feature guides-zones-feature">
         <span><MapPinned size={18} /> Directori territorial</span>
-        <div><h2>Comenceu per les nou zones generals</h2><p>Compareu regions, perfils compatibles i condicions actuals abans de baixar al detall local.</p></div>
-        <strong>Veure les zones <ArrowUpRight size={17} /></strong>
+        <div><h2>Voleu comparar territoris?</h2><p>Les zones agrupen massissos, paratges, comarques i regions, amb les lectures actuals que han passat els controls de publicació.</p></div>
+        <strong>Comparar zones <ArrowUpRight size={17} /></strong>
       </Link>
 
       <section
@@ -103,27 +129,12 @@ export default function GuidesPage() {
 
       <section className="guides-directory" aria-labelledby="guides-directory-title">
         <SectionHeader
-          meta="Comarques i massissos"
-          title="Guies locals publicades"
+          meta={`${speciesLocationPages.length} combinacions publicades`}
+          title="Trobeu la guia concreta"
           titleId="guides-directory-title"
-          description="Cada territori reuneix indrets amb context propi i només les espècies que tenen una relació ecològica documentable."
+          description="Filtreu per espècie, territori o hàbitat. Només hi apareixen combinacions amb una relació ecològica defensable i contingut territorial propi."
         />
-        <div className="location-place-grid" data-local-guide-list>
-          {areaProfiles.map((area) => {
-            const places = placesForArea(area.slug);
-            const pages = speciesLocationPages.filter((page) => page.areaSlug === area.slug);
-            return (
-              <article className="location-place-card" key={area.slug}>
-                <span>{area.typeLabel} · {places.length} {places.length === 1 ? "indret" : "indrets"}</span>
-                <h2>{area.name}</h2>
-                <p>{area.description}</p>
-                <Link href={areaPath(area)} className="text-link">
-                  Veure {pages.length === 1 ? "la guia" : `${pages.length} guies`} <ArrowUpRight size={16} />
-                </Link>
-              </article>
-            );
-          })}
-        </div>
+        <GuideDirectory items={directoryItems} />
       </section>
 
       <aside className="location-safety-note">

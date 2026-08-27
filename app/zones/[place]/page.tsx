@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, BookOpen, BookOpenText, Gauge, Layers3, Map as MapIcon, MapPinned, ShieldCheck } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { MediaImage } from "@/components/media-image";
+import { TerritoryPortrait } from "@/components/territory-portrait";
 import { regionLabels } from "@/data/regions";
 import { getSpecies } from "@/data/species";
 import {
@@ -100,8 +101,6 @@ export default async function AreaPage({ params }: Props) {
     const species = pages[0] ? getSpecies(pages[0].speciesId) : undefined;
     return { place, pages, species };
   });
-  const heroSpecies = cards.find((card) => card.species)?.species;
-  const heroImage = heroSpecies?.media.find((asset) => asset.identificationReference) ?? heroSpecies?.media[0];
   const guideCount = cards.reduce((total, card) => total + card.pages.length, 0);
   const conditions = await loadAreaConditions(areaSlug);
   const territoryGuides = [...new Map(
@@ -123,11 +122,13 @@ export default async function AreaPage({ params }: Props) {
             <h1>Bolets<br /><i>{area.prepositionalName}.</i></h1>
             <p>{area.description} {area.landscape}</p>
           </div>
-          <div className={`location-hub-portrait${heroImage ? " has-image" : ""}`}>
-            {heroImage && <MediaImage asset={heroImage} alt="" fill preload sizes="(max-width: 900px) calc(100vw - 48px), 42vw" />}
-            <div className="location-hub-portrait-shade" />
-            <div className="location-hub-portrait-label"><span>ATLES TERRITORIAL · {area.name.toLocaleUpperCase("ca")}</span><strong>{places.length.toString().padStart(2, "0")}</strong><small>{places.length === 1 ? "indret documentat" : "indrets documentats"}</small></div>
-          </div>
+          <TerritoryPortrait
+            atlasLabel="Atles territorial"
+            name={area.name}
+            regionLabel={regionLabels[area.regionId]}
+            count={places.length}
+            countLabel={places.length === 1 ? "indret documentat" : "indrets documentats"}
+          />
         </div>
       </header>
 
@@ -200,11 +201,11 @@ export default async function AreaPage({ params }: Props) {
         <section className="location-guide-gallery" aria-labelledby="places-title">
           <header><div><p className="eyebrow">Indrets documentats</p><h2 id="places-title">Boscos, valls i municipis</h2></div><p>Cada indret agrupa només les espècies amb una relació ecològica defensable i contingut territorial propi.</p></header>
           <div className="location-guide-grid location-area-grid">
-            {cards.map(({ place, pages, species }) => {
+            {cards.map(({ place, pages, species }, index) => {
               const image = species?.media.find((asset) => asset.identificationReference) ?? species?.media[0];
               return (
                 <Link href={placePath(place)} className="location-guide-card" key={place.slug}>
-                  <div className={`location-guide-card-media${image ? " has-image" : ""}`}>{image && <MediaImage asset={image} alt={image.alt} fill sizes="(max-width: 760px) calc(100vw - 48px), 50vw" />}<span>{place.typeLabel} · {pages.length} {pages.length === 1 ? "guia" : "guies"}</span></div>
+                  <div className={`location-guide-card-media${image ? " has-image" : ""}`}>{image && <MediaImage asset={image} alt={image.alt} fill preload={index === 0} sizes="(max-width: 760px) calc(100vw - 48px), 50vw" />}<span>{place.typeLabel} · {pages.length} {pages.length === 1 ? "guia" : "guies"}</span></div>
                   <div className="location-guide-card-copy"><div className="location-guide-card-title"><h3>{place.name}</h3><ArrowUpRight size={20} /></div><p>{place.description} {place.landscape}</p><div className="location-guide-card-facts"><span><MapPinned size={15} /> {area.name}</span><span><BookOpen size={15} /> {pages.map((page) => displaySearchName(page.searchName)).join(", ")}</span></div></div>
                 </Link>
               );

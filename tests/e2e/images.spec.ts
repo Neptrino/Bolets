@@ -100,3 +100,13 @@ test("species gallery changes slides and opens a larger view", async ({ page }) 
   await page.getByRole("button", { name: "Tanca la fotografia ampliada" }).click();
   await expect(lightbox).not.toBeVisible();
 });
+
+test("species gallery thumbnails carry their media descriptions", async ({ page }) => {
+  await page.goto("/bolets/boletus-edulis");
+
+  const thumbnailImages = page.locator(".species-gallery-thumbnails img");
+  await expect(thumbnailImages).toHaveCount(5);
+  for (let index = 0; index < await thumbnailImages.count(); index += 1) {
+    await expect(thumbnailImages.nth(index)).not.toHaveAttribute("alt", "");
+  }
+});

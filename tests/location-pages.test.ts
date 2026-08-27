@@ -105,4 +105,16 @@ describe("curated species-location pages", () => {
       expect(place.source.url).toMatch(/^https:\/\//);
     }
   });
+
+  it("offers several distinct external resources for every place", () => {
+    for (const place of placeProfiles) {
+      const resources = [place.source, ...place.resources];
+      expect(resources, place.slug).toHaveLength(3);
+      expect(new Set(resources.map((resource) => resource.url)).size, place.slug).toBe(3);
+      for (const resource of resources) {
+        expect(resource.title.length, place.slug).toBeGreaterThan(4);
+        expect(resource.url, place.slug).toMatch(/^https:\/\//);
+      }
+    }
+  });
 });

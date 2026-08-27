@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, CircleAlert, CookingPot } from "lucide-react";
+import { ArrowUpRight, CalendarDays, CircleAlert, CookingPot, Trees } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { SpeciesCard } from "@/components/species-card";
@@ -60,6 +60,30 @@ export default function EdibleMushroomsPage() {
         <CircleAlert size={22} aria-hidden="true" />
         <div><strong>Comestible no vol dir identificat.</strong><p>Una fotografia, un nom popular o aquesta web no són suficients per decidir si un bolet es pot consumir. Confirmeu sempre l’espècie amb una persona experta.</p></div>
       </aside>
+
+      <section className="intent-reading-section" aria-labelledby="edible-reading-title">
+        <SectionHeader
+          meta="Comença per aquí"
+          title="Com triar entre els tipus de bolets comestibles"
+          titleId="edible-reading-title"
+        />
+        <div className="intent-reading-grid">
+          <div>
+            <p>Els bolets comestibles de Catalunya no formen un grup uniforme. Algunes espècies tenen un valor culinari alt; d’altres només es consideren comestibles amb condicions concretes de cocció, preparació o quantitat. Cada fitxa explica aquesta diferència i assenyala les confusions rellevants.</p>
+            <p>Trieu primer una espècie que encaixi amb el bosc i la temporada. Després consulteu les <Link href="/bolets-avui">condicions actuals</Link> i el <Link href="/map">mapa de predicció</Link>. Cap d’aquests passos substitueix una identificació experta de l’exemplar complet.</p>
+          </div>
+          <ol>
+            <li>Reviseu el nivell de comestibilitat i totes les condicions de consum.</li>
+            <li>Compareu barret, himeni, peu, base, hàbitat i temporada.</li>
+            <li>Descarteu els semblants tòxics abans de collir o cuinar.</li>
+          </ol>
+        </div>
+        <nav className="species-topic-links seasonal-guide-topic-links" aria-label="Guies relacionades amb els bolets comestibles">
+          <Link href="/zones/ceps"><CookingPot size={18} aria-hidden="true" /><span><strong>Ceps de Catalunya</strong><small>Tipus, diferències, hàbitat i temporada</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link href="/zones/rovellons"><Trees size={18} aria-hidden="true" /><span><strong>Rovellons i pinetells</strong><small>Làtex, pinedes i trets per distingir-los</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link href="/temporada"><CalendarDays size={18} aria-hidden="true" /><span><strong>Bolets per temporada</strong><small>Calendari mensual de totes les espècies</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+        </nav>
+      </section>
 
       <SectionHeader
         meta={`${edibleSpecies.length} espècies`}

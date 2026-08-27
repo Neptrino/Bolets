@@ -13,6 +13,7 @@ export interface EditorialMetadata {
 }
 
 export const EDITORIAL_LAUNCH_DATE = "2026-08-13";
+export const LOCAL_GUIDES_UPDATED_AT = "2026-08-26";
 
 export const editorialTeam = {
   id: "editorial-team" as const,
@@ -138,8 +139,11 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "bolets": {
     updatedAt: "2026-08-21",
   },
+  "bolets-comestibles": {
+    updatedAt: "2026-08-26",
+  },
   "bolets-verinosos": {
-    updatedAt: "2026-08-21",
+    updatedAt: "2026-08-26",
   },
   "bolets-de-primavera": {
     updatedAt: "2026-08-21",
@@ -169,7 +173,11 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
 };
 
 export function getEditorialMetadata(contentId: string): EditorialMetadata {
-  return { ...defaultMetadata, ...metadataOverrides[contentId] };
+  const sectionMetadata = contentId.startsWith("guide:")
+    ? { updatedAt: LOCAL_GUIDES_UPDATED_AT }
+    : {};
+
+  return { ...defaultMetadata, ...sectionMetadata, ...metadataOverrides[contentId] };
 }
 
 export function editorialArticleFields(contentId: string) {

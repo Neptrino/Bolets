@@ -11,8 +11,8 @@ import { monthInTimeZone } from "@/src/lib/seasonality";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Bolets verinosos a Catalunya",
-  description: `Guia de ${toxicSpecies.length} bolets verinosos de Catalunya amb fotografies, trets d’identificació, espècies semblants i advertiments de toxicitat.`,
+  title: "Bolets verinosos i tòxics de Catalunya",
+  description: `Guia de ${toxicSpecies.length} bolets verinosos i tòxics de Catalunya, amb fotografies, confusions i diferències respecte d’altres bolets no comestibles.`,
   alternates: { canonical: "/bolets-verinosos" },
   openGraph: {
     url: "/bolets-verinosos",
@@ -64,13 +64,13 @@ export default function PoisonousMushroomsPage() {
       <section className="intent-reading-section" aria-labelledby="poisonous-reading-title">
         <SectionHeader
           meta="Identificació responsable"
-          title="Com llegir una guia de bolets verinosos"
+          title="Bolets tòxics, verinosos i no comestibles"
           titleId="poisonous-reading-title"
         />
         <div className="intent-reading-grid">
           <div>
-            <p>Una fotografia, el color o el lloc on creix no basten per decidir que un bolet és segur. Aquesta guia de bolets verinosos de Catalunya serveix per reconèixer trets i confusions, no per confirmar el consum.</p>
-            <p>Abans de cuinar un bolet, contrasteu-lo amb la fitxa d’identificació, reviseu els semblants i, davant de qualsevol dubte, demaneu una identificació experta.</p>
+            <p>“Tòxic” i “verinós” descriuen espècies que poden causar una intoxicació. “No comestible” és més ampli: també inclou bolets que es desaconsellen per l’amargor, la textura, la preparació exigent o el risc de confusió. Aquesta pàgina prioritza les espècies tòxiques; el <Link href="/bolets">catàleg complet</Link> també recull les altres categories.</p>
+            <p>Una fotografia, el color o el lloc on creix no basten per decidir que un bolet és segur. Contrasteu l’exemplar complet amb la fitxa, reviseu els semblants i, davant de qualsevol dubte, demaneu una identificació experta.</p>
           </div>
           <ol>
             <li>Observeu un exemplar complet, inclosa la base del peu.</li>
@@ -78,6 +78,11 @@ export default function PoisonousMushroomsPage() {
             <li>Obriu la fitxa de les espècies semblants abans de prendre cap decisió.</li>
           </ol>
         </div>
+        <nav className="species-topic-links seasonal-guide-topic-links" aria-label="Comparacions de bolets tòxics i comestibles">
+          <Link href="/compare/ou-de-reig-vs-reig-bord"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Ou de reig o reig bord</strong><small>Làmines, peu, volva i risc de confusió</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link href="/compare/rossinyol-vs-bolet-olivera"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Rossinyol o bolet d’olivera</strong><small>Plecs, làmines, substrat i toxicitat</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link href="/compare/cep-vs-matagent"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Cep o matagent</strong><small>Porus, peu, canvi de color i seguretat</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+        </nav>
       </section>
 
       <SectionHeader

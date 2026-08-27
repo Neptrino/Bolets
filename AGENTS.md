@@ -43,6 +43,7 @@
 - Do not expose exact sensitive ecological locations in public maps or interfaces.
 - Treat occurrence datasets as presence-only corroboration, never absence evidence or a direct suitability-score input. Generalize them to at least 10 km before storage, retain dataset DOI/licence/provenance, and deduplicate sources by their GBIF dataset key.
 - Build species-page potential-habitat maps from verified 250 m static cells using hard forest and soil gates plus the shared altitude envelope from the versioned species ecology; aggregate compatible-cell coverage for coarser zoom levels and keep this layer separate from current fruiting predictions.
+- Derive local guide facts from the same versioned potential-habitat coverage, using area-equivalent totals from canonical 250 m evidence aggregated to the public 1 km lattice. Label buffered place windows as the area around a place rather than as administrative boundaries, withhold incomplete or truncated reads, and never present compatible cells as occurrences or collection locations.
 
 ## Environmental pipeline conventions
 

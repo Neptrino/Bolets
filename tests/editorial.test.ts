@@ -4,6 +4,7 @@ import {
   editorialArticleFields,
   editorialAuthors,
   getEditorialMetadata,
+  LOCAL_GUIDES_UPDATED_AT,
   publicEditorialItems,
 } from "@/data/editorial";
 import { speciesProfiles } from "@/data/species";
@@ -32,5 +33,11 @@ describe("editorial metadata", () => {
       expect(editorialArticleFields(id)).not.toHaveProperty("reviewedBy");
       expect(JSON.stringify(editorialArticleFields(id))).not.toContain("reviewedBy");
     }
+  });
+
+  it("dates every local guide from the latest guide-wide editorial update", () => {
+    const contentId = "guide:montseny:viladrau:boletus-edulis";
+    expect(getEditorialMetadata(contentId).updatedAt).toBe(LOCAL_GUIDES_UPDATED_AT);
+    expect(editorialArticleFields(contentId).dateModified).toBe(LOCAL_GUIDES_UPDATED_AT);
   });
 });

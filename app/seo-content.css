@@ -368,6 +368,7 @@
   .rain-evidence-grid { grid-template-columns: 1fr; }
   .rain-index-flow article,
   .rain-evidence-grid article { min-height: 0; }
+  .species-topic-links { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {

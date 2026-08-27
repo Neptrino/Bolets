@@ -125,13 +125,13 @@ export function SpeciesGallery({ images, speciesName }: SpeciesGalleryProps) {
               className={index === activeIndex ? "active" : undefined}
               type="button"
               onClick={() => setActiveIndex(index)}
-              aria-label={`Mostra la fotografia ${index + 1} de ${images.length}`}
+              aria-label={`Mostra la fotografia ${index + 1} de ${images.length}: ${asset.alt}`}
               aria-current={index === activeIndex ? "true" : undefined}
               key={asset.id}
             >
               <MediaImage
                 asset={asset}
-                alt=""
+                alt={asset.alt}
                 fill
                 sizes="72px"
               />

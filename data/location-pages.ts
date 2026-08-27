@@ -5,6 +5,10 @@ interface TerritorialSource {
   url: string;
 }
 
+export interface PlaceResource extends TerritorialSource {
+  label: "Turisme local" | "Espai natural" | "Rutes i patrimoni" | "Context territorial";
+}
+
 export interface AreaProfile {
   slug: string;
   name: string;
@@ -34,6 +38,7 @@ export interface PlaceProfile {
   description: string;
   landscape: string;
   source: TerritorialSource;
+  resources: [PlaceResource, PlaceResource];
 }
 
 export interface SpeciesLocationPage {
@@ -178,6 +183,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi de la vall de Camprodon amb una marcada transició entre fons de vall, boscos montans i vessants pirinencs.",
     landscape: "L’alternança de pinedes, rouredes i fagedes crea hàbitats forestals diversos, però la fructificació continua depenent de la pluja, la humitat acumulada i la temperatura.",
     source: { title: "Visit Pirineus — cuines de la vall de Camprodon", url: "https://www.visitpirineus.com/ca/que-fer/collectiu-de-cuina/cuines-de-la-vall-de-camprodon" },
+    resources: [
+      { label: "Turisme local", title: "Visit Camprodon", url: "https://visitcamprodon.cat/" },
+      { label: "Context territorial", title: "Turisme del Ripollès", url: "https://ripollesturisme.cat/" },
+    ],
   },
   {
     areaSlug: "ripolles", slug: "setcases", name: "Setcases", nameWithArticle: "Setcases", prepositionalName: "a Setcases", typeLabel: "municipi",
@@ -185,6 +194,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi d’alta muntanya de la vall de Camprodon, envoltat de pinedes i vessants que pugen cap a les capçaleres del Ter.",
     landscape: "La Fira del Bolet de tardor reflecteix la vinculació local amb els fongs. Les pinedes de muntanya i les nits fresques poden encaixar amb els ceps de pi quan el sòl manté humitat.",
     source: { title: "Turisme Ripollès — Setcases", url: "https://ripollesturisme.cat/wp-content/uploads/2021/12/Web-Folleto-Setcases-ENG-FR.pdf" },
+    resources: [
+      { label: "Espai natural", title: "Punt d’informació del Parc Natural a Setcases", url: "https://setcases.cat/coneix/espai-dinteres-natural-de-la-capcalera-del-riu-ter/punt-dinformacio-del-parc-natural-setcases/" },
+      { label: "Turisme local", title: "Setcases a Turisme del Ripollès", url: "https://ripollesturisme.cat/municipi/setcases/" },
+    ],
   },
   {
     areaSlug: "ripolles", slug: "les-lloses", name: "Les Lloses", nameWithArticle: "les Lloses", prepositionalName: "a les Lloses", typeLabel: "municipi",
@@ -192,6 +205,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi forestal del sud-oest del Ripollès, entre relleus suaus, rieres, pinedes, alzinars i rouredes.",
     landscape: "Els seus boscos són coneguts entre els aficionats als bolets. El mosaic forestal pot ser compatible amb ceps, però l’orientació i la humitat separen molt els sectors favorables.",
     source: { title: "Visit Pirineus — etapa Ripoll–Alpens", url: "https://www.visitpirineus.com/ca/que-fer/rutes/etapa-de-ruta/etapa-9-ripoll-alpens" },
+    resources: [
+      { label: "Turisme local", title: "Ajuntament de les Llosses", url: "https://lesllosses.cat/" },
+      { label: "Context territorial", title: "Turisme del Ripollès", url: "https://ripollesturisme.cat/" },
+    ],
   },
   {
     areaSlug: "bergueda", slug: "castellar-de-nhug", name: "Castellar de n’Hug", nameWithArticle: "Castellar de n’Hug", prepositionalName: "a Castellar de n’Hug", typeLabel: "municipi",
@@ -199,6 +216,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi de l’Alt Berguedà sota els relleus del Cadí-Moixeró, amb pinedes de muntanya, prats i un fort gradient de cota.",
     landscape: "Les pinedes creen hàbitat potencial per als lactaris associats als pins. La pinassa ha de conservar humitat i el vent o una baixada brusca de temperatura poden escurçar la resposta.",
     source: { title: "Visit Pirineus — Berguedà", url: "https://visitpirineus.com/ca/destinations/bergueda" },
+    resources: [
+      { label: "Turisme local", title: "Turisme de Castellar de n’Hug", url: "https://www.turismecastellardenhug.cat/site/index/ca.html" },
+      { label: "Rutes i patrimoni", title: "Llocs d’interès de Castellar de n’Hug", url: "https://www.ajcastellardenhug.cat/turisme/llocs-dinteres" },
+    ],
   },
   {
     areaSlug: "bergueda", slug: "rasos-de-peguera", name: "Rasos de Peguera", nameWithArticle: "els Rasos de Peguera", prepositionalName: "als Rasos de Peguera", typeLabel: "paratge",
@@ -206,6 +227,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Relleu prepirinenc elevat al nord de Berga, amb boscos de coníferes, clarianes i vessants exposats a canvis ràpids de temps.",
     landscape: "Les pinedes i les cotes montanes poden encaixar amb l’ecologia del cep. La capacitat del sòl per retenir humitat després de la pluja és més important que un xàfec aïllat.",
     source: { title: "Visit Pirineus — ruta del Caracremada", url: "https://www.visitpirineus.com/sites/default/files/fulleto/fitxer/af_cataleg-senderisme_2017_cat_0.pdf" },
+    resources: [
+      { label: "Turisme local", title: "Rasos de Peguera", url: "https://www.rasos.net/" },
+      { label: "Rutes i patrimoni", title: "Volta per les Canals de Catllarí", url: "https://www.elbergueda.cat/ca/pl161/descobreix/a-peu/itineraris-i-xarxa-de-camins/id603/volta-per-les-canals-de-catllari.htm" },
+    ],
   },
   {
     areaSlug: "montseny", slug: "santa-fe", name: "Santa Fe del Montseny", nameWithArticle: "Santa Fe del Montseny", prepositionalName: "a Santa Fe del Montseny", typeLabel: "vall",
@@ -213,6 +238,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Vall alta i humida del massís, coneguda per la fageda i pels ambients frescos que envolten Santa Fe.",
     landscape: "La fageda, la fullaraca i les obagues encaixen amb espècies que necessiten humitat sostinguda. Les activitats del parc han documentat una llarga tradició de descoberta de bolets en aquest entorn.",
     source: { title: "Parc Natural del Montseny — itineraris de bolets", url: "https://parcs.diba.cat/documents/75109/15894267/p03d112.pdf" },
+    resources: [
+      { label: "Espai natural", title: "Centre d’informació Can Casades", url: "https://parcs.diba.cat/ca/web/equipaments/detall-equipament/-/contingut/155678/centre-d-informacio-can-casades" },
+      { label: "Context territorial", title: "Parc Natural del Montseny", url: "https://parcs.diba.cat/web/montseny" },
+    ],
   },
   {
     areaSlug: "montseny", slug: "el-brull", name: "El Brull", nameWithArticle: "el Brull", prepositionalName: "al Brull", typeLabel: "municipi",
@@ -220,6 +249,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi del Montseny occidental amb pinedes, alzinars i una transició marcada entre vessants mediterranis i ambients de muntanya.",
     landscape: "El parc hi organitza activitats de descoberta dels bolets. Les pinedes fresques i els sectors protegits poden conservar la humitat necessària per als camagrocs.",
     source: { title: "Parc Natural del Montseny — els bolets al Brull", url: "https://parcs.diba.cat/ca/web/agenda/-/montseny-els-bolets-amb-uns-altres-ulls-al-brull-1" },
+    resources: [
+      { label: "Rutes i patrimoni", title: "Llocs d’interès del Brull", url: "https://www.elbrull.cat/turisme/llocs-dinteres" },
+      { label: "Rutes i patrimoni", title: "Rutes del Brull", url: "https://www.elbrull.cat/turisme/rutes" },
+    ],
   },
   {
     areaSlug: "montseny", slug: "viladrau", name: "Viladrau", nameWithArticle: "Viladrau", prepositionalName: "a Viladrau", typeLabel: "municipi",
@@ -227,6 +260,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi del vessant nord del Montseny, amb castanyedes, alzinars frescals, rouredes i proximitat a les fagedes del massís.",
     landscape: "Els boscos amb fullaraca profunda i les obagues poden encaixar amb les trompetes de la mort quan la tardor manté una humitat alta i sense gelades persistents.",
     source: { title: "Patrimoni cultural immaterial del Montseny", url: "https://parcs.diba.cat/es/web/el-patrimoni-cultural-immaterial-del-montseny/inventari/detall/-/contingut/29193465/sabers-relacionats-amb-l-alimentacio-recol-leccio-i-consum-de-bolets" },
+    resources: [
+      { label: "Turisme local", title: "Informació turística de Viladrau", url: "https://www.viladrau.cat/en/tourism/tourist-information" },
+      { label: "Context territorial", title: "Viladrau a Osona Turisme", url: "https://osonaturisme.cat/descobreix-osona/viladrau/" },
+    ],
   },
   {
     areaSlug: "cerdanya", slug: "bellver-de-cerdanya", name: "Bellver de Cerdanya", nameWithArticle: "Bellver de Cerdanya", prepositionalName: "a Bellver de Cerdanya", typeLabel: "municipi",
@@ -234,6 +271,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi de la Cerdanya situat entre el fons de vall i els vessants forestals del Cadí-Moixeró.",
     landscape: "Les pinedes montanes i els boscos de coníferes poden encaixar amb els ceps de pi, especialment en orientacions fresques i sòls àcids que mantenen humitat.",
     source: { title: "Visit Pirineus — Cerdanya", url: "https://visitpirineus.com/en/destinations/cerdanya" },
+    resources: [
+      { label: "Turisme local", title: "Turisme de Bellver de Cerdanya", url: "https://www.bellver.org/turisme" },
+      { label: "Rutes i patrimoni", title: "Què visitar a Bellver", url: "https://www.bellver.org/turisme/que-visitar" },
+    ],
   },
   {
     areaSlug: "ports", slug: "horta-de-sant-joan", name: "Horta de Sant Joan", nameWithArticle: "Horta de Sant Joan", prepositionalName: "a Horta de Sant Joan", typeLabel: "municipi",
@@ -241,6 +282,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi de la Terra Alta als peus dels Ports, amb accés a un paisatge de pinedes mediterrànies, pinasses, cingleres calcàries i un gradient de cota molt marcat.",
     landscape: "Les pinedes de pi blanc de les cotes baixes i les de pinassa dels sectors més alts ofereixen contextos diferents per als lactaris. El substrat i la humitat efectiva són imprescindibles per separar compatibilitat ecològica de simple presència de pins.",
     source: { title: "Parc Natural dels Ports — Horta de Sant Joan", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/ports/gaudeix-del-parc/guia-de-visita/pobles/" },
+    resources: [
+      { label: "Turisme local", title: "Turisme d’Horta de Sant Joan", url: "https://turismehortadesantjoan.cat/" },
+      { label: "Espai natural", title: "Ambients del Parc Natural dels Ports", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/ports/el-parc/patrimoni-natural-i-cultural/ambients/" },
+    ],
   },
   {
     areaSlug: "prades", slug: "prades", name: "Prades", nameWithArticle: "Prades", prepositionalName: "a Prades", typeLabel: "municipi",
@@ -248,6 +293,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Vila vermella de l’altiplà de les Muntanyes de Prades, envoltada de pinedes de pi roig i pinassa sobre relleus calcaris d’entre 900 i 1.200 metres.",
     landscape: "L’altiplà combina pinedes obertes, rouredes i pastures on la tradició del rovelló és part de la identitat local. La cota alta suavitza les temperatures de tardor, però el vent hi asseca ràpidament la capa superficial del sòl.",
     source: { title: "Ajuntament de Prades", url: "https://www.prades.cat/" },
+    resources: [
+      { label: "Turisme local", title: "Turisme de Prades", url: "https://prades.cat/turisme/" },
+      { label: "Turisme local", title: "Oficina de Turisme de Prades", url: "https://prades.cat/turisme/oficina-de-turisme/" },
+    ],
   },
   {
     areaSlug: "prades", slug: "bosc-de-poblet", name: "Bosc de Poblet", nameWithArticle: "el bosc de Poblet", prepositionalName: "al bosc de Poblet", typeLabel: "paratge",
@@ -255,6 +304,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Vessant nord de les Muntanyes de Prades protegit com a paratge natural, amb rouredes, alzinars muntanyencs i pinedes que conserven bé la humitat.",
     landscape: "L’obaga del massís acumula fondalades frescos i sòls profunds, amb l’única roureda de roure reboll de Catalunya. Els ambients ombrívols allarguen les finestres de tardor respecte de l’altiplà veí.",
     source: { title: "Paratge Natural d’Interès Nacional de Poblet", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/poblet/" },
+    resources: [
+      { label: "Rutes i patrimoni", title: "Itineraris del Paratge de Poblet", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/poblet/gaudeix-del-paratge/equipaments-i-itineraris/itineraris/" },
+      { label: "Rutes i patrimoni", title: "Itinerari geològic del bosc de Poblet", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/poblet/gaudeix-del-paratge/equipaments-i-itineraris/itineraris/itinerari-geologic-del-bosc-de-poblet/" },
+    ],
   },
   {
     areaSlug: "solsones", slug: "port-del-comte", name: "Port del Comte", nameWithArticle: "el Port del Comte", prepositionalName: "al Port del Comte", typeLabel: "paratge",
@@ -262,6 +315,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Massís calcari del nord del Solsonès que s’enfila per sobre dels 2.300 metres, amb pinedes extenses de pi roig i pi negre a les cotes mitjanes i altes.",
     landscape: "És un dels sectors boletaires més coneguts del Prepirineu. Les pinedes montanes conserven humitat a les obagues, però la cota i el vent poden tancar la temporada d’un dia per l’altre a la tardor avançada.",
     source: { title: "Port del Comte — estació de muntanya", url: "https://www.portdelcomte.net/" },
+    resources: [
+      { label: "Turisme local", title: "La Vall de Lord", url: "https://lavalldelord.com/" },
+      { label: "Context territorial", title: "Turisme Solsonès", url: "https://turismesolsones.com/" },
+    ],
   },
   {
     areaSlug: "solsones", slug: "sant-llorenc-de-morunys", name: "Sant Llorenç de Morunys", nameWithArticle: "Sant Llorenç de Morunys", prepositionalName: "a Sant Llorenç de Morunys", typeLabel: "municipi",
@@ -269,6 +326,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi de la vall de Lord, entre serres calcàries i pinedes de pi roig i pinassa que pugen des del pantà de la Llosa del Cavall cap al Port del Comte.",
     landscape: "La vall tancada concentra contrastos forts entre solells i obagues. Les pinedes fresques de la capçalera responen millor a les pluges de tardor que els vessants oberts i ventejats de l’altiplà solsoní.",
     source: { title: "Turisme Solsonès", url: "https://turismesolsones.com/" },
+    resources: [
+      { label: "Turisme local", title: "La Vall de Lord", url: "https://lavalldelord.com/" },
+      { label: "Turisme local", title: "Oficina de Turisme de la Vall de Lord", url: "https://www.catalunya.com/es/continguts/experiencies-turistiques/oficina-de-turismo-de-vall-de-lord-20-2-490522" },
+    ],
   },
   {
     areaSlug: "guilleries", slug: "sant-hilari-sacalm", name: "Sant Hilari Sacalm", nameWithArticle: "Sant Hilari Sacalm", prepositionalName: "a Sant Hilari Sacalm", typeLabel: "municipi",
@@ -276,6 +337,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Capital de les Guilleries, envoltada de castanyedes, alzinars frescals i pinedes humides sobre sòls granítics d’entre 600 i 1.000 metres.",
     landscape: "La vila de les cent fonts concentra una de les cultures boletaires més vives del país. Les castanyedes i els boscos enclotats mantenen humitat persistent i allarguen la temporada quan la tardor és regular.",
     source: { title: "Les Guilleries km0 — turisme de Sant Hilari Sacalm", url: "https://lesguillerieskm0.cat/" },
+    resources: [
+      { label: "Turisme local", title: "Oficina de Turisme de Sant Hilari Sacalm", url: "https://www.santhilari.cat/viusanthilari/oficina-de-turisme/" },
+      { label: "Espai natural", title: "Espai Natural de les Guilleries-Savassona", url: "https://parcs.diba.cat/web/guilleries" },
+    ],
   },
   {
     areaSlug: "guilleries", slug: "osor", name: "Osor", nameWithArticle: "Osor", prepositionalName: "a Osor", typeLabel: "municipi",
@@ -283,6 +348,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi de la vall de la riera d’Osor, al cor forestal de les Guilleries, entre castanyedes, alzinars i vessants enclotats que baixen cap a Susqueda.",
     landscape: "És un dels racons més humits i boscosos del massís. Les fondalades ombrívoles i la fullaraca profunda conserven l’aigua de les pluges de tardor força més temps que els vessants oberts.",
     source: { title: "Espai Natural de les Guilleries-Savassona", url: "https://parcs.diba.cat/web/guilleries" },
+    resources: [
+      { label: "Turisme local", title: "Què fer a Osor", url: "https://www.osor.cat/que-fer-a-osor/" },
+      { label: "Rutes i patrimoni", title: "Senderisme a Osor", url: "https://www.osor.cat/que-fer-a-osor/activitats/senderisme/" },
+    ],
   },
   {
     areaSlug: "montnegre-corredor", slug: "vallgorguina", name: "Vallgorguina", nameWithArticle: "Vallgorguina", prepositionalName: "a Vallgorguina", typeLabel: "municipi",
@@ -290,6 +359,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi del Vallès Oriental a cavall del Montnegre i el Corredor, amb alzinars, suredes i pinedes mediterrànies que pugen dels fondals cap a les carenes.",
     landscape: "El parc hi manté un mosaic forestal dens a tocar de l’àrea metropolitana. Les obagues del Montnegre conserven humitat més temps que els vessants marítims, i la tardor hi arriba abans que a la costa.",
     source: { title: "Parc del Montnegre i el Corredor", url: "https://parcs.diba.cat/web/montnegre" },
+    resources: [
+      { label: "Rutes i patrimoni", title: "Llocs d’interès de Vallgorguina", url: "https://www.vallgorguina.cat/el-municipi/informacio-del-municipi/llocs-dinteres" },
+      { label: "Context territorial", title: "Vallgorguina al Vallès Oriental", url: "https://www.vallesoriental.cat/la-comarca/els-municipis/vallgorguina.html" },
+    ],
   },
   {
     areaSlug: "garrotxa", slug: "vall-den-bas", name: "Vall d’en Bas", nameWithArticle: "la Vall d’en Bas", prepositionalName: "a la Vall d’en Bas", typeLabel: "vall",
@@ -297,6 +370,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Vall agrícola i forestal del sud-oest de la Garrotxa, tancada per les fagedes i pinedes que pugen cap al Puigsacalm i el collsacabra.",
     landscape: "Els vessants humits que envolten el pla combinen fagedes, rouredes i pinedes de pi roig. La pluja abundant de la comarca hi manté sòls profunds i frescos que responen bé a les tardors regulars.",
     source: { title: "OH! Garrotxa — turisme de la Garrotxa", url: "https://ohgarrotxa.com/" },
+    resources: [
+      { label: "Turisme local", title: "Turisme de la Vall d’en Bas", url: "https://vallbas.cat/turisme/" },
+      { label: "Espai natural", title: "Parc Natural de la Zona Volcànica de la Garrotxa", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/garrotxa/" },
+    ],
   },
   {
     areaSlug: "garrotxa", slug: "santa-pau", name: "Santa Pau", nameWithArticle: "Santa Pau", prepositionalName: "a Santa Pau", typeLabel: "municipi",
@@ -304,6 +381,10 @@ export const placeProfiles: PlaceProfile[] = [
     description: "Municipi medieval del cor de la zona volcànica, entre la fageda d’en Jordà, els volcans coberts de bosc i les rouredes humides de la vall de Ser.",
     landscape: "Les fagedes sobre colades de lava i els sòls volcànics profunds retenen la humitat de manera excepcional. És un dels paisatges forestals més estables de la comarca davant els episodis secs curts.",
     source: { title: "Parc Natural de la Zona Volcànica de la Garrotxa", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/garrotxa/" },
+    resources: [
+      { label: "Turisme local", title: "Turisme de Santa Pau", url: "https://santapau.cat/turisme/" },
+      { label: "Rutes i patrimoni", title: "Llocs d’interès de Santa Pau", url: "https://santapau.cat/turisme/llocs-dinteres/" },
+    ],
   },
 ];
 

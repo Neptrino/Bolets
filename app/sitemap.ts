@@ -24,6 +24,12 @@ const currentOverviewLastModified = new Date(
 const mushroomPartsGuideLastModified = new Date(
   `${getEditorialMetadata("parts-dun-bolet").updatedAt}T00:00:00+02:00`,
 );
+const edibleGuideLastModified = new Date(
+  `${getEditorialMetadata("bolets-comestibles").updatedAt}T00:00:00+02:00`,
+);
+const poisonousGuideLastModified = new Date(
+  `${getEditorialMetadata("bolets-verinosos").updatedAt}T00:00:00+02:00`,
+);
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const pages: MetadataRoute.Sitemap = [
@@ -33,8 +39,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...seasonGuides.map((guide) => ({ url: absoluteUrl(guide.path), lastModified })),
     { url: absoluteUrl("/quan-surten-els-bolets-despres-de-ploure"), lastModified: rainGuideLastModified },
     { url: absoluteUrl("/parts-dun-bolet"), lastModified: mushroomPartsGuideLastModified },
-    { url: absoluteUrl("/bolets-comestibles"), lastModified },
-    { url: absoluteUrl("/bolets-verinosos"), lastModified },
+    { url: absoluteUrl("/bolets-comestibles"), lastModified: edibleGuideLastModified },
+    { url: absoluteUrl("/bolets-verinosos"), lastModified: poisonousGuideLastModified },
     { url: absoluteUrl("/temporada"), lastModified },
     ...SEASON_MONTHS.map(({ key }) => ({
       url: absoluteUrl(seasonMonthPath(key)),

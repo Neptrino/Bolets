@@ -1,8 +1,62 @@
 # SEO field-research report: bolets.app
 
 **Market:** Catalan-language searches in Catalonia, with Spain-wide Catalan spillover
-**Audit date:** 13 August 2026
-**Scope:** live technical crawl, repository/content inventory, public SERP sampling, Google autocomplete, competitor research, mobile Lighthouse test, domain/indexation checks
+**Initial audit date:** 13 August 2026
+**Status refreshed:** 25 August 2026
+**Scope:** live technical crawl, repository/content inventory, public SERP sampling, Google autocomplete, competitor research, mobile Lighthouse test, domain/indexation checks, and current SE Ranking project review
+
+> The 13 August sections below remain the launch baseline. The current-status update takes precedence wherever a metric, gap or recommendation has since changed.
+
+## Current-status update — 25 August 2026
+
+The project has progressed materially since launch. It is still too early to make a traffic forecast or claim a durable index-coverage outcome, but the original report should no longer be read as a list of uncompleted product or SEO tasks. The query data below comes through the connected Search Console report in SE Ranking and remains subject to Search Console's normal reporting lag.
+
+| Area | Current status |
+|---|---|
+| Sitemap | Live sitemap contains **187 URLs**, up from 93. Every entry now includes a truthful `lastModified` value. |
+| Core content | `/bolets-avui`, `/bolets-de-primavera`, `/temporada`, `/map`, the species hub and the rovelló–pinetell comparison are live and return HTTP 200. |
+| Trust | Named author and editorial/source panels are live. Independent mycological review remains explicitly pending and is still the main trust gap. |
+| Comparison content | The 14 initially thin comparison pages have been expanded with field-level traits, safety guidance and source panels. Keep reviewing their distinctiveness rather than treating the template work as finished forever. |
+| SE Ranking | The project now tracks **290 keyword–engine entries**: 145 in Catalan and 145 in Spanish. Daily tracking began in mid-August, so the data is directional rather than a stable trend. |
+| Search Console evidence | The connected report now shows real queries. For example, `pinetells` has 43 impressions, 1 click and an average position of 17.2; `ceps d’estiu` averages 10.9 and `matagent` 9.9. |
+| Keyword coverage | Each of the 52 species profiles has at least one tracked keyword mapped to its canonical URL. On 26 August, 21 broad terms were assigned to canonical pages; one geographic term and three content gaps remain intentionally unassigned. |
+| Local rank tracking | Both language configurations use the national database; no Catalonia or Barcelona region is configured yet. |
+| Fresh technical crawl | SE Ranking’s 25 August crawl scored **95/100** across 549 URLs: 0 errors, no slow-loading-page warnings and no missing-favicon warning. |
+
+### Priority actions now
+
+1. Add descriptive alt text to the identification/gallery images. The fresh crawl finds this on 206 pages; an inspected example is the unlabelled *Russula virescens* gallery images. This is the clearest remaining scalable on-page issue.
+2. Build the safety-reviewed *bolet de soca* and false-rossinyol content before assigning the three deliberately unowned high-intent terms; do not point them at a merely similar species page.
+3. Set a Catalonia or Barcelona tracking location if SE Ranking supports it, while retaining the national view for comparison, and replace the stale `mapa bolets catalunya 2025` term with its 2026 equivalent.
+4. Use the native Google Search Console property for coverage, URL inspection and Core Web Vitals; keep Bing Webmaster Tools verified as a separate operational check. The connected report confirms query data, but it is not a substitute for property-level diagnosis.
+5. Check the six externally reported 4xx links individually before changing them. At least one is an ICGC service that returns 403 to the crawler, rather than a broken bolets.app URL.
+
+### Current keyword evidence
+
+Earlier SE Ranking research confirms that the strategic direction remains sound: `bolets comestibles` has 590 estimated monthly searches with difficulty 8; `bolets Catalunya` has 390 with difficulty 6; and `mapa bolets catalunya` has 170 with difficulty 5. The project has added high-confidence singular/plural and synonym variants such as `bolets de tinta`, `fredolic bolet`, `pinatell bolet`, `bolet de xop`, `carreretes bolet`, `carlets bolet` and the unaccented `rovello bolet`.
+
+The new Search Console feed shows early, useful signals rather than a verdict: `pinetells` improved from an average position of 20.1 in the previous snapshot to 17.2 with 43 impressions; `bolets verinosos` averages 20.1; `bolets de primavera` averages 33.0; and `rovelló`, `fredolic` and `llenega` remain well below page one. Tracked visibility is only 0.218% for Catalan and 0.243% for Spanish on 25 August, with tracking only just started. Prioritize pages and snippets that receive impressions in positions 8–20; do not claim a ranking trend yet.
+
+Track singular and plural variants separately when demand or intent differs, but route them to one canonical page. Do not create duplicate singular/plural landing pages.
+
+### Keyword map — 26 August 2026
+
+This was the first complete demand-to-page mapping pass: SE Ranking’s similar-keyword data and two competitor gap checks were compared with the project’s tracked terms and the live information architecture. The project now has 145 tracked keyword records in each language setting. The following actions are complete:
+
+- **21 previously unowned terms mapped:** broad Catalonia terms to the homepage; map terms to `/map`; current-condition terms to `/bolets-avui`; identification/naming terms to `/bolets`; safety terms to `/bolets-verinosos`; and seasonal, species and comparison terms to their exact canonical pages.
+- **10 existing-page variants added:** `bolets comestible`, `bolets no comestibles`, `bolets toxics`, `bolets venenosos`, `bolets toxics catalunya`, `bolet rossinyol`, `bolets ceps`, `bolet cep`, `temporada de bolets` and `bolets a Catalunya`.
+- **3 intentional content gaps tracked without a target:** `bolet de soca`, `bolets de soca` and `fals rossinyol bolet`. They require new safety-led content; mapping them to an existing but different species would create a poor and potentially unsafe search result.
+
+| Opportunity | Estimated monthly volume | Decision |
+|---|---:|---|
+| `bolet de soca` / `bolets de soca` | 390 each | Build an expert-reviewed profile and danger comparison with *Galerina marginata* before assigning a URL. |
+| `bolets comestible` | 590 | Track as a spelling/number variant of `/bolets-comestibles`; no duplicate page. |
+| `bolets no comestibles` | 140 | Target `/bolets-verinosos`; reinforce the page’s wording and internal links. |
+| `bolets toxics` | 90 | Target `/bolets-verinosos`; no separate page. |
+| `bolet rossinyol` / `bolets ceps` | 140 each | Track against the existing rossinyol and ceps content clusters. |
+| `on trobar bolets aquesta setmana` | 140 | Target `/bolets-avui`, which should retain a prominent map path. |
+
+The high-volume standalone `bolet` term (1,900) is too ambiguous to receive a dedicated page. Spanish `setas…` volume is also deliberately excluded from the Catalan content plan until the site has a genuine Spanish-language experience. Keep both as strategy observations, not as content obligations.
 
 ## Executive assessment
 
@@ -23,7 +77,7 @@ The key conclusions are:
 
 The keyword ordering below uses live Catalan Google autocomplete (`hl=ca`, `gl=es`), recurrence across sampled SERPs, intent breadth, seasonality and fit with the product. These are demand signals, not exact monthly search volumes.
 
-SE Ranking access was announced during the research, but the connected app exposed no callable keyword, SERP or competitor actions in this task. Therefore, inventing volume or keyword-difficulty numbers would be misleading. A quantitative appendix should be added when the connector exposes its tools or when Google Search Console/Keyword Planner exports are available. The required export is listed at the end of this report.
+At the time of the initial audit, SE Ranking access exposed no callable keyword, SERP or competitor actions. That limitation has been resolved: the connected project is now available and its current configuration and keyword findings are recorded in the 25 August update above. The connected Search Console report now supplies query impressions, clicks and positions; use the native Search Console property for index coverage, URL inspection and the complete performance export. Keyword Planner is still useful for a more complete volume export.
 
 ## Current organic status
 
@@ -32,29 +86,33 @@ SE Ranking access was announced during the research, but the connected app expos
 - `bolets.app` was registered at **21:35 UTC on 12 August 2026**, according to the public [RDAP record](https://rdap.org/domain/bolets.app).
 - The homepage, robots file and sitemap are live and return successful responses.
 - `robots.txt` allows all public paths and blocks only `/api/`.
-- The XML sitemap contains **93 indexable URLs**.
+- The initial audit's XML sitemap contained **93 indexable URLs**. As of 25 August, it contains **187 URLs**, each with a `lastModified` value.
 - Public `site:bolets.app` searches returned **zero results** on 13 August. For a domain less than one day old, this is expected and should be treated as a baseline, not a failure.
-- No Google Search Console verification token or verification file exists in the repository.
+- A Search Console verification token or file is not present in the repository, which is normal for DNS verification. The connected SE Ranking report now exposes Search Console query data; retain native property access for coverage and URL-level diagnosis.
 
-**Required action:** verify the domain property in Search Console through DNS, submit `https://bolets.app/sitemap.xml`, inspect the homepage plus one species, one map, one comparison and one location URL, then request indexing for those representative pages. Do not manually request all 93 URLs.
+**Required action:** maintain the domain property in Search Console, confirm the current sitemap submission, inspect the homepage plus one species, one map, one comparison and one location URL, then request indexing only for genuinely new or materially changed representative pages. Do not manually request all 187 URLs.
 
 ### Live crawl results
 
 | Check | Result |
 |---|---:|
-| Sitemap URLs crawled | 93 |
-| HTTP 200 | 93 |
-| Missing titles | 0 |
-| Missing meta descriptions | 0 |
-| Missing canonicals | 0 |
-| Pages without exactly one H1 | 0 |
-| Pages without JSON-LD | 0 |
-| Duplicate titles | 0 |
-| Duplicate descriptions | 0 |
-| Orphan sitemap pages | 0 |
-| Maximum click depth from home | 3 |
+| Sitemap URLs crawled | 93 at the 13 August baseline; the live sitemap has 187 URLs on 25 August |
+| HTTP 200 | 93 at the baseline; the new 25 August audit reports 0 crawl errors across 549 crawled URLs |
+| Missing titles | 0 in both audits |
+| Missing meta descriptions | 0 in both audits |
+| Missing canonicals | 0 in both audits |
+| Pages without exactly one H1 | 0 in both audits |
+| Pages without JSON-LD | 0 at the baseline |
+| Duplicate titles | 0 in both audits |
+| Duplicate descriptions | 0 in both audits |
+| Slow-loading-page warnings | 7 on 21 August; **0** in the 25 August crawl |
+| Missing favicon warning | 1 on 21 August; **0** in the 25 August crawl |
+| Missing image alt text | 206 pages in the 25 August crawl; the remaining material on-page issue |
+| External 4xx links | 6 in the 25 August crawl; investigate individually, as crawler access controls can cause false positives |
+| Orphan sitemap pages | 0 at the 13 August baseline; not re-reported as a warning in the 25 August audit |
+| Maximum click depth from home | 3 at the 13 August baseline; re-measure only if navigation structure changes |
 
-This is a much better launch baseline than most new editorial sites.
+The current technical health score is **95/100** (0 errors, 212 warnings and 953 notices). It is a much better launch baseline than most new editorial sites; the larger URL count also means raw warning totals must be interpreted by issue type, not compared in isolation.
 
 ### Performance and experience
 
@@ -80,13 +138,13 @@ The accessibility deduction came from low contrast in species-card secondary tex
 | P0 | **bolets de Catalunya**, bolets Catalunya, bolets catalans | Broad discovery | `/` | Existing |
 | P0 | **bolets comestibles**, bolets comestibles Catalunya, tipus de bolets comestibles | Identification/safety | `/bolets-comestibles` | Existing; deepen |
 | P0 | **mapa bolets Catalunya**, mapa bolets avui, bolets Catalunya mapa | Live utility | `/map` | Existing; major differentiator |
-| P0 | **on trobar bolets avui/ara/aquesta setmana/aquest cap de setmana** | Fresh/local utility | `/map` plus a fresh editorial summary | Partial |
-| P0 | **rovellons**, on trobar rovellons, quan surten, rovelló vs pinetell | Species/local | `/species/lactarius-sanguifluus`, `/zones/rovellons`, comparison | Strong existing coverage |
-| P1 | **tipus de bolets**, tipus de bolets a Catalunya, noms de bolets | Browse/learn | Localized species hub | Weak URL/targeting |
+| P0 | **on trobar bolets avui/ara/aquesta setmana/aquest cap de setmana** | Fresh/local utility | `/map` plus `/bolets-avui` | Existing; assign the remaining tracked variants to their canonical targets |
+| P0 | **rovellons**, on trobar rovellons, quan surten, rovelló vs pinetell | Species/local | `/bolets/lactarius-sanguifluus`, `/zones/rovellons`, comparison | Strong existing coverage |
+| P1 | **tipus de bolets**, tipus de bolets a Catalunya, noms de bolets | Browse/learn | `/bolets` | Existing; assign the remaining tracked variants to this canonical hub |
 | P1 | **bolets verinosos de Catalunya**, bolets verinosos noms | Safety | `/bolets-verinosos` | Existing; add expert trust |
 | P1 | **temporada de bolets Catalunya**, temporada bolets 2026, primers bolets | Seasonal planning | `/temporada` | Existing |
-| P1 | **bolets de primavera**, múrgoles, moixerons, cama-secs | Seasonal/species | New spring pillar + species pages | Gap |
-| P1 | **quants dies després de ploure surten els bolets** | Conditions/explanation | New evidence-led guide linked to map | Gap |
+| P1 | **bolets de primavera**, múrgoles, moixerons, cama-secs | Seasonal/species | `/bolets-de-primavera` + species pages | Existing |
+| P1 | **quants dies després de ploure surten els bolets** | Conditions/explanation | `/quan-surten-els-bolets-despres-de-ploure` | Existing; assign the tracked keyword |
 | P1 | **camagrocs**, camagroc bolet, on trobar camagrocs | Species/local | Species and location pages | Existing |
 | P1 | **ceps bolets**, tipus de ceps, cep vs fals cep | Species/comparison | Species and comparison cluster | Existing |
 | P2 | **fredolics**, fredolics bords, temporada | Species/safety | Species and comparison content | Partial |
@@ -148,30 +206,32 @@ Every major page should reinforce three proof points: same versioned ecology acr
 ### What is already strong
 
 - Clear Catalan language targeting (`lang="ca"`, Catalan copy and `ca_ES` Open Graph locale).
-- Good launch architecture: homepage, species catalogue, edible/toxic hubs, season, map, method, comparisons and areas.
+- Good launch architecture: homepage, species catalogue, edible/toxic hubs, season, map, method, comparisons, areas, a spring pillar and a current-conditions page.
 - Unique metadata and canonicals across all audited pages.
 - `WebSite`, `Organization`, `CollectionPage`, `ItemList`, `Article`, `BreadcrumbList` and `Taxon` structured entities are used where relevant.
 - Strong internal linking: zero orphan pages; 8 URLs one click from home, 54 at depth two and 30 at depth three.
 - The method page and version-controlled ecological configuration can become powerful trust assets.
+- Named author, editorial metadata and visible sources are now present. The site describes the author’s role and limits without claiming unverified micological qualifications.
 
 ### Highest-impact weaknesses
 
-1. **No named expertise.** Add real author and scientific/mycological reviewer identities, short bios, qualifications, conflicts/disclosures, and links to profiles. Add `author`, `reviewedBy`, `datePublished` and `dateModified` where truthful. Do not fabricate credentials.
+1. **Independent mycological review remains pending.** The author and editorial source panels now exist, but safety-sensitive claims still need independent, named mycological review where the project represents that review as complete. Do not fabricate credentials or reviewer status.
 2. **Insufficient primary sourcing on safety pages.** Species claims, toxicity, confusing lookalikes and consumption conditions should cite authoritative sources close to the claim. Link prominently to ACSA’s safety and consultation service. The warning footer is good but not enough.
-3. **Thin templates.** Fourteen comparison pages are around 212–276 visible words; several area/place hubs are around 216–289 words. Add genuinely distinct identification tables, decisive traits, habitat/season differences, photo annotations, safety escalation and sources. Do not pad templates with generic prose.
-4. **Overlong metadata.** Thirteen comparison descriptions are approximately 266–378 characters and will be rewritten/truncated. Ten titles exceed roughly 65 characters, with one reaching 78. Write concise, benefit-led snippets; Google may still rewrite them.
-5. **Weak localized hub URL.** `/species` is understandable to developers but not an ideal Catalan search URL. Because the domain is new and unindexed, this is the lowest-risk moment to move it to `/bolets` or `/especies-de-bolets`, with a permanent redirect and updated internal links/canonical/sitemap. Only change it once.
-6. **No `lastModified` in the sitemap.** Add truthful modification dates from versioned content. Search engines largely ignore priority/change-frequency hints, so accurate last-modified signals are more useful than claiming that static pages change daily.
-7. **No freshness landing experience.** Queries explicitly include “avui”, “ara”, “aquesta setmana”, “aquest cap de setmana” and the year. Create one canonical, server-rendered current-conditions summary—not separate near-duplicate daily URLs. Show timestamp, data freshness, model completeness and links into the map.
+3. **Image descriptions are incomplete.** The fresh crawl reports missing alt text on 206 pages, including identification-gallery assets. Add concise, factual descriptions that distinguish the visible specimen or diagnostic view; do not turn alt text into a keyword list.
+4. **Area and comparison quality must be maintained.** The initially thin comparison pages have been expanded. Keep adding genuinely distinct identification tables, decisive traits, habitat/season differences, photo annotations, safety escalation and sources rather than generic padding.
+5. **Metadata is largely resolved.** The fresh crawl finds no missing or duplicate titles/descriptions and only three long-title notices. Continue writing concise, benefit-led snippets; Google may still rewrite them.
+6. **Localized hub URL is resolved.** The public catalogue is now `/bolets`; keep it stable and avoid another route change without a genuine information-architecture reason.
+7. **Sitemap freshness is resolved.** The sitemap now publishes truthful `lastModified` values. Continue maintaining them; search engines largely ignore priority/change-frequency hints.
+8. **Freshness landing experience is resolved.** `/bolets-avui` provides the canonical current-conditions summary. Maintain its timestamp, data freshness and model-completeness signals rather than creating duplicate daily URLs.
 
 ## Recommended content architecture
 
 ### Pillars to launch or strengthen
 
-1. **Bolets de Catalunya / tipus de bolets** — a visual classification hub by edibility, morphology, habitat, season and family; route users to individual profiles.
-2. **Bolets avui a Catalunya** — timestamped regional summary linked to the map; explain where conditions are promising without exposing exact sensitive sites.
-3. **Quan surten els bolets després de ploure?** — evidence-led explanation of rain, ET₀, soil moisture memory, dry spells, temperature and species differences. This page should explain why a simplistic “X days” answer is unreliable and show how the model handles it.
-4. **Bolets de primavera** — múrgola, moixeró and cama-sec cluster, published before March.
+1. **Bolets de Catalunya / tipus de bolets** — implemented at `/bolets`; keep improving the visual classification and internal routes to individual profiles.
+2. **Bolets avui a Catalunya** — implemented at `/bolets-avui`; retain the timestamped regional summary and its link to the map without exposing exact sensitive sites.
+3. **Quan surten els bolets després de ploure?** — implemented; keep the explanation evidence-led and clear that a simplistic “X days” answer is unreliable.
+4. **Bolets de primavera** — implemented at `/bolets-de-primavera`; refresh it ahead of the spring season.
 5. **Seguretat i identificació** — a hub for poisonous species, emergency action, photo requirements, myths and expert resources. Link to 061 and current official guidance where appropriate.
 6. **Regulations and responsible collecting** — rules and permits by managed area, private property, parking, collection etiquette and dated official sources. Regulations must be reviewed on a schedule.
 
@@ -198,7 +258,9 @@ The first links should come from relevance and evidence, not generic directory s
 
 Avoid paid link schemes, exact-location bait and low-quality guest-post networks. In this safety-sensitive niche, one relevant institutional or expert citation is worth far more than many unrelated links.
 
-## 30/60/90-day action plan
+## 30/60/90-day action plan — initial plan and current readout
+
+The action plan below records the original sequencing. The following items are complete or materially progressed: the `/bolets` hub decision, `lastModified` sitemap entries, author/editorial panels, spring and current-conditions pages, deeper comparison content, self-hosted analytics, daily SE Ranking tracking, connected Search Console query reporting, and the refreshed full technical crawl. The remaining work is independent review, image-alt completion, native Search Console/Bing operational checks, a local SE Ranking location and re-validating target-URL ownership.
 
 ### Days 0–7: discovery and measurement
 
@@ -206,7 +268,7 @@ Avoid paid link schemes, exact-location bait and low-quality guest-post networks
 - Submit the sitemap; inspect representative URLs; record discovered/crawled/indexed counts weekly.
 - Add GA4 only if the product needs it and consent requirements are handled; retain Vercel Analytics for lightweight product measurement.
 - Configure rank tracking for the priority keyword set on Google Spain, Catalan language, mobile and Catalonia/Barcelona where the tool supports location.
-- Add sitemap `lastModified` values and correct the 13 overlong descriptions plus the longest titles.
+- Keep sitemap `lastModified` values truthful and review the three remaining long-title notices when the associated pages are next edited.
 - Decide the `/species` localization before indexation begins at scale.
 
 ### Days 8–30: trust and core landing pages
@@ -215,7 +277,7 @@ Avoid paid link schemes, exact-location bait and low-quality guest-post networks
 - Strengthen edible, poisonous and highest-demand species pages with primary sources.
 - Launch/strengthen “tipus de bolets”, “bolets avui” and “després de ploure” content.
 - Expand thin comparison pages, starting with rovelló vs pinetell, edible vs deadly Amanita comparisons, rossinyol vs bolet d’olivera and cep vs false/toxic lookalikes.
-- Fix homepage contrast and monitor LCP/field data.
+- Complete gallery-image alt text and monitor LCP/field data.
 
 ### Days 31–60: geographic and seasonal depth
 
@@ -243,9 +305,11 @@ For a domain launched on 12 August 2026, rankings are a lagging measure. Track:
 
 Do not set a traffic forecast until SE Ranking/Keyword Planner volumes and at least 4–8 weeks of Search Console impression data exist.
 
-## Quantitative keyword appendix required from SE Ranking
+## SE Ranking configuration and next data extract
 
-Run Spain database and, if available, a Catalonia/Barcelona location on mobile. Export keyword, monthly volume, trend by month, difficulty, CPC, intent, SERP features and top-10 ranking URLs for:
+SE Ranking is now configured with 290 keyword–engine entries in two language settings (`ca` and `es`), checked daily. The project is not yet location-specific: configure a Catalonia or Barcelona view if available, while retaining the national comparison. Target-URL ownership is complete for all existing pages except the deliberately held `bolets pirineu` term and the three safety-led content gaps recorded above.
+
+Export keyword, monthly volume, trend by month, difficulty, CPC, intent, SERP features and top-10 ranking URLs for:
 
 `bolets`, `bolets de catalunya`, `tipus de bolets`, `bolets comestibles`, `bolets verinosos`, `mapa bolets catalunya`, `bolets catalunya avui`, `on trobar bolets`, `on trobar bolets avui`, `temporada bolets catalunya`, `rovellons`, `on trobar rovellons`, `camagrocs`, `ceps bolets`, `fredolics`, `llenegues`, `rossinyols bolets`, `trompeta de la mort`, `ou de reig`, `múrgoles`, `bolets de primavera`, `quants dies després de ploure surten els bolets`.
 

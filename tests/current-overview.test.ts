@@ -92,6 +92,17 @@ describe("current-condition overview", () => {
     expect(generationSource).toContain('cache: "no-store"');
   });
 
+  it("keys local-guide readings by the same published condition generations", () => {
+    const localGuideSource = readFileSync(
+      "src/lib/local-guide-conditions-server.ts",
+      "utf8",
+    );
+
+    expect(localGuideSource).toContain("readCurrentOverviewGeneration");
+    expect(localGuideSource).toContain("loadCachedLocalGuideCondition(");
+    expect(localGuideSource).toContain('tags: ["local-guide-condition"]');
+  });
+
   it("consolidates territorial hubs into bounded shared 1 km summary buckets", () => {
     const buckets = overviewHubs().flatMap((hub) => areaSummaryBucketsForBounds(hub.bounds));
     const uniqueBuckets = new Set(
