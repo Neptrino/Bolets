@@ -136,6 +136,16 @@ const defaultMetadata: EditorialMetadata = {
 };
 
 const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
+  "zones-rovellons": {
+    updatedAt: "2026-08-28",
+  },
+  "zones-ceps": {
+    updatedAt: "2026-08-28",
+  },
+  "preguntes-frequents-bolets": {
+    publishedAt: "2026-08-27",
+    updatedAt: "2026-08-28",
+  },
   "species:hygrophoropsis-aurantiaca": {
     publishedAt: "2026-08-27",
     updatedAt: "2026-08-27",
@@ -229,6 +239,8 @@ export const publicEditorialItems = [
   "normativa-bolets",
   "bolets-de-soca",
   "fals-rossinyol",
+  "preguntes-frequents-bolets",
+  "zones-rovellons",
   "zones-ceps",
   "equip-editorial",
 ] as const;

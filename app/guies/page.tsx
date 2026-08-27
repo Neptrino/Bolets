@@ -137,6 +137,12 @@ export default function GuidesPage() {
         <GuideDirectory items={directoryItems} />
       </section>
 
+      <Link href="/preguntes-frequents-bolets" className="location-species-feature location-current-feature">
+        <span><BookOpenText size={18} aria-hidden="true" /> Abans de sortir</span>
+        <div><h2>Preguntes sobre anar a buscar bolets</h2><p>Temporada, pluja, boscos, identificació i permisos: respostes curtes amb guies per aprofundir-hi.</p></div>
+        <strong>Consultar les preguntes <ArrowUpRight size={17} aria-hidden="true" /></strong>
+      </Link>
+
       <aside className="location-safety-note">
         <Trees size={22} />
         <div><strong>Hàbitat potencial, no una coordenada.</strong><p>Les guies descriuen compatibilitat ecològica agregada. No demostren presència actual ni substitueixen una identificació experta. Abans de sortir, <Link href="/normativa-bolets">comproveu els permisos i l’accés al bosc</Link>.</p></div>

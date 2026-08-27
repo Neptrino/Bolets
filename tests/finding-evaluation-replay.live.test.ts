@@ -418,6 +418,16 @@ it.skipIf(!inputPath || !artifactsDir)(
     const rainLagDays = Number(process.env.FINDING_EVAL_RAIN_LAG_DAYS ?? 0);
     const bucketProbe = process.env.FINDING_EVAL_BUCKET === "1";
     const surfaceProbes = process.env.FINDING_EVAL_SURFACE_PROBES === "1";
+    // Boletus flush-lag experiment: cep abundance trails good conditions by
+    // roughly two weeks in both observed seasons, so the matured-rain window
+    // shifts from [8..21] days ago to [15..windowDays] for boletus species
+    // only (recent = 14 d fields instead of 7 d).
+    const boletusLagConfig = process.env.FINDING_EVAL_BOLETUS_LAG
+      ? JSON.parse(process.env.FINDING_EVAL_BOLETUS_LAG) as {
+          windowDays: 14 | 21 | 26;
+          halfSatFactor: number;
+        }
+      : null;
     const scoringModel = process.env.FINDING_EVAL_MODEL === "v2" ? "v2" : "v1";
     // Parameter sweeps patch the v2 config so candidate values can be fitted
     // against the same events without editing shipped priors.
@@ -618,7 +628,7 @@ it.skipIf(!inputPath || !artifactsDir)(
             // Either model version can be requested regardless of which one
             // the shipped catalogue currently selects, so v1-vs-v2 shadow
             // comparisons keep working after the production cutover.
-            const profile = scoringModel === "v1"
+            let profile = scoringModel === "v1"
               ? shipped.modelConfig.model === "hydrothermal-v1"
                 ? shipped
                 : { ...shipped, modelConfig: getSpeciesV1ModelConfig(speciesId)! }
@@ -631,6 +641,26 @@ it.skipIf(!inputPath || !artifactsDir)(
                     v2Overrides,
                   ),
                 };
+            if (
+              boletusLagConfig &&
+              speciesId.startsWith("boletus-") &&
+              profile.modelConfig.status === "supported" &&
+              profile.modelConfig.model === "hydrothermal-v2"
+            ) {
+              profile = {
+                ...profile,
+                modelConfig: {
+                  ...profile.modelConfig,
+                  water: {
+                    ...profile.modelConfig.water,
+                    rainfallWindowDays: boletusLagConfig.windowDays,
+                    rainfallHalfSaturationMm:
+                      profile.modelConfig.water.rainfallHalfSaturationMm *
+                        boletusLagConfig.halfSatFactor,
+                  },
+                },
+              };
+            }
             const model = profile.modelConfig;
             if (model.status !== "supported") continue;
             const values: ConditionSnapshot["values"] = {
@@ -654,6 +684,11 @@ it.skipIf(!inputPath || !artifactsDir)(
                 values[daysKey] = window.rainyDays;
                 values[etKey] = window.evapotranspirationMm;
               }
+            }
+            if (boletusLagConfig && speciesId.startsWith("boletus-")) {
+              values.rainfall7dMm = values.rainfall14dMm;
+              values.rainfallDays7d = values.rainfallDays14d;
+              values.evapotranspiration7dMm = values.evapotranspiration14dMm;
             }
             if (terrainHours) {
               const raw = atmosphereBySpan.get(spanIndex)!;

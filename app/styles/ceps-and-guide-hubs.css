@@ -588,6 +588,7 @@
   }
   .rovellons-hero-grid,
   .rovellons-definition,
+  .guide-types > header,
   .rovellons-territories > header,
   .rovellons-published,
   .rovellons-faq {
@@ -595,11 +596,15 @@
   }
   .rovellons-territories > header .eyebrow,
   .rovellons-territories > header h2,
-  .rovellons-territories > header > p:last-child {
+  .rovellons-territories > header > p:last-child,
+  .guide-types > header .eyebrow,
+  .guide-types > header h2,
+  .guide-types > header > p:last-child {
     grid-column: auto;
     grid-row: auto;
   }
-  .rovellons-territories > header h2 {
+  .rovellons-territories > header h2,
+  .guide-types > header h2 {
     margin-top: 0;
   }
   .rovellons-now-grid {

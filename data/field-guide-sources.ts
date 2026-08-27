@@ -1,5 +1,14 @@
 import type { SourceReference } from "@/src/lib/types";
 
+// Checked on 2026-08-28. Emergency guidance is not an identification service.
+export const mushroomPoisoningSource: SourceReference = {
+  id: "canal-salut-intoxicacio-bolets",
+  title: "Intoxicació per bolets: símptomes i assistència sanitària",
+  publisher: "Canal Salut · Generalitat de Catalunya",
+  url: "https://canalsalut.gencat.cat/ca/salut-a-z/i/intoxicacio-bolets/",
+  confidence: "high",
+};
+
 // Checked on 2026-08-27. These are documentary sources, not expert sign-off.
 export const woodFungiSource: SourceReference = {
   id: "museu-ebre-bolets-soca",
@@ -27,6 +36,20 @@ export const falseChanterelleSources: SourceReference[] = [
 ];
 
 export const collectingSources = {
+  harvestingStudy: {
+    id: "egli-harvesting-2006",
+    title: "Mushroom picking does not impair future harvests — results of a long-term study in Switzerland (2006)",
+    publisher: "Egli i col·laboradors · Biological Conservation",
+    url: "https://doi.org/10.1016/j.biocon.2005.10.042",
+    confidence: "high",
+  },
+  mountainSafety: {
+    id: "bombers-seguretat-boletaires",
+    title: "Consells de seguretat per a boletaires",
+    publisher: "Bombers de la Generalitat de Catalunya",
+    url: "https://interior.gencat.cat/ca/arees_dactuacio/bombers/seguretat_a_la_muntanya/boletaires/index.html",
+    confidence: "high",
+  },
   ruralAgents: {
     id: "agents-rurals-recolleccio",
     title: "Agents Rurals: preguntes freqüents sobre recol·lecció",

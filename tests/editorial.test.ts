@@ -17,13 +17,18 @@ describe("editorial metadata", () => {
   ];
 
   it("gives every public editorial item valid revision metadata", () => {
-    const now = Date.now();
+    const todayInCatalonia = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Madrid",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date());
     for (const id of ids) {
       const metadata = getEditorialMetadata(id);
       expect(Object.keys(editorialAuthors), id).toContain(metadata.authorId);
       expect(metadata.reviewStatus, id).toBe("editorial-only");
-      expect(new Date(metadata.publishedAt).getTime(), id).toBeLessThanOrEqual(now);
-      expect(new Date(metadata.updatedAt).getTime(), id).toBeLessThanOrEqual(now);
+      expect(metadata.publishedAt.localeCompare(todayInCatalonia), id).toBeLessThanOrEqual(0);
+      expect(metadata.updatedAt.localeCompare(todayInCatalonia), id).toBeLessThanOrEqual(0);
       expect(new Date(metadata.updatedAt).getTime(), id).toBeGreaterThanOrEqual(new Date(metadata.publishedAt).getTime());
     }
   });

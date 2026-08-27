@@ -10,8 +10,10 @@ import {
   Sprout,
   Trees,
 } from "lucide-react";
+import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { SpeciesCard } from "@/components/species-card";
+import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import {
   areaPath,
   areaProfiles,
@@ -25,27 +27,17 @@ import {
   SEASONAL_ACTIVITY_LABELS,
   SEASON_MONTHS,
 } from "@/src/lib/seasonality";
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
+import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, speciesPath } from "@/src/lib/seo";
 import type { RegionId, SpeciesProfile } from "@/src/lib/types";
 
 export const metadata: Metadata = {
-  title: "On trobar rovellons a Catalunya: zones i temporada",
-  description: "Guia per trobar rovellons a Catalunya: hàbitat, temporada, zones generals, mapa i diferències entre rovelló i pinetell.",
-  keywords: [
-    "on trobar rovellons",
-    "on trobar rovellons a Catalunya",
-    "rovellons avui",
-    "rovellons ara",
-    "mapa de rovellons Catalunya",
-    "temporada de rovellons",
-    "zones de rovellons",
-    "millors llocs per trobar rovellons",
-  ],
+  title: "Rovellons: tipus, hàbitat, temporada i on trobar-ne",
+  description: "Guia dels rovellons a Catalunya: tipus, diferències entre rovelló i pinetell, identificació prudent, hàbitat, temporada, zones i mapes.",
   alternates: { canonical: "/zones/rovellons" },
   openGraph: {
     url: "/zones/rovellons",
-    title: "On trobar rovellons a Catalunya",
-    description: "Zones, hàbitat, temporada i lectura de les condicions actuals per al rovelló i el pinetell.",
+    title: "Rovellons a Catalunya: tipus, hàbitat i temporada",
+    description: "Tipus de rovellons, diferències, hàbitat, temporada, zones i condicions actuals a Catalunya.",
     images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
   },
 };
@@ -126,6 +118,15 @@ function peakMonths(species: SpeciesProfile) {
     .join(" i ");
 }
 
+function seasonRange(species: SpeciesProfile) {
+  const activeMonths = SEASON_MONTHS.filter(
+    ({ key }) => species.ecologicalConfig.seasonality[key] !== "inactive",
+  );
+  const first = activeMonths[0]?.label;
+  const last = activeMonths.at(-1)?.label;
+  return first && last ? `${first}–${last}` : "Calendari no disponible";
+}
+
 const lactariusSpeciesIds = new Set([
   "lactarius-deliciosus",
   "lactarius-sanguifluus",
@@ -148,16 +149,18 @@ export default function RovellonsTerritoryPage() {
         "@context": "https://schema.org",
         "@graph": [
           {
-            "@type": "WebPage",
-            "@id": `${absoluteUrl("/zones/rovellons")}#page`,
-            name: "On trobar rovellons a Catalunya",
+            "@type": "Article",
+            "@id": `${absoluteUrl("/zones/rovellons")}#article`,
+            headline: "Rovellons a Catalunya: tipus, hàbitat i temporada",
             url: absoluteUrl("/zones/rovellons"),
             inLanguage: "ca",
-            description: "Guia ecològica de zones, hàbitat i temporada de rovellons a Catalunya.",
+            description: "Guia dels tipus de rovellons, les diferències d’identificació, l’hàbitat, la temporada i les zones compatibles a Catalunya.",
+            mainEntityOfPage: absoluteUrl("/zones/rovellons"),
             about: [
               { "@type": "Taxon", name: rovello.identity.scientificName },
               { "@type": "Taxon", name: pinetell.identity.scientificName },
             ],
+            ...editorialArticleFields("zones-rovellons"),
           },
           {
             "@type": "FAQPage",
@@ -183,14 +186,14 @@ export default function RovellonsTerritoryPage() {
           <Link href="/guies" className="back-link">← Totes les guies</Link>
           <div className="rovellons-hero-grid">
             <div>
-              <p className="eyebrow light"><MapPinned size={15} /> Guia territorial</p>
-              <h1>On trobar rovellons<br /><i>a Catalunya.</i></h1>
-              <p>La resposta útil no és una coordenada: és la coincidència entre pins, sòl, humitat, temperatura i moment de temporada.</p>
+              <p className="eyebrow light"><MapPinned size={15} /> Tipus, hàbitat i temporada</p>
+              <h1>Rovellons<br /><i>a Catalunya.</i></h1>
+              <p>Què anomenem rovelló, com distingim el rovelló vinós del pinetell i en quines pinedes i moments de l’any pot encaixar cada espècie.</p>
             </div>
             <aside>
               <Trees size={22} aria-hidden="true" />
-              <span>Resposta curta</span>
-              <strong>Pinedes amb pinassa humida, sòl ben drenat i una tardor sense calor ni vent sec persistents.</strong>
+              <span>On trobar-ne</span>
+              <strong>Pinedes compatibles amb pinassa humida, sòl ben drenat i una tardor sense calor ni vent sec persistents.</strong>
               <small>Hàbitat potencial; no confirma presència ni abundància.</small>
             </aside>
           </div>
@@ -200,19 +203,54 @@ export default function RovellonsTerritoryPage() {
       <div className="page-width rovellons-content">
         <section className="rovellons-definition" aria-labelledby="rovellons-definition-title">
           <div>
-            <p className="eyebrow">Abans de mirar el mapa</p>
-            <h2 id="rovellons-definition-title">“Rovelló” pot voler dir dos bolets.</h2>
+            <p className="eyebrow">Què són els rovellons?</p>
+            <h2 id="rovellons-definition-title">Un nom popular que no sempre designa la mateixa espècie.</h2>
           </div>
           <div>
-            <p>A Catalunya, la cerca <em>rovellons</em> sovint barreja el rovelló vinós i el pinetell. Tots dos viuen associats als pins, però no tenen exactament el mateix làtex, sòl preferit ni distribució ecològica.</p>
+            <p>A Catalunya, <em>rovellons</em> pot funcionar com un nom de grup. Aquesta guia compara els dos perfils del catàleg amb predicció pròpia: el rovelló vinós i el pinetell. Tots dos són lactaris associats als pins, però canvien el làtex, el color, el sòl preferit i part de la distribució ecològica.</p>
             <Link href="/compare/rovello-vs-pinetell" className="text-link">Veure rovelló vs. pinetell <ArrowUpRight size={16} /></Link>
           </div>
         </section>
 
-        <div className="species-grid rovellons-species-grid">
+        <section className="guide-types" aria-labelledby="rovellons-types-title">
+          <header>
+            <p className="eyebrow">Tipus de rovellons</p>
+            <h2 id="rovellons-types-title">Rovelló i pinetell, comparats d’un cop d’ull.</h2>
+            <p>La taula resumeix dades de les fitxes documentades; no és una llista exhaustiva de tots els lactaris que poden rebre noms populars semblants.</p>
+          </header>
+          <p className="guide-types-scroll-hint">Feu lliscar la taula per veure totes les columnes.</p>
+          <div className="guide-types-table-scroll">
+            <table className="guide-types-table" data-rovellons-types-table>
+              <caption className="sr-only">Comparació dels dos tipus de rovellons representats al catàleg</caption>
+              <thead>
+                <tr><th scope="col">Tipus</th><th scope="col">Làtex i carn</th><th scope="col">Barret</th><th scope="col">Bosc i temporada</th></tr>
+              </thead>
+              <tbody>
+                {[rovello, pinetell].map((species) => (
+                  <tr key={species.speciesId}>
+                    <th scope="row"><Link href={speciesPath(species)}>{species.identity.commonName}</Link><i>{species.identity.scientificName}</i></th>
+                    <td>{species.morphology.flesh}</td>
+                    <td>{species.morphology.cap}</td>
+                    <td><span>{species.ecologicalConfig.habitat.forestTypes.join("; ")}</span><small>{seasonRange(species)}</small></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div className="species-grid rovellons-species-grid" data-rovellons-species-list>
           <SpeciesCard species={rovello} currentMonth={currentMonth} />
           <SpeciesCard species={pinetell} index={1} currentMonth={currentMonth} />
         </div>
+
+        <section className="rovellons-signals guide-lookalikes" aria-labelledby="rovellons-identification-title">
+          <header><p className="eyebrow"><ShieldAlert size={15} /> Identificació prudent</p><h2 id="rovellons-identification-title">El làtex orienta, però no identifica tot sol.</h2></header>
+          <div>
+            <article><span>01</span><h3>Compareu l’exemplar complet</h3><p>Reviseu el làtex acabat de sortir, el barret, les làmines, el peu, l’arbre associat i la temporada. La <Link href="/compare/rovello-vs-pinetell">comparació entre rovelló i pinetell</Link> ordena aquests trets.</p></article>
+            <article><span>02</span><h3>Descarteu els lactaris de làtex blanc</h3><p>Cap dels dos perfils d’aquesta guia té làtex blanc. Alguns lactaris semblants, com els de barret rosat i pelut, poden causar trastorns digestius.</p></article>
+          </div>
+        </section>
 
         <section className="rovellons-now" aria-labelledby="rovellons-now-title">
           <div className="rovellons-now-heading">
@@ -299,8 +337,16 @@ export default function RovellonsTerritoryPage() {
 
         <aside className="rovellons-safety">
           <ShieldAlert size={23} aria-hidden="true" />
-          <div><strong>No és una guia de recol·lecció ni d’identificació.</strong><p>No consumiu cap bolet basant-vos en el mapa, aquesta pàgina o una fotografia. Confirmeu sempre l’espècie amb una persona experta.</p></div>
+          <div><strong>Aquesta comparació no és suficient per decidir el consum.</strong><p>No consumiu cap bolet basant-vos en el mapa, aquesta pàgina o una fotografia. L’ACSA recomana menjar només els bolets que es puguin identificar sense cap dubte; consulteu la seva <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia oficial</a> i confirmeu l’espècie amb una persona experta.</p></div>
         </aside>
+
+        <EditorialAttribution
+          contentId="zones-rovellons"
+          sources={[
+            officialSafetySource,
+            ...[rovello, pinetell].flatMap((species) => species.references),
+          ]}
+        />
       </div>
     </div>
   );

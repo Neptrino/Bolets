@@ -2,10 +2,18 @@
 
 **Market:** Catalan-language searches in Catalonia, with Spain-wide Catalan spillover
 **Initial audit date:** 13 August 2026
-**Status refreshed:** 27 August 2026 (implementation update; latest quantitative audit remains 25–26 August)
+**Status refreshed:** 28 August 2026 (FAQ usability/safety follow-up; keyword/query research from 27 August; latest broader quantitative audit remains 25–26 August)
 **Scope:** live technical crawl, repository/content inventory, public SERP sampling, Google autocomplete, competitor research, mobile Lighthouse test, domain/indexation checks, and current SE Ranking project review
 
 > The 13 August sections below remain the launch baseline. The current-status update takes precedence wherever a metric, gap or recommendation has since changed.
+
+## FAQ question research — 27 August 2026
+
+Follow-up on 28 August: the local FAQ now has 15 questions, including a sourced response to suspected poisoning, individual answer permalinks and contextual links from the calendar, current conditions and permissions pages. See the [implementation follow-up](docs/seo-faq-research-2026-08-27.md#usability-and-safety-follow-up--28-august-2026). The demand figures below remain the 27 August research snapshot, not a new measurement.
+
+SE Ranking is reconnected. A new [question-level FAQ research report](docs/seo-faq-research-2026-08-27.md) and [evidence snapshot](docs/seo-faq-evidence-2026-08-27.json) record 654 similar-keyword rows from Spain, 161 connected Search Console query rows and six public Google question/intent samples. These are fresh research inputs, not a new full-site crawl or a ranking-trend assessment. The connected GSC response does not disclose its reporting window.
+
+The strongest relevant estimates remain `bolets comestibles` (590/month), `mapa bolets catalunya` (170), `on trobar bolets aquesta setmana` (140) and `temporada de bolets` (50). They belong to the existing specialist pages; the FAQ links readers onward. The local FAQ now has 14 questions, including cutting versus pulling and family-trip preparation, clearer today/weekly wording and explicit limits on photo/app identification. These FAQ changes have not been pushed or deployed by this pass. Exact volumes for several long-tail questions remain unknown because the connector's bulk exact-keyword method failed; no missing value is treated as zero.
 
 ## Implementation update — 27 August 2026
 
@@ -23,7 +31,7 @@ Verification after the follow-up: 671 unit tests passed (8 skipped); type checki
 
 Subsequent species-profile verification: 679 unit tests passed (8 skipped) and the production build passed. Fourteen browser tests passed across the three guides and the new profile, including mobile/tablet/desktop layout, the three guide-card destinations, gallery controls/lightbox, scientific/alternative-name search and absence of map-data requests from the descriptive profile. A narrow-column overflow in the shared editorial attribution was corrected using the panel's own available width. The local sitemap now has **191 page URLs**; these implementation totals do not describe production or Google's index coverage.
 
-SE Ranking again returned an OAuth reauthentication error on 27 August. Fresh competitor rankings, backlink metrics and search volumes remain unavailable; the figures below are historical snapshots. Reconnect SE Ranking, deploy the approved public changes, confirm production output, then measure recrawl and Search Console response rather than assuming a ranking gain.
+Earlier on 27 August SE Ranking returned an OAuth reauthentication error. The owner subsequently reconnected it and fresh FAQ keyword/query research succeeded, as recorded above. Competitor rankings and backlink metrics were not rerun in that narrower pass; older figures below remain dated snapshots. Confirm production output and measure recrawl and Search Console response rather than assuming a ranking gain.
 
 ## Quantitative snapshot — 25 August 2026
 

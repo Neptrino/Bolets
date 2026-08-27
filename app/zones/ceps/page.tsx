@@ -41,26 +41,15 @@ import {
 import type { SpeciesProfile } from "@/src/lib/types";
 
 export const metadata: Metadata = {
-  title: "On trobar ceps a Catalunya",
+  title: "Ceps de Catalunya: tipus, diferències, hàbitat i temporada",
   description:
-    "Guia dels quatre ceps del catàleg: hàbitats, temporada, nou zones generals, mapes actuals, guies locals i diferències amb el mataparent i el matagent.",
-  keywords: [
-    "on trobar ceps",
-    "ceps a Catalunya",
-    "ceps avui",
-    "mapa de ceps Catalunya",
-    "temporada de ceps",
-    "tipus de ceps",
-    "cep negre",
-    "cep rogenc",
-    "cep d’estiu",
-  ],
+    "Guia dels ceps de Catalunya: quatre tipus, diferències, identificació prudent, hàbitat, temporada, zones, mapes i confusions importants.",
   alternates: { canonical: "/zones/ceps" },
   openGraph: {
     url: "/zones/ceps",
-    title: "On trobar ceps a Catalunya",
+    title: "Ceps de Catalunya: tipus, diferències i temporada",
     description:
-      "Quatre ceps, nou regions compatibles, temporada, mapes actuals i guies locals.",
+      "Quatre tipus de ceps, diferències, hàbitats, temporada, zones, mapes i confusions importants.",
     images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
   },
 };
@@ -148,7 +137,7 @@ export default function CepsTerritoryPage() {
             {
               "@type": "Article",
               "@id": `${absoluteUrl("/zones/ceps")}#article`,
-              headline: "On trobar ceps a Catalunya",
+              headline: "Ceps de Catalunya: tipus, diferències, hàbitat i temporada",
               url: absoluteUrl("/zones/ceps"),
               inLanguage: "ca",
               description:
@@ -202,13 +191,11 @@ export default function CepsTerritoryPage() {
           </Link>
           <div className="rovellons-hero-grid">
             <div>
-              <p className="eyebrow light">
-                <MapPinned size={15} /> Guia territorial
-              </p>
+              <p className="eyebrow light"><MapPinned size={15} /> Tipus, diferències i temporada</p>
               <h1>
-                On trobar ceps
+                Ceps
                 <br />
-                <i>a Catalunya.</i>
+                <i>de Catalunya.</i>
               </h1>
               <p>
                 Una sola paraula amaga quatre perfils ecològics: els arbres, la
@@ -218,7 +205,7 @@ export default function CepsTerritoryPage() {
             </div>
             <aside>
               <Trees size={22} aria-hidden="true" />
-              <span>Resposta curta</span>
+              <span>On trobar-ne</span>
               <strong>
                 Boscos frescos de muntanya per al cep comú i el rogenc; boscos
                 mediterranis o planifolis temperats per al negre i el d’estiu.
@@ -237,17 +224,18 @@ export default function CepsTerritoryPage() {
           aria-labelledby="ceps-definition-title"
         >
           <div>
-            <p className="eyebrow">Abans de mirar el mapa</p>
+            <p className="eyebrow">Què són els ceps?</p>
             <h2 id="ceps-definition-title">
-              Aquí, “cep” agrupa quatre espècies.
+              Quatre espècies del gènere Boletus al catàleg.
             </h2>
           </div>
           <div>
             <p>
-              Els quatre perfils tenen porus en lloc de làmines, reticle al peu
-              i carn blanca immutable, però cap d’aquests trets per separat
-              n’assegura la identificació. Compareu la morfologia completa,
-              l’arbre hoste i la temporada.
+              En aquesta guia, <em>ceps</em> agrupa el cep, el cep de pi o
+              rogenc, el cep negre i el cep d’estiu. Comparteixen porus en lloc
+              de làmines i carn blanca immutable, però canvien el barret, el
+              reticle, els arbres associats, la cota i el calendari. Cap tret
+              per separat n’assegura la identificació.
             </p>
             <div className="ceps-comparison-links" aria-label="Comparacions entre ceps">
               {comparisonLinks.map((comparison) => (
@@ -256,6 +244,33 @@ export default function CepsTerritoryPage() {
                 </Link>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="guide-types" aria-labelledby="ceps-types-title">
+          <header>
+            <p className="eyebrow">Tipus de ceps</p>
+            <h2 id="ceps-types-title">Els quatre ceps de Catalunya representats al catàleg.</h2>
+            <p>Aquesta comparació surt de les mateixes fitxes ecològiques i d’identificació que alimenten els perfils individuals i els mapes.</p>
+          </header>
+          <p className="guide-types-scroll-hint">Feu lliscar la taula per veure totes les columnes.</p>
+          <div className="guide-types-table-scroll">
+            <table className="guide-types-table" data-ceps-types-table>
+              <caption className="sr-only">Comparació dels quatre tipus de ceps representats al catàleg</caption>
+              <thead>
+                <tr><th scope="col">Tipus</th><th scope="col">Barret</th><th scope="col">Peu i reticle</th><th scope="col">Bosc i pic habitual</th></tr>
+              </thead>
+              <tbody>
+                {ceps.map((species) => (
+                  <tr key={species.speciesId}>
+                    <th scope="row"><Link href={speciesPath(species)}>{species.identity.commonName}</Link><i>{species.identity.scientificName}</i></th>
+                    <td>{species.morphology.cap}</td>
+                    <td>{species.morphology.stem}</td>
+                    <td><span>{species.ecologicalConfig.habitat.forestTypes.join("; ")}</span><small>Pic habitual: {peakMonths(species)}</small></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
 
@@ -269,6 +284,28 @@ export default function CepsTerritoryPage() {
             />
           ))}
         </div>
+
+        <section
+          className="rovellons-signals ceps-lookalikes guide-lookalikes"
+          aria-labelledby="ceps-lookalikes-title"
+        >
+          <header>
+            <p className="eyebrow"><ShieldAlert size={15} /> Confusions importants</p>
+            <h2 id="ceps-lookalikes-title">Porus rosats o vermells obliguen a aturar la identificació.</h2>
+          </header>
+          <div>
+            <article>
+              <span>01</span><h3>Mataparent</h3>
+              <p>Té porus que es tornen rosats i un reticle bru fosc. És incomestible pel gust amarg; no el tasteu per confirmar-ne la identitat.</p>
+              <Link href="/compare/cep-vs-mataparent" className="text-link">Comparar amb el cep <ArrowUpRight size={15} /></Link>
+            </article>
+            <article>
+              <span>02</span><h3>Matagent</h3>
+              <p>Presenta porus vermells, peu groc i vermell i carn que blaveja. És tòxic i no s’ha de consumir.</p>
+              <Link href="/compare/cep-vs-matagent" className="text-link">Comparar amb el cep <ArrowUpRight size={15} /></Link>
+            </article>
+          </div>
+        </section>
 
         <section className="rovellons-now" aria-labelledby="ceps-now-title">
           <div className="rovellons-now-heading">
@@ -371,7 +408,7 @@ export default function CepsTerritoryPage() {
               {publishedGuides.length} lectures locals, {publishedAreas.length} territoris.
             </h2>
             <p>
-              Les guies baixen al detall de {publishedAreas.map((area, index) => (
+              Els territoris documentats són {publishedAreas.map((area, index) => (
                 <span key={area.slug}>
                   {index > 0 && (index === publishedAreas.length - 1 ? " i " : ", ")}
                   <Link href={areaPath(area)}>{area.nameWithArticle}</Link>
@@ -439,45 +476,6 @@ export default function CepsTerritoryPage() {
                 El vent, la calor o una nova sequera poden tallar la finestra
                 abans que la rehidratació del sòl es tradueixi en fructificació.
               </p>
-            </article>
-          </div>
-        </section>
-
-        <section
-          className="rovellons-signals ceps-lookalikes"
-          aria-labelledby="ceps-lookalikes-title"
-        >
-          <header>
-            <p className="eyebrow">
-              <ShieldAlert size={15} /> Confusions importants
-            </p>
-            <h2 id="ceps-lookalikes-title">
-              Dos semblants que no poden anar al cistell per inèrcia.
-            </h2>
-          </header>
-          <div>
-            <article>
-              <span>01</span>
-              <h3>Mataparent</h3>
-              <p>
-                Té porus que es tornen rosats i un reticle bru fosc. És
-                incomestible pel gust amarg; no el tasteu per confirmar-ne la
-                identitat.
-              </p>
-              <Link href="/compare/cep-vs-mataparent" className="text-link">
-                Comparar amb el cep <ArrowUpRight size={15} />
-              </Link>
-            </article>
-            <article>
-              <span>02</span>
-              <h3>Matagent</h3>
-              <p>
-                Presenta porus vermells, peu groc i vermell i carn que blaveja.
-                És tòxic i no s’ha de consumir.
-              </p>
-              <Link href="/compare/cep-vs-matagent" className="text-link">
-                Comparar amb el cep <ArrowUpRight size={15} />
-              </Link>
             </article>
           </div>
         </section>

@@ -72,7 +72,7 @@ export const seasonGuides = [
       detail: "Prioritzeu boscos frescos i reviseu les condicions després d’episodis de pluja útil; una data d’estiu o un xàfec aïllat no confirma presència.",
       steps: ["Busqueu una combinació de pluja efectiva i nits moderades.", "Comenceu per boscos frescos, ombrívols o de més altitud.", "Contrasteu els ceps d’estiu i els ous de reig amb les seves confusions."],
       links: [
-        { href: "/zones/ceps", label: "Ceps de Catalunya", description: "Tipus, hàbitat i temporada" },
+        { href: "/zones/ceps", label: "Ceps de Catalunya", description: "Tipus, diferències, hàbitat i temporada" },
         { href: "/bolets/amanita-caesarea", label: "Ou de reig", description: "Identificació i confusions de risc" },
         { href: "/bolets-avui", label: "Condicions actuals", description: "Lectura territorial abans de sortir" },
       ],
@@ -96,11 +96,11 @@ export const seasonGuides = [
       detail: "Consulteu primer les condicions actuals i el mapa; després trieu una espècie que encaixi amb el bosc, la cota i el moment de la temporada. Cap lectura confirma que hi hagi bolets.",
       steps: ["Distingiu les primeres pluges d’una rehidratació sostinguda del sòl.", "Trieu l’espècie segons pineda, bosc humit, sòl i altitud.", "Reviseu els semblants abans de collir o consumir cap exemplar."],
       links: [
-        { href: "/zones/rovellons", label: "Rovellons i pinetells", description: "Làtex, pinedes i diferències" },
+        { href: "/zones/rovellons", label: "Rovellons a Catalunya", description: "Tipus, diferències, hàbitat i temporada" },
         { href: "/bolets/craterellus-lutescens", label: "Camagroc", description: "Boscos humits i identificació" },
         { href: "/bolets/tricholoma-terreum", label: "Fredolic", description: "Pinedes i confusions" },
         { href: "/bolets/hygrophorus-latitabundus", label: "Llenega", description: "Pinedes calcàries i tardor" },
-        { href: "/zones/ceps", label: "Ceps de Catalunya", description: "Tipus, bosc i temporada" },
+        { href: "/zones/ceps", label: "Ceps de Catalunya", description: "Tipus, diferències, hàbitat i temporada" },
       ],
     },
   },

@@ -1,0 +1,139 @@
+.topics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.topics a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--forest-panel);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.topics svg,
+.question summary svg {
+  flex-shrink: 0;
+}
+
+.topics a:hover {
+  border-color: var(--forest-panel);
+}
+
+.questions {
+  border-top: 1px solid var(--line);
+}
+
+.question {
+  border-bottom: 1px solid var(--line);
+}
+
+.question summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 0;
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+
+.question summary::-webkit-details-marker {
+  display: none;
+}
+
+.question summary h3 {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.question summary svg {
+  color: var(--clay);
+}
+
+.question[open] summary svg {
+  transform: rotate(45deg);
+}
+
+.question summary:hover h3 {
+  color: var(--clay);
+}
+
+.question summary:focus-visible,
+.topics a:focus-visible,
+.answer a:focus-visible {
+  outline: 2px solid var(--forest-panel);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.answer {
+  padding: 0 0 24px;
+  scroll-margin-top: 120px;
+}
+
+.answer p {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-base);
+  line-height: 1.75;
+}
+
+.answer a {
+  color: var(--bark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.answer .permalink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 8px;
+  font-size: var(--text-xs);
+}
+
+.permalink svg {
+  flex-shrink: 0;
+}
+
+.sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+}
+
+@media (max-width: 800px) {
+  .topics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .topics a {
+    padding: 12px;
+  }
+
+  .question summary {
+    gap: 12px;
+  }
+}

@@ -95,6 +95,7 @@
   margin-bottom: 34px;
 }
 .rovellons-definition h2,
+.guide-types h2,
 .rovellons-territories h2,
 .rovellons-published h2,
 .rovellons-signals h2,
@@ -109,6 +110,95 @@
   color: var(--muted);
   font-size: var(--text-base);
   line-height: 1.75;
+}
+.guide-types {
+  margin-bottom: 42px;
+}
+.guide-types > header {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(300px, 1.1fr);
+  gap: clamp(35px, 7vw, 100px);
+  align-items: end;
+  margin-bottom: 24px;
+}
+.guide-types > header .eyebrow,
+.guide-types > header h2 {
+  grid-column: 1;
+}
+.guide-types > header h2 {
+  margin-top: -30px;
+}
+.guide-types > header > p:last-child {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-base);
+  line-height: 1.65;
+}
+.guide-types-table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: rgba(255, 253, 247, 0.68);
+}
+.guide-types-scroll-hint {
+  display: none;
+}
+.guide-types-table {
+  width: 100%;
+  min-width: 820px;
+  border-collapse: collapse;
+}
+.guide-types-table th,
+.guide-types-table td {
+  padding: 19px 20px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.guide-types-table th:last-child,
+.guide-types-table td:last-child {
+  border-right: 0;
+}
+.guide-types-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.guide-types-table thead th {
+  background: var(--forest-panel);
+  color: var(--on-dark);
+  font-size: var(--text-xs);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.guide-types-table tbody th {
+  width: 18%;
+  color: var(--ink);
+  font-size: var(--text-base);
+}
+.guide-types-table tbody th a {
+  color: var(--forest-panel);
+  text-underline-offset: 0.18em;
+}
+.guide-types-table tbody th i,
+.guide-types-table td small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.45;
+}
+.guide-types-table td {
+  color: var(--muted);
+  font-size: var(--text-base);
+  line-height: 1.55;
+}
+.guide-types-table td span {
+  display: block;
+  color: var(--ink);
 }
 .rovellons-content .rovellons-species-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -342,6 +432,21 @@
   color: var(--muted);
   font-size: var(--text-base);
   line-height: 1.55;
+}
+.guide-lookalikes > div {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.guide-lookalikes article {
+  display: flex;
+  min-height: 250px;
+  flex-direction: column;
+}
+.guide-lookalikes article:nth-child(2) {
+  border-right: 0;
+}
+.guide-lookalikes article .text-link {
+  margin-top: auto;
+  padding-top: 22px;
 }
 .rovellons-faq {
   display: grid;

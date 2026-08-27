@@ -80,7 +80,7 @@ export default function EdibleMushroomsPage() {
         </div>
         <nav className="species-topic-links seasonal-guide-topic-links" aria-label="Guies relacionades amb els bolets comestibles">
           <Link href="/zones/ceps"><CookingPot size={18} aria-hidden="true" /><span><strong>Ceps de Catalunya</strong><small>Tipus, diferències, hàbitat i temporada</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
-          <Link href="/zones/rovellons"><Trees size={18} aria-hidden="true" /><span><strong>Rovellons i pinetells</strong><small>Làtex, pinedes i trets per distingir-los</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link href="/zones/rovellons"><Trees size={18} aria-hidden="true" /><span><strong>Rovellons a Catalunya</strong><small>Tipus, diferències, hàbitat i temporada</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/temporada"><CalendarDays size={18} aria-hidden="true" /><span><strong>Bolets per temporada</strong><small>Calendari mensual de totes les espècies</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
         </nav>
       </section>

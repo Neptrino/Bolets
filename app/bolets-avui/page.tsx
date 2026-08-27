@@ -299,6 +299,7 @@ export default function MushroomsTodayPage() {
       <Suspense fallback={<CurrentOverviewLoading />}>
         <CurrentOverview />
       </Suspense>
+      <p className="prediction-zone-note">Prepareu una sortida? Consulteu les <Link href="/preguntes-frequents-bolets#on-buscar" className="text-link">preguntes freqüents sobre on buscar bolets i com interpretar el mapa</Link>.</p>
     </PageShell>
   );
 }

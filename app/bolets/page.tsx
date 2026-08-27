@@ -76,7 +76,7 @@ export default function SpeciesIndexPage() {
         />
         <nav className="species-topic-links" aria-label="Guies destacades d’espècies de bolets">
           <Link href="/zones/ceps"><CookingPot size={18} /><span><strong>Ceps de Catalunya</strong><small>Tipus, diferències, hàbitat i temporada</small></span><ArrowUpRight size={16} /></Link>
-          <Link href="/zones/rovellons"><Leaf size={18} /><span><strong>Rovellons i pinetells</strong><small>Com distingir-los i on encaixen</small></span><ArrowUpRight size={16} /></Link>
+          <Link href="/zones/rovellons"><Leaf size={18} /><span><strong>Rovellons a Catalunya</strong><small>Tipus, diferències, hàbitat i temporada</small></span><ArrowUpRight size={16} /></Link>
           <Link href="/bolets/craterellus-lutescens"><Leaf size={18} /><span><strong>Camagroc</strong><small>Identificació, bosc i confusions</small></span><ArrowUpRight size={16} /></Link>
           <Link href="/bolets/tricholoma-terreum"><CalendarDays size={18} /><span><strong>Fredolic</strong><small>Pinedes, tardor i identificació prudent</small></span><ArrowUpRight size={16} /></Link>
           <Link href="/bolets/hygrophorus-latitabundus"><Sprout size={18} /><span><strong>Llenega</strong><small>Pinedes calcàries i temporada</small></span><ArrowUpRight size={16} /></Link>

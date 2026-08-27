@@ -99,7 +99,7 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
 
       <aside className="intent-safety-note season-explainer">
         <CloudRain size={22} aria-hidden="true" />
-        <div><strong>Calendari i condicions no són el mateix.</strong><p>La temporada indica quan una espècie pot fructificar habitualment. Per valorar el moment actual també cal llegir pluja acumulada, humitat, temperatura i hàbitat compatible.</p></div>
+        <div><strong>Calendari i condicions no són el mateix.</strong><p>La temporada indica quan una espècie pot fructificar habitualment. Per valorar el moment actual també cal llegir pluja acumulada, humitat, temperatura i hàbitat compatible. <Link href="/preguntes-frequents-bolets#quan-anar-hi" className="text-link">Resolem els dubtes sobre temporada i pluja.</Link></p></div>
       </aside>
 
       <SectionHeader

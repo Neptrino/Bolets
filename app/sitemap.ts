@@ -44,6 +44,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: absoluteUrl("/bolets-de-soca"), lastModified: new Date(`${getEditorialMetadata("bolets-de-soca").updatedAt}T00:00:00+02:00`) },
     { url: absoluteUrl("/fals-rossinyol"), lastModified: new Date(`${getEditorialMetadata("fals-rossinyol").updatedAt}T00:00:00+02:00`) },
     { url: absoluteUrl("/normativa-bolets"), lastModified: new Date(`${getEditorialMetadata("normativa-bolets").updatedAt}T00:00:00+02:00`) },
+    { url: absoluteUrl("/preguntes-frequents-bolets"), lastModified: new Date(`${getEditorialMetadata("preguntes-frequents-bolets").updatedAt}T00:00:00+02:00`) },
     { url: absoluteUrl("/bolets-comestibles"), lastModified: edibleGuideLastModified },
     { url: absoluteUrl("/bolets-verinosos"), lastModified: poisonousGuideLastModified },
     { url: absoluteUrl("/temporada"), lastModified },
@@ -64,7 +65,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: absoluteUrl("/guies"), lastModified },
     ...speciesTerritoryGuides.map((guide) => ({
       url: absoluteUrl(guide.path),
-      lastModified,
+      lastModified: new Date(
+        `${getEditorialMetadata(guide.contentId).updatedAt}T00:00:00+02:00`,
+      ),
     })),
     ...areaProfiles.map((area) => ({
       url: absoluteUrl(`/zones/${area.slug}`),

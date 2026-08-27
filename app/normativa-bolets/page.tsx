@@ -131,6 +131,7 @@ export default function CollectingRulesGuidePage() {
           <Link href="/guies">Guies per territori <ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/bolets-avui">Condicions de fructificació <ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/bolets-verinosos">Seguretat i confusions <ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link href="/preguntes-frequents-bolets#recolleccio-responsable">Dubtes sobre recol·lecció responsable <ArrowUpRight size={16} aria-hidden="true" /></Link>
         </nav>
       </section>
       <EditorialAttribution contentId="normativa-bolets" sources={[...Object.values(collectingSources), officialSafetySource]} />
