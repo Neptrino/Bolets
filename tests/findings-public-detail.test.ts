@@ -2,12 +2,17 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const detailPage = readFileSync("app/troballes/[id]/page.tsx", "utf8");
+const overviewPage = readFileSync("app/troballes/page.tsx", "utf8");
 const locationMap = readFileSync("components/findings/public-finding-location-map.tsx", "utf8");
 const findingCard = readFileSync("components/findings/finding-card.tsx", "utf8");
 const reportForm = readFileSync("components/findings/finding-report-form.tsx", "utf8");
 const flagButton = readFileSync("components/findings/finding-flag-button.tsx", "utf8");
 
 describe("public finding detail", () => {
+  it("publishes a canonical URL for the public findings overview", () => {
+    expect(overviewPage).toContain('alternates: { canonical: "/troballes" }');
+  });
+
   it("renders the finding's public privacy cell without an exact point", () => {
     expect(detailPage).toContain("<PublicFindingLocationMap bounds={finding.cellBounds} />");
     expect(locationMap).toContain("fitSpatialBounds(localMap, cellBounds, false)");

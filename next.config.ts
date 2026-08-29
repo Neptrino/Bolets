@@ -56,6 +56,11 @@ const nextConfig: NextConfig = {
         destination: "/bolets/:path*",
         permanent: true,
       },
+      {
+        source: "/rovellons",
+        destination: "/zones/rovellons",
+        permanent: true,
+      },
     ];
   },
   images: {

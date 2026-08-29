@@ -6,7 +6,11 @@ import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/compone
 import { catalogueSpecies } from "@/data/catalogue";
 import { readPublicFindings } from "@/src/lib/findings/reads.server";
 
-export const metadata: Metadata = { title: "Troballes de bolets a Catalunya", description: "Anota les teves troballes al camp, guarda-les al quadern i comparteix-les en un mapa que mai no publica el punt exacte." };
+export const metadata: Metadata = {
+  title: "Troballes de bolets a Catalunya",
+  description: "Anota les teves troballes al camp, guarda-les al quadern i comparteix-les en un mapa que mai no publica el punt exacte.",
+  alternates: { canonical: "/troballes" },
+};
 export const dynamic = "force-dynamic";
 
 export default async function FindingsPage({ searchParams }: { searchParams: Promise<{ casella?: string }> }) {

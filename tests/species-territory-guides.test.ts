@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import sitemap from "@/app/sitemap";
 import { getEditorialMetadata } from "@/data/editorial";
@@ -6,6 +7,8 @@ import {
   speciesTerritoryGuides,
   territoryGuideForSpecies,
 } from "@/src/lib/species-territory-guides";
+
+const footer = readFileSync("components/site-footer.tsx", "utf8");
 
 describe("species territory guide registry", () => {
   it("publishes unique guide paths with valid, non-overlapping species", () => {
@@ -46,5 +49,9 @@ describe("species territory guide registry", () => {
 
   it("does not invent a territory guide for an unrelated species", () => {
     expect(territoryGuideForSpecies("amanita-phalloides")).toBeUndefined();
+  });
+
+  it("links the high-priority rovellons hub from the global footer", () => {
+    expect(footer).toContain('href="/zones/rovellons"');
   });
 });

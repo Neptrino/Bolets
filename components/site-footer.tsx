@@ -32,6 +32,7 @@ export function SiteFooter() {
           <Link href="/troballes">Troballes comunitàries</Link>
           <Link href="/troballes/nova">Anota una troballa</Link>
           <Link href="/zones">Zones</Link>
+          <Link href="/zones/rovellons">Rovellons a Catalunya</Link>
           <Link href="/guies">Guies locals</Link>
           <Link href="/compare">Comparador d’espècies</Link>
           <CurrentSeasonGuideLink guides={seasonalFooterGuides} initialMonth={initialMonth} />

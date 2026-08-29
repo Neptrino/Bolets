@@ -20,6 +20,12 @@ test("permanently redirects legacy catalogue URLs and preserves query parameters
   const profileLocation = new URL(profile.headers().location!, "http://localhost");
   expect(profileLocation.pathname).toBe("/bolets/boletus-edulis");
   expect(profileLocation.searchParams.get("region")).toBe("pirineus");
+
+  const rovellons = await request.get("/rovellons?region=pirineus", { maxRedirects: 0 });
+  expect(rovellons.status()).toBe(308);
+  const rovellonsLocation = new URL(rovellons.headers().location!, "http://localhost");
+  expect(rovellonsLocation.pathname).toBe("/zones/rovellons");
+  expect(rovellonsLocation.searchParams.get("region")).toBe("pirineus");
 });
 
 for (const route of [
