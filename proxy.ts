@@ -1,6 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { serverSupabaseConfig } from "@/src/lib/supabase/config";
+import {
+  serverSupabaseConfig,
+  SUPABASE_AUTH_COOKIE_NAME,
+} from "@/src/lib/supabase/config";
 
 const privatePages = ["/les-meves-troballes", "/compte", "/moderacio"];
 
@@ -8,6 +11,7 @@ export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
   const { url, key } = serverSupabaseConfig();
   const client = createServerClient(url, key, {
+    cookieOptions: { name: SUPABASE_AUTH_COOKIE_NAME },
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll: (items) => {

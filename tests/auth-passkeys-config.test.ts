@@ -5,6 +5,9 @@ const localConfig = readFileSync("supabase/config.toml", "utf8");
 const productionCompose = readFileSync("deploy/vps/compose.yaml", "utf8");
 const productionEnvExample = readFileSync("deploy/vps/bolets.env.example", "utf8");
 const productionRollout = readFileSync("deploy/vps/rollout.sh", "utf8");
+const browserClient = readFileSync("src/lib/supabase/client.ts", "utf8");
+const serverClient = readFileSync("src/lib/supabase/server.ts", "utf8");
+const requestProxy = readFileSync("proxy.ts", "utf8");
 
 describe("passwordless auth configuration", () => {
   it("binds local passkeys to the localhost app origin", () => {
@@ -36,5 +39,11 @@ describe("passwordless auth configuration", () => {
     expect(productionRollout).toContain("DISABLE_SIGNUP must be false");
     expect(productionRollout).toContain("ADDITIONAL_REDIRECT_URLS must allow");
     expect(productionRollout).toContain("API_EXTERNAL_URL must include the production /auth/v1 path");
+  });
+
+  it("uses one auth cookie name across public and internal Supabase hosts", () => {
+    for (const source of [browserClient, serverClient, requestProxy]) {
+      expect(source).toContain("cookieOptions: { name: SUPABASE_AUTH_COOKIE_NAME }");
+    }
   });
 });

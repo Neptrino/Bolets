@@ -2,12 +2,16 @@ import "server-only";
 
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { serverSupabaseConfig } from "@/src/lib/supabase/config";
+import {
+  serverSupabaseConfig,
+  SUPABASE_AUTH_COOKIE_NAME,
+} from "@/src/lib/supabase/config";
 
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
   const { url, key } = serverSupabaseConfig();
   return createServerClient(url, key, {
+    cookieOptions: { name: SUPABASE_AUTH_COOKIE_NAME },
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll: (items) => {
