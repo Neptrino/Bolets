@@ -11,6 +11,9 @@ export function createRegionMap({
   container,
   fullscreenContainer,
   habitat,
+  interactive = true,
+  showFullscreen = true,
+  showNavigation = true,
   style,
   useGeolocation,
   zoom,
@@ -19,6 +22,9 @@ export function createRegionMap({
   container: HTMLElement;
   fullscreenContainer?: HTMLElement;
   habitat: boolean;
+  interactive?: boolean;
+  showFullscreen?: boolean;
+  showNavigation?: boolean;
   style: StyleSpecification;
   useGeolocation: boolean;
   zoom: number;
@@ -34,7 +40,7 @@ export function createRegionMap({
       [-0.5, 40.1],
       [3.9, 43.2],
     ],
-    interactive: true,
+    interactive,
     dragRotate: false,
     pitchWithRotate: false,
     touchPitch: false,
@@ -48,13 +54,17 @@ export function createRegionMap({
       "AttributionControl.ToggleAttribution": "Mostra l’atribució del mapa",
     },
   });
-  map.addControl(new NavigationControl({ showCompass: false }), "top-right");
-  map.addControl(
-    new FullscreenControl(
-      fullscreenContainer ? { container: fullscreenContainer } : undefined,
-    ),
-    "top-right",
-  );
+  if (showNavigation) {
+    map.addControl(new NavigationControl({ showCompass: false }), "top-right");
+  }
+  if (showFullscreen) {
+    map.addControl(
+      new FullscreenControl(
+        fullscreenContainer ? { container: fullscreenContainer } : undefined,
+      ),
+      "top-right",
+    );
+  }
 
   const geolocate = useGeolocation
     ? new GeolocateControl({

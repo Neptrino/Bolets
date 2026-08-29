@@ -1,0 +1,137 @@
+-- Local-development support grid for privacy-preserving finding reports.
+--
+-- These 10 km cells are the fixed EPSG:25831 buckets that intersect the
+-- version-controlled ICGC Catalonia land boundary. They contain no occurrence,
+-- prediction, or exact-location data. A full canonical 250 m spatial import and
+-- refresh replaces matching rows with source-backed aggregates.
+
+with cell_ranges(min_x, max_x, bucket_y, region_id) as (
+  values
+    (28, 28, 448, 'ports'),
+    (27, 27, 449, 'altres'),
+    (28, 30, 449, 'ports'),
+    (26, 26, 450, 'altres'),
+    (27, 32, 450, 'ports'),
+    (26, 26, 451, 'altres'),
+    (27, 32, 451, 'ports'),
+    (26, 31, 452, 'ports'),
+    (26, 32, 453, 'ports'),
+    (26, 34, 454, 'ports'),
+    (35, 35, 454, 'altres'),
+    (26, 34, 455, 'ports'),
+    (35, 35, 455, 'altres'),
+    (36, 37, 455, 'serralades-prelitorals'),
+    (27, 28, 456, 'altres'),
+    (29, 35, 456, 'muntanyes-interiors'),
+    (36, 42, 456, 'serralades-prelitorals'),
+    (27, 27, 457, 'altres'),
+    (28, 35, 457, 'muntanyes-interiors'),
+    (36, 43, 457, 'serralades-prelitorals'),
+    (27, 27, 458, 'altres'),
+    (28, 35, 458, 'muntanyes-interiors'),
+    (36, 43, 458, 'serralades-prelitorals'),
+    (27, 35, 459, 'muntanyes-interiors'),
+    (36, 37, 459, 'catalunya-central'),
+    (38, 44, 459, 'serralades-prelitorals'),
+    (45, 45, 459, 'serralades-costeres'),
+    (27, 32, 460, 'muntanyes-interiors'),
+    (33, 42, 460, 'catalunya-central'),
+    (43, 44, 460, 'serralades-prelitorals'),
+    (45, 47, 460, 'serralades-costeres'),
+    (27, 30, 461, 'altres'),
+    (31, 44, 461, 'catalunya-central'),
+    (45, 45, 461, 'montseny'),
+    (46, 49, 461, 'serralades-costeres'),
+    (27, 30, 462, 'altres'),
+    (31, 45, 462, 'catalunya-central'),
+    (46, 46, 462, 'montseny'),
+    (47, 47, 462, 'altres'),
+    (48, 50, 462, 'serralades-costeres'),
+    (29, 30, 463, 'altres'),
+    (31, 45, 463, 'catalunya-central'),
+    (46, 46, 463, 'montseny'),
+    (47, 49, 463, 'altres'),
+    (50, 50, 463, 'serralades-costeres'),
+    (51, 51, 463, 'altres'),
+    (29, 30, 464, 'altres'),
+    (31, 45, 464, 'catalunya-central'),
+    (46, 46, 464, 'montseny'),
+    (47, 49, 464, 'altres'),
+    (50, 50, 464, 'emporda'),
+    (51, 51, 464, 'altres'),
+    (30, 45, 465, 'prepirineus'),
+    (46, 46, 465, 'catalunya-central'),
+    (47, 51, 465, 'emporda'),
+    (30, 46, 466, 'prepirineus'),
+    (47, 51, 466, 'emporda'),
+    (30, 46, 467, 'prepirineus'),
+    (47, 51, 467, 'emporda'),
+    (52, 52, 467, 'altres'),
+    (31, 42, 468, 'pirineus'),
+    (43, 46, 468, 'prepirineus'),
+    (47, 51, 468, 'emporda'),
+    (52, 52, 468, 'altres'),
+    (31, 45, 469, 'pirineus'),
+    (47, 47, 469, 'pirineus'),
+    (48, 49, 469, 'altres'),
+    (50, 51, 469, 'emporda'),
+    (31, 41, 470, 'pirineus'),
+    (48, 50, 470, 'altres'),
+    (31, 37, 471, 'pirineus'),
+    (30, 37, 472, 'pirineus'),
+    (30, 30, 473, 'altres'),
+    (31, 36, 473, 'pirineus'),
+    (30, 32, 474, 'altres'),
+    (33, 33, 474, 'pirineus')
+),
+cells as (
+  select
+    bucket_x,
+    ranges.bucket_y,
+    ranges.region_id,
+    extensions.st_transform(
+      extensions.st_makeenvelope(
+        bucket_x * 10000,
+        ranges.bucket_y * 10000,
+        (bucket_x + 1) * 10000,
+        (ranges.bucket_y + 1) * 10000,
+        25831
+      ),
+      4326
+    ) as geographic_cell
+  from cell_ranges ranges
+  cross join lateral generate_series(ranges.min_x, ranges.max_x) bucket_x
+)
+insert into public.spatial_cell_levels (
+  cell_id,
+  region_id,
+  grid_size_m,
+  west,
+  south,
+  east,
+  north,
+  static_values,
+  static_sources,
+  source_resolution_m,
+  confidence,
+  weather_point_ids,
+  soil_point_ids,
+  base_cell_count
+)
+select
+  'epsg25831:10000:' || bucket_x || ':' || bucket_y,
+  region_id,
+  10000,
+  extensions.st_xmin(geographic_cell),
+  extensions.st_ymin(geographic_cell),
+  extensions.st_xmax(geographic_cell),
+  extensions.st_ymax(geographic_cell),
+  '{}'::jsonb,
+  array['ICGC Catalonia land boundary — local development grid'],
+  10000,
+  'unknown',
+  '{}'::text[],
+  '{}'::text[],
+  1
+from cells
+on conflict (cell_id) do nothing;

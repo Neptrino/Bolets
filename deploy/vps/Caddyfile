@@ -48,6 +48,7 @@
 
 	@public_api path \
  /functions/v1* \
+ /auth/v1* \
  /rest/v1* \
  /storage/v1*
 

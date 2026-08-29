@@ -53,6 +53,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
     })),
     { url: absoluteUrl("/map"), lastModified },
+    { url: absoluteUrl("/troballes"), lastModified },
     { url: absoluteUrl("/compare"), lastModified },
     ...comparisonPages.map((page) => ({
       url: absoluteUrl(`/compare/${page.slug}`),

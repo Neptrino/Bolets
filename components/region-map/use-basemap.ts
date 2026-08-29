@@ -11,18 +11,26 @@ import {
 export function useRegionBasemap(
   map: RefObject<MapLibreMap | null>,
   drawCells: RefObject<() => void>,
+  options: {
+    initialBasemapId?: BasemapId;
+    rememberSelection?: boolean;
+  } = {},
 ) {
+  const initialBasemapId = options.initialBasemapId ?? defaultBasemapId;
+  const rememberSelection = options.rememberSelection ?? true;
   const changeId = useRef(0);
   const [selectedBasemapId, setSelectedBasemapId] =
-    useState<BasemapId>(defaultBasemapId);
+    useState<BasemapId>(initialBasemapId);
   const [basemapStatus, setBasemapStatus] =
     useState<"idle" | "loading" | "error">("idle");
 
   const initializeBasemap = useCallback(() => {
-    const initialBasemapId = storedBasemapId();
-    setSelectedBasemapId(initialBasemapId);
-    return initialBasemapId;
-  }, []);
+    const resolvedBasemapId = rememberSelection
+      ? storedBasemapId(initialBasemapId)
+      : initialBasemapId;
+    setSelectedBasemapId(resolvedBasemapId);
+    return resolvedBasemapId;
+  }, [initialBasemapId, rememberSelection]);
 
   const changeBasemap = useCallback((nextBasemapId: BasemapId) => {
     const localMap = map.current;
@@ -41,17 +49,19 @@ export function useRegionBasemap(
         drawCells.current();
       });
       localMap.setStyle(basemapStyle(nextBasemapId));
-      try {
-        window.localStorage.setItem(basemapStorageKey, nextBasemapId);
-      } catch {
-        // The selected basemap still works when browser storage is unavailable.
+      if (rememberSelection) {
+        try {
+          window.localStorage.setItem(basemapStorageKey, nextBasemapId);
+        } catch {
+          // The selected basemap still works when browser storage is unavailable.
+        }
       }
     } catch {
       if (changeId.current !== nextChangeId) return;
       setSelectedBasemapId(previousBasemapId);
       setBasemapStatus("error");
     }
-  }, [drawCells, map, selectedBasemapId]);
+  }, [drawCells, map, rememberSelection, selectedBasemapId]);
 
   return {
     basemapStatus,

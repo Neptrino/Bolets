@@ -10,14 +10,19 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(page.locator('header a[href="/map"]')).toHaveText(
     "Mapa de predicció",
   );
+  await expect(page.locator('header > a[href="/les-meves-troballes"]')).toHaveText(
+    "El meu quadern",
+  );
   await expect(page.locator(".primary-nav > a")).toHaveText([
     "Bolets",
+    "Troballes",
     "Zones",
-    "Guies",
     "Comparador",
-    "Mètode",
     "Avui",
   ]);
+  await expect(page.locator('footer a[href="/compare"]')).toHaveText(
+    "Comparador d’espècies",
+  );
   await expect(
     page.locator(".hero").getByRole("link", { name: "Mapa de predicció" }),
   ).toHaveAttribute("href", "/map");

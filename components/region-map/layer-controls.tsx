@@ -1,9 +1,9 @@
-import { SlidersHorizontal, X } from "lucide-react";
 import { MapModeControl } from "@/components/map-mode-control";
 import type { MapViewMode } from "@/src/lib/types";
+import { RegionMapBasemapControl } from "./basemap-control";
+import { RegionMapControlPanel } from "./control-panel";
 import {
   MapLayerControl,
-  basemapOptions,
   type BasemapId,
 } from "./support";
 
@@ -58,78 +58,21 @@ export function RegionMapLayerControls({
 }) {
   if (!speciesId) return null;
 
-  const panelLabel = layerControlsExpanded
-    ? "Amaga els controls del mapa"
-    : "Mostra els controls del mapa";
-
   return (
-    <div className={`map-cell-visibility${layerControlsExpanded ? "" : " is-collapsed"}`}>
-      <div className="map-cell-visibility-header">
-        <strong className="map-cell-visibility-title">Capes del mapa</strong>
-        <button
-          type="button"
-          className="map-cell-visibility-panel-toggle"
-          aria-controls={layerControlsId}
-          aria-expanded={layerControlsExpanded}
-          aria-label={panelLabel}
-          title={panelLabel}
-          onClick={onExpandedChange}
-        >
-          {layerControlsExpanded ? (
-            <X size={16} aria-hidden />
-          ) : (
-            <SlidersHorizontal size={16} aria-hidden />
-          )}
-        </button>
-      </div>
-      <div
-        id={layerControlsId}
-        className="map-cell-visibility-controls"
-        role="group"
-        aria-label="Capes del mapa"
-        hidden={!layerControlsExpanded}
-      >
+    <RegionMapControlPanel
+      expanded={layerControlsExpanded}
+      id={layerControlsId}
+      onExpandedChange={onExpandedChange}
+    >
         {!habitat && !globalPrediction ? (
           <MapModeControl mode={mode} predictionAvailable={predictionAvailable} />
         ) : null}
-        <fieldset
-          className="map-basemap-control"
-          disabled={basemapStatus === "loading"}
-          aria-busy={basemapStatus === "loading"}
-        >
-          <legend>Fons cartogràfic</legend>
-          <div className="map-basemap-options">
-            {basemapOptions.map((option) => (
-              <label
-                key={option.id}
-                className="map-basemap-option"
-                title={option.description}
-              >
-                <input
-                  type="radio"
-                  name={basemapChoiceName}
-                  value={option.id}
-                  checked={selectedBasemapId === option.id}
-                  aria-label={`${option.label}: ${option.description}`}
-                  onChange={() => onBasemapChange(option.id)}
-                />
-                <span
-                  className={`map-basemap-preview map-basemap-preview-${option.preview}`}
-                  aria-hidden
-                />
-                <span className="map-basemap-option-label">{option.shortLabel}</span>
-                <span className="map-basemap-option-provider">{option.provider}</span>
-              </label>
-            ))}
-          </div>
-          {basemapStatus !== "idle" ? (
-            <p className="map-basemap-status" aria-live="polite">
-              {basemapStatus === "loading"
-                ? "Canviant el fons…"
-                : "No s’ha pogut carregar aquest fons."}
-            </p>
-          ) : null}
-        </fieldset>
+        <RegionMapBasemapControl
+          choiceName={basemapChoiceName}
+          onChange={onBasemapChange}
+          selectedId={selectedBasemapId}
+          status={basemapStatus}
+        />
         <MapLayerControl
           id={cellOpacityId}
           label={showCompatibility ? "Zones compatibles" : "Predicció"}
@@ -156,7 +99,6 @@ export function RegionMapLayerControls({
             onOpacityChange={onHistoricalEvidenceOpacityChange}
           />
         ) : null}
-      </div>
-    </div>
+    </RegionMapControlPanel>
   );
 }

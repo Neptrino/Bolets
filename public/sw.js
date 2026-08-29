@@ -13,7 +13,7 @@
  * forbids it.
  */
 
-const VERSION = "v2";
+const VERSION = "v3";
 const SHELL_CACHE = `bolets-shell-${VERSION}`;
 const ASSET_CACHE = `bolets-assets-${VERSION}`;
 const DATA_CACHE = `bolets-data-${VERSION}`;
@@ -36,9 +36,26 @@ const TILE_CACHE_LIMIT = 2000;
 /** Trimming on every write would thrash; a bounded overshoot is cheaper. */
 const TILE_TRIM_SLACK = 120;
 
+async function precacheShellDocument(path) {
+  const response = await fetch(path, { cache: "reload" });
+  if (!response.ok) throw new Error(`Could not precache ${path}`);
+  const shell = await caches.open(SHELL_CACHE);
+  await shell.put(path, response.clone());
+  const html = await response.text();
+  const assetPaths = new Set(
+    [...html.matchAll(/(?:src|href)="([^"?]*\/_next\/static\/[^"?]+)(?:\?[^"?]*)?"/g)]
+      .map((match) => match[1]),
+  );
+  const assets = await caches.open(ASSET_CACHE);
+  await Promise.all([...assetPaths].map(async (assetPath) => {
+    const asset = await fetch(assetPath, { cache: "reload" });
+    if (asset.ok) await assets.put(assetPath, asset);
+  }));
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(SHELL_CACHE).then((cache) => cache.addAll([OFFLINE_URL])),
+    Promise.all([precacheShellDocument(OFFLINE_URL), precacheShellDocument("/troballes/nova")]),
   );
 });
 
@@ -153,8 +170,18 @@ self.addEventListener("fetch", (event) => {
   // Everything else this worker handles is same-origin.
   if (url.origin !== self.location.origin) return;
 
-  // Private operational pages and sessions must never enter an offline cache.
-  if (url.pathname === "/admin" || url.pathname.startsWith("/admin/")) return;
+  // Private operational, account and personal-data pages must never enter an
+  // offline cache. The report form is public shell; its unsent content lives
+  // only in IndexedDB and is never placed in Cache Storage.
+  const privatePath = url.pathname === "/admin"
+    || url.pathname.startsWith("/admin/")
+    || url.pathname === "/acces"
+    || url.pathname.startsWith("/compte")
+    || url.pathname.startsWith("/les-meves-troballes")
+    || url.pathname.startsWith("/moderacio")
+    || url.pathname.startsWith("/api/me/")
+    || url.pathname.startsWith("/api/moderation/");
+  if (privatePath) return;
 
   if (request.mode === "navigate") {
     event.respondWith(navigate(request));
@@ -167,6 +194,11 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (url.pathname === "/api/predictions") {
+    event.respondWith(networkFirst(request, DATA_CACHE));
+    return;
+  }
+
+  if (url.pathname === "/api/findings") {
     event.respondWith(networkFirst(request, DATA_CACHE));
     return;
   }

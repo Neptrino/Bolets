@@ -122,7 +122,8 @@ describe("rolling observed-weather ingestion", () => {
     expect(conditionCacheCronMigration).toContain(
       "refresh_territorial_level_conditions_after_ingestion(current_date)",
     );
-    expect(cron).toContain("Expected eleven Bolets cron jobs");
+    expect(cron).toContain("cleanup-finding-photo-staging");
+    expect(cron).toContain("Expected twelve Bolets cron jobs");
   });
 
   it("atomically records provider usage without applying local limits", () => {

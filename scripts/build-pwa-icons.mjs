@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 /**
- * Renders the installable-app icons from the single source mark in
- * app/icon.svg, so the home-screen icon can never drift from the site icon.
+ * Renders the installable-app icons from the version-controlled brand assets.
  *
- * Two shapes are produced. The "any" icons keep the mark's own rounded square.
- * The maskable icon is padded into the safe zone and painted edge to edge,
- * because a launcher is free to crop a maskable icon to a circle and would
- * otherwise clip the mushroom.
+ * The "any" and Apple icons use the official app icon. The maskable icon uses
+ * the standalone mushroom over an edge-to-edge brand background, because a
+ * launcher is free to crop that canvas to a circle or another system shape.
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
@@ -15,12 +13,13 @@ import sharp from "sharp";
 
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const sourceIcon = join(projectRoot, "app", "icon.svg");
+const sourceSingleMark = join(projectRoot, "public", "brand", "bolets-single.svg");
 const outputDirectory = join(projectRoot, "public", "icons");
 const faviconPath = join(projectRoot, "public", "favicon.ico");
 
-// The share of the maskable canvas a launcher may crop away. 20% padding on
-// every side keeps the mark inside the guaranteed-visible circle.
-const MASKABLE_SAFE_ZONE_PADDING = 0.2;
+// The standalone SVG already includes whitespace around the mushroom. An
+// additional 10% canvas inset keeps its artwork inside the maskable safe zone.
+const MASKABLE_SAFE_ZONE_PADDING = 0.1;
 const BACKGROUND = "#3b3b3b";
 
 async function renderAny(source, size) {
@@ -33,6 +32,16 @@ async function renderAny(source, size) {
 async function renderMaskable(source, size) {
   const inner = Math.round(size * (1 - MASKABLE_SAFE_ZONE_PADDING * 2));
   const mark = await sharp(source, { density: 512 }).resize(inner, inner).png().toBuffer();
+  return sharp({
+    create: { width: size, height: size, channels: 4, background: BACKGROUND },
+  })
+    .composite([{ input: mark, gravity: "centre" }])
+    .png()
+    .toBuffer();
+}
+
+async function renderOpaque(source, size) {
+  const mark = await sharp(source, { density: 512 }).resize(size, size).png().toBuffer();
   return sharp({
     create: { width: size, height: size, channels: 4, background: BACKGROUND },
   })
@@ -63,15 +72,16 @@ function icoFromPng(png, size) {
 
 async function main() {
   const source = await readFile(sourceIcon);
+  const singleMark = await readFile(sourceSingleMark);
   await mkdir(outputDirectory, { recursive: true });
 
   const outputs = [
     ["icon-192.png", await renderAny(source, 192)],
     ["icon-512.png", await renderAny(source, 512)],
-    ["icon-maskable-512.png", await renderMaskable(source, 512)],
+    ["icon-maskable-512.png", await renderMaskable(singleMark, 512)],
     // iOS ignores the manifest icons for the home screen and reads this one,
     // and it composites onto white, so it must not be transparent.
-    ["apple-touch-icon.png", await renderMaskable(source, 180)],
+    ["apple-touch-icon.png", await renderOpaque(source, 180)],
   ];
 
   for (const [name, buffer] of outputs) {

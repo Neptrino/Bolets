@@ -55,3 +55,8 @@ export function habitatBucketUrl(
   });
   return `/api/habitat?${params}`;
 }
+
+export function findingBucketUrl(bucket: SpatialBounds, speciesId = "all") {
+  const params = bucketRequestParams(bucket, speciesId, 10_000, { view: "map" });
+  return `/api/findings?${params}`;
+}

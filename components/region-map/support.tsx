@@ -73,12 +73,12 @@ function isBasemapId(value: string | null): value is BasemapId {
   return basemapOptions.some((option) => option.id === value);
 }
 
-function storedBasemapId(): BasemapId {
+function storedBasemapId(fallback: BasemapId = defaultBasemapId): BasemapId {
   try {
     const stored = window.localStorage.getItem(basemapStorageKey);
-    return isBasemapId(stored) ? stored : defaultBasemapId;
+    return isBasemapId(stored) ? stored : fallback;
   } catch {
-    return defaultBasemapId;
+    return fallback;
   }
 }
 
@@ -237,7 +237,7 @@ type MapLayerControlProps = {
   label: string;
   controlName: string;
   opacityLabel: string;
-  variant: "prediction" | "compatibility" | "history";
+  variant: "prediction" | "compatibility" | "history" | "findings" | "personal-findings";
   visible: boolean;
   opacity: number;
   onVisibilityChange: () => void;

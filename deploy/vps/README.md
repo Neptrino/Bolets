@@ -96,6 +96,28 @@ Supabase `.env`; do not replace the generated file with the example. Set a real
 TLS email and domains. Keep `COMPOSE_FILE=docker-compose.yml`: the optional
 Logflare/Vector stack is intentionally disabled on the initial 8 GB host.
 
+The field notebook depends on passwordless email. Configure a transactional
+SMTP account with SPF, DKIM and DMARC for the sending domain, keep its password
+only in the root-owned Supabase `.env`, and leave phone and anonymous sign-in
+disabled. `MAILER_TEMPLATES_MAGIC_LINK` points GoTrue at the version-controlled
+template that displays `{{ .Token }}` as a six-digit code. Test delivery to at
+least two unrelated mail providers before opening signups; the local Mailpit
+flow is not evidence that production delivery works.
+
+Passkeys are enabled by the Bolets Compose override and bound to the stable
+`bolets.app` relying-party ID. Keep that ID unchanged after users start
+enrolling credentials; both `https://bolets.app` and
+`https://www.bolets.app` are accepted origins. Email codes remain available as
+the recovery method while the Supabase passkey API is experimental.
+
+Google sign-in stays hidden until `GOOGLE_ENABLED=true` and a client ID and
+secret are stored in the root-owned Supabase `.env`. In Google Cloud, register
+`https://bolets.app` and `https://www.bolets.app` as authorized JavaScript
+origins and `https://api.bolets.app/auth/v1/callback` as the authorized redirect
+URI. Never use the application callback URL as Google's provider callback;
+GoTrue receives the provider response first and then returns to
+`https://bolets.app/auth/callback`.
+
 Copy `deploy/vps/functions.env.example` to
 `/opt/bolets/secrets/functions.env`, populate the required Open-Meteo relay
 values, and run `chmod 600` on the file. The direct AROME shadow credential is
@@ -197,8 +219,9 @@ Restore with `ON_ERROR_STOP` and a single transaction as described by the
 official guide. Never place database URLs or dumps in the repository. A managed
 restore includes schema, rows, RLS, RPCs, triggers and Auth rows; it does not
 carry over working JWT keys, service configuration, function files or object
-bytes. Existing login tokens become invalid after the key change, which is
-currently harmless because Bolets has no public account flow.
+bytes. Existing login tokens become invalid after the key change. Schedule a
+visible maintenance window for the field notebook and tell users they will
+need a new email code after cutover; never describe Auth rows as disposable.
 
 For a deliberately fresh database instead, start Supabase and apply the
 version-controlled migrations with the current Supabase CLI against the
@@ -216,8 +239,10 @@ deploy/vps/prepare-platform-restore.sh /secure/path/to/dump
 
 The script writes `roles.restore.sql` and `data.restore.sql`. It skips the
 incompatible Auth/Storage blocks only when all eight affected blocks contain
-zero rows, as they did in the rehearsal; it fails rather than dropping data if
-that assumption changes. Start the pinned Supabase services once before the
+zero rows, as they did in the pre-account rehearsal. Once the field notebook
+has users or photographs, this compatibility shortcut is intentionally
+unusable: rehearse a release-specific, data-preserving Auth/Storage transform
+or use the verified production backup restore path instead. Start the pinned Supabase services once before the
 restore so their release-owned roles and internal schemas are initialized, then
 stop every service except `db` and restore `roles.restore.sql`, `schema.sql` and
 `data.restore.sql` in one transaction. Re-check the official restore guide and
@@ -446,14 +471,20 @@ Before changing production DNS, verify:
 ```bash
 curl --fail https://bolets.app/api/health
 curl --head https://api.bolets.app/functions/v1/read-environment
+curl --head https://api.bolets.app/auth/v1/health
 curl --fail --header "apikey: $ANON_KEY" \
   --header "Authorization: Bearer $anon_key" \
   "https://api.bolets.app/functions/v1/read-environment?region=prepirineus"
 ```
 
 The unauthenticated function probe normally returns 401; that confirms TLS and
-routing. The public proxy intentionally does not expose Auth, Realtime, GraphQL
-or Studio. Verify map bucket reads, one occurrence read, current conditions,
+routing. The public proxy exposes only Functions, Auth, REST and Storage;
+Realtime, GraphQL and Studio remain private. Before enabling the notebook,
+send and redeem a passwordless code through the configured production SMTP,
+enroll a passkey and use it in a new private window, and, when Google is
+enabled, complete one Google sign-in through the production callback. Then
+stage and resume a WebP upload, publish one test finding, verify that its public
+response contains only a 10 km cell, and delete the test account. Verify map bucket reads, one occurrence read, current conditions,
 scheduled pipeline audit rows and `pipeline_sources` before cutover. Lower DNS
 TTL ahead of time, take a final dump during a short write freeze, restore it,
 rerun the checks, then switch DNS. Keep the hosted project intact until at
@@ -494,6 +525,9 @@ sudo systemctl status bolets-backup.service bolets-backup.timer
 The timer runs once a day around 03:17 UTC with a randomized delay and catches
 up after downtime. It deliberately does not delete local copies: configure
 retention only after the encrypted off-host destination is working and tested.
+Do not enable public notebook signups until the off-host system enforces a
+documented maximum retention period and a restore drill confirms that expired
+archives are no longer recoverable from either local or off-host storage.
 
 At least monthly, restore the latest Supabase database dump and Storage archive
 into an isolated Supabase instance, and restore `umami.dump` into a disposable

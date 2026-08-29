@@ -188,9 +188,12 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
               <PredictionMapLegend />
             </>}
           </div>
-          {isGlobal
-            ? <Link href="/bolets" className="text-link">Consultar les fitxes d’espècies <ArrowUpRight size={17} /></Link>
-            : <Link href={`${speciesPath(species)}?region=${region}`} className="text-link">Llegir la fitxa de {species.identity.commonName} <ArrowUpRight size={17} /></Link>}
+          <nav className="map-reading-links" aria-label="Informació per interpretar el mapa">
+            <Link href="/metode" className="text-link">Entendre el mètode <ArrowUpRight size={17} /></Link>
+            {isGlobal
+              ? <Link href="/bolets" className="text-link">Consultar les fitxes d’espècies <ArrowUpRight size={17} /></Link>
+              : <Link href={`${speciesPath(species)}?region=${region}`} className="text-link">Llegir la fitxa de {species.identity.commonName} <ArrowUpRight size={17} /></Link>}
+          </nav>
         </aside>
       }
     />

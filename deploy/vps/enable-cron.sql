@@ -28,10 +28,11 @@ begin
       'vacuum-weather-grid-snapshots',
       'vacuum-weather-grid-forecasts',
       'vacuum-cron-job-run-details',
-      'import-xema-rain-3h'
+      'import-xema-rain-3h',
+      'cleanup-finding-photo-staging'
     )
-  ) <> 11 then
-    raise exception 'Expected eleven Bolets cron jobs';
+  ) <> 12 then
+    raise exception 'Expected twelve Bolets cron jobs';
   end if;
 end
 $$;
@@ -54,7 +55,8 @@ begin
       'vacuum-weather-grid-snapshots',
       'vacuum-weather-grid-forecasts',
       'vacuum-cron-job-run-details',
-      'import-xema-rain-3h'
+      'import-xema-rain-3h',
+      'cleanup-finding-photo-staging'
     )
   loop
     perform cron.alter_job(existing_job_id, active := true);

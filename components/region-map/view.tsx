@@ -2,10 +2,11 @@ import type { RefObject } from "react";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { HabitatMapLegend } from "@/components/habitat-map-legend";
 import type { MapViewMode, RegionId } from "@/src/lib/types";
+import { RegionMapFrame } from "./frame";
 import { RegionMapDataStatus } from "./data-status";
 import { RegionMapLayerControls } from "./layer-controls";
 import type { MapStatusCopy } from "./status";
-import { fitCatalonia, type BasemapId, type CellState } from "./support";
+import { type BasemapId, type CellState } from "./support";
 
 export function RegionMapView({
   activeRegionCount,
@@ -81,81 +82,69 @@ export function RegionMapView({
   cellState: CellState;
 }) {
   return (
-    <div
-      className={`region-map${habitat ? " region-map-habitat" : ""}${showCompatibility ? " region-map-compatibility" : ""} ${className}`}
-      data-active-region-count={activeRegionCount}
-      data-selected-region={selectedRegion}
-      data-basemap={selectedBasemapId}
-      data-map-mode={showCompatibility ? "compatibility" : "prediction"}
-      aria-busy={cellState.status === "loading"}
-      aria-label="Mapa interactiu de Catalunya. Arrossega per desplaçar-te i utilitza els controls per canviar l’escala o el fons cartogràfic."
-      role="region"
+    <RegionMapFrame
+      activeRegionCount={activeRegionCount}
+      ariaBusy={cellState.status === "loading"}
+      ariaLabel="Mapa interactiu de Catalunya. Arrossega per desplaçar-te i utilitza els controls per canviar l’escala o el fons cartogràfic."
+      basemapId={selectedBasemapId}
+      className={`${habitat ? "region-map-habitat" : ""}${showCompatibility ? " region-map-compatibility" : ""} ${className}`}
+      map={map}
+      mapMode={showCompatibility ? "compatibility" : "prediction"}
+      node={node}
+      selectedRegion={selectedRegion}
     >
-      <div className="region-map-viewport">
-        <div ref={node} className="region-map-surface" />
+      <canvas
+        ref={cellCanvas}
+        className="region-map-cells"
+        style={{ opacity: cellsVisible ? cellOpacity / 100 : 0 }}
+        aria-hidden
+      />
+      {showCompatibility ? (
         <canvas
-          ref={cellCanvas}
-          className="region-map-cells"
-          style={{ opacity: cellsVisible ? cellOpacity / 100 : 0 }}
+          ref={historicalEvidenceCanvas}
+          className="region-map-history"
+          style={{
+            opacity: historicalEvidenceVisible
+              ? historicalEvidenceOpacity / 100
+              : 0,
+          }}
           aria-hidden
         />
-        {showCompatibility ? (
-          <canvas
-            ref={historicalEvidenceCanvas}
-            className="region-map-history"
-            style={{
-              opacity: historicalEvidenceVisible
-                ? historicalEvidenceOpacity / 100
-                : 0,
-            }}
-            aria-hidden
-          />
-        ) : null}
-        <RegionMapDataStatus
-          cellState={cellState}
-          compactLegend={compactLegend}
-          gridDimensions={gridDimensions}
-          habitat={habitat}
-          showCompatibility={showCompatibility}
-          speciesId={speciesId}
-          statusCopy={statusCopy}
-        />
-        <RegionMapLayerControls
-          basemapChoiceName={basemapChoiceName}
-          basemapStatus={basemapStatus}
-          cellOpacity={cellOpacity}
-          cellOpacityId={cellOpacityId}
-          cellsVisible={cellsVisible}
-          globalPrediction={globalPrediction}
-          habitat={habitat}
-          historicalEvidenceOpacity={historicalEvidenceOpacity}
-          historicalEvidenceOpacityId={historicalEvidenceOpacityId}
-          historicalEvidenceVisible={historicalEvidenceVisible}
-          layerControlsExpanded={layerControlsExpanded}
-          layerControlsId={layerControlsId}
-          mode={mode}
-          onBasemapChange={onBasemapChange}
-          onCellOpacityChange={onCellOpacityChange}
-          onCellsVisibilityChange={onCellsVisibilityChange}
-          onExpandedChange={onLayerControlsToggle}
-          onHistoricalEvidenceOpacityChange={onHistoricalEvidenceOpacityChange}
-          onHistoricalEvidenceVisibilityChange={onHistoricalEvidenceVisibilityChange}
-          predictionAvailable={predictionAvailable}
-          selectedBasemapId={selectedBasemapId}
-          showCompatibility={showCompatibility}
-          speciesId={speciesId}
-        />
-        <button
-          type="button"
-          className="map-reset-button"
-          onClick={() => {
-            if (map.current) fitCatalonia(map.current);
-          }}
-          aria-label="Veure tot Catalunya"
-        >
-          Tot Catalunya
-        </button>
-      </div>
+      ) : null}
+      <RegionMapDataStatus
+        cellState={cellState}
+        compactLegend={compactLegend}
+        gridDimensions={gridDimensions}
+        habitat={habitat}
+        showCompatibility={showCompatibility}
+        speciesId={speciesId}
+        statusCopy={statusCopy}
+      />
+      <RegionMapLayerControls
+        basemapChoiceName={basemapChoiceName}
+        basemapStatus={basemapStatus}
+        cellOpacity={cellOpacity}
+        cellOpacityId={cellOpacityId}
+        cellsVisible={cellsVisible}
+        globalPrediction={globalPrediction}
+        habitat={habitat}
+        historicalEvidenceOpacity={historicalEvidenceOpacity}
+        historicalEvidenceOpacityId={historicalEvidenceOpacityId}
+        historicalEvidenceVisible={historicalEvidenceVisible}
+        layerControlsExpanded={layerControlsExpanded}
+        layerControlsId={layerControlsId}
+        mode={mode}
+        onBasemapChange={onBasemapChange}
+        onCellOpacityChange={onCellOpacityChange}
+        onCellsVisibilityChange={onCellsVisibilityChange}
+        onExpandedChange={onLayerControlsToggle}
+        onHistoricalEvidenceOpacityChange={onHistoricalEvidenceOpacityChange}
+        onHistoricalEvidenceVisibilityChange={onHistoricalEvidenceVisibilityChange}
+        predictionAvailable={predictionAvailable}
+        selectedBasemapId={selectedBasemapId}
+        showCompatibility={showCompatibility}
+        speciesId={speciesId}
+      />
       {habitat ? (
         <HabitatMapLegend
           compact={compactLegend}
@@ -164,6 +153,6 @@ export function RegionMapView({
           title={statusCopy.title}
         />
       ) : null}
-    </div>
+    </RegionMapFrame>
   );
 }

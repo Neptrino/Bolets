@@ -21,7 +21,8 @@ begin
     'vacuum-weather-grid-forecasts',
     'vacuum-cron-job-run-details',
     'import-xema-rain-hourly',
-    'import-xema-rain-3h'
+    'import-xema-rain-3h',
+    'cleanup-finding-photo-staging'
   ] loop
     select jobid into existing_job_id from cron.job where jobname = job_name;
     if existing_job_id is not null then
@@ -37,7 +38,8 @@ begin
       ('refresh-spatial-soil', '6-59/5 * * * *', '/functions/v1/refresh-spatial-soil', '{"trigger":"cron"}', 120000),
       ('refresh-species-occurrences-monthly', '15,25,35,45,55 3 1 * *', '/functions/v1/refresh-species-occurrences', '{"trigger":"cron","maxSpecies":9}', 120000),
       ('refresh-species-occurrences-monthly-tail', '5,15 4 1 * *', '/functions/v1/refresh-species-occurrences', '{"trigger":"cron","maxSpecies":9}', 120000),
-      ('import-xema-rain-3h', '50 2-23/3 * * *', '/functions/v1/import-xema-rain', '{"trigger":"cron","hours":12}', 120000)
+      ('import-xema-rain-3h', '50 2-23/3 * * *', '/functions/v1/import-xema-rain', '{"trigger":"cron","hours":12}', 120000),
+      ('cleanup-finding-photo-staging', '27 1 * * *', '/functions/v1/cleanup-finding-photo-staging', '{"trigger":"cron"}', 120000)
     ) as jobs(job_name, schedule, function_path, request_body, timeout_ms)
   loop
     perform cron.schedule(
@@ -138,10 +140,11 @@ begin
       'vacuum-weather-grid-snapshots',
       'vacuum-weather-grid-forecasts',
       'vacuum-cron-job-run-details',
-      'import-xema-rain-3h'
+      'import-xema-rain-3h',
+      'cleanup-finding-photo-staging'
     )
-  ) <> 11 then
-    raise exception 'Expected eleven Bolets cron jobs';
+  ) <> 12 then
+    raise exception 'Expected twelve Bolets cron jobs';
   end if;
 end
 $$;
@@ -166,7 +169,8 @@ begin
       'vacuum-weather-grid-snapshots',
       'vacuum-weather-grid-forecasts',
       'vacuum-cron-job-run-details',
-      'import-xema-rain-3h'
+      'import-xema-rain-3h',
+      'cleanup-finding-photo-staging'
     )
   loop
     perform cron.alter_job(existing_job_id, active := false);

@@ -34,8 +34,10 @@ import {
   isOperationalSessionAuthorized,
   OPERATIONAL_SESSION_COOKIE,
 } from "@/src/lib/operational-status-auth";
+import { readCommunityStatus } from "@/src/lib/community-status-server";
 
 import styles from "./status.module.css";
+import { CommunityStatus } from "./community-status";
 import { ResyncControls } from "./resync-controls";
 
 export const metadata: Metadata = {
@@ -129,10 +131,19 @@ export default async function OperationalStatusPage() {
     redirect("/admin/login");
   }
 
-  let status;
-  try {
-    status = await readOperationalStatus();
-  } catch (error) {
+  const [statusResult, communityResult] = await Promise.allSettled([
+    readOperationalStatus(),
+    readCommunityStatus(),
+  ]);
+  const community = communityResult.status === "fulfilled" ? communityResult.value : null;
+  const communityError = communityResult.status === "rejected"
+    ? communityResult.reason instanceof Error
+      ? communityResult.reason.message
+      : "No s'han pogut consultar les dades de comunitat."
+    : null;
+
+  if (statusResult.status === "rejected") {
+    const error = statusResult.reason;
     const message = error instanceof Error ? error.message : "No s'ha pogut consultar l'estat operatiu.";
     return (
       <PageShell as="article" className={styles.shell}>
@@ -151,7 +162,8 @@ export default async function OperationalStatusPage() {
             <span>{message}</span>
           </div>
         </section>
-        <section className={`${styles.section} ${styles.commandSection}`} aria-labelledby="manual-commands">
+        <CommunityStatus status={community} error={communityError} />
+        <section className={styles.section} aria-labelledby="manual-commands">
           <SectionHeader
             meta="Comandes manuals"
             title="Resincronització selectiva"
@@ -163,6 +175,8 @@ export default async function OperationalStatusPage() {
       </PageShell>
     );
   }
+
+  const status = statusResult.value;
 
   const summary = summarizeOperationalStatus(status);
   const StateIcon = stateIcons[summary.state];
@@ -211,7 +225,7 @@ export default async function OperationalStatusPage() {
       <PageHeader
         eyebrow="Sala de màquines · accés privat"
         title={<>Estat <PageTitleAccent>operatiu</PageTitleAccent></>}
-        description="Una lectura en viu de l'atmosfera publicada, les ingestes en curs, l'ús del proveïdor i les incidències recents."
+        description="Una lectura en viu de la comunitat, l'atmosfera publicada, les ingestes en curs, l'ús del proveïdor i les incidències recents."
         layout="split"
         tone="forest"
       />
@@ -235,7 +249,9 @@ export default async function OperationalStatusPage() {
         </div>
       </section>
 
-      <section className={`${styles.section} ${styles.commandSection}`} aria-labelledby="manual-commands">
+      <CommunityStatus status={community} error={communityError} />
+
+      <section className={styles.section} aria-labelledby="manual-commands">
         <SectionHeader
           meta="Comandes manuals"
           title="Resincronització selectiva"

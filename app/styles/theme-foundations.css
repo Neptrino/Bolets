@@ -33,6 +33,17 @@ body {
   color: var(--ink);
   box-shadow: 0 6px 18px rgba(147, 70, 28, 0.18);
 }
+.header-account-link {
+  border: 1px solid rgba(39, 60, 48, 0.24);
+  background: rgba(255, 250, 240, 0.72);
+  color: var(--finding-green-deep, #273c30);
+}
+.header-account-link:hover,
+.header-account-link[aria-current="page"] {
+  border-color: var(--moss);
+  background: var(--moss);
+  color: var(--paper);
+}
 .header-map-link:hover,
 .moss-button:hover {
   background: var(--apricot);
@@ -513,6 +524,14 @@ body {
     transparent 0 3px,
     rgba(177, 42, 144, 0.92) 3px 5px
   );
+}
+.map-cell-visibility-layer-findings .map-cell-visibility-swatch {
+  border-color: rgba(107, 55, 31, 0.62);
+  background: #d88445;
+}
+.map-cell-visibility-layer-personal-findings .map-cell-visibility-swatch {
+  border-color: rgba(68, 82, 63, 0.72);
+  background: linear-gradient(135deg, #bd592a 0 50%, #425c49 50%);
 }
 .map-cell-visibility-heading label {
   font-size: var(--text-xs);

@@ -67,6 +67,7 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
+  margin-left: auto;
   min-height: 40px;
   padding: 0 16px;
   border: 0;

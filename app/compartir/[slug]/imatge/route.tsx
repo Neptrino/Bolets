@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { BrandMark } from "@/components/brand-mark";
 import { DAILY_OVERVIEW_REVALIDATE_SECONDS } from "@/src/lib/current-overview";
 import { isLocalFavourablePreview, loadDailyShareCard, loadFavourableDailySharePreviewCard, type DailyShareCard, type DailyShareFormat } from "@/src/lib/daily-share-cards";
 import { hasSignedDailySharePayload, readSignedDailyShareCard } from "@/src/lib/daily-share-image-payload-server";
@@ -18,18 +19,6 @@ function PerformanceMark({ color }: { color: string }) {
       <path d="M7 31.5 16.2 22.2l6.1 5.1L35 13.7" stroke={color} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M27.5 13.7H35v7.5" stroke={color} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M7 35h28" stroke="rgba(255,247,232,0.28)" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function BrandMark() {
-  return (
-    <svg width="44" height="44" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-      <rect x="2" y="2" width="60" height="60" rx="20" fill="#3b3b3b" />
-      <path d="M13 31.1C14.8 19.5 21.8 13 32 13s17.2 6.5 19 18.1c.2 1.4-.9 2.6-2.3 2.6H15.3c-1.4 0-2.5-1.2-2.3-2.6Z" fill="#f28a2e" />
-      <path d="M20.1 27.4c3.5-3.2 7.5-4.8 12-4.7 4.4.1 8.3 1.6 11.8 4.5" stroke="#6e3d25" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M26.1 33.7h11.8l3 15.8c.3 1.4-.8 2.7-2.2 2.7H25.3c-1.4 0-2.5-1.3-2.2-2.7l3-15.8Z" fill="#f2ebd5" />
-      <path d="M21.5 51.2c6.7-2.2 13.7-2.2 21 0" stroke="#f2a766" strokeWidth="2.4" strokeLinecap="round" />
     </svg>
   );
 }

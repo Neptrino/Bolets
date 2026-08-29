@@ -2,6 +2,50 @@
 
 Supabase stores normalized environmental evidence and exposes it only through server-side Edge Functions. The public map never receives database credentials, and the 250 m grid represents model units rather than mushroom observations.
 
+## Local development
+
+The local stack keeps only the services the application uses: PostgreSQL,
+Auth, PostgREST, private Storage, Mailpit, Kong, and the Edge runtime. This is
+lighter than running Studio, Realtime, Logflare, Vector, and Supavisor beside
+the application.
+
+```bash
+npm run supabase:start
+npm run supabase:reset
+npm run dev
+```
+
+`supabase:reset` recreates the local database and deletes its local data. It
+applies every migration and then `supabase/seed.sql`. The seed contains only
+the 386 fixed 10 km buckets intersecting the version-controlled ICGC Catalonia
+land boundary. It makes finding-location generalization available without a
+large GIS import; it is not occurrence evidence, habitat evidence, or weather
+data. A reviewed 250 m spatial import safely replaces matching development
+rows during its normal coarse-level refresh.
+
+Copy `.env.example` to the ignored `.env.local`, then fill both server and
+`NEXT_PUBLIC_` Supabase URL/anon variables from `npm run supabase:status -- -o
+env`. The server-only local service-role value belongs only in
+`SUPABASE_SERVICE_ROLE_KEY`; never copy it to a `NEXT_PUBLIC_` variable. The
+usual local API URL is `http://127.0.0.1:54321`, and one-time-code emails are
+visible in Mailpit at `http://127.0.0.1:54324`.
+
+Passkeys are enabled locally and are deliberately bound to
+`http://localhost:3101`; use that hostname rather than `127.0.0.1` when
+enrolling or signing in with one. A user first enters with an email code, then
+adds a passkey from `/compte`. Passkeys are still an experimental Supabase Auth
+API, so the email code remains the recovery path.
+
+Google sign-in requires a Web OAuth client that cannot be committed to the
+repository. Add `http://localhost:3101` as an authorized JavaScript origin and
+`http://127.0.0.1:54321/auth/v1/callback` as its authorized redirect URI. Then
+set `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET` in the ignored repository-root
+`.env` file that the Supabase CLI reads,
+fill the client ID and enable `[auth.external.google]` in `config.toml`. The
+Google button appears automatically when Supabase reports the provider as
+enabled. The application callback is already allowlisted at
+`http://localhost:3101/auth/callback`.
+
 ## Production inventory
 
 | Pipeline | Trigger | Purpose |

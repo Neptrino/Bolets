@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { BrandMark } from "@/components/brand-mark";
 
 export const alt = "Bolets Atles — predicció de bolets, mapa i condicions actuals a Catalunya";
 export const size = { width: 1200, height: 630 };
@@ -19,15 +20,7 @@ export default function OpenGraphImage() {
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <div
-          style={{
-            width: 60,
-            height: 60,
-            borderRadius: 30,
-            background: "#d69b43",
-            display: "flex",
-          }}
-        />
+        <BrandMark size={60} aria-hidden="true" />
         <div style={{ display: "flex", fontSize: 29, letterSpacing: 7 }}>
           BOLETS · ATLES
         </div>

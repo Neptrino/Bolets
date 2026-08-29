@@ -8,6 +8,7 @@
 @import "./styles/ceps-and-guide-hubs.css";
 @import "./styles/territorial-responsive.css";
 @import "./styles/site-shell.css";
+@import "./styles/home-findings.css";
 @import "./styles/site-components.css";
 @import "./styles/theme-foundations.css";
 @import "./styles/species-field-guide.css";
@@ -30,3 +31,4 @@
 @import "./styles/map-workspace.css";
 @import "./styles/culinary-dossier.css";
 @import "./styles/offline.css";
+@import "./styles/findings.css";

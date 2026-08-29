@@ -31,7 +31,7 @@ test("keeps the map reading guide balanced across modes and viewports", async ({
     page.locator(".map-reading-guide").evaluate((guide) => {
       const copy = guide.querySelector(".map-reading-copy");
       if (!copy) throw new Error("Map reading copy is missing");
-      const rectangles = Array.from(copy.children).map((paragraph) => {
+      const rectangles = Array.from(copy.querySelectorAll(":scope > p")).map((paragraph) => {
         const bounds = paragraph.getBoundingClientRect();
         return { left: bounds.left, top: bounds.top, width: bounds.width };
       });
@@ -46,6 +46,11 @@ test("keeps the map reading guide balanced across modes and viewports", async ({
   await page.goto(
     "/map?species=amanita-caesarea&region=prelitoral&mode=prediction",
   );
+  await expect(
+    page.locator(".map-reading-guide").getByRole("link", {
+      name: "Entendre el mètode",
+    }),
+  ).toHaveAttribute("href", "/metode");
   const desktopPrediction = await readGuideLayout();
   expect(desktopPrediction.rectangles).toHaveLength(4);
   expect(

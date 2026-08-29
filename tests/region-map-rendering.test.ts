@@ -22,7 +22,7 @@ describe("prediction map rendering", () => {
   it("keeps an explicit loading overlay visible while replacement cells load", () => {
     expect(source).toContain('className="prediction-map-loading"');
     expect(source).toContain("Actualitzant la predicció…");
-    expect(source).toContain('aria-busy={cellState.status === "loading"}');
+    expect(source).toContain('ariaBusy={cellState.status === "loading"}');
   });
 
   it("loads historical evidence separately from the primary habitat grid", () => {

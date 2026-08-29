@@ -528,6 +528,12 @@
   justify-self: end;
   white-space: nowrap;
 }
+.map-reading-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
 .prediction-map-legend {
   /* Span the reading-guide copy grid so the five bands fit on one row. */
   grid-column: 1 / -1;

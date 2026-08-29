@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
+import { BrandMark } from "@/components/brand-mark";
 import { catalogueSpecies } from "@/data/catalogue";
 import {
   toSpeciesFieldCardProfile,
@@ -46,17 +47,6 @@ const statusColours: Record<EdibilityStatus, string> = {
   dangerously_toxic: "#7d2730",
   unknown: "#77756d",
 };
-
-function BrandMark() {
-  return (
-    <svg width="54" height="54" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-      <rect x="2" y="2" width="60" height="60" rx="20" fill="#3b3b3b" />
-      <path d="M13 31.1C14.8 19.5 21.8 13 32 13s17.2 6.5 19 18.1c.2 1.4-.9 2.6-2.3 2.6H15.3c-1.4 0-2.5-1.2-2.3-2.6Z" fill="#f28a2e" />
-      <path d="M26.1 33.7h11.8l3 15.8c.3 1.4-.8 2.7-2.2 2.7H25.3c-1.4 0-2.5-1.3-2.2-2.7l3-15.8Z" fill="#f2ebd5" />
-      <path d="M21.5 51.2c6.7-2.2 13.7-2.2 21 0" stroke="#f2a766" strokeWidth="2.4" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 function Fact({ label, value }: { label: string; value: string }) {
   return (
@@ -112,7 +102,7 @@ function FieldCardArtwork({
         <img src={imageDataUrl} width="1080" height="500" alt="" style={{ position: "absolute", inset: 0, width: 1080, height: 500, objectFit: "cover", objectPosition: "center 48%" }} />
         <div style={{ display: "flex", position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(15,24,17,0.2) 0%, rgba(15,24,17,0.18) 38%, rgba(15,24,17,0.94) 100%)" }} />
         <div style={{ display: "flex", position: "absolute", top: 38, left: 46, alignItems: "center", gap: 14 }}>
-          <BrandMark />
+          <BrandMark size={54} aria-hidden="true" />
           <span style={{ color: "#fff7e8", fontSize: 24, fontWeight: 850, letterSpacing: "0.12em" }}>BOLETS ATLES</span>
         </div>
         <div style={{ display: "flex", position: "absolute", top: 42, right: 46, minHeight: 49, alignItems: "center", padding: "0 20px", border: "2px solid rgba(255,250,240,0.74)", borderRadius: 999, color: "#fffaf0", background: colour, fontSize: 21, fontWeight: 850, letterSpacing: "0.04em" }}>

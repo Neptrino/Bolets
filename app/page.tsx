@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowDown, ArrowUpRight, BookOpenText, CloudRain, Gauge, Leaf, Snowflake, Sparkles, Sun, Trees } from "lucide-react";
 import { SpeciesCard } from "@/components/species-card";
+import { HomeFindingsFeature } from "@/components/home-findings-feature";
 import { StaticMediaImage } from "@/components/static-media-image";
 import { getFeaturedSeasonalSpecies } from "@/data/species";
 import { catalogueSpecies } from "@/data/catalogue";
@@ -55,6 +56,7 @@ export default function HomePage() {
         <Link href="/quan-surten-els-bolets-despres-de-ploure"><CloudRain size={19} /><span><strong>Després de ploure</strong><small>Com interpretar la resposta de cada espècie</small></span><ArrowUpRight size={16} /></Link>
       </nav>
       <section className="home-cards page-width"><div className="section-topline"><div><p className="eyebrow">Comenceu aquí</p><h2>Espècies de temporada</h2></div><Link href="/bolets" className="text-link">Veure les {catalogueSpecies.length} fitxes <ArrowUpRight size={16} /></Link></div><div className="species-grid featured-grid">{featuredSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} />)}</div></section>
+      <HomeFindingsFeature />
       <section className="home-map-callout"><div className="page-width"><div className="home-map-callout-copy"><p className="eyebrow light">Lectura del territori</p><h2>Una predicció,<br />no una promesa.</h2><p>És una lectura de la compatibilitat entre cada espècie i les condicions ambientals actuals. No indica on hi ha bolets ni garanteix trobar-ne.</p></div><div className="home-map-callout-action"><Link href="/map" className="button light-button">Veure el mapa <ArrowUpRight size={17} /></Link></div><div className="home-map-callout-art" aria-hidden="true"><StaticMediaImage src="/media/generated/home-map-callout-forest-floor.webp" alt="" fill sizes="(max-width: 900px) 0px, 59vw" /></div></div></section>
     </>
   );

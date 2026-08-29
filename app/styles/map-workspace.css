@@ -11,12 +11,14 @@
   flex-basis: 32px;
 }
 .primary-nav a,
-.header-map-link {
+.header-map-link,
+.header-account-link {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
 }
-.header-map-link {
+.header-map-link,
+.header-account-link {
   justify-content: center;
   padding: 0 15px;
 }
@@ -71,8 +73,15 @@
   background: #f2d6b5;
   color: var(--bark);
 }
+.mobile-nav-panel .mobile-nav-account {
+  gap: 9px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid rgba(89, 53, 37, 0.14);
+  border-radius: 8px 8px 3px 3px;
+  color: var(--moss);
+}
 
-@media (max-width: 860px) {
+@media (max-width: 1180px) {
   .primary-nav {
     display: none;
   }
@@ -394,7 +403,7 @@
   gap: 22px 28px;
   padding-left: 36px;
 }
-.map-reading-guide-prediction .text-link {
+.map-reading-guide-prediction .map-reading-links {
   grid-area: link;
   align-self: center;
   justify-self: end;
@@ -427,8 +436,9 @@
   .map-reading-guide-prediction .map-reading-copy > p:nth-child(3):last-child {
     grid-column: auto;
   }
-  .map-reading-guide-prediction .text-link {
+  .map-reading-guide-prediction .map-reading-links {
     align-self: auto;
+    align-items: flex-start;
     justify-self: start;
   }
 }
@@ -483,6 +493,20 @@
     box-shadow: none;
   }
   .header-map-link span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .header-account-link {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+  }
+  .header-account-link span {
     position: absolute;
     width: 1px;
     height: 1px;

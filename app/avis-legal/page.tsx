@@ -10,7 +10,7 @@ const LEGAL_OWNER = "Neptrino Consulting SL";
 
 export const metadata: Metadata = {
   title: "Avís legal, privadesa i condicions d’ús",
-  description: "Titularitat del lloc, limitació de responsabilitat sobre la identificació de bolets, i com tractem les dades: sense galetes ni comptes d’usuari.",
+  description: "Titularitat, limitació de responsabilitat i tractament de comptes, troballes, fotografies i ubicacions.",
   alternates: { canonical: "/avis-legal" },
   openGraph: {
     url: "/avis-legal",
@@ -57,17 +57,21 @@ export default function LegalPage() {
       <section className="seo-guide-section" id="privadesa">
         <p className="eyebrow">Privadesa</p>
         <h2>Quines dades tractem</h2>
-        <p>{SITE_NAME} no té comptes d’usuari, no fa servir galetes i no mostra cap bàner de consentiment perquè no hi ha res a consentir. En concret:</p>
-        <p><strong>Mesura d’audiència.</strong> Fem servir Vercel Analytics i Speed Insights, sense galetes ni identificadors persistents: les visites es comptabilitzen de manera agregada i l’adreça IP es tracta de forma transitòria per servir la pàgina i descartar trànsit automatitzat. No hi ha seguiment entre llocs ni perfils publicitaris.</p>
-        <p><strong>Geolocalització.</strong> Si autoritzeu la ubicació al mapa, la posició es fa servir només al vostre dispositiu per centrar la vista. No s’envia ni s’emmagatzema en cap servidor del lloc.</p>
-        <p><strong>Preferències locals.</strong> Algunes preferències (com el fons de mapa triat) i les dades per al funcionament sense connexió es guarden al vostre navegador (localStorage i memòria cau). Podeu esborrar-les en qualsevol moment des de la configuració del navegador.</p>
-        <p>Per exercir qualsevol dret sobre les vostres dades o fer qualsevol consulta de privadesa, escriviu a <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+        <p><strong>Compte.</strong> Si feu servir el quadern de troballes, tractem el correu electrònic per enviar codis d’accés d’un sol ús i mantenir la sessió. El correu no es publica. La base jurídica és prestar el servei que heu demanat. Podeu crear un àlies opcional; només apareix en les troballes on l’activeu expressament.</p>
+        <p><strong>Troballes i ubicació.</strong> El formulari pot recollir l’espècie proposada, el moment, fotografies, quantitat, notes i coordenades. Abans de desar-les podeu triar entre conservar el punt exacte per al vostre mapa privat o descartar-lo i conservar només la casella pública de 10 × 10 km. El punt exacte, l’hora, la quantitat, les notes i les fotos privades no formen part de cap resposta pública. En públic es mostra el dia, l’espècie proposada, la casella de 10 km i només les fotos i l’àlies que hàgiu autoritzat.</p>
+        <p><strong>Funcionament sense connexió.</strong> Una troballa no sincronitzada —incloses les fotografies i, si ho heu triat, les coordenades— es desa a la base de dades local del navegador. Quan torna la connexió, intentem sincronitzar-la automàticament després que inicieu sessió. Podeu eliminar aquestes dades esborrant les dades del lloc al navegador. Les pujades temporals incompletes s’eliminen del servei d’emmagatzematge després del període operatiu de neteja.</p>
+        <p><strong>Publicació i avisos.</strong> Publicar és opcional i es pot revertir. La identificació que es mostra és el nom indicat per la persona que publica la troballa i no implica cap verificació. Els avisos de moderació es tracten per protegir les persones usuàries i resoldre abusos.</p>
+        <p><strong>Conservació i eliminació.</strong> Les dades privades es conserven fins que elimineu la troballa o el compte. En eliminar el compte s’esborren les troballes privades, les fotografies, les notes i les coordenades exactes. Les troballes que ja havíeu fet públiques poden conservar-se anonimitzades, sense compte ni àlies, només com a observació generalitzada de 10 km. Una dada eliminada pot romandre temporalment en còpies de seguretat xifrades fins que completi el cicle ordinari de retenció; aquestes còpies tenen accés restringit i no s’utilitzen per restaurar selectivament comptes eliminats.</p>
+        <p><strong>Mesura d’audiència.</strong> Fem servir una instal·lació pròpia d’Umami sense galetes, respectant «Do Not Track» i sense recollir la consulta ni el fragment de l’URL. Les pàgines d’accés, compte, quadern privat, moderació i captura de troballes estan excloses de l’analítica. No hi ha seguiment entre llocs ni perfils publicitaris.</p>
+        <p><strong>Preferències i seguretat.</strong> Algunes preferències i les respostes necessàries per al funcionament sense connexió es guarden al navegador. El servidor tracta temporalment l’adreça IP i registres tècnics imprescindibles per servir el lloc, limitar abusos i investigar incidències.</p>
+        <p>Podeu accedir, rectificar, suprimir, limitar o oposar-vos al tractament i sol·licitar la portabilitat quan correspongui des del compte o escrivint a <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. També podeu presentar una reclamació davant l’autoritat de protecció de dades competent.</p>
       </section>
 
       <section className="seo-guide-section" id="continguts">
         <p className="eyebrow">Continguts i llicències</p>
         <h2>Fonts, fotografies i atribucions</h2>
         <p>Les fotografies d’espècies provenen de fonts amb llicència compatible i mantenen l’atribució al costat de cada imatge. Les dades meteorològiques i cartogràfiques s’atribueixen als seus proveïdors (Meteocat XEMA sota CC BY 4.0, Open-Meteo, ICGC, SoilGrids) a les pàgines on s’utilitzen. Si considereu que algun contingut vulnera drets de tercers, contacteu amb el titular i es revisarà.</p>
+        <p>Quan marqueu una fotografia de troballa com a pública, confirmeu que l’heu feta o que teniu permís per publicar-la, que no vulnera la intimitat de terceres persones i autoritzeu {SITE_NAME} a mostrar-la mentre la troballa sigui pública. Podeu revocar-ne la publicació des del vostre quadern. No pugeu rostres, matrícules, menors ni altres dades personals innecessàries.</p>
       </section>
     </PageShell>
   );
