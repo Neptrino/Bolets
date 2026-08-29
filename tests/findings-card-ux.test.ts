@@ -12,7 +12,9 @@ describe("public finding card interactions", () => {
 
   it("keeps the identification explanation at section level instead of repeating it on every card", () => {
     expect(findingCard).not.toContain("Identificació indicada per qui l’ha trobada");
+    expect(findingCard).toContain('className="finding-card-author"');
     expect(findingCard).toContain("Compartida per");
+    expect(findingCard).not.toContain("<p>{finding.alias");
   });
 
   it("keeps generic location privacy copy out of each card", () => {
