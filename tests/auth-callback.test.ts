@@ -37,4 +37,23 @@ describe("OAuth callback", () => {
 
     expect(response.headers.get("location")).toBe("https://bolets.app/acces?retorn=%2Fcompte&error=oauth");
   });
+
+  it("uses the trusted forwarded origin behind the production proxy", async () => {
+    exchangeCodeForSession.mockResolvedValue({ error: new Error("invalid code") });
+    const response = await GET(new NextRequest(
+      "https://0.0.0.0:3000/auth/callback?code=bad&retorn=%2Fcompte",
+      { headers: { "x-forwarded-host": "bolets.app", "x-forwarded-proto": "https" } },
+    ));
+
+    expect(response.headers.get("location")).toBe("https://bolets.app/acces?retorn=%2Fcompte&error=oauth");
+  });
+
+  it("does not trust an arbitrary forwarded host", async () => {
+    const response = await GET(new NextRequest(
+      "https://0.0.0.0:3000/auth/callback?code=abc&retorn=%2Fcompte",
+      { headers: { "x-forwarded-host": "example.com", "x-forwarded-proto": "https" } },
+    ));
+
+    expect(response.headers.get("location")).toBe("https://bolets.app/compte");
+  });
 });
