@@ -14,4 +14,9 @@ describe("public finding card interactions", () => {
     expect(findingCard).not.toContain("Identificació indicada per qui l’ha trobada");
     expect(findingCard).toContain("Compartida per");
   });
+
+  it("keeps generic location privacy copy out of each card", () => {
+    expect(findingCard).toContain("<time dateTime={finding.observedOn}");
+    expect(findingCard).not.toContain("Casella de 10 × 10 km");
+  });
 });
