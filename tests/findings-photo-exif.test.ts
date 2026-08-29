@@ -176,7 +176,9 @@ describe("finding photo capture date metadata", () => {
   });
 
   it("accepts only dates in the reporting window", () => {
-    const now = new Date("2026-08-28T10:00:00+02:00");
+    // EXIF timestamps do not include a timezone, so compare them against a
+    // local wall-clock value regardless of the timezone running the tests.
+    const now = new Date(2026, 7, 28, 10, 0, 0);
     expect(isFindingDateTime("2026-08-28T09:59:59", now)).toBe(true);
     expect(isFindingDateTime("2026-08-28T10:00:01", now)).toBe(false);
     expect(isFindingDateTime("2005-08-28T10:00:00", now)).toBe(false);
