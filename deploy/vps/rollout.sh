@@ -13,6 +13,7 @@ observability_override_file="$app_dir/deploy/vps/compose.observability.yaml"
 umami_env_file=${BOLETS_UMAMI_ENV_FILE:-/opt/bolets/secrets/umami.env}
 status_env_file=${BOLETS_STATUS_ENV_FILE:-/opt/bolets/secrets/status.env}
 observability_env_file=${BOLETS_OBSERVABILITY_ENV_FILE:-/opt/bolets/secrets/observability.env}
+supabase_env_file="$supabase_dir/.env"
 
 if [ ! -f "$app_dir/Dockerfile" ] || [ ! -f "$supabase_dir/docker-compose.yml" ] ||
    [ ! -f "$supabase_dir/.env" ] || [ ! -f "$override_file" ] ||
@@ -30,6 +31,64 @@ fi
 if find "$status_env_file" -perm /077 -print -quit | grep -q .; then
   echo "The status environment file must not be accessible by group or other users" >&2
   exit 77
+fi
+
+read_supabase_env() {
+  key=$1
+  count=$(grep -c "^${key}=" "$supabase_env_file" || true)
+  if [ "$count" -ne 1 ]; then
+    echo "The Supabase environment must contain exactly one ${key} entry" >&2
+    exit 78
+  fi
+  sed -n "s/^${key}=//p" "$supabase_env_file"
+}
+
+app_domain=$(read_supabase_env APP_DOMAIN)
+api_domain=$(read_supabase_env API_DOMAIN)
+site_url=$(read_supabase_env SITE_URL)
+api_external_url=$(read_supabase_env API_EXTERNAL_URL)
+redirect_urls=$(read_supabase_env ADDITIONAL_REDIRECT_URLS)
+
+if [ "$site_url" != "https://${app_domain}" ]; then
+  echo "SITE_URL must match the production application domain" >&2
+  exit 78
+fi
+
+if [ "$api_external_url" != "https://${api_domain}/auth/v1" ]; then
+  echo "API_EXTERNAL_URL must include the production /auth/v1 path" >&2
+  exit 78
+fi
+
+for callback_url in "$site_url/auth/callback" "https://www.${app_domain}/auth/callback"; do
+  case ",$redirect_urls," in
+    *",$callback_url,"*) ;;
+    *)
+      echo "ADDITIONAL_REDIRECT_URLS must allow $callback_url" >&2
+      exit 78
+      ;;
+  esac
+done
+
+if [ "$(read_supabase_env DISABLE_SIGNUP)" != "false" ]; then
+  echo "DISABLE_SIGNUP must be false for Google and passwordless accounts" >&2
+  exit 78
+fi
+
+if [ "$(read_supabase_env ENABLE_EMAIL_SIGNUP)" != "true" ]; then
+  echo "ENABLE_EMAIL_SIGNUP must be true for passwordless accounts" >&2
+  exit 78
+fi
+
+google_enabled=$(read_supabase_env GOOGLE_ENABLED)
+if [ "$google_enabled" = "true" ]; then
+  if [ -z "$(read_supabase_env GOOGLE_CLIENT_ID)" ] ||
+     [ -z "$(read_supabase_env GOOGLE_SECRET)" ]; then
+    echo "Google OAuth credentials are required when GOOGLE_ENABLED=true" >&2
+    exit 78
+  fi
+elif [ "$google_enabled" != "false" ]; then
+  echo "GOOGLE_ENABLED must be true or false" >&2
+  exit 78
 fi
 
 set -a

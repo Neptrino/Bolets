@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 
 const localConfig = readFileSync("supabase/config.toml", "utf8");
 const productionCompose = readFileSync("deploy/vps/compose.yaml", "utf8");
+const productionEnvExample = readFileSync("deploy/vps/bolets.env.example", "utf8");
+const productionRollout = readFileSync("deploy/vps/rollout.sh", "utf8");
 
 describe("passwordless auth configuration", () => {
   it("binds local passkeys to the localhost app origin", () => {
@@ -23,5 +25,16 @@ describe("passwordless auth configuration", () => {
       'secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET)"',
     );
     expect(productionCompose).toContain("GOTRUE_EXTERNAL_GOOGLE_ENABLED: ${GOOGLE_ENABLED:-false}");
+  });
+
+  it("keeps production account creation and exact OAuth callbacks enabled", () => {
+    expect(productionEnvExample).toContain("DISABLE_SIGNUP=false");
+    expect(productionEnvExample).toContain("ENABLE_EMAIL_SIGNUP=true");
+    expect(productionEnvExample).toContain(
+      "ADDITIONAL_REDIRECT_URLS=https://www.bolets.app,https://bolets.app/auth/callback,https://www.bolets.app/auth/callback",
+    );
+    expect(productionRollout).toContain("DISABLE_SIGNUP must be false");
+    expect(productionRollout).toContain("ADDITIONAL_REDIRECT_URLS must allow");
+    expect(productionRollout).toContain("API_EXTERNAL_URL must include the production /auth/v1 path");
   });
 });
