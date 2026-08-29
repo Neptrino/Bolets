@@ -25,6 +25,24 @@ describe("OAuth callback", () => {
     expect(response.headers.get("cache-control")).toBe("private, no-store");
   });
 
+  it("marks a newly created OAuth account for one anonymous signup goal", async () => {
+    exchangeCodeForSession.mockResolvedValue({
+      data: {
+        user: {
+          created_at: "2026-08-29T18:00:00.000Z",
+          last_sign_in_at: "2026-08-29T18:00:05.000Z",
+        },
+      },
+      error: null,
+    });
+
+    const response = await GET(new NextRequest(
+      "https://bolets.app/auth/callback?code=new-user&retorn=%2Fcompte",
+    ));
+
+    expect(response.cookies.get("bolets_signup_goal")?.value).toBe("1");
+  });
+
   it("does not accept an external return destination", async () => {
     const response = await GET(new NextRequest("https://bolets.app/auth/callback?code=abc&retorn=https%3A%2F%2Fexample.com"));
 

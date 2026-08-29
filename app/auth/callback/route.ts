@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { resolveAccessDestination } from "@/src/lib/findings/access-destination";
 import { SITE_URL } from "@/src/lib/seo";
 import { createSupabaseServerClient } from "@/src/lib/supabase/server";
+import { isNewAuthUser, UMAMI_SIGNUP_COOKIE } from "@/src/lib/umami-goals";
 
 const trustedOrigins = new Set([
   SITE_URL,
@@ -33,10 +34,19 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const client = await createSupabaseServerClient();
-    const { error } = await client.auth.exchangeCodeForSession(code);
+    const { data, error } = await client.auth.exchangeCodeForSession(code);
     if (!error) {
       const response = NextResponse.redirect(new URL(destination, origin));
       response.headers.set("Cache-Control", "private, no-store");
+      if (isNewAuthUser(data?.user)) {
+        response.cookies.set(UMAMI_SIGNUP_COOKIE, "1", {
+          httpOnly: false,
+          maxAge: 300,
+          path: "/",
+          sameSite: "lax",
+          secure: origin.startsWith("https://"),
+        });
+      }
       return response;
     }
   }

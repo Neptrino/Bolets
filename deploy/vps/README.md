@@ -155,9 +155,10 @@ a time.
 Copy `deploy/vps/umami.env.example` to
 `/opt/bolets/secrets/umami.env`, generate the three service secrets and the
 administrator password independently with `openssl rand -hex 32`, replace every
-placeholder, and run `chmod 600` on the file. The website UUID is public and
-versioned so the application and idempotent Umami bootstrap agree before the
-first request is collected.
+placeholder, choose the public-session heatmap sample rate, and run `chmod 600`
+on the file. The default records click and scroll heatmaps for 15% of eligible
+public sessions. The website UUID is public and versioned so the application
+and idempotent Umami bootstrap agree before the first request is collected.
 
 Create the independent private-status credential before the first rollout that
 contains the operations page:
@@ -339,7 +340,18 @@ After this first rollout succeeds, add the DNS-only
 password stored in `/opt/bolets/secrets/umami.env`, then enable two-factor
 authentication. The application loads Umami once from its root layout, accepts
 only the production Bolets hostnames, respects Do Not Track, and excludes query
-strings and fragments so map state is not collected.
+strings and fragments so map state is not collected. The bootstrap enables
+click and scroll heatmaps but keeps session replay disabled. A browser-side
+fail-closed filter strips query strings and fragments from heatmap events,
+rejects recorder payloads on private routes, and drops any replay payload even
+if the Umami setting is changed manually. The same bootstrap creates the
+`User signup`, `Finding added`, `Infographic downloaded` and `Infographic
+shared` saved goal reports. Their allowlisted events contain only the conversion
+name and a neutral virtual path; they do not attach an account identifier,
+species, finding data or infographic metadata. It also creates `Signup
+completion` and `Finding sync completion` funnels from the anonymous start and
+completion events. Core Web Vitals are collected only for analytics-eligible
+public pages through Umami's performance report.
 
 The private operational dashboard is available at
 `https://bolets.app/admin/status`. The application presents a normal login page

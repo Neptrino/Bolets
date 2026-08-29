@@ -16,6 +16,7 @@ import {
 import { prepareFindingPhoto } from "@/src/lib/findings/photo-client";
 import { saveOutboxFinding } from "@/src/lib/findings/outbox";
 import { syncFindingOutbox } from "@/src/lib/findings/sync-client";
+import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 import { FindingLocationPreview } from "./finding-location-preview";
 
 type PreparedPhoto = LocalFindingPhoto & {
@@ -284,6 +285,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
         error: null,
         updatedAt: new Date().toISOString(),
       });
+      queueUmamiEvent(UMAMI_EVENTS.findingDraftSaved);
       const result = await syncFindingOutbox();
       if (result.pending === 0) {
         setMessage({ text: "Troballa sincronitzada. Ja la tens al teu quadern.", tone: "success" });

@@ -5,6 +5,7 @@ import "./globals.css";
 import "./seo-content.css";
 import { RegisterServiceWorker } from "@/components/register-service-worker";
 import { FindingSyncAgent } from "@/components/findings/finding-sync-agent";
+import { UmamiAnalyticsAgent } from "@/components/umami-analytics-agent";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { JsonLd } from "@/components/json-ld";
@@ -15,6 +16,7 @@ import {
   SITE_NAME,
   SITE_URL,
 } from "@/src/lib/seo";
+import { umamiPrivacyGuard } from "@/src/lib/umami-privacy";
 
 const nunitoSans = Nunito_Sans({
   subsets: ["latin"],
@@ -104,7 +106,6 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
-  const umamiPrivacyGuard = `window.boletsUmamiBeforeSend=function(type,payload){var blocked=['/admin','/acces','/compte','/les-meves-troballes','/moderacio','/troballes/nova'];try{var path=new URL(payload&&payload.url||window.location.href,window.location.origin).pathname;if(blocked.some(function(item){return path===item||path.indexOf(item+'/')===0}))return false}catch(error){var current=window.location.pathname;if(blocked.some(function(item){return current===item||current.indexOf(item+'/')===0}))return false}return payload}`;
 
-  return <html lang="ca" className={nunitoSans.variable} data-scroll-behavior="smooth"><body><JsonLd data={{ "@context": "https://schema.org", "@graph": [{ "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: SITE_URL, name: SITE_NAME, description: DEFAULT_DESCRIPTION, inLanguage: "ca" }, { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon.svg`, parentOrganization: { "@type": "Organization", name: "Neptrino Consulting SL" } }, { "@type": "Organization", "@id": `${SITE_URL}/#editorial-team`, name: editorialTeam.name, url: editorialTeam.url, parentOrganization: { "@id": `${SITE_URL}/#organization` } }, { "@type": "Person", "@id": siteAuthor.entityId, name: siteAuthor.name, url: siteAuthor.url, jobTitle: siteAuthor.role, description: siteAuthor.summary, worksFor: { "@id": `${SITE_URL}/#organization` } }] }} /><SiteHeader /><main>{children}</main><SiteFooter /><RegisterServiceWorker /><FindingSyncAgent />{umamiWebsiteId ? <><Script id="bolets-umami-privacy" strategy="beforeInteractive">{umamiPrivacyGuard}</Script><Script src="https://analytics.bolets.app/script.js" data-website-id={umamiWebsiteId} data-domains="bolets.app,www.bolets.app" data-do-not-track="true" data-exclude-search="true" data-exclude-hash="true" data-before-send="boletsUmamiBeforeSend" strategy="afterInteractive" /></> : null}</body></html>;
+  return <html lang="ca" className={nunitoSans.variable} data-scroll-behavior="smooth"><body><JsonLd data={{ "@context": "https://schema.org", "@graph": [{ "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: SITE_URL, name: SITE_NAME, description: DEFAULT_DESCRIPTION, inLanguage: "ca" }, { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon.svg`, parentOrganization: { "@type": "Organization", name: "Neptrino Consulting SL" } }, { "@type": "Organization", "@id": `${SITE_URL}/#editorial-team`, name: editorialTeam.name, url: editorialTeam.url, parentOrganization: { "@id": `${SITE_URL}/#organization` } }, { "@type": "Person", "@id": siteAuthor.entityId, name: siteAuthor.name, url: siteAuthor.url, jobTitle: siteAuthor.role, description: siteAuthor.summary, worksFor: { "@id": `${SITE_URL}/#organization` } }] }} /><SiteHeader /><main>{children}</main><SiteFooter /><RegisterServiceWorker /><FindingSyncAgent />{umamiWebsiteId ? <><UmamiAnalyticsAgent /><Script id="bolets-umami-privacy" strategy="beforeInteractive">{umamiPrivacyGuard}</Script><Script id="bolets-umami" src="https://analytics.bolets.app/script.js" data-website-id={umamiWebsiteId} data-domains="bolets.app,www.bolets.app" data-do-not-track="true" data-exclude-search="true" data-exclude-hash="true" data-before-send="boletsUmamiBeforeSend" data-performance="true" strategy="afterInteractive" /><Script id="bolets-umami-heatmaps" src="https://analytics.bolets.app/recorder.js" data-website-id={umamiWebsiteId} strategy="afterInteractive" /></> : null}</body></html>;
 }

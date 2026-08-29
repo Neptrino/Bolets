@@ -5,6 +5,7 @@ import { publicSupabaseConfig } from "@/src/lib/supabase/config";
 import { createSupabaseBrowserClient } from "@/src/lib/supabase/client";
 import { deleteOutboxFinding, listOutboxFindings, updateOutboxFinding } from "@/src/lib/findings/outbox";
 import type { FindingOutboxRecord, FindingPhotoUpload } from "@/src/lib/findings/types";
+import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
 function uploadPhoto(blob: Blob, path: string, accessToken: string) {
   const { url } = publicSupabaseConfig();
@@ -46,6 +47,7 @@ async function syncRecord(record: FindingOutboxRecord, accessToken: string, user
   const finalize = await fetch(`/api/findings/${findingId}/finalize`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ photos }) });
   const finalizeBody = await finalize.json();
   if (!finalize.ok) throw new Error(finalizeBody.error ?? "No s’ha pogut publicar la troballa.");
+  queueUmamiEvent(UMAMI_EVENTS.findingAdded);
   await deleteOutboxFinding(record.draft.clientReportId);
 }
 

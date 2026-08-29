@@ -1,4 +1,5 @@
-import { Download, ExternalLink, Images, ShieldAlert } from "lucide-react";
+import { Images, ShieldAlert } from "lucide-react";
+import { InfographicActions } from "@/components/infographic-actions";
 import { StaticMediaImage } from "@/components/static-media-image";
 
 const posterPath = "/downloads/infografies/bolets-catalunya-infografia.png";
@@ -37,14 +38,7 @@ export function CatalogueInfographic({ speciesCount }: { speciesCount: number })
           <li><strong>A3</strong><span>alta resolució</span></li>
         </ul>
 
-        <div className="catalogue-infographic-actions">
-          <a className="button light-button" href={posterPath} download>
-            <Download size={17} aria-hidden="true" /> Baixar el pòster PNG
-          </a>
-          <a className="text-link" href={posterPath} target="_blank" rel="noreferrer">
-            Veure a mida completa <ExternalLink size={16} aria-hidden="true" />
-          </a>
-        </div>
+        <InfographicActions posterPath={posterPath} />
 
         <div className="catalogue-infographic-safety">
           <ShieldAlert size={18} aria-hidden="true" />

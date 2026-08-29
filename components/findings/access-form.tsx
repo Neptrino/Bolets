@@ -6,6 +6,7 @@ import { useState } from "react";
 import { resolveAccessDestination } from "@/src/lib/findings/access-destination";
 import { syncFindingOutbox } from "@/src/lib/findings/sync-client";
 import { createSupabaseBrowserClient } from "@/src/lib/supabase/client";
+import { isNewAuthUser, queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
 type AccessAction = "google" | "passkey" | "email" | "code";
 
@@ -48,14 +49,22 @@ export function AccessForm({ googleEnabled }: { googleEnabled: boolean }) {
     setMessage(null);
     const callbackUrl = new URL("/auth/callback", window.location.origin);
     callbackUrl.searchParams.set("retorn", destination);
-    const { error } = await createSupabaseBrowserClient().auth.signInWithOAuth({
+    const { data, error } = await createSupabaseBrowserClient().auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: callbackUrl.toString() },
+      options: { redirectTo: callbackUrl.toString(), skipBrowserRedirect: true },
     });
     if (error) {
       setMessage("No hem pogut iniciar l’accés amb Google. Torna-ho a provar o entra amb el correu.");
       setBusy(null);
+      return;
     }
+    if (!data.url) {
+      setMessage("No hem pogut obrir l’accés amb Google. Torna-ho a provar o entra amb el correu.");
+      setBusy(null);
+      return;
+    }
+    queueUmamiEvent(UMAMI_EVENTS.signupStarted);
+    window.location.assign(data.url);
   };
 
   const signInWithPasskey = async () => {
@@ -84,14 +93,17 @@ export function AccessForm({ googleEnabled }: { googleEnabled: boolean }) {
     });
     setBusy(null);
     if (error) setMessage("No hem pogut enviar el codi. Torna-ho a provar d’aquí a uns minuts.");
-    else setStep("code");
+    else {
+      queueUmamiEvent(UMAMI_EVENTS.signupStarted);
+      setStep("code");
+    }
   };
 
   const verifyCode = async (event: React.FormEvent) => {
     event.preventDefault();
     setBusy("code");
     setMessage(null);
-    const { error } = await createSupabaseBrowserClient().auth.verifyOtp({
+    const { data, error } = await createSupabaseBrowserClient().auth.verifyOtp({
       email,
       token: code.replace(/\s/g, ""),
       type: "email",
@@ -101,6 +113,7 @@ export function AccessForm({ googleEnabled }: { googleEnabled: boolean }) {
       setBusy(null);
       return;
     }
+    if (isNewAuthUser(data.user)) queueUmamiEvent(UMAMI_EVENTS.userSignup);
     await finishSignIn();
   };
 

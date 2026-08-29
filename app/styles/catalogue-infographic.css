@@ -112,6 +112,29 @@
   color: #f4d3af;
 }
 
+.catalogue-infographic-actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.catalogue-infographic-actions .infographic-share-button {
+  border-color: rgba(255, 248, 233, 0.45);
+  background: transparent;
+  color: #fff8e9;
+}
+
+.catalogue-infographic-actions .infographic-share-button:hover:not(:disabled) {
+  border-color: #fff8e9;
+  background: rgba(255, 248, 233, 0.1);
+}
+
+.catalogue-infographic-action-status {
+  flex-basis: 100%;
+  min-height: 1.4em;
+  color: #cdd6c8;
+  font-size: var(--text-xs);
+}
+
 .catalogue-infographic-safety {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
