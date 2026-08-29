@@ -7,6 +7,7 @@ import { RegionMapBasemapControl } from "@/components/region-map/basemap-control
 import { RegionMapControlPanel } from "@/components/region-map/control-panel";
 import { RegionMapFrame } from "@/components/region-map/frame";
 import { createRegionMap } from "@/components/region-map/map-instance";
+import { FormSelect } from "@/components/ui/form-select";
 import {
   MapLayerControl,
   basemapStyle,
@@ -225,22 +226,16 @@ export function PublicFindingsMap({ species }: { species: CatalogueSpecies[] }) 
         aria-hidden
       />
       <div className="findings-map-toolbar">
-        <select
+        <FormSelect
           aria-label="Filtra el mapa per espècie"
           value={speciesId}
-          onChange={(event) => {
+          options={[{ value: "all", label: "Totes les espècies" }, ...species.map((item) => ({ value: item.speciesId, label: item.identity.commonName }))]}
+          onValueChange={(value) => {
             selectedCellId.current = null;
             setSelected(null);
-            setSpeciesId(event.target.value);
+            setSpeciesId(value);
           }}
-        >
-          <option value="all">Totes les espècies</option>
-          {species.map((item) => (
-            <option value={item.speciesId} key={item.speciesId}>
-              {item.identity.commonName}
-            </option>
-          ))}
-        </select>
+        />
       </div>
       <RegionMapControlPanel expanded={expanded} id={layerControlsId} onExpandedChange={toggle}>
         <RegionMapBasemapControl

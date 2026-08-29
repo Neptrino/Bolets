@@ -17,6 +17,7 @@ import { prepareFindingPhoto } from "@/src/lib/findings/photo-client";
 import { saveOutboxFinding } from "@/src/lib/findings/outbox";
 import { syncFindingOutbox } from "@/src/lib/findings/sync-client";
 import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
+import { FormSelect } from "@/components/ui/form-select";
 import { FindingLocationPreview } from "./finding-location-preview";
 
 type PreparedPhoto = LocalFindingPhoto & {
@@ -78,7 +79,7 @@ function getInitialClientDateTime() {
 
 export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) {
   const formRef = useRef<HTMLFormElement>(null);
-  const speciesSelectRef = useRef<HTMLSelectElement>(null);
+  const speciesSelectRef = useRef<HTMLButtonElement>(null);
   const initialDateTime = useSyncExternalStore(
     subscribeToInitialDateTime,
     getInitialClientDateTime,
@@ -258,6 +259,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
     event.preventDefault();
     if (!speciesId || latitude === null || longitude === null) {
       setMessage({ text: "Tria l’espècie i desa una ubicació abans de continuar.", tone: "danger" });
+      if (!speciesId) speciesSelectRef.current?.focus();
       return;
     }
     setBusy(true);
@@ -331,14 +333,11 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
       <div className="finding-field-card">
         <section className="finding-step">
           <h2>1. Què has trobat?</h2>
-          <label className="finding-field">
-            Espècie proposada
-            <select ref={speciesSelectRef} required value={speciesId} onChange={(event) => setSpeciesId(event.target.value)}>
-              <option value="">Tria una espècie…</option>
-              {species.map((item) => <option key={item.speciesId} value={item.speciesId}>{item.identity.commonName} · {item.identity.scientificName}</option>)}
-            </select>
+          <div className="finding-field">
+            <span>Espècie proposada</span>
+            <FormSelect triggerRef={speciesSelectRef} required aria-label="Espècie proposada" value={speciesId} onValueChange={setSpeciesId} emptyLabel="Tria una espècie…" options={species.map((item) => ({ value: item.speciesId, label: `${item.identity.commonName} · ${item.identity.scientificName}` }))} />
             <small>És una proposta d’identificació, no una garantia que el bolet sigui comestible.</small>
-          </label>
+          </div>
           {selected ? <p className="finding-location-readout">{selected.identity.scientificName}</p> : null}
         </section>
 
@@ -411,7 +410,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
 
         <section className="finding-step">
           <h2>4. Notes privades</h2>
-          <label className="finding-field">Quantitat aproximada<select value={quantityBand} onChange={(event) => setQuantityBand(event.target.value as FindingQuantityBand | "")}><option value="">No indicar</option><option value="one">1 exemplar</option><option value="two-five">2–5</option><option value="six-twenty">6–20</option><option value="twenty-one-plus">Més de 20</option></select></label>
+          <div className="finding-field"><span>Quantitat aproximada</span><FormSelect aria-label="Quantitat aproximada" value={quantityBand} onValueChange={(value) => setQuantityBand(value as FindingQuantityBand | "")} emptyLabel="No indicar" options={[{ value: "one", label: "1 exemplar" }, { value: "two-five", label: "2–5" }, { value: "six-twenty", label: "6–20" }, { value: "twenty-one-plus", label: "Més de 20" }]} /></div>
           <label className="finding-field">Notes<textarea maxLength={1000} value={privateNotes} onChange={(event) => setPrivateNotes(event.target.value)} placeholder="Hàbitat, estat del bolet, detalls per recordar…" /><small>Aquest text mai no es publica.</small></label>
         </section>
 

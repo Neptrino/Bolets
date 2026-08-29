@@ -2,6 +2,7 @@
 
 import { CircleAlert, Send, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
+import { FormSelect } from "@/components/ui/form-select";
 
 type FlagReason = "spam" | "privacy" | "unsafe" | "other";
 
@@ -81,14 +82,9 @@ export function FindingFlagButton({ findingId }: { findingId: string }) {
           <h2 id={titleId}>Avisar d’un problema</h2>
           <p id={descriptionId}>Explica’ns què cal revisar. No hi incloguis dades personals ni sensibles.</p>
         </div>
-        <label className="finding-field">Tipus de problema
-          <select value={reason} onChange={(event) => setReason(event.target.value as FlagReason)}>
-            <option value="other">Informació incorrecta</option>
-            <option value="privacy">Privadesa</option>
-            <option value="unsafe">Contingut insegur</option>
-            <option value="spam">Contingut brossa</option>
-          </select>
-        </label>
+        <div className="finding-field"><span>Tipus de problema</span>
+          <FormSelect aria-label="Tipus de problema" value={reason} onValueChange={(value) => setReason(value as FlagReason)} options={[{ value: "other", label: "Informació incorrecta" }, { value: "privacy", label: "Privadesa" }, { value: "unsafe", label: "Contingut insegur" }, { value: "spam", label: "Contingut brossa" }]} />
+        </div>
         <label className="finding-field">Detalls opcionals
           <textarea value={detail} maxLength={500} onChange={(event) => setDetail(event.target.value)} placeholder="Què hauríem de revisar?" />
           <small>{detail.length}/500</small>

@@ -7,6 +7,7 @@ import {
   filterGuideDirectoryItems,
   type GuideDirectoryItem,
 } from "@/src/lib/guide-directory";
+import { FormSelect } from "@/components/ui/form-select";
 
 const catalanCollator = new Intl.Collator("ca", { sensitivity: "base" });
 
@@ -51,9 +52,9 @@ export function GuideDirectory({ items }: { items: GuideDirectoryItem[] }) {
           <span>Cerca una guia</span>
           <span className="guide-browser-input"><Search size={17} aria-hidden="true" /><input value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder="Espècie, indret o territori" /></span>
         </label>
-        <label><span>Espècie</span><select value={speciesId} onChange={(event) => setSpeciesId(event.target.value)}><option value="">Totes les espècies</option>{species.map(([id, name]) => <option value={id} key={id}>{name}</option>)}</select></label>
-        <label><span>Territori</span><select value={areaSlug} onChange={(event) => setAreaSlug(event.target.value)}><option value="">Tots els territoris</option>{areas.map(([slug, name]) => <option value={slug} key={slug}>{name}</option>)}</select></label>
-        <label><span>Hàbitat</span><select value={habitat} onChange={(event) => setHabitat(event.target.value)}><option value="">Tots els hàbitats</option>{habitats.map((name) => <option value={name} key={name}>{name}</option>)}</select></label>
+        <div className="guide-browser-filter"><span>Espècie</span><FormSelect aria-label="Espècie" value={speciesId} onValueChange={setSpeciesId} emptyLabel="Totes les espècies" options={species.map(([value, label]) => ({ value, label }))} /></div>
+        <div className="guide-browser-filter"><span>Territori</span><FormSelect aria-label="Territori" value={areaSlug} onValueChange={setAreaSlug} emptyLabel="Tots els territoris" options={areas.map(([value, label]) => ({ value, label }))} /></div>
+        <div className="guide-browser-filter"><span>Hàbitat</span><FormSelect aria-label="Hàbitat" value={habitat} onValueChange={setHabitat} emptyLabel="Tots els hàbitats" options={habitats.map((name) => ({ value: name, label: name }))} /></div>
       </div>
 
       <div className="guide-browser-status">

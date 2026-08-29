@@ -99,6 +99,11 @@ describe("private operational resync controls", () => {
     expect(serverDispatcher).toContain("dispatch_operational_resync");
   });
 
+  it("uses the shared confirmation dialog for the full resync", () => {
+    expect(clientControls).toContain("<ConfirmDialog");
+    expect(clientControls).not.toContain("window.confirm");
+  });
+
   it("keeps the controls available when the status query is unavailable", () => {
     const unavailableBranch = statusPage.slice(
       statusPage.indexOf("La telemetria no respon"),

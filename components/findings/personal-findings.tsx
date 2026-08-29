@@ -14,6 +14,7 @@ import { deleteOutboxFinding, listOutboxFindings } from "@/src/lib/findings/outb
 import { syncFindingOutbox } from "@/src/lib/findings/sync-client";
 import { FindingDeleteDialog } from "@/components/findings/finding-delete-dialog";
 import { PersonalFindingsMap } from "@/components/findings/personal-findings-map";
+import { FormSelect } from "@/components/ui/form-select";
 
 type DeleteTarget =
   | { kind: "pending"; record: FindingOutboxRecord }
@@ -227,7 +228,7 @@ export function PersonalFindings() {
           <span>Cercar per espècie</span>
           <span className="finding-search-control"><Search size={18} aria-hidden="true" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cep, rossinyol, Boletus…" />{query ? <button type="button" aria-label="Esborrar la cerca" onClick={() => setQuery("")}><X size={17} aria-hidden="true" /></button> : null}</span>
         </label>
-        <label className="finding-filter-field">Visibilitat<select value={visibility} onChange={(event) => setVisibility(event.target.value as VisibilityFilter)}><option value="all">Totes</option><option value="public">Publicades</option><option value="private">Privades</option></select></label>
+        <div className="finding-filter-field"><span>Visibilitat</span><FormSelect aria-label="Visibilitat" value={visibility} onValueChange={(value) => setVisibility(value as VisibilityFilter)} options={[{ value: "all", label: "Totes" }, { value: "public", label: "Publicades" }, { value: "private", label: "Privades" }]} /></div>
       </div>
       {loading ? <p className="finding-notice" aria-live="polite">Buscant al quadern…</p> : findings.length ? <>
         <div className="finding-personal-list" aria-busy={loadingMore}>{findings.map((finding) => {

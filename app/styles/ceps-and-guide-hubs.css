@@ -379,7 +379,8 @@
   border-radius: 16px;
   background: var(--surface-warm);
 }
-.guide-browser-controls label {
+.guide-browser-controls label,
+.guide-browser-filter {
   display: grid;
   gap: 7px;
   color: var(--bark);
@@ -388,7 +389,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.guide-browser-controls select,
+.guide-browser-controls .form-select-trigger,
 .guide-browser-input {
   width: 100%;
   min-height: 48px;
@@ -403,9 +404,7 @@
   letter-spacing: normal;
   text-transform: none;
 }
-.guide-browser-controls select {
-  padding: 0 38px 0 13px;
-}
+.guide-browser-controls .form-select-trigger { padding: 0 13px; }
 .guide-browser-input {
   display: flex;
   align-items: center;
@@ -425,7 +424,7 @@
   color: var(--ink);
   font-size: var(--text-base);
 }
-.guide-browser-controls select:focus-visible,
+.guide-browser-controls .form-select-trigger:focus-visible,
 .guide-browser-input:focus-within {
   outline: 3px solid var(--pumpkin);
   outline-offset: 2px;

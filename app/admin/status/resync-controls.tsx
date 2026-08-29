@@ -11,6 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import type { OperationalResyncTarget } from "@/src/lib/operational-resync";
 
 import styles from "./status.module.css";
@@ -80,13 +81,9 @@ export function ResyncControls() {
   const [pendingTarget, setPendingTarget] = useState<OperationalResyncTarget | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [messageKind, setMessageKind] = useState<"success" | "error">("success");
+  const [fullCycleConfirmationOpen, setFullCycleConfirmationOpen] = useState(false);
 
   async function run(target: OperationalResyncTarget) {
-    if (
-      target === "all"
-      && !window.confirm("Vols reiniciar tot el cicle diari? Pot consumir moltes peticions del proveïdor.")
-    ) return;
-
     setPendingTarget(target);
     setMessage(null);
     try {
@@ -122,7 +119,7 @@ export function ResyncControls() {
     }
   }
 
-  return (
+  return <>
     <div className={styles.commandPanel}>
       <div className={styles.commandGrid}>
         {commands.map(({ target, eyebrow, title, description, Icon, primary }) => {
@@ -134,7 +131,10 @@ export function ResyncControls() {
               data-primary={primary || undefined}
               disabled={pendingTarget !== null}
               key={target}
-              onClick={() => void run(target)}
+              onClick={() => {
+                if (target === "all") setFullCycleConfirmationOpen(true);
+                else void run(target);
+              }}
               type="button"
             >
               <span className={styles.commandIcon}><Icon aria-hidden="true" /></span>
@@ -161,5 +161,16 @@ export function ResyncControls() {
         </p>
       </div>
     </div>
-  );
+    <ConfirmDialog
+      open={fullCycleConfirmationOpen}
+      busy={pendingTarget === "all"}
+      title="Reiniciar tot el cicle diari?"
+      description="Aquesta ordre refarà atmosfera, sòl, previsió i memòries, i pot consumir moltes peticions del proveïdor."
+      confirmLabel="Reiniciar el cicle"
+      busyLabel="Preparant…"
+      icon={<RefreshCw aria-hidden="true" />}
+      onCancel={() => setFullCycleConfirmationOpen(false)}
+      onConfirm={() => { void run("all").finally(() => setFullCycleConfirmationOpen(false)); }}
+    />
+  </>;
 }
