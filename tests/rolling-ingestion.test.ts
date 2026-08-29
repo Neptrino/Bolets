@@ -212,6 +212,18 @@ describe("rolling observed-weather ingestion", () => {
     expect(migrationInstaller).toContain("Applied forecast alignment reconciliation");
     expect(migrationInstaller).toContain("20260824151551_add_operational_resync_dispatcher.sql");
     expect(migrationInstaller).toContain("Applied operational resync dispatcher");
+    expect(migrationInstaller).toContain("20260827222558_add_user_findings.sql");
+    expect(migrationInstaller).toContain(
+      'apply_if_missing user_findings "$findings_migration" user-findings',
+    );
+    expect(migrationInstaller).toContain(
+      "20260828114500_read_owner_finding_private_details.sql",
+    );
+    expect(migrationInstaller).toContain("Applied owner-finding private reader");
+    expect(migrationInstaller).toContain("20260828120000_remove_owner_finding_atomically.sql");
+    expect(migrationInstaller).toContain("Applied owner-finding atomic removal");
+    expect(migrationInstaller).toContain("20260829152554_unify_finding_photo_visibility.sql");
+    expect(migrationInstaller).toContain("user_finding_photos_follow_finding_visibility");
     expect(migrationInstaller).toContain("*\"'aws'\"*");
     const migrationPosition = rollout.lastIndexOf("apply-database-migrations.sh");
     const functionPosition = rollout.indexOf("sync-functions.sh");

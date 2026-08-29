@@ -17,13 +17,19 @@ audit_reconciliation_migration="$app_dir/supabase/migrations/20260824135419_reco
 condition_cache_cron_migration="$app_dir/supabase/migrations/20260824141111_schedule_condition_cache_publication.sql"
 forecast_alignment_migration="$app_dir/supabase/migrations/20260824145507_use_latest_observed_completion_for_forecast_alignment.sql"
 operational_resync_migration="$app_dir/supabase/migrations/20260824151551_add_operational_resync_dispatcher.sql"
+findings_migration="$app_dir/supabase/migrations/20260827222558_add_user_findings.sql"
+owner_finding_reader_migration="$app_dir/supabase/migrations/20260828114500_read_owner_finding_private_details.sql"
+owner_finding_removal_migration="$app_dir/supabase/migrations/20260828120000_remove_owner_finding_atomically.sql"
+finding_photo_visibility_migration="$app_dir/supabase/migrations/20260829152554_unify_finding_photo_visibility.sql"
 
 if [ ! -f "$rolling_migration" ] || [ ! -f "$parallel_migration" ] ||
    [ ! -f "$aws_lane_migration" ] || [ ! -f "$egress_circuit_migration" ] ||
    [ ! -f "$unlimited_usage_migration" ] || [ ! -f "$operational_status_migration" ] ||
    [ ! -f "$audit_reconciliation_migration" ] || [ ! -f "$condition_cache_cron_migration" ] ||
-   [ ! -f "$forecast_alignment_migration" ] || [ ! -f "$operational_resync_migration" ]; then
-  echo "A required ingestion migration is missing" >&2
+   [ ! -f "$forecast_alignment_migration" ] || [ ! -f "$operational_resync_migration" ] ||
+   [ ! -f "$findings_migration" ] || [ ! -f "$owner_finding_reader_migration" ] ||
+   [ ! -f "$owner_finding_removal_migration" ] || [ ! -f "$finding_photo_visibility_migration" ]; then
+  echo "A required database migration is missing" >&2
   exit 66
 fi
 
@@ -62,6 +68,45 @@ apply_if_missing() {
 
 apply_if_missing open_meteo_hourly_states "$rolling_migration" rolling-ingestion
 apply_if_missing spatial_atmosphere_jobs "$parallel_migration" parallel-ingestion
+apply_if_missing user_findings "$findings_migration" user-findings
+
+# These owner-only RPC boundaries are idempotent CREATE OR REPLACE migrations.
+# Reapply them so a restored database receives their latest redaction and
+# atomic-removal behavior even though it has no Supabase migration ledger.
+docker exec -i supabase-db psql \
+  --username postgres \
+  --dbname postgres \
+  --set ON_ERROR_STOP=1 \
+  --single-transaction \
+  < "$owner_finding_reader_migration"
+echo "Applied owner-finding private reader"
+
+docker exec -i supabase-db psql \
+  --username postgres \
+  --dbname postgres \
+  --set ON_ERROR_STOP=1 \
+  --single-transaction \
+  < "$owner_finding_removal_migration"
+echo "Applied owner-finding atomic removal"
+
+finding_photo_visibility_installed=$(docker exec supabase-db psql \
+  --username postgres \
+  --dbname postgres \
+  --tuples-only \
+  --no-align \
+  --command "select coalesce(conname, '') from pg_constraint where conname = 'user_finding_photos_follow_finding_visibility';")
+
+if [ "$finding_photo_visibility_installed" = "user_finding_photos_follow_finding_visibility" ]; then
+  echo "Unified finding-photo visibility migration is already installed"
+else
+  docker exec -i supabase-db psql \
+    --username postgres \
+    --dbname postgres \
+    --set ON_ERROR_STOP=1 \
+    --single-transaction \
+    < "$finding_photo_visibility_migration"
+  echo "Applied unified finding-photo visibility"
+fi
 
 aws_lane_installed=$(docker exec supabase-db psql \
   --username postgres \
