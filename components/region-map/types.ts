@@ -33,6 +33,8 @@ export type RegionMapProps = {
   selectedCellId?: string;
   className?: string;
   fullscreenTarget?: "viewport" | "parent";
+  onCellClick?: () => void;
+  onGeolocationSuccess?: () => void;
   onCellSelect?: (
     cell?: PredictionCell,
     topSpecies?: GlobalSpeciesScore[],

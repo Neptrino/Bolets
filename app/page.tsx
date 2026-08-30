@@ -5,11 +5,13 @@ import { SpeciesCard } from "@/components/species-card";
 import { HomeFindingsFeature } from "@/components/home-findings-feature";
 import { HomeShowcaseJumpLink, HomeShowcaseVideo } from "@/components/home-showcase-video";
 import { StaticMediaImage } from "@/components/static-media-image";
+import { UmamiEventLink } from "@/components/umami-event-link";
 import { getFeaturedSeasonalSpecies } from "@/data/species";
 import { catalogueSpecies } from "@/data/catalogue";
 import { DEFAULT_DESCRIPTION } from "@/src/lib/seo";
 import { seasonGuideForMonth, type SeasonGuideId } from "@/src/lib/season-guides";
 import { monthInTimeZone } from "@/src/lib/seasonality";
+import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
 const seasonGuideIcons = {
   primavera: Leaf,
@@ -41,7 +43,7 @@ export default function HomePage() {
             sizes="100vw"
           />
         </div>
-        <div className="hero-copy"><p className="eyebrow light"><Sparkles size={14} /> Bolets · boscos · temporada</p><h1>Entén el bosc<br /><i>abans de sortir.</i></h1><p className="hero-lede">Descobreix quines espècies encaixen amb cada bosc i on les condicions són més favorables avui.</p><div className="hero-actions"><Link href="/map" className="button light-button">Veure les condicions <ArrowUpRight size={17} /></Link><HomeShowcaseJumpLink /><Link href="/bolets" className="text-link">Explora les espècies <Trees size={16} /></Link></div></div>
+        <div className="hero-copy"><p className="eyebrow light"><Sparkles size={14} /> Bolets · boscos · temporada</p><h1>Entén el bosc<br /><i>abans de sortir.</i></h1><p className="hero-lede">Descobreix quines espècies encaixen amb cada bosc i on les condicions són més favorables avui.</p><div className="hero-actions"><UmamiEventLink href="/map" className="button light-button" analyticsEvent={UMAMI_EVENTS.homepageMapCtaClick}>Veure les condicions <ArrowUpRight size={17} /></UmamiEventLink><HomeShowcaseJumpLink /><Link href="/bolets" className="text-link">Explora les espècies <Trees size={16} /></Link></div></div>
         <div className="hero-scroll"><ArrowDown size={16} /> baixa per llegir el territori</div>
       </section>
       <Link href="/bolets-avui" className="home-today-feature page-width">
@@ -59,7 +61,7 @@ export default function HomePage() {
       </nav>
       <section className="home-cards page-width"><div className="section-topline"><div><p className="eyebrow">Comença aquí</p><h2>Espècies de temporada</h2></div><Link href="/bolets" className="text-link">Veure les {catalogueSpecies.length} fitxes <ArrowUpRight size={16} /></Link></div><div className="species-grid featured-grid">{featuredSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} />)}</div></section>
       <HomeFindingsFeature />
-      <section className="home-map-callout"><div className="page-width"><div className="home-map-callout-copy"><p className="eyebrow light">Condicions del territori</p><h2>Compara boscos,<br />no coordenades.</h2><p>El mapa indica on l’hàbitat i el temps recent encaixen millor amb cada espècie. No mostra troballes ni punts de recol·lecció.</p></div><div className="home-map-callout-action"><Link href="/map" className="button light-button">Veure el mapa <ArrowUpRight size={17} /></Link></div><div className="home-map-callout-art" aria-hidden="true"><StaticMediaImage src="/media/generated/home-map-callout-forest-floor.webp" alt="" fill sizes="(max-width: 900px) 0px, 59vw" /></div></div></section>
+      <section className="home-map-callout"><div className="page-width"><div className="home-map-callout-copy"><p className="eyebrow light">Condicions del territori</p><h2>Compara boscos,<br />no coordenades.</h2><p>El mapa indica on l’hàbitat i el temps recent encaixen millor amb cada espècie. No mostra troballes ni punts de recol·lecció.</p></div><div className="home-map-callout-action"><UmamiEventLink href="/map" className="button light-button" analyticsEvent={UMAMI_EVENTS.homepageMapCtaClick}>Veure el mapa <ArrowUpRight size={17} /></UmamiEventLink></div><div className="home-map-callout-art" aria-hidden="true"><StaticMediaImage src="/media/generated/home-map-callout-forest-floor.webp" alt="" fill sizes="(max-width: 900px) 0px, 59vw" /></div></div></section>
     </>
   );
 }

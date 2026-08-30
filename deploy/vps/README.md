@@ -345,10 +345,13 @@ click and scroll heatmaps but keeps session replay disabled. A browser-side
 fail-closed filter strips query strings and fragments from heatmap events,
 rejects recorder payloads on private routes, and drops any replay payload even
 if the Umami setting is changed manually. The same bootstrap creates the
-`User signup`, `Finding added`, `Infographic downloaded` and `Infographic
-shared` saved goal reports. Their allowlisted events contain only the conversion
-name and a neutral virtual path; they do not attach an account identifier,
-species, finding data or infographic metadata. It also creates `Signup
+`User signup`, `Finding added`, `Infographic downloaded`, `Infographic shared`,
+`Homepage video play`, `Map cell click` and `Map species change` saved goal
+reports, together with goals for homepage video completion and map calls to
+action, successful map geolocation, species-profile map opens and finding-form
+starts. Their allowlisted events contain only the event name and a neutral
+virtual path; they do not attach an account identifier, species, map cell,
+coordinates, finding data or infographic metadata. It also creates `Signup
 completion` and `Finding sync completion` funnels from the anonymous start and
 completion events. Core Web Vitals are collected only for analytics-eligible
 public pages through Umami's performance report.

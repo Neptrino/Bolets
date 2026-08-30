@@ -5,12 +5,20 @@ export const UMAMI_EVENTS = {
   findingAdded: "finding-added",
   infographicDownloaded: "infographic-downloaded",
   infographicShared: "infographic-shared",
+  homepageVideoPlay: "homepage-video-play",
+  homepageVideoComplete: "homepage-video-complete",
+  homepageMapCtaClick: "homepage-map-cta-click",
+  mapCellClick: "map-cell-click",
+  mapChangeSpecies: "map-change-species",
+  mapGeolocationSuccess: "map-geolocation-success",
+  speciesMapOpen: "species-map-open",
+  findingFormStarted: "finding-form-started",
 } as const;
 
 export const UMAMI_EVENT_NAMES = Object.values(UMAMI_EVENTS);
 export const UMAMI_SIGNUP_COOKIE = "bolets_signup_goal";
 
-type UmamiEventName = (typeof UMAMI_EVENTS)[keyof typeof UMAMI_EVENTS];
+export type UmamiEventName = (typeof UMAMI_EVENTS)[keyof typeof UMAMI_EVENTS];
 type AuthUserTimestamps = {
   created_at?: string;
   last_sign_in_at?: string;

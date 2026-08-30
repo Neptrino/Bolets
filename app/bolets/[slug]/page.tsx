@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Map } from "lucide-react";
@@ -11,6 +10,7 @@ import { SpeciesFieldCardSection } from "@/components/species-profile/field-card
 import { SpeciesIdentificationSection } from "@/components/species-profile/identification-section";
 import { SpeciesHero } from "@/components/species-hero";
 import { ReferenceSpeciesPage } from "@/components/reference-species-page";
+import { UmamiEventLink } from "@/components/umami-event-link";
 import { catalogueSpecies } from "@/data/catalogue";
 import { getReferenceSpecies } from "@/data/reference-species";
 import { getSpecies } from "@/data/species";
@@ -23,6 +23,7 @@ import {
   speciesPath,
 } from "@/src/lib/seo";
 import type { Month, RegionId, SeasonalActivity } from "@/src/lib/types";
+import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
 const sections = ["Identificació", "Cuina", "Ecologia", "Distribució", "Targeta de camp"];
 const catalanList = new Intl.ListFormat("ca-ES", {
@@ -205,13 +206,14 @@ export default async function SpeciesPage({
               {section}
             </a>
           ))}
-          <Link
+          <UmamiEventLink
             href={`/map?species=${species.speciesId}&region=${region}${species.predictionMode === "habitat_only" ? "&mode=compatibility" : ""}`}
             className="aside-map-link"
+            analyticsEvent={UMAMI_EVENTS.speciesMapOpen}
           >
             <Map size={15} />
             {species.predictionMode === "habitat_only" ? "Mapa d’hàbitat" : "Mapa actual"}
-          </Link>
+          </UmamiEventLink>
         </aside>
 
         <div className="species-main">

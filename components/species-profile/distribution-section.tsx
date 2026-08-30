@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, MapPinned } from "lucide-react";
 import { LazyHabitatMap } from "@/components/lazy-habitat-map";
+import { UmamiEventLink } from "@/components/umami-event-link";
 import { regionLabels } from "@/data/regions";
 import {
   getPlace,
@@ -9,6 +10,7 @@ import {
 } from "@/data/location-pages";
 import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
 import type { RegionId, SpeciesProfile } from "@/src/lib/types";
+import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
 export function SpeciesDistributionSection({
   autoGeolocate,
@@ -45,14 +47,15 @@ export function SpeciesDistributionSection({
         El blau indica boscos on el terreny encaixa amb l’espècie; no
         confirma que hi hagi bolets.
       </p>
-      <Link
+      <UmamiEventLink
         href={`/map?species=${species.speciesId}&region=${region}${species.predictionMode === "habitat_only" ? "&mode=compatibility" : ""}`}
         className="habitat-map-link"
+        analyticsEvent={UMAMI_EVENTS.speciesMapOpen}
       >
         <span>{regionLabels[region]}</span>
         <strong>Obrir el mapa interactiu</strong>
         <ArrowUpRight size={16} aria-hidden="true" />
-      </Link>
+      </UmamiEventLink>
     </div>
     <LazyHabitatMap
       activeRegions={species.ecologicalConfig.regions}

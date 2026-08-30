@@ -2,6 +2,7 @@
 
 import { Play } from "lucide-react";
 import { useRef, useState } from "react";
+import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
 export function HomeShowcaseJumpLink() {
   return (
@@ -15,6 +16,8 @@ export function HomeShowcaseJumpLink() {
 
 export function HomeShowcaseVideo() {
   const video = useRef<HTMLVideoElement>(null);
+  const playTracked = useRef(false);
+  const completionTracked = useRef(false);
   const [started, setStarted] = useState(false);
 
   const play = async () => {
@@ -24,6 +27,20 @@ export function HomeShowcaseVideo() {
     } catch {
       setStarted(false);
     }
+  };
+
+  const handlePlay = () => {
+    setStarted(true);
+    if (playTracked.current) return;
+    playTracked.current = true;
+    queueUmamiEvent(UMAMI_EVENTS.homepageVideoPlay);
+  };
+
+  const handleEnded = () => {
+    setStarted(false);
+    if (completionTracked.current) return;
+    completionTracked.current = true;
+    queueUmamiEvent(UMAMI_EVENTS.homepageVideoComplete);
   };
 
   return (
@@ -45,8 +62,8 @@ export function HomeShowcaseVideo() {
           preload="none"
           poster="/media/generated/home-showcase-poster.webp"
           aria-label="Presentació de Bolets de Catalunya"
-          onPlay={() => setStarted(true)}
-          onEnded={() => setStarted(false)}
+          onPlay={handlePlay}
+          onEnded={handleEnded}
         >
           <source src="/media/generated/home-showcase.webm" type="video/webm" />
           <source src="/media/generated/home-showcase.mp4" type="video/mp4" />

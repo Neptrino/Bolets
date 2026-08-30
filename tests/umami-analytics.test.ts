@@ -88,7 +88,7 @@ describe("Umami analytics", () => {
     expect(privatePage.sent).not.toHaveBeenCalled();
   });
 
-  it("allows only named conversion events from private pages and removes page context", () => {
+  it("allows only named events from private pages and removes page context", () => {
     const { window } = installPrivacyGuard("https://bolets.app/compte?tab=private");
     const guard = (window as typeof window & {
       boletsUmamiBeforeSend: (type: string, payload: Record<string, string>) => unknown;
@@ -115,6 +115,15 @@ describe("Umami analytics", () => {
       name: "ordinary-event",
       url: "https://bolets.app/compte",
     })).toBe(false);
+    expect(guard("event", {
+      website: "website-id",
+      name: UMAMI_EVENTS.findingFormStarted,
+      url: "https://bolets.app/troballes/nova?draft=private",
+    })).toMatchObject({
+      website: "website-id",
+      name: UMAMI_EVENTS.findingFormStarted,
+      url: "https://bolets.app/analytics-event",
+    });
   });
 
   it("distinguishes a new account from a returning sign-in", () => {
@@ -201,10 +210,26 @@ describe("Umami analytics", () => {
     expect(bootstrap).toContain('"finding-draft-saved"');
     expect(bootstrap).toContain('"infographic-downloaded"');
     expect(bootstrap).toContain('"infographic-shared"');
+    expect(bootstrap).toContain('"homepage-video-play"');
+    expect(bootstrap).toContain('"map-cell-click"');
+    expect(bootstrap).toContain('"map-change-species"');
+    expect(bootstrap).toContain('"homepage-video-complete"');
+    expect(bootstrap).toContain('"homepage-map-cta-click"');
+    expect(bootstrap).toContain('"map-geolocation-success"');
+    expect(bootstrap).toContain('"species-map-open"');
+    expect(bootstrap).toContain('"finding-form-started"');
     expect(bootstrap).toContain('"Signup completion"');
     expect(bootstrap).toContain('"Finding sync completion"');
     expect(bootstrap).toContain('"Infographic downloaded"');
     expect(bootstrap).toContain('"Infographic shared"');
+    expect(bootstrap).toContain('"Homepage video play"');
+    expect(bootstrap).toContain('"Map cell click"');
+    expect(bootstrap).toContain('"Map species change"');
+    expect(bootstrap).toContain('"Homepage video complete"');
+    expect(bootstrap).toContain('"Homepage map CTA click"');
+    expect(bootstrap).toContain('"Map geolocation success"');
+    expect(bootstrap).toContain('"Species map open"');
+    expect(bootstrap).toContain('"Finding form started"');
     expect(findingSync.indexOf("queueUmamiEvent(UMAMI_EVENTS.findingAdded)")).toBeGreaterThan(
       findingSync.indexOf("if (!finalize.ok)"),
     );
@@ -212,6 +237,27 @@ describe("Umami analytics", () => {
       findingForm.indexOf("await saveOutboxFinding"),
     );
     expect(accessForm).toContain("queueUmamiEvent(UMAMI_EVENTS.signupStarted)");
+    expect(readFileSync("components/home-showcase-video.tsx", "utf8"))
+      .toContain("queueUmamiEvent(UMAMI_EVENTS.homepageVideoPlay)");
+    expect(readFileSync("components/map-explorer.tsx", "utf8"))
+      .toContain("queueUmamiEvent(UMAMI_EVENTS.mapCellClick)");
+    expect(readFileSync("app/map/page.tsx", "utf8"))
+      .toContain("analyticsEvent={UMAMI_EVENTS.mapChangeSpecies}");
+    expect(readFileSync("components/home-showcase-video.tsx", "utf8"))
+      .toContain("queueUmamiEvent(UMAMI_EVENTS.homepageVideoComplete)");
+    expect(readFileSync("app/page.tsx", "utf8")
+      .match(/analyticsEvent=\{UMAMI_EVENTS\.homepageMapCtaClick\}/g))
+      .toHaveLength(2);
+    const mapExplorer = readFileSync("components/map-explorer.tsx", "utf8");
+    expect(mapExplorer)
+      .toContain("queueUmamiEvent(UMAMI_EVENTS.mapGeolocationSuccess)");
+    expect(readFileSync("components/region-map.tsx", "utf8"))
+      .toContain("onGeolocationSuccess?.()");
+    expect(readFileSync("app/bolets/[slug]/page.tsx", "utf8"))
+      .toContain("analyticsEvent={UMAMI_EVENTS.speciesMapOpen}");
+    expect(readFileSync("components/species-profile/distribution-section.tsx", "utf8"))
+      .toContain("analyticsEvent={UMAMI_EVENTS.speciesMapOpen}");
+    expect(findingForm).toContain("queueUmamiEvent(UMAMI_EVENTS.findingFormStarted)");
   });
 
 });

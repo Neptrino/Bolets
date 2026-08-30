@@ -79,6 +79,7 @@ function getInitialClientDateTime() {
 
 export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) {
   const formRef = useRef<HTMLFormElement>(null);
+  const formStartTracked = useRef(false);
   const speciesSelectRef = useRef<HTMLButtonElement>(null);
   const initialDateTime = useSyncExternalStore(
     subscribeToInitialDateTime,
@@ -328,8 +329,19 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
     });
   };
 
+  const trackFormStart = () => {
+    if (formStartTracked.current) return;
+    formStartTracked.current = true;
+    queueUmamiEvent(UMAMI_EVENTS.findingFormStarted);
+  };
+
   return (
-    <form ref={formRef} className="finding-report-layout" onSubmit={submit}>
+    <form
+      ref={formRef}
+      className="finding-report-layout"
+      onFocusCapture={trackFormStart}
+      onSubmit={submit}
+    >
       <div className="finding-field-card">
         <section className="finding-step">
           <h2>1. Què has trobat?</h2>

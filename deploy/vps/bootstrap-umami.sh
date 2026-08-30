@@ -217,6 +217,38 @@ configure_goal_reports() {
     "Infographic shared" \
     "infographic-shared" \
     "The infographic was successfully sent through the browser share sheet."
+  ensure_goal_report \
+    "Homepage video play" \
+    "homepage-video-play" \
+    "The homepage showcase video started playing."
+  ensure_goal_report \
+    "Map cell click" \
+    "map-cell-click" \
+    "A prediction cell on the main map was selected."
+  ensure_goal_report \
+    "Map species change" \
+    "map-change-species" \
+    "The species displayed on the main map was changed."
+  ensure_goal_report \
+    "Homepage video complete" \
+    "homepage-video-complete" \
+    "The homepage showcase video reached its end."
+  ensure_goal_report \
+    "Homepage map CTA click" \
+    "homepage-map-cta-click" \
+    "A homepage call to action to open the map was selected."
+  ensure_goal_report \
+    "Map geolocation success" \
+    "map-geolocation-success" \
+    "The main map successfully received a device location."
+  ensure_goal_report \
+    "Species map open" \
+    "species-map-open" \
+    "A map link on a species profile was selected."
+  ensure_goal_report \
+    "Finding form started" \
+    "finding-form-started" \
+    "The finding capture form received its first interaction."
 }
 
 funnel_report_payload() {

@@ -97,6 +97,8 @@ export function RegionMap({
   selectedCellId,
   className = "",
   fullscreenTarget = "viewport",
+  onCellClick,
+  onGeolocationSuccess,
   onCellSelect,
   onCellDetailStateChange,
 }: RegionMapProps) {
@@ -120,6 +122,7 @@ export function RegionMap({
   const previousRegion = useRef(selectedRegion);
   const previousSpeciesId = useRef(speciesId);
   const initialGeolocationTriggered = useRef(false);
+  const geolocationSuccessTracked = useRef(false);
   // map.loaded() reports false whenever tiles are still streaming in, and the
   // "load" event only ever fires once, so effects that re-run after it must
   // consult this ref instead of waiting for a second "load" that never comes.
@@ -862,6 +865,7 @@ export function RegionMap({
     const handleCellClick = (event: MapMouseEvent) => {
       const cell = findCell(cellsById.current.values(), event.lngLat.lng, event.lngLat.lat);
       if (!cell) return;
+      onCellClick?.();
       selectedCellIdRef.current = cell.cellId;
       drawCells();
       onCellDetailStateChange?.({
@@ -880,6 +884,10 @@ export function RegionMap({
       void loadCells();
     };
     const handleGeolocate = () => {
+      if (!geolocationSuccessTracked.current) {
+        geolocationSuccessTracked.current = true;
+        onGeolocationSuccess?.();
+      }
       if (localMap.isMoving()) {
         if (!waitingForGeolocationMoveEnd) {
           waitingForGeolocationMoveEnd = true;
@@ -941,6 +949,8 @@ export function RegionMap({
     speciesId,
     maximumPredictionGridSizeM,
     predictionRendering,
+    onCellClick,
+    onGeolocationSuccess,
     onCellSelect,
     onCellDetailStateChange,
   ]);

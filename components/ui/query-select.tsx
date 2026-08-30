@@ -4,6 +4,10 @@ import { Combobox, type ComboboxPortalProps } from "@base-ui/react/combobox";
 import { useState, useTransition } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  queueUmamiEvent,
+  type UmamiEventName,
+} from "@/src/lib/umami-goals";
 
 export type QuerySelectItem = { value: string; label: string };
 
@@ -28,6 +32,7 @@ type QuerySelectProps = {
   variant?: "compact" | "comparison" | "map";
   className?: string;
   portalContainer?: ComboboxPortalProps["container"];
+  analyticsEvent?: UmamiEventName;
   "aria-label"?: string;
 };
 
@@ -119,6 +124,7 @@ function QuerySelectControl({
   variant = "compact",
   className,
   portalContainer,
+  analyticsEvent,
   "aria-label": ariaLabel = "Selecciona una opció"
 }: QuerySelectProps) {
   const router = useRouter();
@@ -131,6 +137,7 @@ function QuerySelectControl({
     if (nextItem.value === value) return;
     const next = new URLSearchParams(searchParams.toString());
     next.set(parameter, nextItem.value);
+    if (analyticsEvent) queueUmamiEvent(analyticsEvent);
     startTransition(() => {
       router.push(`${pathname}?${next}`, { scroll: false });
     });

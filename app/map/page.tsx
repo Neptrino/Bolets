@@ -19,6 +19,7 @@ import { calculateSuitability } from "@/src/lib/scoring";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 import { territorialBoundsFromQuery } from "@/src/lib/territorial-map";
 import type { MapViewMode, RegionId, SuitabilityResult } from "@/src/lib/types";
+import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
 export const metadata: Metadata = {
   title: "Mapa de condicions per als bolets a Catalunya",
@@ -139,6 +140,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
             value={species?.speciesId ?? GLOBAL_SPECIES_ID}
             items={mapSpeciesSelectItems}
             variant="map"
+            analyticsEvent={UMAMI_EVENTS.mapChangeSpecies}
             aria-label="Espècie seleccionada"
           />
           <small>{isGlobal

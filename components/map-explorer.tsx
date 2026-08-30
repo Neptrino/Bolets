@@ -12,6 +12,7 @@ import { GLOBAL_SPECIES_ID } from "@/src/lib/global-map";
 import { formatGridDimensions } from "@/src/lib/map-grid";
 import { calculateSuitability } from "@/src/lib/scoring";
 import { getSuitabilityBand } from "@/src/lib/suitability-scale";
+import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 import type {
   ConditionSnapshot,
   GlobalSpeciesScore,
@@ -129,6 +130,12 @@ export function MapExplorer({
     if (state.status === "loading") setSelection(undefined);
     setCellDetailSelection({ speciesId: speciesKey, state });
   }, [speciesKey]);
+  const trackCellClick = useCallback(() => {
+    queueUmamiEvent(UMAMI_EVENTS.mapCellClick);
+  }, []);
+  const trackGeolocationSuccess = useCallback(() => {
+    queueUmamiEvent(UMAMI_EVENTS.mapGeolocationSuccess);
+  }, []);
   useEffect(() => {
     if (cellDetailState.status !== "ready") return;
     const timer = window.setTimeout(() => {
@@ -196,6 +203,8 @@ export function MapExplorer({
         mode={mode}
         predictionAvailable={species ? species.predictionMode === "current" : true}
         selectedCellId={selectedCellId}
+        onCellClick={trackCellClick}
+        onGeolocationSuccess={trackGeolocationSuccess}
         onCellSelect={selectCell}
         onCellDetailStateChange={updateCellDetailState}
         className="full-map"
@@ -207,6 +216,7 @@ export function MapExplorer({
           value={speciesKey}
           items={speciesItems}
           portalContainer={mapStage}
+          analyticsEvent={UMAMI_EVENTS.mapChangeSpecies}
           aria-label="Canvia l’espècie del mapa en pantalla completa"
         />
       </label>
