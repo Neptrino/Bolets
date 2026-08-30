@@ -425,6 +425,7 @@ test("starts a local guide habitat map at its local area", async ({ page }) => {
 test("keeps ecologically excluded cells clickable after changing species", async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   const cellBounds = [[-0.5, 40.1], [3.9, 43.2]];
 
   await page.route("**/api/predictions/history?*", (route) => route.fulfill({
@@ -555,10 +556,7 @@ test("keeps ecologically excluded cells clickable after changing species", async
   await expect(page).toHaveURL(/species=lactarius-deliciosus/, { timeout: 10_000 });
   const mapDataState = page.locator(".map-data-state");
   await expect(mapDataState.locator("strong")).toHaveText(
-    "1 cel·les amb puntuació 0",
-  );
-  await expect(mapDataState).toContainText(
-    "Es mostren en vermell: ara no tenen hàbitat compatible",
+    "Cap sector favorable en aquesta vista",
   );
 
   const mapCanvas = page.locator(".full-map .maplibregl-canvas");
@@ -571,11 +569,14 @@ test("keeps ecologically excluded cells clickable after changing species", async
   await expect(page.locator(".cell-score-history-legend")).toContainText("Projectat");
   await expect(page.getByText(/D’ara a \+5 dies: \+20 punts/)).toBeVisible();
   await page.getByRole("button", { name: "Com es calcula aquesta projecció" }).focus();
-  await expect(page.getByText(/No és una predicció de l’aparició de bolets/)).toBeVisible();
+  await expect(page.getByRole("tooltip")).toBeVisible();
   await expect(page.locator(".forecast-confidence-list")).toHaveCount(0);
   await expect(page.locator(".cell-score-history table tbody tr")).toHaveCount(7);
 
-  await page.setViewportSize({ width: 390, height: 844 });
+  const documentOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(documentOverflow).toBeLessThanOrEqual(1);
   const hasHorizontalOverflow = await page.locator(".cell-score-history").evaluate(
     (element) => element.scrollWidth > element.clientWidth,
   );

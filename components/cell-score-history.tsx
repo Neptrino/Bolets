@@ -330,22 +330,24 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       {!forecast ? (
         <p className="cell-score-forecast-unavailable">La projecció meteorològica encara no està disponible; es manté l’historial observat.</p>
       ) : null}
-      <table className="visually-hidden">
-        <caption>Dades de l’evolució calculada i la projecció ambiental</caption>
-        <thead><tr><th scope="col">Data</th><th scope="col">Tipus</th><th scope="col">Puntuació de la cel·la</th><th scope="col">Condicions per fructificar dins l’hàbitat</th><th scope="col">Confiança meteorològica de l’horitzó</th></tr></thead>
-        <tbody>
-          {observed.map((point) => (
-            <tr key={`observed:${point.observedAt}`}>
-              <td>{dayLabel(point.observedAt)}</td><td>Calculada</td><td>{scoreLabel(point.opportunityIndex)}</td><td>{scoreLabel(point.fruitingConditionsScore)}</td><td>No aplicable</td>
-            </tr>
-          ))}
-          {forecast?.points.map((point) => (
-            <tr key={`projected:${point.validAt}`}>
-              <td>{dayLabel(point.validAt)}</td><td>Projectada</td><td>{scoreLabel(point.opportunityIndex)}</td><td>{scoreLabel(point.fruitingConditionsScore)}</td><td>{confidenceLabel(point.horizonConfidence)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="visually-hidden">
+        <table>
+          <caption>Dades de l’evolució calculada i la projecció ambiental</caption>
+          <thead><tr><th scope="col">Data</th><th scope="col">Tipus</th><th scope="col">Puntuació de la cel·la</th><th scope="col">Condicions per fructificar dins l’hàbitat</th><th scope="col">Confiança meteorològica de l’horitzó</th></tr></thead>
+          <tbody>
+            {observed.map((point) => (
+              <tr key={`observed:${point.observedAt}`}>
+                <td>{dayLabel(point.observedAt)}</td><td>Calculada</td><td>{scoreLabel(point.opportunityIndex)}</td><td>{scoreLabel(point.fruitingConditionsScore)}</td><td>No aplicable</td>
+              </tr>
+            ))}
+            {forecast?.points.map((point) => (
+              <tr key={`projected:${point.validAt}`}>
+                <td>{dayLabel(point.validAt)}</td><td>Projectada</td><td>{scoreLabel(point.opportunityIndex)}</td><td>{scoreLabel(point.fruitingConditionsScore)}</td><td>{confidenceLabel(point.horizonConfidence)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }
