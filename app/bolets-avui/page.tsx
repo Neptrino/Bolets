@@ -196,8 +196,11 @@ async function CurrentOverview() {
         </aside>
       ) : leader?.summary && leaderScore !== null && leaderScore !== undefined ? (
         <section className="current-leader" aria-labelledby="current-leader-title">
-          <div className="current-leader-copy">
+          <div className="current-leader-topline">
             <p className="current-leader-eyebrow"><MapPinned size={15} /> Millors condicions ara</p>
+            <p className="current-leader-meta"><Clock3 size={14} /> Dades del {dateTime.format(new Date(leader.summary.snapshot.observedAt))}</p>
+          </div>
+          <div className="current-leader-copy">
             <h2 id="current-leader-title">{leaderName}</h2>
             <p><Link href={speciesPath(leader)} className="current-leader-species-link"><strong>{leader.speciesName}</strong><ArrowUpRight size={14} /></Link> és l’espècie amb les condicions més favorables en aquest territori.</p>
             <Link href={leaderMapPath} className="current-leader-link">
@@ -213,7 +216,6 @@ async function CurrentOverview() {
             <div><dt><MapPinned size={16} /> Abast dins la zona</dt><dd>{extentMetric(leader.summary)}</dd></div>
             <div><dt><Gauge size={16} /> Principal fre</dt><dd>{limitingFactor(leader)}</dd></div>
           </dl>
-          <p className="current-leader-meta"><Clock3 size={14} /> Dades del {dateTime.format(new Date(leader.summary.snapshot.observedAt))}</p>
         </section>
       ) : (
         <aside className="current-leader current-leader-empty">

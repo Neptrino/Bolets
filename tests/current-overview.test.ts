@@ -109,6 +109,7 @@ describe("current-condition overview", () => {
     expect(pageSource).not.toContain("Component més limitant");
     expect(pageSource).not.toContain("controls de publicació");
     expect(pageSource).not.toContain("Cel·les compatibles de");
+    expect(pageSource).toContain('className="current-leader-topline"');
   });
 
   it("keys the long-lived overview cache by both published condition generations", () => {
