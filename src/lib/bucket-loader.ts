@@ -6,10 +6,39 @@ import {
 import type { SpatialBounds } from "@/src/lib/types";
 
 /**
- * Bucket requests are small and numerous. A handful in flight keeps a pan
- * responsive without opening a connection per bucket on a phone.
+ * Bucket requests are small and numerous. Network work stays deliberately
+ * bounded, while local Cache Storage lookups can fan out more widely.
  */
 const DEFAULT_CONCURRENCY = 4;
+const CACHE_LOOKUP_CONCURRENCY = 32;
+
+function concurrencyGate(limit: number) {
+  let active = 0;
+  const waiters: Array<() => void> = [];
+
+  const acquire = async () => {
+    if (active < limit) {
+      active += 1;
+      return;
+    }
+    await new Promise<void>((resolve) => waiters.push(resolve));
+  };
+
+  const release = () => {
+    const next = waiters.shift();
+    if (next) next();
+    else active -= 1;
+  };
+
+  return async <R>(task: () => Promise<R>) => {
+    await acquire();
+    try {
+      return await task();
+    } finally {
+      release();
+    }
+  };
+}
 
 export type BucketPayload<T> = {
   cells: T[];
@@ -47,6 +76,8 @@ export async function loadBucketedCells<T>(
     inFlight?: Map<string, Promise<void>>;
   } = {},
 ): Promise<BucketLoadOutcome> {
+  const networkConcurrency = Math.max(1, Math.floor(concurrency));
+  const withNetworkSlot = concurrencyGate(networkConcurrency);
   let nextIndex = 0;
   let succeeded = 0;
   let failed = 0;
@@ -80,11 +111,13 @@ export async function loadBucketedCells<T>(
         // it: cancelling it when this run is superseded would fail that
         // waiter's bucket for no reason. `fetchJsonWithRetry` applies its own
         // deadline, so nothing here can hang.
-        const payload = await fetchJsonWithRetry<BucketPayload<T>>(
-          url,
-          new AbortController().signal,
-          attempts,
-          timeoutMs,
+        const payload = await withNetworkSlot(() =>
+          fetchJsonWithRetry<BucketPayload<T>>(
+            url,
+            new AbortController().signal,
+            attempts,
+            timeoutMs,
+          ),
         );
         // Always store, even if this run no longer cares. The response is
         // already paid for and the next viewport over this ground will use it.
@@ -100,13 +133,21 @@ export async function loadBucketedCells<T>(
         if (signal.aborted) return;
         failed += 1;
       } finally {
-        inFlight?.delete(url);
+        if (inFlight?.get(url) === task) inFlight.delete(url);
       }
     }
   };
 
   await Promise.all(
-    Array.from({ length: Math.min(concurrency, buckets.length) }, runWorker),
+    Array.from(
+      {
+        length: Math.min(
+          Math.max(CACHE_LOOKUP_CONCURRENCY, networkConcurrency),
+          buckets.length,
+        ),
+      },
+      runWorker,
+    ),
   );
   return { succeeded, failed };
 }

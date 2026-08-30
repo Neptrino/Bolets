@@ -1,48 +1,33 @@
 import { predictionMapCellColour, suitabilityScale } from "@/src/lib/suitability-scale";
 
 /**
- * Band-swatch legend for the prediction map. The bands and colours come from
- * the shared ordinal scale so the legend can never drift from the painted map.
+ * Compact legend for the continuously painted prediction score. The detailed
+ * five-band interpretation remains available in the method page.
  */
-export function PredictionMapLegend({ variant = "bands" }: { variant?: "bands" | "gradient" }) {
-  if (variant === "gradient") {
-    const gradient = `linear-gradient(90deg, ${suitabilityScale
-      .map((band) => `${band.color} ${band.minimum}%`)
-      .join(", ")}, ${suitabilityScale.at(-1)!.color} 100%)`;
-    return (
-      <div className="prediction-map-legend prediction-map-legend-gradient">
-        <strong>Intensitat de la predicció</strong>
-        <div className="prediction-gradient-scale">
-          <i style={{ backgroundImage: gradient }} aria-hidden />
-          <span><small>1 · molt baixa</small><small>100 · molt alta</small></span>
-        </div>
-      </div>
-    );
-  }
+export function PredictionMapLegend() {
+  const gradient = [
+    `${predictionMapCellColour(1)} 0%`,
+    ...suitabilityScale.slice(1).map((band) =>
+      `${predictionMapCellColour(band.minimum)} ${band.minimum}%`
+    ),
+    `${predictionMapCellColour(100)} 100%`,
+  ].join(", ");
+
   return (
     <div className="prediction-map-legend">
-      <strong>Escala de puntuació</strong>
-      <ol>
-        <li>
-          <i className="is-zero" style={{ backgroundColor: predictionMapCellColour(0) }} aria-hidden />
-          <span>Zero</span>
-          <small>0</small>
-        </li>
-        {suitabilityScale.map((band, index) => {
-          const maximum = suitabilityScale[index + 1]
-            ? suitabilityScale[index + 1].minimum - 1
-            : 100;
-          return (
-            <li key={band.id}>
-              <i style={{ backgroundColor: band.color }} aria-hidden />
-              <span>{band.label}</span>
-              <small>
-                {index === 0 ? 1 : band.minimum}–{maximum}
-              </small>
-            </li>
-          );
-        })}
-      </ol>
+      <strong>Puntuació</strong>
+      <span className="prediction-map-legend-zero">
+        <i style={{ backgroundColor: predictionMapCellColour(0) }} aria-hidden />
+        0
+      </span>
+      <div
+        className="prediction-map-legend-ramp"
+        role="img"
+        aria-label="Escala contínua: d’1, puntuació molt baixa, a 100, puntuació molt alta"
+      >
+        <i style={{ background: `linear-gradient(90deg, ${gradient})` }} aria-hidden />
+        <span aria-hidden="true"><small>1 · Molt baixa</small><small>50 · Mitjana</small><small>100 · Molt alta</small></span>
+      </div>
     </div>
   );
 }

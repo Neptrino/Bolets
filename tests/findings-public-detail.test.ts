@@ -13,6 +13,19 @@ describe("public finding detail", () => {
     expect(overviewPage).toContain('alternates: { canonical: "/troballes" }');
   });
 
+  it("keeps thin observation and cell-filter views out of the index while allowing discovery", () => {
+    expect(detailPage).toContain('robots: { index: false, follow: true }');
+    expect(overviewPage).toContain('robots: { index: false, follow: true }');
+  });
+
+  it("uses the overview as an aggregate hub linked to canonical species profiles", () => {
+    expect(overviewPage).toContain("Què expliquen aquestes troballes?");
+    expect(overviewPage).toContain("summarizePublicFindings(findings)");
+    expect(overviewPage).toContain('href={item.href}');
+    expect(overviewPage).toContain('"@type": "CollectionPage"');
+    expect(detailPage).toContain('href={profileHref}');
+  });
+
   it("renders the finding's public privacy cell without an exact point", () => {
     expect(detailPage).toContain("<PublicFindingLocationMap bounds={finding.cellBounds} />");
     expect(locationMap).toContain("fitSpatialBounds(localMap, cellBounds, false)");

@@ -1,24 +1,34 @@
 import type { Metadata } from "next";
-import { CalendarDays, Map, UserRound } from "lucide-react";
+import { ArrowUpRight, CalendarDays, Map, UserRound } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { FindingFlagButton } from "@/components/findings/finding-flag-button";
 import { PublicFindingLocationMap } from "@/components/findings/public-finding-location-map";
 import { PageHeader, PageShell } from "@/components/page-layout";
+import { getCatalogueSpecies } from "@/data/catalogue";
 import { readPublicFinding } from "@/src/lib/findings/reads.server";
+import { speciesPath } from "@/src/lib/seo";
 
 export const dynamic = "force-dynamic";
+const getPublicFinding = cache((id: string) => readPublicFinding(id).catch(() => null));
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const finding = await readPublicFinding((await params).id).catch(() => null);
-  return finding ? { title: `Troballa de ${finding.reportedSpeciesName}`, description: `Observació comunitària publicada només en una casella de 10 × 10 km.` } : { title: "Troballa" };
+  const finding = await getPublicFinding((await params).id);
+  return {
+    title: finding ? `Troballa de ${finding.reportedSpeciesName}` : "Troballa",
+    description: finding ? "Observació comunitària generalitzada en una casella de 10 × 10 km; no confirma la identificació ni la presència actual." : undefined,
+    robots: { index: false, follow: true },
+  };
 }
 
 export default async function FindingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const finding = await readPublicFinding(id).catch(() => null);
+  const finding = await getPublicFinding(id);
   if (!finding) notFound();
+  const species = getCatalogueSpecies(finding.reportedSpeciesId);
+  const profileHref = species ? speciesPath(species) : "/bolets";
   const date = new Date(`${finding.observedOn}T12:00:00`);
   const observedDate = new Intl.DateTimeFormat("ca-ES", { dateStyle: "long" }).format(date);
   const observedDay = new Intl.DateTimeFormat("ca-ES", { day: "numeric" }).format(date);
@@ -28,7 +38,7 @@ export default async function FindingPage({ params }: { params: Promise<{ id: st
     <PageHeader
       eyebrow="Troballa compartida"
       title={finding.reportedSpeciesName}
-      actions={<Link className="finding-button-secondary" href="/troballes">Tornar al mapa</Link>}
+      actions={<div className="findings-actions"><Link className="finding-button" href={profileHref}>Fitxa de l’espècie <ArrowUpRight size={15} aria-hidden="true" /></Link><Link className="finding-button-secondary" href="/troballes">Tornar al mapa</Link></div>}
     />
     <div className="finding-detail-grid">
       <div className="finding-gallery">
@@ -51,7 +61,7 @@ export default async function FindingPage({ params }: { params: Promise<{ id: st
           <dl className="finding-detail-facts">
             <div>
               <dt>Identificació indicada</dt>
-              <dd><strong>{finding.reportedSpeciesName}</strong><small>Aportada per qui l’ha compartida; no verificada.</small></dd>
+              <dd><Link className="finding-detail-species-link" href={profileHref}>{finding.reportedSpeciesName} <ArrowUpRight size={14} aria-hidden="true" /></Link><small>Aportada per qui l’ha compartida; no verificada. La fitxa ajuda a contrastar-ne els trets.</small></dd>
             </div>
             <div>
               <dt><UserRound size={16} aria-hidden="true" /> Compartida per</dt>

@@ -5,14 +5,10 @@ import {
   NavigationControl,
   type StyleSpecification,
 } from "maplibre-gl";
-
-const interactiveMapBounds: [[number, number], [number, number]] = [
-  [-0.5, 40.1],
-  [3.9, 43.2],
-];
+import { regionMapPanBounds } from "@/src/lib/map-view-bounds";
 
 export function regionMapMaxBounds(interactive: boolean) {
-  return interactive ? interactiveMapBounds : undefined;
+  return interactive ? regionMapPanBounds : undefined;
 }
 
 export function createRegionMap({

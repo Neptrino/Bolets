@@ -14,6 +14,27 @@ export const suitabilityScale: SuitabilityBand[] = [
   { id: "excellent", label: "Molt alta", description: "Resposta molt alta dins l’escala ordinal del model.", minimum: 80, color: "#4f8a5b" }
 ];
 
+const predictionMapColourStops = [
+  ...suitabilityScale.map(({ minimum, color }, index) => ({
+    score: index === 0 ? 1 : minimum,
+    color,
+  })),
+  // Extend the highest band so scores from 80 to 100 remain distinguishable.
+  { score: 100, color: "#2f704d" },
+];
+
+function rgbFromHex(color: string) {
+  return {
+    red: Number.parseInt(color.slice(1, 3), 16),
+    green: Number.parseInt(color.slice(3, 5), 16),
+    blue: Number.parseInt(color.slice(5, 7), 16),
+  };
+}
+
+function interpolateChannel(start: number, end: number, progress: number) {
+  return Math.round(start + (end - start) * progress);
+}
+
 export function getSuitabilityBand(score: number): SuitabilityBand {
   const boundedScore = Math.min(100, Math.max(0, score));
   for (let index = suitabilityScale.length - 1; index >= 0; index -= 1) {
@@ -29,10 +50,23 @@ export function predictionMapCellColour(score: number | null) {
   // positive low score. Keep the terrain visible and let the dashed outline
   // carry the zero state.
   if (score === 0) return "rgba(112, 103, 88, 0.1)";
-  const color = getSuitabilityBand(score).color;
-  const red = Number.parseInt(color.slice(1, 3), 16);
-  const green = Number.parseInt(color.slice(3, 5), 16);
-  const blue = Number.parseInt(color.slice(5, 7), 16);
+
+  const boundedScore = Number.isFinite(score)
+    ? Math.min(100, Math.max(1, score))
+    : 1;
+  const upperIndex = predictionMapColourStops.findIndex(({ score: stopScore }) =>
+    stopScore >= boundedScore
+  );
+  const upper = predictionMapColourStops[upperIndex];
+  const lower = predictionMapColourStops[Math.max(0, upperIndex - 1)];
+  const progress = upper.score === lower.score
+    ? 0
+    : (boundedScore - lower.score) / (upper.score - lower.score);
+  const lowerRgb = rgbFromHex(lower.color);
+  const upperRgb = rgbFromHex(upper.color);
+  const red = interpolateChannel(lowerRgb.red, upperRgb.red, progress);
+  const green = interpolateChannel(lowerRgb.green, upperRgb.green, progress);
+  const blue = interpolateChannel(lowerRgb.blue, upperRgb.blue, progress);
   return `rgba(${red}, ${green}, ${blue}, 0.68)`;
 }
 

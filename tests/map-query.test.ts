@@ -6,6 +6,7 @@ import {
   mapBoundsFitResolution,
   parseSpatialMapQuery,
   prioritizeBucketsAround,
+  requestBucketDegreesForGrid,
 } from "@/src/lib/map-query";
 
 const catalonia = { west: 0.05, south: 40.48, east: 3.32, north: 42.92 };
@@ -34,6 +35,12 @@ describe("cache-aligned map bounds", () => {
 });
 
 describe("request bucket enumeration", () => {
+  it("exposes the canonical bucket width for server-side shard reuse", () => {
+    expect(requestBucketDegreesForGrid(1000)).toBe(0.1);
+    expect(requestBucketDegreesForGrid(2500)).toBe(0.25);
+    expect(requestBucketDegreesForGrid(10000)).toBe(1);
+  });
+
   it("covers a viewport smaller than a single bucket with that one bucket", () => {
     expect(bucketsForBounds(
       { west: 1.121, south: 41.221, east: 1.139, north: 41.239 },

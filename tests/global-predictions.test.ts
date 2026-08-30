@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { cataloniaSpatialBounds } from "@/data/regions";
 import {
   GLOBAL_SPECIES_ID,
   bestRegionalSuitability,
@@ -12,6 +13,7 @@ import {
   resolveCandidateSlots,
 } from "@/src/lib/global-predictions";
 import { habitatProfileKey } from "@/src/lib/habitat";
+import { bucketsForBounds } from "@/src/lib/map-query";
 import { calculateSuitability } from "@/src/lib/scoring";
 import { toxicSpecies } from "@/src/lib/species-collections";
 import type { ConditionSnapshot, SuitabilityResult } from "@/src/lib/types";
@@ -235,6 +237,74 @@ describe("getGlobalPredictionCells", () => {
     expect(url.searchParams.get("view")).toBe("score");
     expect(url.searchParams.get("resolution")).toBe("1000");
     expect(url.searchParams.get("setVersion")).toBe(globalSpeciesSetKey);
+  });
+
+  it("coalesces adjacent map buckets into one larger environment read", async () => {
+    const profiles = habitatProfiles();
+    const leftCell = environmentCell({
+      cellId: "epsg25831:2500:left",
+      gridSizeM: 2500,
+      bounds: [[1.05, 41.05], [1.075, 41.075]],
+    });
+    const rightCell = environmentCell({
+      cellId: "epsg25831:2500:right",
+      gridSizeM: 2500,
+      bounds: [[1.3, 41.05], [1.325, 41.075]],
+    });
+    const fetchMock = stubGlobalFeed({
+      cells: [leftCell, rightCell],
+      truncated: false,
+      bounds: { west: 1, south: 41, east: 1.5, north: 41.5 },
+      habitatProfiles: profiles,
+    });
+
+    const [left, right] = await Promise.all([
+      getGlobalPredictionCells(
+        { west: 1, south: 41, east: 1.25, north: 41.25 },
+        1000,
+        2500,
+      ),
+      getGlobalPredictionCells(
+        { west: 1.25, south: 41, east: 1.5, north: 41.25 },
+        1000,
+        2500,
+      ),
+    ]);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const url = new URL(String(fetchMock.mock.calls[0][0]));
+    expect(Object.fromEntries([
+      "west", "south", "east", "north", "limit",
+    ].map((key) => [key, url.searchParams.get(key)]))).toEqual({
+      west: "1",
+      south: "41",
+      east: "1.5",
+      north: "41.5",
+      limit: "1000",
+    });
+    expect(url.searchParams.get("readShapeVersion")).toBe("global-map-shard-2x2-coalesced-v1");
+    expect(left.cells.map((cell) => cell.cellId)).toEqual(["epsg25831:2500:left"]);
+    expect(right.cells.map((cell) => cell.cellId)).toEqual(["epsg25831:2500:right"]);
+  });
+
+  it("reduces the full 2.5 km Catalonia map from 154 bucket requests to 42 reads", async () => {
+    const fetchMock = stubGlobalFeed({
+      cells: [],
+      truncated: false,
+      bounds: cataloniaSpatialBounds,
+      habitatProfiles: habitatProfiles(),
+    });
+    const buckets = bucketsForBounds(
+      cataloniaSpatialBounds,
+      2500,
+      cataloniaSpatialBounds,
+    );
+
+    expect(buckets).toHaveLength(154);
+    await Promise.all(buckets.map((bucket) =>
+      getGlobalPredictionCells(bucket, 1000, 2500)));
+
+    expect(fetchMock).toHaveBeenCalledTimes(42);
   });
 });
 

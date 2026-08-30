@@ -2,7 +2,6 @@ import { getSpecies } from "@/data/species";
 import {
   GLOBAL_SPECIES_ID,
   getGlobalCellRanking,
-  getGlobalPredictionCells,
   isGlobalGridSize,
 } from "@/src/lib/global-predictions";
 import {
@@ -12,11 +11,15 @@ import {
 } from "@/src/lib/map-query";
 import { proxyDevelopmentPublicDataGet } from "@/src/lib/development-public-data-proxy";
 import { getPredictionCells } from "@/src/lib/predictions";
+import {
+  getCachedGlobalMapPredictionCells,
+  getCachedSpeciesMapPredictionCells,
+} from "@/src/lib/prediction-response-cache";
 import { jsonResponse } from "@/src/lib/json-response";
 import { withoutInternalModelVersion } from "@/src/lib/public-response";
 
 const CACHE_HEADERS = {
-  "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
+  "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=600",
 };
 
 // Every species with a positive score in the cell is worth listing, but the
@@ -68,7 +71,7 @@ async function globalPredictions(request: Request, params: URLSearchParams) {
         { headers: CACHE_HEADERS },
       );
     }
-    const result = await getGlobalPredictionCells(
+    const result = await getCachedGlobalMapPredictionCells(
       query.bounds,
       query.limit ?? 1000,
       query.resolution,
@@ -103,13 +106,21 @@ export async function GET(request: Request) {
   }
   const { query } = parsedQuery;
   try {
-    const result = await getPredictionCells(
-      speciesId,
-      query.bounds,
-      query.limit ?? (requestedCellId ? 16 : 1000),
-      query.resolution,
-      compact
-    );
+    const limit = query.limit ?? (requestedCellId ? 16 : 1000);
+    const result = compact && !requestedCellId
+      ? await getCachedSpeciesMapPredictionCells(
+        speciesId,
+        query.bounds,
+        limit,
+        query.resolution,
+      )
+      : await getPredictionCells(
+        speciesId,
+        query.bounds,
+        limit,
+        query.resolution,
+        compact,
+      );
     const publicResult = {
       ...result,
       cells: result.cells.map((cell) => withoutInternalModelVersion(cell)),

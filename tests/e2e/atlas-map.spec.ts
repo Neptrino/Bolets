@@ -48,11 +48,11 @@ test("keeps the map reading guide balanced across modes and viewports", async ({
   );
   await expect(
     page.locator(".map-reading-guide").getByRole("link", {
-      name: "Entendre el mètode",
+      name: "Com es calcula",
     }),
   ).toHaveAttribute("href", "/metode");
   const desktopPrediction = await readGuideLayout();
-  expect(desktopPrediction.rectangles).toHaveLength(4);
+  expect(desktopPrediction.rectangles).toHaveLength(2);
   expect(
     Math.max(...desktopPrediction.rectangles.map(({ top }) => top)) -
       Math.min(...desktopPrediction.rectangles.map(({ top }) => top)),

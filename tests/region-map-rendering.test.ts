@@ -56,6 +56,7 @@ describe("prediction map rendering", () => {
 
   it("starts the Avui heatmap at 2.5 km resolution", () => {
     expect(todayPageSource).toContain("maximumPredictionGridSizeM={2500}");
+    expect(source).toContain("initialInteractive.current ? undefined : 12");
   });
 
   it("keeps the Avui overview static while maps remain interactive by default", () => {

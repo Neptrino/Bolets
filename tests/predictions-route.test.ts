@@ -9,6 +9,9 @@ const globalPredictionMocks = vi.hoisted(() => ({
   getGlobalCellRanking: vi.fn(),
 }));
 
+vi.mock("next/cache", () => ({
+  unstable_cache: (callback: (...args: never[]) => unknown) => callback,
+}));
 vi.mock("@/src/lib/predictions", () => predictionMocks);
 vi.mock("@/src/lib/global-predictions", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/src/lib/global-predictions")>()),
@@ -86,6 +89,9 @@ describe("prediction API bounds", () => {
     const body = await response.json();
 
     expect(response.status).toBe(200);
+    expect(response.headers.get("Cache-Control")).toBe(
+      "public, max-age=3600, s-maxage=3600, stale-while-revalidate=600",
+    );
     expect(body.cells[0]).toMatchObject({ score: 64, topSpeciesId: "boletus-edulis" });
     expect(globalPredictionMocks.getGlobalPredictionCells).toHaveBeenCalledWith(
       { west: 1, south: 41, east: 1.1, north: 41.1 },

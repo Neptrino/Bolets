@@ -13,6 +13,10 @@ const requestBucketDegrees: Record<SpatialGridSizeM, number> = {
   10000: 1,
 };
 
+export function requestBucketDegreesForGrid(resolution: SpatialGridSizeM) {
+  return requestBucketDegrees[resolution];
+}
+
 const maximumRequestAreaDegrees: Record<SpatialGridSizeM, number> = {
   250: 0.05,
   1000: 0.5,

@@ -401,7 +401,6 @@
   grid-area: copy;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 22px 28px;
-  padding-left: 36px;
 }
 .map-reading-guide-prediction .map-reading-links {
   grid-area: link;
@@ -412,9 +411,6 @@
 @media (max-width: 1000px) {
   .map-reading-guide-prediction .map-reading-copy {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .map-reading-guide-prediction .map-reading-copy > p:nth-child(3):last-child {
-    grid-column: 1 / -1;
   }
 }
 
@@ -432,9 +428,6 @@
   .map-reading-guide-prediction .map-reading-copy {
     grid-template-columns: minmax(0, 1fr);
     padding-left: 0;
-  }
-  .map-reading-guide-prediction .map-reading-copy > p:nth-child(3):last-child {
-    grid-column: auto;
   }
   .map-reading-guide-prediction .map-reading-links {
     align-self: auto;

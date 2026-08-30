@@ -221,7 +221,7 @@
 .finding-privacy-note { display: flex; gap: 8px; align-items: flex-start; margin: -2px 0 0; padding: 11px 12px; border-radius: 12px; background: rgba(255, 247, 232, .07); color: var(--on-dark-muted); font-size: var(--text-xs); line-height: 1.45; }
 .finding-privacy-note svg { flex: 0 0 auto; margin-top: 2px; color: #efb98f; }
 
-.findings-region-map { min-height: 520px; border: 1px solid var(--line); border-radius: 24px; background: #dce2d8; }
+.findings-region-map { height: min(56.25vw, 664px); min-height: 520px; border: 1px solid var(--line); border-radius: 24px; background: #dce2d8; }
 .findings-region-map .map-cell-visibility { top: 116px; }
 .personal-findings-region-map .map-cell-visibility { top: 156px; }
 .findings-map-toolbar { position: absolute; z-index: 2; top: 14px; left: 14px; right: 14px; display: flex; gap: 10px; justify-content: space-between; pointer-events: none; }
@@ -230,17 +230,43 @@
 .findings-map-status { position: absolute; z-index: 2; right: 14px; bottom: 14px; min-height: 0; }
 
 .finding-section { margin-top: 64px; }
+.finding-community-panel { display: grid; grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr); overflow: hidden; border: 1px solid rgba(39, 60, 48, .2); border-radius: 22px; background: var(--finding-green-deep); color: var(--on-dark); box-shadow: 0 22px 52px rgba(47, 51, 42, .14); }
+.finding-community-stats { display: grid; padding: 10px 26px; background: radial-gradient(circle at 0 0, rgba(242, 138, 46, .18), transparent 18rem); }
+.finding-community-stats > div { display: grid; gap: 5px; align-content: center; min-height: 100px; padding: 18px 0; border-top: 1px solid rgba(255, 247, 232, .14); }
+.finding-community-stats > div:first-child { border-top: 0; }
+.finding-community-stats strong { color: #f2b07b; font-size: var(--display-xs); line-height: 1; text-wrap: balance; }
+.finding-community-stats span { color: var(--on-dark-muted); font-size: var(--text-xs); font-weight: 800; }
+.finding-community-species { display: grid; align-content: start; gap: 18px; padding: 30px; background: var(--surface); color: var(--ink); }
+.finding-community-species > div { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; }
+.finding-community-species > div > svg { color: var(--clay); }
+.finding-community-species h3 { margin: 0; font-size: var(--text-xl); line-height: 1.1; }
+.finding-community-species p { margin: 5px 0 0; color: var(--muted); font-size: var(--text-xs); line-height: 1.5; }
+.finding-community-species nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.finding-community-species nav a { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--finding-cream); color: var(--ink); text-decoration: none; }
+.finding-community-species nav a:hover { border-color: rgba(197, 84, 37, .42); color: var(--clay); }
+.finding-community-species nav span { overflow: hidden; font-size: var(--text-xs); font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+.finding-community-species nav small { color: var(--muted); font-size: var(--text-xs); }
+.finding-community-empty { padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--finding-cream); }
+.finding-community-limits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+.finding-community-limits li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 11px; align-items: start; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-warm); }
+.finding-community-limits li > svg { color: var(--clay); }
+.finding-community-limits span { display: grid; gap: 4px; }
+.finding-community-limits strong { color: var(--ink); font-size: var(--text-xs); }
+.finding-community-limits small { color: var(--muted); font-size: var(--text-xs); line-height: 1.45; }
 .finding-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 .finding-card { overflow: hidden; transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
 .finding-card:hover, .finding-card:focus-within { transform: translateY(-3px); border-color: rgba(197, 84, 37, .42); box-shadow: 0 20px 50px rgba(75, 54, 33, .13); }
-.finding-card-link { display: block; height: 100%; color: inherit; text-decoration: none; }
-.finding-card-link:focus-visible { outline: 3px solid var(--clay); outline-offset: -4px; }
+.finding-card-media-link { display: block; color: inherit; text-decoration: none; }
+.finding-card-media-link:focus-visible { outline: 3px solid var(--clay); outline-offset: -4px; }
 .finding-card-image { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #d9d3c5; transition: transform .25s ease; }
-.finding-card-link:hover .finding-card-image, .finding-card-link:focus-visible .finding-card-image { transform: scale(1.018); }
+.finding-card-media-link:hover .finding-card-image, .finding-card-media-link:focus-visible .finding-card-image { transform: scale(1.018); }
 .finding-card-placeholder { display: grid; place-items: center; aspect-ratio: 4 / 3; background: #e4ddcc; color: var(--muted); font-size: var(--text-xs); font-weight: 900; }
 .finding-card-body { display: grid; gap: 7px; padding: 16px 18px 18px; }
 .finding-card-body h2, .finding-card-body h3 { margin: 0; font-size: var(--text-xl); }
-.finding-card-link:hover h2, .finding-card-link:focus-visible h2 { color: var(--clay); }
+.finding-card-species-link { color: inherit; text-decoration: none; }
+.finding-card-species-link:hover { color: var(--clay); }
+.finding-card-detail-link { display: inline-flex; gap: 5px; align-items: center; justify-self: start; margin-top: 3px; color: var(--clay); font-size: var(--text-xs); font-weight: 900; text-decoration: none; }
+.finding-card-detail-link:hover { text-decoration: underline; text-underline-offset: 3px; }
 .finding-card-meta { display: flex; flex-wrap: wrap; gap: 5px; color: var(--muted); font-size: var(--text-xs); font-weight: 800; }
 .finding-card-author { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
@@ -265,6 +291,8 @@
 .finding-detail-facts dt > svg { flex: 0 0 auto; color: var(--finding-green); }
 .finding-detail-facts dd { margin: 0; color: var(--ink); font-size: var(--text-sm); font-weight: 800; }
 .finding-detail-facts dd small { display: block; margin-top: 3px; color: var(--muted); font-size: var(--text-xs); font-weight: 500; line-height: 1.4; }
+.finding-detail-species-link { display: inline-flex; gap: 5px; align-items: center; color: var(--ink); text-decoration: none; }
+.finding-detail-species-link:hover { color: var(--clay); }
 .finding-detail-location { display: grid; gap: 12px; padding-top: 2px; }
 .finding-detail-location-heading { display: flex; gap: 10px; align-items: center; color: var(--finding-green-deep); }
 .finding-detail-location-heading > svg { flex: 0 0 auto; color: var(--clay); }
@@ -355,12 +383,16 @@
 
 @media (prefers-reduced-motion: reduce) {
   .finding-card, .finding-card-image { transition: none; }
-  .finding-card:hover, .finding-card:focus-within, .finding-card-link:hover .finding-card-image, .finding-card-link:focus-visible .finding-card-image { transform: none; }
+  .finding-card:hover, .finding-card:focus-within, .finding-card-media-link:hover .finding-card-image, .finding-card-media-link:focus-visible .finding-card-image { transform: none; }
 }
 
 @media (max-width: 900px) {
   .finding-report-layout, .finding-detail-grid { grid-template-columns: 1fr; }
   .finding-privacy-summary { position: static; }
+  .finding-community-panel { grid-template-columns: 1fr; }
+  .finding-community-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .finding-community-stats > div { min-height: 0; border-top: 0; border-left: 1px solid rgba(255, 247, 232, .14); }
+  .finding-community-stats > div:first-child { border-left: 0; }
   .finding-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .finding-library-toolbar { grid-template-columns: minmax(0, 1fr) minmax(170px, 210px); }
 }
@@ -373,7 +405,13 @@
   .finding-field-card { padding: 18px; }
   .finding-detail-facts > div { grid-template-columns: 1fr; gap: 5px; }
   .finding-field-row, .finding-photo-grid, .finding-grid { grid-template-columns: 1fr; }
+  .finding-community-stats { grid-template-columns: 1fr; padding-block: 8px; }
+  .finding-community-stats > div { min-height: 0; padding-block: 14px; border-left: 0; border-top: 1px solid rgba(255, 247, 232, .14); }
+  .finding-community-stats > div:first-child { border-top: 0; }
+  .finding-community-species { padding: 22px 18px; }
+  .finding-community-species nav, .finding-community-limits { grid-template-columns: 1fr; }
   .findings-map-shell, .findings-region-map { min-height: 430px; border-radius: 16px; }
+  .findings-region-map { height: 430px; }
   .finding-library-toolbar { grid-template-columns: 1fr; }
   .finding-personal-row { grid-template-columns: minmax(0, 1fr) auto; }
   .finding-personal-entry { grid-column: 1 / -1; grid-template-columns: 74px minmax(0, 1fr); }

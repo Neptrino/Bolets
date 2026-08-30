@@ -177,22 +177,20 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
               <p>El blau mostra on el bosc, l’altitud i el sòl encaixen amb l’espècie. Com més intens és, més superfície adequada hi ha.</p>
               <p>El ratllat lila mostra zones amb registres històrics generals. No indica que hi hagi bolets ara.</p>
             </> : isGlobal ? <>
-              <p>El color mostra l’espècie comestible amb la puntuació més alta a cada sector.</p>
-              <p>Només es puntuen les espècies que són de temporada. Selecciona un sector per veure les opcions més favorables i la seva evolució recent.</p>
-              <p>Aquest mapa compara condicions ambientals; no mostra troballes ni punts de recol·lecció.</p>
+              <p>Com més verd és el sector, millors són les condicions.</p>
+              <p>Selecciona un sector per veure quin bolet destaca.</p>
               <PredictionMapLegend />
             </> : <>
-              <p>El color combina la qualitat de l’hàbitat amb la pluja, la humitat, la temperatura i la temporada.</p>
-              <p>Selecciona un sector per veure què afavoreix o limita l’espècie. Els sectors veïns poden compartir dades meteorològiques.</p>
-              <p>Aquest mapa compara condicions ambientals; no mostra troballes ni punts de recol·lecció.</p>
+              <p>Com més verd és el sector, millors són les condicions per a aquesta espècie.</p>
+              <p>Selecciona’l per veure què l’afavoreix o el limita. No mostra llocs on s’hagin trobat bolets.</p>
               <PredictionMapLegend />
             </>}
           </div>
           <nav className="map-reading-links" aria-label="Informació per interpretar el mapa">
-            <Link href="/metode" className="text-link">Entendre el mètode <ArrowUpRight size={17} /></Link>
+            <Link href="/metode" className="text-link">Com es calcula <ArrowUpRight size={17} /></Link>
             {isGlobal
-              ? <Link href="/bolets" className="text-link">Consultar les fitxes d’espècies <ArrowUpRight size={17} /></Link>
-              : <Link href={`${speciesPath(species)}?region=${region}`} className="text-link">Llegir la fitxa de {species.identity.commonName} <ArrowUpRight size={17} /></Link>}
+              ? <Link href="/bolets" className="text-link">Veure les espècies <ArrowUpRight size={17} /></Link>
+              : <Link href={`${speciesPath(species)}?region=${region}`} className="text-link">Veure {species.identity.commonName} <ArrowUpRight size={17} /></Link>}
           </nav>
         </aside>
       }

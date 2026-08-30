@@ -8,21 +8,18 @@ import {
 } from "maplibre-gl";
 import { createRegionMap } from "@/components/region-map/map-instance";
 import { drawPredictionSurface } from "@/components/region-map/prediction-surface";
-import {
-  habitatEvidenceCopy,
-  mapStatusCopy,
-} from "@/components/region-map/status";
+import { habitatEvidenceCopy, mapStatusCopy } from "@/components/region-map/status";
 import {
   basemapStyle,
   cataloniaBounds,
   cataloniaSpatialBounds,
   createHistoricalEvidencePattern,
-  distributionCentre,
   drawTerritorialWindow,
   findCell,
   fitCatalonia,
   fitRegion,
   fitSpatialBounds,
+  initialRegionMapView,
   prepareCanvas,
   rememberBucket,
   visibleGridParams,
@@ -36,7 +33,6 @@ import type { RegionMapProps } from "@/components/region-map/types";
 import { useRegionBasemap } from "@/components/region-map/use-basemap";
 import { useCollapsibleMapControls } from "@/components/region-map/use-collapsible-controls";
 import { RegionMapView } from "@/components/region-map/view";
-import { regionCentres } from "@/data/regions";
 import { fetchJsonWithRetry } from "@/src/lib/fetch-json";
 import {
   GLOBAL_MINIMUM_GRID_SIZE_M,
@@ -199,21 +195,14 @@ export function RegionMap({
       initialSpeciesId.current && !initialHabitat.current,
     );
     const initialBasemapId = initializeBasemap();
-    const center: [number, number] = initialMapCentre.current
-      ? initialMapCentre.current
-      : initialFocusBounds.current
-        ? [
-            (initialFocusBounds.current.west + initialFocusBounds.current.east) / 2,
-            (initialFocusBounds.current.south + initialFocusBounds.current.north) / 2,
-          ]
-        : isPredictionMap && initialRegion.current
-          ? regionCentres[initialRegion.current]
-          : distributionCentre(initialActiveRegions.current);
-    const zoom = initialMapCentre.current || initialFocusBounds.current
-      ? (initialMapZoom.current ?? 10.8)
-      : isPredictionMap && initialRegion.current
-        ? 9.8
-        : 6.2;
+    const { center, zoom } = initialRegionMapView({
+      activeRegions: initialActiveRegions.current,
+      focusBounds: initialFocusBounds.current,
+      mapCentre: initialMapCentre.current,
+      mapZoom: initialMapZoom.current,
+      prediction: isPredictionMap,
+      region: initialRegion.current,
+    });
     const { geolocate, map: localMap } = createRegionMap({
       center,
       container: node.current,
@@ -755,7 +744,7 @@ export function RegionMap({
               });
             }
           },
-          { inFlight: inFlightBuckets.current },
+          { concurrency: initialInteractive.current ? undefined : 12, inFlight: inFlightBuckets.current },
         );
         if (!isCurrent()) return;
 

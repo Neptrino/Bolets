@@ -4,10 +4,11 @@ import { describe, expect, it } from "vitest";
 const findingCard = readFileSync("components/findings/finding-card.tsx", "utf8");
 
 describe("public finding card interactions", () => {
-  it("uses the full card content as one descriptive link", () => {
-    expect(findingCard).toContain('<Link className="finding-card-link"');
+  it("keeps the observation and canonical species destinations distinct", () => {
+    expect(findingCard).toContain('<Link className="finding-card-media-link"');
     expect(findingCard).toContain("Obrir la troballa de");
-    expect(findingCard).not.toContain("<h2><Link");
+    expect(findingCard).toContain('<Link className="finding-card-species-link" href={profileHref}>');
+    expect(findingCard).toContain('<Link className="finding-card-detail-link"');
   });
 
   it("keeps the identification explanation at section level instead of repeating it on every card", () => {

@@ -12,6 +12,7 @@ import { cataloniaLandRings } from "@/data/catalonia-land";
 import {
   cataloniaRegionsGeoJson,
   regionBounds,
+  regionCentres,
 } from "@/data/regions";
 import {
   boundsContain,
@@ -22,6 +23,7 @@ import {
   cacheAlignedMapBounds,
   formatMapCoordinate,
 } from "@/src/lib/map-query";
+import { cataloniaMapBounds as cataloniaBounds } from "@/src/lib/map-view-bounds";
 import type { PredictionViewportStatus } from "@/src/lib/prediction-map-status";
 import type {
   PredictionMapCell,
@@ -30,10 +32,6 @@ import type {
   SpatialGridSizeM,
 } from "@/src/lib/types";
 
-const cataloniaBounds: [[number, number], [number, number]] = [
-  [0.05, 40.48],
-  [3.32, 42.92],
-];
 const cataloniaSpatialBounds = {
   west: cataloniaBounds[0][0],
   south: cataloniaBounds[0][1],
@@ -326,6 +324,40 @@ function distributionCentre(activeRegions: RegionId[]): [number, number] {
   ];
 }
 
+function initialRegionMapView({
+  activeRegions,
+  focusBounds,
+  mapCentre,
+  mapZoom,
+  prediction,
+  region,
+}: {
+  activeRegions: RegionId[];
+  focusBounds?: SpatialBounds;
+  mapCentre?: [number, number];
+  mapZoom?: number;
+  prediction: boolean;
+  region?: RegionId;
+}) {
+  const center: [number, number] = mapCentre
+    ? mapCentre
+    : focusBounds
+      ? [
+          (focusBounds.west + focusBounds.east) / 2,
+          (focusBounds.south + focusBounds.north) / 2,
+        ]
+      : prediction && region
+        ? regionCentres[region]
+        : distributionCentre(activeRegions);
+  const zoom = mapCentre || focusBounds
+    ? (mapZoom ?? 10.8)
+    : prediction && region
+      ? 9.8
+      : 6.2;
+
+  return { center, zoom };
+}
+
 export {
   MapLayerControl,
   basemapOptions,
@@ -342,6 +374,7 @@ export {
   fitRegion,
   fitSpatialBounds,
   formatCellCount,
+  initialRegionMapView,
   prepareCanvas,
   rememberBucket,
   storedBasemapId,

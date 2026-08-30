@@ -152,6 +152,65 @@ describe("bucketed cell loading", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("reads persistent buckets in parallel without raising network concurrency", async () => {
+    let activeCacheReads = 0;
+    let maximumCacheReads = 0;
+    const cache = {
+      match: vi.fn(async () => {
+        activeCacheReads += 1;
+        maximumCacheReads = Math.max(maximumCacheReads, activeCacheReads);
+        await new Promise((resolve) => setTimeout(resolve, 2));
+        activeCacheReads -= 1;
+        return new Response(JSON.stringify({ cells: [], truncated: false }), {
+          headers: {
+            "Content-Type": "application/json",
+            "x-bolets-cached-at": new Date().toISOString(),
+          },
+        });
+      }),
+    };
+    vi.stubGlobal("window", {
+      caches: { open: vi.fn(async () => cache) },
+    });
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const outcome = await loadBucketedCells(
+      Array.from({ length: 12 }, (_, index) => bucket(1 + index / 10)),
+      (candidate) => `https://bolets.test${url(candidate)}`,
+      new AbortController().signal,
+      () => undefined,
+      { concurrency: 2 },
+    );
+
+    expect(outcome).toEqual({ succeeded: 12, failed: 0 });
+    expect(maximumCacheReads).toBeGreaterThan(4);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("keeps cold network requests within the configured limit", async () => {
+    let activeRequests = 0;
+    let maximumRequests = 0;
+    respondWith(async () => {
+      activeRequests += 1;
+      maximumRequests = Math.max(maximumRequests, activeRequests);
+      await new Promise((resolve) => setTimeout(resolve, 2));
+      activeRequests -= 1;
+      return { body: { cells: [], truncated: false } };
+    });
+
+    const outcome = await loadBucketedCells(
+      Array.from({ length: 12 }, (_, index) => bucket(1 + index / 10)),
+      url,
+      new AbortController().signal,
+      () => undefined,
+      { concurrency: 3 },
+    );
+
+    expect(outcome).toEqual({ succeeded: 12, failed: 0 });
+    expect(maximumRequests).toBe(3);
+  });
+
   it("still delivers a bucket inherited from a run that was superseded", async () => {
     let release = () => undefined as void;
     const held = new Promise<void>((resolve) => {

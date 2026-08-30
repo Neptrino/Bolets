@@ -6,7 +6,6 @@ import {
   ArrowUpRight,
   Clock3,
   Database,
-  FlaskConical,
   Gauge,
   Map,
   MapPinned,
@@ -27,7 +26,6 @@ import {
   type RankedOverviewItem,
   type CurrentOverviewItem,
 } from "@/src/lib/current-overview";
-import { developmentOverviewSimulation } from "@/src/lib/current-overview-simulation";
 import { GLOBAL_SPECIES_ID } from "@/src/lib/global-map";
 import { SEASONAL_ACTIVITY_LABELS } from "@/src/lib/seasonality";
 import { opportunityLabel } from "@/src/lib/scoring";
@@ -75,25 +73,10 @@ const currentMapRegions = regionSelectItems
   .map(({ value }) => value);
 const MAX_OVERVIEW_CARDS = 10;
 
-const limitingFactorLabels = {
-  habitatCoverage: "L’hàbitat disponible",
-  altitude: "L’altitud",
-  phenology: "El moment de la temporada",
-  water: "La disponibilitat d’aigua",
-  temperature: "La temperatura",
-  extremes: "El fred o la calor extrems",
-} satisfies Record<
-  RegionalPredictionSummary["result"]["components"][number]["id"],
-  string
->;
-
 function limitingFactor(item: RankedOverviewItem) {
-  const limiting = item.summary?.result.components
+  return item.summary?.result.components
     .filter((factor) => factor.score !== null)
-    .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0];
-  return limiting
-    ? limitingFactorLabels[limiting.id]
-    : "Cap factor destacat";
+    .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0]?.label ?? "Sense factor limitant publicat";
 }
 
 function extentMetric(summary: RegionalPredictionSummary) {
@@ -115,14 +98,14 @@ function observationWindow(items: RankedOverviewItem[]) {
 
   if (!first || !last) return null;
   if (dateOnly.format(first) === dateOnly.format(last)) {
-    return `Dades del ${dateOnly.format(last)} · ${timeOnly.format(first)}–${timeOnly.format(last)}`;
+    return `Lectures del ${dateOnly.format(last)}, entre les ${timeOnly.format(first)} i les ${timeOnly.format(last)}`;
   }
-  return `Dades entre ${dateTime.format(first)} i ${dateTime.format(last)}`;
+  return `Lectures entre ${dateTime.format(first)} i ${dateTime.format(last)}`;
 }
 
 function monthlyActivityLabel(activity: CurrentOverviewItem["seasonalActivity"]) {
   const label = SEASONAL_ACTIVITY_LABELS[activity];
-  return activity === "peak" || activity === "inactive" ? label : `temporada ${label}`;
+  return activity === "peak" || activity === "inactive" ? label : `activitat ${label}`;
 }
 
 function overviewLocationName(item: RankedOverviewItem) {
@@ -152,16 +135,10 @@ async function CurrentOverview() {
   // request so the runtime-only internal Supabase URL is available; the two
   // overview loaders share one generation-bound data cache.
   await connection();
-  const [loadedCurrentItems, loadedAreaItems] = await Promise.all([
+  const [allItems, areaItems] = await Promise.all([
     loadCachedCurrentOverview(),
     loadCachedAreaOverview(),
   ]);
-  const overview = developmentOverviewSimulation(
-    loadedCurrentItems,
-    loadedAreaItems,
-  );
-  const allItems = overview.currentItems;
-  const areaItems = overview.areaItems;
   const items = rankOverviewItems([...allItems, ...areaItems]);
   const visibleItems = items.slice(0, MAX_OVERVIEW_CARDS);
   const leader = items.find((item) => item.status === "available" && item.summary);
@@ -175,11 +152,6 @@ async function CurrentOverview() {
 
   return (
     <>
-      {overview.simulated ? (
-        <p className="current-simulation-label">
-          <FlaskConical size={14} aria-hidden="true" /> Simulació local · dades fictícies
-        </p>
-      ) : null}
       {leader?.summary && leaderScore === 0 ? (
         <aside className="current-leader current-leader-empty">
           <ShieldCheck size={24} />
@@ -189,7 +161,7 @@ async function CurrentOverview() {
               Les condicions no són favorables en cap dels territoris comparats.
               {dominantLimitingComponent(allItems)
                 ? <> El principal fre ara mateix és «{dominantLimitingComponent(allItems)}».</>
-                : null} Pots consultar les deu zones més ben classificades a continuació.
+                : null} Pots consultar totes les zones a continuació.
             </p>
           </div>
         </aside>
@@ -197,7 +169,7 @@ async function CurrentOverview() {
         <section className="current-leader" aria-labelledby="current-leader-title">
           <div className="current-leader-topline">
             <p className="current-leader-eyebrow"><MapPinned size={15} /> Millors condicions ara</p>
-            <p className="current-leader-meta"><Clock3 size={14} /> Dades del {dateTime.format(new Date(leader.summary.snapshot.observedAt))}</p>
+            <p className="current-leader-meta"><Clock3 size={14} /> Calculat amb dades de {dateTime.format(new Date(leader.summary.snapshot.observedAt))}</p>
           </div>
           <div className="current-leader-copy">
             <h2 id="current-leader-title">{leaderName}</h2>
@@ -206,7 +178,7 @@ async function CurrentOverview() {
               <Map size={16} /> Veure al mapa <ArrowUpRight size={16} />
             </Link>
           </div>
-          <div className="current-leader-score" aria-label={`Puntuació més alta ${leaderScore} sobre 100`}>
+          <div className="current-leader-score" aria-label={`Millor cel·la territorial ${leaderScore} sobre 100`}>
             <strong>{leaderScore}</strong>
             <span>/ 100</span>
             <small>{opportunityLabel(leaderScore)}</small>
@@ -250,7 +222,7 @@ async function CurrentOverview() {
           />
         </div>
         <footer className="current-map-footer">
-          <PredictionMapLegend variant="gradient" />
+          <PredictionMapLegend />
         </footer>
       </section>
 
@@ -263,7 +235,7 @@ async function CurrentOverview() {
         <header className="current-board-heading">
           <div>
             <p className="eyebrow">Comparador territorial</p>
-            <h2 id="current-board-title">Les millors zones avui</h2>
+            <h2 id="current-board-title">Zones i espècies, de més a menys puntuació</h2>
           </div>
           {observedWindow ? (
             <div>
@@ -274,9 +246,9 @@ async function CurrentOverview() {
 
         {items.length > 0 ? <>
           <div className="current-board-columns" aria-hidden="true">
-            <span>Lloc</span><span>Zona i bolet</span><span>Puntuació</span><span>Abast</span><span>Veure</span>
+            <span>Posició</span><span>Zona i bolet</span><span>Puntuació</span><span>Abast</span><span>Mapa</span>
           </div>
-          <ol className="current-overview-grid" aria-label="Rànquing actual de zones i bolets">
+          <ol className="current-overview-grid" aria-label="Puntuacions actuals per espècie i territori, de més a menys">
             {visibleItems.map((item, index) => {
             const summary = item.summary;
             const score = summary?.bestCell.score;
@@ -284,7 +256,8 @@ async function CurrentOverview() {
             const rank = isAvailable ? index + 1 : null;
             const isArea = isAreaOverviewItem(item);
             const locationName = isArea ? item.areaName : item.regionName;
-            const locationLabel = isArea ? item.areaTypeLabel : "regió";
+            const locationLabel = isArea ? item.areaTypeLabel : "regió de predicció";
+            const gridSizeKm = summary ? summary.gridSizeM / 1000 : isArea ? 1 : 10;
             const mapPath = isArea
               ? territorialMapPath(item.speciesId, item.regionId, item.bounds)
               : `/map?species=${item.speciesId}&region=${item.regionId}`;
@@ -300,7 +273,7 @@ async function CurrentOverview() {
                   <p className="current-row-species"><Link href={speciesPath(item)} className="current-row-species-link">{item.speciesName}<ArrowUpRight size={13} /></Link><span>{locationLabel} · {monthlyActivityLabel(item.seasonalActivity)}</span></p>
                 </div>
                 {isAvailable && summary && score !== null && score !== undefined ? (
-                  <div className="current-score" aria-label={`Puntuació ${score} sobre 100, ${opportunityLabel(score)}`}>
+                  <div className="current-score" aria-label={`Millor cel·la de ${gridSizeKm} km ${score} sobre 100, ${opportunityLabel(score)}`}>
                     <div><strong>{score}</strong><span>/100 · {opportunityLabel(score)}</span></div>
                     <span className="current-score-track" aria-hidden="true"><span style={{ width: `${score}%` }} /></span>
                   </div>
@@ -311,7 +284,9 @@ async function CurrentOverview() {
                   </div>
                 )}
                 {summary ? (
-                  <p className="current-row-coverage">{extentMetric(summary)}</p>
+                  <dl className="current-row-signals">
+                    <div><dt>Abast dins la zona</dt><dd>{extentMetric(summary)}</dd></div>
+                  </dl>
                 ) : (
                   <p className="current-row-signals-empty">—</p>
                 )}
@@ -354,7 +329,7 @@ export default function MushroomsTodayPage() {
       <PageHeader
         eyebrow={<><Map size={15} /> Condicions actuals per territori</>}
         title={<>Bolets avui<br /><PageTitleAccent>a Catalunya.</PageTitleAccent></>}
-        description="Comparem les espècies comestibles en temporada i destaquem on tenen millors condicions, sense confirmar que hi hagi bolets."
+        description="Compara les espècies comestibles de temporada i descobreix quins territoris tenen avui les condicions més favorables."
         layout="split"
       />
       <Suspense fallback={<CurrentOverviewLoading />}>

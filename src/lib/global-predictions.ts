@@ -1,7 +1,9 @@
+import { cataloniaSpatialBounds } from "@/data/regions";
 import { habitatScoringValues } from "@/supabase/functions/_shared/habitat-scoring-values";
 import type { GlobalGridSizeM } from "@/src/lib/global-map";
 import { habitatProfileKey } from "@/src/lib/habitat";
 import { PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
+import { requestBucketDegreesForGrid } from "@/src/lib/map-query";
 import { spatialGlobalEnvironmentResponseSchema } from "@/src/lib/schema";
 import { calculateSuitability, missingModelFields } from "@/src/lib/scoring";
 import { edibleSpecies } from "@/src/lib/species-collections";
@@ -37,6 +39,12 @@ export const globalCandidateSpecies = edibleSpecies.filter(
 // open forever. Callers treat an aborted read as unavailable rather than
 // manufacturing a prediction.
 const GLOBAL_ENVIRONMENT_TIMEOUT_MS = 5_000;
+// A 2×2 group keeps the shared payload modest while letting four canonical
+// public buckets reuse one upstream environment read.
+const GLOBAL_MAP_SHARD_FACTOR = 2;
+const GLOBAL_MAP_SHARD_LIMIT = 1000;
+const GLOBAL_MAP_READ_SHAPE_VERSION = "global-map-shard-2x2-coalesced-v1";
+const globalEnvironmentInFlight = new Map<string, Promise<GlobalEnvironmentPayload>>();
 
 function hashKey(input: string) {
   let hash = 5381;
@@ -64,8 +72,11 @@ async function fetchGlobalEnvironment(
   bounds: SpatialBounds,
   limit: number,
   gridSizeM: GlobalGridSizeM,
+  readShapeVersion?: string,
 ): Promise<GlobalEnvironmentPayload> {
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+  const baseUrl = process.env.SUPABASE_URL;
+  const anonKey = process.env.SUPABASE_ANON_KEY;
+  if (!baseUrl || !anonKey) {
     throw new Error("Spatial environment service is not configured");
   }
   const query = new URLSearchParams({
@@ -79,21 +90,92 @@ async function fetchGlobalEnvironment(
     view: "score",
     viewVersion: PREDICTION_CACHE_VERSION,
     setVersion: globalSpeciesSetKey,
+    ...(readShapeVersion ? { readShapeVersion } : {}),
   });
-  const response = await fetch(
-    `${process.env.SUPABASE_URL}/functions/v1/read-spatial-environment?${query}`,
-    {
+  const url = `${baseUrl}/functions/v1/read-spatial-environment?${query}`;
+  const pending = globalEnvironmentInFlight.get(url);
+  if (pending) return pending;
+
+  const task = (async () => {
+    const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
-        apikey: process.env.SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${anonKey}`,
+        apikey: anonKey,
       },
       cache: "force-cache",
       next: { revalidate: 300 },
       signal: AbortSignal.timeout(GLOBAL_ENVIRONMENT_TIMEOUT_MS),
-    },
+    });
+    if (!response.ok) throw new Error(`Spatial environment service returned ${response.status}`);
+    return spatialGlobalEnvironmentResponseSchema.parse(await response.json());
+  })();
+  globalEnvironmentInFlight.set(url, task);
+  try {
+    return await task;
+  } finally {
+    if (globalEnvironmentInFlight.get(url) === task) {
+      globalEnvironmentInFlight.delete(url);
+    }
+  }
+}
+
+const stableCoordinate = (value: number) =>
+  Math.round(value * 1_000_000) / 1_000_000;
+
+function globalMapReadBounds(
+  bounds: SpatialBounds,
+  gridSizeM: GlobalGridSizeM,
+) {
+  const bucketDegrees = requestBucketDegreesForGrid(gridSizeM);
+  const tolerance = 1e-6;
+  if (
+    bounds.east - bounds.west > bucketDegrees + tolerance ||
+    bounds.north - bounds.south > bucketDegrees + tolerance
+  ) {
+    return bounds;
+  }
+
+  const shardDegrees = bucketDegrees * GLOBAL_MAP_SHARD_FACTOR;
+  const west = Math.max(
+    cataloniaSpatialBounds.west,
+    stableCoordinate(Math.floor(bounds.west / shardDegrees) * shardDegrees),
   );
-  if (!response.ok) throw new Error(`Spatial environment service returned ${response.status}`);
-  return spatialGlobalEnvironmentResponseSchema.parse(await response.json());
+  const south = Math.max(
+    cataloniaSpatialBounds.south,
+    stableCoordinate(Math.floor(bounds.south / shardDegrees) * shardDegrees),
+  );
+  return {
+    west,
+    south,
+    east: Math.min(
+      cataloniaSpatialBounds.east,
+      stableCoordinate(west + shardDegrees),
+    ),
+    north: Math.min(
+      cataloniaSpatialBounds.north,
+      stableCoordinate(south + shardDegrees),
+    ),
+  };
+}
+
+function cellsForBounds(cells: GlobalEnvironmentCell[], bounds: SpatialBounds) {
+  const centreLongitude = (bounds.west + bounds.east) / 2;
+  const centreLatitude = (bounds.south + bounds.north) / 2;
+  const distanceFromCentre = (cell: GlobalEnvironmentCell) => {
+    const [[west, south], [east, north]] = cell.bounds;
+    return ((west + east) / 2 - centreLongitude) ** 2
+      + ((south + north) / 2 - centreLatitude) ** 2;
+  };
+  return cells
+    .filter((cell) => {
+      const [[west, south], [east, north]] = cell.bounds;
+      return east >= bounds.west && west <= bounds.east
+        && north >= bounds.south && south <= bounds.north;
+    })
+    .sort((left, right) =>
+      distanceFromCentre(left) - distanceFromCentre(right)
+      || left.cellId.localeCompare(right.cellId),
+    );
 }
 
 type CandidateSlot = { species: SpeciesProfile; slot: number };
@@ -253,10 +335,28 @@ export async function getGlobalPredictionCells(
   limit = 1000,
   gridSizeM: GlobalGridSizeM = 1000,
 ) {
-  const payload = await fetchGlobalEnvironment(bounds, limit, gridSizeM);
+  const readBounds = globalMapReadBounds(bounds, gridSizeM);
+  const sharded = Object.keys(bounds).some(
+    (key) => bounds[key as keyof SpatialBounds] !== readBounds[key as keyof SpatialBounds],
+  );
+  const normalizedLimit = Math.min(Math.max(Math.round(limit), 1), 1000);
+  const payload = await fetchGlobalEnvironment(
+    readBounds,
+    sharded ? GLOBAL_MAP_SHARD_LIMIT : normalizedLimit,
+    gridSizeM,
+    sharded ? GLOBAL_MAP_READ_SHAPE_VERSION : undefined,
+  );
   const candidates = resolveCandidateSlots(payload.habitatProfiles);
-  const cells = payload.cells.map((cell) => combineCell(cell, candidates).mapCell);
-  return { cells, truncated: payload.truncated };
+  const sourceCells = sharded
+    ? cellsForBounds(payload.cells, bounds)
+    : payload.cells;
+  const cells = sourceCells
+    .slice(0, normalizedLimit)
+    .map((cell) => combineCell(cell, candidates).mapCell);
+  return {
+    cells,
+    truncated: payload.truncated || (sharded && sourceCells.length > normalizedLimit),
+  };
 }
 
 /**
