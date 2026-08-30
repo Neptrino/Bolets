@@ -120,6 +120,38 @@ describe("bucketed cell loading", () => {
     expect(new Set(requested).size).toBe(2);
   });
 
+  it("uses a fresh persistent bucket without touching the network", async () => {
+    const cachedPayload = {
+      cells: [{ cellId: "cached" }],
+      truncated: false,
+    };
+    const cache = {
+      match: vi.fn(async () => new Response(JSON.stringify(cachedPayload), {
+        headers: {
+          "Content-Type": "application/json",
+          "x-bolets-cached-at": new Date().toISOString(),
+        },
+      })),
+    };
+    vi.stubGlobal("window", {
+      caches: { open: vi.fn(async () => cache) },
+    });
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const stored: string[] = [];
+
+    const outcome = await loadBucketedCells<{ cellId: string }>(
+      [bucket(1.1)],
+      () => "https://bolets.test/api/predictions?west=1.1",
+      new AbortController().signal,
+      (payload) => stored.push(...payload.cells.map((cell) => cell.cellId)),
+    );
+
+    expect(outcome).toEqual({ succeeded: 1, failed: 0 });
+    expect(stored).toEqual(["cached"]);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("still delivers a bucket inherited from a run that was superseded", async () => {
     let release = () => undefined as void;
     const held = new Promise<void>((resolve) => {

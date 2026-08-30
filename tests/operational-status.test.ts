@@ -258,6 +258,7 @@ describe("operational status", () => {
     expect(migration).toMatch(/revoke all on function public\.read_operational_status\(\)[\s\S]*from public, anon, authenticated/i);
     expect(migration).toMatch(/grant execute[\s\S]*to service_role/i);
     expect(migration).toContain("'observedPublications'");
+    expect(serviceWorker).toContain('const MAP_BUCKET_CACHE = "bolets-map-buckets-v1"');
     expect(migration).toContain("'forecastPublication'");
     expect(migration).toContain("future_horizon_count");
     expect(migration).not.toMatch(/metadata'\s*,\s*recent\.metadata/i);

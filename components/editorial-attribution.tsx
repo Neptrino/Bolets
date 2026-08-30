@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BookOpenCheck, ExternalLink } from "lucide-react";
-import { editorialAuthors, getEditorialMetadata } from "@/data/editorial";
+import { editorialAuthors, editorialTeam, getEditorialMetadata } from "@/data/editorial";
 import type { SourceReference } from "@/src/lib/types";
 
 function formatEditorialDate(date: string) {
@@ -12,9 +12,11 @@ function formatEditorialDate(date: string) {
 
 export function EditorialAttribution({
   contentId,
+  showUpdatedAt = true,
   sources,
 }: {
   contentId: string;
+  showUpdatedAt?: boolean;
   sources: SourceReference[];
 }) {
   const editorial = getEditorialMetadata(contentId);
@@ -22,7 +24,7 @@ export function EditorialAttribution({
   const uniqueSources = [...new Map(sources.map((source) => [source.url, source])).values()];
 
   return (
-    <aside className="editorial-panel" aria-label="Autoria i fonts">
+    <aside className="editorial-panel" aria-label="Autoria, revisió i fonts">
       <div className="editorial-summary">
         <div className="editorial-panel-heading">
           <BookOpenCheck size={18} aria-hidden="true" />
@@ -31,8 +33,11 @@ export function EditorialAttribution({
             <strong><Link href="/equip-editorial#autoria">{author.name}</Link></strong>
           </div>
         </div>
-        <dl className="editorial-meta">
-          <div><dt>Actualitzat</dt><dd><time dateTime={editorial.updatedAt}>{formatEditorialDate(editorial.updatedAt)}</time></dd></div>
+        <dl className={`editorial-meta${showUpdatedAt ? "" : " editorial-meta-without-date"}`}>
+          <div><dt>Editor</dt><dd><Link href="/equip-editorial">{editorialTeam.name}</Link></dd></div>
+          {showUpdatedAt ? (
+            <div><dt>Actualitzat</dt><dd><time dateTime={editorial.updatedAt}>{formatEditorialDate(editorial.updatedAt)}</time></dd></div>
+          ) : null}
           <div><dt>Revisió</dt><dd>{editorial.reviewStatus === "expert-reviewed" ? "Micològica independent" : "Editorial, no micològica"}</dd></div>
         </dl>
       </div>

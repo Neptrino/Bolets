@@ -18,7 +18,16 @@ const SHELL_CACHE = `bolets-shell-${VERSION}`;
 const ASSET_CACHE = `bolets-assets-${VERSION}`;
 const DATA_CACHE = `bolets-data-${VERSION}`;
 const TILE_CACHE = `bolets-tiles-${VERSION}`;
-const CURRENT_CACHES = [SHELL_CACHE, ASSET_CACHE, DATA_CACHE, TILE_CACHE];
+// Client map code owns this short-lived, bounded cache. Keep it when the
+// service worker rotates its own caches.
+const MAP_BUCKET_CACHE = "bolets-map-buckets-v1";
+const CURRENT_CACHES = [
+  SHELL_CACHE,
+  ASSET_CACHE,
+  DATA_CACHE,
+  TILE_CACHE,
+  MAP_BUCKET_CACHE,
+];
 
 const OFFLINE_URL = "/offline";
 

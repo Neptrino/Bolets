@@ -7,6 +7,7 @@ import {
   type MapMouseEvent,
 } from "maplibre-gl";
 import { createRegionMap } from "@/components/region-map/map-instance";
+import { drawPredictionSurface } from "@/components/region-map/prediction-surface";
 import {
   habitatEvidenceCopy,
   mapStatusCopy,
@@ -57,6 +58,7 @@ import {
 } from "@/src/lib/bucket-loader";
 import {
   bucketsForBounds,
+  prioritizeBucketsAround,
 } from "@/src/lib/map-query";
 import {
   habitatBucketUrl,
@@ -65,7 +67,6 @@ import {
 import {
   predictionViewportStatus,
 } from "@/src/lib/prediction-map-status";
-import { predictionMapCellColour } from "@/src/lib/suitability-scale";
 import type {
   OccurrenceSupportCell,
   GlobalSpeciesScore,
@@ -83,12 +84,16 @@ export function RegionMap({
   compactLegend = false,
   initialCentre,
   initialZoom,
+  interactive = true,
   focusBounds,
   selectedRegion,
   speciesId,
   habitat = false,
   mode = "prediction",
+  maximumPredictionGridSizeM,
   predictionAvailable = true,
+  predictionRendering = "cells",
+  showReadyStatus = true,
   selectedCellId,
   className = "",
   fullscreenTarget = "viewport",
@@ -107,6 +112,7 @@ export function RegionMap({
   const initialAutoGeolocate = useRef(autoGeolocate);
   const initialMapCentre = useRef(initialCentre);
   const initialMapZoom = useRef(initialZoom);
+  const initialInteractive = useRef(interactive);
   const initialFocusBounds = useRef(focusBounds);
   const initialRegion = useRef(selectedRegion);
   const initialActiveRegions = useRef(activeRegions);
@@ -151,7 +157,11 @@ export function RegionMap({
     changeBasemap,
     initializeBasemap,
     selectedBasemapId,
-  } = useRegionBasemap(map, drawCellsRef);
+  } = useRegionBasemap(map, drawCellsRef, {
+    // A static map has no layer control, so a saved choice from another map
+    // must not silently replace its intended default relief presentation.
+    rememberSelection: interactive,
+  });
   const [cellsVisible, setCellsVisible] = useState(true);
   const [cellOpacity, setCellOpacity] = useState(100);
   const [historicalEvidenceVisible, setHistoricalEvidenceVisible] =
@@ -206,8 +216,11 @@ export function RegionMap({
       container: node.current,
       fullscreenContainer: fullscreenContainer ?? undefined,
       habitat: initialHabitat.current,
+      interactive: initialInteractive.current,
+      showFullscreen: initialInteractive.current,
+      showNavigation: initialInteractive.current,
       style: basemapStyle(initialBasemapId),
-      useGeolocation: Boolean(initialSpeciesId.current),
+      useGeolocation: Boolean(initialSpeciesId.current) && initialInteractive.current,
       zoom,
     });
     map.current = localMap;
@@ -219,12 +232,15 @@ export function RegionMap({
         fitSpatialBounds(localMap, initialFocusBounds.current, false);
       else if (isPredictionMap && initialRegion.current)
         fitRegion(localMap, initialRegion.current, false);
-      else if (!initialMapCentre.current) fitCatalonia(localMap, false);
+      else if (!initialMapCentre.current)
+        fitCatalonia(localMap, false);
       drawCellsRef.current();
     });
 
     const resizeObserver = new ResizeObserver(() => {
       localMap.resize();
+      if (!initialInteractive.current && !initialMapCentre.current && !initialFocusBounds.current && !initialRegion.current)
+        fitCatalonia(localMap, false);
       drawCellsRef.current();
     });
     resizeObserver.observe(node.current);
@@ -623,25 +639,14 @@ export function RegionMap({
       const context = prepareCanvas(canvas);
       if (!context) return;
       withCataloniaLandClip(context, localMap, () => {
-        for (const cell of cellsById.current.values()) {
-          const [[west, south], [east, north]] = cell.cellBounds;
-          const topLeft = localMap.project([west, north]);
-          const bottomRight = localMap.project([east, south]);
-          const cellWidth = Math.max(bottomRight.x - topLeft.x, 1);
-          const cellHeight = Math.max(bottomRight.y - topLeft.y, 1);
-          const selected = cell.cellId === selectedCellIdRef.current;
-          context.fillStyle = predictionMapCellColour(cell.score);
-          context.fillRect(topLeft.x, topLeft.y, cellWidth, cellHeight);
-          context.strokeStyle = selected
-            ? "#3b3b3b"
-            : cell.score === 0
-              ? "rgba(92, 87, 78, 0.58)"
-              : "rgba(242, 235, 213, 0.78)";
-          context.lineWidth = selected ? 2.5 : 0.65;
-          context.setLineDash(cell.score === 0 && !selected ? [3, 3] : []);
-          context.strokeRect(topLeft.x, topLeft.y, cellWidth, cellHeight);
-          context.setLineDash([]);
-        }
+        drawPredictionSurface({
+          cells: cellsById.current.values(),
+          context,
+          localMap,
+          output: canvas,
+          rendering: predictionRendering,
+          selectedCellId: selectedCellIdRef.current,
+        });
       });
       drawTerritorialWindow(context, localMap, initialFocusBounds.current);
     };
@@ -664,7 +669,11 @@ export function RegionMap({
       withheld: 0,
       truncated: false,
       incomplete: false,
-      gridSizeM: visibleGridSize(localMap, minimumGridSizeM),
+      gridSizeM: visibleGridSize(
+        localMap,
+        minimumGridSizeM,
+        maximumPredictionGridSizeM,
+      ),
     });
     // One controller for the whole species/layer run. Superseded viewports are
     // not cancelled: their buckets are already paid for and stay useful the
@@ -673,9 +682,14 @@ export function RegionMap({
     request.current = controller;
 
     const loadCells = async () => {
-      const gridSizeM = visibleGridSize(localMap, minimumGridSizeM);
+      const gridSizeM = visibleGridSize(
+        localMap,
+        minimumGridSizeM,
+        maximumPredictionGridSizeM,
+      );
+      const viewportBounds = visibleSpatialBounds(localMap);
       const buckets = bucketsForBounds(
-        visibleSpatialBounds(localMap),
+        viewportBounds,
         gridSizeM,
         cataloniaSpatialBounds,
       );
@@ -705,7 +719,13 @@ export function RegionMap({
       };
       repaint();
 
-      const missing = buckets.filter((_, index) => !bucketCells.current.has(urls[index]));
+      const missing = prioritizeBucketsAround(
+        buckets.filter((_, index) => !bucketCells.current.has(urls[index])),
+        [
+          (viewportBounds.west + viewportBounds.east) / 2,
+          (viewportBounds.south + viewportBounds.north) / 2,
+        ],
+      );
       const truncatedBuckets = { any: false };
       try {
         const { failed } = await loadBucketedCells<PredictionMapCell>(
@@ -719,7 +739,18 @@ export function RegionMap({
               predictionBucketUrl(bucket, speciesId, gridSizeM),
               payload.cells,
             );
-            if (isCurrent()) repaint();
+            if (isCurrent()) {
+              repaint();
+              const partialCoverage = summarizeBucketCoverage(
+                cellsById.current.values(),
+                { truncated: truncatedBuckets.any, failed: 0 },
+              );
+              setCellState({
+                ...partialCoverage,
+                status: "loading",
+                gridSizeM,
+              });
+            }
           },
           { inFlight: inFlightBuckets.current },
         );
@@ -864,8 +895,10 @@ export function RegionMap({
       });
     };
     const activate = () => {
-      localMap.on("click", handleCellClick);
-      localMap.on("mousemove", updatePointer);
+      if (initialInteractive.current) {
+        localMap.on("click", handleCellClick);
+        localMap.on("mousemove", updatePointer);
+      }
       localMap.on("move", drawCells);
       locator?.on("geolocate", handleGeolocate);
       void loadCells();
@@ -903,7 +936,14 @@ export function RegionMap({
       locator?.off("geolocate", handleGeolocate);
       drawCellsRef.current = () => undefined;
     };
-  }, [showCompatibility, speciesId, onCellSelect, onCellDetailStateChange]);
+  }, [
+    showCompatibility,
+    speciesId,
+    maximumPredictionGridSizeM,
+    predictionRendering,
+    onCellSelect,
+    onCellDetailStateChange,
+  ]);
 
   const gridDimensions = formatGridDimensions(cellState.gridSizeM);
   const evidenceCopy = habitatEvidenceCopy(habitatEvidenceState);
@@ -934,6 +974,7 @@ export function RegionMap({
       historicalEvidenceOpacity={historicalEvidenceOpacity}
       historicalEvidenceOpacityId={historicalEvidenceOpacityId}
       historicalEvidenceVisible={historicalEvidenceVisible}
+      interactive={interactive}
       layerControlsExpanded={layerControlsExpanded}
       layerControlsId={layerControlsId}
       map={map}
@@ -951,6 +992,7 @@ export function RegionMap({
       selectedBasemapId={selectedBasemapId}
       selectedRegion={selectedRegion}
       showCompatibility={showCompatibility}
+      showReadyStatus={showReadyStatus}
       speciesId={speciesId}
       statusCopy={statusCopy}
     />

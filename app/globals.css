@@ -4,6 +4,7 @@
 @import "maplibre-gl/dist/maplibre-gl.css";
 @import "./styles/tokens.css";
 @import "./styles/daily-share.css";
+@import "./styles/today-map.css";
 @import "./styles/rovellons-guide.css";
 @import "./styles/ceps-and-guide-hubs.css";
 @import "./styles/territorial-responsive.css";

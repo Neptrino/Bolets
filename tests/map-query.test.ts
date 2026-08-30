@@ -5,6 +5,7 @@ import {
   formatMapCoordinate,
   mapBoundsFitResolution,
   parseSpatialMapQuery,
+  prioritizeBucketsAround,
 } from "@/src/lib/map-query";
 
 const catalonia = { west: 0.05, south: 40.48, east: 3.32, north: 42.92 };
@@ -121,6 +122,19 @@ describe("request bucket enumeration", () => {
     )) {
       expect(mapBoundsFitResolution(bucket, 250)).toBe(true);
     }
+  });
+
+  it("can load central buckets first without changing the lattice", () => {
+    const buckets = [
+      { west: 0, south: 40, east: 0.25, north: 40.25 },
+      { west: 1, south: 41, east: 1.25, north: 41.25 },
+      { west: 2, south: 42, east: 2.25, north: 42.25 },
+    ];
+    const prioritized = prioritizeBucketsAround(buckets, [1.1, 41.1]);
+
+    expect(prioritized[0]).toEqual(buckets[1]);
+    expect(new Set(prioritized)).toEqual(new Set(buckets));
+    expect(buckets[0]).toEqual({ west: 0, south: 40, east: 0.25, north: 40.25 });
   });
 });
 

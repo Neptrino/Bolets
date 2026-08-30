@@ -7,8 +7,12 @@ import { parseSpatialMapQuery } from "@/src/lib/map-query";
 import { toPotentialHabitatMapCell } from "@/src/lib/habitat-map";
 import { jsonResponse } from "@/src/lib/json-response";
 import { withoutInternalModelVersion } from "@/src/lib/public-response";
+import { proxyDevelopmentPublicDataGet } from "@/src/lib/development-public-data-proxy";
 
 export async function GET(request: Request) {
+  const proxied = await proxyDevelopmentPublicDataGet(request, "/api/habitat");
+  if (proxied) return proxied;
+
   const params = new URL(request.url).searchParams;
   const speciesId = params.get("species") ?? "";
   const compact = params.get("view") === "map";

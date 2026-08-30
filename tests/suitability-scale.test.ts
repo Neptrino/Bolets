@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   getSuitabilityBand,
+  predictionHeatmapColour,
   predictionMapCellColour,
 } from "@/src/lib/suitability-scale";
 
@@ -32,6 +33,14 @@ describe("ordinal opportunity scale", () => {
 
   it("does not paint a verified zero like a positive low score", () => {
     expect(predictionMapCellColour(0)).not.toBe(predictionMapCellColour(1));
+  });
+
+  it("interpolates a continuous heat colour without painting zero or withheld cells", () => {
+    expect(predictionHeatmapColour(0)).toBe("rgba(0, 0, 0, 0)");
+    expect(predictionHeatmapColour(null)).toBe("rgba(0, 0, 0, 0)");
+    expect(predictionHeatmapColour(30)).toBe("rgba(209, 149, 67, 0.84)");
+    expect(predictionHeatmapColour(90)).toBe("rgba(79, 138, 91, 0.84)");
+    expect(predictionHeatmapColour(100)).toBe("rgba(79, 138, 91, 0.84)");
   });
 
   it("uses one colour for every score in the same rating band", () => {

@@ -1,5 +1,13 @@
 import { Eye, EyeOff } from "lucide-react";
-import type { Map as MapLibreMap, StyleSpecification } from "maplibre-gl";
+import type { Map as MapLibreMap } from "maplibre-gl";
+import {
+  basemapOptions,
+  basemapStorageKey,
+  basemapStyle,
+  defaultBasemapId,
+  storedBasemapId,
+  type BasemapId,
+} from "./basemaps";
 import { cataloniaLandRings } from "@/data/catalonia-land";
 import {
   cataloniaRegionsGeoJson,
@@ -7,6 +15,7 @@ import {
 } from "@/data/regions";
 import {
   boundsContain,
+  constrainGridSize,
   gridSizeForViewport,
 } from "@/src/lib/map-grid";
 import {
@@ -31,122 +40,6 @@ const cataloniaSpatialBounds = {
   east: cataloniaBounds[1][0],
   north: cataloniaBounds[1][1],
 };
-const defaultBasemapId = "icgc-topographic";
-const basemapStorageKey = "bolets-basemap";
-const basemapOptions = [
-  {
-    id: defaultBasemapId,
-    label: "Topogràfic",
-    shortLabel: "Topo",
-    provider: "ICGC",
-    description: "Mapa general de l’ICGC",
-    preview: "topographic",
-  },
-  {
-    id: "open-map",
-    label: "Obert",
-    shortLabel: "OSM",
-    provider: "OpenStreetMap",
-    description: "Mapa estàndard d’OpenStreetMap",
-    preview: "open",
-  },
-  {
-    id: "icgc-aerial",
-    label: "Ortofoto",
-    shortLabel: "Aèria",
-    provider: "ICGC",
-    description: "Imatge aèria híbrida de l’ICGC",
-    preview: "aerial",
-  },
-  {
-    id: "icgc-muted",
-    label: "Gris",
-    shortLabel: "Gris",
-    provider: "ICGC",
-    description: "Mapa de l’ICGC amb menys contrast",
-    preview: "muted",
-  },
-] as const;
-type BasemapId = (typeof basemapOptions)[number]["id"];
-
-function isBasemapId(value: string | null): value is BasemapId {
-  return basemapOptions.some((option) => option.id === value);
-}
-
-function storedBasemapId(fallback: BasemapId = defaultBasemapId): BasemapId {
-  try {
-    const stored = window.localStorage.getItem(basemapStorageKey);
-    return isBasemapId(stored) ? stored : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function icgcBasemapStyle(
-  wmsLayer: "estandard" | "estandard-gris" | "orto-hibrida",
-): StyleSpecification {
-  const sourceId = `icgc-${wmsLayer}`;
-  const background = wmsLayer === "estandard-gris" ? "0xEEEDE8" : "0xF2EBD5";
-  const tiles =
-    `https://geoserveis.icgc.cat/servei/catalunya/mapa-base/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=${wmsLayer}` +
-    `&STYLES=&FORMAT=image/jpeg&TRANSPARENT=FALSE&BGCOLOR=${background}&SRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256`;
-
-  return {
-    version: 8,
-    sources: {
-      [sourceId]: {
-        type: "raster",
-        tiles: [tiles],
-        tileSize: 256,
-        minzoom: 0,
-        maxzoom: 18,
-        attribution: "© Institut Cartogràfic i Geològic de Catalunya",
-      },
-    },
-    layers: [
-      {
-        id: sourceId,
-        type: "raster",
-        source: sourceId,
-        paint: { "raster-fade-duration": 0 },
-      },
-    ],
-  };
-}
-
-function openStreetMapStyle(): StyleSpecification {
-  const sourceId = "openstreetmap-standard";
-  return {
-    version: 8,
-    sources: {
-      [sourceId]: {
-        type: "raster",
-        tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-        tileSize: 256,
-        minzoom: 0,
-        maxzoom: 19,
-        attribution:
-          '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
-      },
-    },
-    layers: [
-      {
-        id: sourceId,
-        type: "raster",
-        source: sourceId,
-        paint: { "raster-fade-duration": 0 },
-      },
-    ],
-  };
-}
-
-function basemapStyle(id: BasemapId): StyleSpecification {
-  if (id === "open-map") return openStreetMapStyle();
-  if (id === "icgc-aerial") return icgcBasemapStyle("orto-hibrida");
-  if (id === "icgc-muted") return icgcBasemapStyle("estandard-gris");
-  return icgcBasemapStyle("estandard");
-}
-
 const fitCatalonia = (map: MapLibreMap, animate = true) => {
   map.fitBounds(cataloniaBounds, {
     padding: { top: 54, right: 54, bottom: 54, left: 54 },
@@ -306,16 +199,17 @@ function visibleSpatialBounds(localMap: MapLibreMap): SpatialBounds {
 function visibleGridSize(
   localMap: MapLibreMap,
   minimumGridSizeM: SpatialGridSizeM = 250,
+  maximumGridSizeM?: SpatialGridSizeM,
 ) {
   const gridSizeM = gridSizeForViewport(
     localMap.getZoom(),
     visibleSpatialBounds(localMap),
   );
   // The combined map has no 250 m habitat cache, so it never requests finer
-  // than its coarse floor even when the zoom would allow it.
-  return gridSizeM < minimumGridSizeM
-    ? (minimumGridSizeM as SpatialGridSizeM)
-    : gridSizeM;
+  // than its detail floor even when the zoom would allow it. Editorial map
+  // surfaces may also opt into a smaller maximum cell size than the ordinary
+  // viewport budget would choose.
+  return constrainGridSize(gridSizeM, minimumGridSizeM, maximumGridSizeM);
 }
 
 function visibleGridParams(localMap: MapLibreMap, speciesId: string, gridSizeM: SpatialGridSizeM, extras?: Record<string, string>) {

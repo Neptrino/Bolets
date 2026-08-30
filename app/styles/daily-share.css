@@ -1,16 +1,4 @@
 /* Daily social cards: a quiet field bulletin, generated only from publishable readings. */
-.daily-share-entry {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  margin: -30px 0 40px;
-  color: var(--forest-panel);
-  font-size: var(--text-base);
-  font-weight: 800;
-  text-decoration: none;
-}
-.daily-share-entry:hover { color: var(--clay); }
-.daily-share-entry svg:last-child { margin-left: 2px; }
 .daily-share-intro {
   display: flex;
   gap: 15px;
@@ -112,7 +100,6 @@
 .daily-share-single-actions a:hover { border-color: var(--clay); color: var(--clay); }
 .daily-share-single-actions a:last-child:hover { background: var(--clay); color: var(--on-dark); }
 @media (max-width: 700px) {
-  .daily-share-entry { margin: -12px 0 31px; }
   .daily-share-intro { margin-bottom: 52px; }
   .daily-share-grid-heading { grid-template-columns: 1fr; gap: 18px; }
   .daily-share-previews { flex-direction: column; align-items: center; padding: 18px; }

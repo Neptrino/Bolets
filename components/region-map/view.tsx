@@ -26,6 +26,7 @@ export function RegionMapView({
   historicalEvidenceOpacity,
   historicalEvidenceOpacityId,
   historicalEvidenceVisible,
+  interactive,
   layerControlsExpanded,
   layerControlsId,
   map,
@@ -41,6 +42,7 @@ export function RegionMapView({
   selectedBasemapId,
   selectedRegion,
   showCompatibility,
+  showReadyStatus,
   speciesId,
   statusCopy,
   cellState,
@@ -62,6 +64,7 @@ export function RegionMapView({
   historicalEvidenceOpacity: number;
   historicalEvidenceOpacityId: string;
   historicalEvidenceVisible: boolean;
+  interactive: boolean;
   layerControlsExpanded: boolean;
   layerControlsId: string;
   map: RefObject<MapLibreMap | null>;
@@ -77,6 +80,7 @@ export function RegionMapView({
   selectedBasemapId: BasemapId;
   selectedRegion?: RegionId;
   showCompatibility: boolean;
+  showReadyStatus: boolean;
   speciesId?: string;
   statusCopy: MapStatusCopy;
   cellState: CellState;
@@ -85,13 +89,16 @@ export function RegionMapView({
     <RegionMapFrame
       activeRegionCount={activeRegionCount}
       ariaBusy={cellState.status === "loading"}
-      ariaLabel="Mapa interactiu de Catalunya. Arrossega per desplaçar-te i utilitza els controls per canviar l’escala o el fons cartogràfic."
+      ariaLabel={interactive
+        ? "Mapa interactiu de Catalunya. Arrossega per desplaçar-te i utilitza els controls per canviar l’escala o el fons cartogràfic."
+        : "Mapa estàtic de la predicció actual a Catalunya."}
       basemapId={selectedBasemapId}
       className={`${habitat ? "region-map-habitat" : ""}${showCompatibility ? " region-map-compatibility" : ""} ${className}`}
       map={map}
       mapMode={showCompatibility ? "compatibility" : "prediction"}
       node={node}
       selectedRegion={selectedRegion}
+      showResetButton={interactive}
     >
       <canvas
         ref={cellCanvas}
@@ -117,34 +124,37 @@ export function RegionMapView({
         gridDimensions={gridDimensions}
         habitat={habitat}
         showCompatibility={showCompatibility}
+        showReadyStatus={showReadyStatus}
         speciesId={speciesId}
         statusCopy={statusCopy}
       />
-      <RegionMapLayerControls
-        basemapChoiceName={basemapChoiceName}
-        basemapStatus={basemapStatus}
-        cellOpacity={cellOpacity}
-        cellOpacityId={cellOpacityId}
-        cellsVisible={cellsVisible}
-        globalPrediction={globalPrediction}
-        habitat={habitat}
-        historicalEvidenceOpacity={historicalEvidenceOpacity}
-        historicalEvidenceOpacityId={historicalEvidenceOpacityId}
-        historicalEvidenceVisible={historicalEvidenceVisible}
-        layerControlsExpanded={layerControlsExpanded}
-        layerControlsId={layerControlsId}
-        mode={mode}
-        onBasemapChange={onBasemapChange}
-        onCellOpacityChange={onCellOpacityChange}
-        onCellsVisibilityChange={onCellsVisibilityChange}
-        onExpandedChange={onLayerControlsToggle}
-        onHistoricalEvidenceOpacityChange={onHistoricalEvidenceOpacityChange}
-        onHistoricalEvidenceVisibilityChange={onHistoricalEvidenceVisibilityChange}
-        predictionAvailable={predictionAvailable}
-        selectedBasemapId={selectedBasemapId}
-        showCompatibility={showCompatibility}
-        speciesId={speciesId}
-      />
+      {interactive ? (
+        <RegionMapLayerControls
+          basemapChoiceName={basemapChoiceName}
+          basemapStatus={basemapStatus}
+          cellOpacity={cellOpacity}
+          cellOpacityId={cellOpacityId}
+          cellsVisible={cellsVisible}
+          globalPrediction={globalPrediction}
+          habitat={habitat}
+          historicalEvidenceOpacity={historicalEvidenceOpacity}
+          historicalEvidenceOpacityId={historicalEvidenceOpacityId}
+          historicalEvidenceVisible={historicalEvidenceVisible}
+          layerControlsExpanded={layerControlsExpanded}
+          layerControlsId={layerControlsId}
+          mode={mode}
+          onBasemapChange={onBasemapChange}
+          onCellOpacityChange={onCellOpacityChange}
+          onCellsVisibilityChange={onCellsVisibilityChange}
+          onExpandedChange={onLayerControlsToggle}
+          onHistoricalEvidenceOpacityChange={onHistoricalEvidenceOpacityChange}
+          onHistoricalEvidenceVisibilityChange={onHistoricalEvidenceVisibilityChange}
+          predictionAvailable={predictionAvailable}
+          selectedBasemapId={selectedBasemapId}
+          showCompatibility={showCompatibility}
+          speciesId={speciesId}
+        />
+      ) : null}
       {habitat ? (
         <HabitatMapLegend
           compact={compactLegend}

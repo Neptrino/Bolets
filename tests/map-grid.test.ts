@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  constrainGridSize,
   formatGridDimensions,
   gridSizeForViewport,
   gridSizeForZoom,
@@ -17,6 +18,13 @@ describe("zoom-adaptive spatial grid", () => {
   it("accepts only supported server resolutions", () => {
     expect(isSpatialGridSize(2500)).toBe(true);
     expect(isSpatialGridSize(750)).toBe(false);
+  });
+
+  it("can opt an editorial surface into finer cells without crossing its detail floor", () => {
+    expect(constrainGridSize(10000, 1000, 5000)).toBe(5000);
+    expect(constrainGridSize(2500, 1000, 5000)).toBe(2500);
+    expect(constrainGridSize(250, 1000, 5000)).toBe(1000);
+    expect(constrainGridSize(10000, 1000)).toBe(10000);
   });
 
   it("coarsens a wide viewport to stay within the visible-cell budget", () => {

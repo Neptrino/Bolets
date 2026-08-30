@@ -157,4 +157,24 @@ describe("potential habitat database reader", () => {
     expect(profileCapacity).toBe(64);
     expect(profileCapacity).toBeGreaterThanOrEqual(speciesProfiles.length);
   });
+
+  it("scopes the intentional full coarse-cache reset for safe-update databases", () => {
+    const source = readFileSync(
+      join(
+        process.cwd(),
+        "supabase",
+        "migrations",
+        "20260830092000_scope_coarse_habitat_cache_reset.sql",
+      ),
+      "utf8",
+    );
+
+    expect(source).toContain(
+      "delete from public.coarse_species_habitat_cells where true;",
+    );
+    expect(source).toContain(
+      "delete from public.species_habitat_profiles where true;",
+    );
+    expect(source).toContain("pg_get_function_identity_arguments");
+  });
 });

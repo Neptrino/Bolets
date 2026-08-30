@@ -6,6 +6,15 @@ import {
   type StyleSpecification,
 } from "maplibre-gl";
 
+const interactiveMapBounds: [[number, number], [number, number]] = [
+  [-0.5, 40.1],
+  [3.9, 43.2],
+];
+
+export function regionMapMaxBounds(interactive: boolean) {
+  return interactive ? interactiveMapBounds : undefined;
+}
+
 export function createRegionMap({
   center,
   container,
@@ -36,10 +45,7 @@ export function createRegionMap({
     zoom,
     attributionControl: { compact: true },
     maplibreLogo: false,
-    maxBounds: [
-      [-0.5, 40.1],
-      [3.9, 43.2],
-    ],
+    maxBounds: regionMapMaxBounds(interactive),
     interactive,
     dragRotate: false,
     pitchWithRotate: false,

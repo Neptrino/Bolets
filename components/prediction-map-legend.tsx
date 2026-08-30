@@ -4,7 +4,21 @@ import { predictionMapCellColour, suitabilityScale } from "@/src/lib/suitability
  * Band-swatch legend for the prediction map. The bands and colours come from
  * the shared ordinal scale so the legend can never drift from the painted map.
  */
-export function PredictionMapLegend() {
+export function PredictionMapLegend({ variant = "bands" }: { variant?: "bands" | "gradient" }) {
+  if (variant === "gradient") {
+    const gradient = `linear-gradient(90deg, ${suitabilityScale
+      .map((band) => `${band.color} ${band.minimum}%`)
+      .join(", ")}, ${suitabilityScale.at(-1)!.color} 100%)`;
+    return (
+      <div className="prediction-map-legend prediction-map-legend-gradient">
+        <strong>Intensitat de la predicció</strong>
+        <div className="prediction-gradient-scale">
+          <i style={{ backgroundImage: gradient }} aria-hidden />
+          <span><small>1 · molt baixa</small><small>100 · molt alta</small></span>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="prediction-map-legend">
       <strong>Escala de puntuació</strong>

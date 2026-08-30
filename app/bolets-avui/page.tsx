@@ -6,16 +6,19 @@ import {
   ArrowUpRight,
   Clock3,
   Database,
+  FlaskConical,
   Gauge,
   Map,
   MapPinned,
   ShieldCheck,
-  Share2,
 } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
+import { PredictionMapLegend } from "@/components/prediction-map-legend";
+import { RegionMap } from "@/components/region-map";
 import { editorialArticleFields, environmentalSources } from "@/data/editorial";
+import { regionSelectItems } from "@/data/regions";
 import {
   dominantLimitingComponent,
   isAreaOverviewItem,
@@ -25,6 +28,8 @@ import {
   type RankedOverviewItem,
   type CurrentOverviewItem,
 } from "@/src/lib/current-overview";
+import { developmentOverviewSimulation } from "@/src/lib/current-overview-simulation";
+import { GLOBAL_SPECIES_ID } from "@/src/lib/global-map";
 import { SEASONAL_ACTIVITY_LABELS } from "@/src/lib/seasonality";
 import { opportunityLabel } from "@/src/lib/scoring";
 import {
@@ -66,10 +71,30 @@ const timeOnly = new Intl.DateTimeFormat("ca-ES", {
   timeZone: "Europe/Madrid",
 });
 
+const currentMapRegions = regionSelectItems
+  .filter(({ value }) => value !== "altres")
+  .map(({ value }) => value);
+const MAX_OVERVIEW_CARDS = 10;
+
+const limitingFactorLabels = {
+  habitatCoverage: "L’hàbitat disponible",
+  altitude: "L’altitud",
+  phenology: "El moment de la temporada",
+  water: "La disponibilitat d’aigua",
+  temperature: "La temperatura",
+  extremes: "El fred o la calor extrems",
+} satisfies Record<
+  RegionalPredictionSummary["result"]["components"][number]["id"],
+  string
+>;
+
 function limitingFactor(item: RankedOverviewItem) {
-  return item.summary?.result.components
+  const limiting = item.summary?.result.components
     .filter((factor) => factor.score !== null)
-    .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0]?.label ?? "Sense factor limitant publicat";
+    .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0];
+  return limiting
+    ? limitingFactorLabels[limiting.id]
+    : "Cap factor destacat";
 }
 
 function extentMetric(summary: RegionalPredictionSummary) {
@@ -91,14 +116,14 @@ function observationWindow(items: RankedOverviewItem[]) {
 
   if (!first || !last) return null;
   if (dateOnly.format(first) === dateOnly.format(last)) {
-    return `Lectures del ${dateOnly.format(last)}, entre les ${timeOnly.format(first)} i les ${timeOnly.format(last)}`;
+    return `Dades del ${dateOnly.format(last)} · ${timeOnly.format(first)}–${timeOnly.format(last)}`;
   }
-  return `Lectures entre ${dateTime.format(first)} i ${dateTime.format(last)}`;
+  return `Dades entre ${dateTime.format(first)} i ${dateTime.format(last)}`;
 }
 
 function monthlyActivityLabel(activity: CurrentOverviewItem["seasonalActivity"]) {
   const label = SEASONAL_ACTIVITY_LABELS[activity];
-  return activity === "peak" || activity === "inactive" ? label : `activitat ${label}`;
+  return activity === "peak" || activity === "inactive" ? label : `temporada ${label}`;
 }
 
 function overviewLocationName(item: RankedOverviewItem) {
@@ -128,11 +153,18 @@ async function CurrentOverview() {
   // request so the runtime-only internal Supabase URL is available; the two
   // overview loaders share one generation-bound data cache.
   await connection();
-  const [allItems, areaItems] = await Promise.all([
+  const [loadedCurrentItems, loadedAreaItems] = await Promise.all([
     loadCachedCurrentOverview(),
     loadCachedAreaOverview(),
   ]);
+  const overview = developmentOverviewSimulation(
+    loadedCurrentItems,
+    loadedAreaItems,
+  );
+  const allItems = overview.currentItems;
+  const areaItems = overview.areaItems;
   const items = rankOverviewItems([...allItems, ...areaItems]);
+  const visibleItems = items.slice(0, MAX_OVERVIEW_CARDS);
   const leader = items.find((item) => item.status === "available" && item.summary);
   const leaderScore = leader?.summary?.bestCell.score;
   const observedWindow = observationWindow(items);
@@ -144,8 +176,11 @@ async function CurrentOverview() {
 
   return (
     <>
-      <Link href="/compartir" className="daily-share-entry"><Share2 size={16} /> Prepara targetes per compartir la lectura d’avui <ArrowUpRight size={16} /></Link>
-
+      {overview.simulated ? (
+        <p className="current-simulation-label">
+          <FlaskConical size={14} aria-hidden="true" /> Simulació local · dades fictícies
+        </p>
+      ) : null}
       {leader?.summary && leaderScore === 0 ? (
         <aside className="current-leader current-leader-empty">
           <ShieldCheck size={24} />
@@ -155,21 +190,21 @@ async function CurrentOverview() {
               Les condicions no són favorables en cap dels territoris comparats.
               {dominantLimitingComponent(allItems)
                 ? <> El principal fre ara mateix és «{dominantLimitingComponent(allItems)}».</>
-                : null} Pots consultar totes les zones a continuació.
+                : null} Pots consultar les deu zones més ben classificades a continuació.
             </p>
           </div>
         </aside>
       ) : leader?.summary && leaderScore !== null && leaderScore !== undefined ? (
         <section className="current-leader" aria-labelledby="current-leader-title">
           <div className="current-leader-copy">
-            <p className="current-leader-eyebrow"><MapPinned size={15} /> Lectura més favorable ara</p>
+            <p className="current-leader-eyebrow"><MapPinned size={15} /> Millors condicions ara</p>
             <h2 id="current-leader-title">{leaderName}</h2>
             <p><Link href={speciesPath(leader)} className="current-leader-species-link"><strong>{leader.speciesName}</strong><ArrowUpRight size={14} /></Link> és l’espècie amb les condicions més favorables en aquest territori.</p>
             <Link href={leaderMapPath} className="current-leader-link">
               <Map size={16} /> Veure al mapa <ArrowUpRight size={16} />
             </Link>
           </div>
-          <div className="current-leader-score" aria-label={`Millor cel·la territorial ${leaderScore} sobre 100`}>
+          <div className="current-leader-score" aria-label={`Puntuació més alta ${leaderScore} sobre 100`}>
             <strong>{leaderScore}</strong>
             <span>/ 100</span>
             <small>{opportunityLabel(leaderScore)}</small>
@@ -178,7 +213,7 @@ async function CurrentOverview() {
             <div><dt><MapPinned size={16} /> Abast dins la zona</dt><dd>{extentMetric(leader.summary)}</dd></div>
             <div><dt><Gauge size={16} /> Principal fre</dt><dd>{limitingFactor(leader)}</dd></div>
           </dl>
-          <p className="current-leader-meta"><Clock3 size={14} /> Calculat amb dades de {dateTime.format(new Date(leader.summary.snapshot.observedAt))}</p>
+          <p className="current-leader-meta"><Clock3 size={14} /> Dades del {dateTime.format(new Date(leader.summary.snapshot.observedAt))}</p>
         </section>
       ) : (
         <aside className="current-leader current-leader-empty">
@@ -186,6 +221,37 @@ async function CurrentOverview() {
           <div><strong>Avui no podem comparar les zones.</strong><p>Falten dades ambientals recents o completes. Torna-ho a provar més tard.</p></div>
         </aside>
       )}
+
+      <section className="current-map-overview" aria-labelledby="current-map-title">
+        <header className="current-map-heading">
+          <div>
+            <p className="eyebrow"><Map size={14} aria-hidden="true" /> Mapa combinat</p>
+            <h2 id="current-map-title">Les condicions d’avui, sobre el territori</h2>
+            <p>El color indica la millor puntuació per cel·la entre les espècies comestibles cartografiades.</p>
+          </div>
+          <Link href="/map?species=all" className="current-map-open">
+            Obrir el mapa complet <ArrowUpRight size={16} aria-hidden="true" />
+          </Link>
+        </header>
+        <div className="current-map-frame">
+          <RegionMap
+            activeRegions={currentMapRegions}
+            autoGeolocate={false}
+            className="current-production-map"
+            compactLegend
+            interactive={false}
+            maximumPredictionGridSizeM={2500}
+            mode="prediction"
+            predictionAvailable
+            predictionRendering="heatmap"
+            showReadyStatus={false}
+            speciesId={GLOBAL_SPECIES_ID}
+          />
+        </div>
+        <footer className="current-map-footer">
+          <PredictionMapLegend variant="gradient" />
+        </footer>
+      </section>
 
       <aside className="current-overview-method">
         <ShieldCheck size={21} aria-hidden="true" />
@@ -196,7 +262,7 @@ async function CurrentOverview() {
         <header className="current-board-heading">
           <div>
             <p className="eyebrow">Comparador territorial</p>
-            <h2 id="current-board-title">Zones i espècies, de més a menys puntuació</h2>
+            <h2 id="current-board-title">Les millors zones avui</h2>
           </div>
           {observedWindow ? (
             <div>
@@ -207,18 +273,17 @@ async function CurrentOverview() {
 
         {items.length > 0 ? <>
           <div className="current-board-columns" aria-hidden="true">
-            <span>Posició</span><span>Zona i espècie</span><span>Puntuació</span><span>Abast dins la zona</span><span>Mapa</span>
+            <span>Lloc</span><span>Zona i bolet</span><span>Puntuació</span><span>Abast</span><span>Veure</span>
           </div>
-          <ol className="current-overview-grid" aria-label="Puntuacions actuals per espècie i territori, de més a menys">
-            {items.map((item, index) => {
+          <ol className="current-overview-grid" aria-label="Rànquing actual de zones i bolets">
+            {visibleItems.map((item, index) => {
             const summary = item.summary;
             const score = summary?.bestCell.score;
             const isAvailable = item.status === "available" && summary !== null && score !== null && score !== undefined;
             const rank = isAvailable ? index + 1 : null;
             const isArea = isAreaOverviewItem(item);
             const locationName = isArea ? item.areaName : item.regionName;
-            const locationLabel = isArea ? item.areaTypeLabel : "regió de predicció";
-            const gridSizeKm = summary ? summary.gridSizeM / 1000 : isArea ? 1 : 10;
+            const locationLabel = isArea ? item.areaTypeLabel : "regió";
             const mapPath = isArea
               ? territorialMapPath(item.speciesId, item.regionId, item.bounds)
               : `/map?species=${item.speciesId}&region=${item.regionId}`;
@@ -234,7 +299,7 @@ async function CurrentOverview() {
                   <p className="current-row-species"><Link href={speciesPath(item)} className="current-row-species-link">{item.speciesName}<ArrowUpRight size={13} /></Link><span>{locationLabel} · {monthlyActivityLabel(item.seasonalActivity)}</span></p>
                 </div>
                 {isAvailable && summary && score !== null && score !== undefined ? (
-                  <div className="current-score" aria-label={`Millor cel·la de ${gridSizeKm} km ${score} sobre 100, ${opportunityLabel(score)}`}>
+                  <div className="current-score" aria-label={`Puntuació ${score} sobre 100, ${opportunityLabel(score)}`}>
                     <div><strong>{score}</strong><span>/100 · {opportunityLabel(score)}</span></div>
                     <span className="current-score-track" aria-hidden="true"><span style={{ width: `${score}%` }} /></span>
                   </div>
@@ -245,9 +310,7 @@ async function CurrentOverview() {
                   </div>
                 )}
                 {summary ? (
-                  <dl className="current-row-signals">
-                    <div><dt>Abast dins la zona</dt><dd>{extentMetric(summary)}</dd></div>
-                  </dl>
+                  <p className="current-row-coverage">{extentMetric(summary)}</p>
                 ) : (
                   <p className="current-row-signals-empty">—</p>
                 )}
@@ -270,7 +333,11 @@ async function CurrentOverview() {
         </aside>
       ) : null}
 
-      <EditorialAttribution contentId="bolets-avui" sources={environmentalSources} />
+      <EditorialAttribution
+        contentId="bolets-avui"
+        showUpdatedAt={false}
+        sources={environmentalSources}
+      />
     </>
   );
 }
@@ -291,7 +358,7 @@ export default function MushroomsTodayPage() {
       <PageHeader
         eyebrow={<><Map size={15} /> Condicions actuals per territori</>}
         title={<>Bolets avui<br /><PageTitleAccent>a Catalunya.</PageTitleAccent></>}
-        description="Compara les espècies comestibles de temporada i descobreix quins territoris tenen avui les condicions més favorables."
+        description="Comparem les espècies comestibles en temporada i destaquem on tenen millors condicions, sense confirmar que hi hagi bolets."
         layout="split"
       />
       <Suspense fallback={<CurrentOverviewLoading />}>

@@ -35,3 +35,38 @@ export function predictionMapCellColour(score: number | null) {
   const blue = Number.parseInt(color.slice(5, 7), 16);
   return `rgba(${red}, ${green}, ${blue}, 0.68)`;
 }
+
+function colourChannels(color: string) {
+  return [
+    Number.parseInt(color.slice(1, 3), 16),
+    Number.parseInt(color.slice(3, 5), 16),
+    Number.parseInt(color.slice(5, 7), 16),
+  ] as const;
+}
+
+/** Continuous colour interpolation for the optional editorial heat surface. */
+export function predictionHeatmapColour(score: number | null) {
+  if (score === null || score <= 0) return "rgba(0, 0, 0, 0)";
+  const bounded = Math.min(100, score);
+  const stops = [
+    ...suitabilityScale.map((band, index) => ({
+      color: band.color,
+      score: index === 0 ? 1 : band.minimum,
+    })),
+    { color: suitabilityScale.at(-1)!.color, score: 100 },
+  ];
+  const upperIndex = stops.findIndex((stop) => stop.score >= bounded);
+  const rightIndex = upperIndex === -1 ? stops.length - 1 : upperIndex;
+  const leftIndex = Math.max(0, rightIndex - 1);
+  const left = stops[leftIndex];
+  const right = stops[rightIndex];
+  const ratio = right.score === left.score
+    ? 0
+    : Math.max(0, Math.min(1, (bounded - left.score) / (right.score - left.score)));
+  const leftChannels = colourChannels(left.color);
+  const rightChannels = colourChannels(right.color);
+  const channels = leftChannels.map((channel, index) =>
+    Math.round(channel + (rightChannels[index] - channel) * ratio)
+  );
+  return `rgba(${channels[0]}, ${channels[1]}, ${channels[2]}, 0.84)`;
+}

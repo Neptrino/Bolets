@@ -120,7 +120,7 @@ test("the current overview stays usable without publishing invented scores", asy
   expect(cardCount).toBeGreaterThan(0);
   await expect(page.locator("body")).not.toContainText(/Model ecologia-v/i);
   await expect(page.locator(".current-overview-method")).toContainText(
-    "Avaluem totes les espècies comestibles amb model vigent",
+    "La puntuació actual decideix el resultat",
   );
   await expect(page.locator("body")).not.toContainText("Oportunitat O");
   await expect(page.locator("body")).not.toContainText("Condicions F");

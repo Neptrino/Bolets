@@ -1,12 +1,14 @@
 import { Grid3X3, LoaderCircle } from "lucide-react";
-import type { CellState } from "./support";
+import { formatCellCount, type CellState } from "./support";
 import type { MapStatusCopy } from "./status";
 
 export function RegionMapDataStatus({
   cellState,
   compactLegend,
+  gridDimensions,
   habitat,
   showCompatibility,
+  showReadyStatus,
   speciesId,
   statusCopy,
 }: {
@@ -15,6 +17,7 @@ export function RegionMapDataStatus({
   gridDimensions: string;
   habitat: boolean;
   showCompatibility: boolean;
+  showReadyStatus: boolean;
   speciesId?: string;
   statusCopy: MapStatusCopy;
 }) {
@@ -27,7 +30,15 @@ export function RegionMapDataStatus({
     );
   }
 
-  if (speciesId && !habitat && cellState.status === "loading") {
+  const loadedCellCount =
+    cellState.published + cellState.excluded + cellState.withheld;
+
+  if (
+    speciesId &&
+    !habitat &&
+    cellState.status === "loading" &&
+    loadedCellCount === 0
+  ) {
     return (
       <div className="prediction-map-loading" role="status" aria-live="polite">
         <div>
@@ -47,7 +58,26 @@ export function RegionMapDataStatus({
     );
   }
 
+  if (speciesId && !habitat && cellState.status === "loading") {
+    return (
+      <div
+        className="map-data-state map-refining-state"
+        role="status"
+        aria-live="polite"
+      >
+        <LoaderCircle size={18} aria-hidden />
+        <div>
+          <strong>Afinant la predicció…</strong>
+          <span>
+            {formatCellCount(loadedCellCount)} carregades a {gridDimensions}.
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   if (speciesId && !habitat) {
+    if (cellState.status === "ready" && !showReadyStatus) return null;
     return (
       <div className="map-data-state" aria-live="polite">
         <Grid3X3 size={18} aria-hidden />

@@ -76,6 +76,41 @@ describe("current-condition overview", () => {
     expect(DAILY_OVERVIEW_REVALIDATE_SECONDS).toBe(12 * 60 * 60);
   });
 
+  it("limits the ranked Avui comparison to ten rendered cards", () => {
+    const pageSource = readFileSync("app/bolets-avui/page.tsx", "utf8");
+
+    expect(pageSource).toContain("const MAX_OVERVIEW_CARDS = 10");
+    expect(pageSource).toContain("items.slice(0, MAX_OVERVIEW_CARDS)");
+    expect(pageSource).toContain("visibleItems.map((item, index)");
+  });
+
+  it("keeps the private sharing tool out of the public Avui page", () => {
+    const pageSource = readFileSync("app/bolets-avui/page.tsx", "utf8");
+
+    expect(pageSource).not.toContain('href="/compartir"');
+    expect(pageSource).not.toContain("daily-share-entry");
+  });
+
+  it("does not present the editorial update date as prediction freshness", () => {
+    const pageSource = readFileSync("app/bolets-avui/page.tsx", "utf8");
+
+    expect(pageSource).toContain("showUpdatedAt={false}");
+  });
+
+  it("uses plain-language labels in the leading Avui card", () => {
+    const pageSource = readFileSync("app/bolets-avui/page.tsx", "utf8");
+
+    expect(pageSource).toContain("Millors condicions ara");
+    expect(pageSource).toContain("Abast dins la zona");
+    expect(pageSource).toContain("Principal fre");
+    expect(pageSource).toContain("Zona i bolet");
+    expect(pageSource).toContain("Puntuació");
+    expect(pageSource).toContain("Abast");
+    expect(pageSource).not.toContain("Component més limitant");
+    expect(pageSource).not.toContain("controls de publicació");
+    expect(pageSource).not.toContain("Cel·les compatibles de");
+  });
+
   it("keys the long-lived overview cache by both published condition generations", () => {
     const overviewSource = readFileSync("src/lib/current-overview.ts", "utf8");
     const generationSource = readFileSync(

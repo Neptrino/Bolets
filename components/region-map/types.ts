@@ -6,6 +6,7 @@ import type {
   SpatialBounds,
   SpatialGridSizeM,
 } from "@/src/lib/types";
+import type { PredictionRendering } from "@/components/region-map/prediction-surface";
 
 export type PredictionCellDetailState = {
   status: "idle" | "loading" | "ready" | "error";
@@ -19,12 +20,16 @@ export type RegionMapProps = {
   compactLegend?: boolean;
   initialCentre?: [number, number];
   initialZoom?: number;
+  interactive?: boolean;
   focusBounds?: SpatialBounds;
   selectedRegion?: RegionId;
   speciesId?: string;
   habitat?: boolean;
   mode?: MapViewMode;
+  maximumPredictionGridSizeM?: SpatialGridSizeM;
   predictionAvailable?: boolean;
+  predictionRendering?: PredictionRendering;
+  showReadyStatus?: boolean;
   selectedCellId?: string;
   className?: string;
   fullscreenTarget?: "viewport" | "parent";

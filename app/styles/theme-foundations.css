@@ -261,6 +261,10 @@ body {
 .map-resolution-state > svg {
   color: var(--apricot);
 }
+.map-refining-state > svg {
+  color: var(--apricot);
+  animation: map-loading-spin 900ms linear infinite;
+}
 .map-resolution-state strong {
   font-size: var(--text-xs);
   line-height: 1.35;
@@ -400,8 +404,8 @@ body {
 }
 .map-basemap-options {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 4px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px 5px;
 }
 .map-basemap-option {
   position: relative;
@@ -465,6 +469,14 @@ body {
     repeating-radial-gradient(ellipse at 18% 118%, transparent 0 6px, rgba(117, 104, 71, 0.4) 7px 8px),
     linear-gradient(152deg, transparent 0 42%, rgba(198, 111, 72, 0.72) 43% 46%, transparent 47%),
     linear-gradient(27deg, rgba(126, 156, 98, 0.38) 0 38%, transparent 39%);
+}
+.map-basemap-preview-relief {
+  background-color: #deddd7;
+  background-image:
+    radial-gradient(ellipse at 18% 112%, transparent 0 10px, rgba(50, 54, 48, 0.45) 11px 13px, rgba(255, 255, 255, 0.58) 14px 17px, transparent 18px),
+    radial-gradient(ellipse at 78% 108%, transparent 0 7px, rgba(64, 68, 60, 0.38) 8px 10px, rgba(255, 255, 255, 0.48) 11px 14px, transparent 15px),
+    linear-gradient(154deg, transparent 0 48%, rgba(97, 94, 82, 0.48) 49% 51%, transparent 52%),
+    linear-gradient(28deg, rgba(255, 255, 255, 0.42) 0 38%, transparent 39%);
 }
 .map-basemap-preview-open {
   background-color: #f5f1e9;

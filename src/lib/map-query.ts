@@ -93,6 +93,25 @@ export function bucketsForBounds(
   return buckets;
 }
 
+/**
+ * Keeps the bucket lattice unchanged while loading the most immediately
+ * useful ground first. This is especially noticeable when a fine grid covers
+ * a large viewport and dozens of cache-stable requests are required.
+ */
+export function prioritizeBucketsAround(
+  buckets: SpatialBounds[],
+  [longitude, latitude]: [number, number],
+) {
+  const distanceSquared = (bucket: SpatialBounds) => {
+    const bucketLongitude = (bucket.west + bucket.east) / 2;
+    const bucketLatitude = (bucket.south + bucket.north) / 2;
+    return (bucketLongitude - longitude) ** 2 + (bucketLatitude - latitude) ** 2;
+  };
+  return [...buckets].sort(
+    (first, second) => distanceSquared(first) - distanceSquared(second),
+  );
+}
+
 const numberParam = (params: URLSearchParams, name: string) => {
   const value = params.get(name);
   return value?.trim() ? Number(value) : Number.NaN;

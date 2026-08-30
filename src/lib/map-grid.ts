@@ -13,6 +13,19 @@ export function isSpatialGridSize(value: number): value is SpatialGridSizeM {
   return spatialGridSizes.some((size) => size === value);
 }
 
+/** Apply a detail floor and an optional maximum cell size to a supported grid. */
+export function constrainGridSize(
+  gridSizeM: SpatialGridSizeM,
+  minimumGridSizeM: SpatialGridSizeM = 250,
+  maximumGridSizeM?: SpatialGridSizeM,
+) {
+  const detailFloor = Math.max(gridSizeM, minimumGridSizeM);
+  const maximumCellSize = maximumGridSizeM === undefined
+    ? spatialGridSizes.at(-1)!
+    : Math.max(maximumGridSizeM, minimumGridSizeM);
+  return Math.min(detailFloor, maximumCellSize) as SpatialGridSizeM;
+}
+
 export function gridSizeForZoom(zoom: number): SpatialGridSizeM {
   if (zoom >= 13.4) return 250;
   if (zoom >= 11.8) return 1000;

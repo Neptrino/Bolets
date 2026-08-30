@@ -24,7 +24,14 @@ export function RegisterServiceWorker() {
           const names = await window.caches.keys();
           await Promise.all(
             names
-              .filter((name) => name.startsWith("bolets-"))
+              .filter((name) =>
+                [
+                  "bolets-shell-",
+                  "bolets-assets-",
+                  "bolets-data-",
+                  "bolets-tiles-",
+                ].some((prefix) => name.startsWith(prefix)),
+              )
               .map((name) => window.caches.delete(name)),
           );
         }

@@ -1,4 +1,8 @@
 import { fetchJsonWithRetry } from "@/src/lib/fetch-json";
+import {
+  readMapBucketPayload,
+  writeMapBucketPayload,
+} from "@/src/lib/map-bucket-cache";
 import type { SpatialBounds } from "@/src/lib/types";
 
 /**
@@ -66,6 +70,11 @@ export async function loadBucketedCells<T>(
         continue;
       }
       const task = (async () => {
+        const cached = await readMapBucketPayload<T>(url);
+        if (cached) {
+          onBucketSettled(cached, bucket);
+          return;
+        }
         // Deliberately not the run's signal. A registered request outlives the
         // viewport that asked for it, and a later viewport may be waiting on
         // it: cancelling it when this run is superseded would fail that
@@ -80,6 +89,7 @@ export async function loadBucketedCells<T>(
         // Always store, even if this run no longer cares. The response is
         // already paid for and the next viewport over this ground will use it.
         onBucketSettled(payload, bucket);
+        await writeMapBucketPayload(url, payload);
       })();
       inFlight?.set(url, task);
       try {
