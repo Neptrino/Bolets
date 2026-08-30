@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ArrowDown, ArrowUpRight, BookOpenText, CloudRain, Gauge, Leaf, Snowflake, Sparkles, Sun, Trees } from "lucide-react";
 import { SpeciesCard } from "@/components/species-card";
 import { HomeFindingsFeature } from "@/components/home-findings-feature";
+import { HomeShowcaseJumpLink, HomeShowcaseVideo } from "@/components/home-showcase-video";
 import { StaticMediaImage } from "@/components/static-media-image";
 import { getFeaturedSeasonalSpecies } from "@/data/species";
 import { catalogueSpecies } from "@/data/catalogue";
@@ -40,15 +41,16 @@ export default function HomePage() {
             sizes="100vw"
           />
         </div>
-        <div className="hero-copy"><p className="eyebrow light"><Sparkles size={14} /> Bolets · boscos · temporada</p><h1>Entén el bosc<br /><i>abans de sortir.</i></h1><p className="hero-lede">Descobreix quines espècies encaixen amb cada bosc i on les condicions són més favorables avui.</p><div className="hero-actions"><Link href="/map" className="button light-button">Veure les condicions <ArrowUpRight size={17} /></Link><Link href="/bolets" className="text-link">Explora les espècies <Trees size={16} /></Link></div></div>
+        <div className="hero-copy"><p className="eyebrow light"><Sparkles size={14} /> Bolets · boscos · temporada</p><h1>Entén el bosc<br /><i>abans de sortir.</i></h1><p className="hero-lede">Descobreix quines espècies encaixen amb cada bosc i on les condicions són més favorables avui.</p><div className="hero-actions"><Link href="/map" className="button light-button">Veure les condicions <ArrowUpRight size={17} /></Link><HomeShowcaseJumpLink /><Link href="/bolets" className="text-link">Explora les espècies <Trees size={16} /></Link></div></div>
         <div className="hero-scroll"><ArrowDown size={16} /> baixa per llegir el territori</div>
       </section>
       <Link href="/bolets-avui" className="home-today-feature page-width">
         <p className="home-today-kicker"><Gauge size={17} /> Condicions actuals</p>
         <div className="home-today-copy"><h2>On són més favorables les condicions avui?</h2><p>Compara espècies i territoris de Catalunya amb les dades ambientals més recents.</p></div>
         <dl className="home-today-facts"><div><dt>Àmbit</dt><dd>Catalunya</dd></div><div><dt>Actualització</dt><dd>Diària</dd></div></dl>
-        <span className="home-today-action">Veure la lectura d’avui <ArrowUpRight size={17} /></span>
+        <span className="home-today-action">Veure <ArrowUpRight size={17} /></span>
       </Link>
+      <HomeShowcaseVideo />
       <section className="home-intro page-width"><div><p className="eyebrow">Com funciona</p><h2>Coneix l’espècie.<br />Després, mira el territori.</h2></div><p>Les fitxes expliquen on i quan creix cada bolet. El mapa compara aquestes necessitats amb les condicions actuals.</p></section>
       <nav className="home-search-guides page-width" aria-label="Guies destacades">
         <Link href="/guies"><BookOpenText size={19} /><span><strong>Guies locals</strong><small>Comarques, massissos i indrets documentats</small></span><ArrowUpRight size={16} /></Link>

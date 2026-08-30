@@ -1,0 +1,72 @@
+"use client";
+
+import { Play } from "lucide-react";
+import { useRef, useState } from "react";
+
+export function HomeShowcaseJumpLink() {
+  return (
+    <a href="#com-funciona" className="home-showcase-trigger">
+      <span className="home-showcase-trigger-icon" aria-hidden="true"><Play size={16} fill="currentColor" /></span>
+      <span>Veure com funciona</span>
+      <small>36 s</small>
+    </a>
+  );
+}
+
+export function HomeShowcaseVideo() {
+  const video = useRef<HTMLVideoElement>(null);
+  const [started, setStarted] = useState(false);
+
+  const play = async () => {
+    try {
+      await video.current?.play();
+      setStarted(true);
+    } catch {
+      setStarted(false);
+    }
+  };
+
+  return (
+    <section id="com-funciona" className="home-showcase-section page-width" aria-labelledby="home-showcase-title">
+      <header className="home-showcase-header">
+        <div>
+          <p className="eyebrow">Bolets en 36 segons</p>
+          <h2 id="home-showcase-title">Del catàleg al territori.</h2>
+        </div>
+        <p>Un recorregut visual per les espècies, les condicions del bosc, el mapa i el quadern de camp.</p>
+      </header>
+
+      <div className="home-showcase-player">
+        <video
+          ref={video}
+          controls
+          muted
+          playsInline
+          preload="none"
+          poster="/media/generated/home-showcase-poster.webp"
+          aria-label="Presentació de Bolets de Catalunya"
+          onPlay={() => setStarted(true)}
+          onEnded={() => setStarted(false)}
+        >
+          <source src="/media/generated/home-showcase.webm" type="video/webm" />
+          <source src="/media/generated/home-showcase.mp4" type="video/mp4" />
+          El navegador no permet reproduir aquest vídeo.
+        </video>
+
+        {!started && (
+          <button type="button" className="home-showcase-poster-play" onClick={play} aria-label="Reprodueix el vídeo de presentació">
+            <span className="home-showcase-poster-play-content">
+              <span className="home-showcase-poster-play-icon" aria-hidden="true"><Play size={24} fill="currentColor" /></span>
+              <span>Reprodueix el vídeo</span>
+              <small>Sense so · textos integrats</small>
+            </span>
+          </button>
+        )}
+      </div>
+
+      <p className="visually-hidden">
+        Presentació visual del catàleg d’espècies, les fitxes ecològiques, el mapa de condicions i el quadern de camp. La presentació recorda que el mapa serveix per comparar condicions i no confirma la presència de bolets, i que el punt exacte de cada troballa és privat.
+      </p>
+    </section>
+  );
+}

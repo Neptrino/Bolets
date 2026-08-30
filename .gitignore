@@ -21,4 +21,5 @@ lambda/**/dist/
 **/.dev.vars
 !**/.dev.vars.example
 workers/**/worker-configuration.d.ts
+video/render/
 .claude/

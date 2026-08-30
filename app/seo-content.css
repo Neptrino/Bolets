@@ -79,7 +79,7 @@
 .home-today-feature:hover .home-today-action { background: #a24822; transform: translateX(2px); }
 .home-today-feature + .home-intro { padding-top: 5.5rem; }
 
-@media (max-width: 980px) {
+@media (max-width: 1240px) {
   .home-today-feature { grid-template-columns: minmax(0, 1fr) auto; }
   .home-today-kicker { grid-column: 1 / -1; }
   .home-today-facts { grid-column: 1; }
