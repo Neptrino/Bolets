@@ -28,6 +28,10 @@ const migration = readFileSync(
   "supabase/migrations/20260829182354_add_user_forest_preferences.sql",
   "utf8",
 );
+const migrationInstaller = readFileSync(
+  "deploy/vps/apply-database-migrations.sh",
+  "utf8",
+);
 
 describe("El meu bosc preferences", () => {
   beforeEach(() => {
@@ -120,5 +124,14 @@ describe("El meu bosc preferences", () => {
     expect(migration).toContain("revoke all on table public.user_forest_preferences from public, anon, authenticated");
     expect(migration.match(/\(select auth\.uid\(\)\) = user_id/g)).toHaveLength(5);
     expect(migration).toMatch(/for update to authenticated[\s\S]*using \(\(select auth\.uid\(\)\) = user_id\)[\s\S]*with check \(\(select auth\.uid\(\)\) = user_id\)/);
+  });
+
+  it("installs the private account boundary during a VPS rollout", () => {
+    expect(migrationInstaller).toContain(
+      "20260829182354_add_user_forest_preferences.sql",
+    );
+    expect(migrationInstaller).toContain(
+      'apply_if_missing user_forest_preferences "$forest_preferences_migration" forest-preferences',
+    );
   });
 });

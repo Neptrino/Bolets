@@ -21,6 +21,7 @@ findings_migration="$app_dir/supabase/migrations/20260827222558_add_user_finding
 owner_finding_reader_migration="$app_dir/supabase/migrations/20260828114500_read_owner_finding_private_details.sql"
 owner_finding_removal_migration="$app_dir/supabase/migrations/20260828120000_remove_owner_finding_atomically.sql"
 finding_photo_visibility_migration="$app_dir/supabase/migrations/20260829152554_unify_finding_photo_visibility.sql"
+forest_preferences_migration="$app_dir/supabase/migrations/20260829182354_add_user_forest_preferences.sql"
 
 if [ ! -f "$rolling_migration" ] || [ ! -f "$parallel_migration" ] ||
    [ ! -f "$aws_lane_migration" ] || [ ! -f "$egress_circuit_migration" ] ||
@@ -28,7 +29,8 @@ if [ ! -f "$rolling_migration" ] || [ ! -f "$parallel_migration" ] ||
    [ ! -f "$audit_reconciliation_migration" ] || [ ! -f "$condition_cache_cron_migration" ] ||
    [ ! -f "$forecast_alignment_migration" ] || [ ! -f "$operational_resync_migration" ] ||
    [ ! -f "$findings_migration" ] || [ ! -f "$owner_finding_reader_migration" ] ||
-   [ ! -f "$owner_finding_removal_migration" ] || [ ! -f "$finding_photo_visibility_migration" ]; then
+   [ ! -f "$owner_finding_removal_migration" ] || [ ! -f "$finding_photo_visibility_migration" ] ||
+   [ ! -f "$forest_preferences_migration" ]; then
   echo "A required database migration is missing" >&2
   exit 66
 fi
@@ -69,6 +71,7 @@ apply_if_missing() {
 apply_if_missing open_meteo_hourly_states "$rolling_migration" rolling-ingestion
 apply_if_missing spatial_atmosphere_jobs "$parallel_migration" parallel-ingestion
 apply_if_missing user_findings "$findings_migration" user-findings
+apply_if_missing user_forest_preferences "$forest_preferences_migration" forest-preferences
 
 # These owner-only RPC boundaries are idempotent CREATE OR REPLACE migrations.
 # Reapply them so a restored database receives their latest redaction and
