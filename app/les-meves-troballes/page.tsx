@@ -10,5 +10,5 @@ export const dynamic = "force-dynamic";
 
 export default async function PersonalFindingsPage() {
   if (!await getAuthenticatedUser()) redirect("/acces?retorn=/les-meves-troballes");
-  return <PageShell className="findings-page"><PageHeader eyebrow="Mapa i llista privats" title={<>Les meves <PageTitleAccent>troballes</PageTitleAccent></>} description="Aquí pots veure el punt exacte només quan vas decidir conservar-lo. La vista pública no rep mai aquestes coordenades." actions={<div className="findings-actions"><Link className="finding-button" href="/troballes/nova">Anotar-ne una</Link><Link className="finding-button-secondary" href="/compte">Compte i àlies</Link></div>} /><PersonalFindings /></PageShell>;
+  return <PageShell className="findings-page"><PageHeader eyebrow="Mapa i llista privats" title={<>Les meves <PageTitleAccent>troballes</PageTitleAccent></>} description="Aquí pots veure el punt exacte només quan vas decidir conservar-lo. La vista pública no rep mai aquestes coordenades." actions={<div className="findings-actions"><Link className="finding-button" href="/troballes/nova">Anotar-ne una</Link><Link className="finding-button-secondary" href="/el-meu-bosc">El meu bosc</Link></div>} /><PersonalFindings /></PageShell>;
 }

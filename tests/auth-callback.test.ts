@@ -46,7 +46,7 @@ describe("OAuth callback", () => {
   it("does not accept an external return destination", async () => {
     const response = await GET(new NextRequest("https://bolets.app/auth/callback?code=abc&retorn=https%3A%2F%2Fexample.com"));
 
-    expect(response.headers.get("location")).toBe("https://bolets.app/les-meves-troballes");
+    expect(response.headers.get("location")).toBe("https://bolets.app/el-meu-bosc");
   });
 
   it("returns to the access page with a safe error when exchange fails", async () => {

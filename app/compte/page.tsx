@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AccountSettings } from "@/components/findings/account-settings";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
@@ -10,5 +11,5 @@ export const dynamic = "force-dynamic";
 export default async function AccountPage() {
   const user = await getAuthenticatedUser();
   if (!user) redirect("/acces?retorn=/compte");
-  return <PageShell className="findings-page finding-auth-wrap"><PageHeader eyebrow="Control de dades" title={<>Compte i <PageTitleAccent>privadesa</PageTitleAccent></>} description="Gestiona l’àlies, les sessions i l’eliminació de les teves dades." /><AccountSettings email={user.email ?? ""} /></PageShell>;
+  return <PageShell className="findings-page finding-auth-wrap"><PageHeader eyebrow="Control de dades" title={<>Compte i <PageTitleAccent>privadesa</PageTitleAccent></>} description="Gestiona l’àlies, les sessions i l’eliminació de les teves dades." actions={<Link className="finding-button-secondary" href="/el-meu-bosc">El meu bosc</Link>} /><AccountSettings email={user.email ?? ""} /></PageShell>;
 }

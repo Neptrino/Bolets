@@ -5,7 +5,7 @@ import {
   SUPABASE_AUTH_COOKIE_NAME,
 } from "@/src/lib/supabase/config";
 
-const privatePages = ["/les-meves-troballes", "/compte", "/moderacio"];
+const privatePages = ["/el-meu-bosc", "/les-meves-troballes", "/compte", "/moderacio"];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -41,6 +41,7 @@ export const config = {
   matcher: [
     "/acces",
     "/compte/:path*",
+    "/el-meu-bosc/:path*",
     "/les-meves-troballes/:path*",
     "/moderacio/:path*",
     "/troballes/:path*",

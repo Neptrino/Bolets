@@ -1,7 +1,8 @@
-export const DEFAULT_ACCESS_DESTINATION = "/les-meves-troballes";
+export const DEFAULT_ACCESS_DESTINATION = "/el-meu-bosc";
 
 const ACCESS_DESTINATIONS = [
   DEFAULT_ACCESS_DESTINATION,
+  "/les-meves-troballes",
   "/compte",
   "/moderacio",
 ] as const;

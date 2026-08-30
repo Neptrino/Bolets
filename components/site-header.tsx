@@ -56,6 +56,7 @@ export function SiteHeader() {
     pathname === href || pathname.startsWith(`${href}/`);
   const accountIsCurrent = pathname === "/acces"
     || pathname.startsWith("/compte")
+    || pathname.startsWith("/el-meu-bosc")
     || pathname.startsWith("/les-meves-troballes");
 
   return (
@@ -72,12 +73,12 @@ export function SiteHeader() {
       </nav>
       <Link href="/map" className="header-map-link"><Map size={16} aria-hidden="true" /> <span>Mapa de predicció</span></Link>
       <Link
-        href="/les-meves-troballes"
+        href="/el-meu-bosc"
         className="header-account-link"
         aria-current={accountIsCurrent ? "page" : undefined}
-        title="Entrar o obrir el meu quadern"
+        title="Entrar o obrir El meu bosc"
       >
-        <UserRound size={17} aria-hidden="true" /> <span>El meu quadern</span>
+        <UserRound size={17} aria-hidden="true" /> <span>El meu bosc</span>
       </Link>
       <details
         ref={mobileNav}
@@ -94,7 +95,7 @@ export function SiteHeader() {
           <X className="menu-icon menu-icon-close" size={20} aria-hidden="true" />
         </summary>
         <nav id="mobile-navigation-panel" className="mobile-nav-panel" aria-label="Navegació mòbil">
-          <Link href="/les-meves-troballes" className="mobile-nav-account" aria-current={accountIsCurrent ? "page" : undefined} onClick={closeMobileNav}><UserRound size={18} aria-hidden="true" /> El meu quadern</Link>
+          <Link href="/el-meu-bosc" className="mobile-nav-account" aria-current={accountIsCurrent ? "page" : undefined} onClick={closeMobileNav}><UserRound size={18} aria-hidden="true" /> El meu bosc</Link>
           {links.map((link) => <Link key={link.href} href={link.href} className={link.featured ? "primary-nav-today" : undefined} aria-current={isCurrentLink(link.href) ? "page" : undefined} onClick={closeMobileNav}>{link.mobileLabel}</Link>)}
         </nav>
       </details>

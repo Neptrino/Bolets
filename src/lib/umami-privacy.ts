@@ -4,6 +4,7 @@ export const UMAMI_BLOCKED_PATHS = [
   "/admin",
   "/acces",
   "/compte",
+  "/el-meu-bosc",
   "/les-meves-troballes",
   "/moderacio",
   "/troballes/nova",
