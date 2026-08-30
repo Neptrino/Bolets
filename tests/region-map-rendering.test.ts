@@ -41,7 +41,7 @@ describe("prediction map rendering", () => {
     expect(source).toContain(
       "globalPrediction && cellState.gridSizeM === GLOBAL_MINIMUM_GRID_SIZE_M",
     );
-    expect(source).toContain("la màxima del mapa combinat");
+    expect(source).toContain("Tria una espècie concreta per veure més detall");
   });
 
   it.each([

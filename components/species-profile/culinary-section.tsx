@@ -148,7 +148,7 @@ export function SpeciesCulinarySection({
           <ShieldAlert size={18} aria-hidden="true" />
           <strong>Identificació i urgències</strong>
         </div>
-        <p>No consumiu aquest bolet sense una identificació experta. Davant una ingestió sospitosa, consulteu la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a> i truqueu al <a href="tel:061">061 Salut Respon</a>.</p>
+        <p>No consumeixis aquest bolet sense una identificació experta. Davant una ingestió sospitosa, consulta la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a> i truca al <a href="tel:061">061 Salut Respon</a>.</p>
       </aside>
     )}
 

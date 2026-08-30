@@ -89,7 +89,7 @@ function compactReadingState(reading: SavedForestReading) {
     icon: ShieldCheck,
   };
   return {
-    label: "Lectura retinguda",
+    label: "Dades incompletes",
     detail: "Dades incompletes o no vigents",
     icon: ShieldCheck,
   };

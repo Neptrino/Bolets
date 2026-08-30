@@ -42,9 +42,8 @@ export function SpeciesDistributionSection({
           És un mapa de compatibilitat ecològica, no una predicció
           d’avui.
         </strong>{" "}
-        El blau indica on coincideixen la coberta del sòl, l’altitud i
-        el pH configurats per a l’espècie; no confirma que hi hagi
-        bolets.
+        El blau indica boscos on el terreny encaixa amb l’espècie; no
+        confirma que hi hagi bolets.
       </p>
       <Link
         href={`/map?species=${species.speciesId}&region=${region}${species.predictionMode === "habitat_only" ? "&mode=compatibility" : ""}`}
@@ -72,8 +71,8 @@ export function SpeciesDistributionSection({
           ? `pH ${soil.phRange[0]}–${soil.phRange[1]}`
           : "Sòl compatible"}
       </span>
-      <span>Cel·les exactes de 250 m</span>
-      <span>FungaCAT/GBIF · generalitzat a 10 km</span>
+      <span>Dades de bosc, altitud i sòl</span>
+      <span>Registres històrics generalitzats</span>
     </div>
     {(territoryGuide || localGuides.length > 0) && (
       <section
@@ -85,7 +84,7 @@ export function SpeciesDistributionSection({
             <MapPinned size={14} aria-hidden="true" /> Guies territorials
           </p>
           <h3 id="local-guides-title">
-            Aquesta espècie, llegida des del lloc.
+            Aquesta espècie, territori per territori.
           </h3>
         </header>
         <div className="species-local-guide-links">

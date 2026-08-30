@@ -14,7 +14,7 @@ import { DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
   title: "Tipus de bolets de Catalunya: guia d’espècies",
-  description: `Descobriu ${speciesAlphabetical.length} tipus de bolets de Catalunya per comestibilitat, temporada i hàbitat, amb fitxes d’identificació i confusions.`,
+  description: `Descobreix ${speciesAlphabetical.length} tipus de bolets de Catalunya per comestibilitat, temporada i hàbitat, amb fitxes d’identificació i confusions.`,
   alternates: { canonical: "/bolets" },
   openGraph: {
     url: "/bolets",
@@ -43,14 +43,14 @@ export default function SpeciesIndexPage() {
     <PageShell as="section">
       <JsonLd data={{ "@context": "https://schema.org", "@type": "CollectionPage", name: "Tipus de bolets de Catalunya", url: `${SITE_URL}/bolets`, inLanguage: "ca", mainEntity: { "@type": "ItemList", numberOfItems: speciesAlphabetical.length, itemListElement: speciesAlphabetical.map((species, index) => ({ "@type": "ListItem", position: index + 1, name: `${species.identity.commonName} (${species.identity.scientificName})`, url: `${SITE_URL}${speciesPath(species)}` })) } }} />
       <PageHeader
-        eyebrow="Catàleg viu"
+        eyebrow="Guia d’espècies"
         title={<>Tipus de bolets<br />de Catalunya.</>}
         actions={
           <Link href="/bolets/infografia" className="button catalogue-title-infographic-link">
             <Images size={18} aria-hidden="true" /> Veure la infografia <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         }
-        description={<>{speciesAlphabetical.length} fitxes per explorar noms comuns i científics, comestibilitat, hàbitat, temporada i espècies semblants. Les agrupacions es generen des de les mateixes dades ecològiques de cada fitxa.</>}
+        description={<>{speciesAlphabetical.length} fitxes amb fotografies, noms, comestibilitat, hàbitat, temporada i espècies semblants.</>}
       />
       <nav className="species-topic-links species-topic-links-primary" aria-label="Tipus i calendari de bolets">
         <Link href="/bolets-comestibles"><CookingPot size={18} /><span><strong>Bolets comestibles</strong><small>Espècies, confusions i condicions</small></span><ArrowUpRight size={16} /></Link>
@@ -58,7 +58,7 @@ export default function SpeciesIndexPage() {
         <Link href="/temporada"><CalendarDays size={18} /><span><strong>Per mesos</strong><small>Calendari mensual per espècie</small></span><ArrowUpRight size={16} /></Link>
       </nav>
       <section className="species-season-navigation" aria-labelledby="species-seasons-title">
-        <header><div><p className="eyebrow">Per estacions</p><h2 id="species-seasons-title">Què pot sortir en cada moment de l’any</h2></div><p>Guies derivades del mateix calendari ecològic de les fitxes.</p></header>
+        <header><div><p className="eyebrow">Per estacions</p><h2 id="species-seasons-title">Què pot sortir en cada moment de l’any</h2></div><p>Consulta les espècies habituals de cada temporada.</p></header>
         <nav className="species-topic-links species-topic-links-seasons" aria-label="Bolets per estació de l’any">
           {seasonGuides.map((guide) => {
             const SeasonIcon = seasonIcons[guide.id];

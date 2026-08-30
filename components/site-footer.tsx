@@ -25,7 +25,7 @@ export function SiteFooter() {
             </Link>
             <span>CATALUNYA · {new Date().getFullYear()}</span>
           </div>
-          <p className="site-footer-safety">No identifiqueu ni consumiu bolets sense confirmació experta.</p>
+          <p className="site-footer-safety">No identifiquis ni consumeixis bolets sense confirmació experta.</p>
         </div>
         <nav className="site-footer-links" aria-label="Guies i informació editorial">
           <Link href="/bolets-avui">Bolets avui</Link>

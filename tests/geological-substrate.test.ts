@@ -145,19 +145,18 @@ describe("geological substrate evidence", () => {
     },
   );
 
-  it("shows the mapped class and species preference without technical provenance", () => {
+  it("keeps display-only geology out of the user condition panel", () => {
     const html = renderSubstrate(exactEvidence);
 
-    expect(html).toContain("Substrat geològic");
-    expect(html).toContain("Silícic");
-    expect(html).toContain("Context no puntuat · afinitat descrita:");
+    expect(html).not.toContain("Substrat geològic");
+    expect(html).not.toContain("Silícic");
     expect(html).not.toContain("ICGC");
     expect(html).not.toContain("1:50.000");
     expect(html).not.toContain("unitat Ggd");
     expect(html).not.toContain("No afecta la puntuació");
   });
 
-  it("distinguishes coarse, mixed, unknown, unconsolidated and absent evidence", () => {
+  it("does not surface coarse or uncertain geology as actionable guidance", () => {
     const coarseMixed = renderSubstrate({
       ...exactEvidence,
       class: "mixed",
@@ -180,14 +179,12 @@ describe("geological substrate evidence", () => {
     });
     const absent = renderSubstrate();
 
-    expect(coarseMixed).toContain("Mixt");
-    expect(unknown).toContain("Alternança centimètrica de gresos i lutites. Formació Jújols");
-    expect(unknown).not.toContain("Família de substrat no determinada");
-    expect(unknown).toContain("class=\"geological-unit-description\"");
-    expect(unknown).toContain("title=\"Alternança centimètrica de gresos i lutites. Formació Jújols\"");
+    expect(coarseMixed).not.toContain("Mixt");
+    expect(unknown).not.toContain("Alternança centimètrica de gresos i lutites. Formació Jújols");
+    expect(unknown).not.toContain("geological-unit-description");
     expect(unknown).not.toContain("EÇOrgl");
-    expect(unconsolidated).toContain("Materials no consolidats");
-    expect(absent).toContain("Sense cartografia geològica");
+    expect(unconsolidated).not.toContain("Materials no consolidats");
+    expect(absent).not.toContain("Sense cartografia geològica");
   });
 
   it("documents geology as a scale-preserving, display-only source on the method page", () => {

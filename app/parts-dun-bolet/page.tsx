@@ -29,7 +29,7 @@ import {
 
 const canonicalPath = "/parts-dun-bolet";
 const title = pageTitle("Parts d’un bolet: guia d’identificació");
-const description = metaDescription("Apreneu les parts d’un bolet —barret, himeni, peu, anell, volva, espores i miceli— per descriure’l millor, sense identificar-lo només per un tret.");
+const description = metaDescription("Aprèn les parts d’un bolet —barret, himeni, peu, anell, volva, espores i miceli— per descriure’l millor, sense identificar-lo només per un tret.");
 
 export const metadata = articleMetadata(canonicalPath, title, description);
 
@@ -89,7 +89,7 @@ export default function MushroomPartsGuidePage() {
           <section>
             <CircleDot size={21} aria-hidden="true" />
             <h3>Barret</h3>
-            <p>És la part superior. Observeu-ne la forma, el marge, la superfície, el color i si conserva restes de vel. Un barret convex de jove pot aplanar-se o enfonsar-se en madurar.</p>
+            <p>És la part superior. Observa-ne la forma, el marge, la superfície, el color i si conserva restes de vel. Un barret convex de jove pot aplanar-se o enfonsar-se en madurar.</p>
           </section>
           <section>
             <ScanLine size={21} aria-hidden="true" />
@@ -99,7 +99,7 @@ export default function MushroomPartsGuidePage() {
           <section>
             <MoveVertical size={21} aria-hidden="true" />
             <h3>Peu</h3>
-            <p>Sosté el barret en moltes espècies. Descriviu-ne la posició, el gruix, la textura, les fibres o reticles i si és buit o massís, sense arrencar-ne exemplars innecessàriament.</p>
+            <p>Sosté el barret en moltes espècies. Descriu-ne la posició, el gruix, la textura, les fibres o reticles i si és buit o massís, sense arrencar-ne exemplars innecessàriament.</p>
           </section>
           <section>
             <CircleDot size={21} aria-hidden="true" />
@@ -135,7 +135,7 @@ export default function MushroomPartsGuidePage() {
           <section>
             <ShieldAlert size={21} aria-hidden="true" />
             <h3>Olor i context</h3>
-            <p>L’olor, l’arbre associat, el tipus de sòl i el moment de l’any completen la descripció. No tasteu exemplars per identificar-los i no utilitzeu cap tret aïllat per decidir si són comestibles.</p>
+            <p>L’olor, l’arbre associat, el tipus de sòl i el moment de l’any completen la descripció. No tastis exemplars per identificar-los i no utilitzis cap tret aïllat per decidir si són comestibles.</p>
           </section>
         </div>
       </section>
@@ -146,7 +146,7 @@ export default function MushroomPartsGuidePage() {
           title="Què anotar abans de consultar una fitxa"
           titleId="observation-title"
         />
-        <p>Fotografieu el bolet sencer, inclosa la base, i anoteu el bosc o substrat, la forma del barret, l’himeni, el peu, qualsevol anell o volva i els canvis de la carn. Després contrasteu aquests trets amb les fitxes i les espècies semblants, sense fer servir l’aplicació com a autorització de consum.</p>
+        <p>Fotografia el bolet sencer, inclosa la base, i anota el bosc o substrat, la forma del barret, l’himeni, el peu, qualsevol anell o volva i els canvis de la carn. Després contrasta aquests trets amb les fitxes i les espècies semblants, sense fer servir l’aplicació com a autorització de consum.</p>
         <nav className="rain-guide-actions" aria-label="Guies d’identificació relacionades">
           <Link href="/bolets">Consultar totes les fitxes <ArrowUpRight size={16} /></Link>
           <Link href="/bolets-comestibles">Veure bolets comestibles <ArrowUpRight size={16} /></Link>

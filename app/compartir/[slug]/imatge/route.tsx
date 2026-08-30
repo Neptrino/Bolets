@@ -367,7 +367,7 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
           )) : (
             <div style={{ display: "flex", flexDirection: "column", width: "100%", minHeight: 164, padding: "25px 30px", justifyContent: "center", borderLeft: "4px solid #f2a766", background: "rgba(255,247,232,0.1)", borderTop: "1px solid rgba(255,247,232,0.24)", borderRight: "1px solid rgba(255,247,232,0.24)", borderBottom: "1px solid rgba(255,247,232,0.24)", borderRadius: 16 }}>
               <span style={{ color: "#f2a766", fontSize: 23 }}>Sense lectura publicada</span>
-              <span style={{ color: "#d7dec7", fontSize: 24, marginTop: 11 }}>Les dades que no compleixen els controls de vigència i completitud no reben cap substitut.</span>
+              <span style={{ color: "#d7dec7", fontSize: 24, marginTop: 11 }}>Si falten dades recents, no mostrem una puntuació parcial.</span>
             </div>
           )}
         </div>

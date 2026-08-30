@@ -32,8 +32,8 @@ export function SpeciesFieldCardSection({
             <div className="species-field-card-safety">
               <ShieldAlert size={19} aria-hidden="true" />
               <p>
-                És una ajuda de camp, no una confirmació d’identitat. Reviseu la
-                fitxa completa i consulteu una persona experta abans de consumir
+                És una ajuda de camp, no una confirmació d’identitat. Revisa la
+                fitxa completa i consulta una persona experta abans de consumir
                 cap bolet.
               </p>
             </div>

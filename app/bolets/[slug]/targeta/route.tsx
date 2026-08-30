@@ -169,7 +169,7 @@ function FieldCardArtwork({
       </div>
 
       <div style={{ display: "flex", width: "100%", height: 92, flexShrink: 0, alignItems: "center", justifyContent: "space-between", padding: "0 46px", borderTop: "9px solid #f28a2e", color: "#fff7e8", background: "#3b3b3b" }}>
-        <span style={{ maxWidth: 730, fontSize: 20, fontWeight: 700, lineHeight: 1.3 }}>No identifiqueu ni consumiu cap bolet només amb aquesta targeta. Confirmeu-lo amb una persona experta.</span>
+        <span style={{ maxWidth: 730, fontSize: 20, fontWeight: 700, lineHeight: 1.3 }}>No identifiquis ni consumeixis cap bolet només amb aquesta targeta. Confirma’l amb una persona experta.</span>
         <span style={{ color: "#f2a766", fontSize: 22, fontWeight: 900, letterSpacing: "0.07em" }}>BOLETS.APP</span>
       </div>
     </div>

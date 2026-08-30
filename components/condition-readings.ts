@@ -90,7 +90,7 @@ const lapseDeltaC = terrainLapseDeltaC(v) ?? 0;
 const atCellAltitude = (value: number | undefined) =>
   value === undefined ? undefined : value + lapseDeltaC;
 const lapseNote = Math.abs(lapseDeltaC) >= 0.05
-  ? ` Temperatures corregides ${lapseDeltaC > 0 ? "+" : "−"}${Math.abs(lapseDeltaC).toFixed(1)} °C del punt de malla (${Math.round(v.weatherElevationM ?? 0)} m) a l’altitud de la cel·la (${Math.round(v.altitudeM ?? 0)} m).`
+  ? " Temperatures ajustades a l’altitud del sector."
   : "";
 const data: Array<{
   label: string;
@@ -112,8 +112,8 @@ const data: Array<{
       : temperature(atCellAltitude(v.temperatureC)),
     context: {
       note: supportedModel
-        ? `El rang diari és context. El model compara la temperatura mitjana de ${temperatureWindowDays} dies amb l’òptim inicial de l’espècie (${supportedModel.temperature.optimumC} °C); les gelades i la calor extrema s’apliquen per separat.${lapseNote}`
-        : `Sense model hidrotermal de curt termini per a aquesta espècie.${lapseNote}`,
+        ? `Compara la temperatura recent amb el rang preferit de l’espècie; també té en compte les gelades i la calor extrema.${lapseNote}`
+        : `Context tèrmic recent per a aquesta espècie.${lapseNote}`,
     },
     stats: [
       {
@@ -126,29 +126,29 @@ const data: Array<{
         label: `Mitj · ${temperatureWindowDays ?? "—"} dies`,
         value: temperature(atCellAltitude(temperatureWindowAverage)),
         explanation:
-          "Mitjana tèrmica de la finestra configurada per al gremi o l’espècie. La resposta té un òptim i decau suaument tant per fred com per calor.",
+          "Temperatura mitjana del període que fa servir aquesta espècie.",
       },
       {
         label: "Hores ≤ 0 °C",
         value: frostHours === undefined ? "—" : `${Math.round(frostHours)} h`,
         explanation:
-          "Hores de gelada dins la mateixa finestra. Actuen com un multiplicador de dany segons la semivida configurada, no com un tall arbitrari.",
+          "Hores de gelada durant el mateix període.",
       },
       {
         label: "Hores ≥ 27 °C",
         value: heatHours === undefined ? "—" : `${Math.round(heatHours)} h`,
         explanation:
-          "Hores de calor dins la mateixa finestra. L’exposició acumulada redueix gradualment la resposta, amb tolerància pròpia del gremi.",
+          "Hores de calor extrema durant el mateix període.",
       },
     ],
     icon: ThermometerSun,
   },
   {
     label: "Humitat del sòl",
-    period: "darrera lectura · profunditat 3–9 cm",
+    period: "darrera lectura",
     current: percentage(v.soilMoisture, true),
     context: {
-      note: "Normalitzada per textura entre punt de marciment i capacitat de camp; forma part d’un únic estat hídric",
+      note: "Aigua disponible a la capa superficial del sòl, ajustada segons el tipus de terra",
     },
     stats: [
       {
@@ -195,7 +195,7 @@ const data: Array<{
     period: "darrera lectura",
     current: percentage(v.relativeHumidity),
     context: {
-      note: "S’utilitza amb la temperatura per estimar el dèficit de pressió de vapor dins l’estat hídric; no puntua per separat",
+      note: "Ajuda a entendre si l’ambient manté la humitat o asseca el bosc",
     },
     stats: [
       {
@@ -227,11 +227,11 @@ const data: Array<{
   },
   {
     label: "Pluja acumulada",
-    period: rainfallWindowDays ? `finestra del model · ${rainfallWindowDays} dies` : "últimes 168 h",
+    period: rainfallWindowDays ? `últims ${rainfallWindowDays} dies` : "últims 7 dies",
     current: millimetres(rainfallWindowAmount),
     context: rainfallWindowDays
-      ? { note: `Finestra de ${rainfallWindowDays} dies amb nombre de dies plujosos, ET₀, ratxa seca i humitat del sòl` }
-      : { note: "Context hídric; no hi ha model de curt termini per a aquesta espècie" },
+      ? { note: `Pluja recent, repartiment dels dies plujosos i temps que fa que el sòl s’asseca` }
+      : { note: "Pluja recent disponible per a aquesta espècie" },
     stats: [
       {
         label: "Pluja · 24 h",
@@ -249,19 +249,19 @@ const data: Array<{
         label: "Pluja · 7 dies",
         value: millimetres(v.rainfall7dMm),
         explanation:
-          "Precipitació de la darrera setmana. Es mostra com a context recent, però el model utilitza la finestra hídrica configurada completa.",
+          "Pluja acumulada durant la darrera setmana.",
       },
       {
         label: `Dies amb ≥ 1 mm · ${rainfallWindowDays ?? "—"} dies`,
         value: dayCount(rainfallWindowWetDays),
         explanation:
-          "Nombre de dies amb almenys un mil·límetre de pluja dins la finestra configurada. Distingeix un pols concentrat d’una rehidratació distribuïda.",
+          "Dies amb pluja apreciable. Ajuda a distingir un xàfec d’un episodi més repartit.",
       },
       {
         label: `ET₀ · ${rainfallWindowDays ?? 7} dies`,
         value: millimetres(rainfallWindowEt0),
         explanation:
-          "Evapotranspiració de referència acumulada a la mateixa finestra que la pluja. Entra en la pluja efectiva i no es puntua per separat.",
+          "Estimació de l’aigua que el sòl i la vegetació poden haver perdut.",
       },
       {
         label: "Ratxa seca",
@@ -277,7 +277,7 @@ const data: Array<{
     period: "darrera lectura",
     current: speed(v.windKmh),
     context: {
-      note: `${species.ecologicalConfig.climate.wind} · es mostra com a context i no puntua separadament`,
+      note: `${species.ecologicalConfig.climate.wind} · el vent ajuda a entendre l’assecament`,
     },
     stats: [
       {

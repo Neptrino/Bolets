@@ -58,7 +58,7 @@ export default function EdibleMushroomsPage() {
 
       <aside className="intent-safety-note">
         <CircleAlert size={22} aria-hidden="true" />
-        <div><strong>Comestible no vol dir identificat.</strong><p>Una fotografia, un nom popular o aquesta web no són suficients per decidir si un bolet es pot consumir. Confirmeu sempre l’espècie amb una persona experta.</p></div>
+        <div><strong>Comestible no vol dir identificat.</strong><p>Una fotografia, un nom popular o aquesta web no són suficients per decidir si un bolet es pot consumir. Confirma sempre l’espècie amb una persona experta.</p></div>
       </aside>
 
       <section className="intent-reading-section" aria-labelledby="edible-reading-title">
@@ -70,12 +70,12 @@ export default function EdibleMushroomsPage() {
         <div className="intent-reading-grid">
           <div>
             <p>Els bolets comestibles de Catalunya no formen un grup uniforme. Algunes espècies tenen un valor culinari alt; d’altres només es consideren comestibles amb condicions concretes de cocció, preparació o quantitat. Cada fitxa explica aquesta diferència i assenyala les confusions rellevants.</p>
-            <p>Trieu primer una espècie que encaixi amb el bosc i la temporada. Després consulteu les <Link href="/bolets-avui">condicions actuals</Link> i el <Link href="/map">mapa de predicció</Link>. Cap d’aquests passos substitueix una identificació experta de l’exemplar complet.</p>
+            <p>Tria primer una espècie que encaixi amb el bosc i la temporada. Després consulta les <Link href="/bolets-avui">condicions actuals</Link> i el <Link href="/map">mapa de condicions</Link>. Cap d’aquests passos substitueix una identificació experta de l’exemplar complet.</p>
           </div>
           <ol>
-            <li>Reviseu el nivell de comestibilitat i totes les condicions de consum.</li>
-            <li>Compareu barret, himeni, peu, base, hàbitat i temporada.</li>
-            <li>Descarteu els semblants tòxics abans de collir o cuinar.</li>
+            <li>Revisa el nivell de comestibilitat i totes les condicions de consum.</li>
+            <li>Compara barret, himeni, peu, base, hàbitat i temporada.</li>
+            <li>Descarta els semblants tòxics abans de collir o cuinar.</li>
           </ol>
         </div>
         <nav className="species-topic-links seasonal-guide-topic-links" aria-label="Guies relacionades amb els bolets comestibles">

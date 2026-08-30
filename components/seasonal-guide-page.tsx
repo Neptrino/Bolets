@@ -51,7 +51,7 @@ export function SeasonalGuidePage({ guide }: { guide: SeasonGuide }) {
 
       <section className="seasonal-guide-notes" aria-label={`Com interpretar la temporada ${guide.id}`}>
         <article><CloudRain size={21} aria-hidden="true" /><div><h2>{guide.conditionTitle}</h2><p>{guide.conditionText}</p></div></article>
-        <article><CircleAlert size={21} aria-hidden="true" /><div><h2>Calendari no vol dir presència</h2><p>No consumiu cap bolet sense una identificació experta. El calendari descriu potencial estacional i no confirma que una espècie estigui fructificant.</p></div></article>
+        <article><CircleAlert size={21} aria-hidden="true" /><div><h2>Calendari no vol dir presència</h2><p>No consumeixis cap bolet sense una identificació experta. El calendari descriu potencial estacional i no confirma que una espècie estigui fructificant.</p></div></article>
       </section>
 
       <section className="intent-reading-section" aria-labelledby={`${guide.id}-reading-title`}>

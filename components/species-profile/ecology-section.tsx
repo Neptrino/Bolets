@@ -119,29 +119,7 @@ export function SpeciesEcologySection({
               <dt>Ombra</dt>
               <dd>{habitat.shade}</dd>
             </div>
-            <div>
-              <dt>Pendent</dt>
-              <dd>{habitat.slope}</dd>
-            </div>
-            <div>
-              <dt>Matèria orgànica</dt>
-              <dd>{soil.organicMatter}</dd>
-            </div>
-            <div>
-              <dt>Retenció d’aigua</dt>
-              <dd>{soil.waterRetention}</dd>
-            </div>
-            <div>
-              <dt>Humus</dt>
-              <dd>{soil.humus}</dd>
-            </div>
           </dl>
-          <p className="soil-evidence">
-            Nivell d’evidència ecològica:{" "}
-            {soil.evidence === "limited"
-              ? "limitat; cal contrastar-lo amb la bibliografia local."
-              : soil.evidence}
-          </p>
         </div>
       </section>
 
@@ -188,7 +166,7 @@ export function SpeciesEcologySection({
           </div>
           <dl className="rainfall-facts">
             <div>
-              <dt>Acumulació preferida</dt>
+              <dt>Pluja habitual</dt>
               <dd>{rainfall.preferredAccumulation}</dd>
             </div>
             <div>
@@ -200,7 +178,7 @@ export function SpeciesEcologySection({
               <dd>{rainfall.temperatureAfterRain}</dd>
             </div>
             <div>
-              <dt>Pot interrompre’s per</dt>
+              <dt>Què ho pot frenar</dt>
               <dd>{rainfall.interruption}</dd>
             </div>
           </dl>

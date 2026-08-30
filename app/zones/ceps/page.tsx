@@ -106,7 +106,7 @@ const faqs = [
   {
     question: "Com es diferencia un cep del mataparent?",
     answer:
-      "El mataparent desenvolupa porus rosats i un reticle bru fosc; és incomestible pel gust molt amarg. No tasteu mai un exemplar dubtós per identificar-lo: compareu tots els trets i consulteu una persona experta.",
+      "El mataparent desenvolupa porus rosats i un reticle bru fosc; és incomestible pel gust molt amarg. No tastis mai un exemplar dubtós per identificar-lo: compara tots els trets i consulta una persona experta.",
   },
   {
     question: "El mapa confirma que hi ha ceps en un lloc?",
@@ -253,7 +253,7 @@ export default function CepsTerritoryPage() {
             <h2 id="ceps-types-title">Els quatre ceps de Catalunya representats al catàleg.</h2>
             <p>Aquesta comparació surt de les mateixes fitxes ecològiques i d’identificació que alimenten els perfils individuals i els mapes.</p>
           </header>
-          <p className="guide-types-scroll-hint">Feu lliscar la taula per veure totes les columnes.</p>
+          <p className="guide-types-scroll-hint">Fes lliscar la taula per veure totes les columnes.</p>
           <div className="guide-types-table-scroll">
             <table className="guide-types-table" data-ceps-types-table>
               <caption className="sr-only">Comparació dels quatre tipus de ceps representats al catàleg</caption>
@@ -296,7 +296,7 @@ export default function CepsTerritoryPage() {
           <div>
             <article>
               <span>01</span><h3>Mataparent</h3>
-              <p>Té porus que es tornen rosats i un reticle bru fosc. És incomestible pel gust amarg; no el tasteu per confirmar-ne la identitat.</p>
+              <p>Té porus que es tornen rosats i un reticle bru fosc. És incomestible pel gust amarg; no el tastis per confirmar-ne la identitat.</p>
               <Link href="/compare/cep-vs-mataparent" className="text-link">Comparar amb el cep <ArrowUpRight size={15} /></Link>
             </article>
             <article>
@@ -503,7 +503,7 @@ export default function CepsTerritoryPage() {
           <div>
             <strong>No és una guia d’identificació per al consum.</strong>
             <p>
-              No consumiu cap bolet basant-vos en el mapa, aquesta pàgina o
+              No consumeixis cap bolet basant-te en el mapa, aquesta pàgina o
               una fotografia. L’ACSA recomana menjar només els bolets que es
               puguin identificar sense cap dubte; consulta la seva{" "}
               <a

@@ -81,7 +81,7 @@ export function GuideDirectory({ items }: { items: GuideDirectoryItem[] }) {
       ) : (
         <div className="guide-browser-empty">
           <BookOpenText size={24} aria-hidden="true" />
-          <div><strong>No hi ha cap guia amb aquesta combinació.</strong><p>Proveu de treure un filtre o cercar un territori més ampli.</p></div>
+          <div><strong>No hi ha cap guia amb aquesta combinació.</strong><p>Prova de treure un filtre o cercar un territori més ampli.</p></div>
           <button type="button" onClick={resetFilters}>Veure totes les guies</button>
         </div>
       )}

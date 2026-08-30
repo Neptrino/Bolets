@@ -54,20 +54,20 @@ export default function WoodFungiGuidePage() {
       <section className="seo-guide-section" aria-labelledby="soca-name">
         <SectionHeader title="Què són els bolets de soca?" titleId="soca-name" meta="Un nom ampli" />
         <p>El Museu de les Terres de l’Ebre presenta sota aquest nom diversos fongs que creixen sobre fusta, com <i>Fomes fomentarius</i>, <i>Phellinus torulosus</i> i <i>Ganoderma lucidum</i>. Aquests altres exemples encara no tenen fitxa al nostre catàleg. Per tant, buscar «bolet de soca» no equival a buscar una sola fitxa científica.</p>
-        <p>Alguns d’aquests fongs descomponen fusta morta; d’altres també poden viure sobre arbres vius. El substrat és una part del context ecològic, no una prova de comestibilitat. <a href={woodFungiSource.url}>Vegeu els exemples documentats pel museu.</a></p>
+        <p>Alguns d’aquests fongs descomponen fusta morta; d’altres també poden viure sobre arbres vius. El substrat és una part del context ecològic, no una prova de comestibilitat. <a href={woodFungiSource.url}>Mira els exemples documentats pel museu.</a></p>
       </section>
       <section className="seo-guide-section" aria-labelledby="soca-observation">
         <SectionHeader title="Què convé documentar?" titleId="soca-observation" meta="Abans de posar-hi un nom" />
         <div className="seo-guide-grid">
-          <section><h3>La fusta i l’entorn</h3><p>Fotografieu el suport sencer: tronc, soca, branca o fusta caiguda. Anoteu l’arbre només si el coneixeu; si no, deixeu-lo com a desconegut. No publiqueu coordenades de punts sensibles.</p></section>
-          <section><h3>La forma i la unió al suport</h3><p>Descriviu si hi ha peu visible, si el bolet s’uneix lateralment a la fusta i si apareix sol o agrupat. Els exemples del museu inclouen formes adherides al tronc i formes amb peu.</p></section>
-          <section><h3>La cara inferior</h3><p>Una vista superior sola deixa informació fora. Si és possible sense malmetre l’exemplar, afegiu una fotografia de sota i descriviu-ne la superfície. La guia de parts explica el vocabulari, no resol la identificació.</p></section>
-          <section><h3>Allò que no sabem</h3><p>No completeu una descripció amb trets que no heu observat. Una fotografia, un nom popular o una semblança amb un exemplar del catàleg no substitueixen l’examen d’una persona experta.</p></section>
+          <section><h3>La fusta i l’entorn</h3><p>Fotografia el suport sencer: tronc, soca, branca o fusta caiguda. Anota l’arbre només si el coneixes; si no, deixa’l com a desconegut. No publiquis coordenades de punts sensibles.</p></section>
+          <section><h3>La forma i la unió al suport</h3><p>Descriu si hi ha peu visible, si el bolet s’uneix lateralment a la fusta i si apareix sol o agrupat. Els exemples del museu inclouen formes adherides al tronc i formes amb peu.</p></section>
+          <section><h3>La cara inferior</h3><p>Una vista superior sola deixa informació fora. Si és possible sense malmetre l’exemplar, afegeix una fotografia de sota i descriu-ne la superfície. La guia de parts explica el vocabulari, no resol la identificació.</p></section>
+          <section><h3>Allò que no sabem</h3><p>No completis una descripció amb trets que no has observat. Una fotografia, un nom popular o una semblança amb un exemplar del catàleg no substitueixen l’examen d’una persona experta.</p></section>
         </div>
       </section>
       <section className="seo-guide-section" aria-labelledby="soca-safety">
         <SectionHeader title="Créixer sobre fusta no és una garantia" titleId="soca-safety" meta="Cap regla de consum" />
-        <p>No agrupem aquests bolets en una llista de «comestibles» pel substrat. Per a qualsevol dubte d’identificació o consum, seguiu els <a href={officialSafetySource.url}>consells de seguretat de l’ACSA</a> i consulteu una persona experta. No tasteu exemplars per intentar posar-los nom.</p>
+        <p>No agrupem aquests bolets en una llista de «comestibles» pel substrat. Per a qualsevol dubte d’identificació o consum, segueix els <a href={officialSafetySource.url}>consells de seguretat de l’ACSA</a> i consulta una persona experta. No tastis exemplars per intentar posar-los nom.</p>
         <nav className="rain-guide-actions" aria-label="Lectures relacionades amb els bolets de soca">
           <Link href="/parts-dun-bolet">Parts d’un bolet <ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/bolets-verinosos">Confusions i bolets verinosos <ArrowUpRight size={16} aria-hidden="true" /></Link>

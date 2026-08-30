@@ -25,7 +25,7 @@ export function SpeciesCard({
     <Link
       href={speciesPath(species)}
       className="species-card"
-      aria-label={`Obriu la fitxa de ${species.identity.commonName}`}
+      aria-label={`Obre la fitxa de ${species.identity.commonName}`}
       style={{ "--tone-a": toneA ?? "#f28a2e", "--tone-b": toneB ?? "#9f4d24", animationDelay: `${index * 45}ms` } as React.CSSProperties}
     >
       <div className={`species-card-illustration${referenceImage ? " has-photo" : ""}`}>

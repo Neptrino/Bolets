@@ -62,7 +62,7 @@ export default function SpringMushroomsPage() {
         layout="split"
       />
 
-      <aside className="intent-safety-note spring-safety-note"><CircleAlert size={22} /><div><strong>La primavera també té confusions de risc.</strong><p>Identifiqueu exemplars complets, reviseu tots els trets i no decidiu el consum amb una fotografia. En cas d’ingestió sospitosa, truqueu al 061.</p></div></aside>
+      <aside className="intent-safety-note spring-safety-note"><CircleAlert size={22} /><div><strong>La primavera també té confusions de risc.</strong><p>Identifica exemplars complets, revisa tots els trets i no decideixis el consum amb una fotografia. En cas d’ingestió sospitosa, truca al 061.</p></div></aside>
 
       <section className="intent-reading-section" aria-labelledby="spring-reading-title">
         <SectionHeader
@@ -73,12 +73,12 @@ export default function SpringMushroomsPage() {
         <div className="intent-reading-grid">
           <div>
             <p>La selecció de bolets de primavera es basa en el calendari ecològic de cada espècie. La data orienta, però la pluja acumulada, la temperatura, l’altitud i el bosc decideixen si pot fructificar en un lloc concret.</p>
-            <p>Per preparar una sortida, consulteu les <Link href="/bolets-avui">condicions actuals</Link> i el <Link href="/map">mapa de predicció</Link>; després contrasteu sempre l’exemplar amb la seva fitxa.</p>
+            <p>Per preparar una sortida, consulta les <Link href="/bolets-avui">condicions actuals</Link> i el <Link href="/map">mapa de condicions</Link>; després contrasta sempre l’exemplar amb la seva fitxa.</p>
           </div>
           <ol>
-            <li>Comenceu per espècies que encaixin amb el mes i l’hàbitat.</li>
-            <li>Comproveu si les condicions recents són favorables a la zona.</li>
-            <li>Reviseu les confusions abans de collir o consumir.</li>
+            <li>Comença per espècies que encaixin amb el mes i l’hàbitat.</li>
+            <li>Comprova si les condicions recents són favorables a la zona.</li>
+            <li>Revisa les confusions abans de collir o consumir.</li>
           </ol>
         </div>
       </section>

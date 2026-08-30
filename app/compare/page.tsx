@@ -26,18 +26,18 @@ import type { EdibilityStatus, Month, SpeciesProfile } from "@/src/lib/types";
 
 export const metadata: Metadata = {
   title: "Comparador de bolets",
-  description: "Compareu dues espècies de bolets de Catalunya: identificació, hàbitat, altitud, temporada, clima i comestibilitat.",
+  description: "Compara dues espècies de bolets de Catalunya: identificació, hàbitat, altitud, temporada, clima i comestibilitat.",
   alternates: { canonical: "/compare" },
   openGraph: {
     url: "/compare",
     title: "Comparador de bolets",
-    description: "Compareu la identificació, l’hàbitat, la temporada i la comestibilitat de dues espècies.",
+    description: "Compara la identificació, l’hàbitat, la temporada i la comestibilitat de dues espècies.",
     images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Comparador de bolets",
-    description: "Compareu la identificació, l’hàbitat, la temporada i la comestibilitat de dues espècies.",
+    description: "Compara la identificació, l’hàbitat, la temporada i la comestibilitat de dues espècies.",
     images: [DEFAULT_SOCIAL_IMAGE],
   },
 };
@@ -128,7 +128,7 @@ function ComparisonProfileCard({
           parameter={side}
           items={speciesSelectItems}
           variant="comparison"
-          aria-label={`Seleccioneu l’espècie ${side === "left" ? "esquerra" : "dreta"}`}
+          aria-label={`Selecciona l’espècie ${side === "left" ? "esquerra" : "dreta"}`}
         />
       </div>
       <div className={`compare-profile-visual${image ? " has-image" : ""}`}>
@@ -194,9 +194,9 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   return (
     <PageShell as="section">
       <PageHeader
-        eyebrow="Lectura comparada"
-        title={<>Dos bolets,<br />dos paisatges.</>}
-        description="Compareu condicions ecològiques estructurades. Les diferències venen de les fitxes, no d’un text paral·lel."
+        eyebrow="Comparador d’espècies"
+        title={<>Dos bolets,<br />cara a cara.</>}
+        description="Compara l’aspecte, el bosc, la temporada i el risc de confusió de dues espècies."
       />
 
       <div className="compare-stage">
@@ -294,7 +294,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
         <div className="comparison-guides-intro">
           <p className="eyebrow">Comparacions publicades</p>
           <h2 id="comparison-guides-title">Confusions freqüents</h2>
-          <p>Comenceu per les parelles que poden acabar al mateix cistell i amplieu després la identificació entre espècies properes.</p>
+          <p>Comença per les parelles que poden acabar al mateix cistell i amplia després la identificació entre espècies properes.</p>
         </div>
         <div className="comparison-guide-groups">
           <div className="comparison-guide-list comparison-guide-list-risk">

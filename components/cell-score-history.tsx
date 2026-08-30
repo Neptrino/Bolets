@@ -253,7 +253,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     return <section className="cell-score-history" aria-busy="true"><p>Carregant l’evolució i la projecció…</p></section>;
   }
   if (state.kind === "unavailable") {
-    return <section className="cell-score-history"><p>No s’ha pogut carregar l’evolució d’aquesta cel·la{state.reason ? ` (${state.reason}).` : "."}</p></section>;
+    return <section className="cell-score-history"><p>No s’ha pogut carregar l’evolució d’aquest sector{state.reason ? ` (${state.reason}).` : "."}</p></section>;
   }
 
   const { observed, forecast } = state.timeline;
@@ -262,7 +262,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     (point): point is PredictionForecastPoint & { score: number } => point.score !== null,
   ) ?? [];
   if (!observedAvailable.length && !projectedAvailable.length) {
-    return <section className="cell-score-history"><p>No hi ha puntuacions publicables en l’evolució recent ni en la projecció d’aquesta cel·la.</p></section>;
+    return <section className="cell-score-history"><p>No hi ha prou dades per mostrar l’evolució recent d’aquest sector.</p></section>;
   }
   const latestObserved = observedAvailable.at(-1);
   const latestProjected = projectedAvailable.at(-1);
@@ -288,14 +288,14 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       ? "Projecció ambiental a 5 dies"
       : "Evolució recent";
   const information = forecast
-    ? `La projecció conserva l’historial atmosfèric observat d’AROME fins a l’inici i hi enllaça les hores futures d’ECMWF; la humitat del sòl prové d’Open-Meteo. Així, la pluja, la calor i el fred recents desapareixen gradualment de cada finestra del model. No és una predicció de l’aparició de bolets. La incertesa augmenta amb l’horitzó. Generada el ${dayLabel(forecast.generatedAt)} amb dades a ${Math.round(forecast.sourceResolutionM / 1000)} km.`
-    : "Cada punt calculat aplica el mateix model a les dades ambientals verificades d’aquell dia.";
+    ? `La projecció combina el temps recent amb la previsió dels pròxims dies. No prediu quan apareixeran bolets i és menys segura com més s’allunya d’avui. Generada el ${dayLabel(forecast.generatedAt)}.`
+    : "Cada punt compara les condicions ambientals disponibles d’aquell dia.";
 
   return (
     <section className="cell-score-history" aria-labelledby={titleId}>
       <div className="cell-score-history-heading">
         <div>
-          <p className="eyebrow">Puntuació de la cel·la</p>
+          <p className="eyebrow">Puntuació del sector</p>
           <div className="cell-score-history-title-row">
             <h4 id={titleId}>{title}</h4>
             <button

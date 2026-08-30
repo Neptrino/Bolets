@@ -41,7 +41,7 @@ export default function FalseChanterelleGuidePage() {
       <PageHeader
         eyebrow={<><ScanLine size={15} /> Noms i confusions</>}
         title={<>Fals rossinyol,<br /><PageTitleAccent>trets i confusions.</PageTitleAccent></>}
-        description="El fals rossinyol (Hygrophoropsis aurantiaca) és un bolet taronja que es pot confondre amb el rossinyol o el bolet d’olivera. Conegueu-ne els trets, l’hàbitat i les precaucions sobre la comestibilitat."
+        description="El fals rossinyol (Hygrophoropsis aurantiaca) és un bolet taronja que es pot confondre amb el rossinyol o el bolet d’olivera. Coneix-ne els trets, l’hàbitat i les precaucions sobre la comestibilitat."
         layout="split"
       />
       <EditorialSafetyNotice />
@@ -60,7 +60,7 @@ export default function FalseChanterelleGuidePage() {
           title="Fitxes per comparar"
           titleId="false-chanterelle-species"
           meta="Fotografies i descripcions"
-          description="Consulteu la fitxa del fals rossinyol i les de les dues espècies amb què es pot confondre. Les fotografies són orientatives, no una prova d’identificació."
+          description="Consulta la fitxa del fals rossinyol i les de les dues espècies amb què es pot confondre. Les fotografies són orientatives, no una prova d’identificació."
           actions={<Link className="text-link" href="/compare/rossinyol-vs-bolet-olivera">Rossinyol i bolet d’olivera <ArrowUpRight size={16} aria-hidden="true" /></Link>}
         />
         <div className="species-grid">
@@ -75,15 +75,15 @@ export default function FalseChanterelleGuidePage() {
       </section>
       <section className="seo-guide-section" aria-labelledby="false-chanterelle-edibility">
         <SectionHeader title="El fals rossinyol és comestible?" titleId="false-chanterelle-edibility" meta="Precaucions de consum" />
-        <p><strong>No el considereu un bolet per al consum.</strong> La <a href={falseChanterelleSources[0].url}>ICHN</a> el descriu com a no comestible. <a href={falseChanterelleSources[1].url}>Aranzadi</a> el classifica com a sospitós i sense valor culinari. La diferència entre aquestes etiquetes no vol dir que sigui segur menjar-ne.</p>
+        <p><strong>No el consideris un bolet per al consum.</strong> La <a href={falseChanterelleSources[0].url}>ICHN</a> el descriu com a no comestible. <a href={falseChanterelleSources[1].url}>Aranzadi</a> el classifica com a sospitós i sense valor culinari. La diferència entre aquestes etiquetes no vol dir que sigui segur menjar-ne.</p>
       </section>
       <section className="seo-guide-section" aria-labelledby="false-chanterelle-habitat">
         <SectionHeader title="On i quan apareix?" titleId="false-chanterelle-habitat" meta="Hàbitat i temporada" />
         <p>És un bolet de tardor: la <a href={falseChanterelleSources[0].url}>ICHN</a> el situa en pinedes i rouredes, i <a href={falseChanterelleSources[1].url}>Aranzadi</a> en boscos de coníferes. El tipus de bosc i l’època de l’any aporten context, però no confirmen la identitat d’un exemplar.</p>
       </section>
       <section className="seo-guide-section" aria-labelledby="false-chanterelle-next">
-        <SectionHeader title="Què fer si teniu dubtes?" titleId="false-chanterelle-next" meta="Identificació amb prudència" />
-        <p>No el consumiu i consulteu una persona experta. Per explicar què heu trobat, reuniu fotografies del barret, la cara inferior, el peu sencer i el lloc on creix. Les imatges ajuden a descriure’l, però no substitueixen la identificació de l’exemplar.</p>
+        <SectionHeader title="Què fer si tens dubtes?" titleId="false-chanterelle-next" meta="Identificació amb prudència" />
+        <p>No el consumeixis i consulta una persona experta. Per explicar què has trobat, reuneix fotografies del barret, la cara inferior, el peu sencer i el lloc on creix. Les imatges ajuden a descriure’l, però no substitueixen la identificació de l’exemplar.</p>
       </section>
       <EditorialAttribution contentId="fals-rossinyol" sources={[...falseChanterelleSources, officialSafetySource]} />
     </PageShell>

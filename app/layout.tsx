@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     "predicció de bolets",
     "predicció bolets Catalunya",
     "bolets avui Catalunya",
-    "mapa de predicció de bolets",
+    "mapa de condicions per als bolets",
     "bolets de Catalunya",
     "espècies de bolets",
     "temporada de bolets",

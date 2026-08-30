@@ -52,12 +52,12 @@ function guidesForArea(areaSlug: string) {
 export const metadata: Metadata = {
   title: "Zones de bolets de Catalunya: massissos i comarques",
   description:
-    "Directori territorial de bolets de Catalunya: massissos, paratges i comarques boletaires amb guies locals, més les regions generals del mapa de predicció.",
+    "Massissos, paratges i comarques de Catalunya amb guies locals i accés al mapa de condicions.",
   alternates: { canonical: "/zones" },
   openGraph: {
     url: "/zones",
     title: "Zones de bolets de Catalunya",
-    description: "Massissos, paratges i comarques boletaires amb guies locals i accés al mapa de predicció, sense revelar localitzacions sensibles.",
+    description: "Massissos, paratges i comarques amb guies locals i accés al mapa de condicions, sense revelar localitzacions sensibles.",
     images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
   },
 };
@@ -132,12 +132,12 @@ export default function ZonesPage() {
       <PageHeader
         eyebrow={<><MapPinned size={15} /> Massissos, comarques i regions</>}
         title={<>Zones de bolets<br /><PageTitleAccent>de Catalunya.</PageTitleAccent></>}
-        description="Els territoris que els boletaires busquen pel seu nom: massissos, paratges i comarques amb guies locals d’hàbitat i temporada, i les regions generals que estructuren el mapa de predicció."
+        description="Explora massissos, paratges i comarques amb guies d’hàbitat i temporada, o compara les condicions actuals de les regions del mapa."
         tone="forest"
       />
       <Link href="/bolets-avui" className="location-species-feature location-current-feature">
-        <span><Gauge size={18} /> Predicció territorial</span>
-        <div><h2>Quines són les millors combinacions avui?</h2><p>Compareu les millors lectures d’avui per massís, comarca i regió, sense revelar punts sensibles.</p></div>
+        <span><Gauge size={18} /> Condicions actuals</span>
+        <div><h2>Quines zones tenen millors condicions avui?</h2><p>Compara massissos, comarques i regions sense revelar punts sensibles.</p></div>
         <strong>Veure les condicions d’avui <ArrowUpRight size={17} /></strong>
       </Link>
 
@@ -147,7 +147,7 @@ export default function ZonesPage() {
         data-species-guide-list
       >
         <p className="guides-species-module-label" id="species-guides-title">
-          <BookOpenText size={18} aria-hidden="true" /> On trobar cada bolet
+          <BookOpenText size={18} aria-hidden="true" /> Guies per espècie
         </p>
         <div className="guides-species-module-list">
           {speciesTerritoryGuides.map((guide) => (
@@ -164,7 +164,7 @@ export default function ZonesPage() {
           meta={`${massisAreas.length} massissos · ${paratgePlaces.length} paratges`}
           title="Massissos i paratges"
           titleId="massis-directory-title"
-          description="La unitat que un boletaire diu en veu alta: el massís o el paratge on aparca. Cada hub agrupa guies d’hàbitat i temporada per espècie."
+          description="Cada territori agrupa les seves guies d’hàbitat i temporada per espècie."
         />
         <ol className="prediction-zone-grid" aria-label="Massissos i paratges amb guies locals">
           {massisAreas.map((area, index) => {
@@ -238,9 +238,9 @@ export default function ZonesPage() {
       <section className="prediction-zone-directory" aria-labelledby="prediction-zone-directory-title">
         <SectionHeader
           meta={`${predictionZones.length} regions generals`}
-          title="Regions del mapa de predicció"
+          title="Regions àmplies del mapa"
           titleId="prediction-zone-directory-title"
-          description="Les regions amples que estructuren el mapa i la lectura d’avui. Són unitats de model, no de cerca: per a la lectura local, feu servir els massissos i les comarques."
+          description="Serveixen per comparar grans àrees. Per a una lectura més local, consulta els massissos i les comarques."
         />
         <ol className="region-map-link-list" data-prediction-zone-list>
           {predictionZones.map((zone) => {
@@ -259,7 +259,7 @@ export default function ZonesPage() {
             );
           })}
         </ol>
-        <p className="prediction-zone-note">La compatibilitat regional no és un recompte d’abundància i no confirma presència ni fructificació actual.</p>
+        <p className="prediction-zone-note">Una bona puntuació compara condicions; no confirma presència ni abundància.</p>
       </section>
 
       <section className="catalogue-habitats" aria-labelledby="zone-habitats-title">
@@ -286,7 +286,7 @@ export default function ZonesPage() {
       </section>
       <aside className="location-safety-note">
         <Trees size={22} />
-        <div><strong>Territoris, no coordenades.</strong><p>Aquest directori organitza la lectura territorial per massís, comarca i regió. Les condicions ambientals i l’hàbitat decideixen si una combinació concreta es pot publicar al mapa, i cap pàgina revela punts de recol·lecció.</p></div>
+        <div><strong>Territoris, no coordenades.</strong><p>Les pàgines comparen massissos, comarques i regions sense revelar punts de recol·lecció.</p></div>
       </aside>
       <Link href="/guies" className="location-species-feature zones-guides-feature">
         <span><BookOpenText size={18} /> Lectura local</span>

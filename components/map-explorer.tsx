@@ -176,14 +176,14 @@ export function MapExplorer({
     return () => { cancelled = true; };
   }, [selectedCell]);
   const unavailableCopy = isLoadingCell
-    ? "Actualitzant el model d’aquesta cel·la amb les seves dades ambientals…"
+    ? "Carregant les dades ambientals d’aquest sector…"
     : hasCellLoadError
-      ? "No s’ha pogut carregar el model local d’aquesta cel·la. Torna-la a seleccionar."
+      ? "No s’han pogut carregar les dades d’aquest sector. Torna-ho a provar."
     : predictionStatus.kind === "environment-unavailable"
     ? "sense dades ambientals verificades"
     : selectedCell
-      ? "puntuació local no disponible"
-      : "selecciona una cel·la per calcular la puntuació";
+      ? "puntuació no disponible"
+      : "selecciona un sector per veure la puntuació";
 
   return <>
     <div ref={mapStage} className="map-stage">
@@ -226,7 +226,7 @@ export function MapExplorer({
               aria-live="polite"
             >
               {isLoadingCell ? <LoaderCircle size={14} aria-hidden="true" /> : isLoadedCell ? <CheckCircle2 size={14} aria-hidden="true" /> : null}
-              {isLoadingCell ? "Carregant model local" : isLoadedCell ? "Model local carregat" : "No s’ha pogut carregar"}
+              {isLoadingCell ? "Carregant dades" : isLoadedCell ? "Dades carregades" : "No s’ha pogut carregar"}
             </span>
           ) : null}
           {emptySelection ? (
@@ -234,7 +234,7 @@ export function MapExplorer({
               <strong>{emptySelection.score === 0 ? <>0<small>/100</small></> : "—"}</strong>
               <p>{emptySelection.score === 0
                 ? "Cap espècie comestible té puntuació en aquesta cel·la ara mateix."
-                : "Puntuació retinguda: falten dades ambientals verificades en aquesta cel·la."}</p>
+                : "Falten dades ambientals recents per puntuar aquest sector."}</p>
             </>
           ) : (
             <>
@@ -246,7 +246,7 @@ export function MapExplorer({
                       : regionalTopSpeciesName
                         ? `Millor opció: ${regionalTopSpeciesName}`
                         : "Millor puntuació entre espècies comestibles"} · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · condicions per fructificar ${result.fruitingConditionsScore}/100`}`
-                  : `Puntuació de la cel·la · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · condicions per fructificar ${result.fruitingConditionsScore}/100`}${selectedEffectiveHabitat === undefined ? "" : ` · ${Math.round(selectedEffectiveHabitat * 100)}% d’hàbitat adequat`}`
+                  : `Puntuació del sector · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · condicions ${result.fruitingConditionsScore}/100`}${selectedEffectiveHabitat === undefined ? "" : ` · ${Math.round(selectedEffectiveHabitat * 100)}% d’hàbitat adequat`}`
                 : unavailableCopy}</p>
               {globalMode && hasPrediction && runnersUp.length ? (
                 <p>
@@ -276,7 +276,7 @@ export function MapExplorer({
         </>
       ) : null}
       {globalMode && selectedCell && topSpeciesId ? (
-        <section className="map-global-top-species" aria-label="Espècies amb millor puntuació de la cel·la">
+        <section className="map-global-top-species" aria-label="Espècies amb millor puntuació del sector">
           <div>
             <p className="eyebrow">Espècies amb puntuació en aquesta cel·la</p>
             <ol className="map-global-species-list">

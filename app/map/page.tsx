@@ -21,19 +21,19 @@ import { territorialBoundsFromQuery } from "@/src/lib/territorial-map";
 import type { MapViewMode, RegionId, SuitabilityResult } from "@/src/lib/types";
 
 export const metadata: Metadata = {
-  title: "Mapa de bolets de Catalunya",
-  description: "Mapa de bolets de Catalunya: la millor puntuació entre les espècies comestibles a cada cel·la, o la lectura d’hàbitat i condicions per a una espècie concreta.",
+  title: "Mapa de condicions per als bolets a Catalunya",
+  description: "Compara l’hàbitat i les condicions actuals de les espècies de bolets a cada zona de Catalunya.",
   alternates: { canonical: "/map" },
   openGraph: {
     url: "/map",
     title: "Mapa de bolets de Catalunya",
-    description: "Mapa combinat de totes les espècies comestibles i lectura ecològica per espècie: hàbitat compatible i condicions de fructificació.",
+    description: "Compara les zones més favorables per a les espècies comestibles o centra el mapa en un bolet concret.",
     images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Mapa de bolets de Catalunya",
-    description: "Mapa combinat de bolets comestibles i lectura d’hàbitat i condicions per espècie.",
+    description: "Mapa d’hàbitat i condicions actuals per espècie.",
     images: [DEFAULT_SOCIAL_IMAGE],
   },
 };
@@ -122,15 +122,15 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
     }} />
     <div className="page-width map-page-heading">
       <div className="map-page-title">
-        <p className="eyebrow">Lectura territorial</p>
-        <h1>{isGlobal ? "Mapa de bolets" : isCompatibility ? "Mapa de compatibilitat" : "Mapa de condicions"}</h1>
+        <p className="eyebrow">Condicions per territori</p>
+        <h1>{isGlobal ? "Mapa de condicions" : isCompatibility ? "On encaixa aquesta espècie" : "Condicions per a l’espècie"}</h1>
         <p><span className="visually-hidden">Mapa de bolets de Catalunya. </span>{isGlobal
-          ? "El color de cada cel·la mostra la millor puntuació entre les espècies comestibles cartografiades. Selecciona una cel·la per veure quines espècies la lideren, o tria una espècie per centrar-hi tota la lectura."
+          ? "El color mostra quina espècie comestible té les condicions més favorables a cada sector. Selecciona una zona o tria una espècie concreta."
           : species.predictionMode === "habitat_only"
           ? species.predictionCaveat
           : isCompatibility
-          ? "Explora on la coberta del sòl, l’altitud i el pH encaixen amb l’espècie. No és una predicció de fructificació."
-          : "Mostra com de favorable és cada cel·la combinant l’hàbitat adequat amb les condicions per fructificar-hi. La puntuació serveix per comparar; no és una probabilitat de presència."}</p>
+          ? "Explora els boscos, altituds i tipus de sòl que encaixen amb l’espècie."
+          : "Compara on l’hàbitat i el temps recent són més favorables per a aquesta espècie."}</p>
       </div>
       <div className="map-controls">
         <div className="map-species-picker">
@@ -142,8 +142,8 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
             aria-label="Espècie seleccionada"
           />
           <small>{isGlobal
-            ? <span>Totes les espècies comestibles · tria’n una per centrar la lectura</span>
-            : <><i>{species.identity.scientificName}</i><span> · canvia l’espècie per actualitzar tota la lectura</span></>}</small>
+            ? <span>Totes les espècies comestibles · tria’n una per veure-la en detall</span>
+            : <><i>{species.identity.scientificName}</i><span> · tria una altra espècie per comparar</span></>}</small>
         </div>
       </div>
     </div>
@@ -172,19 +172,17 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
           </div>
           <div className="map-reading-copy">
             {isCompatibility ? <>
-              <p>El blau identifica els sectors on coincideixen la coberta del sòl, l’altitud i el pH requerits. Més intensitat indica més cobertura compatible dins del sector.</p>
-              <p>El ratllat lila aporta context històric generalitzat a 10 km; no amplia les zones compatibles ni demostra presència actual.</p>
+              <p>El blau mostra on el bosc, l’altitud i el sòl encaixen amb l’espècie. Com més intens és, més superfície adequada hi ha.</p>
+              <p>El ratllat lila mostra zones amb registres històrics generals. No indica que hi hagi bolets ara.</p>
             </> : isGlobal ? <>
-              <p>La cartografia mostra el relleu i els elements topogràfics. Una cel·la mai representa una observació de bolets, una probabilitat de presència ni una garantia de trobar-ne.</p>
-              <p>El color mostra la millor puntuació entre les espècies comestibles cartografiades: per a cada espècie es combina l’hàbitat adequat de la cel·la amb les condicions per fructificar-hi, i es pinta la puntuació més alta.</p>
-              <p>Les espècies fora de temporada es descarten soles: la seva fenologia multiplica la puntuació i les deixa a zero sense aplicar cap filtre addicional.</p>
-              <p>Selecciona una cel·la per veure quines espècies la lideren i l’evolució recent de la millor. La graella combinada es mostra a partir d’1 km; per a la lectura fina de 250 m tria una espècie concreta.</p>
+              <p>El color mostra l’espècie comestible amb la puntuació més alta a cada sector.</p>
+              <p>Només es puntuen les espècies que són de temporada. Selecciona un sector per veure les opcions més favorables i la seva evolució recent.</p>
+              <p>Aquest mapa compara condicions ambientals; no mostra troballes ni punts de recol·lecció.</p>
               <PredictionMapLegend />
             </> : <>
-              <p>La cartografia mostra el relleu i els elements topogràfics. Una cel·la mai representa una observació de bolets, una probabilitat de presència ni una garantia de trobar-ne.</p>
-              <p>El color mostra la puntuació de cada cel·la. Combina quina part té un hàbitat adequat —segons coberta, sòl i altitud— amb les condicions ambientals dins d’aquest hàbitat.</p>
-              <p>Els colors permeten comparar cel·les entre si, però no formen una puntuació única per a tota la regió. La proporció d’hàbitat ja forma part del resultat i no es torna a aplicar mitjançant l’opacitat.</p>
-              <p>Selecciona una cel·la per veure la puntuació, l’hàbitat adequat i les condicions per fructificar-hi, amb el detall de l’aigua, la temperatura, la temporada i els extrems. El temps pot ser compartit entre cel·les veïnes perquè conserva la resolució real del proveïdor.</p>
+              <p>El color combina la qualitat de l’hàbitat amb la pluja, la humitat, la temperatura i la temporada.</p>
+              <p>Selecciona un sector per veure què afavoreix o limita l’espècie. Els sectors veïns poden compartir dades meteorològiques.</p>
+              <p>Aquest mapa compara condicions ambientals; no mostra troballes ni punts de recol·lecció.</p>
               <PredictionMapLegend />
             </>}
           </div>
@@ -201,8 +199,8 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
     <section className="map-page-seo-copy page-width" aria-labelledby="map-search-guide-title">
       <p className="eyebrow">Mapa de bolets de Catalunya</p>
       <h2 id="map-search-guide-title">Com fer servir el mapa per preparar una sortida</h2>
-      <p>El mapa combinat mostra, per a cada cel·la, la millor puntuació entre totes les espècies comestibles cartografiades. Seleccioneu una espècie concreta per diferenciar el seu hàbitat compatible de les condicions actuals per fructificar. El mapa és una lectura ecològica agregada: serveix per comparar cel·les i entendre els factors que limiten cada espècie, però no mostra observacions ni localitzacions exactes.</p>
-      <p>Per decidir què consultar primer, vegeu el resum de <Link href="/bolets-avui">bolets avui</Link>; per entendre una puntuació concreta, contrasteu-la amb la {species ? <Link href={speciesPath(species)}>fitxa de {species.identity.commonName}</Link> : <Link href="/bolets">fitxa de cada espècie</Link>} i amb les <Link href="/zones">zones generals de predicció</Link>.</p>
+      <p>Comença pel mapa general per detectar les zones més favorables. Després tria una espècie per veure on encaixa el seu hàbitat i com hi influeixen les condicions recents.</p>
+      <p>Consulta també el resum de <Link href="/bolets-avui">bolets avui</Link>, la {species ? <Link href={speciesPath(species)}>fitxa de {species.identity.commonName}</Link> : <Link href="/bolets">fitxa de cada espècie</Link>} i les <Link href="/zones">guies de zones</Link>.</p>
       <EditorialAttribution contentId="map" sources={[...environmentalSources, ...coreEditorialSources]} />
     </section>
   </section>;

@@ -5,7 +5,7 @@ import { DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
   title: "Temporada de bolets a Catalunya",
-  description: "Calendari de la temporada de bolets a Catalunya per mesos i espècies. Consulteu quins bolets poden fructificar ara i quines condicions necessiten.",
+  description: "Calendari de la temporada de bolets a Catalunya per mesos i espècies. Consulta quins bolets poden fructificar ara i quines condicions necessiten.",
   alternates: { canonical: "/temporada" },
   openGraph: {
     url: "/temporada",

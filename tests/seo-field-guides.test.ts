@@ -24,7 +24,7 @@ describe("source-linked field guides", () => {
     expect(metadata.robots).toBeUndefined();
     expect(metadata.alternates?.canonical).toBe(`/${id}`);
     expect(metadata.description?.length).toBeLessThanOrEqual(155);
-    expect(html).toContain("sense revisió micològica independent");
+    expect(html).toContain("Editorial, no micològica");
     expect(html).not.toMatch(/Esborrany|independent pendent|revisió experta pendent/);
     expect(html).toContain('"@type":"Article"');
     expect(html).toContain('"@type":"BreadcrumbList"');
@@ -71,7 +71,7 @@ describe("source-linked field guides", () => {
   it("separates false chanterelle from olive mushroom without adding model ecology", () => {
     const html = renderToStaticMarkup(createElement(FalseChanterellePage));
     for (const name of ["Hygrophoropsis aurantiaca", "Cantharellus cibarius", "Omphalotus olearius"]) expect(html).toContain(name);
-    expect(html).toContain("No el considereu un bolet per al consum");
+    expect(html).toContain("No el consideris un bolet per al consum");
     expect(html).toContain("no comestible");
     expect(html).toContain("sospitós i sense valor culinari");
     expect(speciesProfiles.some(species => species.speciesId === "hygrophoropsis-aurantiaca")).toBe(false);
@@ -79,7 +79,7 @@ describe("source-linked field guides", () => {
 
   it("answers reader questions about false chanterelle instead of describing editorial work", () => {
     const html = renderToStaticMarkup(createElement(FalseChanterellePage));
-    for (const heading of ["El fals rossinyol és comestible?", "On i quan apareix?", "Què fer si teniu dubtes?"]) expect(html).toContain(heading);
+    for (const heading of ["El fals rossinyol és comestible?", "On i quan apareix?", "Què fer si tens dubtes?"]) expect(html).toContain(heading);
     expect(html).not.toMatch(/Què aporta la segona font|Contrast documental|no incorpora una nova espècie al mapa/);
     for (const source of falseChanterelleSources) expect(html).toContain(`href="${source.url}"`);
   });

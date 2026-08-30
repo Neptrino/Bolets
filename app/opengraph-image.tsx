@@ -34,7 +34,7 @@ export default function OpenGraphImage() {
         </div>
       </div>
       <div style={{ display: "flex", fontSize: 27, opacity: 0.84 }}>
-        Condicions actuals · mapa de predicció · per espècie i zona
+        Condicions actuals · per espècie i zona
       </div>
     </div>,
     size,

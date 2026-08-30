@@ -49,8 +49,8 @@ export default function LegalPage() {
       <section className="seo-guide-section" id="condicions">
         <p className="eyebrow">Condicions d’ús</p>
         <h2>Ús de la informació i limitació de responsabilitat</h2>
-        <p>Tot el contingut de {SITE_NAME} és educatiu i orientatiu. Cap fitxa, comparació, mapa o predicció no constitueix una identificació micològica ni una garantia de comestibilitat. La identificació segura d’un bolet requereix la confirmació d’una persona experta amb l’exemplar al davant; no consumiu mai cap bolet basant-vos únicament en aquesta aplicació.</p>
-        <p>El titular no es fa responsable dels danys derivats de decisions de recol·lecció o consum preses a partir del contingut del lloc, ni de la vigència de la normativa de recol·lecció de cada territori, que cal comprovar sempre amb la font oficial corresponent. Els mapes de compatibilitat ecològica són models probabilístics amb incertesa: indiquen condicions, no bolets.</p>
+        <p>Tot el contingut de {SITE_NAME} és educatiu i orientatiu. Cap fitxa, comparació, mapa o predicció no constitueix una identificació micològica ni una garantia de comestibilitat. La identificació segura d’un bolet requereix la confirmació d’una persona experta amb l’exemplar al davant; no consumeixis mai cap bolet basant-te únicament en aquesta aplicació.</p>
+        <p>El titular no es fa responsable dels danys derivats de decisions de recol·lecció o consum preses a partir del contingut del lloc, ni de la vigència de la normativa de recol·lecció de cada territori, que cal comprovar sempre amb la font oficial corresponent. Els mapes són models comparatius amb incertesa: indiquen condicions, no bolets.</p>
         <p>Si detecteu un error, el <a href="/equip-editorial">procés públic de correccions</a> descriu com proposar una esmena.</p>
       </section>
 
@@ -71,7 +71,7 @@ export default function LegalPage() {
         <p className="eyebrow">Continguts i llicències</p>
         <h2>Fonts, fotografies i atribucions</h2>
         <p>Les fotografies d’espècies provenen de fonts amb llicència compatible i mantenen l’atribució al costat de cada imatge. Les dades meteorològiques i cartogràfiques s’atribueixen als seus proveïdors (Meteocat XEMA sota CC BY 4.0, Open-Meteo, ICGC, SoilGrids) a les pàgines on s’utilitzen. Si considereu que algun contingut vulnera drets de tercers, contacteu amb el titular i es revisarà.</p>
-        <p>Quan marqueu una fotografia de troballa com a pública, confirmeu que l’heu feta o que teniu permís per publicar-la, que no vulnera la intimitat de terceres persones i autoritzeu {SITE_NAME} a mostrar-la mentre la troballa sigui pública. Podeu revocar-ne la publicació des del vostre quadern. No pugeu rostres, matrícules, menors ni altres dades personals innecessàries.</p>
+        <p>Quan marqueu una fotografia de troballa com a pública, confirma que l’heu feta o que teniu permís per publicar-la, que no vulnera la intimitat de terceres persones i autoritzeu {SITE_NAME} a mostrar-la mentre la troballa sigui pública. Podeu revocar-ne la publicació des del vostre quadern. No pugeu rostres, matrícules, menors ni altres dades personals innecessàries.</p>
       </section>
     </PageShell>
   );

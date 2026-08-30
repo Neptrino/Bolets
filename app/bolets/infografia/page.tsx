@@ -41,7 +41,7 @@ export default function MushroomInfographicPage() {
       <PageHeader
         eyebrow={<><Images size={16} aria-hidden="true" /> Recurs visual</>}
         title={<>Infografia dels bolets<br />de Catalunya.</>}
-        description={`Consulteu en una sola làmina les ${catalogueSpecies.length} espècies del catàleg, agrupades per comestibilitat i resumides amb els millors mesos, l’hàbitat i l’altitud documentada.`}
+        description={`Consulta en una sola làmina les ${catalogueSpecies.length} espècies del catàleg, agrupades per comestibilitat i resumides amb els millors mesos, l’hàbitat i l’altitud documentada.`}
         tone="forest"
       />
       <CatalogueInfographic speciesCount={catalogueSpecies.length} />

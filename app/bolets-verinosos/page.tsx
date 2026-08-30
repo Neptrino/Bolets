@@ -58,7 +58,7 @@ export default function PoisonousMushroomsPage() {
 
       <aside className="intent-emergency-note">
         <ShieldAlert size={23} aria-hidden="true" />
-        <div><strong>Davant una ingestió sospitosa, actueu de seguida.</strong><p>Seguiu la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a>, truqueu al 061 Salut Respon i conserveu restes del bolet. No espereu que apareguin símptomes ni apliqueu remeis casolans.</p></div>
+        <div><strong>Davant una ingestió sospitosa, actua de seguida.</strong><p>Segueix la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a>, truca al 061 Salut Respon i conserva restes del bolet. No esperis que apareguin símptomes ni apliquis remeis casolans.</p></div>
       </aside>
 
       <section className="intent-reading-section" aria-labelledby="poisonous-reading-title">
@@ -70,12 +70,12 @@ export default function PoisonousMushroomsPage() {
         <div className="intent-reading-grid">
           <div>
             <p>“Tòxic” i “verinós” descriuen espècies que poden causar una intoxicació. “No comestible” és més ampli: també inclou bolets que es desaconsellen per l’amargor, la textura, la preparació exigent o el risc de confusió. Aquesta pàgina prioritza les espècies tòxiques; el <Link href="/bolets">catàleg complet</Link> també recull les altres categories.</p>
-            <p>Una fotografia, el color o el lloc on creix no basten per decidir que un bolet és segur. Contrasteu l’exemplar complet amb la fitxa, reviseu els semblants i, davant de qualsevol dubte, demaneu una identificació experta.</p>
+            <p>Una fotografia, el color o el lloc on creix no basten per decidir que un bolet és segur. Contrasta l’exemplar complet amb la fitxa, revisa els semblants i, davant de qualsevol dubte, demana una identificació experta.</p>
           </div>
           <ol>
-            <li>Observeu un exemplar complet, inclosa la base del peu.</li>
-            <li>Compareu làmines, porus, anell, volva, olor i canvi de color.</li>
-            <li>Obriu la fitxa de les espècies semblants abans de prendre cap decisió.</li>
+            <li>Observa un exemplar complet, inclosa la base del peu.</li>
+            <li>Compara làmines, porus, anell, volva, olor i canvi de color.</li>
+            <li>Obre la fitxa de les espècies semblants abans de prendre cap decisió.</li>
           </ol>
         </div>
         <nav className="species-topic-links seasonal-guide-topic-links" aria-label="Comparacions de bolets tòxics i comestibles">

@@ -9,7 +9,6 @@ import {
   CloudSun,
   Database,
   Droplets,
-  Equal,
   ExternalLink,
   FlaskConical,
   Gauge,
@@ -31,7 +30,7 @@ import { DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
 export const metadata: Metadata = {
   title: "Mètode del mapa de bolets",
   description:
-    "Fórmules, components, llindars i límits dels mapes d’hàbitat potencial i de condicions de Bolets Atles.",
+    "Com llegim el bosc, la temporada i el temps recent per comparar condicions, amb el detall tècnic i els límits del mètode.",
   alternates: { canonical: "/metode" },
   openGraph: {
     url: "/metode",
@@ -110,8 +109,8 @@ export default function MethodPage() {
         <div className="page-width method-hero-grid">
           <div className="method-hero-copy">
             <p className="eyebrow light"><ShieldCheck size={15} /> Mètode obert</p>
-            <h1>Cap caixa<br /><i>negra.</i></h1>
-            <p>Expliquem com passem d’una cel·la de territori a tres lectures: quant hàbitat adequat hi ha, com són les condicions per fructificar-hi i quina puntuació rep tota la cel·la.</p>
+            <h1>Com llegim<br /><i>el bosc.</i></h1>
+            <p>Primer comprovem si el lloc encaixa amb l’espècie. Després mirem si la temporada, l’aigua i la temperatura són favorables.</p>
             <nav className="method-jump-links" aria-label="Índex del mètode">
               <a href="#distribucio">01 · Distribució</a>
               <a href="#prediccio">02 · Condicions</a>
@@ -119,26 +118,24 @@ export default function MethodPage() {
               <a href="#fonts">04 · Fonts</a>
             </nav>
           </div>
-          <div className="method-hero-equation" aria-label="Resum de l’índex de condicions de fructificació">
+          <div className="method-hero-equation" aria-label="Resum del mètode">
             <div className="method-equation-meta">
-              <span>ÍNDEX DE CONDICIONS</span>
+              <span>RESUM DEL MÈTODE</span>
               <span>0—100</span>
             </div>
             <div className="method-equation-main">
-              <span className="method-equation-score">F</span>
-              <Equal aria-hidden="true" />
-              <span>100 · P · W<sup>α</sup> · T<sup>1−α</sup> · E</span>
+              <span>Hàbitat · temporada · aigua · temperatura</span>
             </div>
             <div className="method-equation-legend">
-              <p><b>P</b> fenologia · <b>W</b> aigua · <b>T</b> temperatura</p>
-              <p><b>E</b> extrems tèrmics · <b>α</b> balanç hidrotermal</p>
+              <p>El lloc i el moment han de coincidir.</p>
+              <p>Una condició desfavorable pot limitar el resultat.</p>
             </div>
             <div className="method-equation-stamp">
-              <Database size={16} /> Índex ordinal · no és una probabilitat de presència
+              <Database size={16} /> Puntuació comparativa · no confirma presència
             </div>
           </div>
         </div>
-        <a href="#principi" className="method-scroll"><ArrowDown size={16} /> Comenceu pel principi</a>
+        <a href="#principi" className="method-scroll"><ArrowDown size={16} /> Comença pel principi</a>
       </section>
 
       <section id="principi" className="page-width method-principle" aria-labelledby="principle-title">
@@ -159,7 +156,7 @@ export default function MethodPage() {
             <span className="method-track-number">02</span>
             <CloudRain size={25} />
             <h3>Condicions actuals</h3>
-            <p>Combina fenologia, estat hídric, temperatura i extrems tèrmics dins de l’hàbitat compatible.</p>
+            <p>Combina la temporada, l’aigua disponible, la temperatura i els extrems dins de l’hàbitat compatible.</p>
             <strong>No és una garantia de trobar bolets.</strong>
           </article>
         </div>
@@ -685,11 +682,11 @@ export default function MethodPage() {
         <div className="page-width">
           <div>
             <p className="eyebrow">Del mètode al territori</p>
-            <h2>Ara llegiu el mapa<br />amb uns altres ulls.</h2>
+            <h2>Ara llegeix el mapa<br />amb uns altres ulls.</h2>
           </div>
           <div>
-            <p>Seleccioneu una espècie i una cel·la per veure per separat l’hàbitat adequat, les condicions per fructificar i la puntuació final, amb la procedència i els límits de les dades.</p>
-            <Link href="/map" className="button">Obriu el mapa de condicions <ArrowUpRight size={17} /></Link>
+            <p>Selecciona una espècie i una zona per veure l’hàbitat, les condicions actuals i els límits de les dades.</p>
+            <Link href="/map" className="button">Obre el mapa de condicions <ArrowUpRight size={17} /></Link>
           </div>
         </div>
       </section>

@@ -89,7 +89,7 @@ export function SpeciesIdentificationSection({
             Atenció: hi ha confusions possibles amb espècies tòxiques.
           </strong>
           <span>
-            Verifiqueu tots els trets abans de consumir-ne cap exemplar.
+            Verifica tots els trets abans de consumir-ne cap exemplar.
           </span>
         </div>
       )}

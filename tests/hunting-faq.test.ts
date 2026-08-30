@@ -70,12 +70,12 @@ describe("mushroom-hunting FAQ", () => {
 
   it("keeps safety, uncertain conditions and local permissions explicit", () => {
     const text = document.body.textContent!;
-    expect(text).toContain("sense revisió micològica independent");
+    expect(text).toContain("Editorial, no micològica");
     expect(text).not.toMatch(/revisió\s+(?:micològica\s+)?pendent\b|no basta/);
     expect(text).toContain("no confirma que n’estiguin sortint avui");
     expect(text).toContain("zero tampoc demostra absència");
-    expect(text).toContain("no el consumiu");
-    expect(text).toContain("Confirmeu les condicions vigents amb el gestor");
+    expect(text).toContain("no el consumeixis");
+    expect(text).toContain("Confirma les condicions vigents amb el gestor");
     expect(text).not.toContain("€");
     const sources = document.querySelectorAll('ul[aria-label="Fonts d’aquesta resposta"] a');
     expect(sources.length).toBeGreaterThanOrEqual(5);

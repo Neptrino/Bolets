@@ -5,14 +5,13 @@ export function HabitatMapLegend({
   compact = false,
   detail = (
     <>
-      —— sectors de 2,5 km × 2,5 km amb alguna cel·la base compatible.
-      Apropeu-vos per veure la graella de 250 m.
+      —— sectors amb hàbitat compatible. Apropa el mapa per veure més detall.
     </>
   ),
   hidden = false,
   historicalEvidenceDetail =
     "—— registres en — quadrícules de 10 km; —— sectors coincideixen.",
-  title = "Coberta del sòl, altitud i pH compatibles",
+  title = "Zones que encaixen amb l’espècie",
 }: {
   compact?: boolean;
   detail?: ReactNode;
@@ -52,8 +51,7 @@ export function HabitatMapLegend({
               <div>
                 <strong>Blau · zones compatibles</strong>
                 <span>
-                  Més intensitat indica més cobertura; els límits d’altitud
-                  tenen una transició suau.
+                  Més intensitat indica que una part més gran del sector és adequada.
                 </span>
               </div>
             </div>
@@ -62,15 +60,14 @@ export function HabitatMapLegend({
               <div>
                 <strong>Ratllat lila · registres històrics</strong>
                 <span>
-                  Context històric; no amplia les zones compatibles.{" "}
+                  Mostra presències documentades en el passat; no indica l’estat actual.{" "}
                   {historicalEvidenceDetail}
                 </span>
               </div>
             </div>
           </div>
           <p className="habitat-map-legend-note">
-            Aquest mapa no indica presència actual ni si les condicions de
-            fructificació són bones avui.
+            Aquest mapa descriu l’hàbitat; no mostra troballes actuals.
           </p>
         </>
       )}

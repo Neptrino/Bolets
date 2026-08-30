@@ -30,7 +30,7 @@ export function SpeciesDirectory({
           <span className="visually-hidden">Cerca espècies</span>
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cerca per nom català, gènere o família" />
           {query && (
-            <button type="button" onClick={() => setQuery("")} aria-label="Netegeu la cerca">
+            <button type="button" onClick={() => setQuery("")} aria-label="Neteja la cerca">
               <X size={16} aria-hidden="true" />
             </button>
           )}

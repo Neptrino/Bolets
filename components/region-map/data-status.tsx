@@ -5,7 +5,6 @@ import type { MapStatusCopy } from "./status";
 export function RegionMapDataStatus({
   cellState,
   compactLegend,
-  gridDimensions,
   habitat,
   showCompatibility,
   speciesId,
@@ -40,8 +39,8 @@ export function RegionMapDataStatus({
           </strong>
           <span>
             {showCompatibility
-              ? `Carregant les zones compatibles de ${gridDimensions} per a aquesta espècie.`
-              : `Carregant les cel·les de ${gridDimensions} per a aquesta espècie.`}
+              ? "Carregant les zones que encaixen amb aquesta espècie."
+              : "Carregant les condicions d’aquesta zona."}
           </span>
         </div>
       </div>
@@ -65,7 +64,7 @@ export function RegionMapDataStatus({
       <div className="map-data-state map-resolution-state" aria-live="polite">
         <Grid3X3 size={18} aria-hidden />
         <div>
-          <strong>Resolució actual: {gridDimensions}</strong>
+          <strong>Apropa el mapa per veure més detall</strong>
         </div>
       </div>
     );

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BookOpenCheck, ExternalLink } from "lucide-react";
-import { editorialAuthors, editorialTeam, getEditorialMetadata } from "@/data/editorial";
+import { editorialAuthors, getEditorialMetadata } from "@/data/editorial";
 import type { SourceReference } from "@/src/lib/types";
 
 function formatEditorialDate(date: string) {
@@ -22,7 +22,7 @@ export function EditorialAttribution({
   const uniqueSources = [...new Map(sources.map((source) => [source.url, source])).values()];
 
   return (
-    <aside className="editorial-panel" aria-label="Autoria, revisió i fonts">
+    <aside className="editorial-panel" aria-label="Autoria i fonts">
       <div className="editorial-summary">
         <div className="editorial-panel-heading">
           <BookOpenCheck size={18} aria-hidden="true" />
@@ -32,9 +32,8 @@ export function EditorialAttribution({
           </div>
         </div>
         <dl className="editorial-meta">
-          <div><dt>Editor</dt><dd><Link href="/equip-editorial">{editorialTeam.name}</Link></dd></div>
           <div><dt>Actualitzat</dt><dd><time dateTime={editorial.updatedAt}>{formatEditorialDate(editorial.updatedAt)}</time></dd></div>
-          <div><dt>Revisió</dt><dd>{editorial.reviewStatus === "expert-reviewed" ? "Revisió micològica independent completada" : "Revisió editorial; sense revisió micològica independent"}</dd></div>
+          <div><dt>Revisió</dt><dd>{editorial.reviewStatus === "expert-reviewed" ? "Micològica independent" : "Editorial, no micològica"}</dd></div>
         </dl>
       </div>
       {uniqueSources.length > 0 && (

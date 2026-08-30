@@ -119,7 +119,7 @@ export function SpeciesGallery({ images, speciesName }: SpeciesGalleryProps) {
       </div>
 
       {multipleImages && (
-        <div className="species-gallery-thumbnails" aria-label="Trieu una fotografia">
+        <div className="species-gallery-thumbnails" aria-label="Tria una fotografia">
           {images.map((asset, index) => (
             <button
               className={index === activeIndex ? "active" : undefined}

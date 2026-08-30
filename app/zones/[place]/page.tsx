@@ -66,12 +66,12 @@ async function loadAreaConditions(areaSlug: string) {
 
 function areaExtent(summary: AreaPredictionSummary) {
   if (summary.score20CellCount > 0) {
-    return `${summary.score20CellCount} ${summary.score20CellCount === 1 ? "cel·la" : "cel·les"} amb 20 o més · ${Math.round(summary.score20CellShare * 100)}%`;
+    return `Condicions favorables en el ${Math.round(summary.score20CellShare * 100)}% de la zona`;
   }
   if (summary.positiveCellCount > 0) {
-    return `${summary.positiveCellCount} ${summary.positiveCellCount === 1 ? "cel·la positiva" : "cel·les positives"} · ${Math.round(summary.positiveCellShare * 100)}%`;
+    return `Alguna resposta favorable en el ${Math.round(summary.positiveCellShare * 100)}% de la zona`;
   }
-  return "Cap cel·la positiva";
+  return "Cap sector favorable ara mateix";
 }
 
 export function generateStaticParams() {
@@ -123,7 +123,7 @@ export default async function AreaPage({ params }: Props) {
             <p>{area.description} {area.landscape}</p>
           </div>
           <TerritoryPortrait
-            atlasLabel="Atles territorial"
+            atlasLabel="Guies del territori"
             name={area.name}
             regionLabel={regionLabels[area.regionId]}
             count={places.length}
@@ -134,9 +134,9 @@ export default async function AreaPage({ params }: Props) {
 
       <div className="page-width location-hub-body">
         <section className="location-hub-facts" aria-label="Resum de la col·lecció">
-          <div><Layers3 size={19} /><span>Àmbit ambiental</span><strong>{regionLabels[area.regionId]}</strong></div>
-          <div><BookOpen size={19} /><span>Col·lecció</span><strong>{guideCount} {guideCount === 1 ? "guia ecològica" : "guies ecològiques"}</strong></div>
-          <div><ShieldCheck size={19} /><span>Precisió pública</span><strong>Sense punts de recol·lecció</strong></div>
+          <div><Layers3 size={19} /><span>Zona del mapa</span><strong>{regionLabels[area.regionId]}</strong></div>
+          <div><BookOpen size={19} /><span>Guies</span><strong>{guideCount} {guideCount === 1 ? "espècie" : "espècies"}</strong></div>
+          <div><ShieldCheck size={19} /><span>Privadesa</span><strong>Sense punts de recol·lecció</strong></div>
         </section>
 
         {conditions.length > 0 ? (
@@ -156,16 +156,16 @@ export default async function AreaPage({ params }: Props) {
                     <span className="current-row-rank">{String(index + 1).padStart(2, "0")}</span>
                     <div className="current-overview-card-heading">
                       <h3>{species.identity.commonName}</h3>
-                      <p className="current-row-species"><span>Finestra {area.typeLabel === "massís" ? "del massís" : "de la comarca"} · cel·les d’1 km</span></p>
+                      <p className="current-row-species"><span>Condicions {area.typeLabel === "massís" ? "del massís" : "de la comarca"}</span></p>
                     </div>
                     {score !== null && score !== undefined ? (
-                      <div className="current-score" aria-label={`Millor cel·la d’1 km ${score} sobre 100, ${opportunityLabel(score)}`}>
+                      <div className="current-score" aria-label={`Millor sector ${score} sobre 100, ${opportunityLabel(score)}`}>
                         <div><strong>{score}</strong><span>/100 · {opportunityLabel(score)}</span></div>
                         <span className="current-score-track" aria-hidden="true"><span style={{ width: `${score}%` }} /></span>
                       </div>
                     ) : null}
                     <dl className="current-row-signals">
-                      <div><dt>Extensió compatible</dt><dd>{areaExtent(summary)}</dd></div>
+                      <div><dt>Abast dins la zona</dt><dd>{areaExtent(summary)}</dd></div>
                     </dl>
                     <Link href={territorialMapPath(speciesId, area.regionId, areaBounds(area))} className="current-row-map" aria-label={`Veure al mapa: ${species.identity.commonName} ${area.prepositionalName}`}>
                       <MapIcon size={15} /><span>Veure mapa</span>
@@ -174,7 +174,7 @@ export default async function AreaPage({ params }: Props) {
                 );
               })}
             </ol>
-            <p className="prediction-zone-note">Espècies ordenades per la millor cel·la d’1 km dins la finestra territorial {area.prepositionalName}; l’extensió indica quantes cel·les compatibles també responen. No confirma presència ni garanteix trobar bolets.</p>
+            <p className="prediction-zone-note">Espècies ordenades per la millor lectura de la zona. La puntuació compara condicions; no confirma presència ni garanteix trobar bolets.</p>
           </section>
         ) : null}
 
@@ -215,7 +215,7 @@ export default async function AreaPage({ params }: Props) {
 
         <aside className="location-hub-principle">
           <div><MapPinned size={24} /><p className="eyebrow light">Com llegir aquestes guies</p><h2>El territori filtra.<br />El temps decideix.</h2></div>
-          <p>Primer comprovem si la coberta forestal, el sòl i l’altitud poden encaixar amb l’espècie. Després, el mapa interpreta les condicions ambientals disponibles. Cap dels dos passos confirma presència ni revela una localització exacta.</p>
+          <p>La guia explica on encaixa l’espècie i el mapa compara les condicions actuals. Cap dels dos confirma presència ni revela una localització exacta.</p>
           <Link href="/metode" className="text-link">Entendre el mètode <ArrowUpRight size={17} /></Link>
         </aside>
 

@@ -10,10 +10,10 @@ export function habitatEvidenceCopy(state: HabitatEvidenceState) {
   if (state.available === null) return "Carregant registres…";
   if (state.available === false) return "Registres de FungaCAT no disponibles.";
   if (state.habitatCells) {
-    return `${state.records} registres en ${state.cells} quadrícules de 10 km; ${state.habitatCells} sectors coincideixen.`;
+    return `${state.records} registres històrics; ${state.habitatCells} sectors coincideixen amb l’hàbitat.`;
   }
   if (state.cells) {
-    return `${state.records} registres en ${state.cells} quadrícules de 10 km; cap coincidència visible.`;
+    return `${state.records} registres històrics; cap coincidència visible amb l’hàbitat.`;
   }
   return "Cap registre visible; no implica absència.";
 }
@@ -21,7 +21,6 @@ export function habitatEvidenceCopy(state: HabitatEvidenceState) {
 export function mapStatusCopy({
   cellState,
   globalPrediction,
-  gridDimensions,
   showCompatibility,
 }: {
   cellState: CellState;
@@ -32,18 +31,18 @@ export function mapStatusCopy({
   if (showCompatibility) {
     if (cellState.status === "ready") {
       return {
-        title: "Coberta del sòl, altitud i pH compatibles",
+        title: "Zones que encaixen amb l’espècie",
         detail: cellState.truncated
-          ? `Resolució actual: ${gridDimensions}. Apropeu-vos per carregar la resta.`
+          ? "Apropa el mapa per carregar la resta de la zona."
           : cellState.gridSizeM > 250
-            ? `Resolució actual: ${gridDimensions}. Apropeu-vos per veure la graella de 250 m.`
-            : `Resolució actual: ${gridDimensions}.`,
+            ? "Apropa el mapa per veure més detall."
+            : "Màxim detall disponible.",
       };
     }
     if (cellState.status === "loading") {
       return {
-        title: "Comprovant coberta del sòl, altitud i pH…",
-        detail: `Comprovant coberta del sòl, altitud i pH a ${gridDimensions}.`,
+        title: "Comprovant l’hàbitat…",
+        detail: "Estem carregant el bosc, l’altitud i el sòl d’aquesta zona.",
       };
     }
     if (cellState.status === "error") {
@@ -54,43 +53,40 @@ export function mapStatusCopy({
     }
     return {
       title: "Cap zona compatible en aquesta vista",
-      detail: "No hi ha cel·les on coincideixin la coberta del sòl, l’altitud i el pH requerits.",
+      detail: "El bosc, l’altitud o el sòl d’aquesta vista no encaixen amb l’espècie.",
     };
   }
 
   if (cellState.status === "mixed") {
     return {
-      title: "Resultats mixtos a la vista",
-      detail:
-        `${cellState.published ? `Amb puntuació publicada: ${formatCellCount(cellState.published)}; ` : ""}` +
-        `puntuació 0, amb contorn discontinu: ${formatCellCount(cellState.excluded)}; ` +
-        `sense puntuació, en gris: ${formatCellCount(cellState.withheld)} perquè hi falten components requerits, dades vigents o evidència estàtica verificada.`,
+      title: "Hi ha sectors amb resultats diferents",
+      detail: `${cellState.published ? `${formatCellCount(cellState.published)} amb puntuació; ` : ""}${formatCellCount(cellState.excluded)} sense condicions favorables; ${formatCellCount(cellState.withheld)} sense dades suficients.`,
     };
   }
   if (cellState.status === "ready") {
     return {
       title: "Predicció disponible",
       detail: globalPrediction && cellState.gridSizeM === GLOBAL_MINIMUM_GRID_SIZE_M
-        ? `Resolució: ${gridDimensions}, la màxima del mapa combinat. Tria una espècie concreta per a la graella de 250 m.`
-        : `Resolució: ${gridDimensions}.`,
+        ? "Tria una espècie concreta per veure més detall."
+        : "Selecciona un sector per veure’n el detall.",
     };
   }
   if (cellState.status === "incompatible") {
     return {
-      title: `${cellState.excluded} cel·les amb puntuació 0`,
-      detail: "Es mostren sense farciment de color i amb contorn discontinu: ara no tenen hàbitat compatible o l’espècie queda fora de la temporada activa.",
+      title: "Cap sector favorable en aquesta vista",
+      detail: "L’hàbitat no encaixa o l’espècie és fora de temporada.",
     };
   }
   if (cellState.status === "withheld") {
     return {
-      title: "Cel·les disponibles, predicció retinguda",
-      detail: "Falten components requerits, les dades són antigues o la cobertura no supera el llindar mínim.",
+      title: "No hi ha prou dades per puntuar",
+      detail: "Algunes dades ambientals són incompletes o massa antigues.",
     };
   }
   if (cellState.status === "loading") {
     return {
-      title: `Carregant la graella de ${gridDimensions}…`,
-      detail: "Consultant l’última instantània ambiental per a aquesta vista.",
+      title: "Carregant les condicions…",
+      detail: "Consultant les dades ambientals més recents.",
     };
   }
   if (cellState.status === "error") {
@@ -100,7 +96,7 @@ export function mapStatusCopy({
     };
   }
   return {
-    title: `Encara no hi ha cel·les de ${gridDimensions} publicades`,
-    detail: "La predicció per cel·la s’activarà quan la ingestió espacial publiqui sòl, bosc, relleu i temps verificats.",
+    title: "Encara no hi ha dades per a aquesta vista",
+    detail: "Torna-ho a provar més tard o mou el mapa a una altra zona.",
   };
 }

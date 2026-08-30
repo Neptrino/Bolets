@@ -46,7 +46,7 @@ function SearchSelectControl({
   emptyMessage = "No s’ha trobat cap opció.",
   disabled = false,
   resetOnSelect = false,
-  "aria-label": ariaLabel = "Seleccioneu una opció",
+  "aria-label": ariaLabel = "Selecciona una opció",
 }: SearchSelectProps) {
   const [inputValue, setInputValue] = useState(value?.label ?? "");
   const triggerClassName = [
@@ -119,7 +119,7 @@ function QuerySelectControl({
   variant = "compact",
   className,
   portalContainer,
-  "aria-label": ariaLabel = "Seleccioneu una opció"
+  "aria-label": ariaLabel = "Selecciona una opció"
 }: QuerySelectProps) {
   const router = useRouter();
   const pathname = usePathname();

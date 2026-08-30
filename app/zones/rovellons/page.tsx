@@ -218,7 +218,7 @@ export default function RovellonsTerritoryPage() {
             <h2 id="rovellons-types-title">Rovelló i pinetell, comparats d’un cop d’ull.</h2>
             <p>La taula resumeix dades de les fitxes documentades; no és una llista exhaustiva de tots els lactaris que poden rebre noms populars semblants.</p>
           </header>
-          <p className="guide-types-scroll-hint">Feu lliscar la taula per veure totes les columnes.</p>
+          <p className="guide-types-scroll-hint">Fes lliscar la taula per veure totes les columnes.</p>
           <div className="guide-types-table-scroll">
             <table className="guide-types-table" data-rovellons-types-table>
               <caption className="sr-only">Comparació dels dos tipus de rovellons representats al catàleg</caption>
@@ -247,8 +247,8 @@ export default function RovellonsTerritoryPage() {
         <section className="rovellons-signals guide-lookalikes" aria-labelledby="rovellons-identification-title">
           <header><p className="eyebrow"><ShieldAlert size={15} /> Identificació prudent</p><h2 id="rovellons-identification-title">El làtex orienta, però no identifica tot sol.</h2></header>
           <div>
-            <article><span>01</span><h3>Compareu l’exemplar complet</h3><p>Reviseu el làtex acabat de sortir, el barret, les làmines, el peu, l’arbre associat i la temporada. La <Link href="/compare/rovello-vs-pinetell">comparació entre rovelló i pinetell</Link> ordena aquests trets.</p></article>
-            <article><span>02</span><h3>Descarteu els lactaris de làtex blanc</h3><p>Cap dels dos perfils d’aquesta guia té làtex blanc. Alguns lactaris semblants, com els de barret rosat i pelut, poden causar trastorns digestius.</p></article>
+            <article><span>01</span><h3>Compara l’exemplar complet</h3><p>Revisa el làtex acabat de sortir, el barret, les làmines, el peu, l’arbre associat i la temporada. La <Link href="/compare/rovello-vs-pinetell">comparació entre rovelló i pinetell</Link> ordena aquests trets.</p></article>
+            <article><span>02</span><h3>Descarta els lactaris de làtex blanc</h3><p>Cap dels dos perfils d’aquesta guia té làtex blanc. Alguns lactaris semblants, com els de barret rosat i pelut, poden causar trastorns digestius.</p></article>
           </div>
         </section>
 
@@ -337,7 +337,7 @@ export default function RovellonsTerritoryPage() {
 
         <aside className="rovellons-safety">
           <ShieldAlert size={23} aria-hidden="true" />
-          <div><strong>Aquesta comparació no és suficient per decidir el consum.</strong><p>No consumiu cap bolet basant-vos en el mapa, aquesta pàgina o una fotografia. L’ACSA recomana menjar només els bolets que es puguin identificar sense cap dubte; consulteu la seva <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia oficial</a> i confirmeu l’espècie amb una persona experta.</p></div>
+          <div><strong>Aquesta comparació no és suficient per decidir el consum.</strong><p>No consumeixis cap bolet basant-te en el mapa, aquesta pàgina o una fotografia. L’ACSA recomana menjar només els bolets que es puguin identificar sense cap dubte; consulta la seva <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia oficial</a> i confirma l’espècie amb una persona experta.</p></div>
         </aside>
 
         <EditorialAttribution

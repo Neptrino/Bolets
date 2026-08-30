@@ -12,14 +12,12 @@ import { conditionReadings } from "@/components/condition-readings";
 import type {
   ConditionSnapshot,
   CoordinateBounds,
-  GeologicalSubstrateEvidence,
   ModelComponentId,
   RegionalPredictionSummary,
   SpatialGridSizeM,
   SpeciesProfile,
   SuitabilityResult,
 } from "@/src/lib/types";
-import { formatGridDimensions } from "@/src/lib/map-grid";
 import { getConditionPredictionStatus } from "@/src/lib/condition-presentation";
 import { getSuitabilityBand } from "@/src/lib/suitability-scale";
 import { regionLabels } from "@/data/regions";
@@ -56,32 +54,11 @@ function readingTime(value: string) {
   }).format(date);
 }
 
-const geologicalSubstrateLabels: Record<
-  GeologicalSubstrateEvidence["class"],
-  string
-> = {
-  silicic: "Silícic",
-  calcareous: "Calcari",
-  mixed: "Mixt",
-  unconsolidated: "Materials no consolidats",
-  unknown: "Substrat no determinat",
-};
-
-function cellCoordinates(bounds: CoordinateBounds | undefined) {
-  if (!bounds) return undefined;
-  const [[west, south], [east, north]] = bounds;
-  const latitude = (south + north) / 2;
-  const longitude = (west + east) / 2;
-  return `${Math.abs(latitude).toFixed(5)}° ${latitude >= 0 ? "N" : "S"}, ${Math.abs(longitude).toFixed(5)}° ${longitude >= 0 ? "E" : "O"}`;
-}
-
 export function ConditionComparison({
   species,
   snapshot,
   result,
   cellId,
-  cellGridSizeM,
-  cellBounds,
   regionalSummary,
   expanded = false,
 }: {
@@ -117,10 +94,6 @@ export function ConditionComparison({
     : "No disponible en la lectura territorial";
   const [altitudeMin, altitudeMax] = species.ecologicalConfig.habitat.altitude;
   const preferredPhRange = species.ecologicalConfig.soil.phRange;
-  const unknownGeologyDescription = v.geologicalSubstrate?.class === "unknown"
-    ? v.geologicalSubstrate.dominantUnitDescription
-    : undefined;
-  const selectedCellCoordinates = cellCoordinates(cellBounds);
   const resultBand = result.score === null ? undefined : getSuitabilityBand(result.score);
   const supportedModel = species.modelConfig.status === "supported"
     ? species.modelConfig
@@ -155,9 +128,7 @@ export function ConditionComparison({
         opportunity: result.opportunityIndex,
         phenology: phenologyScore,
         temperature: temperatureScore,
-        temperatureWeight: 1 - supportedModel.water.waterExponent,
         water: waterScore,
-        waterWeight: supportedModel.water.waterExponent,
       }
     : null;
   const appliedComponentMultiplier = (entry: ComponentChartItem) => {
@@ -174,23 +145,17 @@ export function ConditionComparison({
     const score = `${entry.score}/100.`;
     switch (entry.id) {
       case "habitatCoverage":
-        return `${score} És la part de la cel·la amb coberta i sòl compatibles per a l’espècie, abans d’aplicar l’altitud. Per exemple, 83 indica aproximadament un 83% de superfície compatible; no és una probabilitat de trobar bolets.`;
+        return `${score} Part del sector amb bosc i sòl compatibles. No és una probabilitat de trobar bolets.`;
       case "altitude":
-        return `${score} Indica com encaixa l’altitud de l’hàbitat compatible amb el rang de l’espècie. 100 correspon al rang central; baixa gradualment als marges i arriba a 0 fora del marge ecològic.`;
+        return `${score} Encaix de l’altitud amb el rang habitual de l’espècie.`;
       case "phenology":
-        return `${score} Situa el dia i l’hora exactes dins el calendari de fructificació de l’espècie, en hora local. Interpola suaument entre els valors del centre de cada mes: l’1 d’agost encara combina juliol i agost, el 15 correspon a l’ancoratge d’agost i el 31 ja transita cap al setembre. 100 és el pic estacional, 25 una fase només possible i 0 una temporada inactiva. Multiplica directament les condicions.`;
+        return `${score} Encaix de la data actual amb la temporada habitual de l’espècie.`;
       case "water":
-        return supportedModel
-          ? `${score} Resumeix la humitat del sòl de 7 dies, la pluja, els dies plujosos i l’ET₀ de ${supportedModel.water.rainfallWindowDays} dies, més la sequedat atmosfèrica i la ratxa seca. 100 és la resposta hídrica òptima del model. En el càlcul s’aplica amb l’exponent ${supportedModel.water.waterExponent.toLocaleString("ca-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`
-          : `${score} Resumeix la disponibilitat recent d’aigua al sòl i l’assecament atmosfèric. 100 representa la resposta hídrica òptima del model.`;
+        return `${score} Resumeix la humitat del sòl, la pluja recent i l’assecament.`;
       case "temperature":
-        return supportedModel
-          ? `${score} Compara la temperatura mitjana de l’aire de ${supportedModel.temperature.windowDays} dies amb l’òptim inicial de ${supportedModel.temperature.optimumC.toLocaleString("ca-ES")} °C. 100 és a prop de l’òptim i disminueix tant per fred com per calor. En el càlcul s’aplica amb l’exponent ${(1 - supportedModel.water.waterExponent).toLocaleString("ca-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}; les hores extremes es tracten a part.`
-          : `${score} Compara la temperatura mitjana recent amb el rang òptim de l’espècie. 100 és a prop de l’òptim i disminueix tant per fred com per calor.`;
+        return `${score} Compara la temperatura recent amb el rang preferit de l’espècie.`;
       case "extremes":
-        return supportedModel
-          ? `${score} Penalitza les hores ≤ 0 °C i ≥ 27 °C acumulades durant ${supportedModel.temperature.windowDays} dies. 100 significa que no hi ha penalització tèrmica; 75 conserva tres quartes parts de la resposta i 0 la redueix pràcticament del tot.`
-          : `${score} Penalitza l’exposició recent a gelades i calor extrema. 100 significa que no hi ha penalització tèrmica.`;
+        return `${score} Reflecteix l’efecte recent de les gelades i la calor extrema.`;
     }
   };
   const lowestAppliedMultiplier = chart.length
@@ -211,9 +176,9 @@ export function ConditionComparison({
         <div>
           <p className="eyebrow">
             {cellId
-              ? `Cel·la seleccionada · ${formatGridDimensions(cellGridSizeM ?? 250)} · ${regionLabels[snapshot.regionId]}`
+              ? `Sector seleccionat · ${regionLabels[snapshot.regionId]}`
               : regionalSummary
-                ? `Resum regional · ${regionalSummary.scoredCellCount} quadrícules de ${formatGridDimensions(regionalSummary.gridSizeM)}`
+                ? `Resum de ${regionLabels[snapshot.regionId]}`
                 : "Lectura territorial"}
           </p>
           <p className="condition-last-updated">
@@ -221,39 +186,35 @@ export function ConditionComparison({
             Dades meteorològiques actualitzades: {weatherUpdatedAt}
           </p>
           <h3>
-            Condicions actuals · {selectedCellCoordinates ?? regionLabels[snapshot.regionId]}
+            Condicions actuals · {regionLabels[snapshot.regionId]}
           </h3>
         </div>
         <div
           className={`suitability-score ${predictionStatus.kind}`}
         >
           <strong style={resultBand ? { color: resultBand.color } : undefined}>{result.score ?? "—"}</strong>
-          <span>{cellId ? "puntuació de la cel·la" : "puntuació territorial"} · {predictionStatus.label}</span>
+          <span>{cellId ? "puntuació del sector" : "puntuació territorial"} · {predictionStatus.label}</span>
         </div>
       </div>
       {snapshot.stale && (
         <p className="data-note">
-          No hi ha una instantània ambiental verificada per a aquesta àrea. No
-          es calcula cap predicció fins que la ingestió diària publiqui dades
-          amb data i procedència.
+          Falten dades ambientals recents per a aquesta zona. La puntuació
+          tornarà quan la lectura sigui completa.
         </p>
       )}
       {predictionStatus.kind === "score-withheld" && (
         <p className="data-note prediction-withheld-note">
           <strong>Puntuació no disponible amb aquesta lectura.</strong>{" "}
           {cellId
-            ? "Les dades ambientals visibles són vàlides, però aquesta cel·la no incorpora tots els components necessaris per publicar una puntuació."
-            : "Les dades meteorològiques són actuals, però cal seleccionar una cel·la del mapa per incorporar-hi l’hàbitat i el sòl."}
+            ? "Falta alguna dada necessària per puntuar aquest sector."
+            : "Selecciona un sector del mapa per combinar el temps amb el bosc i el sòl."}
         </p>
       )}
       {regionalSummary && result.score !== null && (
         <p className="data-note regional-summary-note">
-          <strong>Resum de les zones amb hàbitat compatible.</strong>{" "}
-          L’oportunitat és la mediana per àrea, sense tornar a ponderar la coberta, de{" "}
-          {regionalSummary.scoredCellCount} quadrícules verificades de{" "}
-          {formatGridDimensions(regionalSummary.gridSizeM)}. El tram central va de{" "}
-          {regionalSummary.scoreRange[0]} a {regionalSummary.scoreRange[1]}/100;
-          no descriu tota la regió de manera uniforme.
+          <strong>Resultat habitual dins les zones compatibles.</strong>{" "}
+          La majoria de lectures centrals es mouen entre {regionalSummary.scoreRange[0]} i{" "}
+          {regionalSummary.scoreRange[1]}/100. Les condicions poden variar dins la regió.
         </p>
       )}
       <div className="condition-list">
@@ -366,23 +327,6 @@ export function ConditionComparison({
               <dd>{v.soilTexture ? uppercaseInitial(v.soilTexture) : "No verificada"}</dd>
               <small>Preferència: {uppercaseInitial(species.ecologicalConfig.soil.texture)}</small>
             </div>
-            <div>
-              <dt><Layers3 size={17} aria-hidden="true" />Substrat geològic</dt>
-              <dd
-                className={unknownGeologyDescription ? "geological-unit-description" : undefined}
-                title={unknownGeologyDescription}
-              >{v.geologicalSubstrate
-                ? unknownGeologyDescription
-                  ? unknownGeologyDescription
-                  : geologicalSubstrateLabels[v.geologicalSubstrate.class]
-                : "Sense cartografia geològica"}</dd>
-              <small>Context no puntuat · afinitat descrita: {uppercaseInitial(species.ecologicalConfig.soil.substrate)}</small>
-            </div>
-            <div>
-              <dt><Layers3 size={17} aria-hidden="true" />Drenatge de l’espècie</dt>
-              <dd>{uppercaseInitial(species.ecologicalConfig.soil.drainage)}</dd>
-              <small>Preferència ecològica · sense dada de drenatge de la cel·la</small>
-            </div>
           </dl>
         </section>
       ) : null}
@@ -403,19 +347,19 @@ export function ConditionComparison({
               <strong>{cellCalculation.fruiting}<small>/100</small></strong>
               <p
                 className="score-calculation-expression"
-                aria-label={`Fenologia ${cellCalculation.phenology} per cent, estat hídric ${cellCalculation.water} per cent amb pes ${Math.round(cellCalculation.waterWeight * 100)} per cent, temperatura mitjana ${cellCalculation.temperature} per cent amb pes ${Math.round(cellCalculation.temperatureWeight * 100)} per cent, i gelades i calor extrema ${cellCalculation.extremes} per cent`}
+                aria-label={`Temporada ${cellCalculation.phenology} per cent, aigua ${cellCalculation.water} per cent, temperatura ${cellCalculation.temperature} per cent i extrems ${cellCalculation.extremes} per cent`}
               >
                 <span>{cellCalculation.phenology}%</span>
                 <b>×</b>
-                <span>{cellCalculation.water}%<sup>{cellCalculation.waterWeight.toLocaleString("ca-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</sup></span>
+                <span>{cellCalculation.water}%</span>
                 <b>×</b>
-                <span>{cellCalculation.temperature}%<sup>{cellCalculation.temperatureWeight.toLocaleString("ca-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</sup></span>
+                <span>{cellCalculation.temperature}%</span>
                 <b>×</b>
                 <span>{cellCalculation.extremes}%</span>
                 <b>=</b>
                 <span>{cellCalculation.fruiting}</span>
               </p>
-              <small>Fenologia × estat hídric × temperatura mitjana × extrems tèrmics. Els exponents reparteixen el pes entre aigua i temperatura.</small>
+              <small>Temporada, aigua, temperatura i extrems han de coincidir.</small>
             </li>
             <li>
               <span className="score-calculation-step">2 · Hàbitat efectiu</span>
@@ -455,7 +399,7 @@ export function ConditionComparison({
           {regionalSummary
             ? "Cada barra resumeix les condicions dins l’hàbitat compatible. Una condició molt desfavorable redueix tota la puntuació, encara que les altres siguin bones; no és una probabilitat de trobar bolets."
             : cellCalculation
-              ? "Les barres són multiplicadors, no punts que se sumin. Un 50% redueix el producte a la meitat encara que la resta de respostes siguin altes."
+              ? "La condició més desfavorable pot limitar el resultat, encara que la resta siguin bones."
               : "Una condició molt desfavorable redueix tota la puntuació, encara que les altres siguin bones; no és una probabilitat de trobar bolets."}
         </p>
         {unavailableComponents.length > 0 && (

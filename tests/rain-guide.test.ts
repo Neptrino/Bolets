@@ -24,38 +24,33 @@ describe("rain response guide", () => {
     expect(html).not.toContain("P · temporada");
     expect(html).not.toContain("W · estat hídric");
     for (const heading of [
-      "Hàbitat adequat",
-      "Condicions per fructificar",
-      "Puntuació de la cel·la",
-      "Calendari suau",
-      "Sòl i pluja efectiva",
-      "14, 21 o 26 dies",
-      "Memòria tèrmica i extrems",
-      "Atmosfera i ratxa seca",
+      "Bosc adequat",
+      "Moment favorable",
+      "Resultat conjunt",
+      "El moment de l’any",
+      "La humitat que ja hi havia",
+      "Quantitat i repartiment",
+      "Fred, calor i extrems",
+      "Vent i dies secs",
     ]) {
       expect(html).toContain(`<h3>${heading}</h3>`);
     }
     expect(html.match(/class="rain-index-flow"/g)).toHaveLength(1);
     expect(html.match(/class="rain-factor-grid"/g)).toHaveLength(1);
     expect(html.match(/class="rain-evidence-grid"/g)).toHaveLength(1);
-    expect(html).toContain("El vent no es puntua directament");
+    expect(html).toContain("El vent i una ratxa seca poden fer perdre ràpidament la humitat");
     expect(html).not.toContain("energia del sòl");
     expect(html).not.toContain("Temperatura acumulada");
     expect(html).not.toContain("3, 7 i 30 dies");
   });
 
-  it("derives the six example windows from the resolved species model", () => {
-    for (const [species, waterDays, temperatureDays] of [
-      ["Rovelló", 21, 20],
-      ["Pinetell", 21, 20],
-      ["Cep", 26, 20],
-      ["Camagroc", 21, 20],
-      ["Múrgola", 14, 14],
-      ["Camasec", 14, 14],
-    ] as const) {
+  it("keeps the six examples focused on field-readable guidance", () => {
+    for (const species of ["Rovelló", "Pinetell", "Cep", "Camagroc", "Múrgola", "Camasec"] as const) {
       const card = articleFor(html, species);
-      expect(card).toContain(`<dt>Finestra hídrica</dt><dd>${waterDays} dies</dd>`);
-      expect(card).toContain(`<dt>Finestra tèrmica</dt><dd>${temperatureDays} dies</dd>`);
+      expect(card).toContain("<dt>Resposta habitual</dt>");
+      expect(card).toContain("<dt>Aigua que necessita</dt>");
+      expect(card).not.toContain("Finestra hídrica");
+      expect(card).not.toContain("Finestra tèrmica");
       expect(card).toContain(`aria-label="Veure la fitxa de ${species}"`);
     }
   });

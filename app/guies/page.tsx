@@ -26,7 +26,7 @@ import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 export const metadata: Metadata = {
   title: "Guies locals de bolets per territori",
   description:
-    "Exploreu guies locals de bolets per comarca, massís, indret i espècie, amb hàbitat, temporada i fonts territorials, sense publicar punts sensibles.",
+    "Explora guies de bolets per comarca, massís, indret i espècie, amb hàbitat i temporada sense publicar punts sensibles.",
   alternates: { canonical: "/guies" },
   openGraph: {
     url: "/guies",
@@ -47,7 +47,7 @@ export default function GuidesPage() {
     return [{
       href: locationPagePath(page),
       title: page.titlePhrase,
-      introduction: page.introduction,
+      introduction: page.habitatNote,
       speciesId: species.speciesId,
       speciesName: species.identity.commonName,
       scientificName: species.identity.scientificName,
@@ -93,7 +93,7 @@ export default function GuidesPage() {
       <PageHeader
         eyebrow={<><BookOpenText size={15} /> Guies locals publicades</>}
         title={<>Guies de bolets<br /><PageTitleAccent>per territori.</PageTitleAccent></>}
-        description="Cerqueu directament una combinació d’espècie i indret. Cada guia connecta el perfil ecològic general amb el context territorial, la temporada i les fonts, sense publicar punts de recol·lecció."
+        description="Busca una espècie i un indret. Cada guia explica quin bosc hi encaixa, quan és temporada i què cal tenir en compte, sense publicar punts de recol·lecció."
         tone="forest"
       />
 
@@ -105,7 +105,7 @@ export default function GuidesPage() {
 
       <Link href="/zones" className="location-species-feature location-current-feature guides-zones-feature">
         <span><MapPinned size={18} /> Directori territorial</span>
-        <div><h2>Voleu comparar territoris?</h2><p>Les zones agrupen massissos, paratges, comarques i regions, amb les lectures actuals que han passat els controls de publicació.</p></div>
+        <div><h2>Vols comparar territoris?</h2><p>Les zones agrupen massissos, paratges, comarques i regions amb les condicions actuals disponibles.</p></div>
         <strong>Comparar zones <ArrowUpRight size={17} /></strong>
       </Link>
 
@@ -129,10 +129,10 @@ export default function GuidesPage() {
 
       <section className="guides-directory" aria-labelledby="guides-directory-title">
         <SectionHeader
-          meta={`${speciesLocationPages.length} combinacions publicades`}
-          title="Trobeu la guia concreta"
+          meta={`${speciesLocationPages.length} guies disponibles`}
+          title="Troba la guia concreta"
           titleId="guides-directory-title"
-          description="Filtreu per espècie, territori o hàbitat. Només hi apareixen combinacions amb una relació ecològica defensable i contingut territorial propi."
+          description="Filtra per espècie, territori o hàbitat per arribar directament a la guia que necessites."
         />
         <GuideDirectory items={directoryItems} />
       </section>
@@ -145,7 +145,7 @@ export default function GuidesPage() {
 
       <aside className="location-safety-note">
         <Trees size={22} />
-        <div><strong>Hàbitat potencial, no una coordenada.</strong><p>Les guies descriuen compatibilitat ecològica agregada. No demostren presència actual ni substitueixen una identificació experta. Abans de sortir, <Link href="/normativa-bolets">comproveu els permisos i l’accés al bosc</Link>.</p></div>
+        <div><strong>Hàbitat potencial, no una coordenada.</strong><p>Les guies no confirmen presència actual ni substitueixen una identificació experta. Abans de sortir, <Link href="/normativa-bolets">comprova els permisos i l’accés al bosc</Link>.</p></div>
       </aside>
       <EditorialAttribution contentId="guies" sources={coreEditorialSources} />
     </PageShell>
