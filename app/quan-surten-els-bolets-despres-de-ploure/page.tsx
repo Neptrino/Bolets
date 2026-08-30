@@ -178,7 +178,7 @@ export default function MushroomsAfterRainPage() {
         <Link href="/metode#prediccio">Llegir el mètode complet <ArrowUpRight size={16} /></Link>
       </nav>
 
-      <EditorialAttribution contentId="quan-surten-els-bolets-despres-de-ploure" sources={[...environmentalSources, ...hydrothermalScientificSources, ...exampleSpecies.flatMap((species) => species.references)]} />
+      <EditorialAttribution contentId="quan-surten-els-bolets-despres-de-ploure" sources={[...environmentalSources, ...hydrothermalScientificSources, ...exampleSpecies.flatMap((species) => species.references)]} variant="compact" />
     </PageShell>
   );
 }

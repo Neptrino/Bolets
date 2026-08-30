@@ -229,6 +229,7 @@ export default async function SpeciesPage({
           <EditorialAttribution
             contentId={`species:${species.speciesId}`}
             sources={[...species.references, officialSafetySource]}
+            variant="compact"
           />
         </div>
       </div>

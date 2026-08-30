@@ -524,6 +524,7 @@ export default function CepsTerritoryPage() {
             officialSafetySource,
             ...ceps.flatMap((species) => species.references),
           ]}
+          variant="compact"
         />
       </div>
     </div>

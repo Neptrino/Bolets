@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays, CookingPot, Images, Leaf, ShieldAlert, Snowflake, Sprout, Sun } from "lucide-react";
-import { EditorialAttribution } from "@/components/editorial-attribution";
 import { PageHeader, PageShell, SectionHeader } from "@/components/page-layout";
 import { SpeciesDirectory } from "@/components/species-directory";
 import { JsonLd } from "@/components/json-ld";
-import { coreEditorialSources } from "@/data/editorial";
 import { catalogueSpecies as speciesAlphabetical } from "@/data/catalogue";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { seasonGuides, speciesForSeasonGuide, type SeasonGuideId } from "@/src/lib/season-guides";
@@ -85,7 +83,6 @@ export default function SpeciesIndexPage() {
         </nav>
       </section>
       <SpeciesDirectory species={speciesAlphabetical.map(toSpeciesCardProfile)} currentMonth={monthInTimeZone()} />
-      <EditorialAttribution contentId="bolets" sources={coreEditorialSources} />
     </PageShell>
   );
 }

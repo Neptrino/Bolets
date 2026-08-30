@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, BookOpenCheck, CircleAlert, Database, ShieldCheck } from "lucide-react";
-import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
-import { coreEditorialSources, editorialArticleFields, editorialTeam, siteAuthor } from "@/data/editorial";
+import { editorialArticleFields, editorialTeam, siteAuthor } from "@/data/editorial";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
@@ -62,7 +61,6 @@ export default function EditorialTeamPage() {
         <Link className="button moss-button" href="https://github.com/Neptrino/Bolets/issues" target="_blank" rel="noreferrer">Obrir el registre d’incidències <ArrowUpRight size={16} /></Link>
       </section>
 
-      <EditorialAttribution contentId="equip-editorial" sources={coreEditorialSources} />
     </PageShell>
   );
 }

@@ -104,7 +104,7 @@ export function ReferenceSpeciesPage({ species }: { species: ReferenceSpeciesPro
             </div>
           </section>
           <SpeciesFieldCardSection species={species} />
-          <EditorialAttribution contentId={`species:${species.speciesId}`} sources={species.references} />
+          <EditorialAttribution contentId={`species:${species.speciesId}`} sources={species.references} variant="compact" />
         </div>
       </div>
     </section>

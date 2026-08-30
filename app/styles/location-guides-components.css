@@ -313,6 +313,7 @@
 .local-profile-link small { margin-top: 6px; color: var(--muted); line-height: 1.45; }
 .local-profile-link svg { position: absolute; top: 18px; right: 18px; }
 .local-species-content > .editorial-panel { margin-top: 74px; }
+.local-species-content > .editorial-panel--compact { margin-top: 2.5rem; }
 .local-related-guides {
   margin-top: 70px;
   padding-top: 60px;

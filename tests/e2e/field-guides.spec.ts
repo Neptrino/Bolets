@@ -41,7 +41,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 800, height: 900 
       } else {
         await expect(page.getByRole("complementary", { name: "Abast de la guia" })).toBeVisible();
       }
-      await expect(page.locator(".editorial-panel")).toContainText("sense revisió micològica independent");
+      await expect(page.locator(".editorial-panel")).toContainText("Editorial, no micològica");
       if (route === "/fals-rossinyol") {
         const related = page.getByRole("region", { name: "Fitxes per comparar", exact: true });
         const grid = related.locator(".species-grid");

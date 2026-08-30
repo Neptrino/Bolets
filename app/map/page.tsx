@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowUpRight, Info, Trees } from "lucide-react";
-import { EditorialAttribution } from "@/components/editorial-attribution";
+import { DataSourceCredits } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { MapExplorer } from "@/components/map-explorer";
 import { PredictionMapLegend } from "@/components/prediction-map-legend";
@@ -203,7 +203,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
       <h2 id="map-search-guide-title">Com fer servir el mapa per preparar una sortida</h2>
       <p>Comença pel mapa general per detectar les zones més favorables. Després tria una espècie per veure on encaixa el seu hàbitat i com hi influeixen les condicions recents.</p>
       <p>Consulta també el resum de <Link href="/bolets-avui">bolets avui</Link>, la {species ? <Link href={speciesPath(species)}>fitxa de {species.identity.commonName}</Link> : <Link href="/bolets">fitxa de cada espècie</Link>} i les <Link href="/zones">guies de zones</Link>.</p>
-      <EditorialAttribution contentId="map" sources={[...environmentalSources, ...coreEditorialSources]} />
+      <DataSourceCredits sources={[...environmentalSources, ...coreEditorialSources]} label="Fonts de les dades del mapa" />
     </section>
   </section>;
 }

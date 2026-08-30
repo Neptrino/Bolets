@@ -94,7 +94,7 @@ describe("current-condition overview", () => {
   it("does not present the editorial update date as prediction freshness", () => {
     const pageSource = readFileSync("app/bolets-avui/page.tsx", "utf8");
 
-    expect(pageSource).toContain("showUpdatedAt={false}");
+    expect(pageSource).not.toContain("<EditorialAttribution");
   });
 
   it("uses plain-language labels in the leading Avui card", () => {

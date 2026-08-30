@@ -94,7 +94,7 @@ export default function SpringMushroomsPage() {
         />
         <div className="species-grid intent-species-grid">{springSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} />)}</div>
       </section>
-      <EditorialAttribution contentId="bolets-de-primavera" sources={[officialSafetySource, ...coreEditorialSources, ...springSpecies.flatMap((species) => species.references)]} />
+      <EditorialAttribution contentId="bolets-de-primavera" sources={[officialSafetySource, ...coreEditorialSources, ...springSpecies.flatMap((species) => species.references)]} variant="compact" />
     </PageShell>
   );
 }

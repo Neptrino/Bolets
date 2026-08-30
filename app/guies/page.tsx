@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, BookOpenText, MapPinned, Trees } from "lucide-react";
-import { EditorialAttribution } from "@/components/editorial-attribution";
 import { GuideDirectory } from "@/components/guide-directory";
 import { JsonLd } from "@/components/json-ld";
 import {
@@ -18,7 +17,6 @@ import {
   placeProfiles,
   speciesLocationPages,
 } from "@/data/location-pages";
-import { coreEditorialSources } from "@/data/editorial";
 import { getSpecies } from "@/data/species";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
@@ -147,7 +145,6 @@ export default function GuidesPage() {
         <Trees size={22} />
         <div><strong>Hàbitat potencial, no una coordenada.</strong><p>Les guies no confirmen presència actual ni substitueixen una identificació experta. Abans de sortir, <Link href="/normativa-bolets">comprova els permisos i l’accés al bosc</Link>.</p></div>
       </aside>
-      <EditorialAttribution contentId="guies" sources={coreEditorialSources} />
     </PageShell>
   );
 }

@@ -73,7 +73,7 @@ export default function WoodFungiGuidePage() {
           <Link href="/bolets-verinosos">Confusions i bolets verinosos <ArrowUpRight size={16} aria-hidden="true" /></Link>
         </nav>
       </section>
-      <EditorialAttribution contentId="bolets-de-soca" sources={[woodFungiSource, officialSafetySource]} />
+      <EditorialAttribution contentId="bolets-de-soca" sources={[woodFungiSource, officialSafetySource]} variant="compact" />
     </PageShell>
   );
 }

@@ -240,7 +240,7 @@ test("the rovellons guide connects every published Lactarius local guide", async
     await expect(types.locator(`a[href="/bolets/${speciesId}"]`)).toHaveCount(1);
   }
   await expect(page.getByRole("link", { name: /comparació entre rovelló i pinetell/i })).toHaveAttribute("href", "/compare/rovello-vs-pinetell");
-  await expect(page.locator(".editorial-panel")).toContainText("sense revisió micològica independent");
+  await expect(page.locator(".editorial-panel--compact")).toContainText("Editorial, no micològica");
 
   const guides = page.locator("[data-rovello-local-guides]");
   const lactariusGuideCount = speciesLocationPages.filter((guide) =>
@@ -305,18 +305,16 @@ test("the ceps guide connects every cep, broad region and published local guide"
   await expect(page.locator("[data-cep-local-guides] > a")).toHaveCount(cepGuideCount);
   await expect(page.locator(".rovellons-faq details")).toHaveCount(7);
   await expect(page.locator(".rovellons-safety")).toContainText("ACSA");
-  await expect(page.locator(".editorial-panel")).toContainText(
-    "Revisió editorial; sense revisió micològica independent",
-  );
+  await expect(page.locator(".editorial-panel--compact")).toContainText("Editorial, no micològica");
 });
 
 test("safety-sensitive pages show editorial status and official escalation", async ({ page }) => {
   await page.goto("/bolets-verinosos");
-  await expect(page.getByText("Revisió editorial; sense revisió micològica independent")).toBeVisible();
+  await expect(page.getByText("Editorial, no micològica")).toBeVisible();
   await expect(page.getByRole("link", { name: /guia de l’ACSA/i })).toHaveAttribute("href", /acsa\.gencat\.cat/);
   await expect(page.getByText(/061 Salut Respon/).first()).toBeVisible();
 
   await page.goto("/bolets/amanita-phalloides");
   await expect(page.locator(".species-official-safety")).toContainText("061 Salut Respon");
-  await expect(page.locator(".editorial-panel")).toContainText("sense revisió micològica independent");
+  await expect(page.locator(".editorial-panel--compact")).toContainText("Editorial, no micològica");
 });

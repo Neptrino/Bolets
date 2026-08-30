@@ -54,7 +54,7 @@ for (const width of [1280, 800, 390]) {
       }
       await expect(page.locator(`#${id}`)).toBeInViewport();
     }
-    await expect(page.locator(".editorial-panel")).toContainText("sense revisió micològica independent");
+    await expect(page.locator(".editorial-panel--compact")).toContainText("Editorial, no micològica");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://bolets.app${path}`);
     expect(modelRequests).toEqual([]);
     expect(pageErrors).toEqual([]);

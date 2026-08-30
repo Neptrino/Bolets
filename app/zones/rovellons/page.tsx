@@ -346,6 +346,7 @@ export default function RovellonsTerritoryPage() {
             officialSafetySource,
             ...[rovello, pinetell].flatMap((species) => species.references),
           ]}
+          variant="compact"
         />
       </div>
     </div>

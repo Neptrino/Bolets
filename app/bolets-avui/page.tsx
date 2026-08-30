@@ -12,12 +12,11 @@ import {
   MapPinned,
   ShieldCheck,
 } from "lucide-react";
-import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { PredictionMapLegend } from "@/components/prediction-map-legend";
 import { RegionMap } from "@/components/region-map";
-import { editorialArticleFields, environmentalSources } from "@/data/editorial";
+import { editorialArticleFields } from "@/data/editorial";
 import { regionSelectItems } from "@/data/regions";
 import {
   dominantLimitingComponent,
@@ -335,11 +334,6 @@ async function CurrentOverview() {
         </aside>
       ) : null}
 
-      <EditorialAttribution
-        contentId="bolets-avui"
-        showUpdatedAt={false}
-        sources={environmentalSources}
-      />
     </>
   );
 }

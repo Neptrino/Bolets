@@ -32,7 +32,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 800, height: 900 
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
     const boxes = await Promise.all((await page.locator("main details").all()).map((item) => item.boundingBox()));
     for (let i = 1; i < boxes.length; i++) expect(boxes[i]!.y).toBeGreaterThanOrEqual(boxes[i - 1]!.y + boxes[i - 1]!.height - 1);
-    await expect(page.locator(".editorial-panel")).toContainText("sense revisió micològica independent");
+    await expect(page.locator(".editorial-panel")).toContainText("Editorial, no micològica");
   });
 }
 

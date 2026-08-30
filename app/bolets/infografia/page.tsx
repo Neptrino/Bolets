@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { Images } from "lucide-react";
 import { CatalogueInfographic } from "@/components/catalogue-infographic";
-import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell } from "@/components/page-layout";
 import { catalogueSpecies } from "@/data/catalogue";
-import { coreEditorialSources } from "@/data/editorial";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
 
 const posterPath = "/downloads/infografies/bolets-catalunya-infografia.png";
@@ -45,7 +43,6 @@ export default function MushroomInfographicPage() {
         tone="forest"
       />
       <CatalogueInfographic speciesCount={catalogueSpecies.length} />
-      <EditorialAttribution contentId="bolets" sources={coreEditorialSources} />
     </PageShell>
   );
 }
