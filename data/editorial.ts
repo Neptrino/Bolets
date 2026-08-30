@@ -13,7 +13,7 @@ export interface EditorialMetadata {
 }
 
 export const EDITORIAL_LAUNCH_DATE = "2026-08-13";
-export const LOCAL_GUIDES_UPDATED_AT = "2026-08-26";
+export const LOCAL_GUIDES_UPDATED_AT = "2026-08-30";
 
 export const editorialTeam = {
   id: "editorial-team" as const,

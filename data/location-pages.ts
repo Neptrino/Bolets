@@ -63,7 +63,7 @@ export const areaProfiles: AreaProfile[] = [
     regionId: "pirineus",
     bounds: { west: 1.95, south: 42.05, east: 2.5, north: 42.45 },
     description: "Comarca pirinenca de valls, boscos montans, prats i cursos d’aigua, amb una temporada molt condicionada per l’altitud.",
-    landscape: "Els canvis ràpids de cota desplacen el calendari entre els fons de vall i l’alta muntanya. Camprodon, Setcases i les Lloses ofereixen tres lectures forestals diferents dins la mateixa comarca.",
+    landscape: "Els canvis ràpids de cota desplacen el calendari entre els fons de vall i l’alta muntanya. Camprodon, Setcases, Sant Pau de Segúries i les Lloses ofereixen quatre lectures forestals diferents dins la mateixa comarca.",
     source: { title: "Turisme del Ripollès", url: "https://ripollesturisme.cat/" },
   },
   {
@@ -197,6 +197,17 @@ export const placeProfiles: PlaceProfile[] = [
     resources: [
       { label: "Espai natural", title: "Punt d’informació del Parc Natural a Setcases", url: "https://setcases.cat/coneix/espai-dinteres-natural-de-la-capcalera-del-riu-ter/punt-dinformacio-del-parc-natural-setcases/" },
       { label: "Turisme local", title: "Setcases a Turisme del Ripollès", url: "https://ripollesturisme.cat/municipi/setcases/" },
+    ],
+  },
+  {
+    areaSlug: "ripolles", slug: "sant-pau-de-seguries", name: "Sant Pau de Segúries", nameWithArticle: "Sant Pau de Segúries", prepositionalName: "a Sant Pau de Segúries", typeLabel: "municipi",
+    mapCentre: [2.3652, 42.2614],
+    description: "Municipi a l’entrada de la Vall de Camprodon, entre el Ter, el Capsacosta i vessants forestals que connecten els ambients pirinencs amb els de la Garrotxa.",
+    landscape: "Les fagedes del Capsacosta, els boscos ombrívols i els sectors humits i freds de Sant Pau de Segúries creen un mosaic de planifolis especialment coherent amb els bolets que depenen de fullaraca i humitat sostinguda.",
+    source: { title: "Ripollès Turisme — Sant Pau de Segúries", url: "https://ripollesturisme.cat/municipi/sant-pau-de-seguries/" },
+    resources: [
+      { label: "Espai natural", title: "Ruta de les set fonts i les tres fagedes", url: "https://ripollesturisme.cat/ruta-senderisme/ruta-de-les-fagedes/" },
+      { label: "Rutes i patrimoni", title: "Excursions pel municipi de Sant Pau de Segúries", url: "https://santpauseguries.cat/coneix/planols-i-rutes-2/excursions-pel-municipi-i-el-seu-entorn/" },
     ],
   },
   {
@@ -424,6 +435,18 @@ export const speciesLocationPages: SpeciesLocationPage[] = [
     introduction: "Els boscos montans de Setcases poden oferir sectors compatibles amb el rossinyol quan el sòl conserva humitat. Aquesta lectura ecològica no identifica cap bosc concret ni garanteix que hi hagi exemplars.",
     habitatNote: "Les pinedes humides i els boscos mixtos sobre sòls àcids o descarbonatats encaixen millor, especialment en obagues protegides. A l’alta vall, el vent pot anul·lar ràpidament l’efecte d’una pluja curta.",
     seasonNote: "El potencial s’estén de finals d’estiu fins a la tardor i sol culminar a l’octubre. La cota pot avançar la resposta, però les baixades brusques de temperatura i les gelades n’escurcen la finestra.",
+  },
+  {
+    areaSlug: "ripolles", placeSlug: "sant-pau-de-seguries", speciesSlug: "trompetes-de-la-mort", speciesId: "craterellus-cornucopioides", searchName: "trompetes de la mort", titlePhrase: "Trompetes de la mort a Sant Pau de Segúries",
+    introduction: "Les fagedes i els boscos humits de Sant Pau de Segúries coincideixen amb l’ecologia general de la trompeta de la mort. La guia descriu hàbitat potencial a escala municipal: no confirma exemplars ni revela cap punt de recol·lecció.",
+    habitatNote: "Les obagues amb faig o roure, fullaraca madura i humitat persistent són els ambients més compatibles. La transició forestal del Capsacosta pot crear contrastos molt locals, i la presència de bosc per si sola no substitueix les condicions de sòl i drenatge.",
+    seasonNote: "La finestra principal se situa a la tardor, sobretot entre octubre i novembre, després d’una rehidratació sostinguda de la fullaraca. Una nova sequera, el vent sec o les gelades persistents poden interrompre-la ràpidament.",
+  },
+  {
+    areaSlug: "ripolles", placeSlug: "sant-pau-de-seguries", speciesSlug: "rossinyols", speciesId: "cantharellus-cibarius", searchName: "rossinyols", titlePhrase: "Rossinyols a Sant Pau de Segúries",
+    introduction: "Les fagedes, els boscos ombrívols i els ambients humits de Sant Pau de Segúries poden contenir sectors compatibles amb el rossinyol. Aquesta lectura ecològica no confirma presència ni identifica cap lloc de recol·lecció.",
+    habitatNote: "Els vessants frescos amb faig o roure, sòl àcid o descarbonatat, humus ric i bon drenatge encaixen millor amb l’espècie. Les obagues poden conservar la humitat més temps, però un episodi sec o ventós torna insuficient una pluja aïllada.",
+    seasonNote: "El potencial general va de finals d’estiu fins al novembre i acostuma a culminar a l’octubre. Les pluges regulars i les nits fresques afavoreixen la resposta; la calor, el vent sec o una gelada primerenca la poden frenar.",
   },
   {
     areaSlug: "ripolles", placeSlug: "les-lloses", speciesSlug: "ceps", speciesId: "boletus-edulis", searchName: "ceps", titlePhrase: "Ceps a les Lloses",

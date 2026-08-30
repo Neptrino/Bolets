@@ -25,6 +25,8 @@ describe("curated species-location pages", () => {
     expect(paths).toContain("/zones/ports/horta-de-sant-joan/pinetells");
     expect(paths).toContain("/zones/ripolles/camprodon/rovellons");
     expect(paths).toContain("/zones/ripolles/camprodon/pinetells");
+    expect(paths).toContain("/zones/ripolles/sant-pau-de-seguries/trompetes-de-la-mort");
+    expect(paths).toContain("/zones/ripolles/sant-pau-de-seguries/rossinyols");
     expect(paths).toContain("/zones/cerdanya/bellver-de-cerdanya/rovellons");
     expect(paths).toContain("/zones/cerdanya/bellver-de-cerdanya/pinetells");
     expect(placePath(getPlace("ripolles", "camprodon")!)).toBe("/zones/ripolles/camprodon");
@@ -59,6 +61,16 @@ describe("curated species-location pages", () => {
       const rovelloPage = getLocationPage(areaSlug, placeSlug, "rovellons");
       expect(rovelloPage?.speciesId, `${areaSlug}/${placeSlug}`).toBe("lactarius-sanguifluus");
     }
+  });
+
+  it("publishes the source-backed trompeta guide in the Ripollès", () => {
+    const page = getLocationPage(
+      "ripolles",
+      "sant-pau-de-seguries",
+      "trompetes-de-la-mort",
+    );
+    expect(page?.speciesId).toBe("craterellus-cornucopioides");
+    expect(getSpecies(page!.speciesId)?.ecologicalConfig.regions).toContain("pirineus");
   });
 
   it("publishes multiple guides for every curated place", () => {
