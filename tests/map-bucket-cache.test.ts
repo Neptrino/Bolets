@@ -34,6 +34,10 @@ describe("persistent map bucket cache", () => {
     truncated: false,
   };
 
+  it("retains reusable browser buckets for one hour", () => {
+    expect(MAP_BUCKET_CACHE_TTL_MS).toBe(60 * 60 * 1_000);
+  });
+
   it("reuses a public bucket inside the bounded freshness window", async () => {
     const { open } = installCacheStorage();
     const storedAt = Date.parse("2026-08-30T08:00:00.000Z");

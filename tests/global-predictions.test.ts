@@ -287,7 +287,7 @@ describe("getGlobalPredictionCells", () => {
     expect(right.cells.map((cell) => cell.cellId)).toEqual(["epsg25831:2500:right"]);
   });
 
-  it("reduces the full 2.5 km Catalonia map from 154 bucket requests to 42 reads", async () => {
+  it("serves the full 2.5 km Catalonia map in 42 canonical requests", async () => {
     const fetchMock = stubGlobalFeed({
       cells: [],
       truncated: false,
@@ -300,7 +300,7 @@ describe("getGlobalPredictionCells", () => {
       cataloniaSpatialBounds,
     );
 
-    expect(buckets).toHaveLength(154);
+    expect(buckets).toHaveLength(42);
     await Promise.all(buckets.map((bucket) =>
       getGlobalPredictionCells(bucket, 1000, 2500)));
 

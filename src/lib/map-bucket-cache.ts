@@ -1,7 +1,7 @@
 import type { BucketPayload } from "@/src/lib/bucket-loader";
 
 export const MAP_BUCKET_CACHE_NAME = "bolets-map-buckets-v1";
-export const MAP_BUCKET_CACHE_TTL_MS = 5 * 60 * 1_000;
+export const MAP_BUCKET_CACHE_TTL_MS = 60 * 60 * 1_000;
 
 const CACHED_AT_HEADER = "x-bolets-cached-at";
 const MAP_BUCKET_CACHE_LIMIT = 600;

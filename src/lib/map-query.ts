@@ -8,7 +8,7 @@ export function formatMapCoordinate(value: number) {
 const requestBucketDegrees: Record<SpatialGridSizeM, number> = {
   250: 0.025,
   1000: 0.1,
-  2500: 0.25,
+  2500: 0.5,
   5000: 0.5,
   10000: 1,
 };

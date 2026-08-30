@@ -37,7 +37,7 @@ describe("cache-aligned map bounds", () => {
 describe("request bucket enumeration", () => {
   it("exposes the canonical bucket width for server-side shard reuse", () => {
     expect(requestBucketDegreesForGrid(1000)).toBe(0.1);
-    expect(requestBucketDegreesForGrid(2500)).toBe(0.25);
+    expect(requestBucketDegreesForGrid(2500)).toBe(0.5);
     expect(requestBucketDegreesForGrid(10000)).toBe(1);
   });
 
@@ -115,10 +115,9 @@ describe("request bucket enumeration", () => {
       catalonia,
     );
     expect(fine.length).toBeGreaterThan(coarse.length);
-    // 0.25° cells straddle the 1.25 and 41.25 lattice lines, so the same
-    // ground area is still four coarse buckets rather than one.
-    expect(coarse).toHaveLength(4);
-    expect(coarse).toContainEqual({ west: 1, south: 41, east: 1.25, north: 41.25 });
+    expect(coarse).toEqual([
+      { west: 1, south: 41, east: 1.5, north: 41.5 },
+    ]);
   });
 
   it("keeps every bucket inside the area its resolution allows to be requested", () => {

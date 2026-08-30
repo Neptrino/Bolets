@@ -39,9 +39,15 @@ export const globalCandidateSpecies = edibleSpecies.filter(
 // open forever. Callers treat an aborted read as unavailable rather than
 // manufacturing a prediction.
 const GLOBAL_ENVIRONMENT_TIMEOUT_MS = 5_000;
-// A 2×2 group keeps the shared payload modest while letting four canonical
-// public buckets reuse one upstream environment read.
-const GLOBAL_MAP_SHARD_FACTOR = 2;
+// Coalesce only while the upstream payload remains modest. The 2.5 km public
+// bucket already uses the 0.5° read shape, so expanding it again would add
+// cells without removing another browser request.
+const GLOBAL_MAP_SHARD_FACTOR: Record<GlobalGridSizeM, number> = {
+  1000: 2,
+  2500: 1,
+  5000: 2,
+  10000: 2,
+};
 const GLOBAL_MAP_SHARD_LIMIT = 1000;
 const GLOBAL_MAP_READ_SHAPE_VERSION = "global-map-shard-2x2-coalesced-v1";
 const globalEnvironmentInFlight = new Map<string, Promise<GlobalEnvironmentPayload>>();
@@ -135,7 +141,7 @@ function globalMapReadBounds(
     return bounds;
   }
 
-  const shardDegrees = bucketDegrees * GLOBAL_MAP_SHARD_FACTOR;
+  const shardDegrees = bucketDegrees * GLOBAL_MAP_SHARD_FACTOR[gridSizeM];
   const west = Math.max(
     cataloniaSpatialBounds.west,
     stableCoordinate(Math.floor(bounds.west / shardDegrees) * shardDegrees),
