@@ -36,6 +36,26 @@ function chartDayLabel(timestamp: number) {
   return chartDayFormatter.format(new Date(timestamp * 1000));
 }
 
+function chartDaySplits(chartWidth: number, total: number, boundaryIndex?: number) {
+  if (total <= 0) return [];
+  if (chartWidth >= 520) return Array.from({ length: total }, (_value, index) => index);
+
+  const lastIndex = total - 1;
+  const estimatedPlotWidth = Math.max(chartWidth - 56, 1);
+  const slotWidth = estimatedPlotWidth / Math.max(lastIndex, 1);
+  const minimumSlotGap = Math.max(1, Math.ceil(64 / slotWidth));
+  const selected = new Set([0, lastIndex]);
+  const hasRoom = (candidate: number) => Array.from(selected).every(
+    (existing) => Math.abs(existing - candidate) >= minimumSlotGap,
+  );
+
+  if (boundaryIndex !== undefined && hasRoom(boundaryIndex)) selected.add(boundaryIndex);
+  for (let index = minimumSlotGap; index < lastIndex; index += minimumSlotGap) {
+    if (hasRoom(index)) selected.add(index);
+  }
+  return Array.from(selected).sort((first, second) => first - second);
+}
+
 function scoreChartPlugin(boundaryIndex?: number): uPlot.Plugin {
   return {
     hooks: {
@@ -219,10 +239,11 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
           font: "600 12px ui-sans-serif, system-ui, sans-serif",
           size: 34,
           gap: 9,
-          splits: (currentChart) => currentChart.width < 520
-            ? dailySlots.filter((_slot, index) =>
-              index === anchorObservedIndex || index === timestamps.length - 1 || index % 2 === 0)
-            : dailySlots,
+          splits: (currentChart) => chartDaySplits(
+            currentChart.width,
+            dailySlots.length,
+            anchorObservedIndex >= 0 ? anchorObservedIndex : undefined,
+          ),
           values: (_chart, values) => values.map((slot) =>
             chartDayLabel(timestamps[Math.round(slot)] ?? timestamps[0]!)),
           grid: { stroke: "rgba(105, 112, 99, 0.10)", width: 1 },
@@ -257,6 +278,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
   }
 
   const { observed, forecast } = state.timeline;
+  const simulatedForecast = state.timeline.simulated === true || forecast?.simulated === true;
   const observedAvailable = observed.filter((point): point is PredictionHistoryPoint & { score: number } => point.score !== null);
   const projectedAvailable = forecast?.points.filter(
     (point): point is PredictionForecastPoint & { score: number } => point.score !== null,
@@ -283,11 +305,17 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       ? "Sense canvis en l’historial disponible"
       : `${observedChange! > 0 ? "+" : ""}${observedChange} punts des de ${dayLabel(firstObserved!.observedAt)}`;
   const title = observed.length && forecast
-    ? "Evolució recent i projecció a 5 dies"
+    ? simulatedForecast
+      ? "Evolució recent i simulació a 5 dies"
+      : "Evolució recent i projecció a 5 dies"
     : forecast
-      ? "Projecció ambiental a 5 dies"
+      ? simulatedForecast
+        ? "Simulació ambiental a 5 dies"
+        : "Projecció ambiental a 5 dies"
       : "Evolució recent";
-  const information = forecast
+  const information = simulatedForecast
+    ? "Simulació local amb dades fictícies per comprovar la interfície. No és una previsió meteorològica ni s’utilitza en producció."
+    : forecast
     ? `La projecció combina el temps recent amb la previsió dels pròxims dies. No prediu quan apareixeran bolets i és menys segura com més s’allunya d’avui. Generada el ${dayLabel(forecast.generatedAt)}.`
     : "Cada punt compara les condicions ambientals disponibles d’aquell dia.";
 
@@ -298,6 +326,9 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
           <p className="eyebrow">Evolució de les condicions</p>
           <div className="cell-score-history-title-row">
             <h4 id={titleId}>{title}</h4>
+            {simulatedForecast ? (
+              <span className="cell-score-history-simulation">Simulació local</span>
+            ) : null}
             <button
               type="button"
               className="cell-score-history-help"
@@ -322,8 +353,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       <div className="cell-score-history-legend" aria-hidden="true">
         {observed.length ? <span><i className="observed" />Calculat</span> : null}
         {forecast ? <>
-          <span><i className="projected" />Projectat des d’ara</span>
-          {observed.length ? <span><i className="boundary" />Inici de la projecció</span> : null}
+          <span><i className="projected" />{simulatedForecast ? "Simulat des d’ara" : "Projectat des d’ara"}</span>
         </> : null}
       </div>
       <div ref={chartRef} className="cell-score-history-chart" aria-hidden="true" />
@@ -342,7 +372,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
             ))}
             {forecast?.points.map((point) => (
               <tr key={`projected:${point.validAt}`}>
-                <td>{dayLabel(point.validAt)}</td><td>Projectada</td><td>{scoreLabel(point.opportunityIndex)}</td><td>{scoreLabel(point.fruitingConditionsScore)}</td><td>{confidenceLabel(point.horizonConfidence)}</td>
+                <td>{dayLabel(point.validAt)}</td><td>{simulatedForecast ? "Simulada" : "Projectada"}</td><td>{scoreLabel(point.opportunityIndex)}</td><td>{scoreLabel(point.fruitingConditionsScore)}</td><td>{confidenceLabel(point.horizonConfidence)}</td>
               </tr>
             ))}
           </tbody>

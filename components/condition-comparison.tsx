@@ -8,6 +8,7 @@ import {
   Snowflake,
   Trees,
 } from "lucide-react";
+import { useId, type ReactNode } from "react";
 import { conditionReadings } from "@/components/condition-readings";
 import type {
   ConditionSnapshot,
@@ -35,6 +36,32 @@ const uppercaseInitial = (value: string) =>
   value
     ? `${value.charAt(0).toLocaleUpperCase("ca-ES")}${value.slice(1)}`
     : value;
+
+function ScoreCalculationHelp({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  const tooltipId = useId();
+
+  return (
+    <>
+      <button
+        type="button"
+        className="score-calculation-help"
+        aria-label={label}
+        aria-describedby={tooltipId}
+      >
+        <CircleHelp size={17} aria-hidden="true" />
+      </button>
+      <span id={tooltipId} className="score-calculation-tooltip" role="tooltip">
+        {children}
+      </span>
+    </>
+  );
+}
 
 function soilReactionLabel(ph: number | undefined) {
   if (ph === undefined) return "Sense informació";
@@ -343,21 +370,33 @@ export function ConditionComparison({
         {cellCalculation && (
           <ol className="score-calculation" aria-label="Resum de la valoració del sector">
             <li>
-              <span className="score-calculation-step">1 · Condicions del moment</span>
+              <div className="score-calculation-heading">
+                <span className="score-calculation-step">1 · Condicions del moment</span>
+                <ScoreCalculationHelp label="Explica les condicions del moment">
+                  Valorem si coincideixen la temporada habitual, l’aigua disponible, la temperatura i els episodis extrems.
+                </ScoreCalculationHelp>
+              </div>
               <strong>{cellCalculation.fruiting}<small>/100</small></strong>
-              <p>Valorem si coincideixen la temporada habitual, l’aigua disponible, la temperatura i els episodis extrems.</p>
             </li>
             <li>
-              <span className="score-calculation-step">2 · Terreny adequat</span>
+              <div className="score-calculation-heading">
+                <span className="score-calculation-step">2 · Terreny adequat</span>
+                <ScoreCalculationHelp label="Explica el terreny adequat">
+                  Indica quina part del sector té un tipus de bosc, un sòl i una altitud adequats per a l’espècie.
+                </ScoreCalculationHelp>
+              </div>
               <strong>{cellCalculation.effectiveHabitat}<small>% del sector</small></strong>
-              <p>Indica quina part del sector té un tipus de bosc, un sòl i una altitud adequats per a l’espècie.</p>
             </li>
             <li className="score-calculation-result">
-              <span className="score-calculation-step">3 · Valoració final</span>
+              <div className="score-calculation-heading">
+                <span className="score-calculation-step">3 · Valoració final</span>
+                <ScoreCalculationHelp label="Explica la valoració final">
+                  Resumeix si el lloc i el moment coincideixen. No és una probabilitat de trobar bolets.
+                </ScoreCalculationHelp>
+              </div>
               <strong style={resultBand ? { color: resultBand.color } : undefined}>
                 {cellCalculation.opportunity}<small>/100</small>
               </strong>
-              <p>Resumeix si el lloc i el moment coincideixen. No és una probabilitat de trobar bolets.</p>
             </li>
           </ol>
         )}

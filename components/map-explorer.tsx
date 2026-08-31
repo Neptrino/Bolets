@@ -1,10 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowUpRight, CheckCircle2, LoaderCircle, Map as MapIcon } from "lucide-react";
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { ArrowUpRight, CheckCircle2, Clock3, Info, ListFilter, LoaderCircle, Map as MapIcon, Trees, X } from "lucide-react";
 import Link from "next/link";
 import { ConditionComparison } from "@/components/condition-comparison";
-import { RegionMap, type PredictionCellDetailState } from "@/components/region-map";
+import {
+  RegionMap,
+  type PredictionCellDetailState,
+  type PredictionViewportStatus,
+} from "@/components/region-map";
 import { QuerySelect, type QuerySelectItem } from "@/components/ui/query-select";
 import { regionLabels } from "@/data/regions";
 import { getConditionPredictionStatus } from "@/src/lib/condition-presentation";
@@ -67,7 +71,6 @@ export function MapExplorer({
   regionalTopSpeciesName,
   speciesItems,
   speciesNames,
-  speciesRoutes,
   info
 }: {
   /** null renders the combined all-species map. */
@@ -83,12 +86,20 @@ export function MapExplorer({
   speciesItems: QuerySelectItem[];
   /** Combined map only: display names for ranked species. */
   speciesNames?: Record<string, string>;
-  speciesRoutes?: Record<string, string>;
   info: ReactNode;
 }) {
   const globalMode = species === null;
   const speciesKey = species?.speciesId ?? GLOBAL_SPECIES_ID;
   const mapStage = useRef<HTMLDivElement>(null);
+  const detailPanelId = useId();
+  const mapInfoPanelId = useId();
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [viewportStatus, setViewportStatus] = useState<PredictionViewportStatus>(null);
+  const [detailPanelState, setDetailPanelState] = useState({
+    speciesId: speciesKey,
+    open: false,
+  });
+  const detailOpen = detailPanelState.speciesId === speciesKey && detailPanelState.open;
   const [selection, setSelection] = useState<{
     speciesId: string;
     cell?: PredictionCell;
@@ -160,7 +171,6 @@ export function MapExplorer({
     : regionalResult;
   const predictionStatus = getConditionPredictionStatus(snapshot.stale, result);
   const hasPrediction = predictionStatus.kind === "available" && result.score !== null;
-  const resultBand = result.score === null ? undefined : getSuitabilityBand(result.score);
   const selectedEffectiveHabitat = selectedCell && typeof result.effectiveHabitatCoverage === "number"
     ? result.effectiveHabitatCoverage
     : undefined;
@@ -170,6 +180,14 @@ export function MapExplorer({
   const hasCellLoadError = cellDetailState.status === "error";
   const selectedGridSizeM = cellDetailState.gridSizeM ?? selectedCell?.gridSizeM ??
     emptySelection?.gridSizeM;
+  const displayedScore = emptySelection
+    ? emptySelection.score
+    : hasPrediction
+      ? result.score
+      : null;
+  const displayedBand = displayedScore === null
+    ? undefined
+    : getSuitabilityBand(displayedScore);
   const speciesName = (speciesId: string) => speciesNames?.[speciesId] ?? speciesId;
   const topSpeciesId = selectedTopSpecies[0]?.speciesId;
   // The floating card stays compact; the full ranking renders below the map.
@@ -205,11 +223,13 @@ export function MapExplorer({
         speciesId={speciesKey}
         mode={mode}
         predictionAvailable={species ? species.predictionMode === "current" : true}
+        showReadyStatus={false}
         selectedCellId={selectedCellId}
         onCellClick={trackCellClick}
         onGeolocationSuccess={trackGeolocationSuccess}
         onCellSelect={selectCell}
         onCellDetailStateChange={updateCellDetailState}
+        onViewportStatusChange={mode === "prediction" ? setViewportStatus : undefined}
         className="full-map"
         fullscreenTarget="parent"
       />
@@ -218,112 +238,221 @@ export function MapExplorer({
         <QuerySelect
           value={speciesKey}
           items={speciesItems}
-          routeByValue={speciesRoutes}
           fallbackPath="/map"
           portalContainer={mapStage}
           analyticsEvent={UMAMI_EVENTS.mapChangeSpecies}
           aria-label="Canvia l’espècie del mapa en pantalla completa"
         />
       </label>
-      {mode === "prediction" ? (
-        <div className="map-floating-card" aria-live="polite">
-          <div className="map-floating-card-label">
-            <MapIcon size={17} aria-hidden="true" />
-            <span>{selectedGridSizeM ? `Sector ${formatGridDimensions(selectedGridSizeM)}` : regionLabels[region]}</span>
-            {!emptySelection && hasPrediction && resultBand && (result.score ?? 0) > 0
-              ? <i style={{ backgroundColor: resultBand.color }} aria-hidden="true" />
-              : null}
+      <aside
+        id={mapInfoPanelId}
+        className="map-info-panel"
+        aria-label="Informació per interpretar el mapa"
+        hidden={!infoOpen}
+      >
+        <header>
+          <div>
+            <span>Informació</span>
+            <strong>Sobre aquest mapa</strong>
           </div>
-          {isLoadingCell || isLoadedCell || hasCellLoadError ? (
-            <span
-              className={`map-floating-card-status ${isLoadingCell ? "is-loading" : hasCellLoadError ? "is-error" : "is-ready"}`}
-              role="status"
-              aria-live="polite"
-            >
-              {isLoadingCell ? <LoaderCircle size={14} aria-hidden="true" /> : isLoadedCell ? <CheckCircle2 size={14} aria-hidden="true" /> : null}
-              {isLoadingCell ? "Carregant dades" : isLoadedCell ? "Dades carregades" : "No s’ha pogut carregar"}
-            </span>
-          ) : null}
-          {emptySelection ? (
-            <>
-              <strong>{emptySelection.score === 0 ? <>0<small>/100</small></> : "—"}</strong>
+          <button
+            type="button"
+            aria-label="Tanca la informació del mapa"
+            onClick={() => setInfoOpen(false)}
+          >
+            <X size={20} aria-hidden="true" />
+          </button>
+        </header>
+        <div className="map-info-panel-content">{info}</div>
+      </aside>
+      {mode === "prediction" ? (
+        <aside
+          className={`map-detail-panel${detailOpen ? " is-open" : ""}`}
+          aria-label={globalMode ? "Informació del sector" : "Condicions del sector"}
+        >
+          <div className="map-floating-card" aria-live="polite">
+            <div className="map-floating-card-context">
+              <div className="map-floating-card-label">
+                <MapIcon size={17} aria-hidden="true" />
+                <span>{selectedGridSizeM ? `Sector ${formatGridDimensions(selectedGridSizeM)}` : regionLabels[region]}</span>
+              </div>
+              {isLoadingCell || isLoadedCell || hasCellLoadError ? (
+                <span
+                  className={`map-floating-card-status ${isLoadingCell ? "is-loading" : hasCellLoadError ? "is-error" : "is-ready"}`}
+                  role="status"
+                  aria-live="polite"
+                >
+                  {isLoadingCell ? <LoaderCircle size={14} aria-hidden="true" /> : isLoadedCell ? <CheckCircle2 size={14} aria-hidden="true" /> : null}
+                  {isLoadingCell ? "Carregant dades" : isLoadedCell ? "Dades carregades" : "No s’ha pogut carregar"}
+                </span>
+              ) : null}
+            </div>
+            <div className="map-score-reading">
+              <strong>{displayedScore === null ? "—" : <>{displayedScore}<small>/100</small></>}</strong>
+              {displayedScore !== null ? (
+                <span
+                  className="map-score-meter"
+                  role="meter"
+                  aria-label={`Valoració del sector: ${displayedScore} sobre 100`}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={displayedScore}
+                >
+                  <i
+                    style={{
+                      backgroundColor: displayedBand?.color,
+                      width: `${displayedScore}%`,
+                    }}
+                  />
+                </span>
+              ) : null}
+            </div>
+            {emptySelection ? (
               <p>{emptySelection.score === 0
                 ? "Cap espècie comestible té condicions favorables en aquest sector ara mateix."
                 : "Falten lectures recents per valorar aquest sector."}</p>
-            </>
-          ) : (
-            <>
-              <strong>{hasPrediction ? <>{result.score}<small>/100</small></> : "—"}</strong>
-              <p>{hasPrediction
-                ? globalMode
-                  ? `${selectedCell && topSpeciesId
-                      ? `Millor opció: ${speciesName(topSpeciesId)}`
-                      : regionalTopSpeciesName
-                        ? `Millor opció: ${regionalTopSpeciesName}`
-                        : "Espècie amb millors condicions"} · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · moment actual ${result.fruitingConditionsScore}/100`}`
-                  : `Condicions del sector · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · moment actual ${result.fruitingConditionsScore}/100`}${selectedEffectiveHabitat === undefined ? "" : ` · ${Math.round(selectedEffectiveHabitat * 100)}% de terreny adequat`}`
-                : unavailableCopy}</p>
-              {globalMode && hasPrediction && runnersUp.length ? (
-                <p>
-                  {`També hi destaquen: ${runnersUp
-                    .map((item) => `${speciesName(item.speciesId)} (${item.score})`)
-                    .join(", ")}`}
-                </p>
+            ) : hasPrediction ? (
+              <div className="map-condition-summary">
+                {globalMode ? (
+                  <strong>{selectedCell && topSpeciesId
+                    ? `Millor opció · ${speciesName(topSpeciesId)}`
+                    : regionalTopSpeciesName
+                      ? `Millor opció · ${regionalTopSpeciesName}`
+                      : "Espècie amb millors condicions"}</strong>
+                ) : null}
+                <div className="map-condition-metrics">
+                  <span className="map-condition-band">
+                    {result.label}
+                  </span>
+                  {result.fruitingConditionsScore !== null ? (
+                    <span><Clock3 size={14} aria-hidden="true" />Condicions <strong>{result.fruitingConditionsScore}/100</strong></span>
+                  ) : null}
+                  {!globalMode && selectedEffectiveHabitat !== undefined ? (
+                    <span><Trees size={14} aria-hidden="true" />Terreny <strong>{Math.round(selectedEffectiveHabitat * 100)}%</strong></span>
+                  ) : null}
+                </div>
+                {globalMode && runnersUp.length ? (
+                  <p>{`També: ${runnersUp
+                    .map((item) => `${speciesName(item.speciesId)} ${item.score}`)
+                    .join(" · ")}`}</p>
+                ) : null}
+              </div>
+            ) : viewportStatus ? (
+              <div className="map-condition-summary map-viewport-status" role="status">
+                <strong>{viewportStatus.title}</strong>
+                <p>{viewportStatus.detail}</p>
+              </div>
+            ) : <p>{unavailableCopy}</p>}
+            <div className="map-footer-actions">
+              <button
+                type="button"
+                className="map-info-button"
+                aria-controls={mapInfoPanelId}
+                aria-expanded={infoOpen}
+                aria-label="Obre la informació del mapa"
+                onClick={() => {
+                  setDetailPanelState({ speciesId: speciesKey, open: false });
+                  setInfoOpen(true);
+                }}
+              >
+                <Info size={16} aria-hidden="true" />
+                Informació
+              </button>
+              {!globalMode || topSpeciesId ? (
+                <button
+                  type="button"
+                  className="map-detail-toggle"
+                  aria-controls={detailPanelId}
+                  aria-expanded={detailOpen}
+                  onClick={(event) => {
+                    event.currentTarget.blur();
+                    setInfoOpen(false);
+                    setDetailPanelState({
+                      speciesId: speciesKey,
+                      open: !detailOpen,
+                    });
+                  }}
+                >
+                  {detailOpen ? <X size={16} aria-hidden="true" /> : <ListFilter size={16} aria-hidden="true" />}
+                  {detailOpen ? "Tanca" : "Detalls"}
+                </button>
               ) : null}
-            </>
-          )}
-        </div>
-      ) : null}
-    </div>
-    <div className="page-width map-bottom">
-      {mode === "prediction" && !globalMode ? (
-        <>
-          <ConditionComparison
-            expanded
-            species={species!}
-            snapshot={snapshot}
-            result={result}
-            cellId={selectedCell?.cellId}
-            cellGridSizeM={selectedCell?.gridSizeM}
-            cellBounds={selectedCell?.cellBounds}
-          />
-          {selectedCell && CellScoreHistory ? <CellScoreHistory key={`${species!.speciesId}:${selectedCell.cellId}`} speciesId={species!.speciesId} cell={selectedCell} /> : null}
-        </>
-      ) : null}
-      {globalMode && selectedCell && topSpeciesId ? (
-        <section className="map-global-top-species" aria-label="Espècies amb millors condicions al sector">
-          <div>
-            <p className="eyebrow">Espècies amb condicions favorables en aquest sector</p>
-            <ol className="map-global-species-list">
-              {selectedTopSpecies.map((item) => (
-                <li key={item.speciesId}>
-                  <i
-                    style={{ backgroundColor: getSuitabilityBand(item.score).color }}
-                    aria-hidden
-                  />
-                  <Link href={speciesMapHref(item.speciesId, { region })}>
-                    {speciesName(item.speciesId)}
-                  </Link>
-                  <strong>{item.score}<small>/100</small></strong>
-                </li>
-              ))}
-            </ol>
+            </div>
           </div>
-          <p>
-            La lectura detallada següent correspon a <strong>{speciesName(topSpeciesId)}</strong>,
-            l’espècie amb les millors condicions dins d’aquest sector.{" "}
-            <Link href={speciesMapHref(topSpeciesId, { region })} className="text-link">
-              Veure el mapa complet de {speciesName(topSpeciesId)} <ArrowUpRight size={15} />
-            </Link>
-          </p>
-          {CellScoreHistory ? <CellScoreHistory
-            key={`${topSpeciesId}:${selectedCell.cellId}`}
-            speciesId={topSpeciesId}
-            cell={selectedCell}
-          /> : null}
-        </section>
-      ) : null}
-      {info}
+          <div id={detailPanelId} className="map-detail-panel-content" hidden={!detailOpen}>
+            {!globalMode ? (
+              <>
+                {selectedCell && CellScoreHistory ? <CellScoreHistory key={`${species!.speciesId}:${selectedCell.cellId}`} speciesId={species!.speciesId} cell={selectedCell} /> : null}
+                <ConditionComparison
+                  expanded
+                  species={species!}
+                  snapshot={snapshot}
+                  result={result}
+                  cellId={selectedCell?.cellId}
+                  cellGridSizeM={selectedCell?.gridSizeM}
+                  cellBounds={selectedCell?.cellBounds}
+                />
+              </>
+            ) : null}
+            {globalMode && selectedCell && topSpeciesId ? (
+              <section className="map-global-top-species" aria-label="Espècies amb millors condicions al sector">
+                <div>
+                  <p className="eyebrow">Espècies amb condicions favorables en aquest sector</p>
+                  <ol className="map-global-species-list">
+                    {selectedTopSpecies.map((item) => (
+                      <li key={item.speciesId}>
+                        <i
+                          style={{ backgroundColor: getSuitabilityBand(item.score).color }}
+                          aria-hidden
+                        />
+                        <Link href={speciesMapHref(item.speciesId, { region })}>
+                          {speciesName(item.speciesId)}
+                        </Link>
+                        <strong>{item.score}<small>/100</small></strong>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+                <p>
+                  La lectura correspon a <strong>{speciesName(topSpeciesId)}</strong>,
+                  l’espècie amb les millors condicions dins d’aquest sector.{" "}
+                  <Link href={speciesMapHref(topSpeciesId, { region })} className="text-link">
+                    Veure el mapa complet <ArrowUpRight size={15} />
+                  </Link>
+                </p>
+                {CellScoreHistory ? <CellScoreHistory
+                  key={`${topSpeciesId}:${selectedCell.cellId}`}
+                  speciesId={topSpeciesId}
+                  cell={selectedCell}
+                /> : null}
+              </section>
+            ) : null}
+          </div>
+        </aside>
+      ) : (
+        <aside className="map-detail-panel map-info-only-footer" aria-label="Informació del mapa">
+          <div className="map-floating-card">
+            <div className="map-floating-card-label">
+              <MapIcon size={17} aria-hidden="true" />
+              <span>{regionLabels[region]}</span>
+            </div>
+            <p>Terreny adequat · consulta la guia per interpretar aquesta vista.</p>
+            <div className="map-footer-actions">
+              <button
+                type="button"
+                className="map-info-button"
+                aria-controls={mapInfoPanelId}
+                aria-expanded={infoOpen}
+                aria-label="Obre la informació del mapa"
+                onClick={() => setInfoOpen(true)}
+              >
+                <Info size={16} aria-hidden="true" />
+                Informació
+              </button>
+            </div>
+          </div>
+        </aside>
+      )}
     </div>
   </>;
 }

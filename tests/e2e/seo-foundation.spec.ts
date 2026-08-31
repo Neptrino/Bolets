@@ -148,12 +148,19 @@ test("the footer links to the current Catalonia season", async ({ page }) => {
 });
 
 test("the homepage delegates the full current-conditions query to its canonical overview", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
   const feature = page.locator('a.home-today-feature[href="/bolets-avui"]');
   await expect(feature.getByRole("heading", { name: "Condicions actuals per territori" })).toBeVisible();
   await expect(feature).toContainText("On trobar bolets avui");
   await expect(page.getByRole("heading", { name: "On trobar bolets avui i aquesta setmana?" })).toHaveCount(0);
+  const heroGap = await page.evaluate(() => {
+    const hero = document.querySelector(".hero")?.getBoundingClientRect();
+    const currentConditions = document.querySelector(".home-today-feature")?.getBoundingClientRect();
+    return hero && currentConditions ? currentConditions.top - hero.bottom : 0;
+  });
+  expect(heroGap).toBeGreaterThanOrEqual(15);
 });
 
 test("internal navigation exposes no legacy catalogue link", async ({ page }) => {
@@ -169,6 +176,7 @@ test("curated species maps expose canonical quick links without widening mobile 
 
   expect(response?.status()).toBe(200);
   await expect(page).toHaveTitle(/Mapa del rovelló a Catalunya: condicions avui/);
+  await page.locator(".map-page-panel-toggle").click();
   const quickLinks = page.getByRole("navigation", { name: "Mapes ràpids per espècie" });
   await expect(quickLinks.getByRole("link")).toHaveCount(speciesMapPages.length);
   await expect(quickLinks.getByRole("link", { name: "Rovelló", exact: true })).toHaveAttribute("aria-current", "page");

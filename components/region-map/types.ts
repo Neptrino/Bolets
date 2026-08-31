@@ -14,6 +14,11 @@ export type PredictionCellDetailState = {
   gridSizeM?: SpatialGridSizeM;
 };
 
+export type PredictionViewportStatus = {
+  title: string;
+  detail: string;
+} | null;
+
 export type RegionMapProps = {
   activeRegions?: RegionId[];
   autoGeolocate?: boolean;
@@ -45,4 +50,5 @@ export type RegionMapProps = {
     },
   ) => void;
   onCellDetailStateChange?: (state: PredictionCellDetailState) => void;
+  onViewportStatusChange?: (status: PredictionViewportStatus) => void;
 };

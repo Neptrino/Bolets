@@ -1,7 +1,13 @@
 import { getSpecies } from "@/data/species";
 import { jsonResponse } from "@/src/lib/json-response";
+import { predictionModelVersion } from "@/src/lib/model-versions";
+import {
+  developmentForecastSimulation,
+  developmentTimelineSimulation,
+} from "@/src/lib/prediction-forecast-simulation";
 import { getPredictionCellHistory } from "@/src/lib/predictions";
 import { predictionCellHistoryRequestSchema } from "@/src/lib/prediction-history";
+import { calculateSuitability, missingModelFields } from "@/src/lib/scoring";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -20,12 +26,56 @@ export async function POST(request: Request) {
     return Response.json({ error: "Current fruiting predictions are not available for this species" }, { status: 422 });
   }
 
+  const developmentTimeline = () => {
+    const observedAt = new Date().toISOString();
+    const unavailableFields = missingModelFields(species, parsed.data.values);
+    const result = calculateSuitability(species, {
+      regionId: parsed.data.regionId,
+      observedAt,
+      source: ["Simulació local · dades fictícies"],
+      confidence: "unknown",
+      stale: false,
+      unavailableFields,
+      values: parsed.data.values,
+    });
+    if (result.score === null) return null;
+    return developmentTimelineSimulation(
+      {
+        observedAt,
+        score: result.score,
+        fruitingConditionsScore: result.fruitingConditionsScore,
+        opportunityIndex: result.opportunityIndex,
+      },
+      predictionModelVersion(species.modelConfig.version),
+      `${parsed.data.speciesId}:${parsed.data.cellId}`,
+      { generatedAt: observedAt },
+    );
+  };
+
   try {
-    const timeline = await getPredictionCellHistory(parsed.data.speciesId, parsed.data);
-    return jsonResponse(request, timeline, {
-      headers: { "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=600" },
+    const history = await getPredictionCellHistory(parsed.data.speciesId, parsed.data);
+    const { simulated, timeline } = developmentForecastSimulation(
+      history,
+      `${parsed.data.speciesId}:${parsed.data.cellId}`,
+    );
+    const localTimeline = !simulated && timeline.observed.length === 0
+      ? developmentTimeline()
+      : null;
+    const responseTimeline = localTimeline?.timeline ?? timeline;
+    return jsonResponse(request, responseTimeline, {
+      headers: {
+        "Cache-Control": simulated || localTimeline?.simulated
+          ? "no-store"
+          : "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
+      },
     });
   } catch (error) {
+    const localTimeline = developmentTimeline();
+    if (localTimeline?.simulated) {
+      return jsonResponse(request, localTimeline.timeline, {
+        headers: { "Cache-Control": "no-store" },
+      });
+    }
     console.error("Unable to calculate prediction history", error);
     return Response.json({ error: "Prediction history is temporarily unavailable" }, { status: 503 });
   }

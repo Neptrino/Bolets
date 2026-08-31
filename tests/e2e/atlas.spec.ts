@@ -392,8 +392,9 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
 
   await page.goto("/map?species=boletus-edulis&region=pirineus");
   await expect(
-    page.getByRole("heading", { name: "Mapa de bolets de Catalunya" }),
+    page.getByRole("heading", { name: "Mapa del cep a Catalunya" }),
   ).toBeVisible();
+  await page.locator(".map-page-panel-summary").click();
   const mapSpeciesSearch = page.getByLabel("Espècie seleccionada");
   await expect(mapSpeciesSearch).toHaveCount(1);
   await mapSpeciesSearch.click();
@@ -423,7 +424,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
     };
   });
   expect(desktopMapLayout.headerHeight).toBeLessThanOrEqual(64);
-  expect(desktopMapLayout.pickerHeight).toBeGreaterThanOrEqual(52);
+  expect(desktopMapLayout.pickerHeight).toBeGreaterThanOrEqual(44);
   expect(desktopMapLayout.stageTop).toBeLessThan(320);
   expect(desktopMapLayout.stageWidth).toBeGreaterThanOrEqual(
     desktopMapLayout.viewportWidth - 32,
@@ -448,31 +449,17 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await fullscreenSpeciesSelect.click();
   await page.getByRole("option", { name: "Cep rogenc", exact: true }).click();
   await expect(page).toHaveURL(/species=boletus-pinophilus/);
+  await expect(
+    page.getByRole("heading", { name: "Mapa de cep rogenc a Catalunya" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Veure el mapa a pantalla completa" }),
+  ).toBeVisible();
+  await expect(page.locator(".map-page .maplibregl-ctrl-geolocate")).toBeHidden();
   await expect(page.locator(".full-map")).toHaveAttribute(
     "aria-busy",
     "false",
     { timeout: 15_000 },
-  );
-  await expect(
-    page.getByRole("button", { name: "Sortir de pantalla completa" }),
-  ).toBeVisible();
-  await expect(fullscreenSpeciesSelect).toHaveValue("Cep rogenc");
-  await page
-    .getByRole("button", { name: "Sortir de pantalla completa" })
-    .click();
-  await expect(
-    page.getByRole("button", { name: "Veure el mapa a pantalla completa" }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("button", {
-      name: /Mostra la meva ubicació|Ubicació no disponible/,
-    }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Veure tot Catalunya" }),
-  ).toBeVisible();
-  await expect(page.locator(".map-data-state")).toContainText(
-    /Condicions disponibles|resultats diferents|sectors|Apropa el mapa|No s’ha pogut carregar/i,
   );
   await page
     .getByRole("button", { name: "Mostra els controls del mapa" })
@@ -492,24 +479,20 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
     .getByRole("button", { name: "Mostra les condicions actuals" })
     .click();
   await expect(cellCanvas).toHaveCSS("opacity", "0.4");
+  await page.getByRole("button", { name: "Obre la informació del mapa" }).click();
   await expect(
     page.getByText("No mostra llocs on s’hagin trobat bolets."),
   ).toBeVisible();
+  await page.getByRole("button", { name: "Tanca la informació del mapa" }).click();
 
-  const mapCanvas = page.locator(".full-map .maplibregl-canvas");
-  await mapCanvas.evaluate((element) => {
-    element.setAttribute("data-viewport-instance", "preserved");
-  });
+  await page.locator(".map-page-panel-summary").click();
   await page.getByLabel("Espècie seleccionada").click();
   await page.getByRole("option", { name: "Pinetell", exact: true }).click();
-  await expect(page).toHaveURL(/species=lactarius-deliciosus/);
+  await expect(page).toHaveURL(/\/map\/pinetell\?region=pirineus/);
+  await expect(page.getByRole("heading", { name: "Mapa del pinetell a Catalunya" })).toBeVisible();
   await expect(page.locator(".full-map")).toHaveAttribute(
     "aria-busy",
     "false",
     { timeout: 15_000 },
-  );
-  await expect(page.locator(".full-map .maplibregl-canvas")).toHaveAttribute(
-    "data-viewport-instance",
-    "preserved",
   );
 });

@@ -41,6 +41,7 @@ export function RegionMapView({
   selectedBasemapId,
   selectedRegion,
   showCompatibility,
+  showDataStatus,
   showReadyStatus,
   speciesId,
   statusCopy,
@@ -78,6 +79,7 @@ export function RegionMapView({
   selectedBasemapId: BasemapId;
   selectedRegion?: RegionId;
   showCompatibility: boolean;
+  showDataStatus: boolean;
   showReadyStatus: boolean;
   speciesId?: string;
   statusCopy: MapStatusCopy;
@@ -116,7 +118,7 @@ export function RegionMapView({
           aria-hidden
         />
       ) : null}
-      <RegionMapDataStatus
+      {showDataStatus ? <RegionMapDataStatus
         cellState={cellState}
         compactLegend={compactLegend}
         habitat={habitat}
@@ -124,7 +126,7 @@ export function RegionMapView({
         showReadyStatus={showReadyStatus}
         speciesId={speciesId}
         statusCopy={statusCopy}
-      />
+      /> : null}
       {interactive ? (
         <RegionMapLayerControls
           basemapChoiceName={basemapChoiceName}

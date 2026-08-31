@@ -8,7 +8,6 @@ import {
 } from "maplibre-gl";
 import { createRegionMap } from "@/components/region-map/map-instance";
 import { drawPredictionSurface } from "@/components/region-map/prediction-surface";
-import { habitatEvidenceCopy, mapStatusCopy } from "@/components/region-map/status";
 import {
   basemapStyle,
   cataloniaBounds,
@@ -32,6 +31,7 @@ import {
 import type { RegionMapProps } from "@/components/region-map/types";
 import { useRegionBasemap } from "@/components/region-map/use-basemap";
 import { useCollapsibleMapControls } from "@/components/region-map/use-collapsible-controls";
+import { useRegionMapStatus } from "@/components/region-map/use-viewport-status";
 import { RegionMapView } from "@/components/region-map/view";
 import { fetchJsonWithRetry } from "@/src/lib/fetch-json";
 import {
@@ -71,7 +71,7 @@ import type {
   SpatialGridSizeM,
 } from "@/src/lib/types";
 
-export type { PredictionCellDetailState } from "@/components/region-map/types";
+export type { PredictionCellDetailState, PredictionViewportStatus } from "@/components/region-map/types";
 
 export function RegionMap({
   activeRegions = [],
@@ -96,6 +96,7 @@ export function RegionMap({
   onGeolocationSuccess,
   onCellSelect,
   onCellDetailStateChange,
+  onViewportStatusChange,
 }: RegionMapProps) {
   const showCompatibility = habitat || mode === "compatibility";
   const globalPrediction = speciesId === GLOBAL_SPECIES_ID;
@@ -946,12 +947,9 @@ export function RegionMap({
     onCellDetailStateChange,
   ]);
 
-  const evidenceCopy = habitatEvidenceCopy(habitatEvidenceState);
-  const statusCopy = mapStatusCopy({
-    cellState,
-    globalPrediction,
-    showCompatibility,
-  });
+  const { evidenceCopy, statusCopy } = useRegionMapStatus({ cellState,
+    globalPrediction, habitat, habitatEvidenceState, onViewportStatusChange,
+    showCompatibility, showReadyStatus, speciesId });
 
   return (
     <RegionMapView
@@ -990,6 +988,7 @@ export function RegionMap({
       selectedBasemapId={selectedBasemapId}
       selectedRegion={selectedRegion}
       showCompatibility={showCompatibility}
+      showDataStatus={!onViewportStatusChange}
       showReadyStatus={showReadyStatus}
       speciesId={speciesId}
       statusCopy={statusCopy}

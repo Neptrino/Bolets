@@ -155,7 +155,7 @@
   /* Keep the transition from the system overview to its guide links compact. */
   .home-intro { padding-bottom: 2rem; }
   .home-search-guides { margin-top: 0; }
-  .home-today-feature { grid-template-columns: 1fr; gap: 1.15rem; min-height: 0; margin-top: -1.8rem; padding: 1.35rem; }
+  .home-today-feature { grid-template-columns: 1fr; gap: 1.15rem; min-height: 0; margin-top: 1rem; padding: 1.35rem; }
   .home-today-kicker,
   .home-today-facts,
   .home-today-action { grid-column: 1; grid-row: auto; }

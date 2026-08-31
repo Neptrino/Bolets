@@ -1,5 +1,6 @@
 "use client";
 
+import { CloudSun, Mountain, type LucideIcon } from "lucide-react";
 import { useId, useOptimistic, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { MapViewMode } from "@/src/lib/types";
@@ -8,9 +9,10 @@ const mapModeOptions: Array<{
   value: MapViewMode;
   label: string;
   shortLabel: string;
+  icon: LucideIcon;
 }> = [
-  { value: "prediction", label: "Condicions actuals", shortLabel: "Condicions" },
-  { value: "compatibility", label: "Terreny adequat", shortLabel: "Terreny" },
+  { value: "prediction", label: "Condicions actuals", shortLabel: "Condicions", icon: CloudSun },
+  { value: "compatibility", label: "Terreny adequat", shortLabel: "Terreny", icon: Mountain },
 ];
 
 export function MapModeControl({
@@ -53,20 +55,21 @@ export function MapModeControl({
       <div className="map-mode-options">
         {mapModeOptions
           .filter((option) => predictionAvailable || option.value !== "prediction")
-          .map((option) => (
-          <label key={option.value} className="map-mode-option">
-            <input
-              type="radio"
-              name={choiceName}
-              value={option.value}
-              checked={optimisticMode === option.value}
-              disabled={isPending}
-              aria-label={option.label}
-              onChange={() => selectMode(option.value)}
-            />
-            <span aria-hidden>{option.shortLabel}</span>
-          </label>
-        ))}
+          .map((option) => {
+            const Icon = option.icon;
+            return <label key={option.value} className="map-mode-option">
+              <input
+                type="radio"
+                name={choiceName}
+                value={option.value}
+                checked={optimisticMode === option.value}
+                disabled={isPending}
+                aria-label={option.label}
+                onChange={() => selectMode(option.value)}
+              />
+              <span aria-hidden><Icon size={16} />{option.shortLabel}</span>
+            </label>;
+          })}
       </div>
     </div>
   );

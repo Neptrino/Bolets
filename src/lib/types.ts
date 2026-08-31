@@ -586,6 +586,7 @@ export interface PredictionForecastPoint {
 
 export interface PredictionCellTimeline {
   modelVersion: string;
+  simulated?: boolean;
   observed: PredictionHistoryPoint[];
   forecast: {
     generatedAt: string;
@@ -593,7 +594,8 @@ export interface PredictionCellTimeline {
     sourceResolutionM: number;
     anchor: PredictionHistoryPoint & { score: number };
     calibratedAt: string;
-    correctionMethod: "observed-anomaly-v1";
+    correctionMethod: "observed-anomaly-v1" | "development-simulation-v1";
+    simulated?: boolean;
     points: PredictionForecastPoint[];
   } | null;
 }

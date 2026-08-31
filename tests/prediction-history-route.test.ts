@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ConditionSnapshot, PredictionCellTimeline } from "@/src/lib/types";
 
 const { getPredictionCellHistory } = vi.hoisted(() => ({
@@ -19,6 +19,12 @@ const requestValues = {
   temperatureAvg7dC: 13,
   relativeHumidityAvg7d: 90,
   drySpellDays: 0,
+  rainfall7dMm: 18,
+  rainfallDays7d: 3,
+  evapotranspiration7dMm: 8,
+  rainfall14dMm: 32,
+  rainfallDays14d: 5,
+  evapotranspiration14dMm: 15,
   rainfall26dMm: 50,
   rainfallDays26d: 6,
   evapotranspiration26dMm: 22,
@@ -44,6 +50,10 @@ function request(speciesId = "boletus-edulis") {
 describe("prediction history and forecast route", () => {
   beforeEach(() => {
     getPredictionCellHistory.mockReset();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it("returns structurally separate observed and projected values with cache policy", async () => {
@@ -123,6 +133,48 @@ describe("prediction history and forecast route", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({ forecast: null });
+  });
+
+  it("simulates an uncached and labelled forecast only in local development", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    getPredictionCellHistory.mockResolvedValue({
+      modelVersion: "hydrothermal-v1-priors-2026-08+hydrothermal-v1",
+      observed: [{
+        observedAt: "2026-10-10T12:00:00Z",
+        score: 38,
+        fruitingConditionsScore: 64,
+        opportunityIndex: 38,
+      }],
+      forecast: null,
+    });
+
+    const response = await POST(request());
+    const body = await response.json() as PredictionCellTimeline;
+
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(body.forecast).toMatchObject({
+      simulated: true,
+      correctionMethod: "development-simulation-v1",
+      source: ["Simulació local · dades fictícies"],
+    });
+    expect(body.forecast?.points).toHaveLength(5);
+  });
+
+  it("simulates the full timeline when local history storage has no cell", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    getPredictionCellHistory.mockRejectedValue(
+      new Error("Spatial environment history returned 404"),
+    );
+
+    const response = await POST(request());
+    const body = await response.json() as PredictionCellTimeline;
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(body.simulated).toBe(true);
+    expect(body.observed).toHaveLength(7);
+    expect(body.forecast?.simulated).toBe(true);
+    expect(body.forecast?.points).toHaveLength(5);
   });
 
   it("rejects invalid and habitat-only requests", async () => {

@@ -4,10 +4,15 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import ComparisonLandingPage from "@/app/compare/[slug]/page";
 import { generateMetadata as generateSpeciesMetadata } from "@/app/bolets/[slug]/page";
+import { metadata as mapMetadata } from "@/app/map/page";
 import { buildSitemap } from "@/app/sitemap";
 import { SiteFooter } from "@/components/site-footer";
 import { getEditorialMetadata } from "@/data/editorial";
 import { getSpecies } from "@/data/species";
+import {
+  MAP_PREDICTION_DESCRIPTION,
+  MAP_PREDICTION_TITLE,
+} from "@/src/lib/map-seo";
 
 describe("SEO query ownership", () => {
   it("lets the current overview own the full current-intent heading", () => {
@@ -17,6 +22,18 @@ describe("SEO query ownership", () => {
     expect(homepage).toContain("On trobar bolets avui <ArrowUpRight");
     expect(homepage).toContain('href="/bolets-avui"');
     expect(homepage).not.toContain("On trobar bolets avui i aquesta setmana?");
+  });
+
+  it("lets the map own prediction searches without changing its visible heading", () => {
+    const mapPage = readFileSync("app/map/map-page-content.tsx", "utf8");
+
+    expect(mapMetadata.title).toBe(MAP_PREDICTION_TITLE);
+    expect(mapMetadata.description).toBe(MAP_PREDICTION_DESCRIPTION);
+    expect(MAP_PREDICTION_DESCRIPTION.length).toBeLessThanOrEqual(155);
+    expect(mapMetadata.alternates?.canonical).toBe("/map");
+    expect(mapMetadata.openGraph?.title).toBe(MAP_PREDICTION_TITLE);
+    expect(mapPage).toContain(': "Mapa de bolets de Catalunya");');
+    expect(mapPage).toContain("keywords: MAP_PREDICTION_KEYWORDS");
   });
 
   it("publishes exact, bounded metadata for the three head-term species owners", async () => {

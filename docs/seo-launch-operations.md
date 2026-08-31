@@ -24,7 +24,7 @@ The connected Search Console feed in SE Ranking exposes query signals but does n
 | --- | --- |
 | `bolets Catalunya`, `bolets de Catalunya` | `https://bolets.app/` |
 | `on trobar bolets avui`, `on trobar bolets aquesta setmana` | `https://bolets.app/bolets-avui` |
-| `mapa bolets Catalunya`, `mapa bolets avui` | `https://bolets.app/map` |
+| `mapa bolets Catalunya`, `mapa bolets avui`, `predicció de bolets`, `mapa de predicció de bolets` | `https://bolets.app/map` |
 | `temporada de bolets Catalunya` | `https://bolets.app/temporada` |
 | `bolets al setembre` and equivalent month queries | The matching `/temporada/{mes}` page |
 | Singular species names and scientific taxa | The matching `/bolets/{speciesId}` profile |
@@ -68,7 +68,7 @@ Target-URL mappings are monitoring expectations, not directives that force Googl
 - Apply the target URLs in the query-ownership table.
 - Keep the Spanish engine secondary; do not infer a need for translated content from it.
 
-Track the existing keyword set, including `bolets`, `bolets de Catalunya`, `tipus de bolets`, `bolets comestibles`, `bolets verinosos`, `on trobar bolets avui`, `mapa bolets Catalunya`, `temporada de bolets Catalunya`, `rovellons`, `camagrocs`, `ceps bolets`, `fredolics`, and the priority species and local variants already configured.
+Track the existing keyword set, including `bolets`, `bolets de Catalunya`, `tipus de bolets`, `bolets comestibles`, `bolets verinosos`, `on trobar bolets avui`, `mapa bolets Catalunya`, `predicció de bolets`, `mapa de predicció de bolets`, `temporada de bolets Catalunya`, `rovellons`, `camagrocs`, `ceps bolets`, `fredolics`, and the priority species and local variants already configured.
 
 ## Measurement schedule
 
