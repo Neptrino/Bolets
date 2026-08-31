@@ -190,6 +190,18 @@ export default async function SpeciesPage({
                 },
               ],
             },
+            ...(species.seo?.faqs?.length ? [{
+              "@type": "FAQPage",
+              "@id": `${canonicalUrl}#preguntes`,
+              mainEntity: species.seo.faqs.map((faq) => ({
+                "@type": "Question",
+                name: faq.question,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: faq.answer,
+                },
+              })),
+            }] : []),
           ],
         }}
       />

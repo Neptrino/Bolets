@@ -5,7 +5,7 @@ import WoodFungiPage, { metadata as woodMetadata } from "@/app/bolets-de-soca/pa
 import FalseChanterellePage, { metadata as falseMetadata } from "@/app/fals-rossinyol/page";
 import CollectingPage, { metadata as collectingMetadata } from "@/app/normativa-bolets/page";
 import EditorialTeamPage from "@/app/equip-editorial/page";
-import sitemap from "@/app/sitemap";
+import { buildSitemap as sitemap } from "@/app/sitemap";
 import { editorialArticleFields, getEditorialMetadata, publicEditorialItems } from "@/data/editorial";
 import { speciesGalleryMedia } from "@/data/species-gallery-media";
 import { getSpecies, speciesProfiles } from "@/data/species";

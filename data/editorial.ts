@@ -52,6 +52,30 @@ export const officialSafetySource: SourceReference = {
   confidence: "high",
 };
 
+export const mushroomPreservationSources: SourceReference[] = [
+  {
+    id: "acsa-conservar-bolets",
+    title: "Conservar bolets",
+    publisher: "Agència Catalana de Seguretat Alimentària",
+    url: "https://acsa.gencat.cat/web/.content/_Publicacions/Receptes/malbaratament/receptes-malbaratament-pdf/Conservar-bolets.pdf",
+    confidence: "high",
+  },
+  {
+    id: "acsa-congelacio",
+    title: "Congela amb seguretat",
+    publisher: "Agència Catalana de Seguretat Alimentària",
+    url: "https://acsa.gencat.cat/ca/detall/article/Congelacio",
+    confidence: "high",
+  },
+  {
+    id: "acsa-descongelacio",
+    title: "Descongeles els aliments de manera segura?",
+    publisher: "Agència Catalana de Seguretat Alimentària",
+    url: "https://acsa.gencat.cat/ca/detall/article/descongelacio-00002",
+    confidence: "high",
+  },
+];
+
 export const coreEditorialSources: SourceReference[] = [
   officialSafetySource,
   {
@@ -137,10 +161,10 @@ const defaultMetadata: EditorialMetadata = {
 
 const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "zones-rovellons": {
-    updatedAt: "2026-08-28",
+    updatedAt: "2026-08-31",
   },
   "zones-ceps": {
-    updatedAt: "2026-08-28",
+    updatedAt: "2026-08-31",
   },
   "preguntes-frequents-bolets": {
     publishedAt: "2026-08-27",
@@ -163,31 +187,43 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-08-27",
   },
   "bolets": {
-    updatedAt: "2026-08-27",
+    updatedAt: "2026-08-31",
   },
   "equip-editorial": {
     updatedAt: "2026-08-27",
   },
   "bolets-comestibles": {
-    updatedAt: "2026-08-26",
+    updatedAt: "2026-08-31",
   },
   "bolets-verinosos": {
     updatedAt: "2026-08-26",
   },
   "bolets-de-primavera": {
-    updatedAt: "2026-08-21",
+    updatedAt: "2026-08-31",
   },
   "bolets-d-estiu": {
-    updatedAt: "2026-08-21",
+    updatedAt: "2026-08-31",
   },
   "bolets-de-tardor": {
-    updatedAt: "2026-08-21",
+    updatedAt: "2026-08-31",
   },
   "bolets-d-hivern": {
-    updatedAt: "2026-08-21",
+    updatedAt: "2026-08-31",
+  },
+  "temporada": {
+    updatedAt: "2026-08-31",
   },
   "bolets-avui": {
-    updatedAt: "2026-08-14",
+    updatedAt: "2026-08-31",
+  },
+  "species:craterellus-lutescens": { updatedAt: "2026-08-31" },
+  "species:macrolepiota-procera": { updatedAt: "2026-08-31" },
+  "species:tricholoma-terreum": { updatedAt: "2026-08-31" },
+  "species:hygrophorus-latitabundus": { updatedAt: "2026-08-31" },
+  "species:hygrophorus-russula": { updatedAt: "2026-08-31" },
+  "conservar-bolets": {
+    publishedAt: "2026-08-31",
+    updatedAt: "2026-08-31",
   },
   "quan-surten-els-bolets-despres-de-ploure": {
     updatedAt: "2026-08-14",
@@ -230,6 +266,7 @@ export const publicEditorialItems = [
   "bolets-verinosos",
   "temporada",
   "bolets-avui",
+  "conservar-bolets",
   "bolets-de-primavera",
   "bolets-d-estiu",
   "bolets-de-tardor",

@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import EdibleMushroomsPage, { metadata as edibleMetadata } from "@/app/bolets-comestibles/page";
 import PoisonousMushroomsPage, { metadata as poisonousMetadata } from "@/app/bolets-verinosos/page";
-import sitemap from "@/app/sitemap";
+import { buildSitemap as sitemap } from "@/app/sitemap";
 import { getEditorialMetadata } from "@/data/editorial";
 
 describe("edible and poisonous search-intent hubs", () => {
@@ -12,13 +12,13 @@ describe("edible and poisonous search-intent hubs", () => {
 
     expect(html).toContain("Com triar entre els tipus de bolets comestibles");
     expect(html).toContain("comestibles amb condicions concretes");
-    for (const href of ["/zones/ceps", "/zones/rovellons", "/temporada", "/bolets-avui", "/map"]) {
+    for (const href of ["/zones/ceps", "/zones/rovellons", "/temporada", "/bolets-avui", "/map", "/conservar-bolets"]) {
       expect(html).toContain(`href="${href}"`);
     }
     expect(edibleMetadata.alternates?.canonical).toBe("/bolets-comestibles");
-    expect(getEditorialMetadata("bolets-comestibles").updatedAt).toBe("2026-08-26");
+    expect(getEditorialMetadata("bolets-comestibles").updatedAt).toBe("2026-08-31");
     expect(sitemap().find((entry) => entry.url.endsWith("/bolets-comestibles"))?.lastModified)
-      .toEqual(new Date("2026-08-26T00:00:00+02:00"));
+      .toEqual(new Date("2026-08-31T00:00:00+02:00"));
   });
 
   it("distinguishes toxic mushrooms from the wider non-edible category", () => {

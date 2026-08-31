@@ -477,6 +477,21 @@ speciesProfiles.push(
   }),
   profile({
     speciesId: "craterellus-lutescens",
+    seo: {
+      title: "Camagroc: identificació, confusions i temporada",
+      description: "Guia del camagroc (Craterellus lutescens): peu groc i buit, hàbitat, temporada, comestibilitat i confusions que cal revisar.",
+      keywords: ["camagrocs", "camagroc verinós", "camagroc tòxic"],
+      faqs: [
+        {
+          question: "El camagroc és verinós?",
+          answer: "El perfil de Craterellus lutescens el classifica com a comestible excel·lent, però això no valida cap exemplar collit. Cal confirmar el peu groc i buit, la cara inferior gairebé llisa o amb plecs molt discrets i el barret embudat, i revisar els bolets un per un perquè en una mateixa collita es poden barrejar espècies diferents.",
+        },
+        {
+          question: "Amb què es pot confondre el camagroc?",
+          answer: "Es pot confondre amb altres Craterellus, com el fals camagroc o la trompeta de la mort. El color, el bosc o una fotografia no són suficients: s’han de comprovar la cara inferior, si el peu és buit i la forma completa de cada exemplar abans de considerar-ne el consum.",
+        },
+      ],
+    },
     identity: { commonName: "Camagroc", alternateNames: ["rossinyolic", "trompeta groga"], scientificName: "Craterellus lutescens", family: "Cantharellaceae", genus: "Craterellus", edibility: "excellent_edible", identificationDifficulty: "Mitjana", typicalSize: "3–10 cm d’alçada", shortDescription: "Bolet esvelt de peu groc i barret gris bru, molt habitual en pinedes humides." },
     morphology: { cap: "Petit, embudat, gris bru i ondulat.", hymenium: "Cara inferior llisa o amb plecs molt discrets, grisenca.", stem: "Buit, groc viu, esvelt.", flesh: "Fina i flexible.", colour: "Groc, gris i bru.", smell: "Agradable, suau.", texture: "Elàstica.", typicalAppearance: "Trompeta petita amb peu groc cridaner.", keyFeatures: ["Peu buit i groc", "Himeni gairebé llis", "Barret embudat"], variation: "La sequera redueix molt la mida; amb humitat creix en grups nombrosos." },
     similarSpecies: [{ scientificName: "Craterellus tubaeformis", commonName: "Fals camagroc", mainDifferences: "Té plecs més marcats i peu menys groc.", edibility: "edible", toxicity: "Sense toxicitat coneguda." }, { scientificName: "Craterellus cornucopioides", commonName: "Trompeta de la mort", mainDifferences: "Més fosca, sense peu groc viu.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda." }],
@@ -501,6 +516,21 @@ speciesProfiles.push(
   }),
   profile({
     speciesId: "macrolepiota-procera",
+    seo: {
+      title: "Apagallums: identificació i confusions tòxiques",
+      description: "Guia de l’apagallums (Macrolepiota procera): anell mòbil, peu amb dibuix, temporada i diferències amb lepiotes tòxiques.",
+      keywords: ["apagallums tòxic", "apagallums confusions", "bolet apagallums"],
+      faqs: [
+        {
+          question: "L’apagallums és tòxic?",
+          answer: "Macrolepiota procera es considera comestible quan està completament desenvolupada i identificada amb certesa. El risc és confondre-la amb altres espècies: algunes lepiotes petites poden ser potencialment mortals i Chlorophyllum molybdites és tòxic. No consumeixis exemplars petits, tancats o dubtosos.",
+        },
+        {
+          question: "Quines confusions té l’apagallums?",
+          answer: "L’apagallums adult presenta un barret gran i escatós, un peu alt amb dibuix de pell de serp i un anell doble i mòbil. Les lepiotes petites no comparteixen aquesta combinació, i Chlorophyllum molybdites desenvolupa làmines verdoses. Cap tret aïllat és suficient per decidir-ne el consum.",
+        },
+      ],
+    },
     identity: { commonName: "Apagallums", alternateNames: ["paloma", "cogomella"], scientificName: "Macrolepiota procera", family: "Agaricaceae", genus: "Macrolepiota", edibility: "edible", identificationDifficulty: "Alta", typicalSize: "10–35 cm d’alçada", shortDescription: "Bolet alt amb anell mòbil i barret escatós, habitual en vores de bosc i prats." },
     morphology: { cap: "Gran, amb escates brunes sobre fons clar i umbó central.", hymenium: "Làmines blanques, lliures del peu.", stem: "Molt alt, amb dibuix de pell de serp i anell mòbil.", flesh: "Blanca, prima al barret.", colour: "Crema, bru i blanc.", smell: "Agradable, de nou.", texture: "Làmines fràgils; peu fibrós.", typicalAppearance: "Silueta d’ombrel·la sobre peu alt.", keyFeatures: ["Anell doble i mòbil", "Peu amb ziga-zaga", "Barret gran escatós"], variation: "Els exemplars joves són ovoides; la pluja pot rentar les escates." },
     similarSpecies: [{ scientificName: "Chlorophyllum molybdites", commonName: "Para-sol de làmina verdosa", mainDifferences: "Làmines que es tornen verdoses amb l’edat; pot causar intoxicacions digestives.", edibility: "toxic", toxicity: "Tòxic gastrointestinal.", warning: true }, { scientificName: "Lepiota brunneoincarnata", commonName: "Lepiota mortal", mainDifferences: "Molt més petita, sense peu llarg ni anell mòbil.", edibility: "dangerously_toxic", toxicity: "Potencialment mortal.", warning: true }],
@@ -509,6 +539,21 @@ speciesProfiles.push(
   }),
   profile({
     speciesId: "tricholoma-terreum",
+    seo: {
+      title: "Fredolic: és tòxic? Identificació i confusions",
+      description: "Guia del fredolic (Tricholoma terreum): identificació prudent, consum ocasional, temporada i diferències amb tricolomes tòxics.",
+      keywords: ["fredolic tòxic", "fredolic bord", "fredolics tòxics"],
+      faqs: [
+        {
+          question: "El fredolic és tòxic?",
+          answer: "El perfil de Tricholoma terreum el classifica com a comestible amb condicions i recomana un consum ocasional, moderat i sempre ben cuinat. El nom fredolic no converteix qualsevol tricoloma gris en comestible: abans cal descartar espècies tòxiques semblants amb una identificació experta.",
+        },
+        {
+          question: "Com es diferencia el fredolic dels fredolics tòxics?",
+          answer: "El fredolic és petit, fràgil, sense anell i té el barret gris fibril·lós. El tricoloma tigrat (Tricholoma pardinum) sol ser més gros i mostra escates més contrastades, però la mida o el color no basten. Si un exemplar no coincideix en tots els trets, no ha d’entrar al cistell de consum.",
+        },
+      ],
+    },
     identity: { commonName: "Fredolic", alternateNames: ["negrilla", "bolet de pi"], scientificName: "Tricholoma terreum", family: "Tricholomataceae", genus: "Tricholoma", edibility: "edible_with_conditions", identificationDifficulty: "Alta", typicalSize: "Barret de 3–8 cm", shortDescription: "Bolet gris de pineda, fràgil i freqüent en tardors fresques." },
     morphology: { cap: "Gris, fibril·lós o lleugerament escatós, amb umbó discret.", hymenium: "Làmines blanques a gris pàl·lid, força espaiades.", stem: "Prim, blanquinós, sense anell.", flesh: "Prima, blanca-grisenca.", colour: "Gris, blanc i argentat.", smell: "Suau, farinós en alguns exemplars.", texture: "Fràgil.", typicalAppearance: "Petit tricoloma gris sota pins.", keyFeatures: ["Sense anell", "Barret fibril·lós gris", "Pineda"], variation: "La humitat enfosqueix el barret; l’edat el fa més estès." },
     similarSpecies: [{ scientificName: "Tricholoma pardinum", commonName: "Tricoloma tigrat", mainDifferences: "Més gran, escates contrastades i olor farinosa; és tòxic.", edibility: "toxic", toxicity: "Tòxic gastrointestinal greu.", warning: true }, { scientificName: "Tricholoma portentosum", commonName: "Fredolic gros", mainDifferences: "Més robust, viscoset amb humitat i amb tons grocs al peu.", edibility: "edible", toxicity: "Sense toxicitat coneguda." }],
@@ -517,6 +562,21 @@ speciesProfiles.push(
   }),
   profile({
     speciesId: "hygrophorus-latitabundus",
+    seo: {
+      title: "Llenega negra: identificació, hàbitat i temporada",
+      description: "Guia de la llenega negra (Hygrophorus latitabundus): barret viscós, pinedes calcàries, temporada, cuina i espècies semblants.",
+      keywords: ["llenega negra", "llenegues", "mocosa negra"],
+      faqs: [
+        {
+          question: "Llenega i llenega negra són el mateix bolet?",
+          answer: "En aquesta fitxa, llenega i llenega negra designen Hygrophorus latitabundus, també coneguda com a mocosa negra. És un bolet robust i molt viscós de pinedes, especialment sobre sòls calcaris; el nom popular per si sol no és suficient per identificar un exemplar.",
+        },
+        {
+          question: "Cal pelar la llenega negra abans de cuinar-la?",
+          answer: "La guia de Canal Aliments indica que la pell viscosa del barret pot resultar amarga o indigesta i que es pot retirar, juntament amb el moc del peu. Aquesta preparació no corregeix una identificació dubtosa: primer cal confirmar l’espècie i després cuinar-la completament.",
+        },
+      ],
+    },
     identity: { commonName: "Llenega", alternateNames: ["llenega negra"], scientificName: "Hygrophorus latitabundus", family: "Hygrophoraceae", genus: "Hygrophorus", edibility: "edible", identificationDifficulty: "Mitjana", typicalSize: "Barret de 5–15 cm", shortDescription: "Bolet gran i viscoset de pinedes calcàries, de barret bru grisós i peu clar." },
     morphology: { cap: "Gris-brun, molt viscós amb humitat, convex a estès.", hymenium: "Làmines blanques, gruixudes i decurrents.", stem: "Clar, robust, sovint amb zona mucosa.", flesh: "Blanca, ferma.", colour: "Gris bru, blanc i crema.", smell: "Suau.", texture: "Viscosa, sobretot amb pluja.", typicalAppearance: "Bolet robust i enganxós en pinedes calcàries.", keyFeatures: ["Mucositat abundant", "Làmines gruixudes decurrents", "Associació amb pins i calcària"], variation: "En secor perd la mucositat i pot semblar més apagada." },
     similarSpecies: [{ scientificName: "Hygrophorus persoonii", commonName: "Mocosa de surera", mainDifferences: "Més associada a alzinars o suredes i amb tonalitats diferents.", edibility: "edible", toxicity: "Sense toxicitat coneguda." }],
@@ -549,9 +609,24 @@ speciesProfiles.push(
   }),
   profile({
     speciesId: "hygrophorus-russula",
+    seo: {
+      title: "Carlet: identificació i confusions tòxiques",
+      description: "Guia del carlet (Hygrophorus russula): taques vinoses, làmines ceroses, temporada i diferències amb el carner bord tòxic.",
+      keywords: ["carlets", "carlet bolet", "carlet confusions"],
+      faqs: [
+        {
+          question: "El carlet és comestible?",
+          answer: "Hygrophorus russula es considera comestible, però el nom carlet o el color rosat no identifiquen un exemplar. Cal comprovar la carn compacta, les taques vinoses i les làmines gruixudes i ceroses, i descartar qualsevol bolet que no coincideixi en tots els trets.",
+        },
+        {
+          question: "Com es diferencia el carlet del carner bord tòxic?",
+          answer: "El carlet mostra taques vinós-rosades i làmines gruixudes, ceroses i clares. El carner bord (Entoloma sinuatum) té làmines més fines que maduren cap al rosa salmó i una esporada rosada. Comparar una sola fotografia no és suficient per prendre una decisió de consum.",
+        },
+      ],
+    },
     identity: { commonName: "Carlet", alternateNames: ["escarlet", "carlet vermell"], scientificName: "Hygrophorus russula", family: "Hygrophoraceae", genus: "Hygrophorus", edibility: "edible", identificationDifficulty: "Mitjana", typicalSize: "Barret de 5–15 cm", shortDescription: "Higròfor robust de tons blancs i rosats vinosos, tardorenc i associat sobretot a alzinars i rouredes." },
     morphology: { cap: "Convex, després aplanat; blanc crema tacat irregularment de rosa, vi o porpra, lleugerament viscós amb humitat.", hymenium: "Làmines blanques a crema amb taques rosades, gruixudes, espaiades i d’adnates a lleugerament decurrents.", stem: "Massís, blanc, sovint amb taques o fibril·les vinoses, sense anell.", flesh: "Blanca, compacta i de vegades lleugerament rosada sota la cutícula.", colour: "Blanc crema, rosa i vermell vinós.", smell: "Suau, poc distintiva.", texture: "Molt carnosa i compacta.", typicalAppearance: "Bolet robust i jaspiat de vinós entre la fullaraca d’alzina o roure.", keyFeatures: ["Taques vinós-rosades irregulars", "Làmines gruixudes i ceroses", "Carn i peu massissos"], variation: "La intensitat del rosa varia molt; exemplars secs o vells poden quedar més pàl·lids o brunencs." },
-    similarSpecies: [{ scientificName: "Hygrophorus erubescens", commonName: "Higròfor enrogent", mainDifferences: "Més esvelt, menys massís i habitualment associat a coníferes; pot tenir gust amarg.", edibility: "not_recommended", toxicity: "No recomanat sense una identificació segura." }, { scientificName: "Russula persicina", commonName: "Cualbra rosada", mainDifferences: "Carn i làmines fràgils que es trenquen netament; no té la textura cerosa dels higròfors.", edibility: "not_recommended", toxicity: "Pot resultar acre i causar molèsties digestives." }],
+    similarSpecies: [{ scientificName: "Hygrophorus erubescens", commonName: "Higròfor enrogent", mainDifferences: "Més esvelt, menys massís i habitualment associat a coníferes; pot tenir gust amarg.", edibility: "not_recommended", toxicity: "No recomanat sense una identificació segura." }, { scientificName: "Russula persicina", commonName: "Cualbra rosada", mainDifferences: "Carn i làmines fràgils que es trenquen netament; no té la textura cerosa dels higròfors.", edibility: "not_recommended", toxicity: "Pot resultar acre i causar molèsties digestives." }, { scientificName: "Entoloma sinuatum", commonName: "Carner bord", mainDifferences: "Làmines més fines i sinuades que passen de crema a rosa salmó; no presenta les taques vinoses ni la textura cerosa del carlet.", edibility: "toxic", toxicity: "Pot provocar una intoxicació gastrointestinal greu.", warning: true }],
     ecologicalConfig: { habitat: { forestTypes: ["Alzinars", "rouredes mediterrànies", "boscos de planifolis"], treeAssociations: ["Quercus ilex", "Quercus pubescens", "Quercus faginea"], hosts: ["Quercus"], soilPreference: "Neutre a calcari", substrate: "Sòl de planifolis sovint calcari", moisture: "Fresca després de pluges de tardor", altitude: [50, 1400], slope: "Variable", aspect: "Obagues i vessants protegits", shade: "Mitjana", landscapePosition: "Alzinars i rouredes madures amb fullaraca" }, soil: { texture: "Franca a argilosa", reaction: "Neutra a alcalina", phRange: [6, 8.2], substrate: "Sovint calcari", organicMatter: "Moderada", drainage: "Bo a moderat", waterRetention: "Mitjana", depth: "Mitjana", humus: "Mull de planifolis", evidence: "limited" }, climate: { temperatureRange: [8, 18], nightPreference: "Fresca", relativeHumidity: "Moderada a alta", soilMoisture: "Mitjana a alta", rainfall: "Pluges sostingudes de tardor", drought: "Desfavorable", heat: "Desfavorable durant la fructificació", frost: "Les gelades fortes tanquen la temporada", wind: "El vent sec és desfavorable", snow: "No rellevant" }, rainfall: { preferredAccumulation: "Rehidratació sostinguda de la fullaraca i del sòl", fruitingDelay: "Dies a setmanes segons la temperatura del sòl", priorMoisture: "Important", temperatureAfterRain: "Fresca a suau", interruption: "Vent sec, nova sequera o gelada persistent", uncertainty: "Espècie tardana amb resposta local segons el tipus de roureda o alzinar." }, seasonality: season({ set: "possible", oct: "good", nov: "peak", des: "good" }), regions: ["catalunya-central", "serralades-costeres", "serralades-prelitorals", "emporda", "montseny", "ports", "muntanyes-interiors"] },
     idealConditions: ["Alzinars i rouredes sobre sòl neutre o calcari", "Fullaraca humida després de pluges de tardor", "8–18 °C", "Temporada tardana, sovint d’octubre a desembre"]
   }),

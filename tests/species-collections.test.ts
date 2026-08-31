@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import sitemap from "@/app/sitemap";
+import { buildSitemap as sitemap } from "@/app/sitemap";
 import { edibleSpecies, speciesInSeason, toxicSpecies } from "@/src/lib/species-collections";
 import {
   comparisonPages,
@@ -72,6 +72,7 @@ describe("search-intent species collections", () => {
       expect(urls).toContain(`https://bolets.app${guide.path}`);
     }
     expect(urls).toContain("https://bolets.app/quan-surten-els-bolets-despres-de-ploure");
+    expect(urls).toContain("https://bolets.app/conservar-bolets");
     expect(urls).toContain("https://bolets.app/parts-dun-bolet");
     expect(urls).toContain("https://bolets.app/equip-editorial");
     expect(urls).toContain("https://bolets.app/bolets-comestibles");

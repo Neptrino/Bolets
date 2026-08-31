@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import RainGuidePage from "@/app/quan-surten-els-bolets-despres-de-ploure/page";
-import sitemap from "@/app/sitemap";
+import { buildSitemap as sitemap } from "@/app/sitemap";
 import { getEditorialMetadata, hydrothermalScientificSources } from "@/data/editorial";
 
 function articleFor(html: string, commonName: string) {

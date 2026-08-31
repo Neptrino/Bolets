@@ -205,7 +205,7 @@
 .finding-photo-remove:hover { background: var(--danger-surface); transform: scale(1.04); }
 .finding-photo-remove:disabled { opacity: .55; cursor: wait; transform: none; }
 
-.finding-privacy-summary { position: sticky; top: 90px; display: grid; gap: 20px; overflow: hidden; padding: 25px; border: 1px solid rgba(255, 247, 232, .1); border-radius: 22px; background: radial-gradient(circle at 100% 0, rgba(242, 138, 46, .13), transparent 15rem), linear-gradient(145deg, #2d4939, var(--finding-green-deep)); color: var(--on-dark); box-shadow: 0 22px 52px rgba(47, 51, 42, .16); }
+.finding-privacy-summary { position: sticky; top: 90px; display: grid; gap: 20px; overflow: hidden; padding: 25px; border: 1px solid rgba(255, 247, 232, .1); border-radius: 22px; background: var(--finding-green-deep); color: var(--on-dark); box-shadow: 0 22px 52px rgba(47, 51, 42, .16); }
 .finding-privacy-heading { display: flex; gap: 12px; align-items: center; }
 .finding-privacy-heading > span { display: grid; flex: 0 0 auto; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--clay); color: var(--on-dark); box-shadow: 0 7px 18px rgba(20, 31, 24, .23); }
 .finding-privacy-heading p { margin: 0 0 2px; color: #efb98f; font-size: var(--text-xs); font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
@@ -231,7 +231,7 @@
 
 .finding-section { margin-top: 64px; }
 .finding-community-panel { display: grid; grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr); overflow: hidden; border: 1px solid rgba(39, 60, 48, .2); border-radius: 22px; background: var(--finding-green-deep); color: var(--on-dark); box-shadow: 0 22px 52px rgba(47, 51, 42, .14); }
-.finding-community-stats { display: grid; padding: 10px 26px; background: radial-gradient(circle at 0 0, rgba(242, 138, 46, .18), transparent 18rem); }
+.finding-community-stats { display: grid; padding: 10px 26px; background: var(--finding-green-deep); }
 .finding-community-stats > div { display: grid; gap: 5px; align-content: center; min-height: 100px; padding: 18px 0; border-top: 1px solid rgba(255, 247, 232, .14); }
 .finding-community-stats > div:first-child { border-top: 0; }
 .finding-community-stats strong { color: #f2b07b; font-size: var(--display-xs); line-height: 1; text-wrap: balance; }

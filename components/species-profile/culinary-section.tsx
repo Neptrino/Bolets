@@ -1,4 +1,6 @@
+import Link from "next/link";
 import {
+  ArrowUpRight,
   ChefHat,
   CircleHelp,
   ShieldAlert,
@@ -119,6 +121,11 @@ export function SpeciesCulinarySection({
             </ul>
           </article>
         </div>
+        <p>
+          <Link href="/conservar-bolets" className="text-link">
+            Guia per conservar i congelar bolets amb seguretat <ArrowUpRight size={16} aria-hidden="true" />
+          </Link>
+        </p>
       </>
     ) : (
       <div className="culinary-safety-only">

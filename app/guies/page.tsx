@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, BookOpenText, MapPinned, Trees } from "lucide-react";
+import { ArrowUpRight, BookOpenText, MapPinned, Snowflake, Trees } from "lucide-react";
 import { GuideDirectory } from "@/components/guide-directory";
 import { JsonLd } from "@/components/json-ld";
 import {
@@ -139,6 +139,12 @@ export default function GuidesPage() {
         <span><BookOpenText size={18} aria-hidden="true" /> Abans de sortir</span>
         <div><h2>Preguntes sobre anar a buscar bolets</h2><p>Temporada, pluja, boscos, identificació i permisos: respostes curtes amb guies per aprofundir-hi.</p></div>
         <strong>Consultar les preguntes <ArrowUpRight size={17} aria-hidden="true" /></strong>
+      </Link>
+
+      <Link href="/conservar-bolets" className="location-species-feature location-current-feature">
+        <span><Snowflake size={18} aria-hidden="true" /> Guia pràctica</span>
+        <div><h2>Com conservar i congelar bolets</h2><p>Escaldat, cocció, porcions, etiquetatge i descongelació segura segons les recomanacions de l’ACSA.</p></div>
+        <strong>Obrir la guia <ArrowUpRight size={17} aria-hidden="true" /></strong>
       </Link>
 
       <aside className="location-safety-note">

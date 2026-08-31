@@ -19,6 +19,10 @@ const seasonIcons = {
 export function SeasonalGuidePage({ guide }: { guide: SeasonGuide }) {
   const species = speciesForSeasonGuide(guide);
   const SeasonIcon = seasonIcons[guide.id];
+  const highlightedSpecies = new Intl.ListFormat("ca-ES", {
+    style: "long",
+    type: "conjunction",
+  }).format(species.slice(0, 6).map((item) => item.identity.commonName));
 
   return (
     <PageShell as="article">
@@ -52,6 +56,12 @@ export function SeasonalGuidePage({ guide }: { guide: SeasonGuide }) {
       <section className="seasonal-guide-notes" aria-label={`Com interpretar la temporada ${guide.id}`}>
         <article><CloudRain size={21} aria-hidden="true" /><div><h2>{guide.conditionTitle}</h2><p>{guide.conditionText}</p></div></article>
         <article><CircleAlert size={21} aria-hidden="true" /><div><h2>Calendari no vol dir presència</h2><p>No consumeixis cap bolet sense una identificació experta. El calendari descriu potencial estacional i no confirma que una espècie estigui fructificant.</p></div></article>
+      </section>
+
+      <section className="season-search-answer seasonal-search-answer" aria-labelledby={`${guide.id}-answer-title`}>
+        <p className="eyebrow">Resposta de temporada</p>
+        <h2 id={`${guide.id}-answer-title`}>Quins bolets poden sortir {guide.rangeSentence}?</h2>
+        <p>El catàleg inclou, entre d’altres, <strong>{highlightedSpecies}</strong> amb activitat possible durant aquesta estació. La combinació concreta canvia cada mes; consulta el <Link href="/temporada">calendari mensual</Link> i les <Link href="/bolets-avui">condicions actuals</Link> abans de preparar una sortida.</p>
       </section>
 
       <section className="intent-reading-section" aria-labelledby={`${guide.id}-reading-title`}>

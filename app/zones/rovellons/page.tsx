@@ -276,7 +276,7 @@ export default function RovellonsTerritoryPage() {
             <aside>
               <CloudRain size={20} aria-hidden="true" />
               <strong>Per saber si hi ha condicions ara</strong>
-              <p>El mapa combina la temporada, la pluja acumulada, la humitat del sòl, la temperatura i el terreny adequat quan hi ha prou lectures.</p>
+              <p>El mapa combina la temporada, la pluja acumulada, la humitat del sòl, la temperatura i el terreny adequat quan hi ha prou lectures. <Link href="/bolets-avui">Compara on trobar bolets avui i aquesta setmana.</Link></p>
             </aside>
           </div>
         </section>
@@ -335,6 +335,11 @@ export default function RovellonsTerritoryPage() {
           <header><p className="eyebrow">Preguntes freqüents</p><h2 id="rovellons-faq-title">Rovellons, zones i temporada.</h2></header>
           <div>{faqs.map((faq) => <details key={faq.question}><summary>{faq.question}</summary><p>{faq.answer}</p></details>)}</div>
         </section>
+
+        <nav className="rain-guide-actions" aria-label="Guies relacionades amb els rovellons">
+          <Link href="/bolets-avui">On trobar bolets avui <ArrowUpRight size={16} /></Link>
+          <Link href="/conservar-bolets">Com conservar rovellons <ArrowUpRight size={16} /></Link>
+        </nav>
 
         <aside className="rovellons-safety">
           <ShieldAlert size={23} aria-hidden="true" />

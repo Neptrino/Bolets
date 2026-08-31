@@ -37,6 +37,7 @@ export function SiteFooter() {
           <Link href="/compare">Comparador d’espècies</Link>
           <CurrentSeasonGuideLink guides={seasonalFooterGuides} initialMonth={initialMonth} />
           <Link href="/quan-surten-els-bolets-despres-de-ploure">Després de ploure</Link>
+          <Link href="/conservar-bolets">Conservar i congelar bolets</Link>
           <Link href="/parts-dun-bolet">Parts d’un bolet</Link>
           <Link href="/normativa-bolets">Permisos i recol·lecció</Link>
           <Link href="/preguntes-frequents-bolets">Preguntes freqüents</Link>

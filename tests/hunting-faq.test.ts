@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import HuntingFaqPage, { metadata } from "@/app/preguntes-frequents-bolets/page";
 import GuidesPage from "@/app/guies/page";
-import sitemap from "@/app/sitemap";
+import { buildSitemap as sitemap } from "@/app/sitemap";
 import { SiteFooter } from "@/components/site-footer";
 import { SeasonPageContent } from "@/components/season-page-content";
 import CollectingRulesGuidePage from "@/app/normativa-bolets/page";

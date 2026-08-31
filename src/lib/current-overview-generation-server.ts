@@ -20,15 +20,10 @@ function fallbackGenerationKey() {
   return `fallback:${Math.floor(Date.now() / (5 * 60 * 1_000))}`;
 }
 
-/**
- * Read the two publication generations outside the expensive overview cache.
- * unstable_cache includes function arguments in its key, so a completed
- * coarse or territorial rebuild immediately selects a fresh overview entry.
- */
-export const readCurrentOverviewGeneration = cache(async () => {
+const readConditionCursors = cache(async (): Promise<ConditionCursor[] | null> => {
   const baseUrl = process.env.SUPABASE_URL;
   const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!baseUrl || !serviceRole) return fallbackGenerationKey();
+  if (!baseUrl || !serviceRole) return null;
 
   try {
     const url = new URL(`${baseUrl.replace(/\/$/, "")}/rest/v1/pipeline_cursors`);
@@ -44,7 +39,7 @@ export const readCurrentOverviewGeneration = cache(async () => {
       },
       signal: AbortSignal.timeout(3_000),
     });
-    if (!response.ok) return fallbackGenerationKey();
+    if (!response.ok) return null;
 
     const rows = await response.json() as ConditionCursor[];
     const cursors = rows
@@ -52,12 +47,36 @@ export const readCurrentOverviewGeneration = cache(async () => {
         row.pipeline as (typeof CONDITION_PIPELINES)[number],
       ))
       .sort((left, right) => left.pipeline.localeCompare(right.pipeline));
-    if (cursors.length !== CONDITION_PIPELINES.length) return fallbackGenerationKey();
 
-    return cursors
-      .map((cursor) => `${cursor.pipeline}:${cursor.snapshot_date}:${cursor.updated_at}`)
-      .join("|");
+    return cursors.length === CONDITION_PIPELINES.length ? cursors : null;
   } catch {
-    return fallbackGenerationKey();
+    return null;
   }
+});
+
+/**
+ * Read the two publication generations outside the expensive overview cache.
+ * unstable_cache includes function arguments in its key, so a completed
+ * coarse or territorial rebuild immediately selects a fresh overview entry.
+ */
+export const readCurrentOverviewGeneration = cache(async () => {
+  const cursors = await readConditionCursors();
+  if (!cursors) return fallbackGenerationKey();
+
+  return cursors
+    .map((cursor) => `${cursor.pipeline}:${cursor.snapshot_date}:${cursor.updated_at}`)
+    .join("|");
+});
+
+export const readCurrentOverviewLastModified = cache(async () => {
+  const cursors = await readConditionCursors();
+  if (!cursors) return null;
+
+  const timestamps = cursors
+    .map((cursor) => new Date(cursor.updated_at))
+    .filter((value) => !Number.isNaN(value.getTime()));
+
+  return timestamps.length > 0
+    ? new Date(Math.max(...timestamps.map((value) => value.getTime())))
+    : null;
 });

@@ -351,7 +351,8 @@ export default function CepsTerritoryPage() {
               <p>
                 El mapa combina temporada, pluja acumulada, humitat del sòl,
                 temperatura i cobertura compatible quan les dades són prou
-                completes. No mostra troballes.
+                completes. No mostra troballes. <Link href="/bolets-avui">Compara
+                on trobar bolets avui i aquesta setmana.</Link>
               </p>
             </aside>
           </div>
@@ -499,6 +500,11 @@ export default function CepsTerritoryPage() {
             ))}
           </div>
         </section>
+
+        <nav className="rain-guide-actions" aria-label="Guies relacionades amb els ceps">
+          <Link href="/bolets-avui">On trobar bolets avui <ArrowUpRight size={16} /></Link>
+          <Link href="/conservar-bolets">Com conservar els ceps <ArrowUpRight size={16} /></Link>
+        </nav>
 
         <aside className="rovellons-safety">
           <ShieldAlert size={23} aria-hidden="true" />

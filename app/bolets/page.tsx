@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, CookingPot, Images, Leaf, ShieldAlert, Snowflake, Sprout, Sun } from "lucide-react";
+import { ArrowUpRight, CalendarDays, CookingPot, Images, Leaf, Map, ShieldAlert, Snowflake, Sprout, Sun } from "lucide-react";
 import { PageHeader, PageShell, SectionHeader } from "@/components/page-layout";
 import { SpeciesDirectory } from "@/components/species-directory";
 import { JsonLd } from "@/components/json-ld";
@@ -54,6 +54,9 @@ export default function SpeciesIndexPage() {
         <Link href="/bolets-comestibles"><CookingPot size={18} /><span><strong>Bolets comestibles</strong><small>Espècies, confusions i condicions</small></span><ArrowUpRight size={16} /></Link>
         <Link href="/bolets-verinosos"><ShieldAlert size={18} /><span><strong>Bolets verinosos</strong><small>Identificació i riscos</small></span><ArrowUpRight size={16} /></Link>
         <Link href="/temporada"><CalendarDays size={18} /><span><strong>Bolets per mesos</strong><small>Calendari mensual per espècie</small></span><ArrowUpRight size={16} /></Link>
+        <Link href="/map"><Map size={18} /><span><strong>Mapa de bolets de Catalunya</strong><small>Hàbitat i condicions actuals</small></span><ArrowUpRight size={16} /></Link>
+        <Link href="/bolets-avui"><Sun size={18} /><span><strong>On trobar bolets avui</strong><small>Comparació actualitzada de territoris</small></span><ArrowUpRight size={16} /></Link>
+        <Link href="/conservar-bolets"><Snowflake size={18} /><span><strong>Conservar i congelar bolets</strong><small>Preparació i cadena de fred</small></span><ArrowUpRight size={16} /></Link>
       </nav>
       <section className="species-season-navigation" aria-labelledby="species-seasons-title">
         <header><div><p className="eyebrow">Per estacions</p><h2 id="species-seasons-title">Què pot sortir en cada moment de l’any</h2></div><p>Consulta les espècies habituals de cada temporada.</p></header>

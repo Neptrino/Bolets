@@ -326,6 +326,10 @@ export interface SpeciesProfile {
     title?: string;
     description?: string;
     keywords?: string[];
+    faqs?: Array<{
+      question: string;
+      answer: string;
+    }>;
   };
   identity: {
     commonName: string;

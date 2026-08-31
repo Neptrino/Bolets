@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import SpeciesPage, { generateMetadata, generateStaticParams } from "@/app/bolets/[slug]/page";
 import SpeciesIndexPage from "@/app/bolets/page";
 import MushroomInfographicPage from "@/app/bolets/infografia/page";
-import sitemap from "@/app/sitemap";
+import { buildSitemap as sitemap } from "@/app/sitemap";
 import { catalogueSpecies } from "@/data/catalogue";
 import { getReferenceSpecies, getReferenceSpeciesByScientificName, referenceSpeciesProfiles } from "@/data/reference-species";
 import { getSpecies, speciesProfiles, speciesSelectItems } from "@/data/species";

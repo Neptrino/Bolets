@@ -20,7 +20,7 @@ const lastModified = new Date(`${EDITORIAL_LAUNCH_DATE}T00:00:00+02:00`);
 const rainGuideLastModified = new Date(
   `${getEditorialMetadata("quan-surten-els-bolets-despres-de-ploure").updatedAt}T00:00:00+02:00`,
 );
-const currentOverviewLastModified = new Date(
+const editorialCurrentOverviewLastModified = new Date(
   `${getEditorialMetadata("bolets-avui").updatedAt}T00:00:00+02:00`,
 );
 const mushroomPartsGuideLastModified = new Date(
@@ -32,15 +32,27 @@ const edibleGuideLastModified = new Date(
 const poisonousGuideLastModified = new Date(
   `${getEditorialMetadata("bolets-verinosos").updatedAt}T00:00:00+02:00`,
 );
+const preservationGuideLastModified = new Date(
+  `${getEditorialMetadata("conservar-bolets").updatedAt}T00:00:00+02:00`,
+);
+const seasonPagesLastModified = new Date(
+  `${getEditorialMetadata("temporada").updatedAt}T00:00:00+02:00`,
+);
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export function buildSitemap(
+  currentOverviewLastModified = editorialCurrentOverviewLastModified,
+): MetadataRoute.Sitemap {
   const pages: MetadataRoute.Sitemap = [
     { url: absoluteUrl(), lastModified, images: [absoluteUrl("/media/generated/home-hero-boletus-v2.webp")] },
     { url: absoluteUrl("/bolets"), lastModified: new Date(`${getEditorialMetadata("bolets").updatedAt}T00:00:00+02:00`) },
     { url: absoluteUrl("/bolets/infografia"), lastModified, images: [absoluteUrl("/media/editorial/bolets-catalunya-infografia.webp")] },
     { url: absoluteUrl("/bolets-avui"), lastModified: currentOverviewLastModified },
-    ...seasonGuides.map((guide) => ({ url: absoluteUrl(guide.path), lastModified })),
+    ...seasonGuides.map((guide) => ({
+      url: absoluteUrl(guide.path),
+      lastModified: new Date(`${getEditorialMetadata(guide.path.slice(1)).updatedAt}T00:00:00+02:00`),
+    })),
     { url: absoluteUrl("/quan-surten-els-bolets-despres-de-ploure"), lastModified: rainGuideLastModified },
+    { url: absoluteUrl("/conservar-bolets"), lastModified: preservationGuideLastModified },
     { url: absoluteUrl("/parts-dun-bolet"), lastModified: mushroomPartsGuideLastModified },
     { url: absoluteUrl("/bolets-de-soca"), lastModified: new Date(`${getEditorialMetadata("bolets-de-soca").updatedAt}T00:00:00+02:00`) },
     { url: absoluteUrl("/fals-rossinyol"), lastModified: new Date(`${getEditorialMetadata("fals-rossinyol").updatedAt}T00:00:00+02:00`) },
@@ -48,10 +60,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: absoluteUrl("/preguntes-frequents-bolets"), lastModified: new Date(`${getEditorialMetadata("preguntes-frequents-bolets").updatedAt}T00:00:00+02:00`) },
     { url: absoluteUrl("/bolets-comestibles"), lastModified: edibleGuideLastModified },
     { url: absoluteUrl("/bolets-verinosos"), lastModified: poisonousGuideLastModified },
-    { url: absoluteUrl("/temporada"), lastModified },
+    { url: absoluteUrl("/temporada"), lastModified: seasonPagesLastModified },
     ...SEASON_MONTHS.map(({ key }) => ({
       url: absoluteUrl(seasonMonthPath(key)),
-      lastModified,
+      lastModified: seasonPagesLastModified,
     })),
     { url: absoluteUrl("/map"), lastModified },
     ...speciesMapPages.map((page) => ({
@@ -103,4 +115,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   return [...new Map(pages.map((page) => [page.url, page])).values()];
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { readCurrentOverviewLastModified } = await import(
+    "@/src/lib/current-overview-generation-server"
+  );
+  const publishedAt = await readCurrentOverviewLastModified();
+
+  return buildSitemap(publishedAt ?? editorialCurrentOverviewLastModified);
 }

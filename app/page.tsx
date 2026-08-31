@@ -48,7 +48,7 @@ export default function HomePage() {
       </section>
       <Link href="/bolets-avui" className="home-today-feature page-width">
         <p className="home-today-kicker"><Gauge size={17} /> Condicions actuals</p>
-        <div className="home-today-copy"><h2>On són més favorables les condicions avui?</h2><p>Compara espècies i territoris de Catalunya amb les lectures més recents.</p></div>
+        <div className="home-today-copy"><h2>On trobar bolets avui i aquesta setmana?</h2><p>Compara espècies i territoris de Catalunya amb les lectures més recents.</p></div>
         <dl className="home-today-facts"><div><dt>Àmbit</dt><dd>Catalunya</dd></div><div><dt>Actualització</dt><dd>Diària</dd></div></dl>
         <span className="home-today-action">Bolets avui <ArrowUpRight size={17} /></span>
       </Link>

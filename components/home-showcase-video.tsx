@@ -1,33 +1,63 @@
 "use client";
 
 import { Play } from "lucide-react";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState, useSyncExternalStore } from "react";
 import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
+const neverChanges = () => () => undefined;
+const clientHasHydrated = () => true;
+const serverHasHydrated = () => false;
+
+function useVideoPlaying(video: HTMLVideoElement | null) {
+  const subscribe = useCallback((onPlaybackChange: () => void) => {
+    if (!video) return () => undefined;
+
+    video.addEventListener("play", onPlaybackChange);
+    video.addEventListener("pause", onPlaybackChange);
+    video.addEventListener("ended", onPlaybackChange);
+    video.addEventListener("emptied", onPlaybackChange);
+
+    return () => {
+      video.removeEventListener("play", onPlaybackChange);
+      video.removeEventListener("pause", onPlaybackChange);
+      video.removeEventListener("ended", onPlaybackChange);
+      video.removeEventListener("emptied", onPlaybackChange);
+    };
+  }, [video]);
+  const getSnapshot = useCallback(
+    () => Boolean(video && !video.paused && !video.ended),
+    [video],
+  );
+
+  return useSyncExternalStore(subscribe, getSnapshot, serverHasHydrated);
+}
+
 export function HomeShowcaseVideo() {
-  const video = useRef<HTMLVideoElement>(null);
+  const [video, setVideo] = useState<HTMLVideoElement | null>(null);
   const playTracked = useRef(false);
   const completionTracked = useRef(false);
-  const [started, setStarted] = useState(false);
+  const hydrated = useSyncExternalStore(
+    neverChanges,
+    clientHasHydrated,
+    serverHasHydrated,
+  );
+  const playing = useVideoPlaying(video);
 
   const play = async () => {
     try {
-      await video.current?.play();
-      setStarted(true);
+      await video?.play();
     } catch {
-      setStarted(false);
+      // Keep the native controls available when the browser declines playback.
     }
   };
 
   const handlePlay = () => {
-    setStarted(true);
     if (playTracked.current) return;
     playTracked.current = true;
     queueUmamiEvent(UMAMI_EVENTS.homepageVideoPlay);
   };
 
   const handleEnded = () => {
-    setStarted(false);
     if (completionTracked.current) return;
     completionTracked.current = true;
     queueUmamiEvent(UMAMI_EVENTS.homepageVideoComplete);
@@ -45,7 +75,7 @@ export function HomeShowcaseVideo() {
 
       <div className="home-showcase-player">
         <video
-          ref={video}
+          ref={setVideo}
           controls
           muted
           playsInline
@@ -60,7 +90,7 @@ export function HomeShowcaseVideo() {
           El navegador no permet reproduir aquest vídeo.
         </video>
 
-        {!started && (
+        {hydrated && video !== null && !playing && (
           <button type="button" className="home-showcase-poster-play" onClick={play} aria-label="Reprodueix el vídeo de presentació">
             <span className="home-showcase-poster-play-content">
               <span className="home-showcase-poster-play-icon" aria-hidden="true"><Play size={24} fill="currentColor" /></span>

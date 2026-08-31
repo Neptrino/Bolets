@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { buildSitemap } from "@/app/sitemap";
 import { getSpecies, speciesProfiles } from "@/data/species";
 import {
   CURRENT_OVERVIEW_CONCURRENCY,
@@ -95,6 +96,23 @@ describe("current-condition overview", () => {
     const pageSource = readFileSync("app/bolets-avui/page.tsx", "utf8");
 
     expect(pageSource).not.toContain("<EditorialAttribution");
+  });
+
+  it("answers the current Catalan search intent in metadata and visible copy", () => {
+    const pageSource = readFileSync("app/bolets-avui/page.tsx", "utf8");
+
+    expect(pageSource).toContain('const overviewTitle = "On trobar bolets avui i aquesta setmana"');
+    expect(pageSource).toContain("On trobar bolets avui<br />");
+    expect(pageSource).toContain("On trobar bolets ara a Catalunya?");
+    expect(pageSource).toContain('inLanguage: "ca"');
+    expect(pageSource).toContain("dateModified: pageModifiedAt.toISOString()");
+  });
+
+  it("publishes the current overview generation date in the sitemap", () => {
+    const publishedAt = new Date("2026-08-31T07:00:00.000Z");
+    const entry = buildSitemap(publishedAt).find((item) => item.url.endsWith("/bolets-avui"));
+
+    expect(entry?.lastModified).toEqual(publishedAt);
   });
 
   it("uses plain-language labels in the leading Avui card", () => {

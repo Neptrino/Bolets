@@ -16,10 +16,6 @@ export function PredictionMapLegend() {
   return (
     <div className="prediction-map-legend">
       <strong>Nivell de condicions</strong>
-      <span className="prediction-map-legend-zero">
-        <i style={{ backgroundColor: predictionMapCellColour(0) }} aria-hidden />
-        0
-      </span>
       <div
         className="prediction-map-legend-ramp"
         role="img"

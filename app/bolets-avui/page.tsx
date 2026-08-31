@@ -45,14 +45,19 @@ import { speciesMapHref } from "@/src/lib/species-map-pages";
 import { territorialMapPath } from "@/src/lib/territorial-map";
 import type { RegionalPredictionSummary } from "@/src/lib/types";
 
+const overviewTitle = "On trobar bolets avui i aquesta setmana";
+const overviewDescription = metaDescription(
+  "Consulta on buscar bolets avui i aquesta setmana a Catalunya segons les condicions actuals de pluja, temperatura i hàbitat.",
+);
+
 export const metadata: Metadata = {
-  title: pageTitle("Bolets avui a Catalunya: zones més favorables"),
-  description: metaDescription("Consulta quines zones i espècies tenen avui les condicions més favorables a Catalunya segons la pluja, la temperatura i el bosc."),
+  title: pageTitle(overviewTitle),
+  description: overviewDescription,
   alternates: { canonical: "/bolets-avui" },
   openGraph: {
     url: "/bolets-avui",
-    title: "Bolets avui a Catalunya: zones més favorables",
-    description: "Zones i espècies amb les condicions més favorables avui segons la pluja, la temperatura i el bosc.",
+    title: overviewTitle,
+    description: overviewDescription,
     images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
   },
 };
@@ -109,6 +114,16 @@ function observationWindow(items: RankedOverviewItem[]) {
   return `Lectures entre ${dateTime.format(first)} i ${dateTime.format(last)}`;
 }
 
+function latestObservation(items: RankedOverviewItem[]) {
+  const observations = items
+    .flatMap((item) => item.summary ? [new Date(item.summary.snapshot.observedAt)] : [])
+    .filter((observation) => !Number.isNaN(observation.getTime()));
+
+  return observations.length > 0
+    ? new Date(Math.max(...observations.map((observation) => observation.getTime())))
+    : null;
+}
+
 function monthlyActivityLabel(activity: CurrentOverviewItem["seasonalActivity"]) {
   const label = SEASONAL_ACTIVITY_LABELS[activity];
   return activity === "peak" || activity === "inactive" ? label : `activitat ${label}`;
@@ -116,6 +131,23 @@ function monthlyActivityLabel(activity: CurrentOverviewItem["seasonalActivity"])
 
 function overviewLocationName(item: RankedOverviewItem) {
   return isAreaOverviewItem(item) ? item.areaName : item.regionName;
+}
+
+function topOverviewLocations(items: RankedOverviewItem[]) {
+  const locations = new Set<string>();
+
+  for (const item of items) {
+    if (item.status !== "available" || !item.summary || (item.summary.bestCell.score ?? 0) <= 0) continue;
+    locations.add(overviewLocationName(item));
+    if (locations.size === 3) break;
+  }
+
+  return [...locations];
+}
+
+function catalanList(items: string[]) {
+  if (items.length < 2) return items[0] ?? "";
+  return `${items.slice(0, -1).join(", ")} i ${items.at(-1)}`;
 }
 
 function overviewMapPath(item: RankedOverviewItem) {
@@ -150,14 +182,75 @@ async function CurrentOverview() {
   const leader = items.find((item) => item.status === "available" && item.summary);
   const leaderScore = leader?.summary?.bestCell.score;
   const observedWindow = observationWindow(items);
+  const lastObservedAt = latestObservation(items);
+  const topLocations = topOverviewLocations(items);
+  const editorialFields = editorialArticleFields("bolets-avui");
+  const editorialModifiedAt = new Date(`${editorialFields.dateModified}T00:00:00+02:00`);
+  const pageModifiedAt = lastObservedAt && lastObservedAt > editorialModifiedAt
+    ? lastObservedAt
+    : editorialModifiedAt;
   const overviewSources = [...new Set(
     items.flatMap((item) => item.summary?.snapshot.source ?? []),
   )];
   const leaderName = leader ? overviewLocationName(leader) : null;
   const leaderMapPath = leader ? overviewMapPath(leader) : "/map";
+  const structuredItems = visibleItems.filter(
+    (item) => item.status === "available" && item.summary,
+  );
 
   return (
     <>
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": `${absoluteUrl("/bolets-avui")}#webpage`,
+        name: overviewTitle,
+        headline: "On trobar bolets avui i aquesta setmana a Catalunya",
+        description: overviewDescription,
+        url: absoluteUrl("/bolets-avui"),
+        inLanguage: "ca",
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+        publisher: { "@id": `${SITE_URL}/#organization` },
+        ...editorialFields,
+        dateModified: pageModifiedAt.toISOString(),
+        mainEntity: {
+          "@type": "ItemList",
+          "@id": `${absoluteUrl("/bolets-avui")}#classificacio`,
+          name: "Zones i espècies amb les condicions actuals més favorables",
+          numberOfItems: structuredItems.length,
+          itemListElement: structuredItems.map((item, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            name: `${overviewLocationName(item)} — ${item.speciesName}`,
+            url: absoluteUrl(overviewMapPath(item)),
+          })),
+        },
+      }} />
+
+      <section className="current-search-answer" aria-labelledby="current-search-answer-title">
+        <p className="eyebrow">Resposta actualitzada</p>
+        <h2 id="current-search-answer-title">On trobar bolets ara a Catalunya?</h2>
+        {topLocations.length > 0 ? (
+          <p>
+            Amb les lectures més recents, <strong>{catalanList(topLocations)}</strong> encapçalen
+            la comparació de territoris per preparar una sortida avui o aquesta setmana.
+            Són condicions ambientals favorables: no confirmen que hi hagi bolets ni són una
+            previsió tancada per als pròxims set dies.
+          </p>
+        ) : (
+          <p>
+            Ara mateix cap territori comparat mostra una resposta favorable prou clara.
+            Aquesta situació pot canviar amb noves pluges i temperatures; no confirma
+            l’absència de bolets al bosc.
+          </p>
+        )}
+        {lastObservedAt ? (
+          <p className="current-search-answer-updated">
+            <Clock3 size={14} aria-hidden="true" /> Darrera lectura: {dateTime.format(lastObservedAt)}
+          </p>
+        ) : null}
+      </section>
+
       {leader?.summary && leaderScore === 0 ? (
         <aside className="current-leader current-leader-empty">
           <ShieldCheck size={24} />
@@ -324,20 +417,10 @@ async function CurrentOverview() {
 export default function MushroomsTodayPage() {
   return (
     <PageShell as="article">
-      <JsonLd data={{
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: "Bolets avui: millors zones i condicions a Catalunya",
-        description: metadata.description,
-        url: absoluteUrl("/bolets-avui"),
-        inLanguage: "ca",
-        publisher: { "@id": `${SITE_URL}/#organization` },
-        ...editorialArticleFields("bolets-avui"),
-      }} />
       <PageHeader
         eyebrow={<><Map size={15} /> Condicions actuals per territori</>}
-        title={<>On hi ha millors condicions<br /><PageTitleAccent>per als bolets avui?</PageTitleAccent></>}
-        description="Compara les espècies comestibles de temporada i descobreix quins territoris tenen avui les condicions més favorables."
+        title={<>On trobar bolets avui<br /><PageTitleAccent>i aquesta setmana?</PageTitleAccent></>}
+        description="Compara les espècies comestibles de temporada i descobreix quins territoris de Catalunya tenen ara les condicions més favorables."
         layout="split"
       />
       <Suspense fallback={<CurrentOverviewLoading />}>

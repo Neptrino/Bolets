@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import sitemap from "@/app/sitemap";
+import { buildSitemap as sitemap } from "@/app/sitemap";
 import { getEditorialMetadata } from "@/data/editorial";
 import { getSpecies } from "@/data/species";
 import {
@@ -39,7 +39,7 @@ describe("species territory guide registry", () => {
 
     for (const guide of speciesTerritoryGuides) {
       const editorial = getEditorialMetadata(guide.contentId);
-      expect(editorial.updatedAt, guide.contentId).toBe("2026-08-28");
+      expect(editorial.updatedAt, guide.contentId).toBe("2026-08-31");
       expect(
         entries.find((entry) => entry.url.endsWith(guide.path))?.lastModified,
         guide.path,

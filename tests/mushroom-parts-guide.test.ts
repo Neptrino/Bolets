@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import MushroomPartsGuidePage, { metadata } from "@/app/parts-dun-bolet/page";
-import sitemap from "@/app/sitemap";
+import { buildSitemap as sitemap } from "@/app/sitemap";
 import { getEditorialMetadata } from "@/data/editorial";
 
 describe("mushroom parts guide", () => {

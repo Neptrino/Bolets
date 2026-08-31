@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, CircleAlert, CookingPot, Trees } from "lucide-react";
+import { ArrowUpRight, CalendarDays, CircleAlert, CookingPot, Snowflake, Trees } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { SpeciesCard } from "@/components/species-card";
@@ -82,6 +82,7 @@ export default function EdibleMushroomsPage() {
           <Link href="/zones/ceps"><CookingPot size={18} aria-hidden="true" /><span><strong>Ceps de Catalunya</strong><small>Tipus, diferències, hàbitat i temporada</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/zones/rovellons"><Trees size={18} aria-hidden="true" /><span><strong>Rovellons a Catalunya</strong><small>Tipus, diferències, hàbitat i temporada</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/temporada"><CalendarDays size={18} aria-hidden="true" /><span><strong>Bolets per temporada</strong><small>Calendari mensual de totes les espècies</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link href="/conservar-bolets"><Snowflake size={18} aria-hidden="true" /><span><strong>Com conservar els bolets</strong><small>Congelació, porcions i descongelació segura</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
         </nav>
       </section>
 

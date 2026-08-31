@@ -4,6 +4,7 @@ import {
   ArrowUpRight,
   BookOpen,
   CircleDot,
+  CircleHelp,
   MoveVertical,
   Palette,
   RefreshCw,
@@ -153,6 +154,21 @@ export function SpeciesIdentificationSection({
         </p>
       )}
     </div>
+
+    {species.seo?.faqs?.length ? (
+      <div className="content-subsection species-search-answers">
+        <p className="eyebrow">Preguntes habituals</p>
+        <h3 className="subsection-title">Comestibilitat i confusions</h3>
+        <div className="species-search-answer-list">
+          {species.seo.faqs.map((faq) => (
+            <article key={faq.question}>
+              <h3><CircleHelp size={17} aria-hidden="true" /> {faq.question}</h3>
+              <p>{faq.answer}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    ) : null}
   </div>
 </section>
   );
