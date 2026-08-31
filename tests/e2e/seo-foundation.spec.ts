@@ -94,10 +94,14 @@ test("every month in the season calendar links to its own canonical page", async
   await calendar.getByRole("link", { name: /Temporada de bolets al setembre/ }).click();
 
   await expect(page).toHaveURL(/\/temporada\/setembre$/);
-  await expect(page.locator("h1")).toContainText("Bolets de temporada");
   await expect(page.getByRole("link", { name: /Temporada de bolets al setembre/ })).toHaveAttribute("aria-current", "page");
   await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/temporada\/setembre$/);
+  await expect(page.getByRole("link", { name: "← Temporada de bolets a Catalunya" })).toHaveAttribute("href", "/temporada");
+  await expect(page.getByRole("heading", { name: "Bolets al setembre." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Calendari de bolets al setembre" })).toBeVisible();
+  const structuredData = await page.locator('script[type="application/ld+json"]').allTextContents();
+  expect(structuredData.some((item) => item.includes('"BreadcrumbList"'))).toBe(true);
 });
 
 test("the catalogue separates monthly and seasonal navigation", async ({ page }) => {
@@ -117,7 +121,17 @@ test("the footer links to the current Catalonia season", async ({ page }) => {
   await page.goto("/temporada");
 
   const footer = page.getByRole("contentinfo");
+  await expect(footer.getByRole("link", { name: "Temporada de bolets", exact: true })).toHaveAttribute("href", "/temporada");
   await expect(footer.getByRole("link", { name: currentGuide.cardTitle })).toHaveAttribute("href", currentGuide.path);
+});
+
+test("the homepage delegates the full current-conditions query to its canonical overview", async ({ page }) => {
+  await page.goto("/");
+
+  const feature = page.locator('a.home-today-feature[href="/bolets-avui"]');
+  await expect(feature.getByRole("heading", { name: "Condicions actuals per territori" })).toBeVisible();
+  await expect(feature).toContainText("On trobar bolets avui");
+  await expect(page.getByRole("heading", { name: "On trobar bolets avui i aquesta setmana?" })).toHaveCount(0);
 });
 
 test("internal navigation exposes no legacy catalogue link", async ({ page }) => {

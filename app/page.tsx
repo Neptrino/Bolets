@@ -48,9 +48,9 @@ export default function HomePage() {
       </section>
       <Link href="/bolets-avui" className="home-today-feature page-width">
         <p className="home-today-kicker"><Gauge size={17} /> Condicions actuals</p>
-        <div className="home-today-copy"><h2>On trobar bolets avui i aquesta setmana?</h2><p>Compara espècies i territoris de Catalunya amb les lectures més recents.</p></div>
+        <div className="home-today-copy"><h2>Condicions actuals per territori</h2><p>Compara espècies i territoris de Catalunya amb les lectures més recents.</p></div>
         <dl className="home-today-facts"><div><dt>Àmbit</dt><dd>Catalunya</dd></div><div><dt>Actualització</dt><dd>Diària</dd></div></dl>
-        <span className="home-today-action">Bolets avui <ArrowUpRight size={17} /></span>
+        <span className="home-today-action">On trobar bolets avui <ArrowUpRight size={17} /></span>
       </Link>
       <HomeShowcaseVideo />
       <section className="home-intro page-width"><div><p className="eyebrow">Com funciona</p><h2>Coneix l’espècie.<br />Després, mira el territori.</h2></div><p>Les fitxes expliquen on i quan creix cada bolet. El mapa compara aquestes necessitats amb les condicions actuals.</p></section>

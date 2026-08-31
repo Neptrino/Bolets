@@ -1,5 +1,8 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { generateMetadata } from "@/app/temporada/[month]/page";
+import { SeasonPageContent } from "@/components/season-page-content";
 import {
   monthFromSeasonSlug,
   monthInTimeZone,
@@ -61,8 +64,35 @@ describe("seasonality calendar", () => {
     expect(new Set(descriptions).size).toBe(12);
     for (const [index, item] of metadata.entries()) {
       expect(item.alternates?.canonical).toBe(seasonMonthPath(SEASON_MONTHS[index].key));
+      expect(String(item.title)).not.toContain("temporada a Catalunya");
       expect(item.description?.length).toBeGreaterThanOrEqual(100);
       expect(item.description?.length).toBeLessThanOrEqual(160);
     }
+  });
+
+  it("links monthly pages to the season overview and emits their breadcrumb hierarchy", () => {
+    const html = renderToStaticMarkup(createElement(SeasonPageContent, {
+      canonicalPath: "/temporada/setembre",
+      month: "set",
+    }));
+
+    expect(html).toContain('href="/temporada"');
+    expect(html).toContain("← Temporada de bolets a Catalunya");
+    expect(html).toContain('"@type":"BreadcrumbList"');
+    expect(html).toContain('"name":"setembre"');
+    expect(html).toContain("Calendari de bolets al setembre");
+  });
+
+  it("keeps the broad season wording on the overview only", () => {
+    const html = renderToStaticMarkup(createElement(SeasonPageContent, {
+      canonicalPath: "/temporada",
+      month: "set",
+      overview: true,
+    }));
+
+    expect(html).toContain("Temporada de bolets");
+    expect(html).toContain("a Catalunya.");
+    expect(html).not.toContain("← Temporada de bolets a Catalunya");
+    expect(html).toContain('"@type":"BreadcrumbList"');
   });
 });

@@ -24,6 +24,8 @@ The previous association-led list was deliberately retired: many of those sites 
 
 Do not send this campaign in August. Prepare the asset now, then begin only when the first publishable autumn conditions brief is live (normally September). A general request for a link is not a story.
 
+Send no more than five personalized pitches in the first wave. Keep recipient names, replies and follow-up notes in a private external tracker rather than committing personal contact data to this repository.
+
 | Priority | Organisation | Why it fits | Suggested collaboration | Public contact / source |
 | --- | --- | --- | --- | --- |
 | 1 | 3CatInfo | It published reported mushroom-condition stories in both 2025 autumn and spring, including regional and climate angles. | Pitch a new, evidenced condition shift—never the site launch. Offer the public map, methodology, data timestamp and a named technical contact. | [Autumn conditions report, 17 Sep 2025](https://www.3cat.cat/3catinfo/els-primers-bolets-arriben-als-boscos-de-catalunya-sespera-una-bona-temporada/noticia/3369970/) |

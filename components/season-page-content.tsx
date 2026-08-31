@@ -34,35 +34,53 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
   }).format(leadingSpecies.map((species) => species.identity.commonName));
   const pageName = overview
     ? "Temporada de bolets a Catalunya"
-    : `Bolets de temporada ${monthWithPreposition(month)}: calendari de Catalunya`;
+    : `Bolets ${monthWithPreposition(month)}: espècies i calendari`;
+  const canonicalUrl = absoluteUrl(canonicalPath);
+  const breadcrumbItems = [
+    { "@type": "ListItem", position: 1, name: "Inici", item: absoluteUrl() },
+    { "@type": "ListItem", position: 2, name: "Temporada", item: absoluteUrl("/temporada") },
+    ...(!overview ? [{ "@type": "ListItem", position: 3, name: selectedMonth.label, item: canonicalUrl }] : []),
+  ];
 
   return (
     <PageShell>
       <JsonLd data={{
         "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        name: pageName,
-        url: absoluteUrl(canonicalPath),
-        inLanguage: "ca",
-        description: overview
-          ? "Calendari mensual de fructificació de les espècies de bolets de Catalunya."
-          : `Calendari de les espècies de bolets amb activitat estacional ${monthWithPreposition(month)} a Catalunya.`,
-        mainEntity: {
-          "@type": "ItemList",
-          numberOfItems: activeSpecies.length,
-          itemListElement: activeSpecies.map((species, index) => ({
-            "@type": "ListItem",
-            position: index + 1,
-            name: species.identity.commonName,
-            url: absoluteUrl(speciesPath(species)),
-          })),
-        },
+        "@graph": [
+          {
+            "@type": "CollectionPage",
+            "@id": `${canonicalUrl}#collection`,
+            name: pageName,
+            url: canonicalUrl,
+            inLanguage: "ca",
+            breadcrumb: { "@id": `${canonicalUrl}#breadcrumb` },
+            description: overview
+              ? "Calendari mensual de fructificació de les espècies de bolets de Catalunya."
+              : `Calendari de les espècies de bolets amb activitat estacional ${monthWithPreposition(month)} a Catalunya.`,
+            mainEntity: {
+              "@type": "ItemList",
+              numberOfItems: activeSpecies.length,
+              itemListElement: activeSpecies.map((species, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                name: species.identity.commonName,
+                url: absoluteUrl(speciesPath(species)),
+              })),
+            },
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": `${canonicalUrl}#breadcrumb`,
+            itemListElement: breadcrumbItems,
+          },
+        ],
       }} />
+      {!overview ? <Link href="/temporada" className="text-link season-overview-back">← Temporada de bolets a Catalunya</Link> : null}
       <PageHeader
         eyebrow={<><CalendarDays size={15} /> Calendari ecològic</>}
         title={overview
           ? <>Temporada de bolets<br /><PageTitleAccent>a Catalunya.</PageTitleAccent></>
-          : <>Bolets de temporada<br /><PageTitleAccent>{monthWithPreposition(month)}.</PageTitleAccent></>}
+          : <>Bolets<br /><PageTitleAccent>{monthWithPreposition(month)}.</PageTitleAccent></>}
         description={overview
           ? "La tardor concentra més espècies, però no és l’única temporada. Altitud, pluja, temperatura i humitat poden avançar, retardar o interrompre cada fructificació."
           : `${activeSpecies.length} espècies del catàleg poden tenir activitat estacional ${monthWithPreposition(month)}. La pluja, la temperatura, l’altitud i la humitat decideixen si arriben a fructificar.`}
@@ -74,7 +92,7 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
         <div className="season-now-number">{selectedMonth.shortLabel}</div>
         <div>
           <span>{overview ? "Lectura del mes actual" : "Lectura del mes seleccionat"}</span>
-          <h2>Bolets de temporada {monthWithPreposition(month)}</h2>
+          <h2>{overview ? `Bolets de temporada ${monthWithPreposition(month)}` : `Calendari de bolets ${monthWithPreposition(month)}`}</h2>
           <p>{activeSpecies.length} espècies del catàleg tenen activitat estacional possible o superior aquest mes. El calendari descriu potencial: no confirma que estiguin fructificant avui.</p>
         </div>
         <Link href="/bolets-avui" className="button light-button">On trobar bolets avui <Map size={16} /></Link>

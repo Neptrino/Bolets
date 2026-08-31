@@ -347,6 +347,7 @@
 .spring-lookalikes a:hover { border-color: rgba(47, 65, 42, .42); background: rgba(255, 253, 247, .78); }
 .spring-lookalikes a:focus-visible { outline: 3px solid #c8794d; outline-offset: 2px; }
 .season-related-links { display: flex; flex-wrap: wrap; gap: .65rem 1.2rem; }
+.season-overview-back { display: inline-flex; margin-bottom: 1.25rem; }
 .map-page-guide-links { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .7rem 1.2rem; margin-top: 1rem; }
 .map-page-guide-links a { display: inline-flex; align-items: center; gap: .3rem; color: #31472e; font-weight: 800; }
 .map-page-seo-copy { margin-top: 3.75rem; margin-bottom: 1rem; }

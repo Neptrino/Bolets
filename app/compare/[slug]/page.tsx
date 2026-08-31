@@ -144,9 +144,9 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
       </section>
 
       <div className="comparison-actions">
-        <Link href={speciesPath(left)} className="text-link">Fitxa de {left.identity.commonName} <ArrowUpRight size={16} /></Link>
+        <Link href={speciesPath(left)} className="text-link">Guia principal: {left.identity.commonName} <ArrowUpRight size={16} /></Link>
         <Link href={`/compare?left=${left.speciesId}&right=${right.speciesId}`} className="button moss-button">Obrir el comparador complet <ArrowRightLeft size={16} /></Link>
-        <Link href={speciesPath(right)} className="text-link">Fitxa de {right.identity.commonName} <ArrowUpRight size={16} /></Link>
+        <Link href={speciesPath(right)} className="text-link">Guia principal: {right.identity.commonName} <ArrowUpRight size={16} /></Link>
       </div>
 
       <aside className="intent-emergency-note comparison-warning">

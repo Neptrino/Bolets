@@ -396,6 +396,11 @@ function safetyProfile(seed: SafetySeed): SpeciesProfile {
 speciesProfiles.push(
   profile({
     speciesId: "boletus-edulis",
+    seo: {
+      title: "Cep bolet: identificació, hàbitat i temporada",
+      description: "Guia del cep (Boletus edulis): porus, reticle, boscos, temporada i diferències amb el cep d’estiu, el mataparent i el matagent.",
+      keywords: ["cep bolet", "bolet cep", "ceps bolets"],
+    },
     identity: { commonName: "Cep", alternateNames: ["surenc", "siureny"], scientificName: "Boletus edulis", family: "Boletaceae", genus: "Boletus", edibility: "excellent_edible", identificationDifficulty: "Mitjana", typicalSize: "Barret de 7–25 cm", shortDescription: "Bolet robust de porus blancs a olivacis, associat a coníferes i planifolis." },
     media: [
       {
@@ -461,6 +466,11 @@ speciesProfiles.push(
   }),
   profile({
     speciesId: "lactarius-sanguifluus",
+    seo: {
+      title: "Rovelló bolet: identificació i diferències",
+      description: "Guia del rovelló (Lactarius sanguifluus): làtex vermell vinós, pinedes, temporada i diferències amb el pinetell.",
+      keywords: ["rovelló bolet", "bolet rovelló", "rovello bolet"],
+    },
     identity: { commonName: "Rovelló", alternateNames: ["esclata-sang", "rovelló de sang", "rovelló de solell", "sanguinenc", "rovelló vinós"], scientificName: "Lactarius sanguifluus", family: "Russulaceae", genus: "Lactarius", edibility: "excellent_edible", identificationDifficulty: "Mitjana", typicalSize: "Barret de 4–12 cm", shortDescription: "Lactari de tons vinós-verdosos que segrega làtex vermell fosc sota pinedes mediterrànies i montanes calcàries." },
     morphology: { cap: "Ataronjat apagat a gris vinós, amb zones concèntriques.", hymenium: "Làmines decurrents, que poden virar a vinós.", stem: "Curt, del color del barret o més clar.", flesh: "Segrega làtex vermell vinós.", colour: "Taronja apagat, vi i verd grisós.", smell: "Suau.", texture: "Ferm però fràgil amb l’edat.", typicalAppearance: "Lactari mediterrani menys taronja que el rovelló comú.", keyFeatures: ["Làtex vermell vinós", "Tons grisos o verdosos", "Associació amb pins"], variation: "Els colors s’enfosqueixen ràpidament per pressió o maduresa." },
     similarSpecies: [{ scientificName: "Lactarius deliciosus", commonName: "Pinetell", mainDifferences: "Làtex més taronja i barret generalment més viu.", edibility: "excellent_edible", toxicity: "Sense toxicitat coneguda." }, { scientificName: "Lactarius semisanguifluus", commonName: "Rovelló semisanguinenc", mainDifferences: "Làtex inicialment taronja que es torna més vermellós.", edibility: "edible", toxicity: "Sense toxicitat coneguda." }],
@@ -469,6 +479,11 @@ speciesProfiles.push(
   }),
   profile({
     speciesId: "cantharellus-cibarius",
+    seo: {
+      title: "Rossinyol bolet: identificació i confusions",
+      description: "Guia del rossinyol (Cantharellus cibarius): plecs, boscos, temporada i diferències amb el fals rossinyol i el bolet d’olivera tòxic.",
+      keywords: ["rossinyol bolet", "bolet rossinyol", "rossinyols bolets"],
+    },
     identity: { commonName: "Rossinyol", alternateNames: ["vaqueta", "ginestrola"], scientificName: "Cantharellus cibarius", family: "Cantharellaceae", genus: "Cantharellus", edibility: "excellent_edible", identificationDifficulty: "Mitjana", typicalSize: "Barret de 3–10 cm", shortDescription: "Bolet groc daurat amb plecs decurrents, aromàtic i propi de boscos humits." },
     morphology: { cap: "Irregular, ondulat i embudat amb l’edat.", hymenium: "Plecs gruixuts, decurrents i bifurcats; no són làmines fines.", stem: "Continu amb el barret, del mateix groc.", flesh: "Blanca-groguenca, ferma.", colour: "Groc d’ou a groc ataronjat.", smell: "Afruitat, sovint recorda l’albercoc.", texture: "Ferm i elàstic.", typicalAppearance: "Silueta ondulada, groga i sense separació neta entre barret i peu.", keyFeatures: ["Plecs, no làmines", "Olor afruitada", "Color groc uniforme"], variation: "En sequera és més petit i pàl·lid; amb pluja pot tenir marge més ondulat." },
     similarSpecies: [{ scientificName: "Hygrophoropsis aurantiaca", commonName: "Fals rossinyol", mainDifferences: "Làmines fines i nombroses, color més ataronjat; creix sovint en fusta o restes.", edibility: "not_recommended", toxicity: "Pot causar molèsties digestives.", warning: true }, { scientificName: "Omphalotus olearius", commonName: "Bolet d’olivera", mainDifferences: "Làmines veritables taronja intens; creix en fusta, pot ser bioluminescent.", edibility: "toxic", toxicity: "Provoca trastorns gastrointestinals intensos.", warning: true }],
