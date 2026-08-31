@@ -211,16 +211,14 @@ into source control, chat or shell history. Rotate it before its expiry; a faile
 timer is intentionally visible in the system journal instead of silently
 posting with a different account or stale credential.
 
-After a rollout has loaded the file, invoke the authenticated route once and
-confirm the returned Buffer post ID and the post on Instagram. The endpoint
-serves a signed JPEG that Buffer can fetch from the public URL. Then install the
-daily timer:
+After a rollout has loaded the file, invoke the root-only publishing script once
+and confirm the returned Buffer post ID and the post on Instagram. The public
+proxy deliberately blocks `/api/internal/*`; the script calls the authenticated
+route from inside the application container. The endpoint serves a signed JPEG
+that Buffer can fetch from its public URL. Then install the daily timer:
 
 ```bash
-. /opt/bolets/secrets/instagram.env
-curl --fail-with-body --request POST \
-  --header "Authorization: Bearer ${INSTAGRAM_PUBLISH_SECRET}" \
-  https://bolets.app/api/internal/instagram/daily
+sudo /opt/bolets/app/deploy/vps/publish-instagram-daily.sh
 sudo install -m 644 deploy/vps/bolets-instagram.service /etc/systemd/system/
 sudo install -m 644 deploy/vps/bolets-instagram.timer /etc/systemd/system/
 sudo systemctl daemon-reload

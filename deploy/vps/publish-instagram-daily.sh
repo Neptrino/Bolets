@@ -11,20 +11,34 @@ if find "$instagram_env_file" -perm /077 -print -quit | grep -q .; then
   exit 77
 fi
 
-set -a
-# This file is root-controlled and limited to simple KEY=value assignments.
-# shellcheck disable=SC1090
-. "$instagram_env_file"
-set +a
+app_containers=$(docker ps \
+  --filter label=com.docker.compose.project=supabase \
+  --filter label=com.docker.compose.service=app \
+  --filter status=running \
+  --format '{{.ID}}')
+set -- $app_containers
+if [ "$#" -ne 1 ]; then
+  echo "Expected exactly one running Bolets app container" >&2
+  exit 69
+fi
+app_container=$1
 
-: "${INSTAGRAM_PUBLISH_SECRET:?Set INSTAGRAM_PUBLISH_SECRET}"
+# Caddy intentionally blocks /api/internal/* from the public internet. Run the
+# authenticated request inside the app container, where the root-only env file
+# has already been loaded by Compose.
+docker exec -i "$app_container" node --input-type=module - <<'NODE'
+const secret = process.env.INSTAGRAM_PUBLISH_SECRET;
+if (!secret) {
+  console.error("INSTAGRAM_PUBLISH_SECRET is missing from the app container");
+  process.exit(78);
+}
 
-curl \
-  --fail-with-body \
-  --silent \
-  --show-error \
-  --max-time 90 \
-  --request POST \
-  --header "Authorization: Bearer ${INSTAGRAM_PUBLISH_SECRET}" \
-  https://bolets.app/api/internal/instagram/daily
-printf '\n'
+const response = await fetch("http://127.0.0.1:3000/api/internal/instagram/daily", {
+  method: "POST",
+  headers: { Authorization: `Bearer ${secret}` },
+  signal: AbortSignal.timeout(90_000),
+});
+const body = await response.text();
+console.log(body);
+if (!response.ok) process.exit(1);
+NODE
