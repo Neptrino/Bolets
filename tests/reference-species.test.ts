@@ -129,6 +129,11 @@ describe("descriptive catalogue species", () => {
 
   it("links the existing chanterelle profile to the descriptive lookalike without an unsupported comparator", async () => {
     const html = renderToStaticMarkup(await SpeciesPage({ params: Promise.resolve({ slug: "rossinyol" }), searchParams: Promise.resolve({}) }));
+    expect(html).toContain('class="species-anatomy-guide-link"');
+    expect(html).toContain("Guia de les parts");
+    for (const icon of ["cap", "hymenium", "stem", "flesh-reaction"]) {
+      expect(html).toContain(`data-mushroom-icon="${icon}"`);
+    }
     expect(html).toContain(`href="${speciesPath(species)}"`);
     expect(html).not.toContain("right=hygrophoropsis-aurantiaca");
     expect(html).toContain('href="/fals-rossinyol"');

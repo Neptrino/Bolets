@@ -3,17 +3,19 @@ import {
   ArrowRightLeft,
   ArrowUpRight,
   BookOpen,
-  CircleDot,
   CircleHelp,
-  MoveVertical,
   Palette,
   RefreshCw,
-  Rows3,
-  ScanLine,
   ShieldAlert,
   Wind,
 } from "lucide-react";
 import { EdibilityBadge } from "@/components/edibility-badge";
+import {
+  MushroomCapIcon,
+  MushroomFleshIcon,
+  MushroomHymeniumIcon,
+  MushroomStemIcon,
+} from "@/components/mushroom-anatomy-icons";
 import { comparisonPagesForSpecies } from "@/data/comparison-pages";
 import { getReferenceSpeciesByScientificName } from "@/data/reference-species";
 import { getSpeciesByScientificName } from "@/data/species";
@@ -38,22 +40,28 @@ export function SpeciesIdentificationSection({
   </div>
   <div>
     <p className="eyebrow">Lectura de camp</p>
-    <h2>Com reconèixer-lo</h2>
+    <div className="species-identification-heading">
+      <h2>Com reconèixer-lo</h2>
+      <Link href="/parts-dun-bolet" className="species-anatomy-guide-link">
+        Guia de les parts
+        <ArrowUpRight size={14} aria-hidden="true" />
+      </Link>
+    </div>
     <div className="morphology-grid">
       <article>
-        <h3><CircleDot size={16} aria-hidden="true" />Barret</h3>
+        <h3><MushroomCapIcon size={20} />Barret</h3>
         <p>{species.morphology.cap}</p>
       </article>
       <article>
-        <h3><Rows3 size={16} aria-hidden="true" />Himeni</h3>
+        <h3><MushroomHymeniumIcon size={20} />Himeni</h3>
         <p>{species.morphology.hymenium}</p>
       </article>
       <article>
-        <h3><MoveVertical size={16} aria-hidden="true" />Peu</h3>
+        <h3><MushroomStemIcon size={20} />Peu</h3>
         <p>{species.morphology.stem}</p>
       </article>
       <article>
-        <h3><ScanLine size={16} aria-hidden="true" />Carn i tacte</h3>
+        <h3><MushroomFleshIcon size={20} />Carn i tacte</h3>
         <p>
           {species.morphology.flesh} {species.morphology.texture}
         </p>

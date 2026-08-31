@@ -160,6 +160,36 @@
   line-height: 1.02;
   letter-spacing: -0.025em;
 }
+.compact-species-page .species-identification-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.compact-species-page .species-identification-heading h2 {
+  margin: 0;
+}
+.compact-species-page .species-anatomy-guide-link {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+  padding-bottom: 3px;
+  color: #6f776c;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-color: rgba(111, 119, 108, 0.35);
+  text-underline-offset: 0.22em;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+  white-space: nowrap;
+}
+.compact-species-page .species-anatomy-guide-link:hover,
+.compact-species-page .species-anatomy-guide-link:focus-visible {
+  color: var(--gold);
+  text-decoration-color: currentColor;
+}
 .compact-species-page .section-kicker {
   display: grid;
   align-content: start;
