@@ -1,0 +1,147 @@
+.mushroom-game-forest-art {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  background: #1b3328;
+  pointer-events: none;
+}
+
+.mushroom-game-forest-art picture,
+.mushroom-game-forest-art img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mushroom-game-forest-art img {
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(0.88) brightness(0.76) contrast(1.04);
+  transition: filter 1.2s ease, transform 4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mushroom-game-forest-art::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(180deg, rgba(7, 23, 17, 0.12), rgba(7, 21, 15, 0.36)),
+    radial-gradient(circle at center, transparent 32%, rgba(5, 16, 12, 0.28) 100%);
+  transition: opacity 1.2s ease;
+}
+
+.mushroom-game-stage[data-started="true"] .mushroom-game-forest-art img {
+  transform: scale(1.018);
+}
+
+.mushroom-game-stage[data-complete="true"] .mushroom-game-forest-art img {
+  filter: saturate(1.02) brightness(0.96) contrast(1.02);
+  transform: scale(1.035);
+}
+
+.mushroom-game-stage[data-complete="true"] .mushroom-game-forest-art::after {
+  opacity: 0.34;
+}
+
+.mushroom-game-forest {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+}
+
+.forest-sun,
+.forest-sun-glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mushroom-game-stage[data-complete="true"] .forest-sun {
+  fill: #ffe087;
+  opacity: 1;
+  transform: scale(1.45);
+  filter: drop-shadow(0 0 28px rgba(255, 218, 139, 0.9));
+}
+
+.mushroom-game-stage[data-complete="true"] .forest-sun-glow {
+  opacity: 1;
+  transform: scale(1.22);
+}
+
+.forest-mist {
+  animation: mushroom-illustrated-mist 16s ease-in-out infinite alternate;
+}
+
+.forest-ferns {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  animation: mushroom-fern-breathe 5s ease-in-out infinite alternate;
+}
+
+.mushroom-game-specimen {
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 68px;
+  height: 64px;
+  overflow: visible;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 8px 5px rgba(3, 12, 8, 0.58));
+  transition: transform 0.25s cubic-bezier(0.2, 1.4, 0.4, 1), filter 0.25s ease;
+}
+
+.mushroom-game-hotspot:hover .mushroom-game-specimen,
+.mushroom-game-hotspot:focus-visible .mushroom-game-specimen {
+  transform: translateX(-50%) translateY(-3px) scale(1.1);
+  filter: drop-shadow(0 11px 7px rgba(3, 12, 8, 0.64)) brightness(1.08);
+}
+
+.mushroom-game-hotspot[data-found="true"] .mushroom-game-specimen {
+  filter: drop-shadow(0 0 9px rgba(219, 229, 160, 0.5)) drop-shadow(0 8px 5px rgba(3, 12, 8, 0.55));
+}
+
+@keyframes mushroom-illustrated-mist {
+  to { transform: translateX(48px); opacity: 0.75; }
+}
+
+@keyframes mushroom-fern-breathe {
+  to { transform: rotate(1.5deg); }
+}
+
+@media (max-width: 680px) {
+  .mushroom-game-forest-art img {
+    object-position: center center;
+  }
+
+  .mushroom-game-forest {
+    width: 112%;
+    max-width: none;
+    transform: translateX(-6%);
+  }
+
+  .mushroom-game-specimen {
+    width: 61px;
+    height: 58px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forest-sun,
+  .forest-sun-glow,
+  .forest-mist,
+  .forest-ferns,
+  .mushroom-game-forest-art img,
+  .mushroom-game-specimen {
+    animation: none;
+    transition: none;
+  }
+}

@@ -72,6 +72,7 @@ export function buildSitemap(
     })),
     { url: absoluteUrl("/troballes"), lastModified },
     { url: absoluteUrl("/compare"), lastModified },
+    { url: absoluteUrl("/joc"), lastModified },
     ...comparisonPages.map((page) => ({
       url: absoluteUrl(`/compare/${page.slug}`),
       lastModified,

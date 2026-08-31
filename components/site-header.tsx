@@ -11,6 +11,7 @@ const links = [
   { href: "/troballes", label: "Troballes", mobileLabel: "Troballes", featured: false },
   { href: "/zones", label: "Zones", mobileLabel: "Zones", featured: false },
   { href: "/compare", label: "Comparador", mobileLabel: "Comparador", featured: false },
+  { href: "/joc", label: "Joc", mobileLabel: "Joc del bosc", featured: false },
   { href: "/bolets-avui", label: "Avui", mobileLabel: "Bolets avui", featured: true }
 ] as const;
 
