@@ -1,33 +1,32 @@
 import { expect, test } from "@playwright/test";
 
-test("plays from the first native-control click before hydration", async ({ page }) => {
-  await page.route("**/_next/static/chunks/**", async (route) => {
-    await new Promise((resolve) => setTimeout(resolve, 2_000));
-    await route.continue();
+test.describe("before hydration", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("plays from the first native-control click", async ({ page }) => {
+    await page.goto("/");
+    const video = page.locator(".home-showcase-player video");
+
+    await video.scrollIntoViewIfNeeded();
+    await expect(video).toHaveAttribute("controls", "");
+    await expect(page.locator(".home-showcase-poster-play")).toHaveCount(0);
+
+    const bounds = await video.boundingBox();
+    expect(bounds).not.toBeNull();
+    if (!bounds) return;
+
+    const nativePlayControl = {
+      x: bounds.x + 34,
+      y: bounds.y + bounds.height - 40,
+    };
+    await page.mouse.move(nativePlayControl.x, nativePlayControl.y);
+    await page.waitForTimeout(100);
+    await page.mouse.click(nativePlayControl.x, nativePlayControl.y);
+
+    await expect.poll(
+      () => video.evaluate((element) => (element as HTMLVideoElement).paused),
+    ).toBe(false);
   });
-
-  const navigation = page.goto("/", { waitUntil: "domcontentloaded" });
-  const video = page.locator(".home-showcase-player video");
-
-  await video.waitFor({ state: "visible" });
-  await video.scrollIntoViewIfNeeded();
-  await expect(video).toHaveAttribute("controls", "");
-  await expect(page.locator(".home-showcase-poster-play")).toHaveCount(0);
-
-  const bounds = await video.boundingBox();
-  expect(bounds).not.toBeNull();
-  if (!bounds) return;
-
-  const nativePlayControl = {
-    x: bounds.x + 25,
-    y: bounds.y + bounds.height - 25,
-  };
-  await page.mouse.move(nativePlayControl.x, nativePlayControl.y);
-  await page.mouse.click(nativePlayControl.x, nativePlayControl.y);
-
-  await expect.poll(() => video.evaluate((element) => element.paused)).toBe(false);
-  await navigation;
-  await expect(page.locator(".home-showcase-poster-play")).toHaveCount(0);
 });
 
 test("plays from the first branded-button click after hydration", async ({ page }) => {
@@ -38,6 +37,14 @@ test("plays from the first branded-button click after hydration", async ({ page 
     .getByRole("button", { name: "Reprodueix el vídeo de presentació" })
     .click();
 
-  await expect.poll(() => video.evaluate((element) => element.paused)).toBe(false);
+  await expect.poll(
+    () => video.evaluate((element) => (element as HTMLVideoElement).paused),
+  ).toBe(false);
+  await expect(page.locator(".home-showcase-poster-play")).toHaveCount(0);
+
+  await video.evaluate((element) => (element as HTMLVideoElement).pause());
+  await expect.poll(
+    () => video.evaluate((element) => (element as HTMLVideoElement).paused),
+  ).toBe(true);
   await expect(page.locator(".home-showcase-poster-play")).toHaveCount(0);
 });

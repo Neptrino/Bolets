@@ -8,7 +8,7 @@ const neverChanges = () => () => undefined;
 const clientHasHydrated = () => true;
 const serverHasHydrated = () => false;
 
-function useVideoPlaying(video: HTMLVideoElement | null) {
+function useVideoStarted(video: HTMLVideoElement | null) {
   const subscribe = useCallback((onPlaybackChange: () => void) => {
     if (!video) return () => undefined;
 
@@ -25,7 +25,11 @@ function useVideoPlaying(video: HTMLVideoElement | null) {
     };
   }, [video]);
   const getSnapshot = useCallback(
-    () => Boolean(video && !video.paused && !video.ended),
+    () => Boolean(
+      video
+      && !video.ended
+      && (!video.paused || video.currentTime > 0),
+    ),
     [video],
   );
 
@@ -41,7 +45,7 @@ export function HomeShowcaseVideo() {
     clientHasHydrated,
     serverHasHydrated,
   );
-  const playing = useVideoPlaying(video);
+  const started = useVideoStarted(video);
 
   const play = async () => {
     try {
@@ -90,7 +94,7 @@ export function HomeShowcaseVideo() {
           El navegador no permet reproduir aquest vídeo.
         </video>
 
-        {hydrated && video !== null && !playing && (
+        {hydrated && video !== null && !started && (
           <button type="button" className="home-showcase-poster-play" onClick={play} aria-label="Reprodueix el vídeo de presentació">
             <span className="home-showcase-poster-play-content">
               <span className="home-showcase-poster-play-icon" aria-hidden="true"><Play size={24} fill="currentColor" /></span>
