@@ -32,6 +32,11 @@ export function signedDailyShareImagePath(
   return createSignedDailyShareImagePath(card, format, secret);
 }
 
+export function signedDailyInstagramImagePath(card: DailyShareCard) {
+  const path = signedDailyShareImagePath(card, "feed");
+  return path.replace("/imatge?", "/instagram.jpg?");
+}
+
 export function readSignedDailyShareCard(
   searchParams: URLSearchParams,
   expectedSlug: string,

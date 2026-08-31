@@ -1,0 +1,11 @@
+[Unit]
+Description=Publish the Bolets prediction to Instagram every day
+
+[Timer]
+OnCalendar=*-*-* 08:15:00 UTC
+RandomizedDelaySec=10m
+Persistent=true
+Unit=bolets-instagram.service
+
+[Install]
+WantedBy=timers.target

@@ -11,6 +11,16 @@ const seasonalFooterGuides = seasonGuides.map(({ path, cardTitle, months }) => (
   months,
 }));
 
+function InstagramMark() {
+  return (
+    <svg aria-hidden="true" fill="none" height="17" viewBox="0 0 24 24" width="17">
+      <rect height="18" rx="5" stroke="currentColor" strokeWidth="2" width="18" x="3" y="3" />
+      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
+      <circle cx="17.5" cy="6.5" fill="currentColor" r="1.25" />
+    </svg>
+  );
+}
+
 export function SiteFooter() {
   const initialMonth = monthInTimeZone();
 
@@ -26,6 +36,14 @@ export function SiteFooter() {
             <span>CATALUNYA · {new Date().getFullYear()}</span>
           </div>
           <p className="site-footer-safety">No identifiquis ni consumeixis bolets sense confirmació experta.</p>
+          <Link
+            className="site-footer-social"
+            href="/instagram"
+            rel="me noopener noreferrer"
+            target="_blank"
+          >
+            <InstagramMark /> Instagram
+          </Link>
         </div>
         <nav className="site-footer-links" aria-label="Guies i informació editorial">
           <Link href="/bolets-avui">Bolets avui</Link>

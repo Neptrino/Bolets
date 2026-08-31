@@ -18,7 +18,7 @@ Use these paths on the VPS:
 /opt/bolets/app       this repository
 /opt/bolets/releases  immutable application releases keyed by Git commit
 /opt/bolets/supabase  official Supabase self-hosted files
-/opt/bolets/secrets   root-readable function, status, Umami and optional observability environment files
+/opt/bolets/secrets   root-readable function, status, Umami, Instagram and optional observability environment files
 /var/backups/bolets   short-lived local backups copied off the VPS
 ```
 
@@ -175,6 +175,64 @@ random internal token in `status.env`, then run `chmod 600` on it. Keep the
 plaintext Basic Auth password in the password manager; the internal token is
 only a Caddy-to-Next.js and Alloy-to-Next.js credential and should never be used
 in a browser. Caddy strips any client-supplied copy of that internal header.
+
+### Instagram profile and daily prediction
+
+The footer links through `/instagram`, which resolves the configured profile at
+request time. The daily publisher sends the signed 1080 × 1350 Catalunya card
+to Buffer only when its verified observation belongs to the current civil day
+in `Europe/Madrid`. Before creating a post, it reads the channel's recent posts
+for the date marker, so restarting or manually invoking the timer does not
+publish the same day twice. Missing, withheld and stale predictions fail closed.
+
+The account must be an Instagram Professional account for automatic publishing.
+In Buffer, use **New channel → Instagram → Connect with Instagram** and sign in
+directly with the `bolets.app` Instagram account; a Facebook Page or Facebook
+login is not required for this connection method. Confirm in Buffer that the
+channel is connected and automatic publishing is enabled.
+
+Create a personal API key in Buffer's developer area. Give it only
+`accountRead`, `postsRead` and `postsWrite`, choose the shortest practical
+expiry, and save the expiry date in the password manager. The publisher finds
+the `bolets.app` Instagram channel automatically and refuses to publish if it is
+missing, disconnected, locked or ambiguous.
+
+Create the root-only configuration before enabling publication:
+
+```bash
+cp deploy/vps/instagram.env.example /opt/bolets/secrets/instagram.env
+openssl rand -hex 32
+chmod 600 /opt/bolets/secrets/instagram.env
+```
+
+Set the exact public profile URL, replacement Buffer API key, Buffer channel
+name and the independently generated publish secret. Never paste the Buffer key
+into source control, chat or shell history. Rotate it before its expiry; a failed
+timer is intentionally visible in the system journal instead of silently
+posting with a different account or stale credential.
+
+After a rollout has loaded the file, invoke the authenticated route once and
+confirm the returned Buffer post ID and the post on Instagram. The endpoint
+serves a signed JPEG that Buffer can fetch from the public URL. Then install the
+daily timer:
+
+```bash
+. /opt/bolets/secrets/instagram.env
+curl --fail-with-body --request POST \
+  --header "Authorization: Bearer ${INSTAGRAM_PUBLISH_SECRET}" \
+  https://bolets.app/api/internal/instagram/daily
+sudo install -m 644 deploy/vps/bolets-instagram.service /etc/systemd/system/
+sudo install -m 644 deploy/vps/bolets-instagram.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now bolets-instagram.timer
+sudo systemctl status bolets-instagram.service bolets-instagram.timer
+```
+
+The timer runs at 08:15 UTC with a small randomized delay, after the daily
+environment refresh and condition-cache publication. It catches up after host
+downtime. Inspect failures with
+`journalctl -u bolets-instagram.service`; do not add blind POST retries because
+an interrupted response can occur after Buffer has accepted the publication.
 
 ## 3. Check out Bolets and validate Compose
 

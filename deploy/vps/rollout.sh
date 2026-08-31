@@ -13,6 +13,7 @@ observability_override_file="$app_dir/deploy/vps/compose.observability.yaml"
 umami_env_file=${BOLETS_UMAMI_ENV_FILE:-/opt/bolets/secrets/umami.env}
 status_env_file=${BOLETS_STATUS_ENV_FILE:-/opt/bolets/secrets/status.env}
 observability_env_file=${BOLETS_OBSERVABILITY_ENV_FILE:-/opt/bolets/secrets/observability.env}
+instagram_env_file=${BOLETS_INSTAGRAM_ENV_FILE:-/opt/bolets/secrets/instagram.env}
 supabase_env_file="$supabase_dir/.env"
 
 if [ ! -f "$app_dir/Dockerfile" ] || [ ! -f "$supabase_dir/docker-compose.yml" ] ||
@@ -30,6 +31,12 @@ fi
 
 if find "$status_env_file" -perm /077 -print -quit | grep -q .; then
   echo "The status environment file must not be accessible by group or other users" >&2
+  exit 77
+fi
+
+if [ -f "$instagram_env_file" ] &&
+   find "$instagram_env_file" -perm /077 -print -quit | grep -q .; then
+  echo "The Instagram environment file must not be accessible by group or other users" >&2
   exit 77
 fi
 

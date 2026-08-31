@@ -28,6 +28,9 @@ services:
         required: false
 
   app:
+    env_file:
+      - path: ${BOLETS_INSTAGRAM_ENV_FILE:-/opt/bolets/secrets/instagram.env}
+        required: false
     build:
       context: ${BOLETS_APP_DIR:?Set BOLETS_APP_DIR to the checked-out Bolets repository}
       dockerfile: Dockerfile
