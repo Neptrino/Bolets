@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, BookOpen, Layers3, MapPinned, Mountain, ShieldCheck, Trees } from "lucide-react";
+import { DataSourceCredits } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { MediaImage } from "@/components/media-image";
 import { TerritoryPortrait } from "@/components/territory-portrait";
@@ -51,7 +52,10 @@ export default async function PlacePage({ params }: Props) {
           {guides.map(({ page, species }, index) => { const image = species.media.find((asset) => asset.identificationReference) ?? species.media[0]; const habitat = species.ecologicalConfig.habitat; return <Link href={locationPagePath(page)} className="location-guide-card" key={page.speciesSlug}><div className={`location-guide-card-media${image ? " has-image" : ""}`}>{image && <MediaImage asset={image} alt={image.alt} fill preload={index === 0} sizes="(max-width: 760px) calc(100vw - 48px), 50vw" />}<span>{species.identity.scientificName}</span></div><div className="location-guide-card-copy"><div className="location-guide-card-title"><h3>{page.titlePhrase}</h3><ArrowUpRight size={20} /></div><p>{page.habitatNote}</p><div className="location-guide-card-facts"><span><Trees size={15} /> {habitat.forestTypes[0]}</span><span><Mountain size={15} /> {habitat.altitude[0]}–{habitat.altitude[1]} m</span></div></div></Link>; })}
         </div></section>
         <aside className="location-hub-principle"><div><MapPinned size={24} /><p className="eyebrow light">Com llegir aquestes guies</p><h2>El lloc i el moment<br />han de coincidir.</h2></div><p>La guia explica on encaixa l’espècie i el mapa compara les condicions actuals. Cap dels dos confirma presència ni revela una localització exacta.</p><Link href="/metode" className="text-link">Entendre el mètode <ArrowUpRight size={17} /></Link></aside>
-        <p className="location-territorial-source">Font territorial: <Link href={location.source.url} target="_blank" rel="noreferrer">{location.source.title} <ArrowUpRight size={13} /></Link></p>
+        <DataSourceCredits
+          label="Font territorial"
+          sources={[{ label: location.source.title, url: location.source.url }]}
+        />
       </div>
     </div>
   );

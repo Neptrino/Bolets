@@ -5,9 +5,9 @@ export default function MushroomsTodayLoading() {
   return (
     <PageShell as="article">
       <PageHeader
-        eyebrow={<><Map size={15} /> Predicció amb les últimes dades disponibles</>}
-        title={<>Bolets avui<br /><PageTitleAccent>a Catalunya.</PageTitleAccent></>}
-        description="Comparem totes les espècies comestibles en temporada i destaquem la millor cel·la de cada territori. La puntuació combina l’hàbitat adequat amb les condicions per fructificar-hi; no confirma presència ni garanteix trobar bolets."
+        eyebrow={<><Map size={15} /> Condicions actuals per territori</>}
+        title={<>On hi ha millors condicions<br /><PageTitleAccent>per als bolets avui?</PageTitleAccent></>}
+        description="Comparem les espècies comestibles de temporada i destaquem el sector més favorable de cada territori. La valoració combina el bosc, el sòl i el temps recent; no confirma que hi hagi bolets."
         layout="split"
       />
       <section className="current-board current-board-loading" aria-busy="true" aria-live="polite">

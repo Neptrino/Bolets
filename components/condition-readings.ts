@@ -117,13 +117,13 @@ const data: Array<{
     },
     stats: [
       {
-        label: "Mitj · 24 h",
+        label: "Mitjana · 24 h",
         value: temperature(atCellAltitude(v.temperatureAvg24hC)),
         explanation:
-          "Mitjana tèrmica de les últimes 24 hores, nits incloses, a l’altitud de la cel·la.",
+          "Temperatura mitjana de les últimes 24 hores, nits incloses, ajustada a l’altitud del sector.",
       },
       {
-        label: `Mitj · ${temperatureWindowDays ?? "—"} dies`,
+        label: `Mitjana · ${temperatureWindowDays ?? "—"} dies`,
         value: temperature(atCellAltitude(temperatureWindowAverage)),
         explanation:
           "Temperatura mitjana del període que fa servir aquesta espècie.",
@@ -155,31 +155,31 @@ const data: Array<{
         label: "Mín. · 24 h",
         value: percentage(v.soilMoistureMin24h, true),
         explanation:
-          "Humitat més baixa estimada a 3–9 cm de profunditat durant les últimes 24 h. Indica el moment més sec del dia, que pot limitar l’activitat si és massa baix.",
+          "Humitat més baixa estimada prop de la superfície durant les últimes 24 hores. Indica el moment més sec del dia.",
       },
       {
         label: "Mitj. · 24 h",
         value: percentage(v.soilMoistureAvg24h, true),
         explanation:
-          "Humitat mitjana estimada a 3–9 cm durant les últimes 24 h. És una referència de l’aigua disponible a la capa superficial del sòl.",
+          "Humitat mitjana estimada prop de la superfície durant les últimes 24 hores. Orienta sobre l’aigua disponible al sòl.",
       },
       {
         label: "Màx. · 24 h",
         value: percentage(v.soilMoistureMax24h, true),
         explanation:
-          "Humitat més alta estimada a 3–9 cm durant les últimes 24 h. Pot reflectir la resposta del sòl a la pluja, la rosada o una menor evaporació.",
+          "Humitat més alta estimada prop de la superfície durant les últimes 24 hores. Pot reflectir la pluja, la rosada o una menor evaporació.",
       },
       {
         label: "Mín. · 7 dies",
         value: percentage(v.soilMoistureMin7d, true),
         explanation:
-          "Humitat més baixa estimada a 3–9 cm durant la darrera setmana. Ajuda a detectar si hi ha hagut una fase seca recent, encara que ara el sòl sembli humit.",
+          "Humitat més baixa estimada prop de la superfície durant la darrera setmana. Ajuda a detectar una fase seca recent.",
       },
       {
         label: "Mitj. · 7 dies",
         value: percentage(v.soilMoistureAvg7d, true),
         explanation:
-          "Humitat mitjana estimada a 3–9 cm durant la darrera setmana. Resumeix la disponibilitat d’aigua recent, no només la lectura actual.",
+          "Humitat mitjana estimada prop de la superfície durant la darrera setmana. Resumeix l’aigua disponible recent, no només la lectura actual.",
       },
       {
         label: "Tendència · 7 dies",
@@ -220,7 +220,7 @@ const data: Array<{
         label: "Mitj. · 7 dies",
         value: percentage(v.relativeHumidityAvg7d),
         explanation:
-          "Humitat relativa mitjana dels últims set dies. Combinada amb la temperatura, estima la demanda atmosfèrica que pot accelerar l’assecament.",
+          "Humitat relativa mitjana dels últims set dies. Juntament amb la temperatura, ajuda a entendre com l’aire pot assecar el bosc.",
       },
     ],
     icon: Cloud,
@@ -237,13 +237,13 @@ const data: Array<{
         label: "Pluja · 24 h",
         value: millimetres(v.rainfall24hMm),
         explanation:
-          "Precipitació acumulada durant les últimes 24 h. Mostra si hi ha hagut un pols de pluja molt recent que pugui començar a rehidratar la capa superficial del sòl.",
+          "Pluja acumulada durant les últimes 24 hores. Mostra si el sòl ha rebut aigua molt recentment.",
       },
       {
         label: "Pluja · 3 dies",
         value: millimetres(v.rainfall3dMm),
         explanation:
-          "Precipitació de les últimes 72 h. Mulla la capa superficial i pot reactivar ràpidament la fructificació; si és baixa, el sòl superficial pot assecar-se de pressa.",
+          "Pluja dels últims tres dies. Pot millorar ràpidament les condicions, però la superfície també es pot assecar de pressa.",
       },
       {
         label: "Pluja · 7 dies",
@@ -258,10 +258,10 @@ const data: Array<{
           "Dies amb pluja apreciable. Ajuda a distingir un xàfec d’un episodi més repartit.",
       },
       {
-        label: `ET₀ · ${rainfallWindowDays ?? 7} dies`,
+        label: `Aigua perduda · ${rainfallWindowDays ?? 7} dies`,
         value: millimetres(rainfallWindowEt0),
         explanation:
-          "Estimació de l’aigua que el sòl i la vegetació poden haver perdut.",
+          "Estimació de l’aigua que el sòl i la vegetació poden haver perdut per evaporació.",
       },
       {
         label: "Ratxa seca",

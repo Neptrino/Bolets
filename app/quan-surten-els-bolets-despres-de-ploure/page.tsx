@@ -27,6 +27,7 @@ import {
 } from "@/data/editorial";
 import { getSpecies } from "@/data/species";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
+import { rainfallLimitationCopy } from "@/src/lib/species-copy";
 
 export const metadata: Metadata = {
   title: "Bolets després de ploure: quan surten?",
@@ -101,7 +102,7 @@ export default function MushroomsAfterRainPage() {
           meta="Com llegir-ho"
           title="Pluja, bosc i temporada han de coincidir"
           titleId="rain-model-title"
-          description="La pluja només modifica una part de les condicions. El mapa combina el lloc i el moment abans de donar una puntuació."
+          description="La pluja només modifica una part de les condicions. El mapa combina el lloc i el moment abans de donar una valoració."
         />
         <div className="rain-index-flow">
           <article><span aria-hidden="true">1</span><Trees size={20} /><h3>Bosc adequat</h3><p>Comprova si el bosc, el sòl i l’altitud encaixen amb l’espècie.</p></article>
@@ -110,8 +111,8 @@ export default function MushroomsAfterRainPage() {
         </div>
         <div className="rain-formula-panel">
           <div><span>Primer</span><strong>Valorem com són les condicions per fructificar dins de l’hàbitat adequat.</strong></div>
-          <div><span>Després</span><strong>La puntuació baixa si hi ha poc hàbitat adequat o si una condició clau és desfavorable.</strong></div>
-          <p><ShieldCheck size={17} aria-hidden="true" /> Les puntuacions són escales comparatives de 0 a 100. No indiquen probabilitat de presència, abundància ni data de sortida. Les fórmules completes es poden consultar a la pàgina del mètode.</p>
+          <div><span>Després</span><strong>La valoració baixa si hi ha poc terreny adequat o si una condició clau és desfavorable.</strong></div>
+          <p><ShieldCheck size={17} aria-hidden="true" /> Les valoracions serveixen per comparar zones de 0 a 100. No indiquen probabilitat de presència, abundància ni data de sortida. El càlcul complet es pot consultar a la pàgina del mètode.</p>
         </div>
       </section>
 
@@ -122,7 +123,7 @@ export default function MushroomsAfterRainPage() {
           titleId="rain-signals-title"
           description="Cap factor funciona sol, i un mateix episodi de pluja pot tenir efectes molt diferents."
         />
-        <div className="rain-factor-grid" aria-label="Components dinàmics del model després de ploure">
+        <div className="rain-factor-grid" aria-label="Factors que influeixen en les condicions després de ploure">
           <article><CalendarRange size={22} /><span>Temporada</span><h3>El moment de l’any</h3><p>Fora de la temporada habitual, una pluja difícilment serà suficient.</p></article>
           <article><Droplets size={22} /><span>Sòl</span><h3>La humitat que ja hi havia</h3><p>Un sòl molt sec pot necessitar més d’un xàfec per recuperar aigua.</p></article>
           <article><CloudRain size={22} /><span>Pluja</span><h3>Quantitat i repartiment</h3><p>Uns quants dies de pluja sostinguda no tenen el mateix efecte que un aiguat breu.</p></article>
@@ -148,7 +149,7 @@ export default function MushroomsAfterRainPage() {
               <div><dt>Humitat prèvia</dt><dd>{rainfall.priorMoisture}</dd></div>
               <div><dt>Què la pot frenar</dt><dd>{rainfall.interruption}</dd></div>
             </dl>
-            <p>{rainfall.uncertainty}</p>
+            <p>{rainfallLimitationCopy(species.speciesId, rainfall.uncertainty)}</p>
             <Link href={speciesPath(species)} className="text-link" aria-label={`Veure la fitxa de ${species.identity.commonName}`}>Veure la fitxa <ArrowUpRight size={15} /></Link>
           </article>;
         })}
@@ -169,7 +170,7 @@ export default function MushroomsAfterRainPage() {
             <a href={source.url} target="_blank" rel="noreferrer" aria-label={`Consultar l’estudi: ${source.title}`}>Consultar l’estudi <ArrowUpRight size={14} /></a>
           </article>)}
         </div>
-        <aside className="rain-model-caveat"><ShieldCheck size={21} aria-hidden="true" /><p><strong>Límit important.</strong> Les puntuacions permeten comparar condicions, però encara no s’han calibrat amb prou observacions de camp a Catalunya. No són una probabilitat de trobar bolets.</p></aside>
+        <aside className="rain-model-caveat"><ShieldCheck size={21} aria-hidden="true" /><p><strong>Límit important.</strong> Les valoracions permeten comparar condicions, però encara no les hem contrastat amb prou observacions de camp a Catalunya. No són una probabilitat de trobar bolets.</p></aside>
       </section>
 
       <nav className="rain-guide-actions" aria-label="Continuar explorant les condicions dels bolets">

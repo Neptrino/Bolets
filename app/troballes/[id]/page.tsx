@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const finding = await getPublicFinding((await params).id);
   return {
     title: finding ? `Troballa de ${finding.reportedSpeciesName}` : "Troballa",
-    description: finding ? "Observació comunitària generalitzada en una casella de 10 × 10 km; no confirma la identificació ni la presència actual." : undefined,
+    description: finding ? "Observació comunitària situada en una zona aproximada de 10 × 10 km; no confirma la identificació ni la presència actual." : undefined,
     robots: { index: false, follow: true },
   };
 }

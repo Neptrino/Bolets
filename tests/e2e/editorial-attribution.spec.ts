@@ -12,6 +12,9 @@ test("species profiles use a compact expandable credit", async ({ page }) => {
 
   const credit = page.locator(".editorial-panel--compact");
   await expect(credit).toContainText("Editorial, no micològica");
+  expect(await credit.evaluate((panel) =>
+    getComputedStyle(panel.previousElementSibling!).borderBottomWidth
+  )).toBe("0px");
   await expect(credit.locator("details")).not.toHaveAttribute("open", "");
   await credit.locator("summary").click();
   await expect(credit.locator('a[target="_blank"]')).not.toHaveCount(0);

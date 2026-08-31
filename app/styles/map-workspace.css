@@ -85,6 +85,9 @@
   .primary-nav {
     display: none;
   }
+  .header-map-link {
+    margin-left: auto;
+  }
   .mobile-nav {
     display: block;
   }
@@ -133,6 +136,8 @@
   line-height: 1.55;
 }
 .map-controls {
+  display: grid;
+  gap: 10px;
   align-self: end;
   width: min(100%, 540px);
   justify-self: end;
@@ -213,6 +218,48 @@
 .map-species-picker small i {
   color: var(--bark);
   font-family: var(--font-nunito-sans), sans-serif;
+}
+.map-species-quick-links {
+  display: grid;
+  gap: 6px;
+  padding-inline: 4px;
+}
+.map-species-quick-links > span {
+  color: #6d655d;
+  font-size: var(--text-xs);
+  font-weight: 850;
+}
+.map-species-quick-links > div {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.map-species-quick-links a {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  padding: 4px 10px;
+  border: 1px solid rgba(89, 53, 37, 0.18);
+  border-radius: 999px;
+  background: rgba(251, 247, 233, 0.58);
+  color: #554d46;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  line-height: 1.15;
+  text-decoration: none;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+.map-species-quick-links a:hover,
+.map-species-quick-links a:focus-visible {
+  border-color: rgba(169, 80, 39, 0.5);
+  background: #fff9ed;
+  color: var(--clay);
+}
+.map-species-quick-links a[aria-current="page"] {
+  border-color: #a95027;
+  background: #a95027;
+  color: #fffaf0;
 }
 
 .map-stage {
@@ -366,6 +413,9 @@
 .map-page .map-cell-visibility-heading {
   grid-template-columns: 12px minmax(0, 1fr) auto 44px;
 }
+.map-page .map-basemap-options {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
 .map-page .map-mode-option span {
   min-height: 44px;
   display: grid;
@@ -399,7 +449,7 @@
 }
 .map-reading-guide-prediction .map-reading-copy {
   grid-area: copy;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 22px 28px;
 }
 .map-reading-guide-prediction .map-reading-links {
@@ -549,6 +599,23 @@
   }
   .map-species-picker small span {
     display: none;
+  }
+  .map-species-quick-links {
+    gap: 7px;
+    padding-inline: 0;
+  }
+  .map-species-quick-links > div {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 1px 1px 5px;
+    scrollbar-width: none;
+  }
+  .map-species-quick-links > div::-webkit-scrollbar {
+    display: none;
+  }
+  .map-species-quick-links a {
+    flex: 0 0 auto;
+    min-height: 34px;
   }
   .map-stage {
     height: clamp(440px, 62dvh, 520px);

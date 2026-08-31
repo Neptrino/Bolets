@@ -5,12 +5,12 @@ import { Suspense } from "react";
 import {
   ArrowUpRight,
   Clock3,
-  Database,
   Gauge,
   Map,
   MapPinned,
   ShieldCheck,
 } from "lucide-react";
+import { DataSourceCredits } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { PredictionMapLegend } from "@/components/prediction-map-legend";
@@ -27,6 +27,10 @@ import {
   type CurrentOverviewItem,
 } from "@/src/lib/current-overview";
 import { GLOBAL_SPECIES_ID } from "@/src/lib/global-map";
+import {
+  publicConditionFactorLabel,
+  publicConditionFactorLabelFromSource,
+} from "@/src/lib/condition-presentation";
 import { SEASONAL_ACTIVITY_LABELS } from "@/src/lib/seasonality";
 import { opportunityLabel } from "@/src/lib/scoring";
 import {
@@ -37,17 +41,18 @@ import {
   SITE_URL,
   speciesPath,
 } from "@/src/lib/seo";
+import { speciesMapHref } from "@/src/lib/species-map-pages";
 import { territorialMapPath } from "@/src/lib/territorial-map";
 import type { RegionalPredictionSummary } from "@/src/lib/types";
 
 export const metadata: Metadata = {
-  title: pageTitle("Condicions per als bolets avui a Catalunya"),
-  description: metaDescription("Compara les zones i espècies amb les condicions més favorables avui a Catalunya segons la pluja, la temperatura i l’hàbitat."),
+  title: pageTitle("Bolets avui a Catalunya: zones més favorables"),
+  description: metaDescription("Consulta quines zones i espècies tenen avui les condicions més favorables a Catalunya segons la pluja, la temperatura i el bosc."),
   alternates: { canonical: "/bolets-avui" },
   openGraph: {
     url: "/bolets-avui",
-    title: "Condicions per als bolets avui a Catalunya",
-    description: "Zones i espècies amb les condicions més favorables avui, comparades amb dades ambientals vigents.",
+    title: "Bolets avui a Catalunya: zones més favorables",
+    description: "Zones i espècies amb les condicions més favorables avui segons la pluja, la temperatura i el bosc.",
     images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
   },
 };
@@ -74,9 +79,10 @@ const currentMapRegions = regionSelectItems
 const MAX_OVERVIEW_CARDS = 10;
 
 function limitingFactor(item: RankedOverviewItem) {
-  return item.summary?.result.components
+  const factor = item.summary?.result.components
     .filter((factor) => factor.score !== null)
-    .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0]?.label ?? "Sense factor limitant publicat";
+    .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0];
+  return factor ? publicConditionFactorLabel(factor.id) : "Sense cap factor destacat";
 }
 
 function extentMetric(summary: RegionalPredictionSummary) {
@@ -115,7 +121,7 @@ function overviewLocationName(item: RankedOverviewItem) {
 function overviewMapPath(item: RankedOverviewItem) {
   return isAreaOverviewItem(item)
     ? territorialMapPath(item.speciesId, item.regionId, item.bounds)
-    : `/map?species=${item.speciesId}&region=${item.regionId}`;
+    : speciesMapHref(item.speciesId, { region: item.regionId });
 }
 
 function CurrentOverviewLoading() {
@@ -160,7 +166,7 @@ async function CurrentOverview() {
             <p>
               Les condicions no són favorables en cap dels territoris comparats.
               {dominantLimitingComponent(allItems)
-                ? <> El principal fre ara mateix és «{dominantLimitingComponent(allItems)}».</>
+                ? <> El principal fre ara mateix és «{publicConditionFactorLabelFromSource(dominantLimitingComponent(allItems)!)}».</>
                 : null} Pots consultar totes les zones a continuació.
             </p>
           </div>
@@ -178,7 +184,7 @@ async function CurrentOverview() {
               <Map size={16} /> Veure al mapa <ArrowUpRight size={16} />
             </Link>
           </div>
-          <div className="current-leader-score" aria-label={`Millor cel·la territorial ${leaderScore} sobre 100`}>
+          <div className="current-leader-score" aria-label={`Millor sector del territori: ${leaderScore} sobre 100`}>
             <strong>{leaderScore}</strong>
             <span>/ 100</span>
             <small>{opportunityLabel(leaderScore)}</small>
@@ -191,7 +197,7 @@ async function CurrentOverview() {
       ) : (
         <aside className="current-leader current-leader-empty">
           <ShieldCheck size={24} />
-          <div><strong>Avui no podem comparar les zones.</strong><p>Falten dades ambientals recents o completes. Torna-ho a provar més tard.</p></div>
+          <div><strong>Avui no podem comparar les zones.</strong><p>Falten lectures recents o completes. Torna-ho a provar més tard.</p></div>
         </aside>
       )}
 
@@ -200,9 +206,9 @@ async function CurrentOverview() {
           <div>
             <p className="eyebrow"><Map size={14} aria-hidden="true" /> Mapa combinat</p>
             <h2 id="current-map-title">Les condicions d’avui, sobre el territori</h2>
-            <p>El color indica la millor puntuació per cel·la entre les espècies comestibles cartografiades.</p>
+            <p>El color mostra quina espècie comestible té les millors condicions a cada sector.</p>
           </div>
-          <Link href="/map?species=all" className="current-map-open">
+          <Link href="/map" className="current-map-open">
             Obrir el mapa complet <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         </header>
@@ -228,14 +234,14 @@ async function CurrentOverview() {
 
       <aside className="current-overview-method">
         <ShieldCheck size={21} aria-hidden="true" />
-        <p><strong>El resultat compara territoris; no assenyala troballes.</strong> Només hi entren espècies comestibles que són de temporada i zones amb dades ambientals recents i completes.</p>
+        <p><strong>El resultat compara territoris; no assenyala troballes.</strong> Només hi entren espècies comestibles que són de temporada i zones amb lectures recents i completes.</p>
       </aside>
 
       <section className="current-board" aria-labelledby="current-board-title">
         <header className="current-board-heading">
           <div>
             <p className="eyebrow">Comparador territorial</p>
-            <h2 id="current-board-title">Zones i espècies, de més a menys puntuació</h2>
+            <h2 id="current-board-title">Zones i espècies, de més a menys favorables</h2>
           </div>
           {observedWindow ? (
             <div>
@@ -246,9 +252,9 @@ async function CurrentOverview() {
 
         {items.length > 0 ? <>
           <div className="current-board-columns" aria-hidden="true">
-            <span>Posició</span><span>Zona i bolet</span><span>Puntuació</span><span>Abast</span><span>Mapa</span>
+            <span>Posició</span><span>Zona i bolet</span><span>Condicions</span><span>Abast</span><span>Mapa</span>
           </div>
-          <ol className="current-overview-grid" aria-label="Puntuacions actuals per espècie i territori, de més a menys">
+          <ol className="current-overview-grid" aria-label="Condicions actuals per espècie i territori, de més a menys favorables">
             {visibleItems.map((item, index) => {
             const summary = item.summary;
             const score = summary?.bestCell.score;
@@ -256,11 +262,11 @@ async function CurrentOverview() {
             const rank = isAvailable ? index + 1 : null;
             const isArea = isAreaOverviewItem(item);
             const locationName = isArea ? item.areaName : item.regionName;
-            const locationLabel = isArea ? item.areaTypeLabel : "regió de predicció";
+            const locationLabel = isArea ? item.areaTypeLabel : "regió";
             const gridSizeKm = summary ? summary.gridSizeM / 1000 : isArea ? 1 : 10;
             const mapPath = isArea
               ? territorialMapPath(item.speciesId, item.regionId, item.bounds)
-              : `/map?species=${item.speciesId}&region=${item.regionId}`;
+              : speciesMapHref(item.speciesId, { region: item.regionId });
 
             return (
               <li
@@ -273,14 +279,14 @@ async function CurrentOverview() {
                   <p className="current-row-species"><Link href={speciesPath(item)} className="current-row-species-link">{item.speciesName}<ArrowUpRight size={13} /></Link><span>{locationLabel} · {monthlyActivityLabel(item.seasonalActivity)}</span></p>
                 </div>
                 {isAvailable && summary && score !== null && score !== undefined ? (
-                  <div className="current-score" aria-label={`Millor cel·la de ${gridSizeKm} km ${score} sobre 100, ${opportunityLabel(score)}`}>
+                  <div className="current-score" aria-label={`Millor sector de ${gridSizeKm} km: ${score} sobre 100, ${opportunityLabel(score)}`}>
                     <div><strong>{score}</strong><span>/100 · {opportunityLabel(score)}</span></div>
                     <span className="current-score-track" aria-hidden="true"><span style={{ width: `${score}%` }} /></span>
                   </div>
                 ) : (
                   <div className="current-unavailable">
                     <strong>{item.status === "unavailable" ? "Temporalment no disponible" : "Dades insuficients"}</strong>
-                    <span>{item.status === "unavailable" ? "No hem rebut les dades ambientals" : "Falten dades recents o completes"}</span>
+                    <span>{item.status === "unavailable" ? "No hem rebut les lectures necessàries" : "Falten lectures recents o completes"}</span>
                   </div>
                 )}
                 {summary ? (
@@ -300,13 +306,15 @@ async function CurrentOverview() {
         </> : <div className="current-board-empty"><strong>Avui no hi ha dades suficients</strong><p>Torna-ho a provar més tard per comparar les zones.</p></div>}
       </section>
 
-      <p className="prediction-zone-note">La puntuació resumeix el sector més favorable de cada territori. Consulta el mapa per veure com canvien les condicions dins de la zona.</p>
+      <p className="prediction-zone-note">La valoració resumeix el sector més favorable de cada territori. Consulta el mapa per veure com canvien les condicions dins de la zona.</p>
 
       {overviewSources.length > 0 ? (
-        <aside className="current-overview-provenance" aria-label="Procedència de les dades">
-          <Database size={14} aria-hidden="true" />
-          <p><strong>Fonts de les dades:</strong> {overviewSources.join(" · ")}</p>
-        </aside>
+        <DataSourceCredits
+          sources={overviewSources}
+          label="Fonts de les dades"
+          description="Cartografia i lectures ambientals"
+          variant="panel"
+        />
       ) : null}
 
     </>
@@ -328,14 +336,14 @@ export default function MushroomsTodayPage() {
       }} />
       <PageHeader
         eyebrow={<><Map size={15} /> Condicions actuals per territori</>}
-        title={<>Bolets avui<br /><PageTitleAccent>a Catalunya.</PageTitleAccent></>}
+        title={<>On hi ha millors condicions<br /><PageTitleAccent>per als bolets avui?</PageTitleAccent></>}
         description="Compara les espècies comestibles de temporada i descobreix quins territoris tenen avui les condicions més favorables."
         layout="split"
       />
       <Suspense fallback={<CurrentOverviewLoading />}>
         <CurrentOverview />
       </Suspense>
-      <p className="prediction-zone-note">Prepares una sortida? Consulta les <Link href="/preguntes-frequents-bolets#on-buscar" className="text-link">preguntes freqüents sobre on buscar bolets i com interpretar el mapa</Link>.</p>
+      <p className="prediction-zone-note">Prepares una sortida? Consulta les <Link href="/preguntes-frequents-bolets#on-buscar" className="text-link">preguntes freqüents sobre on buscar bolets i com interpretar el mapa.</Link></p>
     </PageShell>
   );
 }

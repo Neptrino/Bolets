@@ -137,7 +137,7 @@ export function SpeciesIdentificationSection({
                     aria-label={`Comparar ${species.identity.commonName} i ${item.commonName}`}
                   >
                     <ArrowRightLeft size={15} aria-hidden="true" />
-                    Comparar
+                    Comparar amb {item.commonName}
                   </Link>
                 )}
               </div>

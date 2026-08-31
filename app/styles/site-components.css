@@ -537,7 +537,7 @@
 .prediction-map-legend {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: auto auto minmax(280px, 440px);
+  grid-template-columns: max-content max-content minmax(280px, 1fr);
   align-items: center;
   gap: 10px 16px;
 }

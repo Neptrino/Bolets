@@ -13,6 +13,7 @@ import { catalogueSpecies } from "@/data/catalogue";
 import { seasonMonthPath, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { seasonGuides } from "@/src/lib/season-guides";
 import { absoluteUrl, speciesImage, speciesPath } from "@/src/lib/seo";
+import { speciesMapPages } from "@/src/lib/species-map-pages";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 
 const lastModified = new Date(`${EDITORIAL_LAUNCH_DATE}T00:00:00+02:00`);
@@ -53,6 +54,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
     })),
     { url: absoluteUrl("/map"), lastModified },
+    ...speciesMapPages.map((page) => ({
+      url: absoluteUrl(`/map/${page.slug}`),
+      lastModified,
+    })),
     { url: absoluteUrl("/troballes"), lastModified },
     { url: absoluteUrl("/compare"), lastModified },
     ...comparisonPages.map((page) => ({

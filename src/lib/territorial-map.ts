@@ -1,5 +1,6 @@
 import { cataloniaSpatialBounds } from "@/data/regions";
 import { formatMapCoordinate } from "@/src/lib/map-query";
+import { speciesMapHref } from "@/src/lib/species-map-pages";
 import type { RegionId, SpatialBounds } from "@/src/lib/types";
 
 type BoundsQuery = Partial<Record<"west" | "south" | "east" | "north", string>>;
@@ -9,15 +10,13 @@ export function territorialMapPath(
   regionId: RegionId,
   bounds: SpatialBounds,
 ) {
-  const query = new URLSearchParams({
-    species: speciesId,
+  return speciesMapHref(speciesId, {
     region: regionId,
     west: formatMapCoordinate(bounds.west),
     south: formatMapCoordinate(bounds.south),
     east: formatMapCoordinate(bounds.east),
     north: formatMapCoordinate(bounds.north),
   });
-  return `/map?${query}`;
 }
 
 export function territorialBoundsFromQuery(query: BoundsQuery): SpatialBounds | null {

@@ -104,7 +104,7 @@ describe("current-condition overview", () => {
     expect(pageSource).toContain("Abast dins la zona");
     expect(pageSource).toContain("Principal fre");
     expect(pageSource).toContain("Zona i bolet");
-    expect(pageSource).toContain("Puntuació");
+    expect(pageSource).toContain("Condicions");
     expect(pageSource).toContain("Abast");
     expect(pageSource).not.toContain("Component més limitant");
     expect(pageSource).not.toContain("controls de publicació");

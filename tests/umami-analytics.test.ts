@@ -241,7 +241,7 @@ describe("Umami analytics", () => {
       .toContain("queueUmamiEvent(UMAMI_EVENTS.homepageVideoPlay)");
     expect(readFileSync("components/map-explorer.tsx", "utf8"))
       .toContain("queueUmamiEvent(UMAMI_EVENTS.mapCellClick)");
-    expect(readFileSync("app/map/page.tsx", "utf8"))
+    expect(readFileSync("app/map/map-page-content.tsx", "utf8"))
       .toContain("analyticsEvent={UMAMI_EVENTS.mapChangeSpecies}");
     expect(readFileSync("components/home-showcase-video.tsx", "utf8"))
       .toContain("queueUmamiEvent(UMAMI_EVENTS.homepageVideoComplete)");

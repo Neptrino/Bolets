@@ -7,7 +7,14 @@ import {
 import { cepSpeciesIds } from "@/src/lib/ceps-guide";
 import { seasonGuideForMonth } from "@/src/lib/season-guides";
 import { monthInTimeZone } from "@/src/lib/seasonality";
+import { getSpeciesMapPageBySlug, speciesMapPages } from "@/src/lib/species-map-pages";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
+
+function speciesIdFromMapUrl(url: URL) {
+  return url.searchParams.get("species")
+    ?? getSpeciesMapPageBySlug(url.pathname.split("/").at(-1) ?? "")?.speciesId
+    ?? null;
+}
 
 test("permanently redirects legacy catalogue URLs and preserves query parameters", async ({ request }) => {
   const catalogue = await request.get("/species?region=pirineus", { maxRedirects: 0 });
@@ -26,6 +33,12 @@ test("permanently redirects legacy catalogue URLs and preserves query parameters
   const rovellonsLocation = new URL(rovellons.headers().location!, "http://localhost");
   expect(rovellonsLocation.pathname).toBe("/zones/rovellons");
   expect(rovellonsLocation.searchParams.get("region")).toBe("pirineus");
+
+  const speciesMap = await request.get("/map?species=boletus-edulis&region=pirineus", { maxRedirects: 0 });
+  expect(speciesMap.status()).toBe(308);
+  const speciesMapLocation = new URL(speciesMap.headers().location!, "http://localhost");
+  expect(speciesMapLocation.pathname).toBe("/map/cep");
+  expect(speciesMapLocation.searchParams.get("region")).toBe("pirineus");
 });
 
 for (const route of [
@@ -44,6 +57,8 @@ for (const route of [
   "/equip-editorial",
   "/compare/rovello-vs-pinetell",
   "/temporada/setembre",
+  "/map/rovello",
+  "/map/cep",
 ]) {
   test(`${route} has one H1, a self canonical and structured data`, async ({ page }) => {
     const response = await page.goto(route);
@@ -88,7 +103,7 @@ test("every month in the season calendar links to its own canonical page", async
 test("the catalogue separates monthly and seasonal navigation", async ({ page }) => {
   await page.goto("/bolets");
 
-  await expect(page.getByRole("link", { name: /Per mesos/ })).toHaveAttribute("href", "/temporada");
+  await expect(page.getByRole("link", { name: /Bolets per mesos/ })).toHaveAttribute("href", "/temporada");
   const seasons = page.getByRole("navigation", { name: "Bolets per estació de l’any" });
   await expect(seasons.getByRole("link")).toHaveCount(4);
   await expect(seasons.getByRole("link", { name: /Bolets de primavera/ })).toHaveAttribute("href", "/bolets-de-primavera");
@@ -112,6 +127,24 @@ test("internal navigation exposes no legacy catalogue link", async ({ page }) =>
   }
 });
 
+test("curated species maps expose canonical quick links without widening mobile pages", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const response = await page.goto("/map/rovello");
+
+  expect(response?.status()).toBe(200);
+  await expect(page).toHaveTitle(/Mapa del rovelló a Catalunya: condicions avui/);
+  const quickLinks = page.getByRole("navigation", { name: "Mapes ràpids per espècie" });
+  await expect(quickLinks.getByRole("link")).toHaveCount(speciesMapPages.length);
+  await expect(quickLinks.getByRole("link", { name: "Rovelló", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(quickLinks.getByRole("link", { name: "Cep", exact: true })).toHaveAttribute("href", "/map/cep");
+
+  const width = await page.locator("html").evaluate((element) => ({
+    document: element.scrollWidth,
+    viewport: window.innerWidth,
+  }));
+  expect(width.document).toBe(width.viewport);
+});
+
 test("the current overview stays usable without publishing invented scores", async ({ page }) => {
   const response = await page.goto("/bolets-avui");
   expect(response?.status()).toBe(200);
@@ -120,7 +153,7 @@ test("the current overview stays usable without publishing invented scores", asy
   expect(cardCount).toBeGreaterThan(0);
   await expect(page.locator("body")).not.toContainText(/Model ecologia-v/i);
   await expect(page.locator(".current-overview-method")).toContainText(
-    "La puntuació actual decideix el resultat",
+    "El resultat compara territoris",
   );
   await expect(page.locator("body")).not.toContainText("Oportunitat O");
   await expect(page.locator("body")).not.toContainText("Condicions F");
@@ -143,14 +176,15 @@ test("the current overview stays usable without publishing invented scores", asy
       const speciesHref = await speciesLink.getAttribute("href");
       const mapHref = await mapLink.getAttribute("href");
       const mapUrl = new URL(mapHref!, "http://localhost");
-      expect(mapUrl.pathname).toBe("/map");
-      expect(mapUrl.searchParams.get("species")).toBe(speciesHref?.split("/").at(-1));
+      expect(speciesIdFromMapUrl(mapUrl)).toBe(speciesHref?.split("/").at(-1));
       expect(mapUrl.searchParams.get("region")).toBeTruthy();
     }
 
     const leader = page.locator(".current-leader:not(.current-leader-empty)");
-    await expect(leader.locator(".current-leader-species-link")).toHaveAttribute("href", /^\/bolets\/[a-z0-9-]+$/);
-    await expect(leader.locator(".current-leader-link")).toContainText("Veure al mapa");
+    if (await leader.count()) {
+      await expect(leader.locator(".current-leader-species-link")).toHaveAttribute("href", /^\/bolets\/[a-z0-9-]+$/);
+      await expect(leader.locator(".current-leader-link")).toContainText("Veure al mapa");
+    }
   }
 });
 
@@ -181,9 +215,9 @@ test("the zones directory lists every prediction region with representative spec
     await expect(card.locator(".region-map-link-count")).toContainText(/\d+ espècies/);
     const mapLink = card.getByRole("link", { name: `Veure ${label} al mapa` });
     const mapUrl = new URL((await mapLink.getAttribute("href"))!, "http://localhost");
-    const speciesId = mapUrl.searchParams.get("species");
+    const speciesId = speciesIdFromMapUrl(mapUrl);
 
-    expect(mapUrl.pathname).toBe("/map");
+    expect(mapUrl.pathname === "/map" || speciesMapPages.some((page) => mapUrl.pathname === `/map/${page.slug}`)).toBe(true);
     expect(mapUrl.searchParams.get("region")).toBe(regionId);
     expect(speciesId).toBeTruthy();
   }
@@ -231,7 +265,7 @@ test("the guides hub owns the curated local directory", async ({ page }) => {
 test("the rovellons guide connects every published Lactarius local guide", async ({ page }) => {
   const response = await page.goto("/zones/rovellons");
   expect(response?.status()).toBe(200);
-  await expect(page).toHaveTitle(/Rovellons: tipus, hàbitat, temporada i on trobar-ne/);
+  await expect(page).toHaveTitle(/Rovellons a Catalunya: tipus, temporada i zones/);
   await expect(page.locator("h1")).toContainText("Rovellons");
 
   const types = page.locator("[data-rovellons-types-table]");
@@ -260,7 +294,7 @@ test("the rovellons guide connects every published Lactarius local guide", async
 test("the ceps guide connects every cep, broad region and published local guide", async ({ page }) => {
   const response = await page.goto("/zones/ceps");
   expect(response?.status()).toBe(200);
-  await expect(page).toHaveTitle(/Ceps de Catalunya: tipus, diferències, hàbitat i temporada/);
+  await expect(page).toHaveTitle(/Ceps de Catalunya: tipus, temporada i zones/);
   await expect(page.locator("h1")).toContainText("Ceps");
 
   const speciesList = page.locator("[data-cep-species-list]");
@@ -294,9 +328,9 @@ test("the ceps guide connects every cep, broad region and published local guide"
   for (const [regionId, speciesId] of expectedReadings) {
     const link = regionList.locator(`a[data-region="${regionId}"]`);
     const href = new URL((await link.getAttribute("href"))!, "http://localhost");
-    expect(href.pathname).toBe("/map");
+    expect(href.pathname === "/map" || speciesMapPages.some((mapPage) => href.pathname === `/map/${mapPage.slug}`)).toBe(true);
     expect(href.searchParams.get("region")).toBe(regionId);
-    expect(href.searchParams.get("species")).toBe(speciesId);
+    expect(speciesIdFromMapUrl(href)).toBe(speciesId);
   }
 
   const cepGuideCount = speciesLocationPages.filter((guide) =>

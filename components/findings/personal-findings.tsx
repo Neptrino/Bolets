@@ -236,7 +236,7 @@ export function PersonalFindings() {
           const viewHref = finding.visibility === "public" && finding.publicationState === "published" ? `/troballes/${finding.id}` : null;
           const summary = <>
             {photo ? <Image src={photo.url} alt="" width={photo.width} height={photo.height} unoptimized /> : <div className="finding-personal-thumb" />}
-            <div className="finding-personal-copy"><h3>{finding.reportedSpeciesName}</h3><p>{new Intl.DateTimeFormat("ca-ES", { dateStyle: "medium", timeStyle: "short" }).format(new Date(finding.observedAt))} · {finding.exactLocation ? "punt exacte guardat" : "només casella de 10 × 10 km"}</p>{finding.privateNotes ? <p className="finding-personal-notes">{finding.privateNotes}</p> : null}</div>
+            <div className="finding-personal-copy"><h3>{finding.reportedSpeciesName}</h3><p>{new Intl.DateTimeFormat("ca-ES", { dateStyle: "medium", timeStyle: "short" }).format(new Date(finding.observedAt))} · {finding.exactLocation ? "punt exacte guardat" : "només zona aproximada de 10 × 10 km"}</p>{finding.privateNotes ? <p className="finding-personal-notes">{finding.privateNotes}</p> : null}</div>
           </>;
           return <article className="finding-personal-row" key={finding.id}>
             {viewHref ? <Link className="finding-personal-entry" href={viewHref} aria-label={`Obrir la troballa de ${finding.reportedSpeciesName}`}>{summary}</Link> : <div className="finding-personal-entry">{summary}</div>}
@@ -253,7 +253,7 @@ export function PersonalFindings() {
           {hasMore ? <button className="finding-button-secondary" type="button" disabled={loadingMore} onClick={() => void loadMore()}>{loadingMore ? "Carregant…" : "Carregar-ne 20 més"}</button> : null}
         </div>
       </> : filtersActive ? <div className="finding-account-card finding-stack"><h2>Cap resultat</h2><p>Prova una altra espècie o mostra totes les visibilitats.</p><button className="finding-button-secondary" type="button" onClick={() => { setQuery(""); setVisibility("all"); }}>Netejar els filtres</button></div> : <div className="finding-account-card finding-stack"><h2>El quadern és buit</h2><p>Les troballes que desis al camp apareixeran aquí, incloses les privades.</p><Link className="finding-button" href="/troballes/nova">Anotar una troballa</Link></div>}
-      <p className="finding-library-privacy">La comunitat veu totes les fotos, el dia i la casella de 10 × 10 km de les troballes publicades. El punt exacte i les notes continuen sent només teus.</p>
+      <p className="finding-library-privacy">La comunitat veu totes les fotos, el dia i una zona aproximada de 10 × 10 km de les troballes publicades. El punt exacte i les notes continuen sent només teus.</p>
     </section>
 
     <FindingDeleteDialog

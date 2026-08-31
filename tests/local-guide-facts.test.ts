@@ -38,7 +38,7 @@ describe("local guide facts", () => {
     expect(facts?.gridSizeM).toBe(1000);
     expect(facts?.facts).toEqual(expect.arrayContaining([
       expect.objectContaining({ metric: "compatible-area", value: 0.75, unit: "km²" }),
-      expect.objectContaining({ metric: "compatible-cells", value: 2, unit: "cel·les" }),
+      expect.objectContaining({ metric: "compatible-cells", value: 2, unit: "sectors" }),
       expect.objectContaining({ metric: "altitude-retention", value: 100 * (0.5 / 0.75), unit: "%" }),
     ]));
     expect(localGuideFactsSchema.parse(facts)).toEqual(facts);

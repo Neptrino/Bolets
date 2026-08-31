@@ -70,7 +70,7 @@ export default function EdibleMushroomsPage() {
         <div className="intent-reading-grid">
           <div>
             <p>Els bolets comestibles de Catalunya no formen un grup uniforme. Algunes espècies tenen un valor culinari alt; d’altres només es consideren comestibles amb condicions concretes de cocció, preparació o quantitat. Cada fitxa explica aquesta diferència i assenyala les confusions rellevants.</p>
-            <p>Tria primer una espècie que encaixi amb el bosc i la temporada. Després consulta les <Link href="/bolets-avui">condicions actuals</Link> i el <Link href="/map">mapa de condicions</Link>. Cap d’aquests passos substitueix una identificació experta de l’exemplar complet.</p>
+            <p>Tria primer una espècie que encaixi amb el bosc i la temporada. Després consulta els <Link href="/bolets-avui">bolets avui a Catalunya</Link> i el <Link href="/map">mapa de bolets de Catalunya</Link>. Cap d’aquests passos substitueix una identificació experta de l’exemplar complet.</p>
           </div>
           <ol>
             <li>Revisa el nivell de comestibilitat i totes les condicions de consum.</li>

@@ -435,3 +435,22 @@
     font-size: var(--text-base);
   }
 }
+@media (max-width: 380px) {
+  .conditions-panel-expanded .conditions-heading {
+    flex-direction: column;
+    gap: 14px;
+  }
+  .conditions-panel-expanded .suitability-score {
+    justify-items: start;
+    text-align: left;
+  }
+  .site-footer-links {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 18px;
+  }
+  .site-footer-links a {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}

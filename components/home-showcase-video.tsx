@@ -4,16 +4,6 @@ import { Play } from "lucide-react";
 import { useRef, useState } from "react";
 import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
-export function HomeShowcaseJumpLink() {
-  return (
-    <a href="#com-funciona" className="home-showcase-trigger">
-      <span className="home-showcase-trigger-icon" aria-hidden="true"><Play size={16} fill="currentColor" /></span>
-      <span>Veure com funciona</span>
-      <small>36 s</small>
-    </a>
-  );
-}
-
 export function HomeShowcaseVideo() {
   const video = useRef<HTMLVideoElement>(null);
   const playTracked = useRef(false);

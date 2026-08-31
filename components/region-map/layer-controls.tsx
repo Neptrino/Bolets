@@ -75,11 +75,11 @@ export function RegionMapLayerControls({
         />
         <MapLayerControl
           id={cellOpacityId}
-          label={showCompatibility ? "Zones compatibles" : "Predicció"}
-          controlName={showCompatibility ? "les zones compatibles" : "la predicció"}
+          label={showCompatibility ? "Terreny adequat" : "Condicions actuals"}
+          controlName={showCompatibility ? "el terreny adequat" : "les condicions actuals"}
           opacityLabel={showCompatibility
-            ? "Opacitat de les zones compatibles"
-            : "Opacitat de la predicció"}
+            ? "Opacitat del terreny adequat"
+            : "Opacitat de les condicions actuals"}
           variant={showCompatibility ? "compatibility" : "prediction"}
           visible={cellsVisible}
           opacity={cellOpacity}

@@ -499,6 +499,12 @@ body {
     linear-gradient(145deg, transparent 0 46%, rgba(255, 255, 255, 0.9) 47% 53%, transparent 54%),
     linear-gradient(24deg, rgba(139, 139, 132, 0.22) 0 40%, transparent 41%);
 }
+.map-basemap-preview-simplified {
+  background-color: #d9ddd5;
+  background-image:
+    radial-gradient(ellipse at 22% 112%, transparent 0 8px, rgba(84, 92, 83, 0.4) 9px 11px, transparent 12px),
+    linear-gradient(28deg, transparent 0 48%, rgba(219, 166, 69, 0.86) 49% 53%, transparent 54%);
+}
 .map-basemap-status {
   margin: 7px 0 0;
   color: #665d52;
@@ -599,6 +605,10 @@ body {
   height: 420px;
   min-height: 300px;
   background: #e7edf0;
+}
+.region-map-habitat .map-cell-visibility:not(.is-collapsed) {
+  max-height: calc(100% - 172px);
+  overflow-y: auto;
 }
 .region-map-viewport:fullscreen,
 .region-map-viewport.maplibregl-pseudo-fullscreen {

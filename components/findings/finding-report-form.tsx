@@ -390,7 +390,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
               {photoLocation ? <li><MapPin size={18} aria-hidden="true" /><span><strong>Ubicació GPS aplicada</strong></span></li> : null}
               {photoDateTime ? <li><CalendarClock size={18} aria-hidden="true" /><span><strong>Data i hora aplicades</strong><small>{new Intl.DateTimeFormat("ca-ES", { dateStyle: "medium", timeStyle: "medium" }).format(new Date(photoDateTime.localDateTime))}</small></span></li> : null}
             </ul>
-            <small>En públic, la ubicació continuarà sent només una casella de 10 × 10 km.</small>
+            <small>En públic, la ubicació continuarà sent només una zona aproximada de 10 × 10 km.</small>
           </div> : null}
           {photoLocationNotice ? <p className="finding-notice">{photoLocationNotice}</p> : null}
           {photoDateTimeNotice ? <p className="finding-notice">{photoDateTimeNotice}</p> : null}
@@ -416,7 +416,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
           <label className="finding-field">Data i hora<input type="datetime-local" step="1" required value={observedAtValue} max={latestObservedAtValue || undefined} onFocus={() => setLatestObservedAt(localDateTimeValue())} onChange={(event) => { setObservedAt(event.target.value); setDateTimeSource("manual"); }} /><small>{dateTimeSource === "photo" ? "Extretes de la foto. Encara les pots canviar." : "Hi posem l’hora actual per defecte. Canvia-la si cal."}</small></label>
           <label className="finding-choice">
             <input type="checkbox" checked={keepExact} onChange={(event) => setKeepExact(event.target.checked)} />
-            <span>Guardar la posició exacta només per a mi<small>Si ho desactives, ni tan sols nosaltres en conservarem les coordenades exactes. En públic sempre es mostra només una casella de 10 × 10 km.</small></span>
+            <span>Guardar la posició exacta només per a mi<small>Si ho desactives, ni tan sols nosaltres en conservarem les coordenades exactes. En públic sempre es mostra només una zona aproximada de 10 × 10 km.</small></span>
           </label>
         </section>
 
@@ -428,7 +428,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
 
         <section className="finding-step">
           <h2>5. Publicació</h2>
-          <label className="finding-choice"><input type="checkbox" checked={publish} onChange={(event) => setPublish(event.target.checked)} /><span>Compartir la troballa a l’atles públic<small>Es publiquen totes les fotos, el dia i la casella de 10 × 10 km, mai el punt exacte ni les notes.</small></span></label>
+          <label className="finding-choice"><input type="checkbox" checked={publish} onChange={(event) => setPublish(event.target.checked)} /><span>Compartir la troballa a l’atles públic<small>Es publiquen totes les fotos, el dia i una zona aproximada de 10 × 10 km, mai el punt exacte ni les notes.</small></span></label>
           <label className="finding-choice"><input type="checkbox" checked={showAlias} onChange={(event) => rememberShowAliasPreference(event.target.checked)} /><span>Mostrar el meu àlies públic<small>La publicació és anònima si no l’actives. Recordarem aquesta elecció en aquest dispositiu.</small></span></label>
           {message?.tone === "success" ? <div className="finding-save-success">
             <CheckCircle2 size={24} aria-hidden="true" />
@@ -454,11 +454,11 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
         </div>
         <p className="finding-privacy-promise">El punt exacte <strong>no es publica mai.</strong></p>
         <ul>
-          <li><MapPinned size={20} aria-hidden="true" /><span><strong>Al mapa públic</strong><small>Només es mostra el dia i una casella de 10 × 10 km.</small></span></li>
+          <li><MapPinned size={20} aria-hidden="true" /><span><strong>Al mapa públic</strong><small>Només es mostra el dia i una zona aproximada de 10 × 10 km.</small></span></li>
           <li><Camera size={20} aria-hidden="true" /><span><strong>Les fotos van amb la troballa</strong><small>Només es veuen si decideixes publicar-la.</small></span></li>
           <li><LockKeyhole size={20} aria-hidden="true" /><span><strong>La decisió sempre és teva</strong><small>Pots conservar-la privada o retirar-la de l’atles quan vulguis.</small></span></li>
         </ul>
-        <p className="finding-privacy-note"><Info size={16} aria-hidden="true" /> Les troballes no modifiquen la predicció ni el mapa d’hàbitat.</p>
+        <p className="finding-privacy-note"><Info size={16} aria-hidden="true" /> Les troballes no modifiquen el mapa de condicions ni el de terreny adequat.</p>
       </aside>
     </form>
   );

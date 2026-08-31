@@ -101,7 +101,7 @@ export function FindingLocationPreview({
       </RegionMapFrame>
       <figcaption>
         <span><MousePointerClick size={15} aria-hidden="true" /><span><strong>Corregeix el punt directament al mapa.</strong> Pots ampliar, desplaçar el mapa o arrossegar el marcador.</span></span>
-        <span><LockKeyhole size={15} aria-hidden="true" /> Aquesta ubicació és privada. El mapa públic només mostra una casella de 10 × 10 km.</span>
+        <span><LockKeyhole size={15} aria-hidden="true" /> Aquesta ubicació és privada. El mapa públic només mostra una zona aproximada de 10 × 10 km.</span>
       </figcaption>
     </figure>
   );

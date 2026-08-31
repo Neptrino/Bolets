@@ -315,9 +315,8 @@
 .local-species-content > .editorial-panel { margin-top: 74px; }
 .local-species-content > .editorial-panel--compact { margin-top: 2.5rem; }
 .local-related-guides {
-  margin-top: 70px;
+  margin-top: 0;
   padding-top: 60px;
-  border-top: 1px solid var(--line);
 }
 .local-related-guides > header h2 {
   margin: 5px 0 25px;
@@ -563,7 +562,7 @@
   .local-current-card .local-current-signals { grid-template-columns: 1fr; }
   .local-current-card .button { justify-self: start; }
   .local-related-guides > div { grid-template-columns: 1fr; }
-  .local-related-guides { margin-top: 54px; padding-top: 44px; }
+  .local-related-guides { margin-top: 0; padding-top: 44px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .local-fact-placeholder span { animation: none; }

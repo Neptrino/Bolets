@@ -5,7 +5,6 @@ import type { MapStatusCopy } from "./status";
 export function RegionMapDataStatus({
   cellState,
   compactLegend,
-  gridDimensions,
   habitat,
   showCompatibility,
   showReadyStatus,
@@ -14,7 +13,6 @@ export function RegionMapDataStatus({
 }: {
   cellState: CellState;
   compactLegend: boolean;
-  gridDimensions: string;
   habitat: boolean;
   showCompatibility: boolean;
   showReadyStatus: boolean;
@@ -25,7 +23,7 @@ export function RegionMapDataStatus({
     return (
       <div className="habitat-map-loading" aria-hidden="true">
         <LoaderCircle size={16} />
-        <span>Carregant mapa i zones compatibles…</span>
+        <span>Carregant el mapa i el terreny adequat…</span>
       </div>
     );
   }
@@ -45,12 +43,12 @@ export function RegionMapDataStatus({
           <LoaderCircle size={24} aria-hidden />
           <strong>
             {showCompatibility
-              ? "Actualitzant la compatibilitat…"
-              : "Actualitzant la predicció…"}
+              ? "Actualitzant el terreny adequat…"
+              : "Actualitzant les condicions…"}
           </strong>
           <span>
             {showCompatibility
-              ? "Carregant les zones que encaixen amb aquesta espècie."
+              ? "Carregant el terreny que encaixa amb aquesta espècie."
               : "Carregant les condicions d’aquesta zona."}
           </span>
         </div>
@@ -67,9 +65,9 @@ export function RegionMapDataStatus({
       >
         <LoaderCircle size={18} aria-hidden />
         <div>
-          <strong>Afinant la predicció…</strong>
+          <strong>Completant el mapa…</strong>
           <span>
-            {formatCellCount(loadedCellCount)} carregades a {gridDimensions}.
+            {formatCellCount(loadedCellCount)} preparats.
           </span>
         </div>
       </div>

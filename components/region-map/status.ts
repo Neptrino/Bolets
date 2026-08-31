@@ -8,7 +8,7 @@ export type MapStatusCopy = {
 
 export function habitatEvidenceCopy(state: HabitatEvidenceState) {
   if (state.available === null) return "Carregant registres…";
-  if (state.available === false) return "Registres de FungaCAT no disponibles.";
+  if (state.available === false) return "Els registres històrics no estan disponibles.";
   if (state.habitatCells) {
     return `${state.records} registres històrics; ${state.habitatCells} sectors coincideixen amb l’hàbitat.`;
   }
@@ -25,7 +25,6 @@ export function mapStatusCopy({
 }: {
   cellState: CellState;
   globalPrediction: boolean;
-  gridDimensions: string;
   showCompatibility: boolean;
 }): MapStatusCopy {
   if (showCompatibility) {
@@ -47,12 +46,12 @@ export function mapStatusCopy({
     }
     if (cellState.status === "error") {
       return {
-        title: "No s’han pogut carregar les zones compatibles",
+        title: "No s’ha pogut carregar el terreny adequat",
         detail: "La base cartogràfica continua disponible; torna-ho a provar movent el mapa.",
       };
     }
     return {
-      title: "Cap zona compatible en aquesta vista",
+      title: "Cap terreny adequat en aquesta vista",
       detail: "El bosc, l’altitud o el sòl d’aquesta vista no encaixen amb l’espècie.",
     };
   }
@@ -60,12 +59,12 @@ export function mapStatusCopy({
   if (cellState.status === "mixed") {
     return {
       title: "Hi ha sectors amb resultats diferents",
-      detail: `${cellState.published ? `${formatCellCount(cellState.published)} amb puntuació; ` : ""}${formatCellCount(cellState.excluded)} sense condicions favorables; ${formatCellCount(cellState.withheld)} sense dades suficients.`,
+      detail: `${cellState.published ? `${formatCellCount(cellState.published)} amb valoració; ` : ""}${formatCellCount(cellState.excluded)} sense condicions favorables; ${formatCellCount(cellState.withheld)} sense informació suficient.`,
     };
   }
   if (cellState.status === "ready") {
     return {
-      title: "Predicció disponible",
+      title: "Condicions disponibles",
       detail: globalPrediction && cellState.gridSizeM === GLOBAL_MINIMUM_GRID_SIZE_M
         ? "Tria una espècie concreta per veure més detall."
         : "Selecciona un sector per veure’n el detall.",
@@ -79,19 +78,19 @@ export function mapStatusCopy({
   }
   if (cellState.status === "withheld") {
     return {
-      title: "No hi ha prou dades per puntuar",
-      detail: "Algunes dades ambientals són incompletes o massa antigues.",
+      title: "No hi ha prou informació per valorar la zona",
+      detail: "Algunes lectures són incompletes o massa antigues.",
     };
   }
   if (cellState.status === "loading") {
     return {
       title: "Carregant les condicions…",
-      detail: "Consultant les dades ambientals més recents.",
+      detail: "Consultant les lectures més recents.",
     };
   }
   if (cellState.status === "error") {
     return {
-      title: "No s’han pogut carregar les cel·les",
+      title: "No s’ha pogut carregar aquesta zona",
       detail: "La base cartogràfica continua disponible; torna-ho a provar movent el mapa.",
     };
   }

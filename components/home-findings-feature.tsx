@@ -40,7 +40,7 @@ export function HomeFindingsFeature() {
             </dl>
             <div className="home-findings-public-area">
               <span aria-hidden="true"><i /><i /><i /><i /></span>
-              <p><small>Si la comparteixes</small><b>Només publiquem la casella de 10 × 10 km</b></p>
+              <p><small>Si la comparteixes</small><b>Només publiquem una zona aproximada de 10 × 10 km</b></p>
             </div>
           </div>
         </div>

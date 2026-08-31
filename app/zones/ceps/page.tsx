@@ -36,12 +36,14 @@ import {
 import {
   absoluteUrl,
   DEFAULT_SOCIAL_IMAGE,
+  pageTitle,
   speciesPath,
 } from "@/src/lib/seo";
 import type { SpeciesProfile } from "@/src/lib/types";
+import { speciesMapHref } from "@/src/lib/species-map-pages";
 
 export const metadata: Metadata = {
-  title: "Ceps de Catalunya: tipus, diferències, hàbitat i temporada",
+  title: pageTitle("Ceps de Catalunya: tipus, temporada i zones"),
   description:
     "Guia dels ceps de Catalunya: quatre tipus, diferències, identificació prudent, hàbitat, temporada, zones, mapes i confusions importants.",
   alternates: { canonical: "/zones/ceps" },
@@ -111,7 +113,7 @@ const faqs = [
   {
     question: "El mapa confirma que hi ha ceps en un lloc?",
     answer:
-      "No. El mapa representa compatibilitat ecològica i, quan hi ha prou dades, condicions ambientals actuals. No demostra presència, abundància ni fructificació en cap punt concret.",
+      "No. El mapa mostra on el terreny pot ser adequat i, quan hi ha prou lectures, les condicions actuals. No demostra que hi hagi ceps en cap punt concret.",
   },
 ] as const;
 
@@ -141,7 +143,7 @@ export default function CepsTerritoryPage() {
               url: absoluteUrl("/zones/ceps"),
               inLanguage: "ca",
               description:
-                "Guia ecològica dels tipus de ceps, les regions compatibles, la temporada i les condicions actuals a Catalunya.",
+                "Guia dels tipus de ceps, les zones on el terreny pot ser adequat, la temporada i les condicions actuals a Catalunya.",
               mainEntityOfPage: absoluteUrl("/zones/ceps"),
               about: ceps.map((species) => ({
                 "@type": "Taxon",
@@ -335,7 +337,7 @@ export default function CepsTerritoryPage() {
                     fructificació avui.
                   </p>
                   <Link
-                    href={`/map?species=${species.speciesId}&region=${species.ecologicalConfig.regions[0]}`}
+                    href={speciesMapHref(species.speciesId, { region: species.ecologicalConfig.regions[0] })}
                     className="text-link"
                   >
                     Veure al mapa <Map size={15} />
@@ -380,7 +382,7 @@ export default function CepsTerritoryPage() {
               const species = requiredSpecies(territory.speciesId);
               return (
                 <Link
-                  href={`/map?species=${territory.speciesId}&region=${territory.region}`}
+                  href={speciesMapHref(territory.speciesId, { region: territory.region })}
                   key={territory.region}
                   data-region={territory.region}
                 >

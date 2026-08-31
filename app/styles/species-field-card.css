@@ -2,6 +2,13 @@
   scroll-margin-top: 96px;
 }
 
+/* The compact editorial credit supplies the closing divider on profile pages. */
+.species-main > .content-section.species-field-card-section {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
 .species-field-card-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 338px);

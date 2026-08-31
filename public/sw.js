@@ -35,7 +35,11 @@ const OFFLINE_URL = "/offline";
 const CACHED_AT_HEADER = "x-bolets-cached-at";
 
 /** Basemap hosts whose tiles may be kept as the user pans over them. */
-const TILE_HOSTS = new Set(["geoserveis.icgc.cat", "tile.openstreetmap.org"]);
+const TILE_HOSTS = new Set([
+  "geoserveis.icgc.cat",
+  "server.arcgisonline.com",
+  "tile.openstreetmap.org",
+]);
 
 /**
  * Tiles are uniform enough that a count is a good proxy for bytes: roughly
@@ -171,7 +175,10 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
 
-  if (TILE_HOSTS.has(url.hostname)) {
+  if (
+    TILE_HOSTS.has(url.hostname)
+    || url.pathname.startsWith("/api/map-tiles/icgc/")
+  ) {
     event.respondWith(tileFirst(request));
     return;
   }

@@ -18,6 +18,7 @@ import { opportunityLabel } from "@/src/lib/scoring";
 import { absoluteUrl, metaDescription, pageTitle, SITE_URL, speciesDescription, speciesImage, speciesPath } from "@/src/lib/seo";
 import { monthInTimeZone, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { territorialMapPath } from "@/src/lib/territorial-map";
+import { publicConditionFactorLabel } from "@/src/lib/condition-presentation";
 import type { AreaProfile, PlaceProfile } from "@/data/location-pages";
 import type { SourceReference, SpeciesProfile } from "@/src/lib/types";
 
@@ -121,7 +122,7 @@ async function LocalEvidencePanel({
           </ul>
           <footer className="local-evidence-provenance">
             <Info size={16} aria-hidden="true" />
-            <p>Per obtenir aquestes xifres, sumem les zones compatibles del mapa a partir de dades de bosc, sòl i altitud. No fem servir observacions de bolets.</p>
+            <p>Aquest resum compara el tipus de bosc, el sòl i l’altitud d’una àrea àmplia. No fa servir observacions de bolets.</p>
           </footer>
         </div>
       ) : (
@@ -147,9 +148,10 @@ function extentMetric(summary: Awaited<ReturnType<typeof loadLocalGuideCondition
 }
 
 function limitingFactor(summary: NonNullable<Awaited<ReturnType<typeof loadLocalGuideCondition>>>) {
-  return summary.result.components
+  const factor = summary.result.components
     .filter((component) => component.score !== null)
-    .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0]?.label ?? "Sense factor publicat";
+    .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0];
+  return factor ? publicConditionFactorLabel(factor.id) : "Sense cap factor destacat";
 }
 
 function LocalConditionsLoading() {
@@ -186,7 +188,7 @@ async function LocalConditionsCard({
         <Map size={20} aria-hidden="true" />
         <p className="eyebrow light">Condicions actuals</p>
         <h2>{species.predictionMode === "current" ? "Fora de temporada" : "Només hàbitat"}</h2>
-        <p>{species.predictionMode === "current" ? "Ara no és la temporada habitual d’aquesta espècie. Encara pots consultar els boscos compatibles." : "Per a aquesta espècie mostrem on encaixa el terreny, però no una puntuació actual."}</p>
+        <p>{species.predictionMode === "current" ? "Ara no és la temporada habitual d’aquesta espècie. Encara pots consultar els boscos adequats." : "Per a aquesta espècie mostrem on encaixa el terreny, però no una valoració actual."}</p>
         <Link href={mapPath} className="button light-button">Veure el mapa <ArrowUpRight size={16} aria-hidden="true" /></Link>
       </aside>
     );
@@ -215,7 +217,7 @@ async function LocalConditionsCard({
         <Gauge size={20} aria-hidden="true" />
         <p className="eyebrow light">Condicions actuals</p>
         <h2>Condicions no disponibles</h2>
-        <p>Falten dades recents per donar una puntuació completa. Torna-ho a provar més tard.</p>
+        <p>Falten lectures recents per donar una valoració completa. Torna-ho a provar més tard.</p>
         <Link href={mapPath} className="button light-button">Obrir el mapa <ArrowUpRight size={16} aria-hidden="true" /></Link>
       </aside>
     );
@@ -311,9 +313,9 @@ export default async function SpeciesLocationPage({ params }: Props) {
           <div className="local-current-slot"><Suspense fallback={<LocalConditionsLoading />}><LocalConditionsCard species={species} area={area} location={location} /></Suspense></div>
           <div className="local-species-main">
             <section className="local-landscape-section"><p className="eyebrow">Lectura del paisatge</p><h2>Per què hi pot encaixar</h2><p>{location.landscape}</p></section>
-            <section className="local-factors-section"><p className="eyebrow">Perfil ecològic</p><h2>Quins factors compten</h2><p>El tipus de bosc, el sòl i el relleu ajuden a saber on pot encaixar l’espècie.</p><div className="local-factor-grid">
-              <article><Trees size={20} /><h3>Bosc i arbres</h3><p>{habitat.forestTypes.join(", ")}. Associacions principals: {habitat.treeAssociations.join(", ")}.</p></article>
-              <article><Sprout size={20} /><h3>Sòl</h3><p>{habitat.soilPreference}. {soil.texture}, amb pH {soil.phRange ? `${soil.phRange[0]}–${soil.phRange[1]}` : "variable"} i drenatge {soil.drainage.toLocaleLowerCase("ca")}.</p></article>
+            <section className="local-factors-section"><p className="eyebrow">Bosc i terreny</p><h2>Què necessita aquesta espècie</h2><p>El tipus de bosc, el sòl i el relleu ajuden a saber on pot encaixar l’espècie.</p><div className="local-factor-grid">
+              <article><Trees size={20} /><h3>Bosc i arbres</h3><p>{habitat.forestTypes.join(", ")}.{habitat.treeAssociations.length > 0 ? ` Arbres habituals: ${habitat.treeAssociations.join(", ")}.` : ""}</p></article>
+              <article><Sprout size={20} /><h3>Sòl</h3><p>{habitat.soilPreference}. {soil.texture}, de reacció {soil.reaction.toLocaleLowerCase("ca")} i amb drenatge {soil.drainage.toLocaleLowerCase("ca")}.</p></article>
               <article><Mountain size={20} /><h3>Relleu</h3><p>{habitat.altitude[0]}–{habitat.altitude[1]} m, {habitat.aspect.toLocaleLowerCase("ca")}; {habitat.landscapePosition.toLocaleLowerCase("ca")}.</p></article>
             </div></section>
             <section className="local-habitat-section">

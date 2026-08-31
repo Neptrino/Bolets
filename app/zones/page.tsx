@@ -21,6 +21,7 @@ import {
 } from "@/data/location-pages";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
+import { speciesMapHref } from "@/src/lib/species-map-pages";
 import { predictionZoneDirectory } from "@/src/lib/zone-directory";
 
 const predictionZones = predictionZoneDirectory();
@@ -50,7 +51,7 @@ function guidesForArea(areaSlug: string) {
 }
 
 export const metadata: Metadata = {
-  title: "Zones de bolets de Catalunya: massissos i comarques",
+  title: "Zones de bolets a Catalunya",
   description:
     "Massissos, paratges i comarques de Catalunya amb guies locals i accés al mapa de condicions.",
   alternates: { canonical: "/zones" },
@@ -248,7 +249,7 @@ export default function ZonesPage() {
             return (
               <li data-region={zone.regionId} key={zone.regionId}>
                 <Link
-                  href={featuredSpecies ? `/map?species=${featuredSpecies.speciesId}&region=${zone.regionId}` : `/map?region=${zone.regionId}`}
+                  href={featuredSpecies ? speciesMapHref(featuredSpecies.speciesId, { region: zone.regionId }) : `/map?region=${zone.regionId}`}
                   aria-label={`Veure ${zone.label} al mapa`}
                 >
                   <span className="region-map-link-name">{zone.label}</span>
@@ -259,7 +260,7 @@ export default function ZonesPage() {
             );
           })}
         </ol>
-        <p className="prediction-zone-note">Una bona puntuació compara condicions; no confirma presència ni abundància.</p>
+        <p className="prediction-zone-note">Una valoració alta indica condicions favorables; no confirma presència ni abundància.</p>
       </section>
 
       <section className="catalogue-habitats" aria-labelledby="zone-habitats-title">

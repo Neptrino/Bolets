@@ -116,21 +116,24 @@
 }
 .guide-types > header {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(300px, 1.1fr);
-  gap: clamp(35px, 7vw, 100px);
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 12px;
+  align-items: start;
   margin-bottom: 24px;
 }
-.guide-types > header .eyebrow,
+.guide-types > header .eyebrow {
+  grid-column: 1;
+  grid-row: 1;
+}
 .guide-types > header h2 {
   grid-column: 1;
-}
-.guide-types > header h2 {
-  margin-top: -30px;
+  grid-row: 2;
+  margin-top: 0;
 }
 .guide-types > header > p:last-child {
-  grid-column: 2;
-  grid-row: 1 / span 2;
+  grid-column: 1;
+  grid-row: 3;
+  max-width: 72ch;
   margin: 0;
   color: var(--muted);
   font-size: var(--text-base);
@@ -216,10 +219,10 @@
   box-shadow: 0 24px 60px rgba(35, 57, 42, 0.16);
 }
 .rovellons-now-heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 30px;
-  align-items: end;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
   padding: 29px 31px 25px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
@@ -281,21 +284,24 @@
 }
 .rovellons-territories > header {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
-  gap: 45px;
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 12px;
+  align-items: start;
   margin-bottom: 27px;
 }
-.rovellons-territories > header .eyebrow,
+.rovellons-territories > header .eyebrow {
+  grid-column: 1;
+  grid-row: 1;
+}
 .rovellons-territories > header h2 {
   grid-column: 1;
-}
-.rovellons-territories > header h2 {
-  margin-top: -34px;
+  grid-row: 2;
+  margin-top: 0;
 }
 .rovellons-territories > header > p:last-child {
-  grid-column: 2;
-  grid-row: 1 / span 2;
+  grid-column: 1;
+  grid-row: 3;
+  max-width: 72ch;
   margin: 0;
   color: var(--muted);
   line-height: 1.65;
@@ -363,8 +369,8 @@
 }
 .rovellons-published {
   display: grid;
-  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.2fr);
-  gap: clamp(45px, 8vw, 110px);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
   margin-bottom: 90px;
   padding: 40px;
   border: 1px solid var(--line);
@@ -372,6 +378,7 @@
   background: var(--surface-muted);
 }
 .rovellons-published > div:first-child > p:last-child {
+  max-width: 72ch;
   color: var(--muted);
   line-height: 1.65;
 }
@@ -450,8 +457,8 @@
 }
 .rovellons-faq {
   display: grid;
-  grid-template-columns: minmax(260px, 0.75fr) minmax(0, 1.25fr);
-  gap: clamp(45px, 8vw, 110px);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
   margin-bottom: 50px;
 }
 .rovellons-faq > div {

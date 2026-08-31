@@ -22,7 +22,7 @@ describe("El meu bosc dashboard states", () => {
       simulation: true,
     }));
     expect(html).toContain("Previsualització local");
-    expect(html).toContain("no són una predicció i no es desen");
+    expect(html).toContain("no descriuen condicions reals i no es desen");
     expect(html).toContain('href="/el-meu-bosc"');
   });
 

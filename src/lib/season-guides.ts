@@ -46,11 +46,11 @@ export const seasonGuides = [
     reading: {
       title: "Com interpretar els bolets de primavera",
       summary: "La data orienta, però la pluja acumulada, la temperatura, l’altitud i el bosc decideixen si una espècie pot fructificar en un lloc concret.",
-      detail: "Per preparar una sortida, consulteu les condicions actuals i el mapa de predicció; després contrasteu sempre l’exemplar amb la seva fitxa.",
+      detail: "Per preparar una sortida, consulteu les condicions actuals i el mapa de bolets; després contrasteu sempre l’exemplar amb la seva fitxa.",
       steps: ["Comenceu per espècies que encaixin amb el mes i l’hàbitat.", "Comproveu si les condicions recents són favorables a la zona.", "Reviseu les confusions abans de collir o consumir."],
       links: [
         { href: "/bolets-avui", label: "Condicions actuals", description: "Lectura territorial per espècie" },
-        { href: "/map", label: "Mapa de predicció", description: "Compatibilitat i condicions per cel·la" },
+        { href: "/map", label: "Mapa de bolets de Catalunya", description: "Terreny i condicions per sector" },
       ],
     },
   },

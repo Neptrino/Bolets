@@ -44,7 +44,7 @@ const topics: HuntingTopic[] = [
       {
         id: "despres-de-ploure",
         question: "Quants dies després de ploure surten els bolets?",
-        answer: <>No hi ha un nombre de dies que serveixi per a totes les espècies i tots els boscos. Importen la humitat prèvia del sòl, com s’ha repartit la pluja i la temperatura; un xàfec aïllat pot no ser suficient. A la guia de <Link href="/quan-surten-els-bolets-despres-de-ploure">quan surten els bolets després de ploure</Link> expliquem aquests factors i els límits de la predicció.</>,
+        answer: <>No hi ha un nombre de dies que serveixi per a totes les espècies i tots els boscos. Importen la humitat prèvia del sòl, com s’ha repartit la pluja i la temperatura; un xàfec aïllat pot no ser suficient. A la guia de <Link href="/quan-surten-els-bolets-despres-de-ploure">quan surten els bolets després de ploure</Link> expliquem aquests factors i els límits del mapa.</>,
       },
       {
         id: "calor-i-vent",
@@ -66,12 +66,12 @@ const topics: HuntingTopic[] = [
       {
         id: "boscos",
         question: "En quins boscos creixen els rovellons i els ceps?",
-        answer: <>No busquis només un nom de comarca: cal que el bosc sigui compatible amb l’espècie. La <Link href="/zones/rovellons">guia de rovellons i pinetells</Link> se centra en les pinedes; la <Link href="/zones/ceps">guia de ceps</Link> distingeix diverses espècies amb arbres associats i calendaris diferents. El tipus de bosc és una pista ecològica, no una prova que hi hagi bolets ni una identificació de l’exemplar.</>,
+        answer: <>No busquis només un nom de comarca: cal que el tipus de bosc sigui adequat per a l’espècie. La <Link href="/zones/rovellons">guia de rovellons i pinetells</Link> se centra en les pinedes; la <Link href="/zones/ceps">guia de ceps</Link> distingeix diverses espècies amb arbres associats i calendaris diferents. El tipus de bosc és una pista, no una prova que hi hagi bolets ni una identificació de l’exemplar.</>,
       },
       {
         id: "mapa-i-presencia",
         question: "Una zona favorable al mapa garanteix que hi trobaré bolets?",
-        answer: <>No. El <Link href="/map">mapa de bolets</Link> compara hàbitat i condicions per fructificar; no mostra observacions ni punts de recol·lecció confirmats. Una puntuació alta no equival a una probabilitat de trobar-ne, i una puntuació zero tampoc demostra absència. Consulta <Link href="/metode">com s’elaboren les puntuacions i quins límits tenen</Link> abans d’interpretar-les com una recomanació de sortida.</>,
+        answer: <>No. El <Link href="/map">mapa de bolets</Link> compara el terreny i les condicions del moment; no mostra observacions ni punts de recol·lecció confirmats. Una valoració alta no garanteix que n’hi hagi, i una valoració zero tampoc demostra absència. Consulta <Link href="/metode">com funciona el mapa i quins límits té</Link> abans d’interpretar-lo com una recomanació de sortida.</>,
       },
     ],
   },

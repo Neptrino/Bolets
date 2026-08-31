@@ -4,9 +4,13 @@ import { useId, useOptimistic, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { MapViewMode } from "@/src/lib/types";
 
-const mapModeOptions: Array<{ value: MapViewMode; label: string }> = [
-  { value: "prediction", label: "Predicció" },
-  { value: "compatibility", label: "Compatibilitat" },
+const mapModeOptions: Array<{
+  value: MapViewMode;
+  label: string;
+  shortLabel: string;
+}> = [
+  { value: "prediction", label: "Condicions actuals", shortLabel: "Condicions" },
+  { value: "compatibility", label: "Terreny adequat", shortLabel: "Terreny" },
 ];
 
 export function MapModeControl({
@@ -57,9 +61,10 @@ export function MapModeControl({
               value={option.value}
               checked={optimisticMode === option.value}
               disabled={isPending}
+              aria-label={option.label}
               onChange={() => selectMode(option.value)}
             />
-            <span>{option.label}</span>
+            <span aria-hidden>{option.shortLabel}</span>
           </label>
         ))}
       </div>

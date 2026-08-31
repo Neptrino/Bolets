@@ -11,6 +11,7 @@ import { getConditionPredictionStatus } from "@/src/lib/condition-presentation";
 import { GLOBAL_SPECIES_ID } from "@/src/lib/global-map";
 import { formatGridDimensions } from "@/src/lib/map-grid";
 import { calculateSuitability } from "@/src/lib/scoring";
+import { speciesMapHref } from "@/src/lib/species-map-pages";
 import { getSuitabilityBand } from "@/src/lib/suitability-scale";
 import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 import type {
@@ -66,6 +67,7 @@ export function MapExplorer({
   regionalTopSpeciesName,
   speciesItems,
   speciesNames,
+  speciesRoutes,
   info
 }: {
   /** null renders the combined all-species map. */
@@ -81,6 +83,7 @@ export function MapExplorer({
   speciesItems: QuerySelectItem[];
   /** Combined map only: display names for ranked species. */
   speciesNames?: Record<string, string>;
+  speciesRoutes?: Record<string, string>;
   info: ReactNode;
 }) {
   const globalMode = species === null;
@@ -183,14 +186,14 @@ export function MapExplorer({
     return () => { cancelled = true; };
   }, [selectedCell]);
   const unavailableCopy = isLoadingCell
-    ? "Carregant les dades ambientals d’aquest sector…"
+    ? "Carregant les condicions d’aquest sector…"
     : hasCellLoadError
       ? "No s’han pogut carregar les dades d’aquest sector. Torna-ho a provar."
     : predictionStatus.kind === "environment-unavailable"
-    ? "sense dades ambientals verificades"
+    ? "sense lectures recents suficients"
     : selectedCell
-      ? "puntuació no disponible"
-      : "selecciona un sector per veure la puntuació";
+      ? "valoració no disponible"
+      : "selecciona un sector per veure’n les condicions";
 
   return <>
     <div ref={mapStage} className="map-stage">
@@ -215,6 +218,8 @@ export function MapExplorer({
         <QuerySelect
           value={speciesKey}
           items={speciesItems}
+          routeByValue={speciesRoutes}
+          fallbackPath="/map"
           portalContainer={mapStage}
           analyticsEvent={UMAMI_EVENTS.mapChangeSpecies}
           aria-label="Canvia l’espècie del mapa en pantalla completa"
@@ -224,7 +229,7 @@ export function MapExplorer({
         <div className="map-floating-card" aria-live="polite">
           <div className="map-floating-card-label">
             <MapIcon size={17} aria-hidden="true" />
-            <span>{selectedGridSizeM ? `Cel·la ${formatGridDimensions(selectedGridSizeM)}` : regionLabels[region]}</span>
+            <span>{selectedGridSizeM ? `Sector ${formatGridDimensions(selectedGridSizeM)}` : regionLabels[region]}</span>
             {!emptySelection && hasPrediction && resultBand && (result.score ?? 0) > 0
               ? <i style={{ backgroundColor: resultBand.color }} aria-hidden="true" />
               : null}
@@ -243,8 +248,8 @@ export function MapExplorer({
             <>
               <strong>{emptySelection.score === 0 ? <>0<small>/100</small></> : "—"}</strong>
               <p>{emptySelection.score === 0
-                ? "Cap espècie comestible té puntuació en aquesta cel·la ara mateix."
-                : "Falten dades ambientals recents per puntuar aquest sector."}</p>
+                ? "Cap espècie comestible té condicions favorables en aquest sector ara mateix."
+                : "Falten lectures recents per valorar aquest sector."}</p>
             </>
           ) : (
             <>
@@ -255,8 +260,8 @@ export function MapExplorer({
                       ? `Millor opció: ${speciesName(topSpeciesId)}`
                       : regionalTopSpeciesName
                         ? `Millor opció: ${regionalTopSpeciesName}`
-                        : "Millor puntuació entre espècies comestibles"} · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · condicions per fructificar ${result.fruitingConditionsScore}/100`}`
-                  : `Puntuació del sector · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · condicions ${result.fruitingConditionsScore}/100`}${selectedEffectiveHabitat === undefined ? "" : ` · ${Math.round(selectedEffectiveHabitat * 100)}% d’hàbitat adequat`}`
+                        : "Espècie amb millors condicions"} · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · moment actual ${result.fruitingConditionsScore}/100`}`
+                  : `Condicions del sector · ${result.label}${result.fruitingConditionsScore === null ? "" : ` · moment actual ${result.fruitingConditionsScore}/100`}${selectedEffectiveHabitat === undefined ? "" : ` · ${Math.round(selectedEffectiveHabitat * 100)}% de terreny adequat`}`
                 : unavailableCopy}</p>
               {globalMode && hasPrediction && runnersUp.length ? (
                 <p>
@@ -286,9 +291,9 @@ export function MapExplorer({
         </>
       ) : null}
       {globalMode && selectedCell && topSpeciesId ? (
-        <section className="map-global-top-species" aria-label="Espècies amb millor puntuació del sector">
+        <section className="map-global-top-species" aria-label="Espècies amb millors condicions al sector">
           <div>
-            <p className="eyebrow">Espècies amb puntuació en aquesta cel·la</p>
+            <p className="eyebrow">Espècies amb condicions favorables en aquest sector</p>
             <ol className="map-global-species-list">
               {selectedTopSpecies.map((item) => (
                 <li key={item.speciesId}>
@@ -296,7 +301,7 @@ export function MapExplorer({
                     style={{ backgroundColor: getSuitabilityBand(item.score).color }}
                     aria-hidden
                   />
-                  <Link href={`/map?species=${item.speciesId}&region=${region}`}>
+                  <Link href={speciesMapHref(item.speciesId, { region })}>
                     {speciesName(item.speciesId)}
                   </Link>
                   <strong>{item.score}<small>/100</small></strong>
@@ -306,8 +311,8 @@ export function MapExplorer({
           </div>
           <p>
             La lectura detallada següent correspon a <strong>{speciesName(topSpeciesId)}</strong>,
-            l’espècie amb la millor puntuació dins d’aquesta cel·la.{" "}
-            <Link href={`/map?species=${topSpeciesId}&region=${region}`} className="text-link">
+            l’espècie amb les millors condicions dins d’aquest sector.{" "}
+            <Link href={speciesMapHref(topSpeciesId, { region })} className="text-link">
               Veure el mapa complet de {speciesName(topSpeciesId)} <ArrowUpRight size={15} />
             </Link>
           </p>

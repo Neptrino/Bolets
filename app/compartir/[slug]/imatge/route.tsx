@@ -43,7 +43,7 @@ function PredictionScale({ score, isStory }: { score: number | null; isStory: bo
   return (
     <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ color: "#344438", fontSize: isStory ? 28 : 24, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>Escala de la predicció</span>
+        <span style={{ color: "#344438", fontSize: isStory ? 28 : 24, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>Nivell de condicions</span>
         <span style={{ color: "#706f67", fontSize: isStory ? 26 : 22 }}>0 — 100</span>
       </div>
       <div style={{ display: "flex", position: "relative", width: "100%", height: isStory ? 30 : 24, gap: 5, marginTop: isStory ? 22 : 16 }}>
@@ -140,11 +140,11 @@ function PortraitShareCard({ card, format, homeHeroUrl, isPreview }: { card: Dai
           <div style={{ display: "flex", width: "100%", gap: isStory ? 20 : 16, marginTop: isStory ? 28 : 22 }}>
             <div style={{ display: "flex", flex: 1, alignItems: "center", gap: isStory ? 22 : 16, padding: isStory ? "25px 30px" : "19px 24px", border: "1px solid #d4c8ab", borderRadius: isStory ? 22 : 17, background: "rgba(255,250,240,0.62)" }}>
               <span style={{ color: scoreTone(reading.score), fontSize: isStory ? 48 : 38, fontWeight: 900, letterSpacing: "-0.04em" }}>{Math.round(reading.positiveCellShare * 100)}%</span>
-              <span style={{ color: "#5d6159", fontSize: isStory ? 25 : 22, lineHeight: 1.22 }}>de cel·les amb puntuació positiva</span>
+              <span style={{ color: "#5d6159", fontSize: isStory ? 25 : 22, lineHeight: 1.22 }}>de sectors amb condicions favorables</span>
             </div>
             <div style={{ display: "flex", flex: 1, alignItems: "center", gap: isStory ? 22 : 16, padding: isStory ? "25px 30px" : "19px 24px", border: "1px solid #d4c8ab", borderRadius: isStory ? 22 : 17, background: "rgba(255,250,240,0.62)" }}>
               <span style={{ color: scoreTone(reading.score), fontSize: isStory ? 48 : 38, fontWeight: 900, letterSpacing: "-0.04em" }}>{Math.round(reading.score20CellShare * 100)}%</span>
-              <span style={{ color: "#5d6159", fontSize: isStory ? 25 : 22, lineHeight: 1.22 }}>de cel·les amb 20 punts o més</span>
+              <span style={{ color: "#5d6159", fontSize: isStory ? 25 : 22, lineHeight: 1.22 }}>de sectors amb condicions destacables</span>
             </div>
           </div>
         ) : null}
@@ -367,7 +367,7 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
           )) : (
             <div style={{ display: "flex", flexDirection: "column", width: "100%", minHeight: 164, padding: "25px 30px", justifyContent: "center", borderLeft: "4px solid #f2a766", background: "rgba(255,247,232,0.1)", borderTop: "1px solid rgba(255,247,232,0.24)", borderRight: "1px solid rgba(255,247,232,0.24)", borderBottom: "1px solid rgba(255,247,232,0.24)", borderRadius: 16 }}>
               <span style={{ color: "#f2a766", fontSize: 23 }}>Sense lectura publicada</span>
-              <span style={{ color: "#d7dec7", fontSize: 24, marginTop: 11 }}>Si falten dades recents, no mostrem una puntuació parcial.</span>
+              <span style={{ color: "#d7dec7", fontSize: 24, marginTop: 11 }}>Si falten lectures recents, no mostrem una valoració parcial.</span>
             </div>
           )}
         </div>

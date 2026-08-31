@@ -11,7 +11,7 @@ describe("territorial map links", () => {
     const path = territorialMapPath("boletus-edulis", "pirineus", ripolles);
     const url = new URL(path, "https://bolets.app");
 
-    expect(url.searchParams.get("species")).toBe("boletus-edulis");
+    expect(url.pathname).toBe("/map/cep");
     expect(url.searchParams.get("region")).toBe("pirineus");
     expect(territorialBoundsFromQuery(Object.fromEntries(url.searchParams))).toEqual(ripolles);
   });

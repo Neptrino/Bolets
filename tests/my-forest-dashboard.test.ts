@@ -87,7 +87,7 @@ describe("El meu bosc current readings", () => {
       score20CellShare: 0.4,
     });
     const url = new URL(reading.mapPath, "https://bolets.app");
-    expect(url.searchParams.get("species")).toBe("boletus-edulis");
+    expect(url.pathname).toBe("/map/cep");
     expect(url.searchParams.get("region")).toBe("pirineus");
     expect(["west", "south", "east", "north"].every((key) => url.searchParams.has(key))).toBe(true);
     expect(reading.rainfallWindowDays).toBe(26);

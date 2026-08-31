@@ -29,6 +29,8 @@ type QuerySelectProps = {
   value: string;
   items: QuerySelectItem[];
   parameter?: string;
+  routeByValue?: Record<string, string>;
+  fallbackPath?: string;
   variant?: "compact" | "comparison" | "map";
   className?: string;
   portalContainer?: ComboboxPortalProps["container"];
@@ -121,6 +123,8 @@ function QuerySelectControl({
   value,
   items,
   parameter = "species",
+  routeByValue,
+  fallbackPath,
   variant = "compact",
   className,
   portalContainer,
@@ -136,10 +140,14 @@ function QuerySelectControl({
   const selectValue = (nextItem: QuerySelectItem) => {
     if (nextItem.value === value) return;
     const next = new URLSearchParams(searchParams.toString());
-    next.set(parameter, nextItem.value);
+    const targetPath = routeByValue?.[nextItem.value];
+    if (targetPath) next.delete(parameter);
+    else next.set(parameter, nextItem.value);
     if (analyticsEvent) queueUmamiEvent(analyticsEvent);
     startTransition(() => {
-      router.push(`${pathname}?${next}`, { scroll: false });
+      const destinationPath = targetPath ?? fallbackPath ?? pathname;
+      const suffix = next.toString();
+      router.push(`${destinationPath}${suffix ? `?${suffix}` : ""}`, { scroll: false });
     });
   };
 

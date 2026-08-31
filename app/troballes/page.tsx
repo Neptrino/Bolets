@@ -77,11 +77,11 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
       </div>
       <ul className="finding-community-limits">
         <li><Eye size={19} aria-hidden="true" /><span><strong>Identificació declarada</strong><small>El nom l’indica qui publica. La fitxa ajuda a contrastar trets, però no valida la fotografia.</small></span></li>
-        <li><Grid3X3 size={19} aria-hidden="true" /><span><strong>Privadesa de 10 × 10 km</strong><small>La vista pública mostra la casella i el dia; mai no publica el punt exacte ni l’hora.</small></span></li>
-        <li><MapPinOff size={19} aria-hidden="true" /><span><strong>Separades de la predicció</strong><small>Les troballes no canvien el mapa de condicions ni confirmen presència actual.</small></span></li>
+        <li><Grid3X3 size={19} aria-hidden="true" /><span><strong>Privadesa de 10 × 10 km</strong><small>La vista pública mostra una zona aproximada i el dia; mai no publica el punt exacte ni l’hora.</small></span></li>
+        <li><MapPinOff size={19} aria-hidden="true" /><span><strong>Separades del mapa de condicions</strong><small>Les troballes no canvien les condicions mostrades ni confirmen presència actual.</small></span></li>
       </ul>
     </section> : null}
-    <section className="finding-section"><SectionHeader meta={safeCell ? "Casella seleccionada" : "Publicacions recents"} title={safeCell ? "Troballes d’aquesta casella de 10 km" : "Últimes troballes compartides"} description="El nom de cada troballa és la identificació indicada per qui l’ha publicada; no ha estat verificat." actions={safeCell ? <Link className="finding-button-secondary" href="/troballes">Veure totes</Link> : null} />
+    <section className="finding-section"><SectionHeader meta={safeCell ? "Zona seleccionada" : "Publicacions recents"} title={safeCell ? "Troballes d’aquesta zona aproximada de 10 km" : "Últimes troballes compartides"} description="El nom de cada troballa és la identificació indicada per qui l’ha publicada; no ha estat verificat." actions={safeCell ? <Link className="finding-button-secondary" href="/troballes">Veure totes</Link> : null} />
       {findings.length ? <div className="finding-grid">{findings.map((finding) => <FindingCard finding={finding} key={finding.id} />)}</div> : <p className="finding-notice">Encara no hi ha troballes públiques en aquesta selecció, o el servei no està disponible ara mateix.</p>}
     </section>
   </PageShell>;

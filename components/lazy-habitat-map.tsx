@@ -26,13 +26,13 @@ function HabitatMapPlaceholder({
       className="region-map region-map-habitat species-map"
       role="region"
       aria-busy="true"
-      aria-label="Mapa de compatibilitat ecològica de Catalunya"
+      aria-label="Mapa del terreny adequat a Catalunya"
     >
       <div className="region-map-viewport">
         <div className="habitat-map-loading" role="status" aria-live="polite">
           <span>
             {loading
-              ? "Carregant el mapa de compatibilitat…"
+              ? "Carregant el mapa del terreny adequat…"
               : "El mapa es carregarà quan t’hi acostis…"}
           </span>
         </div>

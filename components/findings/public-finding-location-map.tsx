@@ -78,7 +78,7 @@ export function PublicFindingLocationMap({ bounds }: { bounds: SpatialBounds }) 
   return (
       <figure className="finding-public-location">
         <RegionMapFrame
-          ariaLabel="Mapa estàtic de la casella pública de 10 per 10 quilòmetres"
+          ariaLabel="Mapa estàtic de la zona pública aproximada de 10 per 10 quilòmetres"
           basemapId="icgc-muted"
           className="finding-public-location-map"
           map={map}

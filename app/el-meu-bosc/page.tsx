@@ -68,7 +68,7 @@ export default async function MyForestPage({
       <PageHeader
         eyebrow="Compte personal"
         title={<>El meu <PageTitleAccent>bosc</PageTitleAccent></>}
-        description="Les teves espècies, els teus territoris i el resum privat de la temporada en un sol lloc. Les preferències no alteren la predicció pública."
+        description="Les teves espècies, els teus territoris i el resum privat de la temporada en un sol lloc. Les preferències no alteren el mapa públic."
         actions={<Link className="finding-button-secondary" href="/compte">Compte i privadesa</Link>}
       />
       <TodayForYou

@@ -29,7 +29,7 @@ describe("daily share cards", () => {
     expect(catalunya?.readings).toEqual([{ speciesId: "boletus-edulis", regionName: "Pirineus", speciesName: "Cep", score: 74, label: "alta", positiveCellShare: 0.42, score20CellShare: 0.27 }]);
     expect(catalunya?.shareText).toContain("no confirma presència");
     expect(catalunya?.shareText).toContain("https://bolets.app/bolets-avui");
-    expect(cards.find((card) => card.slug === "pirineus")?.shareText).toContain("https://bolets.app/map?species=boletus-edulis&region=pirineus");
+    expect(cards.find((card) => card.slug === "pirineus")?.shareText).toContain("https://bolets.app/map/cep?region=pirineus");
     expect(montseny?.available).toBe(false);
     expect(montseny?.readings).toEqual([]);
     expect(montseny?.shareText).toContain("no hi ha una lectura territorial publicable");

@@ -100,7 +100,7 @@ function drawTerritorialWindow(
 }
 
 function formatCellCount(count: number) {
-  return `${count} ${count === 1 ? "cel·la" : "cel·les"}`;
+  return `${count} ${count === 1 ? "sector" : "sectors"}`;
 }
 
 type CellState = {

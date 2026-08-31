@@ -20,7 +20,6 @@ export function RegionMapView({
   compactLegend,
   evidenceCopy,
   globalPrediction,
-  gridDimensions,
   habitat,
   historicalEvidenceCanvas,
   historicalEvidenceOpacity,
@@ -58,7 +57,6 @@ export function RegionMapView({
   compactLegend: boolean;
   evidenceCopy: string;
   globalPrediction: boolean;
-  gridDimensions: string;
   habitat: boolean;
   historicalEvidenceCanvas: RefObject<HTMLCanvasElement | null>;
   historicalEvidenceOpacity: number;
@@ -91,7 +89,7 @@ export function RegionMapView({
       ariaBusy={cellState.status === "loading"}
       ariaLabel={interactive
         ? "Mapa interactiu de Catalunya. Arrossega per desplaçar-te i utilitza els controls per canviar l’escala o el fons cartogràfic."
-        : "Mapa estàtic de la predicció actual a Catalunya."}
+        : "Mapa estàtic de les condicions actuals a Catalunya."}
       basemapId={selectedBasemapId}
       className={`${habitat ? "region-map-habitat" : ""}${showCompatibility ? " region-map-compatibility" : ""} ${className}`}
       map={map}
@@ -121,7 +119,6 @@ export function RegionMapView({
       <RegionMapDataStatus
         cellState={cellState}
         compactLegend={compactLegend}
-        gridDimensions={gridDimensions}
         habitat={habitat}
         showCompatibility={showCompatibility}
         showReadyStatus={showReadyStatus}

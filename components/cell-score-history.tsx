@@ -253,7 +253,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     return <section className="cell-score-history" aria-busy="true"><p>Carregant l’evolució i la projecció…</p></section>;
   }
   if (state.kind === "unavailable") {
-    return <section className="cell-score-history"><p>No s’ha pogut carregar l’evolució d’aquest sector{state.reason ? ` (${state.reason}).` : "."}</p></section>;
+    return <section className="cell-score-history"><p>No s’ha pogut carregar l’evolució d’aquest sector.</p></section>;
   }
 
   const { observed, forecast } = state.timeline;
@@ -295,7 +295,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     <section className="cell-score-history" aria-labelledby={titleId}>
       <div className="cell-score-history-heading">
         <div>
-          <p className="eyebrow">Puntuació del sector</p>
+          <p className="eyebrow">Evolució de les condicions</p>
           <div className="cell-score-history-title-row">
             <h4 id={titleId}>{title}</h4>
             <button
@@ -332,8 +332,8 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
       ) : null}
       <div className="visually-hidden">
         <table>
-          <caption>Dades de l’evolució calculada i la projecció ambiental</caption>
-          <thead><tr><th scope="col">Data</th><th scope="col">Tipus</th><th scope="col">Puntuació de la cel·la</th><th scope="col">Condicions per fructificar dins l’hàbitat</th><th scope="col">Confiança meteorològica de l’horitzó</th></tr></thead>
+          <caption>Evolució recent i previsió de les condicions</caption>
+          <thead><tr><th scope="col">Data</th><th scope="col">Tipus</th><th scope="col">Valoració del sector</th><th scope="col">Condicions del moment</th><th scope="col">Fiabilitat de la previsió</th></tr></thead>
           <tbody>
             {observed.map((point) => (
               <tr key={`observed:${point.observedAt}`}>

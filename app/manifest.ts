@@ -3,7 +3,7 @@ import { SITE_NAME } from "@/src/lib/seo";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: `${SITE_NAME} · Predicció de bolets a Catalunya`,
+    name: `${SITE_NAME} · Mapa de bolets de Catalunya`,
     short_name: SITE_NAME,
     description:
       "Consulta el mapa de condicions per a la fructificació de bolets a Catalunya i desa una zona per consultar-la sense cobertura.",

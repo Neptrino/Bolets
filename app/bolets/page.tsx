@@ -53,7 +53,7 @@ export default function SpeciesIndexPage() {
       <nav className="species-topic-links species-topic-links-primary" aria-label="Tipus i calendari de bolets">
         <Link href="/bolets-comestibles"><CookingPot size={18} /><span><strong>Bolets comestibles</strong><small>Espècies, confusions i condicions</small></span><ArrowUpRight size={16} /></Link>
         <Link href="/bolets-verinosos"><ShieldAlert size={18} /><span><strong>Bolets verinosos</strong><small>Identificació i riscos</small></span><ArrowUpRight size={16} /></Link>
-        <Link href="/temporada"><CalendarDays size={18} /><span><strong>Per mesos</strong><small>Calendari mensual per espècie</small></span><ArrowUpRight size={16} /></Link>
+        <Link href="/temporada"><CalendarDays size={18} /><span><strong>Bolets per mesos</strong><small>Calendari mensual per espècie</small></span><ArrowUpRight size={16} /></Link>
       </nav>
       <section className="species-season-navigation" aria-labelledby="species-seasons-title">
         <header><div><p className="eyebrow">Per estacions</p><h2 id="species-seasons-title">Què pot sortir en cada moment de l’any</h2></div><p>Consulta les espècies habituals de cada temporada.</p></header>

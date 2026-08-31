@@ -106,7 +106,7 @@ test("switches prediction and compatibility from the layer control", async ({
   const mapCanvas = map.locator(".maplibregl-canvas");
 
   await expect(
-    page.getByRole("heading", { name: "Mapa de condicions" }),
+    page.getByRole("heading", { name: "Mapa de bolets de Catalunya" }),
   ).toBeVisible();
   await expect(map).toHaveAttribute("data-map-mode", "prediction");
   await page
@@ -116,7 +116,7 @@ test("switches prediction and compatibility from the layer control", async ({
   const modeControl = map.getByRole("radiogroup", { name: "Vista" });
   await expect(modeControl).toBeVisible();
   await expect(
-    modeControl.getByRole("radio", { name: "Predicció" }),
+    modeControl.getByRole("radio", { name: "Condicions actuals" }),
   ).toBeChecked();
   await mapCanvas.evaluate((element) => {
     element.setAttribute("data-mode-switch-instance", "preserved");
@@ -124,18 +124,18 @@ test("switches prediction and compatibility from the layer control", async ({
 
   const habitatRequest = page.waitForRequest("**/api/habitat?*");
   await modeControl
-    .getByRole("radio", { name: "Compatibilitat" })
+    .getByRole("radio", { name: "Terreny adequat" })
     .check();
   await habitatRequest;
 
   await expect(page).toHaveURL(/mode=compatibility/);
   await expect(
-    page.getByRole("heading", { name: "Mapa de compatibilitat" }),
+    page.getByRole("heading", { name: "Mapa de bolets de Catalunya" }),
   ).toBeVisible();
   await expect(map).toHaveAttribute("data-map-mode", "compatibility");
   await expect(map.locator(".region-map-history")).toBeVisible();
-  await expect(page.getByLabel("Opacitat de les zones compatibles")).toBeVisible();
-  await expect(page.getByText(/El blau identifica els sectors/)).toBeVisible();
+  await expect(page.getByLabel("Opacitat del terreny adequat")).toBeVisible();
+  await expect(page.getByText(/El blau mostra on el bosc, l’altitud i el sòl encaixen/)).toBeVisible();
   await expect(page.locator(".conditions-panel-expanded")).toHaveCount(0);
   await expect(mapCanvas).toHaveAttribute(
     "data-mode-switch-instance",
@@ -145,17 +145,17 @@ test("switches prediction and compatibility from the layer control", async ({
   const predictionRequest = page.waitForRequest("**/api/predictions?*");
   await map
     .getByRole("radiogroup", { name: "Vista" })
-    .getByRole("radio", { name: "Predicció" })
+    .getByRole("radio", { name: "Condicions actuals" })
     .check();
   await predictionRequest;
 
   await expect(page).not.toHaveURL(/mode=compatibility/);
   await expect(
-    page.getByRole("heading", { name: "Mapa de condicions" }),
+    page.getByRole("heading", { name: "Mapa de bolets de Catalunya" }),
   ).toBeVisible();
   await expect(map).toHaveAttribute("data-map-mode", "prediction");
   await expect(map.locator(".region-map-history")).toHaveCount(0);
-  await expect(page.getByLabel("Opacitat de la predicció")).toBeVisible();
+  await expect(page.getByLabel("Opacitat de les condicions actuals")).toBeVisible();
   await expect(mapCanvas).toHaveAttribute(
     "data-mode-switch-instance",
     "preserved",
@@ -191,9 +191,9 @@ test("reports score-zero and withheld map cells together", async ({ page }) => {
   await page.goto("/map?species=boletus-edulis&region=pirineus");
 
   const status = page.locator(".map-data-state");
-  await expect(status.locator("strong")).toHaveText("Resultats mixtos a la vista");
-  await expect(status).toContainText("puntuació 0, en vermell: 1 cel·la");
-  await expect(status).toContainText("sense puntuació, en gris: 1 cel·la");
+  await expect(status.locator("strong")).toHaveText("Hi ha sectors amb resultats diferents");
+  await expect(status).toContainText("1 sector sense condicions favorables");
+  await expect(status).toContainText("1 sector sense informació suficient");
 });
 
 test("keeps prediction out of the camasec species guide", async ({ page }) => {
@@ -206,7 +206,7 @@ test("keeps prediction out of the camasec species guide", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Condicions actuals" }),
   ).toHaveCount(0);
-  await expect(page.getByText(/no una predicció d’avui/i)).toBeVisible();
+  await expect(page.getByText(/no una lectura de les condicions d’avui/i)).toBeVisible();
 });
 
 test("keeps the black truffle in habitat-only mode", async ({ page }) => {
@@ -223,24 +223,24 @@ test("keeps the black truffle in habitat-only mode", async ({ page }) => {
 
   await page.goto("/map?species=tuber-melanosporum");
 
-  await expect(page.getByRole("heading", { name: "Mapa de compatibilitat" })).toBeVisible();
-  await expect(page.getByText(/La tòfona negra és hipogea/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Mapa de bolets de Catalunya" })).toBeVisible();
+  await expect(page.getByText(/La tòfona negra creix sota terra/)).toBeVisible();
   const map = page.locator(".full-map");
   await expect(map).toHaveAttribute("data-map-mode", "compatibility");
   await page.getByRole("button", { name: "Mostra els controls del mapa" }).click();
   const modeControl = map.getByRole("radiogroup", { name: "Vista" });
-  await expect(modeControl.getByRole("radio", { name: "Compatibilitat" })).toBeChecked();
-  await expect(modeControl.getByRole("radio", { name: "Predicció" })).toHaveCount(0);
+  await expect(modeControl.getByRole("radio", { name: "Terreny adequat" })).toBeChecked();
+  await expect(modeControl.getByRole("radio", { name: "Condicions actuals" })).toHaveCount(0);
   await expect(page.locator(".map-floating-card")).toHaveCount(0);
 });
 
-test("keeps model component labels readable on narrow maps", async ({ page }) => {
+test("keeps condition labels readable on narrow maps", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/map?species=boletus-edulis&region=prepirineus");
 
   const mobileMapLayout = await page.evaluate(() => {
     const picker = document
-      .querySelector('[aria-label="Espècie seleccionada"]')
+      .querySelector('.species-select-trigger-map')
       ?.getBoundingClientRect();
     const stage = document.querySelector(".map-stage")?.getBoundingClientRect();
     return {
@@ -270,7 +270,7 @@ test("keeps model component labels readable on narrow maps", async ({ page }) =>
 
   const chart = page.locator(".factor-chart");
   await expect(chart).toBeVisible();
-  const componentList = chart.getByRole("list", { name: "Multiplicadors del càlcul" });
+  const componentList = chart.getByRole("list", { name: "Factors que influeixen en la valoració" });
   await expect(componentList).toBeVisible();
   const componentLabels = componentList.locator(".factor-bar-label");
   const componentValues = componentList.locator(".factor-bar-reading strong");
@@ -549,7 +549,7 @@ test("keeps ecologically excluded cells clickable after changing species", async
   });
 
   await page.goto("/map?species=boletus-edulis&region=pirineus");
-  await expect(page.locator(".map-data-state")).toContainText("Predicció disponible");
+  await expect(page.locator(".map-data-state")).toContainText("Condicions disponibles");
 
   await page.getByLabel("Espècie seleccionada").click();
   await page.getByRole("option", { name: "Pinetell", exact: true }).click();

@@ -14,7 +14,7 @@ const localFactSchema = z.discriminatedUnion("kind", [
     ]),
     label: z.string().min(1),
     value: z.number().finite().nonnegative(),
-    unit: z.enum(["km²", "cel·les", "%"]),
+    unit: z.enum(["km²", "sectors", "%"]),
     description: z.string().min(1),
   }),
   z.object({
@@ -105,10 +105,10 @@ export function aggregateLocalGuideFacts(
       {
         kind: "derived",
         metric: "compatible-cells",
-        label: "Quadrats amb encaix",
+        label: "Sectors amb terreny adequat",
         value: compatibleCells.length,
-        unit: "cel·les",
-        description: "Quadrats d’1 km del mapa que contenen alguna zona compatible. No indiquen que hi hagi bolets.",
+        unit: "sectors",
+        description: "Sectors del mapa que contenen alguna zona adequada. No indiquen que hi hagi bolets.",
       },
       {
         kind: "derived",

@@ -18,7 +18,7 @@ export const revalidate = 43200;
 
 export const metadata: Metadata = {
   title: "Targetes diàries per compartir",
-  description: "Targetes de condicions actuals de bolets per a Catalunya, les regions de predicció i els territoris locals de Zones.",
+  description: "Targetes de condicions actuals de bolets per a Catalunya, les regions i els territoris locals de Zones.",
   alternates: { canonical: "/compartir" },
   robots: { index: false, follow: false },
 };

@@ -18,10 +18,12 @@ import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { isRegionId } from "@/data/regions";
 import {
   SITE_URL,
+  pageTitle,
   speciesDescription,
   speciesImage,
   speciesPath,
 } from "@/src/lib/seo";
+import { speciesMapHref } from "@/src/lib/species-map-pages";
 import type { Month, RegionId, SeasonalActivity } from "@/src/lib/types";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
@@ -77,7 +79,7 @@ export async function generateMetadata({
   const path = speciesPath(species);
   const description = species.seo?.description ?? speciesDescription(species);
   const image = speciesImage(species);
-  const title = species.seo?.title ?? `${species.identity.commonName} (${species.identity.scientificName})`;
+  const title = species.seo?.title ?? pageTitle(`${species.identity.commonName}: identificació, hàbitat i temporada`);
 
   return {
     title,
@@ -207,7 +209,10 @@ export default async function SpeciesPage({
             </a>
           ))}
           <UmamiEventLink
-            href={`/map?species=${species.speciesId}&region=${region}${species.predictionMode === "habitat_only" ? "&mode=compatibility" : ""}`}
+            href={speciesMapHref(species.speciesId, {
+              region,
+              mode: species.predictionMode === "habitat_only" ? "compatibility" : undefined,
+            })}
             className="aside-map-link"
             analyticsEvent={UMAMI_EVENTS.speciesMapOpen}
           >

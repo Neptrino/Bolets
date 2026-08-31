@@ -135,7 +135,7 @@ export function PersonalFindingsMap({ findings }: { findings: OwnerFindingMapIte
       if (!finding) return;
       new Popup({ offset: 12 })
         .setLngLat(event.lngLat)
-        .setText(`${finding.reportedSpeciesName} · ${finding.exactLocation ? "punt exacte privat" : "casella aproximada de 10 km"}`)
+        .setText(`${finding.reportedSpeciesName} · ${finding.exactLocation ? "punt exacte privat" : "zona aproximada de 10 km"}`)
         .addTo(localMap);
     };
     const handlePointer = (event: MapMouseEvent) => {

@@ -15,7 +15,7 @@ export function PredictionMapLegend() {
 
   return (
     <div className="prediction-map-legend">
-      <strong>Puntuació</strong>
+      <strong>Nivell de condicions</strong>
       <span className="prediction-map-legend-zero">
         <i style={{ backgroundColor: predictionMapCellColour(0) }} aria-hidden />
         0
@@ -23,7 +23,7 @@ export function PredictionMapLegend() {
       <div
         className="prediction-map-legend-ramp"
         role="img"
-        aria-label="Escala contínua: d’1, puntuació molt baixa, a 100, puntuació molt alta"
+        aria-label="Escala contínua: d’1, condicions molt poc favorables, a 100, condicions molt favorables"
       >
         <i style={{ background: `linear-gradient(90deg, ${gradient})` }} aria-hidden />
         <span aria-hidden="true"><small>1 · Molt baixa</small><small>50 · Mitjana</small><small>100 · Molt alta</small></span>

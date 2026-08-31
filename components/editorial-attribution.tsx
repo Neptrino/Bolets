@@ -29,6 +29,28 @@ function SourceLinks({ sources }: { sources: SourceReference[] }) {
   );
 }
 
+type DataSourceCredit = {
+  label: string;
+  url?: string;
+};
+
+type DataSourceCreditInput = DataSourceCredit | SourceReference | string;
+
+function normalizeDataSourceCredits(sources: readonly DataSourceCreditInput[]) {
+  const credits = new Map<string, DataSourceCredit>();
+
+  for (const source of sources) {
+    const credit = typeof source === "string"
+      ? { label: source }
+      : "label" in source
+        ? source
+        : { label: source.publisher, url: source.url };
+    if (!credits.has(credit.label)) credits.set(credit.label, credit);
+  }
+
+  return [...credits.values()];
+}
+
 export function EditorialAttribution({
   contentId,
   showUpdatedAt = true,
@@ -108,27 +130,52 @@ export function EditorialAttribution({
 export function DataSourceCredits({
   sources,
   label = "Dades i metodologia",
+  description,
+  variant = "inline",
 }: {
-  sources: SourceReference[];
+  sources: readonly DataSourceCreditInput[];
   label?: string;
+  description?: string;
+  variant?: "inline" | "panel";
 }) {
-  const publishers = [...new Map(
-    uniqueSources(sources).map((source) => [source.publisher, source]),
-  ).values()];
+  const credits = normalizeDataSourceCredits(sources);
 
-  if (publishers.length === 0) return null;
+  if (credits.length === 0) return null;
+
+  const sourceList = (
+    <ul>
+      {credits.map((source) => (
+        <li key={source.label}>
+          {source.url
+            ? <a href={source.url} target="_blank" rel="noreferrer">{source.label}</a>
+            : source.label}
+        </li>
+      ))}
+    </ul>
+  );
+
+  if (variant === "panel") {
+    return (
+      <aside className="data-source-credits data-source-credits--panel" aria-label={label}>
+        <div className="data-source-credits-heading">
+          <span className="data-source-credits-icon">
+            <Database size={17} aria-hidden="true" />
+          </span>
+          <div>
+            <strong>{label}</strong>
+            {description ? <span>{description}</span> : null}
+          </div>
+        </div>
+        {sourceList}
+      </aside>
+    );
+  }
 
   return (
     <aside className="data-source-credits" aria-label={label}>
       <Database size={16} aria-hidden="true" />
       <strong>{label}</strong>
-      <ul>
-        {publishers.map((source) => (
-          <li key={source.publisher}>
-            <a href={source.url} target="_blank" rel="noreferrer">{source.publisher}</a>
-          </li>
-        ))}
-      </ul>
+      {sourceList}
     </aside>
   );
 }

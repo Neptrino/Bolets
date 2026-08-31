@@ -13,6 +13,12 @@
 .ceps-comparison-links .text-link {
   white-space: nowrap;
 }
+@media (min-width: 901px) {
+  .ceps-hub .rovellons-definition {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(45px, 6vw, 90px);
+  }
+}
 .ceps-now-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }

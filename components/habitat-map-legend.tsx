@@ -23,13 +23,13 @@ export function HabitatMapLegend({
     <aside
       className={`habitat-map-legend${compact ? " habitat-map-legend-compact" : ""}`}
       aria-hidden={hidden || undefined}
-      aria-label={hidden ? undefined : "Com llegir les zones compatibles"}
+      aria-label={hidden ? undefined : "Com llegir el terreny adequat"}
     >
       {compact ? (
         <div className="habitat-map-legend-items">
           <div className="habitat-map-legend-item">
             <i className="habitat-coverage-swatch" aria-hidden />
-            <strong>Blau · zones compatibles</strong>
+            <strong>Blau · terreny adequat</strong>
           </div>
           <div className="habitat-map-legend-item">
             <i className="habitat-history-swatch" aria-hidden />
@@ -49,7 +49,7 @@ export function HabitatMapLegend({
             <div className="habitat-map-legend-item">
               <i className="habitat-coverage-swatch" aria-hidden />
               <div>
-                <strong>Blau · zones compatibles</strong>
+                <strong>Blau · terreny adequat</strong>
                 <span>
                   Més intensitat indica que una part més gran del sector és adequada.
                 </span>

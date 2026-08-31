@@ -19,7 +19,7 @@ describe("condition prediction presentation", () => {
       }),
     ).toEqual({
       kind: "score-withheld",
-      label: "puntuació no disponible",
+      label: "valoració no disponible",
     });
   });
 

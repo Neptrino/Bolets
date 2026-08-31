@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, BookOpen, BookOpenText, Gauge, Layers3, Map as MapIcon, MapPinned, ShieldCheck } from "lucide-react";
+import { DataSourceCredits } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { MediaImage } from "@/components/media-image";
 import { TerritoryPortrait } from "@/components/territory-portrait";
@@ -22,7 +23,7 @@ import { getAreaPredictionSummaries } from "@/src/lib/predictions";
 import { opportunityLabel } from "@/src/lib/scoring";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
+import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, pageTitle } from "@/src/lib/seo";
 import { territorialMapPath } from "@/src/lib/territorial-map";
 import type { AreaPredictionSummary } from "@/src/lib/types";
 
@@ -84,7 +85,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!area) notFound();
   const path = areaPath(area);
   return {
-    title: `Bolets ${area.prepositionalName}: indrets i temporada`,
+    title: pageTitle(`Bolets ${area.prepositionalName}: zones i temporada`),
     description: `Guies de bolets ${area.prepositionalName} per indret i espècie, amb hàbitat, temporada i condicions ecològiques.`,
     alternates: { canonical: path },
     openGraph: { url: path, title: `Bolets ${area.prepositionalName}`, description: area.description, images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }] },
@@ -174,7 +175,7 @@ export default async function AreaPage({ params }: Props) {
                 );
               })}
             </ol>
-            <p className="prediction-zone-note">Espècies ordenades per la millor lectura de la zona. La puntuació compara condicions; no confirma presència ni garanteix trobar bolets.</p>
+            <p className="prediction-zone-note">Espècies ordenades per la millor lectura de la zona. La valoració compara condicions; no confirma presència ni garanteix trobar bolets.</p>
           </section>
         ) : null}
 
@@ -219,7 +220,10 @@ export default async function AreaPage({ params }: Props) {
           <Link href="/metode" className="text-link">Entendre el mètode <ArrowUpRight size={17} /></Link>
         </aside>
 
-        <p className="location-territorial-source">Font territorial: <Link href={area.source.url} target="_blank" rel="noreferrer">{area.source.title} <ArrowUpRight size={13} /></Link></p>
+        <DataSourceCredits
+          label="Font territorial"
+          sources={[{ label: area.source.title, url: area.source.url }]}
+        />
       </div>
     </div>
   );

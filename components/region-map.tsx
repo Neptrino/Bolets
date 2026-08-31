@@ -45,7 +45,6 @@ import {
 } from "@/src/lib/habitat-map";
 import {
   boundsContain,
-  formatGridDimensions,
 } from "@/src/lib/map-grid";
 import { PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
 import {
@@ -217,15 +216,18 @@ export function RegionMap({
     });
     map.current = localMap;
     geolocateControl.current = geolocate ?? null;
+
+    localMap.resize();
+    if (initialFocusBounds.current)
+      fitSpatialBounds(localMap, initialFocusBounds.current, false);
+    else if (isPredictionMap && initialRegion.current)
+      fitRegion(localMap, initialRegion.current, false);
+    else if (!initialMapCentre.current)
+      fitCatalonia(localMap, false);
+
     localMap.once("load", () => {
       mapLoaded.current = true;
       localMap.resize();
-      if (initialFocusBounds.current)
-        fitSpatialBounds(localMap, initialFocusBounds.current, false);
-      else if (isPredictionMap && initialRegion.current)
-        fitRegion(localMap, initialRegion.current, false);
-      else if (!initialMapCentre.current)
-        fitCatalonia(localMap, false);
       drawCellsRef.current();
     });
 
@@ -944,12 +946,10 @@ export function RegionMap({
     onCellDetailStateChange,
   ]);
 
-  const gridDimensions = formatGridDimensions(cellState.gridSizeM);
   const evidenceCopy = habitatEvidenceCopy(habitatEvidenceState);
   const statusCopy = mapStatusCopy({
     cellState,
     globalPrediction,
-    gridDimensions,
     showCompatibility,
   });
 
@@ -967,7 +967,6 @@ export function RegionMap({
       compactLegend={compactLegend}
       evidenceCopy={evidenceCopy}
       globalPrediction={globalPrediction}
-      gridDimensions={gridDimensions}
       habitat={habitat}
       historicalEvidenceCanvas={historicalEvidenceCanvas}
       historicalEvidenceOpacity={historicalEvidenceOpacity}

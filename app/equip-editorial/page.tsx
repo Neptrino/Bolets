@@ -41,12 +41,12 @@ export default function EditorialTeamPage() {
         <p className="eyebrow">Qui signa el contingut</p>
         <h2>{siteAuthor.name}</h2>
         <p><strong>{siteAuthor.role}.</strong> {siteAuthor.summary}</p>
-        <p>Aquesta distinció és deliberada: el criteri ecològic i de modelització és propi, mentre que els trets d’identificació i les advertències de consum es recolzen en fonts externes citades. Quan una font no permet afirmar alguna cosa amb prou seguretat, la fitxa ho fa constar en comptes d’omplir el buit.</p>
+        <p>L’atles interpreta el bosc, el sòl i el temps recent, mentre que els trets d’identificació i les advertències de consum es basen en fonts externes citades. Quan una font no permet afirmar alguna cosa amb prou seguretat, la fitxa ho fa constar en comptes d’omplir el buit.</p>
       </section>
 
       <div className="seo-guide-grid">
-        <section><Database size={22} /><h2>Com compilem la informació</h2><p>Les fitxes parteixen de bibliografia micològica, catàlegs de biodiversitat i fonts oficials. Els trets d’identificació es contrasten entre fonts; la configuració ecològica versionada alimenta alhora les fitxes i el model, de manera que no hi ha dues definicions independents.</p></section>
-        <section><ShieldCheck size={22} /><h2>Fonts i seguretat</h2><p>La cartografia s’alimenta de fonts amb procedència registrada, com l’ICGC. Les advertències de consum prioritzen les indicacions oficials de l’Agència Catalana de Seguretat Alimentària. Aquesta web és educativa i no presta un servei d’identificació.</p></section>
+        <section><Database size={22} /><h2>Com compilem la informació</h2><p>Les fitxes parteixen de bibliografia micològica, catàlegs de biodiversitat i fonts oficials. Contrastem els trets d’identificació i fem servir la mateixa informació sobre bosc, sòl i temporada tant a les fitxes com al mapa.</p></section>
+        <section><ShieldCheck size={22} /><h2>Fonts i seguretat</h2><p>La cartografia prové d’organismes públics i altres fonts identificades als crèdits. Les advertències de consum prioritzen les indicacions oficials de l’Agència Catalana de Seguretat Alimentària. Aquesta web és educativa i no presta un servei d’identificació.</p></section>
       </div>
 
       <aside className="intent-emergency-note">

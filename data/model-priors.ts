@@ -397,7 +397,7 @@ function phenologyAnchors(
 }
 
 export const TUBER_SHORT_TERM_CAVEAT =
-  "La tòfona negra és hipogea i es desenvolupa durant mesos. El mapa només pot indicar compatibilitat edàfica i forestal; el model meteorològic de curt termini no calcula la probabilitat de trobar tòfones madures.";
+  "La tòfona negra creix sota terra i es desenvolupa durant mesos. El mapa només mostra on el sòl i el bosc podrien ser adequats; el temps recent no permet saber si hi ha tòfones madures.";
 
 const SPECIES_MODEL_CATALOGUE = {
   "rubroboletus-satanas": {

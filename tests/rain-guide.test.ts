@@ -18,7 +18,7 @@ describe("rain response guide", () => {
 
   it("explains the hydrothermal model without promising a fruiting date", () => {
     expect(html).toContain("La pluja no activa un compte enrere");
-    expect(html).toContain("La puntuació baixa si hi ha poc hàbitat adequat");
+    expect(html).toContain("La valoració baixa si hi ha poc terreny adequat");
     expect(html).not.toContain("F = 100 × P × W");
     expect(html).not.toContain("O = H × F");
     expect(html).not.toContain("P · temporada");

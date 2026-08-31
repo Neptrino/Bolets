@@ -27,11 +27,12 @@ import {
   SEASONAL_ACTIVITY_LABELS,
   SEASON_MONTHS,
 } from "@/src/lib/seasonality";
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, speciesPath } from "@/src/lib/seo";
+import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, pageTitle, speciesPath } from "@/src/lib/seo";
+import { speciesMapHref } from "@/src/lib/species-map-pages";
 import type { RegionId, SpeciesProfile } from "@/src/lib/types";
 
 export const metadata: Metadata = {
-  title: "Rovellons: tipus, hàbitat, temporada i on trobar-ne",
+  title: pageTitle("Rovellons a Catalunya: tipus, temporada i zones"),
   description: "Guia dels rovellons a Catalunya: tipus, diferències entre rovelló i pinetell, identificació prudent, hàbitat, temporada, zones i mapes.",
   alternates: { canonical: "/zones/rovellons" },
   openGraph: {
@@ -54,7 +55,7 @@ const territoryReadings: Array<{
     name: "Pirineus: Ripollès i Cerdanya",
     region: "pirineus",
     speciesId: "lactarius-sanguifluus",
-    description: "Pinedes dels estatges baixos i montans on el rovelló pot encaixar si la cota, el substrat neutre o calcari i la humitat de tardor són compatibles.",
+    description: "Pinedes de baixa i mitjana muntanya on el rovelló pot encaixar si l’altitud, el sòl i la humitat de tardor són adequats.",
   },
   {
     name: "Prepirineu i Berguedà",
@@ -91,7 +92,7 @@ const territoryReadings: Array<{
 const faqs = [
   {
     question: "On es poden trobar rovellons a Catalunya?",
-    answer: "En termes ecològics, cal buscar pinedes compatibles amb l’espècie, pinassa que conservi humitat i sòls amb bon drenatge. Els Pirineus, el Prepirineu, Catalunya Central, l’Empordà, les serralades prelitorals i els Ports contenen paisatges potencialment compatibles, però això no confirma presència en cap punt concret.",
+    answer: "Cal buscar pinedes adequades per a l’espècie, pinassa que conservi humitat i sòls amb bon drenatge. Els Pirineus, el Prepirineu, Catalunya Central, l’Empordà, les serralades prelitorals i els Ports contenen paisatges que poden ser adequats, però això no confirma que hi hagi rovellons en cap punt concret.",
   },
   {
     question: "Quan comença la temporada de rovellons?",
@@ -154,7 +155,7 @@ export default function RovellonsTerritoryPage() {
             headline: "Rovellons a Catalunya: tipus, hàbitat i temporada",
             url: absoluteUrl("/zones/rovellons"),
             inLanguage: "ca",
-            description: "Guia dels tipus de rovellons, les diferències d’identificació, l’hàbitat, la temporada i les zones compatibles a Catalunya.",
+            description: "Guia dels tipus de rovellons, les diferències d’identificació, l’hàbitat, la temporada i les zones on el terreny pot ser adequat a Catalunya.",
             mainEntityOfPage: absoluteUrl("/zones/rovellons"),
             about: [
               { "@type": "Taxon", name: rovello.identity.scientificName },
@@ -193,7 +194,7 @@ export default function RovellonsTerritoryPage() {
             <aside>
               <Trees size={22} aria-hidden="true" />
               <span>On trobar-ne</span>
-              <strong>Pinedes compatibles amb pinassa humida, sòl ben drenat i una tardor sense calor ni vent sec persistents.</strong>
+              <strong>Pinedes amb pinassa humida, sòl ben drenat i una tardor sense calor ni vent sec persistents.</strong>
               <small>Hàbitat potencial; no confirma presència ni abundància.</small>
             </aside>
           </div>
@@ -207,7 +208,7 @@ export default function RovellonsTerritoryPage() {
             <h2 id="rovellons-definition-title">Un nom popular que no sempre designa la mateixa espècie.</h2>
           </div>
           <div>
-            <p>A Catalunya, <em>rovellons</em> pot funcionar com un nom de grup. Aquesta guia compara els dos perfils del catàleg amb predicció pròpia: el rovelló vinós i el pinetell. Tots dos són lactaris associats als pins, però canvien el làtex, el color, el sòl preferit i part de la distribució ecològica.</p>
+            <p>A Catalunya, <em>rovellons</em> pot funcionar com un nom de grup. Aquesta guia compara els dos perfils del catàleg amb informació pròpia al mapa: el rovelló vinós i el pinetell. Tots dos són lactaris associats als pins, però canvien el làtex, el color, el sòl preferit i part de la distribució ecològica.</p>
             <Link href="/compare/rovello-vs-pinetell" className="text-link">Veure rovelló vs. pinetell <ArrowUpRight size={16} /></Link>
           </div>
         </section>
@@ -268,14 +269,14 @@ export default function RovellonsTerritoryPage() {
                   <span>{species.identity.commonName}</span>
                   <strong>{SEASONAL_ACTIVITY_LABELS[activity]}</strong>
                   <p>Pic habitual: {peakMonths(species)}. El calendari no confirma fructificació avui.</p>
-                  <Link href={`/map?species=${species.speciesId}&region=${species.ecologicalConfig.regions[0]}`} className="text-link">Obrir el mapa actual <Map size={15} /></Link>
+                  <Link href={speciesMapHref(species.speciesId, { region: species.ecologicalConfig.regions[0] })} className="text-link">Obrir el mapa actual <Map size={15} /></Link>
                 </article>
               );
             })}
             <aside>
               <CloudRain size={20} aria-hidden="true" />
               <strong>Per saber si hi ha condicions ara</strong>
-              <p>El mapa combina temporada, pluja acumulada, humitat del sòl, temperatura i cobertura compatible quan les dades són prou completes.</p>
+              <p>El mapa combina la temporada, la pluja acumulada, la humitat del sòl, la temperatura i el terreny adequat quan hi ha prou lectures.</p>
             </aside>
           </div>
         </section>
@@ -284,11 +285,11 @@ export default function RovellonsTerritoryPage() {
           <header>
             <p className="eyebrow"><MapPinned size={15} /> Zones generals</p>
             <h2 id="rovellons-territories-title">On mirar l’hàbitat, no on buscar una coordenada.</h2>
-            <p>Aquestes lectures regionals provenen dels àmbits compatibles configurats per a cada espècie. Dins de cada regió hi ha grans diferències de bosc, sòl i exposició.</p>
+            <p>Aquestes lectures resumeixen el terreny adequat per a cada espècie. Dins de cada regió hi ha grans diferències de bosc, sòl i exposició.</p>
           </header>
           <div className="rovellons-territory-grid">
             {territoryReadings.map((territory) => (
-              <Link href={`/map?species=${territory.speciesId}&region=${territory.region}`} key={`${territory.region}-${territory.speciesId}`}>
+              <Link href={speciesMapHref(territory.speciesId, { region: territory.region })} key={`${territory.region}-${territory.speciesId}`}>
                 <span><MapPinned size={15} /> Lectura regional</span>
                 <h3>{territory.name}</h3>
                 <p>{territory.description}</p>
@@ -323,7 +324,7 @@ export default function RovellonsTerritoryPage() {
         <section className="rovellons-signals" aria-labelledby="rovellons-signals-title">
           <header><p className="eyebrow"><Sprout size={15} /> Com llegir el bosc</p><h2 id="rovellons-signals-title">Quatre senyals abans d’obrir el mapa.</h2></header>
           <div>
-            <article><span>01</span><h3>Pins compatibles</h3><p>Rovellons i pinetells són micorrízics: la presència de pins és necessària, però per si sola no és suficient.</p></article>
+            <article><span>01</span><h3>Els pins adequats</h3><p>Rovellons i pinetells necessiten pins, però la seva presència per si sola no és suficient.</p></article>
             <article><span>02</span><h3>Pinassa humida</h3><p>La capa superficial ha de conservar humitat durant dies. Un xàfec curt sobre un sòl encara sec pot no activar res.</p></article>
             <article><span>03</span><h3>Bon drenatge</h3><p>Els sòls frescos funcionen millor quan retenen aigua sense quedar entollats ni compactats.</p></article>
             <article><span>04</span><h3>Poc vent sec</h3><p>Vent, calor o una nova sequera poden tallar la finestra encara que la pluja recent sembli favorable.</p></article>

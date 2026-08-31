@@ -260,7 +260,8 @@ h3 {
 }
 .hero h1 {
   margin: 0;
-  font-size: var(--display-xl);
+  max-width: 9em;
+  font-size: var(--display-lg);
   line-height: 0.88;
   text-shadow: 0 2px 32px rgba(5, 12, 8, 0.24);
 }
@@ -268,6 +269,7 @@ h3 {
   font-weight: 400;
 }
 .hero-lede {
+  max-width: 65ch;
   margin: 29px 0;
   color: #d9dfc8;
   font-size: var(--text-base);
@@ -280,6 +282,15 @@ h3 {
 }
 .hero-actions .text-link {
   color: #e1e8c9;
+}
+.hero-actions .hero-guide-button {
+  border-color: rgba(255, 246, 224, 0.28);
+  background: var(--apricot);
+  color: var(--ink);
+  box-shadow: 0 12px 30px rgba(5, 12, 8, 0.2);
+}
+.hero-actions .hero-guide-button:hover {
+  background: #ffc17f;
 }
 .hero-scroll {
   position: absolute;

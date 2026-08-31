@@ -22,8 +22,8 @@ const basemapOptions = [
   {
     id: "open-map",
     label: "Obert",
-    shortLabel: "OSM",
-    provider: "OpenStreetMap",
+    shortLabel: "Obert",
+    provider: "OSM",
     description: "Mapa estàndard d’OpenStreetMap",
     preview: "open",
   },
@@ -42,6 +42,22 @@ const basemapOptions = [
     provider: "ICGC",
     description: "Mapa de l’ICGC amb menys contrast",
     preview: "muted",
+  },
+  {
+    id: "esri-topographic",
+    label: "Topogràfic mundial",
+    shortLabel: "Topo",
+    provider: "Esri",
+    description: "Mapa topogràfic mundial d’Esri",
+    preview: "topographic",
+  },
+  {
+    id: "icgc-simplified",
+    label: "Simplificat",
+    shortLabel: "Simple",
+    provider: "ICGC",
+    description: "Mapa base simplificat de l’ICGC",
+    preview: "simplified",
   },
 ] as const;
 
@@ -104,10 +120,8 @@ function icgcBasemapStyle(wmsLayer: IcgcBaseLayer): StyleSpecification {
 function icgcReliefStyle(): StyleSpecification {
   const reliefSourceId = "icgc-shaded-relief";
   const labelsSourceId = "icgc-relief-references";
-  const reliefTiles =
-    "https://geoserveis.icgc.cat/servei/catalunya/elevacions-territorial/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap" +
-    "&LAYERS=model-elevacions-terreny-ombrejat-catalunya-topografic-5m-2009-2018&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE" +
-    "&SRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256";
+  const reliefTiles = "/api/map-tiles/icgc/v1/relief/{z}/{x}/{y}";
+  const referenceTiles = "/api/map-tiles/icgc/v1/references/{z}/{x}/{y}";
 
   return {
     version: 8,
@@ -122,7 +136,7 @@ function icgcReliefStyle(): StyleSpecification {
       },
       [labelsSourceId]: {
         type: "raster",
-        tiles: [icgcTileUrl("topografic-gris", "image/png")],
+        tiles: [referenceTiles],
         tileSize: 256,
         minzoom: 0,
         maxzoom: 18,
@@ -186,11 +200,67 @@ function openStreetMapStyle(): StyleSpecification {
   };
 }
 
+function rasterBasemapStyle({
+  attribution,
+  maxzoom,
+  sourceId,
+  tiles,
+}: {
+  attribution: string;
+  maxzoom: number;
+  sourceId: string;
+  tiles: string;
+}): StyleSpecification {
+  return {
+    version: 8,
+    sources: {
+      [sourceId]: {
+        type: "raster",
+        tiles: [tiles],
+        tileSize: 256,
+        minzoom: 0,
+        maxzoom,
+        attribution,
+      },
+    },
+    layers: [
+      {
+        id: sourceId,
+        type: "raster",
+        source: sourceId,
+        paint: { "raster-fade-duration": 0 },
+      },
+    ],
+  };
+}
+
+function esriTopographicStyle() {
+  return rasterBasemapStyle({
+    attribution:
+      "Tiles © Esri — Sources: Esri, HERE, Garmin, Intermap, increment P Corp., GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), OpenStreetMap contributors, and the GIS User Community",
+    maxzoom: 23,
+    sourceId: "esri-world-topographic",
+    tiles:
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+  });
+}
+
+function icgcSimplifiedStyle() {
+  return rasterBasemapStyle({
+    attribution: "© Institut Cartogràfic i Geològic de Catalunya",
+    maxzoom: 18,
+    sourceId: "icgc-simplified",
+    tiles: "/api/map-tiles/icgc/v1/simplified/{z}/{x}/{y}?encoding=jpeg-v1",
+  });
+}
+
 function basemapStyle(id: BasemapId): StyleSpecification {
   if (id === "icgc-relief") return icgcReliefStyle();
   if (id === "open-map") return openStreetMapStyle();
   if (id === "icgc-aerial") return icgcBasemapStyle("orto-hibrida");
   if (id === "icgc-muted") return icgcBasemapStyle("estandard-gris");
+  if (id === "esri-topographic") return esriTopographicStyle();
+  if (id === "icgc-simplified") return icgcSimplifiedStyle();
   return icgcBasemapStyle("estandard");
 }
 

@@ -18,7 +18,10 @@ import type {
   SpeciesProfile,
   SuitabilityResult,
 } from "@/src/lib/types";
-import { getConditionPredictionStatus } from "@/src/lib/condition-presentation";
+import {
+  getConditionPredictionStatus,
+  publicConditionFactorLabel,
+} from "@/src/lib/condition-presentation";
 import { getSuitabilityBand } from "@/src/lib/suitability-scale";
 import { regionLabels } from "@/data/regions";
 
@@ -28,19 +31,17 @@ type ComponentChartItem = {
   fullName: string;
   score: number;
 };
-const componentChartNames: Record<ModelComponentId, string> = {
-  habitatCoverage: "Coberta",
-  altitude: "Altitud",
-  phenology: "Fenologia",
-  water: "Estat hídric",
-  temperature: "Temperatura mitjana",
-  extremes: "Gelades i calor extrema",
-};
-
 const uppercaseInitial = (value: string) =>
   value
     ? `${value.charAt(0).toLocaleUpperCase("ca-ES")}${value.slice(1)}`
     : value;
+
+function soilReactionLabel(ph: number | undefined) {
+  if (ph === undefined) return "Sense informació";
+  if (ph < 6.5) return "Àcid";
+  if (ph <= 7.5) return "Neutre";
+  return "Calcari o alcalí";
+}
 
 function readingTime(value: string) {
   const date = new Date(value);
@@ -82,7 +83,7 @@ export function ConditionComparison({
     .filter((item) => item.score !== null)
     .map((item) => ({
       id: item.id,
-      name: componentChartNames[item.id],
+      name: publicConditionFactorLabel(item.id),
       fullName: item.label,
       score: item.score ?? 0,
     }));
@@ -90,10 +91,9 @@ export function ConditionComparison({
     ? []
     : result.components.filter((item) => item.score === null);
   const unavailableComponentCopy = cellId
-    ? "No disponible per a aquesta cel·la"
-    : "No disponible en la lectura territorial";
+    ? "No disponible per a aquest sector"
+    : "No disponible per al resum territorial";
   const [altitudeMin, altitudeMax] = species.ecologicalConfig.habitat.altitude;
-  const preferredPhRange = species.ecologicalConfig.soil.phRange;
   const resultBand = result.score === null ? undefined : getSuitabilityBand(result.score);
   const supportedModel = species.modelConfig.status === "supported"
     ? species.modelConfig
@@ -193,26 +193,26 @@ export function ConditionComparison({
           className={`suitability-score ${predictionStatus.kind}`}
         >
           <strong style={resultBand ? { color: resultBand.color } : undefined}>{result.score ?? "—"}</strong>
-          <span>{cellId ? "puntuació del sector" : "puntuació territorial"} · {predictionStatus.label}</span>
+          <span>{cellId ? "valoració del sector" : "valoració territorial"} · {predictionStatus.label}</span>
         </div>
       </div>
       {snapshot.stale && (
         <p className="data-note">
-          Falten dades ambientals recents per a aquesta zona. La puntuació
-          tornarà quan la lectura sigui completa.
+          Falten lectures recents per a aquesta zona. La valoració tornarà
+          quan tinguem tota la informació necessària.
         </p>
       )}
       {predictionStatus.kind === "score-withheld" && (
         <p className="data-note prediction-withheld-note">
-          <strong>Puntuació no disponible amb aquesta lectura.</strong>{" "}
+          <strong>Valoració no disponible.</strong>{" "}
           {cellId
-            ? "Falta alguna dada necessària per puntuar aquest sector."
+            ? "Falta alguna lectura necessària per valorar aquest sector."
             : "Selecciona un sector del mapa per combinar el temps amb el bosc i el sòl."}
         </p>
       )}
       {regionalSummary && result.score !== null && (
         <p className="data-note regional-summary-note">
-          <strong>Resultat habitual dins les zones compatibles.</strong>{" "}
+          <strong>Resultat habitual dins el terreny adequat.</strong>{" "}
           La majoria de lectures centrals es mouen entre {regionalSummary.scoreRange[0]} i{" "}
           {regionalSummary.scoreRange[1]}/100. Les condicions poden variar dins la regió.
         </p>
@@ -287,7 +287,7 @@ export function ConditionComparison({
                     {frostState === "warning"
                       ? <><strong>Gelada detectada</strong><span>{Math.round(frostHours ?? 0)} hores dins la finestra</span></>
                       : frostState === "clear"
-                        ? <><strong>Sense gelada</strong><span>{temperatureWindowDays ? `en ${temperatureWindowDays} dies` : "a la finestra configurada"}</span></>
+                        ? <><strong>Sense gelada</strong><span>{temperatureWindowDays ? `en ${temperatureWindowDays} dies` : "durant el període analitzat"}</span></>
                         : <strong>Historial de gelada no disponible</strong>}
                   </span>
                 </div>
@@ -304,27 +304,27 @@ export function ConditionComparison({
           <dl className="cell-static-factor-list">
             <div>
               <dt><Mountain size={17} aria-hidden="true" />Altitud</dt>
-              <dd>{v.altitudeM === undefined ? "No verificada" : `${Math.round(v.altitudeM)} m`}</dd>
+              <dd>{v.altitudeM === undefined ? "Sense informació" : `${Math.round(v.altitudeM)} m`}</dd>
               <small>
                 Preferència: {altitudeMin}–{altitudeMax} m
                 {v.habitatAltitudeSuitability === undefined
                   ? ""
-                  : ` · Ajust de la cel·la: ${Math.round(v.habitatAltitudeSuitability)}%`}
+                  : ` · Coincidència amb l’altitud habitual: ${Math.round(v.habitatAltitudeSuitability)}%`}
               </small>
             </div>
             <div>
-              <dt><Trees size={17} aria-hidden="true" />Coberta compatible</dt>
-              <dd>{v.habitatCoveragePercent === undefined ? "No verificada" : `${Math.round(v.habitatCoveragePercent)}%`}</dd>
-              <small>Part de la cel·la que coincideix amb la coberta preferida</small>
+              <dt><Trees size={17} aria-hidden="true" />Bosc i terreny adequats</dt>
+              <dd>{v.habitatCoveragePercent === undefined ? "Sense informació" : `${Math.round(v.habitatCoveragePercent)}%`}</dd>
+              <small>Part del sector on el tipus de bosc i de sòl encaixen</small>
             </div>
             <div>
-              <dt><Layers3 size={17} aria-hidden="true" />pH del sòl</dt>
-              <dd>{v.soilPh === undefined ? "No verificat" : v.soilPh.toFixed(1)}</dd>
-              <small>{preferredPhRange ? `Preferència: pH ${preferredPhRange[0]}–${preferredPhRange[1]}` : `Preferència: ${species.ecologicalConfig.soil.reaction}`}</small>
+              <dt><Layers3 size={17} aria-hidden="true" />Tipus de sòl</dt>
+              <dd>{soilReactionLabel(v.soilPh)}</dd>
+              <small>Preferència: {species.ecologicalConfig.soil.reaction}</small>
             </div>
             <div>
               <dt><Layers3 size={17} aria-hidden="true" />Textura del sòl</dt>
-              <dd>{v.soilTexture ? uppercaseInitial(v.soilTexture) : "No verificada"}</dd>
+              <dd>{v.soilTexture ? uppercaseInitial(v.soilTexture) : "Sense informació"}</dd>
               <small>Preferència: {uppercaseInitial(species.ecologicalConfig.soil.texture)}</small>
             </div>
           </dl>
@@ -332,7 +332,7 @@ export function ConditionComparison({
       ) : null}
       <div className="factor-chart">
         <div className="chart-caption">
-          <span>{cellCalculation ? "Com es calcula la puntuació" : "Resposta dels components"}</span>
+          <span>{cellCalculation ? "Com s’obté la valoració" : "Factors que afavoreixen o limiten"}</span>
           <strong style={resultBand ? { color: resultBand.color } : undefined}>
             {predictionStatus.kind === "available" && result.score !== null
               ? getSuitabilityBand(result.score).label
@@ -341,71 +341,37 @@ export function ConditionComparison({
           </strong>
         </div>
         {cellCalculation && (
-          <ol className="score-calculation" aria-label="Càlcul de la puntuació de la cel·la">
+          <ol className="score-calculation" aria-label="Resum de la valoració del sector">
             <li>
-              <span className="score-calculation-step">1 · Condicions per fructificar</span>
+              <span className="score-calculation-step">1 · Condicions del moment</span>
               <strong>{cellCalculation.fruiting}<small>/100</small></strong>
-              <p
-                className="score-calculation-expression"
-                aria-label={`Temporada ${cellCalculation.phenology} per cent, aigua ${cellCalculation.water} per cent, temperatura ${cellCalculation.temperature} per cent i extrems ${cellCalculation.extremes} per cent`}
-              >
-                <span>{cellCalculation.phenology}%</span>
-                <b>×</b>
-                <span>{cellCalculation.water}%</span>
-                <b>×</b>
-                <span>{cellCalculation.temperature}%</span>
-                <b>×</b>
-                <span>{cellCalculation.extremes}%</span>
-                <b>=</b>
-                <span>{cellCalculation.fruiting}</span>
-              </p>
-              <small>Temporada, aigua, temperatura i extrems han de coincidir.</small>
+              <p>Valorem si coincideixen la temporada habitual, l’aigua disponible, la temperatura i els episodis extrems.</p>
             </li>
             <li>
-              <span className="score-calculation-step">2 · Hàbitat efectiu</span>
-              <strong>{cellCalculation.effectiveHabitat}<small>% de la cel·la</small></strong>
-              <p
-                className="score-calculation-expression"
-                aria-label={`Coberta compatible ${cellCalculation.habitatCoverage} per cent per idoneïtat altitudinal ${cellCalculation.altitude} per cent igual a ${cellCalculation.effectiveHabitat} per cent d’hàbitat efectiu`}
-              >
-                <span>{cellCalculation.habitatCoverage}%</span>
-                <b>×</b>
-                <span>{cellCalculation.altitude}%</span>
-                <b>=</b>
-                <span>{cellCalculation.effectiveHabitat}%</span>
-              </p>
-              <small>Coberta compatible × idoneïtat altitudinal.</small>
+              <span className="score-calculation-step">2 · Terreny adequat</span>
+              <strong>{cellCalculation.effectiveHabitat}<small>% del sector</small></strong>
+              <p>Indica quina part del sector té un tipus de bosc, un sòl i una altitud adequats per a l’espècie.</p>
             </li>
             <li className="score-calculation-result">
-              <span className="score-calculation-step">3 · Puntuació de la cel·la</span>
+              <span className="score-calculation-step">3 · Valoració final</span>
               <strong style={resultBand ? { color: resultBand.color } : undefined}>
                 {cellCalculation.opportunity}<small>/100</small>
               </strong>
-              <p
-                className="score-calculation-expression"
-                aria-label={`Condicions per fructificar ${cellCalculation.fruiting} per cent per hàbitat efectiu ${cellCalculation.effectiveHabitat} per cent igual a una puntuació de ${cellCalculation.opportunity} sobre 100`}
-              >
-                <span>{cellCalculation.fruiting}</span>
-                <b>×</b>
-                <span>{cellCalculation.effectiveHabitat}%</span>
-                <b>=</b>
-                <span>{cellCalculation.opportunity}</span>
-              </p>
-              <small>Condicions per fructificar × part efectiva de la cel·la.</small>
+              <p>Resumeix si el lloc i el moment coincideixen. No és una probabilitat de trobar bolets.</p>
             </li>
           </ol>
         )}
         <p className="factor-chart-explanation">
           {regionalSummary
-            ? "Cada barra resumeix les condicions dins l’hàbitat compatible. Una condició molt desfavorable redueix tota la puntuació, encara que les altres siguin bones; no és una probabilitat de trobar bolets."
+            ? "Cada barra resumeix les condicions dins el terreny adequat. Una condició molt desfavorable redueix tota la valoració, encara que les altres siguin bones; no és una probabilitat de trobar bolets."
             : cellCalculation
               ? "La condició més desfavorable pot limitar el resultat, encara que la resta siguin bones."
-              : "Una condició molt desfavorable redueix tota la puntuació, encara que les altres siguin bones; no és una probabilitat de trobar bolets."}
+              : "Una condició molt desfavorable redueix tota la valoració, encara que les altres siguin bones; no és una probabilitat de trobar bolets."}
         </p>
         {unavailableComponents.length > 0 && (
           <dl
             className="unavailable-factor-list"
-            aria-label="Components necessaris no disponibles"
+            aria-label="Factors necessaris no disponibles"
           >
             {unavailableComponents.map((item) => (
               <div key={item.id}>
@@ -415,7 +381,7 @@ export function ConditionComparison({
             ))}
           </dl>
         )}
-        <ul className="factor-bars" aria-label="Multiplicadors del càlcul">
+        <ul className="factor-bars" aria-label="Factors que influeixen en la valoració">
           {chart.map((entry) => {
             const band = getSuitabilityBand(entry.score);
             const appliedMultiplier = appliedComponentMultiplier(entry);
@@ -452,7 +418,7 @@ export function ConditionComparison({
                 <span
                   className="factor-bar-meter"
                   role="meter"
-                  aria-label={`${entry.fullName}: ${entry.score} sobre 100, ${band.label}`}
+                  aria-label={`${entry.name}: ${entry.score} sobre 100, ${band.label}`}
                   aria-valuemin={0}
                   aria-valuemax={100}
                   aria-valuenow={entry.score}

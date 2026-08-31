@@ -9,6 +9,7 @@ import {
   locationPagesForSpecies,
 } from "@/data/location-pages";
 import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
+import { speciesMapHref } from "@/src/lib/species-map-pages";
 import type { RegionId, SpeciesProfile } from "@/src/lib/types";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
@@ -36,19 +37,22 @@ export function SpeciesDistributionSection({
     <span>04</span>
   </div>
   <div>
-    <p className="eyebrow">Evidència territorial</p>
+    <p className="eyebrow">Bosc i territori</p>
     <h2>On podria créixer a Catalunya</h2>
     <div className="habitat-map-explainer">
       <p>
         <strong>
-          És un mapa de compatibilitat ecològica, no una predicció
-          d’avui.
+          És un mapa dels terrenys on l’espècie podria créixer, no una
+          lectura de les condicions d’avui.
         </strong>{" "}
         El blau indica boscos on el terreny encaixa amb l’espècie; no
         confirma que hi hagi bolets.
       </p>
       <UmamiEventLink
-        href={`/map?species=${species.speciesId}&region=${region}${species.predictionMode === "habitat_only" ? "&mode=compatibility" : ""}`}
+        href={speciesMapHref(species.speciesId, {
+          region,
+          mode: species.predictionMode === "habitat_only" ? "compatibility" : undefined,
+        })}
         className="habitat-map-link"
         analyticsEvent={UMAMI_EVENTS.speciesMapOpen}
       >
@@ -65,17 +69,15 @@ export function SpeciesDistributionSection({
       speciesId={species.speciesId}
     />
     <div className="region-pill-row habitat-evidence-row">
-      <span>Coberta del sòl ICGC</span>
+      <span>Tipus de bosc</span>
       <span>
         {habitat.altitude[0]}–{habitat.altitude[1]} m
       </span>
       <span>
-        {soil.phRange
-          ? `pH ${soil.phRange[0]}–${soil.phRange[1]}`
-          : "Sòl compatible"}
+        {soil.reaction}
       </span>
       <span>Dades de bosc, altitud i sòl</span>
-      <span>Registres històrics generalitzats</span>
+      <span>Observacions històriques agrupades per zona</span>
     </div>
     {(territoryGuide || localGuides.length > 0) && (
       <section

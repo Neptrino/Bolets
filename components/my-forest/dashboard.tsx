@@ -55,16 +55,16 @@ function ReadingCard({
       </header>
       <div className="forest-reading-score">
         <span><strong>{summary.bestCell.score}</strong><small>/100</small></span>
-        <p><strong>{opportunityLabel(summary.bestCell.score)}</strong><small>Millor cel·la d’1 km</small></p>
+        <p><strong>{opportunityLabel(summary.bestCell.score)}</strong><small>Millor sector del territori</small></p>
       </div>
       <dl className="forest-reading-coverage">
         <div>
           <dt>Territori positiu</dt>
-          <dd><strong>{Math.round(summary.positiveCellShare * 100)}%</strong><small>{summary.positiveCellCount} de {summary.scoredCellCount} cel·les</small></dd>
+          <dd><strong>{Math.round(summary.positiveCellShare * 100)}%</strong><small>{summary.positiveCellCount} de {summary.scoredCellCount} sectors</small></dd>
         </div>
         <div>
           <dt>Territori amb 20 o més</dt>
-          <dd><strong>{Math.round(summary.score20CellShare * 100)}%</strong><small>{summary.score20CellCount} de {summary.scoredCellCount} cel·les</small></dd>
+          <dd><strong>{Math.round(summary.score20CellShare * 100)}%</strong><small>{summary.score20CellCount} de {summary.scoredCellCount} sectors</small></dd>
         </div>
       </dl>
       <footer>
@@ -172,7 +172,7 @@ export function TodayForYou({
       {simulation ? (
         <aside className="forest-simulation-note">
           <FlaskConical size={18} aria-hidden="true" />
-          <p><strong>Previsualització local.</strong> Aquestes puntuacions i cobertures són simulades per revisar la interfície; no són una predicció i no es desen.</p>
+          <p><strong>Previsualització local.</strong> Aquestes valoracions i superfícies són simulades per revisar la interfície; no descriuen condicions reals i no es desen.</p>
           <Link href="/el-meu-bosc">Veure les dades reals</Link>
         </aside>
       ) : null}
@@ -186,7 +186,7 @@ export function TodayForYou({
         <div className="forest-empty">
           <Sprout size={25} aria-hidden="true" />
           <div>
-            <strong>{hasBoth ? "Encara no hi ha cap combinació compatible." : "Tria espècies i territoris per començar."}</strong>
+            <strong>{hasBoth ? "Encara no hi ha cap lectura per a aquesta combinació." : "Tria espècies i territoris per començar."}</strong>
             <p>{hasBoth
               ? "Les preferències queden desades, però ara no coincideixen amb cap guia local que tingui lectura actual. Pots ajustar-les més avall."
               : "Quan en desis almenys una de cada, aquí apareixeran les combinacions que ja disposen de guia local i dades territorials."}</p>
@@ -203,7 +203,7 @@ export function TodayForYou({
                 {combination.speciesName} <span>·</span> {combination.territoryName}
               </li>
             ))}</ul>
-            <small>Les preferències estan desades; només mostrem una targeta quan ja existeix una guia local compatible.</small>
+            <small>Les preferències estan desades; només mostrem una targeta quan ja existeix una guia local per a l’espècie i el territori.</small>
           </div>
         </aside>
       ) : null}

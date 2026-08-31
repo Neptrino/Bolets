@@ -32,12 +32,12 @@ export function AccountSettings({ email }: { email: string }) {
     <section className="finding-account-card finding-stack"><h2>Identitat pública</h2><p>Compte: <strong>{email}</strong>. El correu mai no es publica.</p><form className="finding-stack" onSubmit={save}><label className="finding-field">Àlies opcional<input minLength={3} maxLength={30} value={alias} onChange={(event) => setAlias(event.target.value)} placeholder="Per exemple, BoscEndins" /><small>Encara que tinguis àlies, decideixes troballa per troballa si es mostra.</small></label><button className="finding-button" disabled={busy}>Desar l’àlies</button></form>{message ? <p className="finding-notice">{message}</p> : null}</section>
     <PasskeySettings />
     <section className="finding-account-card finding-stack"><h2>Sessió</h2><button className="finding-button-secondary" onClick={() => void signOut()}>Tancar sessió a tots els dispositius</button></section>
-    <section className="finding-account-card finding-stack"><h2>Eliminar el compte</h2><p>S’esborren el punt exacte, les notes, les fotos i les troballes privades. Les aportacions que ja eren públiques es conserven anonimitzades només a la quadrícula de 10 km.</p><button className="finding-button-danger" onClick={() => { setDeleteError(null); setDeleteOpen(true); }} disabled={busy}>Eliminar definitivament el compte</button></section>
+    <section className="finding-account-card finding-stack"><h2>Eliminar el compte</h2><p>S’esborren el punt exacte, les notes, les fotos i les troballes privades. Les aportacions que ja eren públiques es conserven anonimitzades només en una zona aproximada de 10 km.</p><button className="finding-button-danger" onClick={() => { setDeleteError(null); setDeleteOpen(true); }} disabled={busy}>Eliminar definitivament el compte</button></section>
     <FindingDeleteDialog
       open={deleteOpen}
       busy={busy}
       title="Eliminar definitivament el compte?"
-      description="Les dades privades i les fotos s’eliminaran. Les troballes ja públiques conservaran només el dia, l’espècie i la casella de 10 × 10 km, sense cap vincle amb tu."
+      description="Les dades privades i les fotos s’eliminaran. Les troballes ja públiques conservaran només el dia, l’espècie i una zona aproximada de 10 × 10 km, sense cap vincle amb tu."
       confirmLabel="Eliminar el compte"
       error={deleteError}
       onCancel={() => { setDeleteOpen(false); setDeleteError(null); }}

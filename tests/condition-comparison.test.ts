@@ -49,10 +49,10 @@ describe("condition calculation presentation", () => {
       cellGridSizeM: 250,
     }));
 
-    expect(html).toContain("Càlcul de la puntuació de la cel·la");
-    expect(html).toContain("Condicions per fructificar");
+    expect(html).toContain("Com s’obté la valoració");
+    expect(html).toContain("Condicions del moment");
     expect(html).toContain("35<small>/100</small>");
-    expect(html).toContain("62<small>% de la cel·la</small>");
+    expect(html).toContain("62<small>% del sector</small>");
     expect(html).toContain("22<small>/100</small>");
     expect(html).toContain("La condició més desfavorable pot limitar el resultat");
     expect(html).toContain("Temperatura mitjana");
@@ -66,8 +66,8 @@ describe("condition calculation presentation", () => {
     expect(html).toContain("factor-tooltip-extremes");
     expect(html).toContain("Reflecteix l’efecte recent de les gelades");
     expect(html).toContain("No és una probabilitat de trobar bolets");
-    expect(html).toContain("68%</span>");
-    expect(html).toContain("73%</span>");
+    expect(html).toContain("68%</strong>");
+    expect(html).toContain("73%</strong>");
     expect(html).not.toContain("<sup>");
     expect(html).toContain("Més restrictiu");
     expect(html).not.toContain("factor-scale");
@@ -92,8 +92,10 @@ describe("condition calculation presentation", () => {
     expect(html).toContain("Període: últims 26 dies");
     expect(html).toContain("Compara la temperatura recent amb el rang preferit");
     expect(html).toContain("Preferència: 400–1900 m");
-    expect(html).toContain("Part de la cel·la que coincideix amb la coberta preferida");
-    expect(html).toContain("Preferència: pH 4.5–6.5");
+    expect(html).toContain("Part del sector on el tipus de bosc i de sòl encaixen");
+    expect(html).toContain("Preferència: Àcida a lleugerament àcida");
+    expect(html).not.toContain('aria-label="Estat hídric unificat');
+    expect(html).not.toContain('aria-label="Resposta tèrmica');
     expect(html).not.toContain("Substrat geològic");
     expect(html).not.toContain("Drenatge de l’espècie");
     expect(html).toContain("Aigua disponible a la capa superficial del sòl");

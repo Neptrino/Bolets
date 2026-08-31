@@ -30,9 +30,9 @@ export const siteAuthor = {
   entityId: `${SITE_URL}/#author-aleix-ventayol`,
   name: "Aleix Ventayol",
   url: `${SITE_URL}/equip-editorial#autoria`,
-  role: "Autor i responsable del model",
+  role: "Autor i responsable de l’atles",
   summary:
-    "Boletaire aficionat des de petit, desenvolupa i manté l’atles i el model hidrotèrmic. La seva formació és en desenvolupament de software i tractament de dades, no en micologia: els trets d’identificació provenen de bibliografia micològica i de fonts oficials, citades a cada fitxa.",
+    "Boletaire aficionat des de petit, desenvolupa i manté l’atles que compara el bosc, el sòl, la pluja i la temperatura. La seva formació és en desenvolupament de programari i tractament de dades, no en micologia: els trets d’identificació provenen de bibliografia micològica i de fonts oficials, citades a cada fitxa.",
 };
 
 export const editorialAuthors = {

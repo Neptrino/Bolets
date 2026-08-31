@@ -10,6 +10,7 @@ import {
   type CurrentOverviewItem,
 } from "@/src/lib/current-overview";
 import { opportunityLabel } from "@/src/lib/scoring";
+import { speciesMapHref } from "@/src/lib/species-map-pages";
 import type { RegionId } from "@/src/lib/types";
 
 export type DailyShareSlug = "catalunya" | Exclude<RegionId, "altres"> | `zona-${string}`;
@@ -205,7 +206,7 @@ export function createDailyShareCards(items: CurrentOverviewItem[], territoryIte
         .filter((candidate): candidate is DailyShareReading => candidate !== null)
         .slice(0, 3);
 
-      const mapPath = readings[0] ? `/map?species=${readings[0].speciesId}&region=${regionId}` : "/map";
+      const mapPath = readings[0] ? speciesMapHref(readings[0].speciesId, { region: regionId }) : "/map";
 
       return {
         slug: regionId,
@@ -217,7 +218,7 @@ export function createDailyShareCards(items: CurrentOverviewItem[], territoryIte
         mapPath,
         shareText: regionalShareText(label, readings, observedAt, mapPath),
         scope: "region",
-        scopeLabel: "Regió de predicció",
+        scopeLabel: "Regió",
       } satisfies DailyShareCard;
     });
 
@@ -321,7 +322,7 @@ export function createFavourableDailySharePreviewCards(): DailyShareCard[] {
     .filter((region): region is { value: Exclude<RegionId, "altres">; label: string } => region.value !== "altres")
     .map(({ value: regionId, label }) => {
       const readings = favourablePreviewReadings.filter((candidate) => candidate.regionName === label);
-      const mapPath = `/map?species=${readings[0]!.speciesId}&region=${regionId}`;
+      const mapPath = speciesMapHref(readings[0]!.speciesId, { region: regionId });
 
       return {
         slug: regionId,
@@ -333,7 +334,7 @@ export function createFavourableDailySharePreviewCards(): DailyShareCard[] {
         mapPath,
         shareText: `${favourablePreviewNotice}\n\nCondicions favorables de demostració a ${label}.`,
         scope: "region",
-        scopeLabel: "Regió de predicció",
+        scopeLabel: "Regió",
         isPreview: true,
       } satisfies DailyShareCard;
     });

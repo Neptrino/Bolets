@@ -4,6 +4,10 @@ import { describe, expect, it } from "vitest";
 import { predictionViewportStatus } from "@/src/lib/prediction-map-status";
 
 describe("prediction map rendering", () => {
+  const regionMapSource = readFileSync(
+    join(process.cwd(), "components", "region-map.tsx"),
+    "utf8",
+  );
   const regionMapSources = [
     join(process.cwd(), "components", "region-map.tsx"),
     ...readdirSync(join(process.cwd(), "components", "region-map"))
@@ -32,14 +36,31 @@ describe("prediction map rendering", () => {
 
   it("keeps an explicit loading overlay visible while replacement cells load", () => {
     expect(source).toContain('className="prediction-map-loading"');
-    expect(source).toContain("Actualitzant la predicció…");
+    expect(source).toContain("Actualitzant les condicions…");
     expect(source).toContain('ariaBusy={cellState.status === "loading"}');
   });
 
   it("reveals fine-grid buckets progressively instead of blocking on the last one", () => {
     expect(source).toContain("prioritizeBucketsAround(");
     expect(source).toContain('className="map-data-state map-refining-state"');
-    expect(source).toContain("Afinant la predicció…");
+    expect(source).toContain("Completant el mapa…");
+  });
+
+  it("fits the initial camera before waiting for basemap tiles to load", () => {
+    const initialLoadListener = regionMapSource.indexOf('localMap.once("load"');
+    expect(initialLoadListener).toBeGreaterThan(0);
+    expect(
+      regionMapSource.lastIndexOf(
+        "fitRegion(localMap, initialRegion.current, false)",
+        initialLoadListener,
+      ),
+    ).toBeGreaterThan(0);
+    expect(
+      regionMapSource.indexOf(
+        "fitRegion(localMap, initialRegion.current, false)",
+        initialLoadListener,
+      ),
+    ).toBe(-1);
   });
 
   it("loads historical evidence separately from the primary habitat grid", () => {

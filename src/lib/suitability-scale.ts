@@ -7,11 +7,11 @@ export type SuitabilityBand = {
 };
 
 export const suitabilityScale: SuitabilityBand[] = [
-  { id: "very-bad", label: "Molt baixa", description: "Resposta molt baixa dins l’escala ordinal del model.", minimum: 0, color: "#c95e35" },
-  { id: "bad", label: "Baixa", description: "Resposta baixa dins l’escala ordinal del model.", minimum: 20, color: "#dd873c" },
-  { id: "regular", label: "Mitjana", description: "Resposta intermèdia dins l’escala ordinal del model.", minimum: 40, color: "#c5a34a" },
-  { id: "good", label: "Alta", description: "Resposta alta dins l’escala ordinal del model.", minimum: 60, color: "#88a84f" },
-  { id: "excellent", label: "Molt alta", description: "Resposta molt alta dins l’escala ordinal del model.", minimum: 80, color: "#4f8a5b" }
+  { id: "very-bad", label: "Molt baixa", description: "Condicions molt poc favorables.", minimum: 0, color: "#c95e35" },
+  { id: "bad", label: "Baixa", description: "Condicions poc favorables.", minimum: 20, color: "#dd873c" },
+  { id: "regular", label: "Mitjana", description: "Condicions intermèdies.", minimum: 40, color: "#c5a34a" },
+  { id: "good", label: "Alta", description: "Condicions favorables.", minimum: 60, color: "#88a84f" },
+  { id: "excellent", label: "Molt alta", description: "Condicions molt favorables.", minimum: 80, color: "#4f8a5b" }
 ];
 
 const predictionMapColourStops = [

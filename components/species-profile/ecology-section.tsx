@@ -9,6 +9,7 @@ import {
   Trees,
 } from "lucide-react";
 import { SeasonCalendar } from "@/components/season-calendar";
+import { rainfallLimitationCopy } from "@/src/lib/species-copy";
 import type { SpeciesProfile } from "@/src/lib/types";
 
 const catalanList = new Intl.ListFormat("ca-ES", {
@@ -74,7 +75,7 @@ export function SpeciesEcologySection({
     {species.predictionMode === "habitat_only" && (
       <div className="habitat-map-explainer">
         <p>
-          <strong>Només compatibilitat d’hàbitat.</strong>{" "}
+          <strong>Només terreny adequat.</strong>{" "}
           {species.predictionCaveat}
         </p>
       </div>
@@ -182,7 +183,7 @@ export function SpeciesEcologySection({
               <dd>{rainfall.interruption}</dd>
             </div>
           </dl>
-          <p className="rainfall-uncertainty">{rainfall.uncertainty}</p>
+          <p className="rainfall-uncertainty">{rainfallLimitationCopy(species.speciesId, rainfall.uncertainty)}</p>
         </div>
       </section>
     </div>
