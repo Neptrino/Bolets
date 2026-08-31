@@ -71,7 +71,7 @@
 .data-source-credits-heading { display: flex; gap: .75rem; align-items: center; }
 .data-source-credits-icon { display: grid; place-items: center; flex: 0 0 auto; width: 2.35rem; height: 2.35rem; border-radius: 50%; background: #304839; color: #fffaf0; }
 .data-source-credits-heading strong,
-.data-source-credits-heading span { display: block; }
+.data-source-credits-heading div > span { display: block; }
 .data-source-credits-heading strong { color: #344338; font-size: var(--text-base); line-height: 1.2; }
 .data-source-credits-heading div > span { margin-top: .22rem; color: #737a72; font-size: var(--text-xs); line-height: 1.35; }
 .data-source-credits--panel ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem 1.5rem; margin: 0; padding: 0; list-style: none; }
