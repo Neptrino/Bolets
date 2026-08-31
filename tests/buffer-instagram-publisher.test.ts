@@ -91,6 +91,12 @@ describe("Buffer Instagram daily publisher", () => {
     expect(options.headers).toMatchObject({ Authorization: "Bearer secret-buffer-key" });
     expect(body.variables.input).toMatchObject({
       channelId: "channel-1",
+      metadata: {
+        instagram: {
+          shouldShareToFeed: true,
+          type: "post",
+        },
+      },
       mode: "shareNow",
       schedulingType: "automatic",
     });

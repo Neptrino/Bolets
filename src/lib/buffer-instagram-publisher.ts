@@ -312,6 +312,12 @@ async function createImagePost({
       input: {
         assets: [{ image: { url: imageUrl } }],
         channelId,
+        metadata: {
+          instagram: {
+            shouldShareToFeed: true,
+            type: "post",
+          },
+        },
         mode: "shareNow",
         schedulingType: "automatic",
         text: caption,
