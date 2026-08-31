@@ -107,13 +107,35 @@ test("every month in the season calendar links to its own canonical page", async
 test("the catalogue separates monthly and seasonal navigation", async ({ page }) => {
   await page.goto("/bolets");
 
-  await expect(page.getByRole("link", { name: /Bolets per mesos/ })).toHaveAttribute("href", "/temporada");
-  const seasons = page.getByRole("navigation", { name: "Bolets per estació de l’any" });
-  await expect(seasons.getByRole("link")).toHaveCount(4);
-  await expect(seasons.getByRole("link", { name: /Bolets de primavera/ })).toHaveAttribute("href", "/bolets-de-primavera");
-  await expect(seasons.getByRole("link", { name: /Bolets d’estiu/ })).toHaveAttribute("href", "/bolets-d-estiu");
-  await expect(seasons.getByRole("link", { name: /Bolets de tardor/ })).toHaveAttribute("href", "/bolets-de-tardor");
-  await expect(seasons.getByRole("link", { name: /Bolets d’hivern/ })).toHaveAttribute("href", "/bolets-d-hivern");
+  const directory = page.locator(".directory-shell");
+  const supportingLinks = page.locator(".species-catalogue-support");
+  await expect(directory.locator(".directory-controls")).toBeInViewport();
+  const shortcuts = directory.getByRole("navigation", { name: "Explora el catàleg" });
+  await expect(shortcuts.getByRole("link")).toHaveCount(7);
+  await expect(shortcuts.getByRole("group", { name: "Explora espècies" }).getByRole("link")).toHaveCount(3);
+  await expect(shortcuts.getByRole("group", { name: "Per estacions" }).getByRole("link")).toHaveCount(4);
+  await expect(shortcuts).toBeInViewport();
+  await expect(shortcuts.getByRole("link", { name: "Comestibles" })).toHaveAttribute("href", "/bolets-comestibles");
+  await expect(shortcuts.getByRole("link", { name: "Verinosos" })).toHaveAttribute("href", "/bolets-verinosos");
+  await expect(shortcuts.getByRole("link", { name: "Per mesos" })).toHaveAttribute("href", "/temporada");
+  await expect(shortcuts.getByRole("link", { name: "Primavera" })).toHaveAttribute("href", "/bolets-de-primavera");
+  await expect(shortcuts.getByRole("link", { name: "Estiu" })).toHaveAttribute("href", "/bolets-d-estiu");
+  await expect(shortcuts.getByRole("link", { name: "Tardor" })).toHaveAttribute("href", "/bolets-de-tardor");
+  await expect(shortcuts.getByRole("link", { name: "Hivern" })).toHaveAttribute("href", "/bolets-d-hivern");
+  const [directoryBox, supportingLinksBox] = await Promise.all([
+    directory.boundingBox(),
+    supportingLinks.boundingBox(),
+  ]);
+  expect(directoryBox).not.toBeNull();
+  expect(supportingLinksBox).not.toBeNull();
+  expect(directoryBox!.y).toBeLessThan(supportingLinksBox!.y);
+  await expect(page.getByRole("navigation", { name: "Tipus i calendari de bolets" })).toHaveCount(0);
+  await expect(page.getByRole("navigation", { name: "Bolets per estació de l’any" })).toHaveCount(0);
+  const tools = page.getByRole("navigation", { name: "Eines pràctiques del catàleg" });
+  await expect(tools.getByRole("link")).toHaveCount(3);
+  await expect(tools.getByRole("link", { name: /Mapa de bolets/ })).toHaveAttribute("href", "/map");
+  await expect(tools.getByRole("link", { name: /On trobar bolets avui/ })).toHaveAttribute("href", "/bolets-avui");
+  await expect(tools.getByRole("link", { name: /Conservar i congelar bolets/ })).toHaveAttribute("href", "/conservar-bolets");
 });
 
 test("the footer links to the current Catalonia season", async ({ page }) => {

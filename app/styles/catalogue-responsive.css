@@ -1,3 +1,17 @@
+@media (max-width: 760px) {
+  .directory-shortcuts {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .directory-shortcut-items {
+    gap: 6px;
+  }
+  .directory-shortcut-group:first-child .directory-shortcut-items,
+  .directory-shortcut-group:last-child .directory-shortcut-items {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 680px) {
   .compact-species-page .species-content {
     display: block;

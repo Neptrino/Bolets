@@ -125,6 +125,75 @@
   background: #eee6d8;
   color: var(--bark);
 }
+.directory-shortcuts {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 4fr);
+  gap: 18px;
+  margin-top: 12px;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.directory-shortcut-group {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+.directory-shortcut-label {
+  color: #7d746a;
+  font-size: var(--text-xs);
+  font-weight: 850;
+  letter-spacing: .06em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.directory-shortcut-items {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.directory-shortcut-group:first-child .directory-shortcut-items {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.directory-shortcut-group:last-child .directory-shortcut-items {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.directory-shortcuts a {
+  min-width: 0;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 10px;
+  border: 1px solid rgba(89, 53, 37, 0.13);
+  border-radius: 10px;
+  background: #f8f3e9;
+  color: #42483e;
+  font-size: var(--text-xs);
+  font-weight: 850;
+  line-height: 1.15;
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+.directory-shortcuts a:hover,
+.directory-shortcuts a:focus-visible {
+  background: #fffdf8;
+  color: var(--clay);
+  transform: translateY(-1px);
+}
+.directory-shortcuts a:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: -2px;
+}
+.directory-shortcuts svg {
+  flex: 0 0 auto;
+  color: var(--clay);
+  stroke-width: 2;
+}
 .directory-count {
   margin: 23px 2px 16px;
   color: #786f65;
