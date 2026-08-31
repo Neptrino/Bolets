@@ -1,14 +1,17 @@
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  CircleDot,
-  MoveVertical,
-  ScanLine,
-  ShieldAlert,
-  Sprout,
-} from "lucide-react";
+import { ArrowUpRight, ScanLine, ShieldAlert } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
+import {
+  MushroomCapIcon,
+  MushroomContextIcon,
+  MushroomFleshIcon,
+  MushroomHymeniumIcon,
+  MushroomMyceliumIcon,
+  MushroomRingVolvaIcon,
+  MushroomSporesIcon,
+  MushroomStemIcon,
+} from "@/components/mushroom-anatomy-icons";
 import { MushroomPartsExplorer } from "@/components/mushroom-parts-explorer";
 import {
   PageHeader,
@@ -85,23 +88,31 @@ export default function MushroomPartsGuidePage() {
         />
         <div className="seo-guide-grid">
           <section>
-            <CircleDot size={21} aria-hidden="true" />
-            <h3>Barret</h3>
+            <header className="seo-guide-card-heading">
+              <MushroomCapIcon className="mushroom-anatomy-icon" />
+              <h3>Barret</h3>
+            </header>
             <p>És la part superior. Observa-ne la forma, el marge, la superfície, el color i si conserva restes de vel. Un barret convex de jove pot aplanar-se o enfonsar-se en madurar.</p>
           </section>
           <section>
-            <ScanLine size={21} aria-hidden="true" />
-            <h3>Himeni</h3>
+            <header className="seo-guide-card-heading">
+              <MushroomHymeniumIcon className="mushroom-anatomy-icon" />
+              <h3>Himeni</h3>
+            </header>
             <p>És la superfície fèrtil sota el barret. Pot tenir làmines, tubs amb porus, agulletes o plecs. Cal mirar com s’uneix al peu, el color i si canvia en tocar-lo.</p>
           </section>
           <section>
-            <MoveVertical size={21} aria-hidden="true" />
-            <h3>Peu</h3>
+            <header className="seo-guide-card-heading">
+              <MushroomStemIcon className="mushroom-anatomy-icon" />
+              <h3>Peu</h3>
+            </header>
             <p>Sosté el barret en moltes espècies. Descriu-ne la posició, el gruix, la textura, les fibres o reticles i si és buit o massís, sense arrencar-ne exemplars innecessàriament.</p>
           </section>
           <section>
-            <CircleDot size={21} aria-hidden="true" />
-            <h3>Anell, volva i base</h3>
+            <header className="seo-guide-card-heading">
+              <MushroomRingVolvaIcon className="mushroom-anatomy-icon" />
+              <h3>Anell, volva i base</h3>
+            </header>
             <p>L’anell és una resta de vel al peu. La volva és una beina o copa a la base. Són trets importants en algunes confusions, així que cal observar la base sencera sense deixar-la enterrada.</p>
           </section>
         </div>
@@ -116,23 +127,31 @@ export default function MushroomPartsGuidePage() {
         />
         <div className="seo-guide-grid">
           <section>
-            <Sprout size={21} aria-hidden="true" />
-            <h3>Carn i reaccions</h3>
+            <header className="seo-guide-card-heading">
+              <MushroomFleshIcon className="mushroom-anatomy-icon" />
+              <h3>Carn i reaccions</h3>
+            </header>
             <p>La carn interior pot ser compacta, fibrosa, fràgil o gelatinosa. Alguns bolets canvien de color en tallar-los o pressionar-los; aquest canvi només és un tret més que cal contrastar.</p>
           </section>
           <section>
-            <ScanLine size={21} aria-hidden="true" />
-            <h3>Espores i esporada</h3>
+            <header className="seo-guide-card-heading">
+              <MushroomSporesIcon className="mushroom-anatomy-icon" />
+              <h3>Espores i esporada</h3>
+            </header>
             <p>Les espores es formen a l’himeni. El color de l’esporada pot ajudar en una identificació experta, però requereix una observació controlada i no substitueix la resta de caràcters.</p>
           </section>
           <section>
-            <Sprout size={21} aria-hidden="true" />
-            <h3>Miceli</h3>
+            <header className="seo-guide-card-heading">
+              <MushroomMyceliumIcon className="mushroom-anatomy-icon" />
+              <h3>Miceli</h3>
+            </header>
             <p>És la xarxa de filaments que viu al sòl, a la fusta o vinculada a les arrels. El bolet apareix quan el miceli fructifica; no és tota la vida del fong ni una prova que n’hi hagi cada any al mateix punt.</p>
           </section>
           <section>
-            <ShieldAlert size={21} aria-hidden="true" />
-            <h3>Olor i context</h3>
+            <header className="seo-guide-card-heading">
+              <MushroomContextIcon className="mushroom-anatomy-icon" />
+              <h3>Olor i context</h3>
+            </header>
             <p>L’olor, l’arbre associat, el tipus de sòl i el moment de l’any completen la descripció. No tastis exemplars per identificar-los i no utilitzis cap tret aïllat per decidir si són comestibles.</p>
           </section>
         </div>

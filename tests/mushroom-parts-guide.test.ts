@@ -18,6 +18,21 @@ describe("mushroom parts guide", () => {
     expect(html).toContain('href="/bolets-verinosos"');
   });
 
+  it("uses a distinct custom icon for each guide concept", () => {
+    for (const icon of [
+      "cap",
+      "hymenium",
+      "stem",
+      "ring-volva",
+      "flesh-reaction",
+      "spores",
+      "mycelium",
+      "context",
+    ]) {
+      expect(html).toContain(`data-mushroom-icon="${icon}"`);
+    }
+  });
+
   it("renders an accessible interactive anatomy explorer", () => {
     expect(html).toContain("Explora l’anatomia del bolet");
     expect(html).toContain('/media/optimized/v4/editorial/parts-dun-bolet-infografia-v2.');

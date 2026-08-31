@@ -210,10 +210,14 @@
 .rain-factor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 3rem 0; }
 .seo-guide-grid section,
 .rain-factor-grid article { padding: 1.4rem; border-radius: 16px; background: #f4efe5; }
+.mushroom-anatomy-icon { display: block; color: var(--clay, #b7552b); }
 .seo-guide-grid h2,
 .seo-guide-grid h3,
 .rain-factor-grid h2,
 .rain-factor-grid h3 { margin: .8rem 0 .5rem; font-size: var(--text-xl); }
+.seo-guide-card-heading { display: flex; gap: .7rem; align-items: center; margin: 0 0 .65rem; }
+.seo-guide-card-heading h3 { margin: 0; }
+.seo-guide-card-heading .mushroom-anatomy-icon { flex: 0 0 auto; }
 .seo-guide-grid p,
 .rain-factor-grid p { margin: 0; line-height: 1.65; color: #4e594f; }
 .seo-guide-section { margin: 3.2rem 0; }
