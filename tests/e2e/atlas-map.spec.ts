@@ -397,7 +397,7 @@ test("hides the meaningless view choice from combined-map mobile controls", asyn
 });
 
 test("keeps prediction out of the camasec species guide", async ({ page }) => {
-  await page.goto("/bolets/marasmius-oreades");
+  await page.goto("/bolets/camasec");
 
   await expect(
     page.getByRole("heading", { name: "On podria créixer a Catalunya" }),
@@ -619,7 +619,7 @@ test("starts a zone habitat map at its selected zone", async ({
     });
   });
 
-  await page.goto("/bolets/boletus-edulis?region=pirineus");
+  await page.goto("/bolets/cep?region=pirineus");
   await page.locator("#distribució").scrollIntoViewIfNeeded();
 
   // Requests arrive as cache-aligned buckets, so the initial zone load is a

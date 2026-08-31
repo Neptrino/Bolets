@@ -9,6 +9,8 @@ import { buildSitemap } from "@/app/sitemap";
 import { SiteFooter } from "@/components/site-footer";
 import { getEditorialMetadata } from "@/data/editorial";
 import { getSpecies } from "@/data/species";
+import { speciesSlugForId } from "@/data/species-slugs";
+import { speciesPath } from "@/src/lib/seo";
 import {
   MAP_PREDICTION_DESCRIPTION,
   MAP_PREDICTION_TITLE,
@@ -58,7 +60,7 @@ describe("SEO query ownership", () => {
     for (const target of targets) {
       const species = getSpecies(target.speciesId)!;
       const metadata = await generateSpeciesMetadata({
-        params: Promise.resolve({ slug: target.speciesId }),
+        params: Promise.resolve({ slug: speciesSlugForId(target.speciesId) }),
       });
 
       expect(species.seo?.title).toBe(target.title);
@@ -66,7 +68,7 @@ describe("SEO query ownership", () => {
       expect(species.seo?.keywords).not.toContain("rovellons");
       expect(species.seo?.description?.length).toBeLessThanOrEqual(155);
       expect(metadata.title).toBe(target.title);
-      expect(metadata.alternates?.canonical).toBe(`/bolets/${target.speciesId}`);
+      expect(metadata.alternates?.canonical).toBe(speciesPath(species));
       expect(getEditorialMetadata(`species:${target.speciesId}`).updatedAt).toBe("2026-08-31");
     }
   });
@@ -77,9 +79,9 @@ describe("SEO query ownership", () => {
     });
     const html = renderToStaticMarkup(page);
 
-    expect(html).toContain('href="/bolets/boletus-edulis"');
+    expect(html).toContain('href="/bolets/cep"');
     expect(html).toContain("Guia principal: Cep");
-    expect(html).toContain('href="/bolets/boletus-reticulatus"');
+    expect(html).toContain('href="/bolets/cep-d-estiu"');
     expect(html).toContain("Guia principal: Cep d’estiu");
     expect(html).toContain("Obrir el comparador complet");
   });

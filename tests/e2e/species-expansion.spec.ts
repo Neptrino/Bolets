@@ -19,7 +19,7 @@ test("renders new edible and lethal profiles with their local galleries", async 
     /hygrophorus-marzuolus\.webp/,
   );
 
-  await page.goto("/bolets/hygrophorus-marzuolus");
+  await page.goto("/bolets/marcot");
   await expect(page.getByRole("heading", { name: "Marçot", exact: true })).toBeVisible();
   await expect(page.locator(".species-gallery-thumbnails button")).toHaveCount(3);
   await expect(page.locator(".species-gallery-stage img")).toHaveJSProperty("complete", true);
@@ -27,7 +27,7 @@ test("renders new edible and lethal profiles with their local galleries", async 
     await page.locator(".species-gallery-stage img").evaluate((image: HTMLImageElement) => image.naturalWidth),
   ).toBeGreaterThan(0);
 
-  await page.goto("/bolets/lepiota-brunneoincarnata");
+  await page.goto("/bolets/palometa-metzinosa");
   await expect(
     page.getByRole("heading", { name: "Palometa metzinosa", exact: true }),
   ).toBeVisible();

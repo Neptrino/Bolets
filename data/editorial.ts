@@ -232,7 +232,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-08-14",
   },
   "parts-dun-bolet": {
-    updatedAt: "2026-08-15",
+    updatedAt: "2026-08-31",
   },
   "avis-legal": {
     publishedAt: "2026-08-17",

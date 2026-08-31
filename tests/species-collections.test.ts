@@ -11,6 +11,7 @@ import { seasonMonthPath, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { seasonGuides } from "@/src/lib/season-guides";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { toSpeciesFieldCardProfile } from "@/src/lib/species-field-card";
+import { speciesPath } from "@/src/lib/seo";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 
 describe("search-intent species collections", () => {
@@ -98,7 +99,7 @@ describe("search-intent species collections", () => {
     expect(urls.some((url) => new URL(url).pathname.startsWith("/species"))).toBe(false);
     for (const species of speciesProfiles) {
       const entriesForSpecies = entries.filter(
-        (entry) => entry.url === `https://bolets.app/bolets/${species.speciesId}`,
+        (entry) => entry.url === `https://bolets.app${speciesPath(species)}`,
       );
       expect(entriesForSpecies, species.speciesId).toHaveLength(1);
       expect(entriesForSpecies[0]?.images, species.speciesId).toHaveLength(1);

@@ -73,7 +73,7 @@ export const seasonGuides = [
       steps: ["Busqueu una combinació de pluja efectiva i nits moderades.", "Comenceu per boscos frescos, ombrívols o de més altitud.", "Contrasteu els ceps d’estiu i els ous de reig amb les seves confusions."],
       links: [
         { href: "/zones/ceps", label: "Ceps de Catalunya", description: "Tipus, diferències, hàbitat i temporada" },
-        { href: "/bolets/amanita-caesarea", label: "Ou de reig", description: "Identificació i confusions de risc" },
+        { href: "/bolets/ou-de-reig", label: "Ou de reig", description: "Identificació i confusions de risc" },
         { href: "/bolets-avui", label: "Condicions actuals", description: "Lectura territorial abans de sortir" },
       ],
     },
@@ -97,9 +97,9 @@ export const seasonGuides = [
       steps: ["Distingiu les primeres pluges d’una rehidratació sostinguda del sòl.", "Trieu l’espècie segons pineda, bosc humit, sòl i altitud.", "Reviseu els semblants abans de collir o consumir cap exemplar."],
       links: [
         { href: "/zones/rovellons", label: "Rovellons a Catalunya", description: "Tipus, diferències, hàbitat i temporada" },
-        { href: "/bolets/craterellus-lutescens", label: "Camagroc", description: "Boscos humits i identificació" },
-        { href: "/bolets/tricholoma-terreum", label: "Fredolic", description: "Pinedes i confusions" },
-        { href: "/bolets/hygrophorus-latitabundus", label: "Llenega", description: "Pinedes calcàries i tardor" },
+        { href: "/bolets/camagroc", label: "Camagroc", description: "Boscos humits i identificació" },
+        { href: "/bolets/fredolic", label: "Fredolic", description: "Pinedes i confusions" },
+        { href: "/bolets/llenega", label: "Llenega", description: "Pinedes calcàries i tardor" },
         { href: "/zones/ceps", label: "Ceps de Catalunya", description: "Tipus, diferències, hàbitat i temporada" },
       ],
     },
@@ -122,8 +122,8 @@ export const seasonGuides = [
       detail: "No traslladeu una lectura d’una vall o d’un dia temperat a tot el territori. Consulteu les condicions actuals i comproveu els trets de l’exemplar abans de decidir-ne el consum.",
       steps: ["Comproveu si hi ha hagut gelades i si el sòl conserva humitat.", "Prioritzeu espècies i boscos que encaixin amb la finestra hivernal.", "Reviseu la fitxa completa i els semblants abans de collir."],
       links: [
-        { href: "/bolets/hygrophorus-latitabundus", label: "Llenega", description: "Pinedes calcàries i mesos freds" },
-        { href: "/bolets/hygrophorus-marzuolus", label: "Marçot", description: "Una espècie de final d’hivern" },
+        { href: "/bolets/llenega", label: "Llenega", description: "Pinedes calcàries i mesos freds" },
+        { href: "/bolets/marcot", label: "Marçot", description: "Una espècie de final d’hivern" },
         { href: "/bolets-avui", label: "Condicions actuals", description: "Lectura territorial per espècie" },
       ],
     },

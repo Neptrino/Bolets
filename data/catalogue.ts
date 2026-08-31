@@ -1,5 +1,6 @@
 import { speciesProfiles } from "@/data/species";
 import { referenceSpeciesProfiles } from "@/data/reference-species";
+import { speciesIdForSlug } from "@/data/species-slugs";
 import type { CatalogueSpecies } from "@/src/lib/types";
 
 // Public discovery includes descriptive profiles; prediction consumers must
@@ -9,4 +10,9 @@ export const catalogueSpecies: CatalogueSpecies[] = [...speciesProfiles, ...refe
 
 export function getCatalogueSpecies(id: string) {
   return catalogueSpecies.find((species) => species.speciesId === id);
+}
+
+export function getCatalogueSpeciesBySlug(slug: string) {
+  const speciesId = speciesIdForSlug(slug);
+  return speciesId ? getCatalogueSpecies(speciesId) : undefined;
 }

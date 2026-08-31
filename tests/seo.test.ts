@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { speciesProfiles } from "@/data/species";
+import { speciesSlugForId } from "@/data/species-slugs";
 import {
   absoluteUrl,
   jsonLd,
@@ -15,7 +16,9 @@ describe("SEO helpers", () => {
 
   it("builds canonical absolute URLs without duplicate slashes", () => {
     expect(absoluteUrl("/bolets")).toBe("https://bolets.app/bolets");
-    expect(speciesPath(species)).toBe(`/bolets/${species.speciesId}`);
+    expect(speciesPath(species)).toBe(
+      `/bolets/${speciesSlugForId(species.speciesId)}`,
+    );
   });
 
   it("builds a descriptive species snippet", () => {

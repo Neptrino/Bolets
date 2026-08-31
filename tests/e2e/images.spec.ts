@@ -16,7 +16,7 @@ const responsiveImages = [
   },
   {
     name: "species hero",
-    path: "/bolets/boletus-edulis",
+    path: "/bolets/cep",
     selector: ".specimen-photo",
     sizes:
       "(max-width: 760px) calc(100vw - 48px), (max-width: 1000px) calc(55vw - 45px), (max-width: 1228px) calc(55vw - 61px), 615px",
@@ -62,7 +62,7 @@ for (const image of responsiveImages) {
 }
 
 test("preloads only the primary above-the-fold hero image", async ({ page }) => {
-  await page.goto("/bolets/boletus-edulis");
+  await page.goto("/bolets/cep");
 
   const photos = page.locator(".specimen-photo");
   await expect(photos).toHaveCount(1);
@@ -81,7 +81,7 @@ test("preloads only the primary above-the-fold hero image", async ({ page }) => 
 });
 
 test("species gallery changes slides and opens a larger view", async ({ page }) => {
-  await page.goto("/bolets/lactarius-deliciosus");
+  await page.goto("/bolets/pinetell");
 
   const mainImage = page.locator(".species-gallery-stage .specimen-photo");
   const initialSource = await mainImage.getAttribute("src");
@@ -102,7 +102,7 @@ test("species gallery changes slides and opens a larger view", async ({ page }) 
 });
 
 test("species gallery thumbnails carry their media descriptions", async ({ page }) => {
-  await page.goto("/bolets/boletus-edulis");
+  await page.goto("/bolets/cep");
 
   const thumbnailImages = page.locator(".species-gallery-thumbnails img");
   await expect(thumbnailImages).toHaveCount(5);

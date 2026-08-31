@@ -337,7 +337,7 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
     {
       id: "aleix-macrolepiota-procera-field-20260822",
       localPath: "/media/generated/macrolepiota-procera-field-aleix-v1.webp",
-      sourceUrl: "https://bolets.app/bolets/macrolepiota-procera",
+      sourceUrl: "https://bolets.app/bolets/apagallums",
       attribution: "Aleix Ventayol",
       license: "© Aleix Ventayol",
       identificationReference: false,

@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 
-const path = "/bolets/hygrophoropsis-aurantiaca";
+const path = "/bolets/fals-rossinyol";
 
 test("chanterelle details link to the false chanterelle guide", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/bolets/cantharellus-cibarius");
+  await page.goto("/bolets/rossinyol");
   const guide = page.locator(".lookalikes-subsection").getByRole("link", { name: "Guia del fals rossinyol", exact: true });
   await expect(guide).toHaveAttribute("href", "/fals-rossinyol");
   await guide.click();

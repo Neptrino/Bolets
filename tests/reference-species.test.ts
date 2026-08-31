@@ -10,16 +10,19 @@ import { buildSitemap as sitemap } from "@/app/sitemap";
 import { catalogueSpecies } from "@/data/catalogue";
 import { getReferenceSpecies, getReferenceSpeciesByScientificName, referenceSpeciesProfiles } from "@/data/reference-species";
 import { getSpecies, speciesProfiles, speciesSelectItems } from "@/data/species";
+import { speciesSlugForId } from "@/data/species-slugs";
 import { globalCandidateSpecies } from "@/src/lib/global-predictions";
 import { referenceSpeciesProfileSchema } from "@/src/lib/reference-species-schema";
 import { speciesProfileSchema } from "@/src/lib/schema";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { toSpeciesFieldCardProfile } from "@/src/lib/species-field-card";
 import { speciesInSeason } from "@/src/lib/species-collections";
+import { speciesFieldCardPath, speciesPath } from "@/src/lib/seo";
 import { SpeciesCard } from "@/components/species-card";
 
-const slug = "hygrophoropsis-aurantiaca";
-const species = getReferenceSpecies(slug)!;
+const speciesId = "hygrophoropsis-aurantiaca";
+const slug = speciesSlugForId(speciesId);
+const species = getReferenceSpecies(speciesId)!;
 
 describe("descriptive catalogue species", () => {
   it("validates sourced knowledge without accepting numeric model fields", () => {
@@ -38,11 +41,11 @@ describe("descriptive catalogue species", () => {
     expect(catalogueSpecies).toContain(species);
     expect(getReferenceSpeciesByScientificName("  HYGROPHOROPSIS aurantiaca ")).toBe(species);
     expect(getReferenceSpeciesByScientificName("Unknown species")).toBeUndefined();
-    expect(getSpecies(slug)).toBeUndefined();
+    expect(getSpecies(speciesId)).toBeUndefined();
     expect(speciesProfiles).toHaveLength(52);
-    expect(speciesSelectItems.some(item => item.value === slug)).toBe(false);
-    expect(globalCandidateSpecies.some(item => item.speciesId === slug)).toBe(false);
-    expect(speciesInSeason("oct").some(item => item.speciesId === slug)).toBe(false);
+    expect(speciesSelectItems.some(item => item.value === speciesId)).toBe(false);
+    expect(globalCandidateSpecies.some(item => item.speciesId === speciesId)).toBe(false);
+    expect(speciesInSeason("oct").some(item => item.speciesId === speciesId)).toBe(false);
   });
 
   it("uses compact cards with a sourced season instead of fabricated altitude or monthly intensity", () => {
@@ -51,7 +54,7 @@ describe("descriptive catalogue species", () => {
     expect(card.ecologicalConfig.seasonality).toBeNull();
     expect(card.seasonLabel).toBe("Tardor");
     const html = renderToStaticMarkup(createElement(SpeciesCard, { species: card, currentMonth: "oct" }));
-    expect(html).toContain('href="/bolets/hygrophoropsis-aurantiaca"');
+    expect(html).toContain(`href="${speciesPath(species)}"`);
     expect(html).toContain("No recomanat");
     expect(html).toContain("Tardor");
     expect(html).not.toContain("Altitud");
@@ -59,7 +62,7 @@ describe("descriptive catalogue species", () => {
     expect(html).not.toContain("/_next/image");
     const catalogue = renderToStaticMarkup(createElement(SpeciesIndexPage));
     expect(catalogue).toContain(`"numberOfItems":${catalogueSpecies.length}`);
-    expect(catalogue).toContain('href="/bolets/hygrophoropsis-aurantiaca"');
+    expect(catalogue).toContain(`href="${speciesPath(species)}"`);
     expect(catalogue).toContain('href="/bolets/infografia"');
     expect(catalogue).toContain("catalogue-title-infographic-link");
     expect(catalogue).not.toContain("catalogue-infographic-entry");
@@ -96,7 +99,7 @@ describe("descriptive catalogue species", () => {
   it("publishes the canonical route, Article and sitemap with the real publication date", async () => {
     const params = Promise.resolve({ slug });
     const metadata = await generateMetadata({ params });
-    expect(metadata.alternates?.canonical).toBe(`/bolets/${slug}`);
+    expect(metadata.alternates?.canonical).toBe(speciesPath(species));
     expect(metadata.robots).toBeUndefined();
     expect(metadata.description!.length).toBeLessThanOrEqual(155);
     expect(generateStaticParams()).toContainEqual({ slug });
@@ -113,20 +116,20 @@ describe("descriptive catalogue species", () => {
     expect(html).not.toContain("Mapa actual");
     expect(html).toContain('href="/fals-rossinyol"');
     expect(html).toContain('id="targeta-de-camp"');
-    expect(html).toContain('src="/bolets/hygrophoropsis-aurantiaca/targeta"');
-    expect(html).toContain('href="/bolets/hygrophoropsis-aurantiaca/targeta" target="_blank"');
+    expect(html).toContain(`src="${speciesFieldCardPath(species)}"`);
+    expect(html).toContain(`href="${speciesFieldCardPath(species)}" target="_blank"`);
     expect(html).toContain("1080 × 1350 px · Format 4:5");
     expect(html).not.toContain("Instagram");
     expect(html).toContain("Infografia vertical del Fals rossinyol amb fotografia, comestibilitat, trets d’identificació, temporada, hàbitat i advertiment de confusió.");
-    expect(sitemap().find(item => item.url.endsWith(`/bolets/${slug}`))).toMatchObject({
+    expect(sitemap().find(item => item.url.endsWith(speciesPath(species)))).toMatchObject({
       lastModified: new Date("2026-08-27T00:00:00+02:00"),
       images: ["https://bolets.app/media/wikimedia/hygrophoropsis-aurantiaca.webp"],
     });
   });
 
   it("links the existing chanterelle profile to the descriptive lookalike without an unsupported comparator", async () => {
-    const html = renderToStaticMarkup(await SpeciesPage({ params: Promise.resolve({ slug: "cantharellus-cibarius" }), searchParams: Promise.resolve({}) }));
-    expect(html).toContain('href="/bolets/hygrophoropsis-aurantiaca"');
+    const html = renderToStaticMarkup(await SpeciesPage({ params: Promise.resolve({ slug: "rossinyol" }), searchParams: Promise.resolve({}) }));
+    expect(html).toContain(`href="${speciesPath(species)}"`);
     expect(html).not.toContain("right=hygrophoropsis-aurantiaca");
     expect(html).toContain('href="/fals-rossinyol"');
     expect(html).toContain("Guia del fals rossinyol");

@@ -5,6 +5,7 @@ import {
   speciesLocationPages,
 } from "@/data/location-pages";
 import { cepSpeciesIds } from "@/src/lib/ceps-guide";
+import { speciesSlugForId } from "@/data/species-slugs";
 import { seasonGuideForMonth } from "@/src/lib/season-guides";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { getSpeciesMapPageBySlug, speciesMapPages } from "@/src/lib/species-map-pages";
@@ -25,8 +26,14 @@ test("permanently redirects legacy catalogue URLs and preserves query parameters
   const profile = await request.get("/species/boletus-edulis?region=pirineus", { maxRedirects: 0 });
   expect(profile.status()).toBe(308);
   const profileLocation = new URL(profile.headers().location!, "http://localhost");
-  expect(profileLocation.pathname).toBe("/bolets/boletus-edulis");
+  expect(profileLocation.pathname).toBe("/bolets/cep");
   expect(profileLocation.searchParams.get("region")).toBe("pirineus");
+
+  const scientificProfile = await request.get("/bolets/boletus-edulis?region=pirineus", { maxRedirects: 0 });
+  expect(scientificProfile.status()).toBe(308);
+  const scientificProfileLocation = new URL(scientificProfile.headers().location!, "http://localhost");
+  expect(scientificProfileLocation.pathname).toBe("/bolets/cep");
+  expect(scientificProfileLocation.searchParams.get("region")).toBe("pirineus");
 
   const rovellons = await request.get("/rovellons?region=pirineus", { maxRedirects: 0 });
   expect(rovellons.status()).toBe(308);
@@ -43,7 +50,7 @@ test("permanently redirects legacy catalogue URLs and preserves query parameters
 
 for (const route of [
   "/bolets",
-  "/bolets/boletus-edulis",
+  "/bolets/cep",
   "/bolets-avui",
   "/bolets-de-primavera",
   "/bolets-d-estiu",
@@ -164,7 +171,7 @@ test("the homepage delegates the full current-conditions query to its canonical 
 });
 
 test("internal navigation exposes no legacy catalogue link", async ({ page }) => {
-  for (const route of ["/", "/bolets", "/bolets/boletus-edulis", "/map", "/compare/rovello-vs-pinetell"]) {
+  for (const route of ["/", "/bolets", "/bolets/cep", "/map", "/compare/rovello-vs-pinetell"]) {
     await page.goto(route);
     await expect(page.locator('a[href^="/species"]'), route).toHaveCount(0);
   }
@@ -220,7 +227,9 @@ test("the current overview stays usable without publishing invented scores", asy
       const speciesHref = await speciesLink.getAttribute("href");
       const mapHref = await mapLink.getAttribute("href");
       const mapUrl = new URL(mapHref!, "http://localhost");
-      expect(speciesIdFromMapUrl(mapUrl)).toBe(speciesHref?.split("/").at(-1));
+      expect(speciesHref?.split("/").at(-1)).toBe(
+        speciesSlugForId(speciesIdFromMapUrl(mapUrl)!),
+      );
       expect(mapUrl.searchParams.get("region")).toBeTruthy();
     }
 
@@ -315,7 +324,7 @@ test("the rovellons guide connects every published Lactarius local guide", async
   const types = page.locator("[data-rovellons-types-table]");
   await expect(types.locator("tbody tr")).toHaveCount(2);
   for (const speciesId of ["lactarius-sanguifluus", "lactarius-deliciosus"]) {
-    await expect(types.locator(`a[href="/bolets/${speciesId}"]`)).toHaveCount(1);
+    await expect(types.locator(`a[href="/bolets/${speciesSlugForId(speciesId)}"]`)).toHaveCount(1);
   }
   await expect(page.getByRole("link", { name: /comparació entre rovelló i pinetell/i })).toHaveAttribute("href", "/compare/rovello-vs-pinetell");
   await expect(page.locator(".editorial-panel--compact")).toContainText("Editorial, no micològica");
@@ -352,8 +361,9 @@ test("the ceps guide connects every cep, broad region and published local guide"
   await expect(speciesList.locator(".species-card")).toHaveCount(4);
   await expect(types.locator("tbody tr")).toHaveCount(4);
   for (const speciesId of expectedSpecies) {
-    await expect(speciesList.locator(`a[href="/bolets/${speciesId}"]`)).toHaveCount(1);
-    await expect(types.locator(`a[href="/bolets/${speciesId}"]`)).toHaveCount(1);
+    const speciesSlug = speciesSlugForId(speciesId);
+    await expect(speciesList.locator(`a[href="/bolets/${speciesSlug}"]`)).toHaveCount(1);
+    await expect(types.locator(`a[href="/bolets/${speciesSlug}"]`)).toHaveCount(1);
   }
 
   const expectedReadings = [
@@ -392,7 +402,7 @@ test("safety-sensitive pages show editorial status and official escalation", asy
   await expect(page.getByRole("link", { name: /guia de l’ACSA/i })).toHaveAttribute("href", /acsa\.gencat\.cat/);
   await expect(page.getByText(/061 Salut Respon/).first()).toBeVisible();
 
-  await page.goto("/bolets/amanita-phalloides");
+  await page.goto("/bolets/farinera-borda");
   await expect(page.locator(".species-official-safety")).toContainText("061 Salut Respon");
   await expect(page.locator(".editorial-panel--compact")).toContainText("Editorial, no micològica");
 });

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { speciesSlugForId } from "@/data/species-slugs";
 import type { MediaAsset, SpeciesProfile } from "@/src/lib/types";
 
 export const SITE_NAME = "Bolets Atles";
@@ -17,7 +18,11 @@ export function absoluteUrl(path = "/") {
 }
 
 export function speciesPath(species: Pick<SpeciesProfile, "speciesId">) {
-  return `/bolets/${species.speciesId}`;
+  return `/bolets/${speciesSlugForId(species.speciesId)}`;
+}
+
+export function speciesFieldCardPath(species: Pick<SpeciesProfile, "speciesId">) {
+  return `${speciesPath(species)}/targeta`;
 }
 
 export function speciesDescription(species: Pick<SpeciesProfile, "identity">) {

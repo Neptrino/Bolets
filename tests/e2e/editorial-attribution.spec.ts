@@ -8,7 +8,7 @@ test("catalogue and policy hubs do not repeat the editorial panel", async ({ pag
 });
 
 test("species profiles use a compact expandable credit", async ({ page }) => {
-  await page.goto("/bolets/hygrophoropsis-aurantiaca");
+  await page.goto("/bolets/fals-rossinyol");
 
   const credit = page.locator(".editorial-panel--compact");
   await expect(credit).toContainText("Editorial, no micològica");

@@ -70,9 +70,9 @@ export default function SpeciesIndexPage() {
           <nav className="species-topic-links" aria-label="Guies destacades d’espècies de bolets">
             <Link href="/zones/ceps"><CookingPot size={18} /><span><strong>Ceps de Catalunya</strong><small>Tipus, diferències, hàbitat i temporada</small></span><ArrowUpRight size={16} /></Link>
             <Link href="/zones/rovellons"><Leaf size={18} /><span><strong>Rovellons a Catalunya</strong><small>Tipus, diferències, hàbitat i temporada</small></span><ArrowUpRight size={16} /></Link>
-            <Link href="/bolets/craterellus-lutescens"><Leaf size={18} /><span><strong>Camagroc</strong><small>Identificació, bosc i confusions</small></span><ArrowUpRight size={16} /></Link>
-            <Link href="/bolets/tricholoma-terreum"><CalendarDays size={18} /><span><strong>Fredolic</strong><small>Pinedes, tardor i identificació prudent</small></span><ArrowUpRight size={16} /></Link>
-            <Link href="/bolets/hygrophorus-latitabundus"><Sprout size={18} /><span><strong>Llenega</strong><small>Pinedes calcàries i temporada</small></span><ArrowUpRight size={16} /></Link>
+            <Link href="/bolets/camagroc"><Leaf size={18} /><span><strong>Camagroc</strong><small>Identificació, bosc i confusions</small></span><ArrowUpRight size={16} /></Link>
+            <Link href="/bolets/fredolic"><CalendarDays size={18} /><span><strong>Fredolic</strong><small>Pinedes, tardor i identificació prudent</small></span><ArrowUpRight size={16} /></Link>
+            <Link href="/bolets/llenega"><Sprout size={18} /><span><strong>Llenega</strong><small>Pinedes calcàries i temporada</small></span><ArrowUpRight size={16} /></Link>
             <Link href="/bolets-de-soca"><Leaf size={18} /><span><strong>Bolets de soca</strong><small>Espècies de la fusta i fitxes del catàleg</small></span><ArrowUpRight size={16} /></Link>
             <Link href="/fals-rossinyol"><ShieldAlert size={18} /><span><strong>Fals rossinyol</strong><small>Noms, fonts i confusions</small></span><ArrowUpRight size={16} /></Link>
           </nav>

@@ -12,6 +12,7 @@ import { getSpecies, speciesProfiles } from "@/data/species";
 import { getReferenceSpecies } from "@/data/reference-species";
 import { woodFungiSpeciesIds } from "@/data/wood-fungi";
 import { collectingSources, falseChanterelleSources } from "@/data/field-guide-sources";
+import { speciesPath } from "@/src/lib/seo";
 
 describe("source-linked field guides", () => {
   const guides = [
@@ -50,7 +51,7 @@ describe("source-linked field guides", () => {
     for (const id of woodFungiSpeciesIds) {
       const species = getSpecies(id)!;
       expect(species, id).toBeDefined();
-      expect(html).toContain(`href="/bolets/${id}"`);
+      expect(html).toContain(`href="${speciesPath(species)}"`);
       expect(html).toContain(species.identity.commonName);
       expect(html).toContain(species.identity.scientificName);
       expect(species.ecologicalConfig.soil.substrate, id).toMatch(/lignícola|fusta/i);
@@ -89,7 +90,7 @@ describe("source-linked field guides", () => {
     expect(html.match(/class="species-card"/g)).toHaveLength(3);
     for (const id of ["hygrophoropsis-aurantiaca", "cantharellus-cibarius", "omphalotus-olearius"]) {
       const species = (getSpecies(id) ?? getReferenceSpecies(id))!;
-      expect(html).toContain(`href="/bolets/${id}"`);
+      expect(html).toContain(`href="${speciesPath(species)}"`);
       expect(html).toContain(species.identity.commonName);
       expect(html).toContain(species.identity.scientificName);
       expect(html).toContain(species.media.find(asset => asset.identificationReference)!.alt);

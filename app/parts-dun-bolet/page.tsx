@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
+import { MushroomPartsExplorer } from "@/components/mushroom-parts-explorer";
 import {
   PageHeader,
   PageShell,
@@ -73,10 +74,7 @@ export default function MushroomPartsGuidePage() {
         layout="split"
       />
 
-      <aside className="intent-safety-note">
-        <ShieldAlert size={22} aria-hidden="true" />
-        <div><strong>Cap part, per si sola, confirma l’espècie.</strong><p>Color, forma i mida canvien amb l’edat, la humitat i el lloc. Per a una identificació responsable cal contrastar diversos trets, incloses les confusions possibles, amb una persona experta.</p></div>
-      </aside>
+      <MushroomPartsExplorer />
 
       <section className="seo-guide-section" aria-labelledby="visible-parts-title">
         <SectionHeader
@@ -153,6 +151,11 @@ export default function MushroomPartsGuidePage() {
           <Link href="/bolets-verinosos">Conèixer bolets verinosos <ArrowUpRight size={16} /></Link>
         </nav>
       </section>
+
+      <aside className="intent-safety-note">
+        <ShieldAlert size={22} aria-hidden="true" />
+        <div><strong>Cap part, per si sola, confirma l’espècie.</strong><p>Color, forma i mida canvien amb l’edat, la humitat i el lloc. Per a una identificació responsable cal contrastar diversos trets, incloses les confusions possibles, amb una persona experta.</p></div>
+      </aside>
 
       <EditorialAttribution contentId="parts-dun-bolet" sources={coreEditorialSources} />
     </PageShell>

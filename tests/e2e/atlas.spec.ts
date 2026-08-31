@@ -49,7 +49,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   ).toHaveCount(1);
   await expect(page.getByRole("link", { name: /Cep rogenc/i })).toHaveCount(0);
 
-  await page.goto("/bolets/boletus-edulis");
+  await page.goto("/bolets/cep");
   await expect(
     page.getByRole("heading", { name: "Cep", exact: true }),
   ).toBeVisible();

@@ -1,5 +1,6 @@
 import { PanelsTopLeft, ShieldAlert } from "lucide-react";
 import { SpeciesFieldCardActions } from "@/components/species-field-card-actions";
+import { speciesFieldCardPath } from "@/src/lib/seo";
 import type { CatalogueSpecies } from "@/src/lib/types";
 
 export function SpeciesFieldCardSection({
@@ -7,7 +8,7 @@ export function SpeciesFieldCardSection({
 }: {
   species: CatalogueSpecies;
 }) {
-  const imagePath = `/bolets/${species.speciesId}/targeta`;
+  const imagePath = speciesFieldCardPath(species);
 
   return (
     <section

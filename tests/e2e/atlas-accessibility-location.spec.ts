@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("keeps rendered text at 12px or larger", async ({ page }) => {
-  for (const route of ["/", "/bolets/boletus-edulis", "/compare", "/map", "/metode"]) {
+  for (const route of ["/", "/bolets/cep", "/compare", "/map", "/metode"]) {
     await page.goto(route);
     const violations = await page.locator("body *").evaluateAll((elements) =>
       elements.flatMap((element) => {

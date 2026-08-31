@@ -3,7 +3,11 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
 import { BrandMark } from "@/components/brand-mark";
-import { catalogueSpecies } from "@/data/catalogue";
+import {
+  getCatalogueSpecies,
+  getCatalogueSpeciesBySlug,
+} from "@/data/catalogue";
+import { speciesFieldCardPath } from "@/src/lib/seo";
 import {
   toSpeciesFieldCardProfile,
   type SpeciesFieldCardProfile,
@@ -177,12 +181,21 @@ function FieldCardArtwork({
 }
 
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await context.params;
-  const species = catalogueSpecies.find((candidate) => candidate.speciesId === slug);
-  if (!species) return new Response("Not found", { status: 404 });
+  const species = getCatalogueSpeciesBySlug(slug);
+  if (!species) {
+    const legacySpecies = getCatalogueSpecies(slug);
+    if (!legacySpecies) return new Response("Not found", { status: 404 });
+
+    const query = new URL(request.url).search;
+    return new Response(null, {
+      status: 308,
+      headers: { Location: `${speciesFieldCardPath(legacySpecies)}${query}` },
+    });
+  }
 
   const card = toSpeciesFieldCardProfile(species);
   const image = await readFile(join(process.cwd(), "public", card.imagePath.slice(1)));

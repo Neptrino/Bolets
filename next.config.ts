@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { speciesSlugs } from "./data/species-slugs";
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -51,6 +52,11 @@ const nextConfig: NextConfig = {
         destination: "/bolets",
         permanent: true,
       },
+      ...Object.entries(speciesSlugs).map(([speciesId, slug]) => ({
+        source: `/species/${speciesId}`,
+        destination: `/bolets/${slug}`,
+        permanent: true,
+      })),
       {
         source: "/species/:path*",
         destination: "/bolets/:path*",

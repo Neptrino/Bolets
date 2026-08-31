@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Map } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
@@ -11,9 +11,14 @@ import { SpeciesIdentificationSection } from "@/components/species-profile/ident
 import { SpeciesHero } from "@/components/species-hero";
 import { ReferenceSpeciesPage } from "@/components/reference-species-page";
 import { UmamiEventLink } from "@/components/umami-event-link";
-import { catalogueSpecies } from "@/data/catalogue";
+import {
+  catalogueSpecies,
+  getCatalogueSpecies,
+  getCatalogueSpeciesBySlug,
+} from "@/data/catalogue";
 import { getReferenceSpecies } from "@/data/reference-species";
 import { getSpecies } from "@/data/species";
+import { speciesSlugForId } from "@/data/species-slugs";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { isRegionId } from "@/data/regions";
 import {
@@ -64,7 +69,9 @@ function detailId(label: string) {
 }
 
 export function generateStaticParams() {
-  return catalogueSpecies.map((species) => ({ slug: species.speciesId }));
+  return catalogueSpecies.map((species) => ({
+    slug: speciesSlugForId(species.speciesId),
+  }));
 }
 
 export async function generateMetadata({
@@ -73,7 +80,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const species = getSpecies(slug) ?? getReferenceSpecies(slug);
+  const species = getCatalogueSpeciesBySlug(slug) ?? getCatalogueSpecies(slug);
   if (!species) notFound();
 
   const path = speciesPath(species);
@@ -119,10 +126,22 @@ export default async function SpeciesPage({
   searchParams: Promise<{ region?: string }>;
 }) {
   const { slug } = await params;
-  const referenceSpecies = getReferenceSpecies(slug);
+  const catalogueEntry = getCatalogueSpeciesBySlug(slug);
+  if (!catalogueEntry) {
+    const legacySpecies = getCatalogueSpecies(slug);
+    if (!legacySpecies) notFound();
+
+    const query = await searchParams;
+    const canonicalQuery = new URLSearchParams();
+    if (query.region) canonicalQuery.set("region", query.region);
+    const suffix = canonicalQuery.size ? `?${canonicalQuery}` : "";
+    permanentRedirect(`${speciesPath(legacySpecies)}${suffix}`);
+  }
+
+  const referenceSpecies = getReferenceSpecies(catalogueEntry.speciesId);
   if (referenceSpecies) return <ReferenceSpeciesPage species={referenceSpecies} />;
   const query = await searchParams;
-  const species = getSpecies(slug);
+  const species = getSpecies(catalogueEntry.speciesId);
   if (!species) notFound();
 
   const region: RegionId = isRegionId(query.region)
