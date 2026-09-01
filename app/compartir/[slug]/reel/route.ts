@@ -14,6 +14,15 @@ export const runtime = "nodejs";
 
 const activeRenders = new Map<string, Promise<Buffer>>();
 
+function imageRenderOrigin(requestUrl: URL) {
+  if (requestUrl.hostname === "127.0.0.1" || requestUrl.hostname === "localhost") {
+    return requestUrl.origin;
+  }
+  // Avoid a public DNS/TLS round trip from the container back to itself. The
+  // image route still validates the signed card payload on this local request.
+  return `http://127.0.0.1:${process.env.PORT ?? "3000"}`;
+}
+
 async function runFfmpeg(args: string[]) {
   await new Promise<void>((resolve, reject) => {
     const process = spawn("ffmpeg", args, { stdio: ["ignore", "ignore", "pipe"] });
@@ -97,7 +106,7 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
   const cacheKey = requestUrl.searchParams.get("signature") ?? requestUrl.search;
   let render = activeRenders.get(cacheKey);
   if (!render) {
-    render = renderWeekendReel(card, requestUrl.origin).finally(() => {
+    render = renderWeekendReel(card, imageRenderOrigin(requestUrl)).finally(() => {
       activeRenders.delete(cacheKey);
     });
     activeRenders.set(cacheKey, render);
