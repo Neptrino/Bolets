@@ -9,6 +9,7 @@ import {
   readSignedDailyShareCard,
 } from "@/src/lib/daily-share-image-payload-server";
 import { signedSocialGrowthImagePath } from "@/src/lib/social-growth-assets";
+import { weekendReelFfmpegArgs } from "@/src/lib/weekend-reel-render";
 
 export const runtime = "nodejs";
 
@@ -66,26 +67,8 @@ async function renderWeekendReel(card: NonNullable<ReturnType<typeof readSignedD
       await writeFile(path, Buffer.from(await response.arrayBuffer()));
     }));
 
-    const manifestPath = join(directory, "frames.txt");
-    const manifest = slidePaths
-      .flatMap((path) => [`file '${path}'`, "duration 1.8"])
-      .concat(`file '${slidePaths.at(-1)}'`)
-      .join("\n");
-    await writeFile(manifestPath, manifest);
     const outputPath = join(directory, "weekend.mp4");
-    await runFfmpeg([
-      "-hide_banner",
-      "-loglevel", "error",
-      "-f", "concat",
-      "-safe", "0",
-      "-i", manifestPath,
-      "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,fps=30,format=yuv420p",
-      "-c:v", "libx264",
-      "-preset", "veryfast",
-      "-movflags", "+faststart",
-      "-t", "7.2",
-      "-y", outputPath,
-    ]);
+    await runFfmpeg(weekendReelFfmpegArgs(slidePaths, outputPath));
     return await readFile(outputPath);
   } finally {
     await rm(directory, { recursive: true, force: true });

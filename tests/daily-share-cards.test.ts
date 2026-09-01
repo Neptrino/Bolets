@@ -26,7 +26,7 @@ describe("daily share cards", () => {
     const montseny = cards.find((card) => card.slug === "montseny");
 
     expect(cards).toHaveLength(22);
-    expect(catalunya?.readings).toEqual([{ speciesId: "boletus-edulis", regionName: "Pirineus", speciesName: "Cep", score: 74, label: "alta", positiveCellShare: 0.42, score20CellShare: 0.27 }]);
+    expect(catalunya?.readings).toEqual([{ regionId: "pirineus", speciesId: "boletus-edulis", regionName: "Pirineus", speciesName: "Cep", score: 74, label: "alta", positiveCellShare: 0.42, score20CellShare: 0.27 }]);
     expect(catalunya?.shareText).toContain("no confirma presència");
     expect(catalunya?.shareText).toContain("https://bolets.app/bolets-avui");
     expect(cards.find((card) => card.slug === "pirineus")?.shareText).toContain("https://bolets.app/map/cep?region=pirineus");

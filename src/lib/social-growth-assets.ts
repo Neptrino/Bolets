@@ -26,5 +26,6 @@ export function signedWeekendReelPath(card: DailyShareCard) {
   url.searchParams.delete("format");
   url.searchParams.delete("series");
   url.searchParams.delete("slide");
+  url.searchParams.set("reelVersion", "3");
   return `${url.pathname}${url.search}`;
 }

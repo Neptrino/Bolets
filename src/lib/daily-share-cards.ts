@@ -18,6 +18,7 @@ export type DailyShareFormat = "feed" | "story" | "landscape";
 type DailyShareScope = "overview" | "region" | "territory";
 
 interface DailyShareReading {
+  regionId?: Exclude<RegionId, "altres">;
   speciesId: string;
   regionName: string;
   speciesName: string;
@@ -82,6 +83,7 @@ function availableReading(item: CurrentOverviewItem): DailyShareReading | null {
   }
 
   return {
+    regionId: item.regionId === "altres" ? undefined : item.regionId,
     speciesId: item.speciesId,
     regionName: item.regionName,
     speciesName: item.speciesName,
@@ -99,6 +101,7 @@ function availableTerritoryReading(item: AreaOverviewItem): DailyShareReading | 
   }
 
   return {
+    regionId: item.regionId === "altres" ? undefined : item.regionId,
     speciesId: item.speciesId,
     regionName: item.areaName,
     speciesName: item.speciesName,
@@ -273,15 +276,16 @@ const favourablePreviewSpecies = [
   { speciesId: "cantharellus-cibarius", speciesName: "Rossinyol" },
 ];
 
-const favourablePreviewRegions: Array<{ regionName: string; score: number }> = [
-  { regionName: "Pirineus", score: 91 }, { regionName: "Prepirineus", score: 84 }, { regionName: "Empordà", score: 78 },
-  { regionName: "Catalunya Central", score: 86 }, { regionName: "Sistemes interiors", score: 73 }, { regionName: "Montseny", score: 88 },
-  { regionName: "Serralades Costeres", score: 76 }, { regionName: "Serralades Prelitorals", score: 82 }, { regionName: "Ports", score: 80 },
+const favourablePreviewRegions: Array<{ regionId: Exclude<RegionId, "altres">; regionName: string; score: number }> = [
+  { regionId: "pirineus", regionName: "Pirineus", score: 91 }, { regionId: "prepirineus", regionName: "Prepirineus", score: 84 }, { regionId: "emporda", regionName: "Empordà", score: 78 },
+  { regionId: "catalunya-central", regionName: "Catalunya Central", score: 86 }, { regionId: "muntanyes-interiors", regionName: "Sistemes interiors", score: 73 }, { regionId: "montseny", regionName: "Montseny", score: 88 },
+  { regionId: "serralades-costeres", regionName: "Serralades Costeres", score: 76 }, { regionId: "serralades-prelitorals", regionName: "Serralades Prelitorals", score: 82 }, { regionId: "ports", regionName: "Ports", score: 80 },
 ];
 
-const favourablePreviewReadings: DailyShareReading[] = favourablePreviewRegions.flatMap(({ regionName, score }) => favourablePreviewSpecies.map((species, index) => {
+const favourablePreviewReadings: DailyShareReading[] = favourablePreviewRegions.flatMap(({ regionId, regionName, score }) => favourablePreviewSpecies.map((species, index) => {
   const readingScore = score - index * 6;
   return {
+    regionId,
     regionName,
     speciesId: species.speciesId,
     speciesName: species.speciesName,
@@ -344,6 +348,7 @@ export function createFavourableDailySharePreviewCards(): DailyShareCard[] {
     const score = Math.max(54, reading.score - (index % 4) * 4);
     const territoryReading: DailyShareReading = {
       ...reading,
+      regionId: territory.regionId === "altres" ? undefined : territory.regionId,
       regionName: territory.name,
       score,
       label: opportunityLabel(score),

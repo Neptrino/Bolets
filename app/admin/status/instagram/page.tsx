@@ -20,6 +20,7 @@ import {
   signedSocialGrowthImagePath,
   signedWeekendReelPath,
 } from "@/src/lib/social-growth-assets";
+import { weekendReelDurationSeconds } from "@/src/lib/weekend-reel-render";
 
 import { DetailNav } from "../detail-nav";
 import { formatDetailDateTime, numberFormatter } from "../detail-utils";
@@ -277,12 +278,12 @@ export default async function AdminInstagramPage() {
                     >
                       El navegador no pot reproduir aquesta previsualització de vídeo.
                     </video>
-                    <figcaption>Reel · 7,2 s · 9:16</figcaption>
+                    <figcaption>Reel · {weekendReelDurationSeconds(socialGrowthSlideCount("weekend")).toLocaleString("ca-ES")} s · 9:16</figcaption>
                   </figure>
                   <div className={plannerStyles.reelNotes}>
                     <span>Publicació automàtica</span>
-                    <strong>Quatre pantalles verticals amb la lectura verificada del divendres.</strong>
-                    <p>Es comparteix també al feed. No incorpora música, adhesius ni localitzacions.</p>
+                    <strong>Sis pantalles verticals, transicions suaus, mapa generalitzat i context del bolet líder.</strong>
+                    <p>Es comparteix també al feed. No incorpora música, adhesius ni localitzacions precises.</p>
                     <details className={plannerStyles.captionPreview}>
                       <summary>Veure el text del Reel</summary>
                       <p>{instagramGrowthCaption("weekend", previewable, publicationDate)}</p>
