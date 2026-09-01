@@ -27,6 +27,7 @@ import { formatDetailDateTime, numberFormatter } from "../detail-utils";
 import styles from "../details.module.css";
 import plannerStyles from "./instagram.module.css";
 import { PinnedPublishControl } from "./pinned-publish-control";
+import { ReelPreview } from "./reel-preview";
 
 export const dynamic = "force-dynamic";
 
@@ -268,18 +269,11 @@ export default async function AdminInstagramPage() {
                   <time>{nextScheduleLabel(5, 18)}</time>
                 </header>
                 <div className={plannerStyles.reelPreviewGrid}>
-                  <figure className={plannerStyles.reelFrame}>
-                    <video
-                      controls
-                      playsInline
-                      poster={signedSocialGrowthImagePath(previewable, "weekend", 1)}
-                      preload="metadata"
-                      src={signedWeekendReelPath(previewable)}
-                    >
-                      El navegador no pot reproduir aquesta previsualització de vídeo.
-                    </video>
-                    <figcaption>Reel · {weekendReelDurationSeconds(socialGrowthSlideCount("weekend")).toLocaleString("ca-ES")} s · 9:16</figcaption>
-                  </figure>
+                  <ReelPreview
+                    durationLabel={`${weekendReelDurationSeconds(socialGrowthSlideCount("weekend")).toLocaleString("ca-ES")} s`}
+                    poster={signedSocialGrowthImagePath(previewable, "weekend", 1)}
+                    src={signedWeekendReelPath(previewable)}
+                  />
                   <div className={plannerStyles.reelNotes}>
                     <span>Publicació automàtica</span>
                     <strong>Sis pantalles verticals, transicions suaus, mapa generalitzat i context del bolet líder.</strong>
