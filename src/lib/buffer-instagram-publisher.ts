@@ -10,9 +10,12 @@ export interface BufferInstagramPublisherConfig {
   channelName: string;
 }
 
-export type InstagramPublicationResult =
-  | { status: "already_published"; publicationDate: string; postId: string | null }
-  | { status: "published"; publicationDate: string; postId: string };
+export interface InstagramPublicationResult {
+  status: "already_published" | "published";
+  publicationDate: string;
+  feed: { status: "already_published" | "published"; postId: string };
+  story: { status: "already_published" | "published"; postId: string };
+}
 
 interface BufferGraphResponse<T> {
   data?: T;
@@ -38,6 +41,8 @@ interface BufferPost {
   id?: unknown;
   text?: unknown;
   status?: unknown;
+  metadata?: { type?: unknown } | null;
+  assets?: Array<{ source?: unknown }>;
 }
 
 export class BufferPublicationError extends Error {
@@ -238,17 +243,19 @@ async function findInstagramChannel(
   return matches[0];
 }
 
-async function findExistingPublication({
+async function findExistingPublications({
   channelId,
   config,
   fetchImpl,
-  marker,
+  feedMarker,
+  storyImageUrl,
   organizationId,
 }: {
   channelId: string;
   config: BufferInstagramPublisherConfig;
   fetchImpl: typeof fetch;
-  marker: string;
+  feedMarker: string;
+  storyImageUrl: string;
   organizationId: string;
 }) {
   const result = await bufferGraphql<{
@@ -259,7 +266,16 @@ async function findExistingPublication({
     operation: "Reading recent Buffer posts",
     query: `query BufferRecentPosts($input: PostsInput!) {
       posts(first: 50, input: $input) {
-        edges { node { id text status } }
+        edges {
+          node {
+            id text status
+            metadata {
+              __typename
+              ... on InstagramPostMetadata { type }
+            }
+            assets { ... on ImageAsset { source } }
+          }
+        }
       }
     }`,
     variables: {
@@ -273,10 +289,20 @@ async function findExistingPublication({
       },
     },
   });
-  const match = result.posts?.edges?.find(
-    (edge) => typeof edge.node?.text === "string" && edge.node.text.includes(marker),
+  const posts = result.posts?.edges?.map((edge) => edge.node).filter(
+    (post): post is BufferPost => Boolean(post),
+  ) ?? [];
+  const feed = posts.find(
+    (post) => typeof post.text === "string" && post.text.includes(feedMarker),
   );
-  return typeof match?.node?.id === "string" ? match.node.id : null;
+  const story = posts.find(
+    (post) => post.metadata?.type === "story"
+      && post.assets?.some((asset) => asset.source === storyImageUrl),
+  );
+  return {
+    feedPostId: typeof feed?.id === "string" ? feed.id : null,
+    storyPostId: typeof story?.id === "string" ? story.id : null,
+  };
 }
 
 async function createImagePost({
@@ -285,12 +311,14 @@ async function createImagePost({
   config,
   fetchImpl,
   imageUrl,
+  type,
 }: {
   caption: string;
   channelId: string;
   config: BufferInstagramPublisherConfig;
   fetchImpl: typeof fetch;
   imageUrl: string;
+  type: "post" | "story";
 }) {
   const result = await bufferGraphql<{
     createPost?: {
@@ -315,8 +343,8 @@ async function createImagePost({
         channelId,
         metadata: {
           instagram: {
-            shouldShareToFeed: true,
-            type: "post",
+            shouldShareToFeed: type === "post",
+            type,
           },
         },
         mode: "shareNow",
@@ -344,12 +372,14 @@ export async function publishDailyInstagramPrediction({
   config,
   fetchImpl = fetch,
   imageUrl,
+  storyImageUrl,
   now = new Date(),
 }: {
   card: DailyShareCard;
   config: BufferInstagramPublisherConfig;
   fetchImpl?: typeof fetch;
   imageUrl: string;
+  storyImageUrl: string;
   now?: Date;
 }): Promise<InstagramPublicationResult> {
   if (!card.available || !card.observedAt || card.isPreview) {
@@ -380,23 +410,46 @@ export async function publishDailyInstagramPrediction({
 
   const { channelId, organizationId } = await findInstagramChannel(config, fetchImpl);
   const marker = dailyInstagramMarker(publicationDate);
-  const existingPostId = await findExistingPublication({
+  const existing = await findExistingPublications({
     channelId,
     config,
+    feedMarker: marker,
     fetchImpl,
-    marker,
     organizationId,
+    storyImageUrl,
   });
-  if (existingPostId) {
-    return { status: "already_published", publicationDate, postId: existingPostId };
-  }
-
-  const postId = await createImagePost({
-    caption,
-    channelId,
-    config,
-    fetchImpl,
-    imageUrl,
-  });
-  return { status: "published", publicationDate, postId };
+  const feed = existing.feedPostId
+    ? { status: "already_published" as const, postId: existing.feedPostId }
+    : {
+        status: "published" as const,
+        postId: await createImagePost({
+          caption,
+          channelId,
+          config,
+          fetchImpl,
+          imageUrl,
+          type: "post",
+        }),
+      };
+  const story = existing.storyPostId
+    ? { status: "already_published" as const, postId: existing.storyPostId }
+    : {
+        status: "published" as const,
+        postId: await createImagePost({
+          caption: "",
+          channelId,
+          config,
+          fetchImpl,
+          imageUrl: storyImageUrl,
+          type: "story",
+        }),
+      };
+  return {
+    status: feed.status === "already_published" && story.status === "already_published"
+      ? "already_published"
+      : "published",
+    publicationDate,
+    feed,
+    story,
+  };
 }

@@ -61,13 +61,16 @@ function channelResponse() {
 }
 
 describe("Buffer Instagram daily publisher", () => {
-  it("publishes today's verified feed card through Buffer", async () => {
+  it("publishes today's verified feed and Story cards through Buffer", async () => {
     const fetchImpl = vi.fn()
       .mockResolvedValueOnce(organizationResponse())
       .mockResolvedValueOnce(channelResponse())
       .mockResolvedValueOnce(bufferResponse({ posts: { edges: [] } }))
       .mockResolvedValueOnce(bufferResponse({
         createPost: { __typename: "PostActionSuccess", post: { id: "post-1" } },
+      }))
+      .mockResolvedValueOnce(bufferResponse({
+        createPost: { __typename: "PostActionSuccess", post: { id: "story-1" } },
       }));
 
     await expect(publishDailyInstagramPrediction({
@@ -75,14 +78,16 @@ describe("Buffer Instagram daily publisher", () => {
       config,
       fetchImpl,
       imageUrl: "https://bolets.app/compartir/catalunya/imatge?format=feed&signed=yes",
+      storyImageUrl: "https://bolets.app/compartir/catalunya/imatge?format=story&signed=yes",
       now: new Date("2026-08-31T12:00:00.000Z"),
     })).resolves.toEqual({
       status: "published",
       publicationDate: "2026-08-31",
-      postId: "post-1",
+      feed: { status: "published", postId: "post-1" },
+      story: { status: "published", postId: "story-1" },
     });
 
-    expect(fetchImpl).toHaveBeenCalledTimes(4);
+    expect(fetchImpl).toHaveBeenCalledTimes(5);
     expect(fetchImpl.mock.calls.every(([url]) => url === "https://api.buffer.com")).toBe(true);
     const recentPostsOptions = fetchImpl.mock.calls[2]?.[1] as RequestInit;
     const recentPostsBody = JSON.parse(String(recentPostsOptions.body)) as {
@@ -96,12 +101,12 @@ describe("Buffer Instagram daily publisher", () => {
       organizationId: "organization-1",
       sort: [{ direction: "desc", field: "createdAt" }],
     });
-    const options = fetchImpl.mock.calls[3]?.[1] as RequestInit;
-    const body = JSON.parse(String(options.body)) as {
+    const feedOptions = fetchImpl.mock.calls[3]?.[1] as RequestInit;
+    const feedBody = JSON.parse(String(feedOptions.body)) as {
       variables: { input: Record<string, unknown> };
     };
-    expect(options.headers).toMatchObject({ Authorization: "Bearer secret-buffer-key" });
-    expect(body.variables.input).toMatchObject({
+    expect(feedOptions.headers).toMatchObject({ Authorization: "Bearer secret-buffer-key" });
+    expect(feedBody.variables.input).toMatchObject({
       channelId: "channel-1",
       metadata: {
         instagram: {
@@ -112,20 +117,52 @@ describe("Buffer Instagram daily publisher", () => {
       mode: "shareNow",
       schedulingType: "automatic",
     });
-    expect(body.variables.input.text).toContain(dailyInstagramMarker("2026-08-31"));
-    expect(body.variables.input.assets).toEqual([{
+    expect(feedBody.variables.input.text).toContain(dailyInstagramMarker("2026-08-31"));
+    expect(feedBody.variables.input.assets).toEqual([{
       image: { url: "https://bolets.app/compartir/catalunya/imatge?format=feed&signed=yes" },
+    }]);
+
+    const storyOptions = fetchImpl.mock.calls[4]?.[1] as RequestInit;
+    const storyBody = JSON.parse(String(storyOptions.body)) as {
+      variables: { input: Record<string, unknown> };
+    };
+    expect(storyBody.variables.input).toMatchObject({
+      channelId: "channel-1",
+      metadata: {
+        instagram: {
+          shouldShareToFeed: false,
+          type: "story",
+        },
+      },
+      mode: "shareNow",
+      schedulingType: "automatic",
+      text: "",
+    });
+    expect(storyBody.variables.input.assets).toEqual([{
+      image: { url: "https://bolets.app/compartir/catalunya/imatge?format=story&signed=yes" },
     }]);
   });
 
-  it("does not create a duplicate when today's marker is already present", async () => {
+  it("does not create duplicates when today's feed marker and Story asset are present", async () => {
     const fetchImpl = vi.fn()
       .mockResolvedValueOnce(organizationResponse())
       .mockResolvedValueOnce(channelResponse())
       .mockResolvedValueOnce(bufferResponse({
         posts: {
           edges: [{
-            node: { id: "existing-post", text: `Avui\n${dailyInstagramMarker("2026-08-31")}` },
+            node: {
+              id: "existing-post",
+              text: `Avui\n${dailyInstagramMarker("2026-08-31")}`,
+              metadata: { type: "post" },
+              assets: [],
+            },
+          }, {
+            node: {
+              id: "existing-story",
+              text: "",
+              metadata: { type: "story" },
+              assets: [{ source: "https://bolets.app/story.png" }],
+            },
           }],
         },
       }));
@@ -135,13 +172,51 @@ describe("Buffer Instagram daily publisher", () => {
       config,
       fetchImpl,
       imageUrl: "https://bolets.app/card.jpg",
+      storyImageUrl: "https://bolets.app/story.png",
       now: new Date("2026-08-31T12:00:00.000Z"),
     })).resolves.toEqual({
       status: "already_published",
       publicationDate: "2026-08-31",
-      postId: "existing-post",
+      feed: { status: "already_published", postId: "existing-post" },
+      story: { status: "already_published", postId: "existing-story" },
     });
     expect(fetchImpl).toHaveBeenCalledTimes(3);
+  });
+
+  it("publishes the Story when today's feed already exists", async () => {
+    const fetchImpl = vi.fn()
+      .mockResolvedValueOnce(organizationResponse())
+      .mockResolvedValueOnce(channelResponse())
+      .mockResolvedValueOnce(bufferResponse({
+        posts: {
+          edges: [{
+            node: {
+              id: "existing-post",
+              text: `Avui\n${dailyInstagramMarker("2026-08-31")}`,
+              metadata: { type: "post" },
+              assets: [],
+            },
+          }],
+        },
+      }))
+      .mockResolvedValueOnce(bufferResponse({
+        createPost: { __typename: "PostActionSuccess", post: { id: "story-1" } },
+      }));
+
+    await expect(publishDailyInstagramPrediction({
+      card,
+      config,
+      fetchImpl,
+      imageUrl: "https://bolets.app/card.jpg",
+      storyImageUrl: "https://bolets.app/story.png",
+      now: new Date("2026-08-31T12:00:00.000Z"),
+    })).resolves.toEqual({
+      status: "published",
+      publicationDate: "2026-08-31",
+      feed: { status: "already_published", postId: "existing-post" },
+      story: { status: "published", postId: "story-1" },
+    });
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
   });
 
   it("fails closed before contacting Buffer when the reading is stale", async () => {
@@ -151,6 +226,7 @@ describe("Buffer Instagram daily publisher", () => {
       config,
       fetchImpl,
       imageUrl: "https://bolets.app/card.jpg",
+      storyImageUrl: "https://bolets.app/story.png",
       now: new Date("2026-09-01T12:00:00.000Z"),
     })).rejects.toMatchObject({
       code: "prediction_stale",
@@ -168,6 +244,7 @@ describe("Buffer Instagram daily publisher", () => {
       config,
       fetchImpl,
       imageUrl: "https://bolets.app/card.jpg",
+      storyImageUrl: "https://bolets.app/story.png",
       now: new Date("2026-08-31T12:00:00.000Z"),
     })).rejects.toMatchObject({
       code: "buffer_api_error",

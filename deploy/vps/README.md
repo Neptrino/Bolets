@@ -179,11 +179,12 @@ in a browser. Caddy strips any client-supplied copy of that internal header.
 ### Instagram profile and daily prediction
 
 The footer links through `/instagram`, which resolves the configured profile at
-request time. The daily publisher sends the signed 1080 × 1350 Catalunya card
-to Buffer only when its verified observation belongs to the current civil day
-in `Europe/Madrid`. Before creating a post, it reads the channel's recent posts
-for the date marker, so restarting or manually invoking the timer does not
-publish the same day twice. Missing, withheld and stale predictions fail closed.
+request time. The daily publisher sends the signed 1080 × 1350 feed card and
+1080 × 1920 Story card to Buffer only when their verified observation belongs
+to the current civil day in `Europe/Madrid`. Before creating either item, it
+reads the channel's recent posts for the feed date marker and exact signed Story
+asset, so restarting or manually invoking the timer does not publish the same
+day twice. Missing, withheld and stale predictions fail closed.
 
 The account must be an Instagram Professional account for automatic publishing.
 In Buffer, use **New channel → Instagram → Connect with Instagram** and sign in
@@ -215,7 +216,7 @@ After a rollout has loaded the file, invoke the root-only publishing script once
 and confirm the returned Buffer post ID and the post on Instagram. The public
 proxy deliberately blocks `/api/internal/*`; the script calls the authenticated
 route from inside the application container. The endpoint serves the signed PNG
-feed card that Buffer can fetch from its public URL. Then install the daily timer:
+cards that Buffer can fetch from their public URLs. Then install the daily timer:
 
 ```bash
 sudo /opt/bolets/app/deploy/vps/publish-instagram-daily.sh
