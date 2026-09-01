@@ -206,6 +206,9 @@ test("the current overview stays usable without publishing invented scores", asy
   await expect(page.locator(".current-overview-method")).toContainText(
     "El resultat compara territoris",
   );
+  const instagramLink = page.getByRole("link", { name: "Segueix @bolets.app" });
+  await expect(instagramLink).toHaveAttribute("href", "/instagram");
+  await expect(instagramLink).toHaveAttribute("target", "_blank");
   await expect(page.locator("body")).not.toContainText("Oportunitat O");
   await expect(page.locator("body")).not.toContainText("Condicions F");
   await expect(page.locator("body")).not.toContainText("H / F");
