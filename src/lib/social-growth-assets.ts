@@ -1,6 +1,11 @@
 import type { SocialGrowthSeries } from "@/components/social-growth-card";
 import type { DailyShareCard } from "@/src/lib/daily-share-cards";
 import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
+import type { PinnedInstagramSeries } from "@/src/lib/instagram-pinned-posts";
+
+export function pinnedInstagramImagePath(series: PinnedInstagramSeries) {
+  return `/compartir/instagram/fixada/${series}`;
+}
 
 export function signedSocialGrowthImagePath(
   card: DailyShareCard,

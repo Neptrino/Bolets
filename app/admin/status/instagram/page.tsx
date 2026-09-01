@@ -12,9 +12,11 @@ import {
 import { dateInCatalonia } from "@/src/lib/buffer-client";
 import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
 import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
+import { pinnedInstagramPosts } from "@/src/lib/instagram-pinned-posts";
 import { readInstagramPerformanceReport } from "@/src/lib/instagram-performance-server";
 import { requireOperationalSession } from "@/src/lib/operational-status-session";
 import {
+  pinnedInstagramImagePath,
   signedSocialGrowthImagePath,
   signedWeekendReelPath,
 } from "@/src/lib/social-growth-assets";
@@ -139,13 +141,17 @@ export default async function AdminInstagramPage() {
         (_, index) => signedSocialGrowthImagePath(previewable, "education", index + 1),
       )
     : [];
+  const pinnedImages = pinnedInstagramPosts.map((post) => ({
+    ...post,
+    imagePath: pinnedInstagramImagePath(post.series),
+  }));
 
   return (
     <PageShell as="article" className={styles.detailShell}>
       <PageHeader
         eyebrow="Administració · taula de publicació"
         title={<>Pla visual d’<PageTitleAccent>Instagram</PageTitleAccent></>}
-        description="Previsualitza exactament les peces automatitzades amb les dades vigents i revisa després com han funcionat."
+        description="Previsualitza les peces previstes, comprova les dades vigents i revisa després com han funcionat."
         layout="split"
         tone="forest"
       />
@@ -157,106 +163,139 @@ export default async function AdminInstagramPage() {
             <span>Pròximes peces</span>
             <h2 id="instagram-planner-title">Així es veuran</h2>
           </div>
-          <p>La composició i el text són exactes. Les puntuacions canviaran si entren dades noves abans de publicar.</p>
+          <p>La composició i el text són exactes. A les peces recurrents, les puntuacions poden canviar abans de publicar.</p>
         </div>
 
-        {previewable && publicationDate ? (
-          <div className={plannerStyles.publicationPlan}>
-            <section className={plannerStyles.previewBlock}>
-              <header className={plannerStyles.previewHeader}>
-                <div><span>Diari · Feed + Story</span><h3>Predicció del dia</h3></div>
-                <time>{nextScheduleLabel(null, 7)}</time>
-              </header>
-              <div className={plannerStyles.dailyPreviewGrid}>
-                <figure className={plannerStyles.feedFrame}>
-                  <Image
-                    alt="Previsualització de la pròxima publicació diària al feed"
-                    height={1350}
-                    loading="eager"
-                    src={signedDailyShareImagePath(previewable, "feed")}
-                    unoptimized
-                    width={1080}
-                  />
-                  <figcaption>Feed · 4:5</figcaption>
-                </figure>
-                <figure className={plannerStyles.storyFrame}>
-                  <Image
-                    alt="Previsualització de la pròxima Story diària"
-                    height={1920}
-                    src={signedDailyShareImagePath(previewable, "story")}
-                    unoptimized
-                    width={1080}
-                  />
-                  <figcaption>Story · 9:16</figcaption>
-                </figure>
-                <details className={plannerStyles.captionPreview}>
-                  <summary>Veure el text del feed</summary>
-                  <p>{dailyInstagramCaption(previewable, publicationDate)}</p>
-                </details>
-              </div>
-            </section>
-
-            <section className={plannerStyles.previewBlock}>
-              <header className={plannerStyles.previewHeader}>
-                <div><span>Dimecres · Carrusel</span><h3>Com llegir la predicció</h3></div>
-                <time>{nextScheduleLabel(3, 19)}</time>
-              </header>
-              <div className={plannerStyles.carouselRail} aria-label="Cinc diapositives del carrusel educatiu">
-                {educationImages.map((imagePath, index) => (
-                  <figure className={plannerStyles.carouselFrame} key={imagePath}>
+        <div className={plannerStyles.publicationPlan}>
+          <section className={`${plannerStyles.previewBlock} ${plannerStyles.pinnedBlock}`}>
+            <header className={plannerStyles.previewHeader}>
+              <div><span>Perfil · 3 publicacions fixades</span><h3>La portada permanent del compte</h3></div>
+              <strong className={plannerStyles.draftBadge}>Esborranys</strong>
+            </header>
+            <div className={plannerStyles.pinnedIntro}>
+              <p>Presenten què és Bolets Atles, com s’interpreta i amb quin criteri cal sortir al bosc.</p>
+              <span>Publicació única · després es fixen al perfil</span>
+            </div>
+            <div className={plannerStyles.pinnedGrid} aria-label="Tres publicacions que es fixaran al perfil">
+              {pinnedImages.map((post) => (
+                <article className={plannerStyles.pinnedPost} key={post.series}>
+                  <figure className={plannerStyles.pinnedFrame}>
                     <Image
-                      alt={`Diapositiva ${index + 1} de ${educationImages.length} del carrusel educatiu`}
+                      alt={`Portada de la publicació fixada ${post.number}: ${post.shortTitle}`}
                       height={1350}
-                      src={imagePath}
+                      src={post.imagePath}
                       unoptimized
                       width={1080}
                     />
-                    <figcaption>{index + 1}/{educationImages.length}</figcaption>
+                    <figcaption>{post.number} · {post.shortTitle}</figcaption>
                   </figure>
-                ))}
-              </div>
-              <details className={plannerStyles.captionPreview}>
-                <summary>Veure el text del carrusel</summary>
-                <p>{instagramGrowthCaption("education", previewable, publicationDate)}</p>
-              </details>
-            </section>
-
-            <section className={plannerStyles.previewBlock}>
-              <header className={plannerStyles.previewHeader}>
-                <div><span>Divendres · Reel</span><h3>Preparació del cap de setmana</h3></div>
-                <time>{nextScheduleLabel(5, 18)}</time>
-              </header>
-              <div className={plannerStyles.reelPreviewGrid}>
-                <figure className={plannerStyles.reelFrame}>
-                  <video
-                    controls
-                    playsInline
-                    poster={signedSocialGrowthImagePath(previewable, "weekend", 1)}
-                    preload="metadata"
-                    src={signedWeekendReelPath(previewable)}
-                  >
-                    El navegador no pot reproduir aquesta previsualització de vídeo.
-                  </video>
-                  <figcaption>Reel · 7,2 s · 9:16</figcaption>
-                </figure>
-                <div className={plannerStyles.reelNotes}>
-                  <span>Publicació automàtica</span>
-                  <strong>Quatre pantalles verticals amb la lectura verificada del divendres.</strong>
-                  <p>Es comparteix també al feed. No incorpora música, adhesius ni localitzacions.</p>
                   <details className={plannerStyles.captionPreview}>
-                    <summary>Veure el text del Reel</summary>
-                    <p>{instagramGrowthCaption("weekend", previewable, publicationDate)}</p>
+                    <summary>Veure el text</summary>
+                    <p>{post.caption}</p>
+                  </details>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          {previewable && publicationDate ? (
+            <>
+              <section className={plannerStyles.previewBlock}>
+                <header className={plannerStyles.previewHeader}>
+                  <div><span>Diari · Feed + Story</span><h3>Predicció del dia</h3></div>
+                  <time>{nextScheduleLabel(null, 7)}</time>
+                </header>
+                <div className={plannerStyles.dailyPreviewGrid}>
+                  <figure className={plannerStyles.feedFrame}>
+                    <Image
+                      alt="Previsualització de la pròxima publicació diària al feed"
+                      height={1350}
+                      loading="eager"
+                      src={signedDailyShareImagePath(previewable, "feed")}
+                      unoptimized
+                      width={1080}
+                    />
+                    <figcaption>Feed · 4:5</figcaption>
+                  </figure>
+                  <figure className={plannerStyles.storyFrame}>
+                    <Image
+                      alt="Previsualització de la pròxima Story diària"
+                      height={1920}
+                      src={signedDailyShareImagePath(previewable, "story")}
+                      unoptimized
+                      width={1080}
+                    />
+                    <figcaption>Story · 9:16</figcaption>
+                  </figure>
+                  <details className={plannerStyles.captionPreview}>
+                    <summary>Veure el text del feed</summary>
+                    <p>{dailyInstagramCaption(previewable, publicationDate)}</p>
                   </details>
                 </div>
-              </div>
-            </section>
-          </div>
-        ) : (
-          <div className={styles.emptyState}>
-            <strong>No hi ha una lectura vigent per previsualitzar</strong>
-            <p>Les peces apareixeran aquí quan la lectura de Catalunya superi els controls de publicació.</p>
-          </div>
-        )}
+              </section>
+
+              <section className={plannerStyles.previewBlock}>
+                <header className={plannerStyles.previewHeader}>
+                  <div><span>Dimecres · Carrusel</span><h3>Com llegir la predicció</h3></div>
+                  <time>{nextScheduleLabel(3, 19)}</time>
+                </header>
+                <div className={plannerStyles.carouselRail} aria-label="Cinc diapositives del carrusel educatiu">
+                  {educationImages.map((imagePath, index) => (
+                    <figure className={plannerStyles.carouselFrame} key={imagePath}>
+                      <Image
+                        alt={`Diapositiva ${index + 1} de ${educationImages.length} del carrusel educatiu`}
+                        height={1350}
+                        src={imagePath}
+                        unoptimized
+                        width={1080}
+                      />
+                      <figcaption>{index + 1}/{educationImages.length}</figcaption>
+                    </figure>
+                  ))}
+                </div>
+                <details className={plannerStyles.captionPreview}>
+                  <summary>Veure el text del carrusel</summary>
+                  <p>{instagramGrowthCaption("education", previewable, publicationDate)}</p>
+                </details>
+              </section>
+
+              <section className={plannerStyles.previewBlock}>
+                <header className={plannerStyles.previewHeader}>
+                  <div><span>Divendres · Reel</span><h3>Preparació del cap de setmana</h3></div>
+                  <time>{nextScheduleLabel(5, 18)}</time>
+                </header>
+                <div className={plannerStyles.reelPreviewGrid}>
+                  <figure className={plannerStyles.reelFrame}>
+                    <video
+                      controls
+                      playsInline
+                      poster={signedSocialGrowthImagePath(previewable, "weekend", 1)}
+                      preload="metadata"
+                      src={signedWeekendReelPath(previewable)}
+                    >
+                      El navegador no pot reproduir aquesta previsualització de vídeo.
+                    </video>
+                    <figcaption>Reel · 7,2 s · 9:16</figcaption>
+                  </figure>
+                  <div className={plannerStyles.reelNotes}>
+                    <span>Publicació automàtica</span>
+                    <strong>Quatre pantalles verticals amb la lectura verificada del divendres.</strong>
+                    <p>Es comparteix també al feed. No incorpora música, adhesius ni localitzacions.</p>
+                    <details className={plannerStyles.captionPreview}>
+                      <summary>Veure el text del Reel</summary>
+                      <p>{instagramGrowthCaption("weekend", previewable, publicationDate)}</p>
+                    </details>
+                  </div>
+                </div>
+              </section>
+            </>
+          ) : (
+            <div className={styles.emptyState}>
+              <strong>No hi ha una lectura vigent per previsualitzar</strong>
+              <p>Les peces recurrents apareixeran aquí quan la lectura de Catalunya superi els controls de publicació.</p>
+            </div>
+          )}
+        </div>
       </section>
 
       <section className={styles.reportSection} aria-labelledby="instagram-report-title">

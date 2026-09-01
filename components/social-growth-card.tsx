@@ -1,5 +1,9 @@
 import { BrandMark } from "@/components/brand-mark";
 import type { DailyShareCard } from "@/src/lib/daily-share-cards";
+import {
+  pinnedInstagramPost,
+  type PinnedInstagramSeries,
+} from "@/src/lib/instagram-pinned-posts";
 import { getSuitabilityBand } from "@/src/lib/suitability-scale";
 
 export type SocialGrowthSeries = "education" | "weekend";
@@ -62,6 +66,60 @@ export function socialGrowthSlideCount(series: SocialGrowthSeries) {
 
 export function isSocialGrowthSeries(value: string | null): value is SocialGrowthSeries {
   return value === "education" || value === "weekend";
+}
+
+export function PinnedInstagramCard({ series }: { series: PinnedInstagramSeries }) {
+  const post = pinnedInstagramPost(series);
+  const palettes = {
+    clay: {
+      background: "linear-gradient(145deg, #8f4e2d 0%, #5e3625 54%, #173021 100%)",
+      glow: "rgba(255,205,143,0.28)",
+      accent: "#ffd09c",
+      body: "#f7e4cb",
+    },
+    forest: {
+      background: "linear-gradient(145deg, #0e2619 0%, #173b27 56%, #38513b 100%)",
+      glow: "rgba(242,167,102,0.25)",
+      accent: "#f2a766",
+      body: "#d7dec7",
+    },
+    sand: {
+      background: "linear-gradient(145deg, #e7d6b9 0%, #c6ad83 55%, #896143 100%)",
+      glow: "rgba(255,247,232,0.48)",
+      accent: "#6b3f25",
+      body: "#3f382f",
+    },
+  } as const;
+  const palette = palettes[post.tone];
+  const foreground = post.tone === "sand" ? "#173021" : "#fff7e8";
+  const rule = post.tone === "sand" ? "rgba(23,48,33,0.20)" : "rgba(255,247,232,0.18)";
+
+  return (
+    <div style={{ display: "flex", position: "relative", width: "100%", height: "100%", overflow: "hidden", flexDirection: "column", padding: "58px 58px 66px", color: foreground, background: palette.background, fontFamily: "sans-serif" }}>
+      <div style={{ display: "flex", position: "absolute", width: 690, height: 690, right: -285, top: 225, borderRadius: 999, background: `radial-gradient(circle, ${palette.glow}, rgba(255,255,255,0))` }} />
+      <div style={{ display: "flex", position: "absolute", right: 48, bottom: 58, color: post.tone === "sand" ? "rgba(23,48,33,0.10)" : "rgba(255,247,232,0.08)", fontSize: 350, lineHeight: 0.8, fontWeight: 900, letterSpacing: "-0.12em" }}>{post.number}</div>
+      <div style={{ display: "flex", position: "absolute", inset: 24, border: `1px solid ${rule}`, borderRadius: 28 }} />
+
+      <div style={{ display: "flex", position: "relative", alignItems: "center", justifyContent: "space-between", paddingBottom: 25, borderBottom: `1px solid ${rule}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <BrandMark />
+          <span style={{ fontSize: 24, fontWeight: 900, letterSpacing: "0.11em", textTransform: "uppercase" }}>Bolets Atles</span>
+        </div>
+        <span style={{ color: palette.accent, fontSize: 22, fontWeight: 900 }}>{post.number}/03</span>
+      </div>
+
+      <div style={{ display: "flex", position: "relative", flex: 1, flexDirection: "column", justifyContent: "center", paddingBottom: 25 }}>
+        <span style={{ color: palette.accent, fontSize: 24, fontWeight: 900, letterSpacing: "0.12em", textTransform: "uppercase" }}>{post.eyebrow}</span>
+        <span style={{ maxWidth: "94%", marginTop: 20, color: foreground, fontSize: 72, lineHeight: 0.98, fontWeight: 900, letterSpacing: "-0.052em" }}>{post.title}</span>
+        <span style={{ maxWidth: "91%", marginTop: 31, color: palette.body, fontSize: 29, lineHeight: 1.34 }}>{post.body}</span>
+      </div>
+
+      <div style={{ display: "flex", position: "relative", alignItems: "center", justifyContent: "space-between", paddingTop: 24, borderTop: `1px solid ${rule}`, color: palette.body, fontSize: 21 }}>
+        <span>{post.footer}</span>
+        <span style={{ color: foreground, fontWeight: 900 }}>bolets.app</span>
+      </div>
+    </div>
+  );
 }
 
 function ReadingPanel({ card, vertical }: { card: DailyShareCard; vertical: boolean }) {
