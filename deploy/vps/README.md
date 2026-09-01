@@ -402,19 +402,23 @@ Verify `cron.job` contains exactly eleven active Bolets jobs and inspect
 ```
 
 The script loads the root-only Umami and private-status environments, validates the merged Compose
-model, builds the standalone Next.js image, transactionally installs the
-additive rolling-ingestion, parallel-job and condition-publication database schemas,
-and synchronizes Edge Functions only after that schema is ready. It then waits
+model, builds the standalone Next.js image, applies every pending SQL migration
+in timestamp order through `supabase_migrations.schema_migrations`, and
+synchronizes Edge Functions only after that schema is ready. It then waits
 for healthy services, replaces Umami's default administrator password, creates
 the fixed Bolets website record idempotently, and restarts the function
 runtime. Before completing, it warms the server-side daily overview cache from
 inside the candidate app container, so the first visitor after a rollout does
 not wait for its bounded territorial aggregation. A failed warm is a failed
-rollout and restores the previous application. The restored managed project has no local Supabase migration ledger,
-so this post-restore migration is guarded by its own new table rather than
-replaying historical migrations over an already-populated database. The app
-uses the internal gateway URL; its server credentials never travel through
-public DNS.
+rollout and restores the previous application. On the first ledger-backed
+rollout only, the runner verifies the fixed managed-project restore contract
+and records its 121-migration baseline without replaying historical SQL. Every
+later migration is discovered from `supabase/migrations`, applied atomically,
+and recorded in that standard ledger. Missing files, remote-only versions,
+non-contiguous history, partial untracked restores, and final inventory
+mismatches all fail the rollout before Edge Functions or the app are replaced.
+The app uses the internal gateway URL; its server credentials never travel
+through public DNS.
 
 After this first rollout succeeds, add the DNS-only
 `analytics.bolets.app -> 51.255.40.179` record. Verify

@@ -7,233 +7,217 @@ if [ "$#" -ne 1 ]; then
 fi
 
 app_dir=$1
-rolling_migration="$app_dir/supabase/migrations/20260824061712_add_open_meteo_rolling_history.sql"
-parallel_migration="$app_dir/supabase/migrations/20260824074556_parallel_spatial_ingestion.sql"
-aws_lane_migration="$app_dir/supabase/migrations/20260824113000_add_aws_ingestion_lane.sql"
-egress_circuit_migration="$app_dir/supabase/migrations/20260824114320_add_open_meteo_egress_circuit_breaker.sql"
-unlimited_usage_migration="$app_dir/supabase/migrations/20260824125832_disable_local_open_meteo_limits.sql"
-operational_status_migration="$app_dir/supabase/migrations/20260824143000_add_operational_status_reader.sql"
-audit_reconciliation_migration="$app_dir/supabase/migrations/20260824135419_reconcile_spatial_job_audits.sql"
-condition_cache_cron_migration="$app_dir/supabase/migrations/20260824141111_schedule_condition_cache_publication.sql"
-forecast_alignment_migration="$app_dir/supabase/migrations/20260824145507_use_latest_observed_completion_for_forecast_alignment.sql"
-operational_resync_migration="$app_dir/supabase/migrations/20260824151551_add_operational_resync_dispatcher.sql"
-findings_migration="$app_dir/supabase/migrations/20260827222558_add_user_findings.sql"
-owner_finding_reader_migration="$app_dir/supabase/migrations/20260828114500_read_owner_finding_private_details.sql"
-owner_finding_removal_migration="$app_dir/supabase/migrations/20260828120000_remove_owner_finding_atomically.sql"
-finding_photo_visibility_migration="$app_dir/supabase/migrations/20260829152554_unify_finding_photo_visibility.sql"
-forest_preferences_migration="$app_dir/supabase/migrations/20260829182354_add_user_forest_preferences.sql"
-admin_role_migration="$app_dir/supabase/migrations/20260901151545_assign_initial_admin_role.sql"
+migration_dir="$app_dir/supabase/migrations"
+baseline_verifier="$app_dir/deploy/vps/verify-restored-migration-baseline.sql"
+db_container=${BOLETS_DB_CONTAINER:-supabase-db}
+db_name=${BOLETS_DB_NAME:-postgres}
 
-if [ ! -f "$rolling_migration" ] || [ ! -f "$parallel_migration" ] ||
-   [ ! -f "$aws_lane_migration" ] || [ ! -f "$egress_circuit_migration" ] ||
-   [ ! -f "$unlimited_usage_migration" ] || [ ! -f "$operational_status_migration" ] ||
-   [ ! -f "$audit_reconciliation_migration" ] || [ ! -f "$condition_cache_cron_migration" ] ||
-   [ ! -f "$forecast_alignment_migration" ] || [ ! -f "$operational_resync_migration" ] ||
-   [ ! -f "$findings_migration" ] || [ ! -f "$owner_finding_reader_migration" ] ||
-   [ ! -f "$owner_finding_removal_migration" ] || [ ! -f "$finding_photo_visibility_migration" ] ||
-   [ ! -f "$forest_preferences_migration" ] || [ ! -f "$admin_role_migration" ]; then
-  echo "A required database migration is missing" >&2
+# The final managed-project restore and the former manual installer were
+# verified through this migration. This fixed boundary is used exactly once to
+# adopt the restored schema into the standard Supabase migration ledger.
+restored_baseline_version=20260901151545
+restored_baseline_count=121
+
+if [ ! -d "$migration_dir" ] || [ ! -f "$baseline_verifier" ]; then
+  echo "The database migration directory or restored-schema verifier is missing" >&2
   exit 66
 fi
 
-if ! docker inspect supabase-db >/dev/null 2>&1; then
+if ! docker inspect "$db_container" >/dev/null 2>&1; then
   echo "The Supabase database container is not running" >&2
   exit 69
 fi
 
-# The managed-project restore predates a local migration ledger. Use one
-# additive object from each migration as its marker instead of replaying the
-# historical migration set that already exists in the restored schema.
-apply_if_missing() {
-  marker=$1
-  migration=$2
-  label=$3
-  installed=$(docker exec supabase-db psql \
+psql_query() {
+  docker exec "$db_container" psql \
     --username postgres \
-    --dbname postgres \
+    --dbname "$db_name" \
     --tuples-only \
     --no-align \
-    --command "select coalesce(to_regclass('public.$marker')::text, '');")
-
-  if [ "$installed" = "$marker" ]; then
-    echo "$label database migration is already installed"
-    return
-  fi
-
-  docker exec -i supabase-db psql \
-    --username postgres \
-    --dbname postgres \
     --set ON_ERROR_STOP=1 \
-    --single-transaction \
-    < "$migration"
-  echo "Applied $label database migration"
+    --command "$1"
 }
 
-apply_if_missing open_meteo_hourly_states "$rolling_migration" rolling-ingestion
-apply_if_missing spatial_atmosphere_jobs "$parallel_migration" parallel-ingestion
-apply_if_missing user_findings "$findings_migration" user-findings
-apply_if_missing user_forest_preferences "$forest_preferences_migration" forest-preferences
-
-# Auth metadata is data rather than a schema object, so verify the expected
-# trusted role directly. The production restore has no migration ledger and
-# would otherwise silently skip this one-time assignment.
-admin_role=$(docker exec supabase-db psql \
-  --username postgres \
-  --dbname postgres \
-  --tuples-only \
-  --no-align \
-  --command "select coalesce((select raw_app_meta_data ->> 'app_role' from auth.users where lower(email) = 'aleix@ventayol.cat' limit 1), '');")
-
-if [ "$admin_role" != "admin" ]; then
-  docker exec -i supabase-db psql \
+psql_input() {
+  docker exec -i "$db_container" psql \
     --username postgres \
-    --dbname postgres \
-    --set ON_ERROR_STOP=1 \
-    --single-transaction \
-    < "$admin_role_migration"
-  admin_role=$(docker exec supabase-db psql \
-    --username postgres \
-    --dbname postgres \
-    --tuples-only \
-    --no-align \
-    --command "select coalesce((select raw_app_meta_data ->> 'app_role' from auth.users where lower(email) = 'aleix@ventayol.cat' limit 1), '');")
+    --dbname "$db_name" \
+    --set ON_ERROR_STOP=1
+}
+
+migration_files=$(find "$migration_dir" -maxdepth 1 -type f -name '*.sql' -print | LC_ALL=C sort)
+if [ -z "$migration_files" ]; then
+  echo "No database migrations were found" >&2
+  exit 66
 fi
 
-if [ "$admin_role" != "admin" ]; then
-  echo "The initial administrator role could not be assigned" >&2
+migration_count=0
+previous_version=
+for migration in $migration_files; do
+  filename=$(basename "$migration")
+  version=${filename%%_*}
+  name=${filename#*_}
+  name=${name%.sql}
+
+  if ! printf '%s\n' "$version" | grep -Eq '^[0-9]{14}$' ||
+     ! printf '%s\n' "$name" | grep -Eq '^[a-z0-9_]+$'; then
+    echo "Invalid database migration filename: $filename" >&2
+    exit 65
+  fi
+  if [ -n "$previous_version" ] && [ "$version" -le "$previous_version" ]; then
+    echo "Database migration versions must be unique and increasing" >&2
+    exit 65
+  fi
+
+  previous_version=$version
+  migration_count=$((migration_count + 1))
+done
+
+# Match the table used by the Supabase CLI so `migration list`, `repair`, and
+# `db push` see the same authoritative production history.
+psql_input <<'SQL'
+create schema if not exists supabase_migrations;
+create table if not exists supabase_migrations.schema_migrations (
+  version text primary key,
+  statements text[],
+  name text
+);
+SQL
+
+ledger_shape=$(psql_query "
+  select count(*)
+  from information_schema.columns
+  where table_schema = 'supabase_migrations'
+    and table_name = 'schema_migrations'
+    and (
+      (column_name = 'version' and data_type = 'text')
+      or (column_name = 'statements' and data_type = 'ARRAY')
+      or (column_name = 'name' and data_type = 'text')
+    );")
+if [ "$ledger_shape" -ne 3 ]; then
+  echo "The Supabase migration ledger has an unexpected shape" >&2
   exit 70
 fi
-echo "Verified initial administrator role"
 
-# These owner-only RPC boundaries are idempotent CREATE OR REPLACE migrations.
-# Reapply them so a restored database receives their latest redaction and
-# atomic-removal behavior even though it has no Supabase migration ledger.
-docker exec -i supabase-db psql \
-  --username postgres \
-  --dbname postgres \
-  --set ON_ERROR_STOP=1 \
-  --single-transaction \
-  < "$owner_finding_reader_migration"
-echo "Applied owner-finding private reader"
+baseline_recorded=$(psql_query "
+  select exists (
+    select 1
+    from supabase_migrations.schema_migrations
+    where version = '$restored_baseline_version'
+  );")
+restore_marker_count=$(psql_query "
+  select
+    (to_regclass('public.environment_snapshots') is not null)::integer
+    + (to_regclass('public.weather_grid_snapshots') is not null)::integer
+    + (to_regclass('public.coarse_species_habitat_cells') is not null)::integer;")
 
-docker exec -i supabase-db psql \
-  --username postgres \
-  --dbname postgres \
-  --set ON_ERROR_STOP=1 \
-  --single-transaction \
-  < "$owner_finding_removal_migration"
-echo "Applied owner-finding atomic removal"
+if [ "$baseline_recorded" != "t" ] && [ "$restore_marker_count" -eq 3 ]; then
+  # A physical restore contains the application schema but may have an empty
+  # or historical CLI ledger. Verify the known post-restore contracts before
+  # filling the fixed baseline; never infer it from a single table.
+  psql_input < "$baseline_verifier"
 
-finding_photo_visibility_installed=$(docker exec supabase-db psql \
-  --username postgres \
-  --dbname postgres \
-  --tuples-only \
-  --no-align \
-  --command "select coalesce(conname, '') from pg_constraint where conname = 'user_finding_photos_follow_finding_visibility';")
+  baseline_count=0
+  for migration in $migration_files; do
+    filename=$(basename "$migration")
+    version=${filename%%_*}
+    if [ "$version" -le "$restored_baseline_version" ]; then
+      baseline_count=$((baseline_count + 1))
+    fi
+  done
+  if [ "$baseline_count" -ne "$restored_baseline_count" ]; then
+    echo "The restored migration baseline inventory has changed" >&2
+    exit 70
+  fi
 
-if [ "$finding_photo_visibility_installed" = "user_finding_photos_follow_finding_visibility" ]; then
-  echo "Unified finding-photo visibility migration is already installed"
-else
-  docker exec -i supabase-db psql \
-    --username postgres \
-    --dbname postgres \
-    --set ON_ERROR_STOP=1 \
-    --single-transaction \
-    < "$finding_photo_visibility_migration"
-  echo "Applied unified finding-photo visibility"
+  {
+    printf '%s\n' 'begin;'
+    printf "%s\n" "select pg_advisory_xact_lock(hashtextextended('bolets-schema-migrations', 0));"
+    for migration in $migration_files; do
+      filename=$(basename "$migration")
+      version=${filename%%_*}
+      name=${filename#*_}
+      name=${name%.sql}
+      if [ "$version" -le "$restored_baseline_version" ]; then
+        printf "insert into supabase_migrations.schema_migrations (version, statements, name) values ('%s', array[]::text[], '%s') on conflict (version) do nothing;\n" \
+          "$version" "$name"
+      fi
+    done
+    printf '%s\n' 'commit;'
+  } | psql_input
+  echo "Recorded verified restored migration baseline through $restored_baseline_version"
+elif [ "$baseline_recorded" != "t" ] && [ "$restore_marker_count" -ne 0 ]; then
+  echo "The database has a partial untracked Bolets schema; refusing to guess its migration history" >&2
+  exit 70
 fi
 
-aws_lane_installed=$(docker exec supabase-db psql \
-  --username postgres \
-  --dbname postgres \
-  --tuples-only \
-  --no-align \
-  --command "select coalesce(pg_get_constraintdef(oid), '') from pg_constraint where conname = 'spatial_atmosphere_jobs_egress_lane_check';")
+applied_versions=$(psql_query "select version from supabase_migrations.schema_migrations order by version;")
 
-case "$aws_lane_installed" in
-  *"'aws'"*)
-    echo "AWS ingestion-lane database migration is already installed"
-    ;;
-  *)
-    docker exec -i supabase-db psql \
-      --username postgres \
-      --dbname postgres \
-      --set ON_ERROR_STOP=1 \
-      --single-transaction \
-      < "$aws_lane_migration"
-    echo "Applied AWS ingestion-lane database migration"
-    ;;
-esac
+version_is_applied() {
+  printf '%s\n' "$applied_versions" | grep -Fxq "$1"
+}
 
-apply_if_missing open_meteo_egress_lanes "$egress_circuit_migration" egress-circuit-breaker
+# Remote-only versions indicate edited or deleted migration history. Stop
+# before changing the schema so the mismatch can be reconciled deliberately.
+for applied_version in $applied_versions; do
+  matching_files=$(find "$migration_dir" -maxdepth 1 -type f -name "${applied_version}_*.sql" -print | wc -l | tr -d ' ')
+  if [ "$matching_files" -ne 1 ]; then
+    echo "Production records migration $applied_version, but the repository does not contain exactly one matching file" >&2
+    exit 70
+  fi
+done
 
-usage_recorder_installed=$(docker exec supabase-db psql \
-  --username postgres \
-  --dbname postgres \
-  --tuples-only \
-  --no-align \
-  --command "select coalesce(to_regprocedure('public.record_provider_usage(text,text,integer)')::text, '');")
+# Applied history must be a contiguous prefix. This prevents a restored or
+# manually repaired database from replaying an old migration underneath newer
+# schema changes.
+missing_seen=false
+for migration in $migration_files; do
+  filename=$(basename "$migration")
+  version=${filename%%_*}
+  if version_is_applied "$version"; then
+    if [ "$missing_seen" = true ]; then
+      echo "The Supabase migration ledger is non-contiguous before $version" >&2
+      exit 70
+    fi
+  else
+    missing_seen=true
+  fi
+done
 
-if [ "$usage_recorder_installed" = "record_provider_usage(text,text,integer)" ]; then
-  echo "Unlimited provider-usage recorder is already installed"
-else
-  docker exec -i supabase-db psql \
-    --username postgres \
-    --dbname postgres \
-    --set ON_ERROR_STOP=1 \
-    --single-transaction \
-    < "$unlimited_usage_migration"
-  echo "Applied unlimited provider-usage recorder"
+for migration in $migration_files; do
+  filename=$(basename "$migration")
+  version=${filename%%_*}
+  name=${filename#*_}
+  name=${name%.sql}
+
+  if version_is_applied "$version"; then
+    continue
+  fi
+
+  echo "Applying database migration $filename"
+  {
+    printf '%s\n' '\set ON_ERROR_STOP on'
+    printf '%s\n' 'begin;'
+    printf "%s\n" "select pg_advisory_xact_lock(hashtextextended('bolets-schema-migrations', 0));"
+    printf "%s\n" "select not exists (select 1 from supabase_migrations.schema_migrations where version = '$version') as migration_missing \\gset"
+    printf '%s\n' '\if :migration_missing'
+    cat "$migration"
+    printf "\ninsert into supabase_migrations.schema_migrations (version, statements, name) values ('%s', array[]::text[], '%s');\n" \
+      "$version" "$name"
+    printf '%s\n' '\else'
+    printf '%s\n' "\echo Migration $version was applied by another rollout"
+    printf '%s\n' '\endif'
+    printf '%s\n' 'commit;'
+  } | psql_input
+
+  applied_versions="${applied_versions}
+${version}"
+done
+
+final_count=$(psql_query "select count(*) from supabase_migrations.schema_migrations;")
+if [ "$final_count" -ne "$migration_count" ]; then
+  echo "The production migration ledger does not match the repository inventory" >&2
+  exit 70
 fi
 
-# Reapply the idempotent function replacement on every rollout. Its bounded
-# cleanup also repairs abandoned audit rows left by workers from older builds.
-docker exec -i supabase-db psql \
-  --username postgres \
-  --dbname postgres \
-  --set ON_ERROR_STOP=1 \
-  --single-transaction \
-  < "$audit_reconciliation_migration"
-echo "Applied spatial audit reconciliation"
-
-# Recreate this one cheap database-local job on every rollout so scheduling
-# changes are not hidden behind a restored cron catalogue.
-docker exec -i supabase-db psql \
-  --username postgres \
-  --dbname postgres \
-  --set ON_ERROR_STOP=1 \
-  --single-transaction \
-  < "$condition_cache_cron_migration"
-echo "Applied condition-cache publication schedule"
-
-# The restored database has no local migration ledger. Reapply this private,
-# idempotent function replacement so forecast alignment always uses the later
-# of the two completed observed-stream cursors.
-docker exec -i supabase-db psql \
-  --username postgres \
-  --dbname postgres \
-  --set ON_ERROR_STOP=1 \
-  --single-transaction \
-  < "$forecast_alignment_migration"
-echo "Applied forecast alignment reconciliation"
-
-# This private dispatcher is an idempotent CREATE OR REPLACE boundary. Reapply
-# it because the restored database intentionally has no local migration ledger.
-docker exec -i supabase-db psql \
-  --username postgres \
-  --dbname postgres \
-  --set ON_ERROR_STOP=1 \
-  --single-transaction \
-  < "$operational_resync_migration"
-echo "Applied operational resync dispatcher"
-
-# This migration is deliberately idempotent and contains only CREATE OR
-# REPLACE plus grants. Reapply it so query-shape and redaction improvements are
-# not hidden behind the function's existence on restored databases.
-docker exec -i supabase-db psql \
-  --username postgres \
-  --dbname postgres \
-  --set ON_ERROR_STOP=1 \
-  --single-transaction \
-  < "$operational_status_migration"
-echo "Applied operational-status database boundary"
+echo "Database migrations are synchronized ($final_count applied)"

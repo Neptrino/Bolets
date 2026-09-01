@@ -126,12 +126,9 @@ describe("El meu bosc preferences", () => {
     expect(migration).toMatch(/for update to authenticated[\s\S]*using \(\(select auth\.uid\(\)\) = user_id\)[\s\S]*with check \(\(select auth\.uid\(\)\) = user_id\)/);
   });
 
-  it("installs the private account boundary during a VPS rollout", () => {
-    expect(migrationInstaller).toContain(
-      "20260829182354_add_user_forest_preferences.sql",
-    );
-    expect(migrationInstaller).toContain(
-      'apply_if_missing user_forest_preferences "$forest_preferences_migration" forest-preferences',
-    );
+  it("installs the private account boundary through the production migration ledger", () => {
+    expect(migrationInstaller).toContain("find \"$migration_dir\"");
+    expect(migrationInstaller).toContain("supabase_migrations.schema_migrations");
+    expect(migrationInstaller).toContain("Applying database migration $filename");
   });
 });

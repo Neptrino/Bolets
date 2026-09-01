@@ -84,9 +84,10 @@ describe("private operational resync controls", () => {
     );
   });
 
-  it("reapplies the dispatcher on restored self-hosted databases", () => {
-    expect(installer).toContain("20260824151551_add_operational_resync_dispatcher.sql");
-    expect(installer).toContain("Applied operational resync dispatcher");
+  it("applies the dispatcher through the ordered production migration ledger", () => {
+    expect(installer).toContain("find \"$migration_dir\"");
+    expect(installer).toContain("supabase_migrations.schema_migrations");
+    expect(installer).toContain("Applying database migration $filename");
   });
 
   it("keeps operational credentials out of the client controls", () => {

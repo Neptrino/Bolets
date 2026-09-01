@@ -15,8 +15,8 @@ describe("operational status authentication", () => {
       "supabase/migrations/20260901151545_assign_initial_admin_role.sql",
       "utf8",
     );
-    const installer = readFileSync(
-      "deploy/vps/apply-database-migrations.sh",
+    const baselineVerifier = readFileSync(
+      "deploy/vps/verify-restored-migration-baseline.sql",
       "utf8",
     );
     expect(migration).toContain("update auth.users");
@@ -24,9 +24,7 @@ describe("operational status authentication", () => {
     expect(migration).toContain("'app_role', 'admin'");
     expect(migration).toContain("lower(email) = 'aleix@ventayol.cat'");
     expect(migration).not.toContain("raw_user_meta_data");
-    expect(installer).toContain("20260901151545_assign_initial_admin_role.sql");
-    expect(installer).toContain("raw_app_meta_data ->> 'app_role'");
-    expect(installer).toContain("The initial administrator role could not be assigned");
-    expect(installer).toContain("Verified initial administrator role");
+    expect(baselineVerifier).toContain("raw_app_meta_data ->> 'app_role' = 'admin'");
+    expect(baselineVerifier).toContain("The restored schema is missing the initial administrator role");
   });
 });

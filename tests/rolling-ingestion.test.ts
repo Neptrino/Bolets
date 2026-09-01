@@ -191,40 +191,13 @@ describe("rolling observed-weather ingestion", () => {
     expect(refresh).toContain("egressLane,");
   });
 
-  it("installs the additive schema before synchronizing the new VPS function", () => {
-    expect(migrationInstaller).toContain("--single-transaction");
-    expect(migrationInstaller).toContain("to_regclass('public.$marker')");
-    expect(migrationInstaller).toContain("open_meteo_hourly_states");
-    expect(migrationInstaller).toContain("spatial_atmosphere_jobs");
-    expect(migrationInstaller).toContain("20260824113000_add_aws_ingestion_lane.sql");
-    expect(migrationInstaller).toContain("20260824114320_add_open_meteo_egress_circuit_breaker.sql");
-    expect(migrationInstaller).toContain("apply_if_missing open_meteo_egress_lanes");
-    expect(migrationInstaller).toContain("20260824125832_disable_local_open_meteo_limits.sql");
-    expect(migrationInstaller).toContain("record_provider_usage(text,text,integer)");
-    expect(migrationInstaller).toContain("spatial_atmosphere_jobs_egress_lane_check");
-    expect(migrationInstaller).toContain("20260824135419_reconcile_spatial_job_audits.sql");
-    expect(migrationInstaller).toContain("Applied spatial audit reconciliation");
-    expect(migrationInstaller).toContain("20260824141111_schedule_condition_cache_publication.sql");
-    expect(migrationInstaller).toContain("Applied condition-cache publication schedule");
-    expect(migrationInstaller).toContain(
-      "20260824145507_use_latest_observed_completion_for_forecast_alignment.sql",
-    );
-    expect(migrationInstaller).toContain("Applied forecast alignment reconciliation");
-    expect(migrationInstaller).toContain("20260824151551_add_operational_resync_dispatcher.sql");
-    expect(migrationInstaller).toContain("Applied operational resync dispatcher");
-    expect(migrationInstaller).toContain("20260827222558_add_user_findings.sql");
-    expect(migrationInstaller).toContain(
-      'apply_if_missing user_findings "$findings_migration" user-findings',
-    );
-    expect(migrationInstaller).toContain(
-      "20260828114500_read_owner_finding_private_details.sql",
-    );
-    expect(migrationInstaller).toContain("Applied owner-finding private reader");
-    expect(migrationInstaller).toContain("20260828120000_remove_owner_finding_atomically.sql");
-    expect(migrationInstaller).toContain("Applied owner-finding atomic removal");
-    expect(migrationInstaller).toContain("20260829152554_unify_finding_photo_visibility.sql");
-    expect(migrationInstaller).toContain("user_finding_photos_follow_finding_visibility");
-    expect(migrationInstaller).toContain("*\"'aws'\"*");
+  it("applies every ordered migration before synchronizing the VPS functions", () => {
+    expect(migrationInstaller).toContain("find \"$migration_dir\"");
+    expect(migrationInstaller).toContain("supabase_migrations.schema_migrations");
+    expect(migrationInstaller).toContain("Database migration versions must be unique and increasing");
+    expect(migrationInstaller).toContain("The Supabase migration ledger is non-contiguous");
+    expect(migrationInstaller).toContain("Applying database migration $filename");
+    expect(migrationInstaller).toContain("Database migrations are synchronized");
     const migrationPosition = rollout.lastIndexOf("apply-database-migrations.sh");
     const functionPosition = rollout.indexOf("sync-functions.sh");
     expect(migrationPosition).toBeGreaterThan(rollout.indexOf("build app"));
