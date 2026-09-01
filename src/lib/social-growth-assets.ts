@@ -16,6 +16,7 @@ export function signedSocialGrowthImagePath(
   const url = new URL(signedDailyShareImagePath(card, format), "https://bolets.app");
   url.searchParams.set("series", series);
   url.searchParams.set("slide", String(slide));
+  url.searchParams.set("growthVersion", "2");
   return `${url.pathname}${url.search}`;
 }
 
@@ -26,6 +27,6 @@ export function signedWeekendReelPath(card: DailyShareCard) {
   url.searchParams.delete("format");
   url.searchParams.delete("series");
   url.searchParams.delete("slide");
-  url.searchParams.set("reelVersion", "3");
+  url.searchParams.set("reelVersion", "4");
   return `${url.pathname}${url.search}`;
 }

@@ -1,12 +1,10 @@
 import { BrandMark } from "@/components/brand-mark";
-import regionDefinitions from "@/data/regions.json";
 import type { DailyShareCard } from "@/src/lib/daily-share-cards";
 import {
   pinnedInstagramPost,
   type PinnedInstagramSeries,
 } from "@/src/lib/instagram-pinned-posts";
 import { getSuitabilityBand } from "@/src/lib/suitability-scale";
-import type { RegionId } from "@/src/lib/types";
 
 export type SocialGrowthSeries = "education" | "weekend";
 
@@ -52,7 +50,7 @@ const slideCopy = {
     {
       eyebrow: "Mapa general de Catalunya",
       title: "On destaca el senyal d’avui?",
-      body: "Una vista generalitzada de les lectures territorials més favorables, sense punts de recol·lecció.",
+      body: "La mateixa lectura combinada del mapa Avui, sobre el relleu de Catalunya i sense punts de recol·lecció.",
     },
     {
       eyebrow: "Lectura líder d’avui",
@@ -134,78 +132,19 @@ export function PinnedInstagramCard({ series }: { series: PinnedInstagramSeries 
   );
 }
 
-type ReelMapRegion = {
-  id: Exclude<RegionId, "altres">;
-  label: string;
-  centre: [number, number];
-  coordinates: [number, number][];
-};
-
-const reelMapRegions = regionDefinitions.filter(
-  (region): region is ReelMapRegion => region.id !== "altres" && region.coordinates.length > 0,
-);
-const reelMapBounds = { west: 0.05, south: 40.48, east: 3.32, north: 42.92 };
-const reelMapSize = { width: 760, height: 690 };
-
-function reelMapPoint([longitude, latitude]: [number, number]) {
-  return {
-    x: ((longitude - reelMapBounds.west) / (reelMapBounds.east - reelMapBounds.west)) * reelMapSize.width,
-    y: ((reelMapBounds.north - latitude) / (reelMapBounds.north - reelMapBounds.south)) * reelMapSize.height,
-  };
-}
-
-function reelMapPath(coordinates: [number, number][]) {
-  return coordinates.map((coordinate, index) => {
-    const point = reelMapPoint(coordinate);
-    return `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
-  }).join(" ") + " Z";
-}
-
-function CataloniaOverviewPanel({ card }: { card: DailyShareCard }) {
-  const readingsByRegion = new Map<Exclude<RegionId, "altres">, DailyShareCard["readings"][number]>();
-  for (const reading of card.readings) {
-    const region = reading.regionId
-      ? reelMapRegions.find((candidate) => candidate.id === reading.regionId)
-      : reelMapRegions.find((candidate) => candidate.label === reading.regionName);
-    if (!region) continue;
-    const current = readingsByRegion.get(region.id);
-    if (!current || reading.score > current.score) readingsByRegion.set(region.id, reading);
-  }
-
+function CataloniaOverviewPanel({ mapImageUrl }: { mapImageUrl: string }) {
   return (
-    <div style={{ display: "flex", position: "relative", width: "100%", height: 760, marginTop: 42, overflow: "hidden", border: "1px solid rgba(255,247,232,0.22)", borderRadius: 32, background: "linear-gradient(155deg, rgba(255,247,232,0.12), rgba(255,247,232,0.045))" }}>
-      <svg viewBox={`0 0 ${reelMapSize.width} ${reelMapSize.height}`} width={reelMapSize.width} height={reelMapSize.height} style={{ position: "absolute", left: 90, top: 30 }}>
-        {reelMapRegions.map((region) => {
-          const reading = readingsByRegion.get(region.id);
-          return (
-            <path
-              d={reelMapPath(region.coordinates)}
-              fill={reading ? getSuitabilityBand(reading.score).color : "#365541"}
-              key={region.id}
-              opacity={reading ? 0.92 : 0.48}
-              stroke="rgba(255,247,232,0.58)"
-              strokeWidth="3"
-            />
-          );
-        })}
-      </svg>
-      {[...readingsByRegion.entries()].map(([regionId, reading]) => {
-        const region = reelMapRegions.find((candidate) => candidate.id === regionId)!;
-        const point = reelMapPoint(region.centre);
-        return (
-          <div key={regionId} style={{ display: "flex", position: "absolute", left: point.x + 47, top: point.y - 13, width: 86, height: 86, alignItems: "center", justifyContent: "center", border: "4px solid #fff7e8", borderRadius: 999, background: getSuitabilityBand(reading.score).color, color: "#102a1b", fontSize: 31, fontWeight: 900, boxShadow: "0 10px 28px rgba(8,24,15,0.30)" }}>
-            {reading.score}
-          </div>
-        );
-      })}
-      <span style={{ position: "absolute", right: 24, top: 18, color: "#d7dec7", fontSize: 21 }}>Mapa generalitzat · no localitza bolets</span>
-      <div style={{ display: "flex", position: "absolute", left: 22, right: 22, bottom: 18, gap: 10, padding: "14px 16px", border: "1px solid rgba(255,247,232,0.18)", borderRadius: 18, background: "rgba(10,32,20,0.86)" }}>
-        {[...readingsByRegion.values()].map((reading, index) => (
-          <div key={`${reading.regionName}-${reading.speciesName}`} style={{ display: "flex", flex: 1, minWidth: 0, flexDirection: "column", paddingLeft: 13, borderLeft: `4px solid ${getSuitabilityBand(reading.score).color}` }}>
-            <span style={{ color: "#f2a766", fontSize: 18, fontWeight: 900 }}>{index + 1}</span>
-            <span style={{ color: "#fff7e8", fontSize: 20, fontWeight: 800 }}>{reading.regionName}</span>
-          </div>
-        ))}
+    <div style={{ display: "flex", position: "relative", width: "100%", height: 880, marginTop: 36, overflow: "hidden", border: "1px solid rgba(255,247,232,0.28)", borderRadius: 32, background: "#eee9dc", boxShadow: "0 24px 48px rgba(8,24,15,0.24)" }}>
+      {/* ImageResponse requires the generated map as a raw data URI. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={mapImageUrl} alt="" width="940" height="820" style={{ position: "absolute", inset: 0, width: "100%", height: 820, objectFit: "cover" }} />
+      <div style={{ display: "flex", position: "absolute", left: 20, top: 20, padding: "10px 14px", borderRadius: 999, background: "rgba(255,250,240,0.92)", color: "#273c2d", fontSize: 19, fontWeight: 900 }}>El mapa Avui · 2,5 km</div>
+      <div style={{ display: "flex", position: "absolute", right: 20, top: 20, padding: "8px 12px", borderRadius: 999, background: "rgba(255,250,240,0.88)", color: "#545a53", fontSize: 17 }}>© ICGC</div>
+      <div style={{ display: "flex", position: "absolute", left: 0, right: 0, bottom: 0, height: 94, flexDirection: "column", justifyContent: "center", padding: "13px 22px", borderTop: "1px solid rgba(47,65,42,0.22)", background: "rgba(255,250,240,0.96)" }}>
+        <div style={{ display: "flex", width: "100%", height: 13, borderRadius: 999, background: "linear-gradient(90deg, #c95e35 0%, #dd873c 25%, #c5a34a 50%, #88a84f 75%, #4f8a5b 100%)" }} />
+        <div style={{ display: "flex", width: "100%", justifyContent: "space-between", marginTop: 8, color: "#626a62", fontSize: 18 }}>
+          <span>1 · Molt baixa</span><span>50 · Mitjana</span><span>100 · Molt alta</span>
+        </div>
       </div>
     </div>
   );
@@ -271,10 +210,12 @@ function ReadingPanel({ card, vertical }: { card: DailyShareCard; vertical: bool
 
 export function SocialGrowthCard({
   card,
+  mapImageUrl,
   series,
   slide,
 }: {
   card: DailyShareCard;
+  mapImageUrl?: string;
   series: SocialGrowthSeries;
   slide: number;
 }) {
@@ -310,8 +251,8 @@ export function SocialGrowthCard({
           <div style={{ display: "flex", width: "100%", marginTop: vertical ? 65 : 47 }}>
             <ReadingPanel card={card} vertical={vertical} />
           </div>
-        ) : showOverviewMap ? (
-          <CataloniaOverviewPanel card={card} />
+        ) : showOverviewMap && mapImageUrl ? (
+          <CataloniaOverviewPanel mapImageUrl={mapImageUrl} />
         ) : showTopSpecies ? (
           <TopSpeciesPanel card={card} />
         ) : safeSlide === 2 && series === "education" && reading ? (

@@ -11,6 +11,7 @@ import { DAILY_OVERVIEW_REVALIDATE_SECONDS } from "@/src/lib/current-overview";
 import { isLocalFavourablePreview, loadDailyShareCard, loadFavourableDailySharePreviewCard, type DailyShareCard, type DailyShareFormat } from "@/src/lib/daily-share-cards";
 import { hasSignedDailySharePayload, readSignedDailyShareCard } from "@/src/lib/daily-share-image-payload-server";
 import { getSuitabilityBand, suitabilityScale } from "@/src/lib/suitability-scale";
+import { renderSocialCurrentMapDataUrl } from "@/src/lib/social-current-map-server";
 
 export const runtime = "nodejs";
 
@@ -306,8 +307,25 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
     const dimensions = growthSeries === "weekend"
       ? { width: 1080, height: 1920 }
       : { width: 1080, height: 1350 };
+    let mapImageUrl: string | undefined;
+    if (growthSeries === "weekend" && slide === 3) {
+      try {
+        const mapOrigin = requestUrl.hostname === "127.0.0.1" || requestUrl.hostname === "localhost"
+          ? requestUrl.origin
+          : "https://bolets.app";
+        mapImageUrl = await renderSocialCurrentMapDataUrl(mapOrigin);
+      } catch (error) {
+        console.error("Instagram Reel current map render failed", {
+          message: error instanceof Error ? error.message : "Unknown error",
+        });
+        return new Response("Current map render failed", {
+          status: 503,
+          headers: { "Cache-Control": "no-store" },
+        });
+      }
+    }
     const image = new ImageResponse(
-      <SocialGrowthCard card={card} series={growthSeries} slide={slide} />,
+      <SocialGrowthCard card={card} mapImageUrl={mapImageUrl} series={growthSeries} slide={slide} />,
       dimensions,
     );
     image.headers.set(
