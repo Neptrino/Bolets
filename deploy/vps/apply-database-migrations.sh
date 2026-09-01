@@ -22,6 +22,7 @@ owner_finding_reader_migration="$app_dir/supabase/migrations/20260828114500_read
 owner_finding_removal_migration="$app_dir/supabase/migrations/20260828120000_remove_owner_finding_atomically.sql"
 finding_photo_visibility_migration="$app_dir/supabase/migrations/20260829152554_unify_finding_photo_visibility.sql"
 forest_preferences_migration="$app_dir/supabase/migrations/20260829182354_add_user_forest_preferences.sql"
+admin_role_migration="$app_dir/supabase/migrations/20260901151545_assign_initial_admin_role.sql"
 
 if [ ! -f "$rolling_migration" ] || [ ! -f "$parallel_migration" ] ||
    [ ! -f "$aws_lane_migration" ] || [ ! -f "$egress_circuit_migration" ] ||
@@ -30,7 +31,7 @@ if [ ! -f "$rolling_migration" ] || [ ! -f "$parallel_migration" ] ||
    [ ! -f "$forecast_alignment_migration" ] || [ ! -f "$operational_resync_migration" ] ||
    [ ! -f "$findings_migration" ] || [ ! -f "$owner_finding_reader_migration" ] ||
    [ ! -f "$owner_finding_removal_migration" ] || [ ! -f "$finding_photo_visibility_migration" ] ||
-   [ ! -f "$forest_preferences_migration" ]; then
+   [ ! -f "$forest_preferences_migration" ] || [ ! -f "$admin_role_migration" ]; then
   echo "A required database migration is missing" >&2
   exit 66
 fi
@@ -72,6 +73,37 @@ apply_if_missing open_meteo_hourly_states "$rolling_migration" rolling-ingestion
 apply_if_missing spatial_atmosphere_jobs "$parallel_migration" parallel-ingestion
 apply_if_missing user_findings "$findings_migration" user-findings
 apply_if_missing user_forest_preferences "$forest_preferences_migration" forest-preferences
+
+# Auth metadata is data rather than a schema object, so verify the expected
+# trusted role directly. The production restore has no migration ledger and
+# would otherwise silently skip this one-time assignment.
+admin_role=$(docker exec supabase-db psql \
+  --username postgres \
+  --dbname postgres \
+  --tuples-only \
+  --no-align \
+  --command "select coalesce((select raw_app_meta_data ->> 'app_role' from auth.users where lower(email) = 'aleix@ventayol.cat' limit 1), '');")
+
+if [ "$admin_role" != "admin" ]; then
+  docker exec -i supabase-db psql \
+    --username postgres \
+    --dbname postgres \
+    --set ON_ERROR_STOP=1 \
+    --single-transaction \
+    < "$admin_role_migration"
+  admin_role=$(docker exec supabase-db psql \
+    --username postgres \
+    --dbname postgres \
+    --tuples-only \
+    --no-align \
+    --command "select coalesce((select raw_app_meta_data ->> 'app_role' from auth.users where lower(email) = 'aleix@ventayol.cat' limit 1), '');")
+fi
+
+if [ "$admin_role" != "admin" ]; then
+  echo "The initial administrator role could not be assigned" >&2
+  exit 70
+fi
+echo "Verified initial administrator role"
 
 # These owner-only RPC boundaries are idempotent CREATE OR REPLACE migrations.
 # Reapply them so a restored database receives their latest redaction and
