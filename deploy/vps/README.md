@@ -226,9 +226,11 @@ sudo systemctl enable --now bolets-instagram.timer
 sudo systemctl status bolets-instagram.service bolets-instagram.timer
 ```
 
-The timer runs at 08:15 UTC with a small randomized delay, after the daily
-environment refresh and condition-cache publication. It catches up after host
-downtime. Inspect failures with
+The timer runs at 07:00 Europe/Madrid, following daylight-saving time. The
+publisher still requires the current Catalonia civil day's verified overview,
+so it fails closed instead of posting stale data if the daily environment
+refresh and condition-cache publication have not completed. It catches up after
+host downtime. Inspect failures with
 `journalctl -u bolets-instagram.service`; do not add blind POST retries because
 an interrupted response can occur after Buffer has accepted the publication.
 

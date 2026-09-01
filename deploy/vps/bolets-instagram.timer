@@ -2,8 +2,8 @@
 Description=Publish the Bolets prediction to Instagram every day
 
 [Timer]
-OnCalendar=*-*-* 08:15:00 UTC
-RandomizedDelaySec=10m
+OnCalendar=*-*-* 07:00:00 Europe/Madrid
+RandomizedDelaySec=0
 Persistent=true
 Unit=bolets-instagram.service
 
