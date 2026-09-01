@@ -74,7 +74,7 @@ describe("Buffer Instagram daily publisher", () => {
       card,
       config,
       fetchImpl,
-      imageUrl: "https://bolets.app/compartir/catalunya/instagram.jpg?signed=yes",
+      imageUrl: "https://bolets.app/compartir/catalunya/imatge?format=feed&signed=yes",
       now: new Date("2026-08-31T12:00:00.000Z"),
     })).resolves.toEqual({
       status: "published",
@@ -102,7 +102,7 @@ describe("Buffer Instagram daily publisher", () => {
     });
     expect(body.variables.input.text).toContain(dailyInstagramMarker("2026-08-31"));
     expect(body.variables.input.assets).toEqual([{
-      image: { url: "https://bolets.app/compartir/catalunya/instagram.jpg?signed=yes" },
+      image: { url: "https://bolets.app/compartir/catalunya/imatge?format=feed&signed=yes" },
     }]);
   });
 

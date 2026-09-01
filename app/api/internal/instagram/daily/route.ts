@@ -1,5 +1,5 @@
 import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
-import { signedDailyInstagramImagePath } from "@/src/lib/daily-share-image-payload-server";
+import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
 import {
   bufferInstagramPublisherConfig,
   BufferPublicationError,
@@ -29,7 +29,7 @@ async function runPublication() {
       "prediction_unavailable",
     );
   }
-  const imageUrl = absoluteUrl(signedDailyInstagramImagePath(card));
+  const imageUrl = absoluteUrl(signedDailyShareImagePath(card, "feed"));
   return publishDailyInstagramPrediction({
     card,
     config: bufferInstagramPublisherConfig(),

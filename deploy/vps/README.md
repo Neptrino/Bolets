@@ -214,8 +214,8 @@ posting with a different account or stale credential.
 After a rollout has loaded the file, invoke the root-only publishing script once
 and confirm the returned Buffer post ID and the post on Instagram. The public
 proxy deliberately blocks `/api/internal/*`; the script calls the authenticated
-route from inside the application container. The endpoint serves a signed JPEG
-that Buffer can fetch from its public URL. Then install the daily timer:
+route from inside the application container. The endpoint serves the signed PNG
+feed card that Buffer can fetch from its public URL. Then install the daily timer:
 
 ```bash
 sudo /opt/bolets/app/deploy/vps/publish-instagram-daily.sh
