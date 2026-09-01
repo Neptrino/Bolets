@@ -8,12 +8,33 @@ import {
   hasSignedDailySharePayload,
   readSignedDailyShareCard,
 } from "@/src/lib/daily-share-image-payload-server";
+import { mp4Response } from "@/src/lib/mp4-response";
 import { signedSocialGrowthImagePath } from "@/src/lib/social-growth-assets";
 import { weekendReelFfmpegArgs } from "@/src/lib/weekend-reel-render";
 
 export const runtime = "nodejs";
 
 const activeRenders = new Map<string, Promise<Buffer>>();
+const completedRenders = new Map<string, { createdAt: number; video: Buffer }>();
+const COMPLETED_RENDER_TTL_MS = 24 * 60 * 60 * 1_000;
+const MAX_COMPLETED_RENDERS = 3;
+
+function readCompletedRender(cacheKey: string) {
+  const now = Date.now();
+  for (const [key, render] of completedRenders) {
+    if (now - render.createdAt > COMPLETED_RENDER_TTL_MS) completedRenders.delete(key);
+  }
+  return completedRenders.get(cacheKey)?.video ?? null;
+}
+
+function storeCompletedRender(cacheKey: string, video: Buffer) {
+  while (completedRenders.size >= MAX_COMPLETED_RENDERS) {
+    const oldestKey = completedRenders.keys().next().value as string | undefined;
+    if (!oldestKey) break;
+    completedRenders.delete(oldestKey);
+  }
+  completedRenders.set(cacheKey, { createdAt: Date.now(), video });
+}
 
 function imageRenderOrigin(requestUrl: URL) {
   if (requestUrl.hostname === "127.0.0.1" || requestUrl.hostname === "localhost") {
@@ -86,24 +107,26 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
     return new Response("Verified current card required", { status: 400 });
   }
 
-  const cacheKey = requestUrl.searchParams.get("signature") ?? requestUrl.search;
-  let render = activeRenders.get(cacheKey);
-  if (!render) {
-    render = renderWeekendReel(card, imageRenderOrigin(requestUrl)).finally(() => {
-      activeRenders.delete(cacheKey);
-    });
-    activeRenders.set(cacheKey, render);
-  }
+  const cacheKey = requestUrl.search;
 
   try {
-    const video = await render;
-    return new Response(new Uint8Array(video), {
-      headers: {
-        "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
-        "Content-Disposition": `inline; filename="bolets-${slug}-weekend.mp4"`,
-        "Content-Type": "video/mp4",
-      },
-    });
+    let video = readCompletedRender(cacheKey);
+    if (!video) {
+      let render = activeRenders.get(cacheKey);
+      if (!render) {
+        render = renderWeekendReel(card, imageRenderOrigin(requestUrl)).finally(() => {
+          activeRenders.delete(cacheKey);
+        });
+        activeRenders.set(cacheKey, render);
+      }
+      video = await render;
+      storeCompletedRender(cacheKey, video);
+    }
+    return mp4Response(
+      video,
+      `bolets-${slug}-weekend.mp4`,
+      request.headers.get("range"),
+    );
   } catch (error) {
     console.error("Instagram Reel render failed", {
       message: error instanceof Error ? error.message : "Unknown error",
