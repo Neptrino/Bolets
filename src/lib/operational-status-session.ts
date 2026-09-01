@@ -1,17 +1,15 @@
 import "server-only";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import {
-  isOperationalSessionAuthorized,
-  OPERATIONAL_SESSION_COOKIE,
-} from "@/src/lib/operational-status-auth";
+import { APP_ROLES, userHasAppRole } from "@/src/lib/auth/roles";
+import { getAuthenticatedUser } from "@/src/lib/supabase/server";
 
 export async function requireOperationalSession() {
-  const cookieStore = await cookies();
-  const authorized = await isOperationalSessionAuthorized(
-    cookieStore.get(OPERATIONAL_SESSION_COOKIE)?.value,
-  );
-  if (!authorized) redirect("/admin/login");
+  const user = await getAuthenticatedUser();
+  if (!user) redirect("/acces?retorn=%2Fadmin%2Fstatus");
+  if (!userHasAppRole(user, APP_ROLES.admin)) {
+    redirect("/admin/login?error=forbidden");
+  }
+  return user;
 }

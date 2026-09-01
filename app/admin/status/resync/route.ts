@@ -2,7 +2,6 @@ import { NextRequest } from "next/server";
 
 import {
   isOperationalSessionAuthorized,
-  OPERATIONAL_SESSION_COOKIE,
 } from "@/src/lib/operational-status-auth";
 import { isOperationalResyncTarget } from "@/src/lib/operational-resync";
 import { dispatchOperationalResync } from "@/src/lib/operational-resync-server";
@@ -33,9 +32,7 @@ function isSameOrigin(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   if (!isSameOrigin(request)) return noStoreJson({ error: "Invalid request origin" }, 403);
-  const authorized = await isOperationalSessionAuthorized(
-    request.cookies.get(OPERATIONAL_SESSION_COOKIE)?.value,
-  );
+  const authorized = await isOperationalSessionAuthorized();
   if (!authorized) return noStoreJson({ error: "Authentication required" }, 401);
 
   const body = await request.json().catch(() => null) as { target?: unknown } | null;

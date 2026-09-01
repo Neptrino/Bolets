@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import {
   Activity,
   AlertTriangle,
@@ -30,10 +28,7 @@ import {
 import {
   readOperationalStatus,
 } from "@/src/lib/operational-status-server";
-import {
-  isOperationalSessionAuthorized,
-  OPERATIONAL_SESSION_COOKIE,
-} from "@/src/lib/operational-status-auth";
+import { requireOperationalSession } from "@/src/lib/operational-status-session";
 import { readCommunityStatus } from "@/src/lib/community-status-server";
 
 import styles from "./status.module.css";
@@ -124,12 +119,7 @@ function statusLabel(status: string) {
 }
 
 export default async function OperationalStatusPage() {
-  const cookieStore = await cookies();
-  if (!await isOperationalSessionAuthorized(
-    cookieStore.get(OPERATIONAL_SESSION_COOKIE)?.value,
-  )) {
-    redirect("/admin/login");
-  }
+  await requireOperationalSession();
 
   const [statusResult, communityResult] = await Promise.allSettled([
     readOperationalStatus(),

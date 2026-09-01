@@ -439,10 +439,10 @@ completion events. Core Web Vitals are collected only for analytics-eligible
 public pages through Umami's performance report.
 
 The private operational dashboard is available at
-`https://bolets.app/admin/status`. The application presents a normal login page
-and checks the username and bcrypt password hash in `status.env`. A successful
-login creates a signed, HttpOnly, SameSite session cookie that expires after
-seven days; the separate internal token remains reserved for the private
+`https://bolets.app/admin/status`. It reuses the normal Supabase Auth sign-in
+and authorizes the server-validated user through the non-user-editable
+`app_metadata.app_role` value. The `admin` role is required for every dashboard
+read and mutation; the separate internal token remains reserved for the private
 Prometheus endpoint. The page is not linked from the public site, returns
 private/no-store and noindex headers, is excluded from Umami and is never cached
 by the offline worker. It reads one service-role-only, `security invoker` RPC and
@@ -458,7 +458,7 @@ forecast validity edge. Rolling AROME and rain state is kept in an explicitly
 technical disclosure because it is input continuity for incremental ingestion,
 not another published map product.
 
-The same signed session exposes allowlisted manual controls for the complete
+The same signed Supabase session exposes allowlisted manual controls for the complete
 daily cycle, spatial atmosphere, soil plus forecast, regional summaries, XEMA
 rain and condition caches. Commands cross a same-origin Next.js route and a
 service-role-only database dispatcher; the browser never receives the ingestion

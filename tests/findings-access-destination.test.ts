@@ -2,7 +2,17 @@ import { describe, expect, it } from "vitest";
 import { resolveAccessDestination } from "@/src/lib/findings/access-destination";
 
 describe("finding access destination", () => {
-  it.each(["/el-meu-bosc", "/les-meves-troballes", "/compte", "/moderacio"])("accepts %s", (destination) => {
+  it.each([
+    "/el-meu-bosc",
+    "/les-meves-troballes",
+    "/compte",
+    "/moderacio",
+    "/admin/status",
+    "/admin/status/users",
+    "/admin/status/findings",
+    "/admin/status/reports",
+    "/admin/status/instagram",
+  ])("accepts %s", (destination) => {
     expect(resolveAccessDestination(destination)).toBe(destination);
   });
 

@@ -5,7 +5,7 @@ import {
   SUPABASE_AUTH_COOKIE_NAME,
 } from "@/src/lib/supabase/config";
 
-const privatePages = ["/el-meu-bosc", "/les-meves-troballes", "/compte", "/moderacio"];
+const privatePages = ["/el-meu-bosc", "/les-meves-troballes", "/compte", "/moderacio", "/admin/status"];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -22,6 +22,8 @@ export async function proxy(request: NextRequest) {
     },
   });
   const { data } = await client.auth.getUser();
+  const isAdminPage = request.nextUrl.pathname === "/admin"
+    || request.nextUrl.pathname.startsWith("/admin/");
   const isPrivatePage = privatePages.some((path) => request.nextUrl.pathname.startsWith(path));
   if (!data.user && isPrivatePage) {
     const loginUrl = request.nextUrl.clone();
@@ -30,7 +32,7 @@ export async function proxy(request: NextRequest) {
     loginUrl.searchParams.set("retorn", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
-  if (isPrivatePage || request.nextUrl.pathname === "/acces") {
+  if (isPrivatePage || isAdminPage || request.nextUrl.pathname === "/acces") {
     response.headers.set("Cache-Control", "private, no-store");
     response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
   }
@@ -44,6 +46,7 @@ export const config = {
     "/el-meu-bosc/:path*",
     "/les-meves-troballes/:path*",
     "/moderacio/:path*",
+    "/admin/:path*",
     "/troballes/:path*",
     "/api/findings/:path*",
     "/api/me/:path*",

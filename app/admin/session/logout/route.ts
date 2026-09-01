@@ -1,20 +1,15 @@
 import { NextResponse } from "next/server";
 
-import {
-  OPERATIONAL_SESSION_COOKIE,
-  OPERATIONAL_SESSION_COOKIE_OPTIONS,
-} from "@/src/lib/operational-status-auth";
+import { createSupabaseServerClient } from "@/src/lib/supabase/server";
 
 export const runtime = "nodejs";
 
-export function POST() {
+export async function POST() {
+  const client = await createSupabaseServerClient();
+  await client.auth.signOut({ scope: "global" });
   const response = new NextResponse(null, {
     status: 303,
-    headers: { Location: "/admin/login" },
-  });
-  response.cookies.set(OPERATIONAL_SESSION_COOKIE, "", {
-    ...OPERATIONAL_SESSION_COOKIE_OPTIONS,
-    maxAge: 0,
+    headers: { Location: "/acces?retorn=%2Fadmin%2Fstatus" },
   });
   response.headers.set("Cache-Control", "private, no-store");
   return response;

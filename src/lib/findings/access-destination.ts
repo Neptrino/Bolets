@@ -5,6 +5,11 @@ const ACCESS_DESTINATIONS = [
   "/les-meves-troballes",
   "/compte",
   "/moderacio",
+  "/admin/status",
+  "/admin/status/users",
+  "/admin/status/findings",
+  "/admin/status/reports",
+  "/admin/status/instagram",
 ] as const;
 
 export type AccessDestination = (typeof ACCESS_DESTINATIONS)[number];

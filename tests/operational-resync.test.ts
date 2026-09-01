@@ -10,7 +10,6 @@ const { dispatchOperationalResync, isOperationalSessionAuthorized } = vi.hoisted
 
 vi.mock("@/src/lib/operational-status-auth", () => ({
   isOperationalSessionAuthorized,
-  OPERATIONAL_SESSION_COOKIE: "bolets-admin-session",
 }));
 vi.mock("@/src/lib/operational-resync-server", () => ({ dispatchOperationalResync }));
 
@@ -45,7 +44,7 @@ const serverDispatcher = readFileSync(
 let address = 20;
 function request(
   target: unknown,
-  options: { origin?: string; cookie?: boolean } = {},
+  options: { origin?: string } = {},
 ) {
   address += 1;
   return new NextRequest("https://bolets.app/admin/status/resync", {
@@ -55,7 +54,6 @@ function request(
       Origin: options.origin ?? "https://bolets.app",
       Host: "bolets.app",
       "CF-Connecting-IP": `192.0.2.${address}`,
-      ...(options.cookie === false ? {} : { Cookie: "bolets-admin-session=test-session" }),
     },
     body: JSON.stringify({ target }),
   });
@@ -133,7 +131,7 @@ describe("private operational resync controls", () => {
     expect(crossOrigin.status).toBe(403);
 
     isOperationalSessionAuthorized.mockResolvedValue(false);
-    const unauthenticated = await POST(request("all", { cookie: false }));
+    const unauthenticated = await POST(request("all"));
     expect(unauthenticated.status).toBe(401);
 
     isOperationalSessionAuthorized.mockResolvedValue(true);

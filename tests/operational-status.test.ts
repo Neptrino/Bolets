@@ -251,8 +251,12 @@ describe("operational status", () => {
     );
     const caddy = readFileSync("deploy/vps/Caddyfile", "utf8");
     const serviceWorker = readFileSync("public/sw.js", "utf8");
-    const sessionRoute = readFileSync("app/admin/session/route.ts", "utf8");
+    const sessionGuard = readFileSync("src/lib/operational-status-session.ts", "utf8");
     const logoutRoute = readFileSync("app/admin/session/logout/route.ts", "utf8");
+    const roleMigration = readFileSync(
+      "supabase/migrations/20260901151545_assign_initial_admin_role.sql",
+      "utf8",
+    );
 
     expect(migration).toMatch(/security invoker/i);
     expect(migration).toMatch(/revoke all on function public\.read_operational_status\(\)[\s\S]*from public, anon, authenticated/i);
@@ -270,8 +274,11 @@ describe("operational status", () => {
     expect(caddy).toContain("header_up -X-Bolets-Status-Auth");
     expect(caddy).toMatch(/@internal_api[\s\S]*respond "Not found" 404/);
     expect(serviceWorker).toMatch(/pathname === "\/admin"[\s\S]*startsWith\("\/admin\/"\)[\s\S]*return/);
-    expect(sessionRoute).toContain('Location: "/admin/status"');
-    expect(sessionRoute).not.toMatch(/new URL\([^)]*request\.url/);
-    expect(logoutRoute).toContain('Location: "/admin/login"');
+    expect(sessionGuard).toContain("getAuthenticatedUser");
+    expect(sessionGuard).toContain("APP_ROLES.admin");
+    expect(sessionGuard).toContain("/acces?retorn=%2Fadmin%2Fstatus");
+    expect(roleMigration).toContain("raw_app_meta_data");
+    expect(logoutRoute).toContain('Location: "/acces?retorn=%2Fadmin%2Fstatus"');
+    expect(logoutRoute).toContain('signOut({ scope: "global" })');
   });
 });

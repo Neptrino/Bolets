@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { extname } from "node:path";
 import { spawnSync } from "node:child_process";
 
@@ -68,7 +68,7 @@ const lineCount = (source) => {
 
 const failures = [];
 for (const file of listed.stdout.split("\0").filter(Boolean)) {
-  if (!sourceExtensions.has(extname(file)) || ignored(file)) continue;
+  if (!existsSync(file) || !sourceExtensions.has(extname(file)) || ignored(file)) continue;
   const lines = lineCount(readFileSync(file, "utf8"));
   if (lines > HARD_LIMIT && !hardLimitExceptions.has(file)) {
     failures.push(`${file}: ${lines} lines exceeds the ${HARD_LIMIT}-line limit`);
