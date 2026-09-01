@@ -7,12 +7,12 @@ import { Map, Menu, UserRound, X } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 
 const links = [
-  { href: "/bolets", label: "Bolets", mobileLabel: "Bolets", featured: false },
-  { href: "/troballes", label: "Troballes", mobileLabel: "Troballes", featured: false },
-  { href: "/zones", label: "Zones", mobileLabel: "Zones", featured: false },
-  { href: "/compare", label: "Comparador", mobileLabel: "Comparador", featured: false },
-  { href: "/joc", label: "Joc", mobileLabel: "Joc del bosc", featured: false },
-  { href: "/bolets-avui", label: "Avui", mobileLabel: "Bolets avui", featured: true }
+  { href: "/bolets", label: "Bolets", mobileLabel: "Bolets", activePrefixes: ["/bolets"], featured: false },
+  { href: "/troballes", label: "Troballes", mobileLabel: "Troballes", activePrefixes: ["/troballes"], featured: false },
+  { href: "/guies", label: "Guies", mobileLabel: "Guies locals", activePrefixes: ["/guies", "/zones"], featured: false },
+  { href: "/compare", label: "Comparador", mobileLabel: "Comparador", activePrefixes: ["/compare"], featured: false },
+  { href: "/joc", label: "Joc", mobileLabel: "Joc del bosc", activePrefixes: ["/joc"], featured: false },
+  { href: "/bolets-avui", label: "Avui", mobileLabel: "Bolets avui", activePrefixes: ["/bolets-avui"], featured: true }
 ] as const;
 
 export function SiteHeader() {
@@ -53,8 +53,10 @@ export function SiteHeader() {
     setMobileOpen(false);
   };
 
-  const isCurrentLink = (href: (typeof links)[number]["href"]) =>
-    pathname === href || pathname.startsWith(`${href}/`);
+  const isCurrentLink = (link: (typeof links)[number]) =>
+    link.activePrefixes.some((prefix) =>
+      pathname === prefix || pathname.startsWith(`${prefix}/`),
+    );
   const accountIsCurrent = pathname === "/acces"
     || pathname.startsWith("/compte")
     || pathname.startsWith("/el-meu-bosc")
@@ -70,7 +72,7 @@ export function SiteHeader() {
         </span>
       </Link>
       <nav className="primary-nav" aria-label="Navegació principal">
-        {links.map((link) => <Link key={link.href} href={link.href} className={link.featured ? "primary-nav-today" : undefined} aria-current={isCurrentLink(link.href) ? "page" : undefined}>{link.label}</Link>)}
+        {links.map((link) => <Link key={link.href} href={link.href} className={link.featured ? "primary-nav-today" : undefined} aria-current={isCurrentLink(link) ? "page" : undefined}>{link.label}</Link>)}
       </nav>
       <Link href="/map" className="header-map-link"><Map size={16} aria-hidden="true" /> <span>Mapa de condicions</span></Link>
       <Link
@@ -97,7 +99,7 @@ export function SiteHeader() {
         </summary>
         <nav id="mobile-navigation-panel" className="mobile-nav-panel" aria-label="Navegació mòbil">
           <Link href="/el-meu-bosc" className="mobile-nav-account" aria-current={accountIsCurrent ? "page" : undefined} onClick={closeMobileNav}><UserRound size={18} aria-hidden="true" /> El meu bosc</Link>
-          {links.map((link) => <Link key={link.href} href={link.href} className={link.featured ? "primary-nav-today" : undefined} aria-current={isCurrentLink(link.href) ? "page" : undefined} onClick={closeMobileNav}>{link.mobileLabel}</Link>)}
+          {links.map((link) => <Link key={link.href} href={link.href} className={link.featured ? "primary-nav-today" : undefined} aria-current={isCurrentLink(link) ? "page" : undefined} onClick={closeMobileNav}>{link.mobileLabel}</Link>)}
         </nav>
       </details>
     </header>

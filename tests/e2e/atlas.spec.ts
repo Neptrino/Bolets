@@ -16,10 +16,19 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(page.locator(".primary-nav > a")).toHaveText([
     "Bolets",
     "Troballes",
-    "Zones",
+    "Guies",
     "Comparador",
+    "Joc",
     "Avui",
   ]);
+  const guidesNavLink = page.locator(".primary-nav").getByRole("link", {
+    name: "Guies",
+    exact: true,
+  });
+  await expect(guidesNavLink).toHaveAttribute("href", "/guies");
+  await expect(page.locator('.mobile-nav-panel a[href="/guies"]')).toHaveText(
+    "Guies locals",
+  );
   await expect(page.locator('footer a[href="/compare"]')).toHaveText(
     "Comparador d’espècies",
   );
@@ -31,6 +40,9 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   ).toHaveAttribute("href", "/bolets");
   await expect(page.locator(".hero .home-showcase-trigger")).toHaveCount(0);
   await expect(page.locator(".featured-grid .card-season")).toHaveCount(0);
+
+  await page.goto("/zones");
+  await expect(guidesNavLink).toHaveAttribute("aria-current", "page");
 
   await page.goto("/bolets");
   await page.getByRole("textbox", { name: "Cerca espècies" }).fill("rossinyol");
