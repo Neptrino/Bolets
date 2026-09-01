@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { readInstagramPerformanceReport } from "@/src/lib/instagram-performance-server";
+import { pinnedInstagramMarker } from "@/src/lib/instagram-pinned-posts";
 
 function response(data: unknown) {
   return Response.json({ data });
@@ -35,19 +36,29 @@ describe("Instagram performance report", () => {
       }))
       .mockResolvedValueOnce(response({
         posts: {
-          edges: [{
-            node: {
-              id: "post-1",
-              text: "A top post",
-              status: "sent",
-              sentAt: "2026-08-31T10:00:00.000Z",
-              metadata: { type: "post" },
-              metrics: [
-                { type: "reach", name: "Reach", value: 104, unit: "count" },
-                { type: "shares", name: "Shares", value: 2, unit: "count" },
-              ],
+          edges: [
+            {
+              node: {
+                id: "post-1",
+                text: "A top post",
+                status: "sent",
+                sentAt: "2026-08-31T10:00:00.000Z",
+                metadata: { type: "post" },
+                metrics: [
+                  { type: "reach", name: "Reach", value: 104, unit: "count" },
+                  { type: "shares", name: "Shares", value: 2, unit: "count" },
+                ],
+              },
             },
-          }],
+            {
+              node: {
+                id: "pinned-1",
+                text: pinnedInstagramMarker("pinned-start"),
+                status: "sending",
+                metadata: { type: "post" },
+              },
+            },
+          ],
         },
       }));
 
@@ -68,6 +79,10 @@ describe("Instagram performance report", () => {
       reach: 104,
       shares: 2,
       saves: 0,
+    }]);
+    expect(report.pinnedPosts).toEqual([{
+      series: "pinned-start",
+      postId: "pinned-1",
     }]);
   });
 });

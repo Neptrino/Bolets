@@ -6,6 +6,11 @@ import {
   findInstagramChannel,
   readRecentInstagramPosts,
 } from "@/src/lib/buffer-client";
+import {
+  pinnedInstagramMarker,
+  pinnedInstagramPosts,
+  type PinnedInstagramSeries,
+} from "@/src/lib/instagram-pinned-posts";
 
 export interface InstagramMetric {
   key: string;
@@ -30,6 +35,7 @@ export interface InstagramPerformanceReport {
   endAt: string;
   metricsUpdatedAt: string | null;
   metrics: InstagramMetric[];
+  pinnedPosts: Array<{ series: PinnedInstagramSeries; postId: string }>;
   topPosts: InstagramTopPost[];
 }
 
@@ -127,6 +133,16 @@ export async function readInstagramPerformanceReport({
     .filter((post) => !post.publishedAt || new Date(post.publishedAt) >= new Date(startAt))
     .sort((left, right) => right.reach - left.reach || right.shares - left.shares)
     .slice(0, 5);
+  const pinnedPosts = pinnedInstagramPosts.flatMap((pinnedPost) => {
+    const matchingPost = posts.find(
+      (post) => typeof post.text === "string"
+        && post.text.includes(pinnedInstagramMarker(pinnedPost.series))
+        && typeof post.id === "string",
+    );
+    return matchingPost && typeof matchingPost.id === "string"
+      ? [{ series: pinnedPost.series, postId: matchingPost.id }]
+      : [];
+  });
 
   return {
     channelName: config.channelName,
@@ -135,6 +151,7 @@ export async function readInstagramPerformanceReport({
     metricsUpdatedAt: typeof aggregated?.metricsUpdatedAt === "string"
       ? aggregated.metricsUpdatedAt
       : null,
+    pinnedPosts,
     startAt,
     topPosts,
   };

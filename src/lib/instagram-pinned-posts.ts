@@ -3,18 +3,18 @@ export const pinnedInstagramPosts = [
     series: "pinned-start",
     number: "01",
     shortTitle: "Comença aquí",
-    eyebrow: "Comença aquí · Bolets Atles",
-    title: "El bosc canvia. La lectura també.",
-    body: "Una lectura diària de les condicions de fructificació a Catalunya, espècie per espècie i territori per territori.",
-    footer: "Predicció actualitzada cada dia",
+    eyebrow: "Descobreix Bolets Atles",
+    title: "Coneix els bolets. Entén el bosc.",
+    body: "Catàleg, identificació, comparadors, temporades, guies territorials, condicions actuals i quadern de camp privat.",
+    footer: "Tot l’atles en un sol lloc",
     tone: "clay",
-    caption: `Això és Bolets Atles.
+    caption: `Això és Bolets Atles: una guia digital dels bolets de Catalunya.
 
-Cada dia convertim dades ambientals verificades en una lectura clara de les condicions de fructificació a Catalunya.
+Explora el catàleg d’espècies, aprèn a identificar-les, compara confusions habituals, consulta temporades i guies territorials, i entén les condicions actuals del bosc.
 
-Hi trobaràs prediccions per espècie, comparadors territorials i context per entendre què està canviant al bosc. No publiquem punts de recol·lecció ni prometem que hi trobaràs bolets.
+També pots crear el teu bosc i portar un quadern de camp privat. Les localitzacions exactes de les troballes no es publiquen ni alimenten la predicció.
 
-Comença per la lectura d’avui: https://bolets.app/bolets-avui
+Comença a explorar: https://bolets.app
 
 #BoletsAtles #BoletsCatalunya #Micologia #Bosc`,
   },
@@ -68,4 +68,12 @@ export function isPinnedInstagramSeries(value: string | null): value is PinnedIn
 
 export function pinnedInstagramPost(series: PinnedInstagramSeries) {
   return pinnedInstagramPosts.find((post) => post.series === series)!;
+}
+
+export function pinnedInstagramMarker(series: PinnedInstagramSeries) {
+  return `Bolets Atles · perfil fixat · ${pinnedInstagramPost(series).number}/03`;
+}
+
+export function pinnedInstagramCaption(series: PinnedInstagramSeries) {
+  return `${pinnedInstagramPost(series).caption}\n\n${pinnedInstagramMarker(series)}`;
 }

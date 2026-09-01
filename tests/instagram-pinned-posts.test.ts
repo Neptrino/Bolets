@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   isPinnedInstagramSeries,
+  pinnedInstagramCaption,
+  pinnedInstagramMarker,
   pinnedInstagramPost,
   pinnedInstagramPosts,
 } from "@/src/lib/instagram-pinned-posts";
@@ -15,8 +17,10 @@ describe("Instagram pinned posts", () => {
 
   it("keeps captions within Instagram's limit", () => {
     for (const post of pinnedInstagramPosts) {
-      expect(post.caption.length).toBeLessThanOrEqual(2_200);
-      expect(post.caption).not.toContain("\\n");
+      const caption = pinnedInstagramCaption(post.series);
+      expect(caption.length).toBeLessThanOrEqual(2_200);
+      expect(caption).not.toContain("\\n");
+      expect(caption).toContain(pinnedInstagramMarker(post.series));
     }
   });
 

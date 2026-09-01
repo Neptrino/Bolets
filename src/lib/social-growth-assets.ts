@@ -4,7 +4,7 @@ import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-s
 import type { PinnedInstagramSeries } from "@/src/lib/instagram-pinned-posts";
 
 export function pinnedInstagramImagePath(series: PinnedInstagramSeries) {
-  return `/compartir/instagram/fixada/${series}`;
+  return `/compartir/instagram/fixada/${series}?v=2`;
 }
 
 export function signedSocialGrowthImagePath(

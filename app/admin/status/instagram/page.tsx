@@ -12,7 +12,7 @@ import {
 import { dateInCatalonia } from "@/src/lib/buffer-client";
 import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
 import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
-import { pinnedInstagramPosts } from "@/src/lib/instagram-pinned-posts";
+import { pinnedInstagramCaption, pinnedInstagramPosts } from "@/src/lib/instagram-pinned-posts";
 import { readInstagramPerformanceReport } from "@/src/lib/instagram-performance-server";
 import { requireOperationalSession } from "@/src/lib/operational-status-session";
 import {
@@ -25,6 +25,7 @@ import { DetailNav } from "../detail-nav";
 import { formatDetailDateTime, numberFormatter } from "../detail-utils";
 import styles from "../details.module.css";
 import plannerStyles from "./instagram.module.css";
+import { PinnedPublishControl } from "./pinned-publish-control";
 
 export const dynamic = "force-dynamic";
 
@@ -143,6 +144,7 @@ export default async function AdminInstagramPage() {
     : [];
   const pinnedImages = pinnedInstagramPosts.map((post) => ({
     ...post,
+    caption: pinnedInstagramCaption(post.series),
     imagePath: pinnedInstagramImagePath(post.series),
   }));
 
@@ -170,7 +172,7 @@ export default async function AdminInstagramPage() {
           <section className={`${plannerStyles.previewBlock} ${plannerStyles.pinnedBlock}`}>
             <header className={plannerStyles.previewHeader}>
               <div><span>Perfil · 3 publicacions fixades</span><h3>La portada permanent del compte</h3></div>
-              <strong className={plannerStyles.draftBadge}>Esborranys</strong>
+              <PinnedPublishControl initialPublishedCount={report?.pinnedPosts.length ?? 0} />
             </header>
             <div className={plannerStyles.pinnedIntro}>
               <p>Presenten què és Bolets Atles, com s’interpreta i amb quin criteri cal sortir al bosc.</p>
