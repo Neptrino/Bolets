@@ -143,7 +143,7 @@ describe("Buffer Instagram daily publisher", () => {
     }]);
   });
 
-  it("does not create duplicates when today's feed marker and Story asset are present", async () => {
+  it("does not duplicate today's Story when its signed prediction payload has refreshed", async () => {
     const fetchImpl = vi.fn()
       .mockResolvedValueOnce(organizationResponse())
       .mockResolvedValueOnce(channelResponse())
@@ -160,8 +160,11 @@ describe("Buffer Instagram daily publisher", () => {
             node: {
               id: "existing-story",
               text: "",
+              sentAt: "2026-08-31T06:30:00.000Z",
               metadata: { type: "story" },
-              assets: [{ source: "https://bolets.app/story.png" }],
+              assets: [{
+                source: "https://bolets.app/compartir/catalunya/imatge?format=story&card=first&signature=first",
+              }],
             },
           }],
         },
@@ -172,7 +175,7 @@ describe("Buffer Instagram daily publisher", () => {
       config,
       fetchImpl,
       imageUrl: "https://bolets.app/card.jpg",
-      storyImageUrl: "https://bolets.app/story.png",
+      storyImageUrl: "https://bolets.app/compartir/catalunya/imatge?format=story&card=refreshed&signature=refreshed",
       now: new Date("2026-08-31T12:00:00.000Z"),
     })).resolves.toEqual({
       status: "already_published",
@@ -196,6 +199,16 @@ describe("Buffer Instagram daily publisher", () => {
               metadata: { type: "post" },
               assets: [],
             },
+          }, {
+            node: {
+              id: "yesterday-story",
+              text: "",
+              sentAt: "2026-08-30T12:00:00.000Z",
+              metadata: { type: "story" },
+              assets: [{
+                source: "https://bolets.app/compartir/catalunya/imatge?format=story&card=yesterday&signature=yesterday",
+              }],
+            },
           }],
         },
       }))
@@ -208,7 +221,7 @@ describe("Buffer Instagram daily publisher", () => {
       config,
       fetchImpl,
       imageUrl: "https://bolets.app/card.jpg",
-      storyImageUrl: "https://bolets.app/story.png",
+      storyImageUrl: "https://bolets.app/compartir/catalunya/imatge?format=story&card=today&signature=today",
       now: new Date("2026-08-31T12:00:00.000Z"),
     })).resolves.toEqual({
       status: "published",

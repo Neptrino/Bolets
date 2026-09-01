@@ -38,11 +38,27 @@ interface BufferChannel {
 }
 
 interface BufferPost {
+  createdAt?: unknown;
   id?: unknown;
+  sentAt?: unknown;
   text?: unknown;
   status?: unknown;
   metadata?: { type?: unknown } | null;
   assets?: Array<{ source?: unknown }>;
+}
+
+function sameDailyStoryAsset(candidate: unknown, expected: string) {
+  if (typeof candidate !== "string") return false;
+  try {
+    const candidateUrl = new URL(candidate);
+    const expectedUrl = new URL(expected);
+    return candidateUrl.origin === expectedUrl.origin
+      && candidateUrl.pathname === expectedUrl.pathname
+      && candidateUrl.searchParams.get("format") === "story"
+      && expectedUrl.searchParams.get("format") === "story";
+  } catch {
+    return false;
+  }
 }
 
 export class BufferPublicationError extends Error {
@@ -248,6 +264,7 @@ async function findExistingPublications({
   config,
   fetchImpl,
   feedMarker,
+  publicationDate,
   storyImageUrl,
   organizationId,
 }: {
@@ -255,6 +272,7 @@ async function findExistingPublications({
   config: BufferInstagramPublisherConfig;
   fetchImpl: typeof fetch;
   feedMarker: string;
+  publicationDate: string;
   storyImageUrl: string;
   organizationId: string;
 }) {
@@ -268,7 +286,7 @@ async function findExistingPublications({
       posts(first: 50, input: $input) {
         edges {
           node {
-            id text status
+            id text status createdAt sentAt
             metadata {
               __typename
               ... on InstagramPostMetadata { type }
@@ -295,10 +313,13 @@ async function findExistingPublications({
   const feed = posts.find(
     (post) => typeof post.text === "string" && post.text.includes(feedMarker),
   );
-  const story = posts.find(
-    (post) => post.metadata?.type === "story"
-      && post.assets?.some((asset) => asset.source === storyImageUrl),
-  );
+  const story = posts.find((post) => {
+    const publishedAt = post.sentAt ?? post.createdAt;
+    return post.metadata?.type === "story"
+      && post.assets?.some((asset) => sameDailyStoryAsset(asset.source, storyImageUrl)) === true
+      && typeof publishedAt === "string"
+      && dateInCatalonia(new Date(publishedAt)) === publicationDate;
+  });
   return {
     feedPostId: typeof feed?.id === "string" ? feed.id : null,
     storyPostId: typeof story?.id === "string" ? story.id : null,
@@ -416,6 +437,7 @@ export async function publishDailyInstagramPrediction({
     feedMarker: marker,
     fetchImpl,
     organizationId,
+    publicationDate,
     storyImageUrl,
   });
   const feed = existing.feedPostId
