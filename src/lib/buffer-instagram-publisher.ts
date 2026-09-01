@@ -243,17 +243,14 @@ async function findExistingPublication({
   config,
   fetchImpl,
   marker,
-  now,
   organizationId,
 }: {
   channelId: string;
   config: BufferInstagramPublisherConfig;
   fetchImpl: typeof fetch;
   marker: string;
-  now: Date;
   organizationId: string;
 }) {
-  const startDate = new Date(now.getTime() - 48 * 60 * 60 * 1_000).toISOString();
   const result = await bufferGraphql<{
     posts?: { edges?: Array<{ node?: BufferPost }> };
   }>({
@@ -261,14 +258,18 @@ async function findExistingPublication({
     fetchImpl,
     operation: "Reading recent Buffer posts",
     query: `query BufferRecentPosts($input: PostsInput!) {
-      posts(first: 25, input: $input) {
+      posts(first: 50, input: $input) {
         edges { node { id text status } }
       }
     }`,
     variables: {
       input: {
-        filter: { channelIds: [channelId], startDate },
+        filter: {
+          channelIds: [channelId],
+          status: ["scheduled", "sending", "sent"],
+        },
         organizationId,
+        sort: [{ direction: "desc", field: "createdAt" }],
       },
     },
   });
@@ -384,7 +385,6 @@ export async function publishDailyInstagramPrediction({
     config,
     fetchImpl,
     marker,
-    now,
     organizationId,
   });
   if (existingPostId) {

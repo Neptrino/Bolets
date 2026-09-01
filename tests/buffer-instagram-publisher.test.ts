@@ -84,6 +84,18 @@ describe("Buffer Instagram daily publisher", () => {
 
     expect(fetchImpl).toHaveBeenCalledTimes(4);
     expect(fetchImpl.mock.calls.every(([url]) => url === "https://api.buffer.com")).toBe(true);
+    const recentPostsOptions = fetchImpl.mock.calls[2]?.[1] as RequestInit;
+    const recentPostsBody = JSON.parse(String(recentPostsOptions.body)) as {
+      variables: { input: Record<string, unknown> };
+    };
+    expect(recentPostsBody.variables.input).toMatchObject({
+      filter: {
+        channelIds: ["channel-1"],
+        status: ["scheduled", "sending", "sent"],
+      },
+      organizationId: "organization-1",
+      sort: [{ direction: "desc", field: "createdAt" }],
+    });
     const options = fetchImpl.mock.calls[3]?.[1] as RequestInit;
     const body = JSON.parse(String(options.body)) as {
       variables: { input: Record<string, unknown> };
