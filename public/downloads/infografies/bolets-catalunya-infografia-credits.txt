@@ -78,6 +78,11 @@ Cep rogenc (Boletus pinophilus)
   Llicència: CC BY-SA 3.0
   Font: https://commons.wikimedia.org/wiki/File:Boletus_pinophilus3.JPG
 
+Cigró (Leccinellum lepidum)
+  Fotografia: Davide Puddu
+  Llicència: CC BY 4.0
+  Font: https://commons.wikimedia.org/wiki/File:Leccinellum_lepidum_2.jpg
+
 Cogomassa (Amanita verna)
   Fotografia: James St. John
   Llicència: CC BY 2.0
@@ -163,6 +168,16 @@ Llengua de bou (Hydnum repandum)
   Llicència: Domini públic
   Font: https://commons.wikimedia.org/wiki/File:Hedgehog_fungi2.jpg
 
+Lleterola roja (Lactifluus rugatus)
+  Fotografia: Andrea Monsalve
+  Llicència: CC BY 4.0
+  Font: https://www.inaturalist.org/photos/457279762
+
+Llora aspra (Russula cyanoxantha)
+  Fotografia: Jerzy Opioła
+  Llicència: CC BY-SA 4.0 · mida i format adaptats
+  Font: https://commons.wikimedia.org/wiki/File:Russula_cyanoxantha_G2.1.jpg
+
 Llora verda (Russula virescens)
   Fotografia: Lukas Large
   Llicència: CC BY-SA 2.0
@@ -218,6 +233,21 @@ Paxil·le tòxic (Paxillus involutus)
   Llicència: CC BY-SA 2.0
   Font: https://commons.wikimedia.org/wiki/File:2021-11-14_Paxillus_involutus_(Flickr_51690952401).jpg
 
+Pet de llop gegant (Calvatia gigantea)
+  Fotografia: © Hans Hillewaert
+  Llicència: CC BY-SA 4.0 · mida i format adaptats
+  Font: https://commons.wikimedia.org/wiki/File:Calvatia_gigantea.jpg
+
+Pet de llop perlat (Lycoperdon perlatum)
+  Fotografia: Daniel Ullrich, Threedots
+  Llicència: CC BY-SA 3.0 · format adaptat
+  Font: https://commons.wikimedia.org/wiki/File:Single_lycoperdon_perlatum.jpg
+
+Peu de rata bord (Ramaria formosa)
+  Fotografia: Jose Angel Urquia Goitia
+  Llicència: CC BY-SA 4.0
+  Font: https://commons.wikimedia.org/wiki/File:Ramaria_formosa_2.jpg
+
 Peu de rata daurat (Ramaria aurea)
   Fotografia: Böhringer Friedrich; retall d’Ak ccm
   Llicència: CC BY-SA 2.5
@@ -232,6 +262,11 @@ Pinetell (Lactarius deliciosus)
   Fotografia: Eric Steinert
   Llicència: CC BY-SA 3.0
   Font: https://commons.wikimedia.org/wiki/File:Lactarius_deliciosus.jpg
+
+Pinetell bord (Lactarius chrysorrheus)
+  Fotografia: Richard Daniel (RichardDaniel)
+  Llicència: CC BY-SA 3.0
+  Font: https://commons.wikimedia.org/wiki/File:Lactarius_chrysorrheus_1139526.jpg
 
 Pixacà (Amanita pantherina)
   Fotografia: Matej Frančeškin
@@ -257,6 +292,11 @@ Rovelló (Lactarius sanguifluus)
   Fotografia: Holger Krisp
   Llicència: CC BY 3.0
   Font: https://commons.wikimedia.org/wiki/File:Weinroter_Kiefern-Reizker_Lactarius_sanguifluus.jpg
+
+Rovelló de cabra (Lactarius torminosus)
+  Fotografia: Strobilomyces
+  Llicència: CC BY-SA 3.0
+  Font: https://commons.wikimedia.org/wiki/File:Lactarius_torminosus_041031w.jpg
 
 Tòfona negra (Tuber melanosporum)
   Fotografia: Diego Delso

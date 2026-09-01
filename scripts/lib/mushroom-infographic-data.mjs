@@ -68,6 +68,7 @@ export function readSpecies(projectRoot) {
   const sourceFiles = [
     path.join(projectRoot, "data", "species.ts"),
     path.join(projectRoot, "data", "reference-species.ts"),
+    path.join(projectRoot, "data", "reference-species-additions.ts"),
   ];
   const species = [];
 

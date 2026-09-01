@@ -5,7 +5,7 @@ import {
   comparisonPages,
   comparisonPagesForSpecies,
 } from "@/data/comparison-pages";
-import { catalogueSpecies } from "@/data/catalogue";
+import { catalogueSpecies, getCatalogueSpecies } from "@/data/catalogue";
 import { getSpecies, speciesProfiles } from "@/data/species";
 import { seasonMonthPath, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { seasonGuides } from "@/src/lib/season-guides";
@@ -116,8 +116,8 @@ describe("search-intent species collections", () => {
     const unorderedPairs = comparisonPages.map((page) => [page.leftSpeciesId, page.rightSpeciesId].sort().join(":"));
     expect(new Set(unorderedPairs).size).toBe(unorderedPairs.length);
     for (const page of comparisonPages) {
-      expect(getSpecies(page.leftSpeciesId), page.slug).toBeDefined();
-      expect(getSpecies(page.rightSpeciesId), page.slug).toBeDefined();
+      expect(getCatalogueSpecies(page.leftSpeciesId), page.slug).toBeDefined();
+      expect(getCatalogueSpecies(page.rightSpeciesId), page.slug).toBeDefined();
       expect(page.introduction.length).toBeGreaterThan(100);
       expect(page.decisiveDifference.length).toBeGreaterThan(70);
       expect(page.metaDescription.length).toBeGreaterThanOrEqual(100);
@@ -130,6 +130,7 @@ describe("search-intent species collections", () => {
     const slugs = comparisonPages.map((page) => page.slug);
     expect(slugs).toEqual(expect.arrayContaining([
       "rovello-vs-pinetell",
+      "rovello-vs-rovello-de-cabra",
       "rossinyol-vs-camagroc",
       "ou-de-reig-vs-reig-bord",
       "cep-vs-mataparent",

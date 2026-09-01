@@ -5,8 +5,10 @@ import type { CatalogueSpecies } from "@/src/lib/types";
 
 export function SpeciesFieldCardSection({
   species,
+  sectionNumber = "05",
 }: {
   species: CatalogueSpecies;
+  sectionNumber?: string;
 }) {
   const imagePath = speciesFieldCardPath(species);
 
@@ -18,7 +20,7 @@ export function SpeciesFieldCardSection({
     >
       <div className="section-kicker">
         <PanelsTopLeft size={17} aria-hidden="true" />
-        <span>05</span>
+        <span>{sectionNumber}</span>
       </div>
       <div>
         <p className="eyebrow">Per guardar i compartir</p>
@@ -26,9 +28,9 @@ export function SpeciesFieldCardSection({
         <div className="species-field-card-layout">
           <div className="species-field-card-copy">
             <p>
-              Una fitxa visual en format 4:5 amb els trets principals, els millors
-              mesos, el bosc o hàbitat, l’altitud documentada i la confusió més
-              rellevant.
+              {"scope" in species
+                ? "Una fitxa visual en format 4:5 amb els trets principals, la temporada descrita, l’hàbitat i la confusió més rellevant."
+                : "Una fitxa visual en format 4:5 amb els trets principals, els millors mesos, el bosc o hàbitat, l’altitud documentada i la confusió més rellevant."}
             </p>
             <div className="species-field-card-safety">
               <ShieldAlert size={19} aria-hidden="true" />

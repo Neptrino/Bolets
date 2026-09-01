@@ -9,14 +9,12 @@ import { SpeciesEcologySection } from "@/components/species-profile/ecology-sect
 import { SpeciesFieldCardSection } from "@/components/species-profile/field-card-section";
 import { SpeciesIdentificationSection } from "@/components/species-profile/identification-section";
 import { SpeciesHero } from "@/components/species-hero";
-import { ReferenceSpeciesPage } from "@/components/reference-species-page";
 import { UmamiEventLink } from "@/components/umami-event-link";
 import {
   catalogueSpecies,
   getCatalogueSpecies,
   getCatalogueSpeciesBySlug,
 } from "@/data/catalogue";
-import { getReferenceSpecies } from "@/data/reference-species";
 import { getSpecies } from "@/data/species";
 import { speciesSlugForId } from "@/data/species-slugs";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
@@ -138,23 +136,31 @@ export default async function SpeciesPage({
     permanentRedirect(`${speciesPath(legacySpecies)}${suffix}`);
   }
 
-  const referenceSpecies = getReferenceSpecies(catalogueEntry.speciesId);
-  if (referenceSpecies) return <ReferenceSpeciesPage species={referenceSpecies} />;
   const query = await searchParams;
-  const species = getSpecies(catalogueEntry.speciesId);
-  if (!species) notFound();
-
-  const region: RegionId = isRegionId(query.region)
-    ? query.region
-    : species.ecologicalConfig.regions[0] ?? "prepirineus";
-
-  const habitat = species.ecologicalConfig.habitat;
-  const season = seasonSummary(species.ecologicalConfig.seasonality);
+  const species = catalogueEntry;
+  const scoredSpecies = getSpecies(species.speciesId);
+  const region: RegionId | null = scoredSpecies
+    ? isRegionId(query.region)
+      ? query.region
+      : scoredSpecies.ecologicalConfig.regions[0] ?? "prepirineus"
+    : null;
+  const habitatLabel = "scope" in species
+    ? species.ecology.habitats[0]
+    : species.ecologicalConfig.habitat.forestTypes[0];
+  const season = "scope" in species
+    ? species.ecology.season
+    : seasonSummary(species.ecologicalConfig.seasonality);
   const canonicalUrl = `${SITE_URL}${speciesPath(species)}`;
   const image = speciesImage(species);
+  const visibleSections = scoredSpecies
+    ? sections
+    : sections.filter((section) => section !== "Distribució");
 
   return (
-    <section className="species-page compact-species-page">
+    <section
+      className="species-page compact-species-page"
+      data-species-scope={scoredSpecies ? undefined : "reference-only"}
+    >
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -226,42 +232,46 @@ export default async function SpeciesPage({
       />
       <SpeciesHero
         species={species}
-        habitatLabel={habitat.forestTypes[0]}
-        altitudeLabel={`${habitat.altitude[0]}–${habitat.altitude[1]} m`}
+        habitatLabel={habitatLabel}
+        altitudeLabel={scoredSpecies ? `${scoredSpecies.ecologicalConfig.habitat.altitude[0]}–${scoredSpecies.ecologicalConfig.habitat.altitude[1]} m` : undefined}
         seasonLabel={season}
       />
 
       <div className="page-width species-content">
         <aside className="species-aside" aria-label="Contingut de la fitxa">
           <p>CONTINGUT</p>
-          {sections.map((section) => (
+          {visibleSections.map((section) => (
             <a href={`#${detailId(section)}`} key={section}>
               {section}
             </a>
           ))}
-          <UmamiEventLink
-            href={speciesMapHref(species.speciesId, {
-              region,
-              mode: species.predictionMode === "habitat_only" ? "compatibility" : undefined,
-            })}
-            className="aside-map-link"
-            analyticsEvent={UMAMI_EVENTS.speciesMapOpen}
-          >
-            <Map size={15} />
-            {species.predictionMode === "habitat_only" ? "Mapa d’hàbitat" : "Mapa actual"}
-          </UmamiEventLink>
+          {scoredSpecies && region && (
+            <UmamiEventLink
+              href={speciesMapHref(scoredSpecies.speciesId, {
+                region,
+                mode: scoredSpecies.predictionMode === "habitat_only" ? "compatibility" : undefined,
+              })}
+              className="aside-map-link"
+              analyticsEvent={UMAMI_EVENTS.speciesMapOpen}
+            >
+              <Map size={15} />
+              {scoredSpecies.predictionMode === "habitat_only" ? "Mapa d’hàbitat" : "Mapa actual"}
+            </UmamiEventLink>
+          )}
         </aside>
 
         <div className="species-main">
           <SpeciesIdentificationSection species={species} />
           <SpeciesCulinarySection species={species} />
           <SpeciesEcologySection species={species} />
-          <SpeciesDistributionSection
-            autoGeolocate={!isRegionId(query.region)}
-            region={region}
-            species={species}
-          />
-          <SpeciesFieldCardSection species={species} />
+          {scoredSpecies && region && (
+            <SpeciesDistributionSection
+              autoGeolocate={!isRegionId(query.region)}
+              region={region}
+              species={scoredSpecies}
+            />
+          )}
+          <SpeciesFieldCardSection species={species} sectionNumber={scoredSpecies ? "05" : "04"} />
           <EditorialAttribution
             contentId={`species:${species.speciesId}`}
             sources={[...species.references, officialSafetySource]}

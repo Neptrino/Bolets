@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import SpeciesPage, { generateMetadata, generateStaticParams } from "@/app/bolets/[slug]/page";
 import SpeciesIndexPage from "@/app/bolets/page";
 import MushroomInfographicPage from "@/app/bolets/infografia/page";
+import ComparisonLandingPage from "@/app/compare/[slug]/page";
 import { buildSitemap as sitemap } from "@/app/sitemap";
 import { catalogueSpecies } from "@/data/catalogue";
 import { getReferenceSpecies, getReferenceSpeciesByScientificName, referenceSpeciesProfiles } from "@/data/reference-species";
@@ -25,6 +26,62 @@ const slug = speciesSlugForId(speciesId);
 const species = getReferenceSpecies(speciesId)!;
 
 describe("descriptive catalogue species", () => {
+  it.each([
+    ["lycoperdon-perlatum", "pet-de-llop-perlat", "Pet de llop perlat", "edible_with_conditions"],
+    ["calvatia-gigantea", "pet-de-llop-gegant", "Pet de llop gegant", "edible_with_conditions"],
+    ["russula-cyanoxantha", "llora-aspra", "Llora aspra", "excellent_edible"],
+    ["lactarius-chrysorrheus", "pinetell-bord", "Pinetell bord", "inedible"],
+    ["lactarius-torminosus", "rovello-de-cabra", "Rovelló de cabra", "toxic"],
+    ["ramaria-formosa", "peu-de-rata-bord", "Peu de rata bord", "toxic"],
+    ["lactifluus-rugatus", "lleterola-roja", "Lleterola roja", "edible"],
+    ["leccinellum-lepidum", "cigro-alzinenc", "Cigró", "edible"],
+  ])("publishes %s with its own content while keeping it out of predictions", async (id, canonicalSlug, name, edibility) => {
+    const profile = getReferenceSpecies(id)!;
+    expect(referenceSpeciesProfileSchema.parse(profile).identity.edibility).toBe(edibility);
+    expect(speciesSlugForId(id)).toBe(canonicalSlug);
+    expect(catalogueSpecies).toContain(profile);
+    expect(getReferenceSpeciesByScientificName(profile.identity.scientificName.toUpperCase())).toBe(profile);
+    expect(getSpecies(id)).toBeUndefined();
+    expect(speciesSelectItems.some(item => item.value === id)).toBe(false);
+    expect(globalCandidateSpecies.some(item => item.speciesId === id)).toBe(false);
+    expect(speciesInSeason("oct").some(item => item.speciesId === id)).toBe(false);
+    const card = toSpeciesCardProfile(profile);
+    expect(card.ecologicalConfig.habitat.altitude).toBeNull();
+    expect(card.ecologicalConfig.seasonality).toBeNull();
+    for (const asset of profile.media) {
+      expect(asset.attribution).toBeTruthy();
+      expect(asset.license).toMatch(/^CC BY/);
+      expect(statSync(join(process.cwd(), "public", asset.localPath!)).size).toBeGreaterThan(0);
+    }
+    const params = Promise.resolve({ slug: canonicalSlug });
+    expect((await generateMetadata({ params })).alternates?.canonical).toBe(`/bolets/${canonicalSlug}`);
+    expect(generateStaticParams()).toContainEqual({ slug: canonicalSlug });
+    const html = renderToStaticMarkup(await SpeciesPage({ params, searchParams: Promise.resolve({}) }));
+    expect(html).toContain(`<h1>${name}</h1>`);
+    expect(html).toContain(profile.morphology.cap);
+    expect(html).toContain(profile.culinaryProfile.summary);
+    expect(html).toContain(profile.culinaryProfile.cautions[0]);
+    expect(html).toContain('"datePublished":"2026-09-02"');
+    expect(html).toContain('data-species-scope="reference-only"');
+    expect(html).toContain("Editorial, no micològica");
+    expect(html).toContain('id="identificació" class="content-section"');
+    expect(html).toContain('id="cuina" class="content-section culinary-section"');
+    expect(html).toContain('id="ecologia" class="content-section ecology-section"');
+    expect(html).not.toContain('id="distribució"');
+    expect(html).toContain('data-mushroom-icon="cap"');
+    expect(html).not.toContain('href="/map?');
+    expect(html).not.toContain('href="/fals-rossinyol"');
+    expect(html).not.toContain("No es recomana consumir-lo");
+    expect(html).not.toContain("/_next/image");
+    expect(sitemap().find(item => item.url.endsWith(`/bolets/${canonicalSlug}`))?.lastModified).toEqual(new Date("2026-09-02T00:00:00+02:00"));
+    if (["lycoperdon-perlatum", "calvatia-gigantea"].includes(id)) {
+      const relatedSlug = id === "lycoperdon-perlatum" ? "pet-de-llop-gegant" : "pet-de-llop-perlat";
+      expect(html).toContain(`href="/bolets/${relatedSlug}"`);
+      expect(html).toContain("Himeni");
+      expect(profile.morphology.hymenium).toContain("No té làmines");
+    }
+  });
+
   it("validates sourced knowledge without accepting numeric model fields", () => {
     for (const profile of referenceSpeciesProfiles) expect(referenceSpeciesProfileSchema.safeParse(profile).success).toBe(true);
     expect(speciesProfileSchema.safeParse(species).success).toBe(false);
@@ -111,7 +168,7 @@ describe("descriptive catalogue species", () => {
     expect(html).toContain('"@type":"BreadcrumbList"');
     expect(html).toContain('"datePublished":"2026-08-27"');
     expect(html).not.toContain('"reviewedBy"');
-    expect(html).toContain("sense revisió micològica independent");
+    expect(html).toContain("Editorial, no micològica");
     expect(html).not.toContain('href="/map?');
     expect(html).not.toContain("Mapa actual");
     expect(html).toContain('href="/fals-rossinyol"');
@@ -138,5 +195,19 @@ describe("descriptive catalogue species", () => {
     expect(html).not.toContain("right=hygrophoropsis-aurantiaca");
     expect(html).toContain('href="/fals-rossinyol"');
     expect(html).toContain("Guia del fals rossinyol");
+  });
+
+  it("publishes the dedicated rovelló and rovelló de cabra comparison", async () => {
+    const html = renderToStaticMarkup(await ComparisonLandingPage({
+      params: Promise.resolve({ slug: "rovello-vs-rovello-de-cabra" }),
+    }));
+    expect(html).toContain("Rovelló");
+    expect(html).toContain("Rovelló de cabra");
+    expect(html).toContain("làtex vermell vinós");
+    expect(html).toContain("marge densament pelut");
+    expect(html).toContain('href="/bolets/rovello"');
+    expect(html).toContain('href="/bolets/rovello-de-cabra"');
+    expect(html).not.toContain("Obrir el comparador complet");
+    expect(html).toContain('"datePublished":"2026-09-02"');
   });
 });

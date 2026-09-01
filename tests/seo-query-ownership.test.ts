@@ -97,7 +97,7 @@ describe("SEO query ownership", () => {
   it("keeps the coordinated release URL-neutral", () => {
     const entries = buildSitemap();
 
-    expect(entries).toHaveLength(205);
+    expect(entries).toHaveLength(214);
     expect(new Set(entries.map(({ url }) => url)).size).toBe(entries.length);
   });
 });

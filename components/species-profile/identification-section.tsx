@@ -20,12 +20,12 @@ import { comparisonPagesForSpecies } from "@/data/comparison-pages";
 import { getReferenceSpeciesByScientificName } from "@/data/reference-species";
 import { getSpeciesByScientificName } from "@/data/species";
 import { speciesPath } from "@/src/lib/seo";
-import type { SpeciesProfile } from "@/src/lib/types";
+import type { CatalogueSpecies } from "@/src/lib/types";
 
 export function SpeciesIdentificationSection({
   species,
 }: {
-  species: SpeciesProfile;
+  species: CatalogueSpecies;
 }) {
   const hasToxicLookalike = species.similarSpecies.some(
     (item) => item.warning || item.edibility.includes("toxic"),
@@ -108,17 +108,17 @@ export function SpeciesIdentificationSection({
             item.scientificName,
           );
           const relatedProfile = relatedSpecies ?? getReferenceSpeciesByScientificName(item.scientificName);
-          const comparison = relatedSpecies
+          const comparison = relatedProfile
             ? speciesComparisons.find((page) => (
-                page.leftSpeciesId === relatedSpecies.speciesId
-                || page.rightSpeciesId === relatedSpecies.speciesId
+                page.leftSpeciesId === relatedProfile.speciesId
+                || page.rightSpeciesId === relatedProfile.speciesId
               ))
             : undefined;
-          const comparisonHref = relatedSpecies
-            ? comparison
-              ? `/compare/${comparison.slug}`
-              : `/compare?left=${species.speciesId}&right=${relatedSpecies.speciesId}`
-            : undefined;
+          const comparisonHref = comparison
+            ? `/compare/${comparison.slug}`
+            : relatedSpecies && "ecologicalConfig" in species
+              ? `/compare?left=${species.speciesId}&right=${relatedSpecies.speciesId}`
+              : undefined;
 
           return (
             <article key={item.scientificName}>
@@ -154,7 +154,7 @@ export function SpeciesIdentificationSection({
           );
         })}
       </div>
-      {species.speciesId === "cantharellus-cibarius" && (
+      {(species.speciesId === "cantharellus-cibarius" || species.speciesId === "hygrophoropsis-aurantiaca") && (
         <p>
           <Link href="/fals-rossinyol" className="text-link">
             Guia del fals rossinyol <ArrowUpRight size={16} aria-hidden="true" />

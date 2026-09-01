@@ -1,6 +1,33 @@
 import type { MediaAsset } from "@/src/lib/types";
 
 export const speciesMedia: Record<string, MediaAsset[]> = {
+  "lycoperdon-perlatum": [{
+    id: "wikimedia-single-lycoperdon-perlatum",
+    localPath: "/media/wikimedia/lycoperdon-perlatum.webp",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/35/Single_lycoperdon_perlatum.jpg",
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Single_lycoperdon_perlatum.jpg",
+    attribution: "Daniel Ullrich, Threedots", license: "CC BY-SA 3.0 · format adaptat",
+    identificationReference: true,
+    alt: "Pet de llop perlat blanc amb agullons cònics i base allargada, entre la fullaraca del bosc.",
+  }],
+  "calvatia-gigantea": [{
+    id: "wikimedia-calvatia-gigantea-hillewaert",
+    localPath: "/media/wikimedia/calvatia-gigantea.webp",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Calvatia_gigantea.jpg",
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Calvatia_gigantea.jpg",
+    attribution: "© Hans Hillewaert", license: "CC BY-SA 4.0 · mida i format adaptats",
+    identificationReference: true,
+    alt: "Pet de llop gegant, blanc i de superfície llisa, entre l’herba d’una pastura amb vaques al fons.",
+  }],
+  "russula-cyanoxantha": [{
+    id: "wikimedia-russula-cyanoxantha-g21",
+    localPath: "/media/wikimedia/russula-cyanoxantha.webp",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/6/66/Russula_cyanoxantha_G2.1.jpg",
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Russula_cyanoxantha_G2.1.jpg",
+    attribution: "Jerzy Opioła", license: "CC BY-SA 4.0 · mida i format adaptats",
+    identificationReference: true,
+    alt: "Llora aspra de barret violaci amb tons verdosos i peu blanc sobre el sòl del bosc.",
+  }],
   "hygrophoropsis-aurantiaca": [
     {
       id: "wikimedia-hygrophoropsis-aurantiaca-anglars",
@@ -645,6 +672,76 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
       license: "CC BY-SA 4.0",
       identificationReference: true,
       alt: "Pleurotus eryngii silvestre al costat de la planta hoste, amb barret bru i peu blanc gruixut."
+    }
+  ],
+  "lactarius-chrysorrheus": [
+    {
+      id: "wikimedia-lactarius-chrysorrheus",
+      localPath: "/media/wikimedia/lactarius-chrysorrheus.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/9/92/Lactarius_chrysorrheus_1139526.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Lactarius_chrysorrheus_1139526.jpg",
+      attribution: "Richard Daniel (RichardDaniel)",
+      license: "CC BY-SA 3.0",
+      identificationReference: true,
+      alt: "Lactarius chrysorrheus amb el barret salmó deprimit, làmines decurrents i gotes de làtex groc visibles."
+    }
+  ],
+  "lactarius-torminosus": [
+    {
+      id: "wikimedia-lactarius-torminosus",
+      localPath: "/media/wikimedia/lactarius-torminosus.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/8/87/Lactarius_torminosus_041031w.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Lactarius_torminosus_041031w.jpg",
+      attribution: "Strobilomyces",
+      license: "CC BY-SA 3.0",
+      identificationReference: true,
+      alt: "Lactarius torminosus amb barret rosat zonat, marge densament pelut i un exemplar mostrant les làmines clares."
+    }
+  ],
+  "ramaria-formosa": [
+    {
+      id: "wikimedia-ramaria-formosa",
+      localPath: "/media/wikimedia/ramaria-formosa.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/70/Ramaria_formosa_2.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Ramaria_formosa_2.jpg",
+      attribution: "Jose Angel Urquia Goitia",
+      license: "CC BY-SA 4.0",
+      identificationReference: true,
+      alt: "Ramaria formosa al bosc amb base carnosa rosada, branques salmó i puntes groguenques densament dividides."
+    }
+  ],
+  "lactifluus-rugatus": [
+    {
+      id: "inaturalist-lactifluus-rugatus-cap",
+      localPath: "/media/wikimedia/lactifluus-rugatus.webp",
+      imageUrl: "https://inaturalist-open-data.s3.amazonaws.com/photos/457279762/original.jpg",
+      sourceUrl: "https://www.inaturalist.org/photos/457279762",
+      attribution: "Andrea Monsalve",
+      license: "CC BY 4.0",
+      identificationReference: true,
+      alt: "Lactifluus rugatus vist de dalt, amb barret irregular de color vermell rajola i superfície finament rugosa."
+    },
+    {
+      id: "inaturalist-lactifluus-rugatus-underside",
+      localPath: "/media/wikimedia/lactifluus-rugatus-underside.webp",
+      imageUrl: "https://inaturalist-open-data.s3.amazonaws.com/photos/457279760/original.jpg",
+      sourceUrl: "https://www.inaturalist.org/photos/457279760",
+      attribution: "Andrea Monsalve",
+      license: "CC BY 4.0",
+      identificationReference: false,
+      alt: "Lactifluus rugatus vist per sota, amb làmines clares espaiades, gotes de làtex blanc i peu robust rogenc."
+    }
+  ],
+  "leccinellum-lepidum": [
+    {
+      id: "wikimedia-leccinellum-lepidum",
+      localPath: "/media/wikimedia/leccinellum-lepidum.webp",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Leccinellum_lepidum_2.jpg",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Leccinellum_lepidum_2.jpg",
+      attribution: "Davide Puddu",
+      license: "CC BY 4.0",
+      identificationReference: true,
+      alt: "Diversos Leccinellum lepidum d’alzinar amb barrets bruns, porus grocs i una secció que mostra la carn pàl·lida."
     }
   ]
 };
