@@ -1,0 +1,25 @@
+import type { SocialGrowthSeries } from "@/components/social-growth-card";
+import type { DailyShareCard } from "@/src/lib/daily-share-cards";
+import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
+
+export function signedSocialGrowthImagePath(
+  card: DailyShareCard,
+  series: SocialGrowthSeries,
+  slide: number,
+) {
+  const format = series === "weekend" ? "story" : "feed";
+  const url = new URL(signedDailyShareImagePath(card, format), "https://bolets.app");
+  url.searchParams.set("series", series);
+  url.searchParams.set("slide", String(slide));
+  return `${url.pathname}${url.search}`;
+}
+
+export function signedWeekendReelPath(card: DailyShareCard) {
+  const imagePath = signedSocialGrowthImagePath(card, "weekend", 1);
+  const url = new URL(imagePath, "https://bolets.app");
+  url.pathname = `/compartir/${card.slug}/reel`;
+  url.searchParams.delete("format");
+  url.searchParams.delete("series");
+  url.searchParams.delete("slide");
+  return `${url.pathname}${url.search}`;
+}

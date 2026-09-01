@@ -2,6 +2,11 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { BrandMark } from "@/components/brand-mark";
+import {
+  isSocialGrowthSeries,
+  SocialGrowthCard,
+  socialGrowthSlideCount,
+} from "@/components/social-growth-card";
 import { DAILY_OVERVIEW_REVALIDATE_SECONDS } from "@/src/lib/current-overview";
 import { isLocalFavourablePreview, loadDailyShareCard, loadFavourableDailySharePreviewCard, type DailyShareCard, type DailyShareFormat } from "@/src/lib/daily-share-cards";
 import { hasSignedDailySharePayload, readSignedDailyShareCard } from "@/src/lib/daily-share-image-payload-server";
@@ -283,6 +288,34 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
   const hasNoFavourableConditions = card.readings.length > 0 && card.readings.every((reading) => reading.score === 0);
   const homeHero = await readFile(join(process.cwd(), "public/media/generated/home-hero-boletus-v2-share.jpg"));
   const homeHeroUrl = `data:image/jpeg;base64,${homeHero.toString("base64")}`;
+
+  const requestedGrowthSeries = requestUrl.searchParams.get("series");
+  if (requestedGrowthSeries && !isSocialGrowthSeries(requestedGrowthSeries)) {
+    return new Response("Invalid social series", { status: 400 });
+  }
+  const growthSeries = isSocialGrowthSeries(requestedGrowthSeries) ? requestedGrowthSeries : null;
+  if (growthSeries) {
+    if (!signedCard || isPreview || !card.available || !card.observedAt) {
+      return new Response("Verified signed card required", { status: 400 });
+    }
+    const requestedSlide = Number(requestUrl.searchParams.get("slide"));
+    const slide = Number.isInteger(requestedSlide) ? requestedSlide : 1;
+    if (slide < 1 || slide > socialGrowthSlideCount(growthSeries)) {
+      return new Response("Invalid social slide", { status: 400 });
+    }
+    const dimensions = growthSeries === "weekend"
+      ? { width: 1080, height: 1920 }
+      : { width: 1080, height: 1350 };
+    const image = new ImageResponse(
+      <SocialGrowthCard card={card} series={growthSeries} slide={slide} />,
+      dimensions,
+    );
+    image.headers.set(
+      "Cache-Control",
+      `public, s-maxage=${cacheSeconds}, stale-while-revalidate=${cacheSeconds}`,
+    );
+    return image;
+  }
 
   if (format !== "landscape") {
     const dimensions = format === "story" ? { width: 1080, height: 1920 } : { width: 1080, height: 1350 };

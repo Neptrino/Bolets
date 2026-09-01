@@ -1,0 +1,11 @@
+[Unit]
+Description=Publish the Bolets weekend Instagram Reel
+
+[Timer]
+OnCalendar=Fri *-*-* 18:00:00 Europe/Madrid
+RandomizedDelaySec=0
+Persistent=true
+Unit=bolets-instagram-growth@weekend.service
+
+[Install]
+WantedBy=timers.target

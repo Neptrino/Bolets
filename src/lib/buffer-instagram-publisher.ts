@@ -1,50 +1,28 @@
 import type { DailyShareCard } from "@/src/lib/daily-share-cards";
-import { timingSafeEqual } from "node:crypto";
+import {
+  BufferPublicationError,
+  bufferInstagramPublisherConfig,
+  createBufferInstagramPost,
+  dateInCatalonia,
+  findInstagramChannel,
+  isInstagramPublishRequestAuthorized,
+  readRecentInstagramPosts,
+  type BufferInstagramPublisherConfig,
+} from "@/src/lib/buffer-client";
 
-const INSTAGRAM_TIME_ZONE = "Europe/Madrid";
-const BUFFER_API_URL = "https://api.buffer.com";
-
-export interface BufferInstagramPublisherConfig {
-  apiKey: string;
-  apiUrl: string;
-  channelName: string;
-}
+export {
+  BufferPublicationError,
+  bufferInstagramPublisherConfig,
+  dateInCatalonia,
+  isInstagramPublishRequestAuthorized,
+  type BufferInstagramPublisherConfig,
+};
 
 export interface InstagramPublicationResult {
   status: "already_published" | "published";
   publicationDate: string;
   feed: { status: "already_published" | "published"; postId: string };
   story: { status: "already_published" | "published"; postId: string };
-}
-
-interface BufferGraphResponse<T> {
-  data?: T;
-  errors?: Array<{ message?: unknown }>;
-}
-
-interface BufferOrganization {
-  id?: unknown;
-  name?: unknown;
-}
-
-interface BufferChannel {
-  id?: unknown;
-  name?: unknown;
-  service?: unknown;
-  externalLink?: unknown;
-  isDisconnected?: unknown;
-  isLocked?: unknown;
-  organizationId?: unknown;
-}
-
-interface BufferPost {
-  createdAt?: unknown;
-  id?: unknown;
-  sentAt?: unknown;
-  text?: unknown;
-  status?: unknown;
-  metadata?: { type?: unknown } | null;
-  assets?: Array<{ source?: unknown }>;
 }
 
 function sameDailyStoryAsset(candidate: unknown, expected: string) {
@@ -61,331 +39,12 @@ function sameDailyStoryAsset(candidate: unknown, expected: string) {
   }
 }
 
-export class BufferPublicationError extends Error {
-  constructor(
-    message: string,
-    readonly status: number,
-    readonly code: string,
-  ) {
-    super(message);
-    this.name = "BufferPublicationError";
-  }
-}
-
-function requiredEnvironmentValue(
-  environment: Readonly<Record<string, string | undefined>>,
-  name: string,
-) {
-  const value = environment[name]?.trim();
-  if (!value) throw new Error(`${name} is required`);
-  return value;
-}
-
-export function bufferInstagramPublisherConfig(
-  environment: Readonly<Record<string, string | undefined>> = process.env,
-): BufferInstagramPublisherConfig {
-  return {
-    apiKey: requiredEnvironmentValue(environment, "BUFFER_API_KEY"),
-    apiUrl: BUFFER_API_URL,
-    channelName: environment.BUFFER_INSTAGRAM_CHANNEL?.trim() || "bolets.app",
-  };
-}
-
-export function dateInCatalonia(date: Date) {
-  const parts = new Intl.DateTimeFormat("en", {
-    day: "2-digit",
-    month: "2-digit",
-    timeZone: INSTAGRAM_TIME_ZONE,
-    year: "numeric",
-  }).formatToParts(date);
-  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-  return `${values.year}-${values.month}-${values.day}`;
-}
-
 export function dailyInstagramMarker(publicationDate: string) {
   return `Publicació diària · ${publicationDate}`;
 }
 
 export function dailyInstagramCaption(card: DailyShareCard, publicationDate: string) {
   return `${card.shareText}\n\n${dailyInstagramMarker(publicationDate)}\n#BoletsAtles #BoletsCatalunya`;
-}
-
-export function isInstagramPublishRequestAuthorized(
-  headers: Pick<Headers, "get">,
-  expectedSecret = process.env.INSTAGRAM_PUBLISH_SECRET,
-) {
-  const authorization = headers.get("authorization");
-  if (!expectedSecret || !authorization?.startsWith("Bearer ")) return false;
-  const supplied = Buffer.from(authorization.slice("Bearer ".length));
-  const expected = Buffer.from(expectedSecret);
-  return supplied.length === expected.length && timingSafeEqual(supplied, expected);
-}
-
-async function bufferGraphql<T>({
-  config,
-  fetchImpl,
-  operation,
-  query,
-  variables,
-}: {
-  config: BufferInstagramPublisherConfig;
-  fetchImpl: typeof fetch;
-  operation: string;
-  query: string;
-  variables?: Record<string, unknown>;
-}): Promise<T> {
-  const response = await fetchImpl(config.apiUrl, {
-    method: "POST",
-    cache: "no-store",
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query, variables }),
-    signal: AbortSignal.timeout(30_000),
-  });
-  const raw = await response.text();
-  let payload: BufferGraphResponse<T>;
-  try {
-    payload = JSON.parse(raw) as BufferGraphResponse<T>;
-  } catch {
-    throw new BufferPublicationError(
-      `${operation} returned an invalid response`,
-      502,
-      "buffer_invalid_response",
-    );
-  }
-
-  const graphMessage = payload.errors
-    ?.map((error) => error.message)
-    .find((message): message is string => typeof message === "string");
-  if (!response.ok || graphMessage || !payload.data) {
-    const detail = graphMessage || `Buffer rejected the request with status ${response.status}`;
-    throw new BufferPublicationError(
-      `${operation} failed: ${detail.slice(0, 300)}`,
-      502,
-      "buffer_api_error",
-    );
-  }
-  return payload.data;
-}
-
-function normalizeChannelName(value: string) {
-  return value.trim().toLocaleLowerCase("en").replace(/^@/, "");
-}
-
-function channelMatches(channel: BufferChannel, configuredName: string) {
-  if (typeof channel.service !== "string" || channel.service.toLowerCase() !== "instagram") {
-    return false;
-  }
-  const expected = normalizeChannelName(configuredName);
-  if (typeof channel.name === "string" && normalizeChannelName(channel.name) === expected) {
-    return true;
-  }
-  if (typeof channel.externalLink !== "string") return false;
-  try {
-    const url = new URL(channel.externalLink);
-    const handle = url.pathname.split("/").filter(Boolean)[0];
-    return url.hostname.replace(/^www\./, "") === "instagram.com"
-      && typeof handle === "string"
-      && normalizeChannelName(handle) === expected;
-  } catch {
-    return false;
-  }
-}
-
-async function findInstagramChannel(
-  config: BufferInstagramPublisherConfig,
-  fetchImpl: typeof fetch,
-) {
-  const account = await bufferGraphql<{ account?: { organizations?: BufferOrganization[] } }>({
-    config,
-    fetchImpl,
-    operation: "Reading the Buffer account",
-    query: `query BufferOrganizations {
-      account { organizations { id name } }
-    }`,
-  });
-  const organizations = account.account?.organizations?.filter(
-    (organization): organization is BufferOrganization & { id: string } => typeof organization.id === "string",
-  ) ?? [];
-  if (organizations.length === 0) {
-    throw new BufferPublicationError(
-      "The Buffer account has no organization",
-      502,
-      "buffer_channel_unavailable",
-    );
-  }
-
-  const matches: Array<{ channelId: string; organizationId: string }> = [];
-  for (const organization of organizations) {
-    const result = await bufferGraphql<{ channels?: BufferChannel[] }>({
-      config,
-      fetchImpl,
-      operation: "Reading Buffer channels",
-      query: `query BufferChannels($input: ChannelsInput!) {
-        channels(input: $input) {
-          id name service externalLink isDisconnected isLocked organizationId
-        }
-      }`,
-      variables: { input: { organizationId: organization.id } },
-    });
-    for (const channel of result.channels ?? []) {
-      if (
-        channelMatches(channel, config.channelName)
-        && channel.isDisconnected !== true
-        && channel.isLocked !== true
-        && typeof channel.id === "string"
-      ) {
-        matches.push({
-          channelId: channel.id,
-          organizationId: typeof channel.organizationId === "string"
-            ? channel.organizationId
-            : organization.id,
-        });
-      }
-    }
-  }
-
-  if (matches.length !== 1) {
-    throw new BufferPublicationError(
-      matches.length === 0
-        ? `No connected Buffer Instagram channel matches ${config.channelName}`
-        : `More than one Buffer Instagram channel matches ${config.channelName}`,
-      503,
-      "buffer_channel_unavailable",
-    );
-  }
-  return matches[0];
-}
-
-async function findExistingPublications({
-  channelId,
-  config,
-  fetchImpl,
-  feedMarker,
-  publicationDate,
-  storyImageUrl,
-  organizationId,
-}: {
-  channelId: string;
-  config: BufferInstagramPublisherConfig;
-  fetchImpl: typeof fetch;
-  feedMarker: string;
-  publicationDate: string;
-  storyImageUrl: string;
-  organizationId: string;
-}) {
-  const result = await bufferGraphql<{
-    posts?: { edges?: Array<{ node?: BufferPost }> };
-  }>({
-    config,
-    fetchImpl,
-    operation: "Reading recent Buffer posts",
-    query: `query BufferRecentPosts($input: PostsInput!) {
-      posts(first: 50, input: $input) {
-        edges {
-          node {
-            id text status createdAt sentAt
-            metadata {
-              __typename
-              ... on InstagramPostMetadata { type }
-            }
-            assets { ... on ImageAsset { source } }
-          }
-        }
-      }
-    }`,
-    variables: {
-      input: {
-        filter: {
-          channelIds: [channelId],
-          status: ["scheduled", "sending", "sent"],
-        },
-        organizationId,
-        sort: [{ direction: "desc", field: "createdAt" }],
-      },
-    },
-  });
-  const posts = result.posts?.edges?.map((edge) => edge.node).filter(
-    (post): post is BufferPost => Boolean(post),
-  ) ?? [];
-  const feed = posts.find(
-    (post) => typeof post.text === "string" && post.text.includes(feedMarker),
-  );
-  const story = posts.find((post) => {
-    const publishedAt = post.sentAt ?? post.createdAt;
-    return post.metadata?.type === "story"
-      && post.assets?.some((asset) => sameDailyStoryAsset(asset.source, storyImageUrl)) === true
-      && typeof publishedAt === "string"
-      && dateInCatalonia(new Date(publishedAt)) === publicationDate;
-  });
-  return {
-    feedPostId: typeof feed?.id === "string" ? feed.id : null,
-    storyPostId: typeof story?.id === "string" ? story.id : null,
-  };
-}
-
-async function createImagePost({
-  caption,
-  channelId,
-  config,
-  fetchImpl,
-  imageUrl,
-  type,
-}: {
-  caption: string;
-  channelId: string;
-  config: BufferInstagramPublisherConfig;
-  fetchImpl: typeof fetch;
-  imageUrl: string;
-  type: "post" | "story";
-}) {
-  const result = await bufferGraphql<{
-    createPost?: {
-      __typename?: unknown;
-      message?: unknown;
-      post?: { id?: unknown };
-    };
-  }>({
-    config,
-    fetchImpl,
-    operation: "Creating the Buffer Instagram post",
-    query: `mutation BufferCreatePost($input: CreatePostInput!) {
-      createPost(input: $input) {
-        __typename
-        ... on PostActionSuccess { post { id } }
-        ... on MutationError { message }
-      }
-    }`,
-    variables: {
-      input: {
-        assets: [{ image: { url: imageUrl } }],
-        channelId,
-        metadata: {
-          instagram: {
-            shouldShareToFeed: type === "post",
-            type,
-          },
-        },
-        mode: "shareNow",
-        schedulingType: "automatic",
-        text: caption,
-      },
-    },
-  });
-  const postId = result.createPost?.post?.id;
-  if (typeof postId !== "string") {
-    const detail = typeof result.createPost?.message === "string"
-      ? `: ${result.createPost.message.slice(0, 300)}`
-      : "";
-    throw new BufferPublicationError(
-      `Buffer did not accept the Instagram post${detail}`,
-      502,
-      "buffer_publication_failed",
-    );
-  }
-  return postId;
 }
 
 export async function publishDailyInstagramPrediction({
@@ -431,38 +90,48 @@ export async function publishDailyInstagramPrediction({
 
   const { channelId, organizationId } = await findInstagramChannel(config, fetchImpl);
   const marker = dailyInstagramMarker(publicationDate);
-  const existing = await findExistingPublications({
+  const posts = await readRecentInstagramPosts({
     channelId,
     config,
-    feedMarker: marker,
     fetchImpl,
     organizationId,
-    publicationDate,
-    storyImageUrl,
   });
-  const feed = existing.feedPostId
-    ? { status: "already_published" as const, postId: existing.feedPostId }
+  const existingFeed = posts.find(
+    (post) => typeof post.text === "string" && post.text.includes(marker),
+  );
+  const existingStory = posts.find((post) => {
+    const publishedAt = post.sentAt ?? post.createdAt;
+    return post.metadata?.type === "story"
+      && post.assets?.some((asset) => sameDailyStoryAsset(asset.source, storyImageUrl)) === true
+      && typeof publishedAt === "string"
+      && dateInCatalonia(new Date(publishedAt)) === publicationDate;
+  });
+  const feedPostId = typeof existingFeed?.id === "string" ? existingFeed.id : null;
+  const storyPostId = typeof existingStory?.id === "string" ? existingStory.id : null;
+
+  const feed = feedPostId
+    ? { status: "already_published" as const, postId: feedPostId }
     : {
         status: "published" as const,
-        postId: await createImagePost({
+        postId: await createBufferInstagramPost({
+          assets: [{ image: { url: imageUrl } }],
           caption,
           channelId,
           config,
           fetchImpl,
-          imageUrl,
           type: "post",
         }),
       };
-  const story = existing.storyPostId
-    ? { status: "already_published" as const, postId: existing.storyPostId }
+  const story = storyPostId
+    ? { status: "already_published" as const, postId: storyPostId }
     : {
         status: "published" as const,
-        postId: await createImagePost({
+        postId: await createBufferInstagramPost({
+          assets: [{ image: { url: storyImageUrl } }],
           caption: "",
           channelId,
           config,
           fetchImpl,
-          imageUrl: storyImageUrl,
           type: "story",
         }),
       };

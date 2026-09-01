@@ -1,0 +1,145 @@
+import type { DailyShareCard } from "@/src/lib/daily-share-cards";
+import {
+  BufferPublicationError,
+  createBufferInstagramPost,
+  dateInCatalonia,
+  findInstagramChannel,
+  readRecentInstagramPosts,
+  weekdayInCatalonia,
+  type BufferInstagramPublisherConfig,
+} from "@/src/lib/buffer-client";
+
+export type InstagramGrowthPublication = "education" | "weekend";
+
+const publicationConfig = {
+  education: {
+    markerLabel: "Publicació educativa",
+    weekday: "Wed",
+  },
+  weekend: {
+    markerLabel: "Previsió del cap de setmana",
+    weekday: "Fri",
+  },
+} satisfies Record<InstagramGrowthPublication, { markerLabel: string; weekday: string }>;
+
+export function instagramGrowthMarker(kind: InstagramGrowthPublication, publicationDate: string) {
+  return `${publicationConfig[kind].markerLabel} · ${publicationDate}`;
+}
+
+function educationCaption(card: DailyShareCard, publicationDate: string) {
+  const reading = card.readings[0];
+  const today = reading
+    ? `La lectura territorial més alta d’avui és ${reading.score}/100 per a ${reading.speciesName} a ${reading.regionName}.`
+    : "Avui no hi ha una lectura territorial favorable publicable.";
+  return `Com s’ha d’interpretar la predicció de Bolets Atles?\n\n${today}\n\nEl valor descriu condicions ambientals i hàbitat compatible. No confirma presència ni assenyala punts de recol·lecció. Desplaça per entendre què hi ha darrere del número.\n\nConsulta la lectura completa a https://bolets.app/bolets-avui\n\n${instagramGrowthMarker("education", publicationDate)}\n#BoletsAtles #Micologia #BoletsCatalunya #Bosc`;
+}
+
+function weekendCaption(card: DailyShareCard, publicationDate: string) {
+  const highlights = card.readings.slice(0, 3).map(
+    (reading) => `${reading.regionName}: ${reading.speciesName} · ${reading.score}/100`,
+  ).join("\n");
+  return `Com arriben les condicions al cap de setmana?\n\n${highlights || "Sense condicions favorables publicables avui."}\n\nAquesta és la lectura verificada d’avui, no una confirmació de presència. Revisa el mapa abans de sortir perquè les dades evolucionen.\n\nhttps://bolets.app/bolets-avui\n\n${instagramGrowthMarker("weekend", publicationDate)}\n#BoletsAtles #BoletsCatalunya #CapDeSetmana #Micologia`;
+}
+
+export function instagramGrowthCaption(
+  kind: InstagramGrowthPublication,
+  card: DailyShareCard,
+  publicationDate: string,
+) {
+  return kind === "education"
+    ? educationCaption(card, publicationDate)
+    : weekendCaption(card, publicationDate);
+}
+
+export async function publishInstagramGrowthPost({
+  card,
+  config,
+  educationImageUrls,
+  fetchImpl = fetch,
+  kind,
+  now = new Date(),
+  reelUrl,
+}: {
+  card: DailyShareCard;
+  config: BufferInstagramPublisherConfig;
+  educationImageUrls?: string[];
+  fetchImpl?: typeof fetch;
+  kind: InstagramGrowthPublication;
+  now?: Date;
+  reelUrl?: string;
+}) {
+  if (!card.available || !card.observedAt || card.isPreview) {
+    throw new BufferPublicationError(
+      "There is no verified current prediction for the growth publication",
+      503,
+      "prediction_unavailable",
+    );
+  }
+
+  const publicationDate = dateInCatalonia(new Date(card.observedAt));
+  if (publicationDate !== dateInCatalonia(now)) {
+    throw new BufferPublicationError(
+      "The latest verified prediction is stale",
+      503,
+      "prediction_stale",
+    );
+  }
+  if (weekdayInCatalonia(now) !== publicationConfig[kind].weekday) {
+    throw new BufferPublicationError(
+      `The ${kind} publication may only run on its scheduled weekday`,
+      409,
+      "instagram_growth_off_schedule",
+    );
+  }
+  if (kind === "education" && educationImageUrls?.length !== 5) {
+    throw new BufferPublicationError(
+      "The educational carousel requires exactly five signed images",
+      500,
+      "instagram_growth_assets_invalid",
+    );
+  }
+  if (kind === "weekend" && !reelUrl) {
+    throw new BufferPublicationError(
+      "The weekend Reel requires a signed video URL",
+      500,
+      "instagram_growth_assets_invalid",
+    );
+  }
+
+  const caption = instagramGrowthCaption(kind, card, publicationDate);
+  if (caption.length > 2_200) {
+    throw new BufferPublicationError(
+      "The Instagram growth caption exceeds 2,200 characters",
+      500,
+      "instagram_caption_too_long",
+    );
+  }
+
+  const { channelId, organizationId } = await findInstagramChannel(config, fetchImpl);
+  const marker = instagramGrowthMarker(kind, publicationDate);
+  const posts = await readRecentInstagramPosts({
+    channelId,
+    config,
+    fetchImpl,
+    organizationId,
+  });
+  const existing = posts.find(
+    (post) => typeof post.text === "string" && post.text.includes(marker),
+  );
+  if (typeof existing?.id === "string") {
+    return { status: "already_published" as const, postId: existing.id, publicationDate, kind };
+  }
+
+  const assets = kind === "education"
+    ? educationImageUrls!.map((url) => ({ image: { url } }))
+    : [{ video: { url: reelUrl! } }];
+  const postId = await createBufferInstagramPost({
+    assets,
+    caption,
+    channelId,
+    config,
+    fetchImpl,
+    type: kind === "education" ? "post" : "reel",
+  });
+  return { status: "published" as const, postId, publicationDate, kind };
+}
