@@ -2,6 +2,9 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Share, SquarePlus } from "lucide-react";
+import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
+
+const installationTrackedKey = "bolets:app-install-tracked";
 
 /**
  * The event Chromium fires when the app meets the install criteria. It is not
@@ -24,6 +27,21 @@ function isInstalled() {
   return window.matchMedia("(display-mode: standalone)").matches
     // Safari's own flag, which predates display-mode and is still what iOS sets.
     || (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
+}
+
+function trackInstallationOnce() {
+  try {
+    if (window.localStorage.getItem(installationTrackedKey) === "1") return;
+  } catch {
+    // A blocked storage API must not prevent the anonymous completion event.
+  }
+
+  queueUmamiEvent(UMAMI_EVENTS.appInstalled);
+  try {
+    window.localStorage.setItem(installationTrackedKey, "1");
+  } catch {
+    // The event remains useful even when this browser cannot deduplicate it.
+  }
 }
 
 /** Reads a browser fact that React does not own, without a render-time guess. */
@@ -59,6 +77,10 @@ export function InstallApp() {
   const installed = useIsInstalled();
 
   useEffect(() => {
+    // Safari does not emit appinstalled. Its first standalone launch is the
+    // strongest confirmation available, and also recovers missed browser events.
+    if (isInstalled()) trackInstallationOnce();
+
     const capture = (event: Event) => {
       // Keep the browser's own banner from appearing so the offer stays in one
       // place, and hold the event for the button.
@@ -66,6 +88,7 @@ export function InstallApp() {
       setInstallPrompt(event as InstallPromptEvent);
     };
     const installedNow = () => {
+      trackInstallationOnce();
       setJustInstalled(true);
       setInstallPrompt(null);
     };
@@ -96,10 +119,17 @@ export function InstallApp() {
           type="button"
           className="install-app-button"
           onClick={async () => {
-            await installPrompt.prompt();
-            await installPrompt.userChoice;
-            // The event can only be used once, whatever the answer.
-            setInstallPrompt(null);
+            queueUmamiEvent(UMAMI_EVENTS.appInstallStarted);
+            try {
+              await installPrompt.prompt();
+              const choice = await installPrompt.userChoice;
+              if (choice.outcome === "accepted") {
+                queueUmamiEvent(UMAMI_EVENTS.appInstallAccepted);
+              }
+            } finally {
+              // The event can only be used once, whatever the answer.
+              setInstallPrompt(null);
+            }
           }}
         >
           <SquarePlus size={15} aria-hidden="true" /> Instal·la
@@ -109,7 +139,12 @@ export function InstallApp() {
           type="button"
           className="install-app-button"
           aria-expanded={appleInstructions}
-          onClick={() => setAppleInstructions((open) => !open)}
+          onClick={() => {
+            if (!appleInstructions) {
+              queueUmamiEvent(UMAMI_EVENTS.appInstallStarted);
+            }
+            setAppleInstructions((open) => !open);
+          }}
         >
           <SquarePlus size={15} aria-hidden="true" /> Com instal·lar-la
         </button>

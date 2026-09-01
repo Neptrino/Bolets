@@ -249,6 +249,10 @@ configure_goal_reports() {
     "Finding form started" \
     "finding-form-started" \
     "The finding capture form received its first interaction."
+  ensure_goal_report \
+    "App installed" \
+    "app-installed" \
+    "The browser confirmed installation or the installed app launched for the first time."
 }
 
 funnel_report_payload() {
@@ -364,6 +368,12 @@ configure_funnel_reports() {
     "finding-added" \
     30 \
     "A local finding draft that is finalized on the server within thirty days."
+  ensure_funnel_report \
+    "App install completion" \
+    "app-install-started" \
+    "app-installed" \
+    7 \
+    "An install action that is confirmed by the browser or a first standalone launch within seven days."
 }
 
 configure_analytics_reports() {

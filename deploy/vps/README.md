@@ -435,12 +435,15 @@ if the Umami setting is changed manually. The same bootstrap creates the
 `Homepage video play`, `Map cell click` and `Map species change` saved goal
 reports, together with goals for homepage video completion and map calls to
 action, successful map geolocation, species-profile map opens and finding-form
-starts. Their allowlisted events contain only the event name and a neutral
-virtual path; they do not attach an account identifier, species, map cell,
-coordinates, finding data or infographic metadata. It also creates `Signup
-completion` and `Finding sync completion` funnels from the anonymous start and
-completion events. Core Web Vitals are collected only for analytics-eligible
-public pages through Umami's performance report.
+starts, plus confirmed app installations. An `App install completion` funnel
+connects the anonymous install action to Chromium's completion event or the
+installed app's first standalone launch, which also covers iOS. Their
+allowlisted events contain only the event name and a neutral virtual path; they
+do not attach an account identifier, species, map cell, coordinates, finding
+data or infographic metadata. It also creates `Signup completion` and `Finding
+sync completion` funnels from the anonymous start and completion events. Core
+Web Vitals are collected only for analytics-eligible public pages through
+Umami's performance report.
 
 The private operational dashboard is available at
 `https://bolets.app/admin/status`. It reuses the normal Supabase Auth sign-in

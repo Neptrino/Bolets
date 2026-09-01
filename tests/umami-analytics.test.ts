@@ -218,6 +218,7 @@ describe("Umami analytics", () => {
     expect(bootstrap).toContain('"map-geolocation-success"');
     expect(bootstrap).toContain('"species-map-open"');
     expect(bootstrap).toContain('"finding-form-started"');
+    expect(bootstrap).toContain('"app-installed"');
     expect(bootstrap).toContain('"Signup completion"');
     expect(bootstrap).toContain('"Finding sync completion"');
     expect(bootstrap).toContain('"Infographic downloaded"');
@@ -230,6 +231,8 @@ describe("Umami analytics", () => {
     expect(bootstrap).toContain('"Map geolocation success"');
     expect(bootstrap).toContain('"Species map open"');
     expect(bootstrap).toContain('"Finding form started"');
+    expect(bootstrap).toContain('"App installed"');
+    expect(bootstrap).toContain('"App install completion"');
     expect(findingSync.indexOf("queueUmamiEvent(UMAMI_EVENTS.findingAdded)")).toBeGreaterThan(
       findingSync.indexOf("if (!finalize.ok)"),
     );
@@ -258,6 +261,10 @@ describe("Umami analytics", () => {
     expect(readFileSync("components/species-profile/distribution-section.tsx", "utf8"))
       .toContain("analyticsEvent={UMAMI_EVENTS.speciesMapOpen}");
     expect(findingForm).toContain("queueUmamiEvent(UMAMI_EVENTS.findingFormStarted)");
+    const installApp = readFileSync("components/install-app.tsx", "utf8");
+    expect(installApp).toContain("queueUmamiEvent(UMAMI_EVENTS.appInstallStarted)");
+    expect(installApp).toContain("queueUmamiEvent(UMAMI_EVENTS.appInstallAccepted)");
+    expect(installApp).toContain("queueUmamiEvent(UMAMI_EVENTS.appInstalled)");
   });
 
 });

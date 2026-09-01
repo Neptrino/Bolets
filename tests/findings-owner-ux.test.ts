@@ -69,6 +69,11 @@ describe("owner finding interactions", () => {
     expect(reportForm).toContain("corregeix el punt al mapa");
   });
 
+  it("opens the image picker instead of forcing the Android camera", () => {
+    expect(reportForm).toContain('type="file" accept="image/*" multiple');
+    expect(reportForm).not.toContain('capture="environment"');
+  });
+
   it("gives the privacy summary a clear promise and distinct decisions", () => {
     expect(reportForm).toContain("El punt exacte");
     expect(reportForm).toContain("no es publica mai");

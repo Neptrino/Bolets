@@ -13,6 +13,9 @@ export const UMAMI_EVENTS = {
   mapGeolocationSuccess: "map-geolocation-success",
   speciesMapOpen: "species-map-open",
   findingFormStarted: "finding-form-started",
+  appInstallStarted: "app-install-started",
+  appInstallAccepted: "app-install-accepted",
+  appInstalled: "app-installed",
 } as const;
 
 export const UMAMI_EVENT_NAMES = Object.values(UMAMI_EVENTS);

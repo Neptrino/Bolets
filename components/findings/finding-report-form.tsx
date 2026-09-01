@@ -370,7 +370,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
           </div>
           <label className="finding-button-secondary finding-detect-button">
             <Camera size={18} aria-hidden="true" /> Afegir fotos i detectar dades
-            <input hidden type="file" accept="image/*" capture="environment" multiple onChange={(event) => { void addPhotos(event.currentTarget.files); event.currentTarget.value = ""; }} disabled={busy || photos.length >= 4} />
+            <input hidden type="file" accept="image/*" multiple onChange={(event) => { void addPhotos(event.currentTarget.files); event.currentTarget.value = ""; }} disabled={busy || photos.length >= 4} />
           </label>
           {photos.length ? <div className="finding-photo-grid">{photos.map((photo, index) => <div className="finding-photo-option" key={photo.id}>
             {/* A local object URL never leaves the device until sync. */}

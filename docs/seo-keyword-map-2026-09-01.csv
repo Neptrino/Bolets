@@ -1,0 +1,45 @@
+priority,cluster,keyword,volume_es,difficulty,intent,target,status,recommended_action
+P0,Broad discovery,bolets,2900,64,informational,/,existing_optimize,Long-term head term; strengthen category proof and internal links
+P0,Broad discovery,bolets catalunya,390,6,informational,/,existing_optimize,Primary homepage phrase
+P0,Broad discovery,bolets de catalunya,320,9,informational,/,existing_optimize,Same canonical as bolets catalunya
+P0,Current conditions,on trobar bolets aquesta setmana,140,5,informational,/bolets-avui,existing_optimize,Server-render dated territorial summary
+P0,Current conditions,on trobar bolets ara,90,7,informational,/bolets-avui,existing_optimize,Use as secondary freshness phrase
+P0,Current conditions,donde hay setas ahora en cataluña,320,7,informational,,defer,Only target within a complete Spanish experience
+P0,Map,mapa bolets catalunya,170,5,informational,/map,existing_optimize,Add indexable explanation and exact phrase
+P0,Catalogue,tipus de bolets,210,10,informational,/bolets,existing_optimize,Primary catalogue phrase
+P0,Catalogue,guia de bolets,110,10,informational,/bolets,existing_optimize,Secondary catalogue phrase
+P0,Catalogue,noms de bolets,110,6,informational,/bolets,existing_optimize,Explain aliases and scientific names
+P0,Edibility,bolets comestibles,590,8,informational,/bolets-comestibles,existing_optimize,Primary edible hub phrase
+P0,Edibility,bolets comestibles catalunya,390,9,informational,/bolets-comestibles,existing_optimize,Reinforce Catalonia scope
+P0,Safety,bolets verinosos,140,8,informational,/bolets-verinosos,existing_optimize,Keep one generic poisonous hub
+P0,Safety,bolets toxics,90,5,informational,/bolets-verinosos,existing_optimize,Add exact synonym without duplicate URL
+P0,Safety,bolets no comestibles,140,10,informational,/bolets-verinosos,existing_optimize,Explain distinction from toxic
+P0,Species group,rovellons,2400,73,informational,/zones/rovellons,existing_optimize,Plural group owner supported by two species profiles
+P0,Species group,tipus de ceps,260,23,informational,/zones/ceps,existing_optimize,Group hub owner
+P0,Species,camagroc,920,8,informational,/bolets/camagroc,existing_optimize,Highest-priority easy species term
+P0,Species,fredolic,660,16,informational,/bolets/fredolic,existing_optimize,Link toxic comparison prominently
+P0,Safety comparison,fredolic toxic,260,8,informational,/compare/fredolic-vs-fredolic-metzinos,existing_optimize,Use exact modifier and plural variant
+P0,Species alias,pota de perdiu,260,5,informational,/bolets/cama-de-perdiu,existing_optimize,Add as prominent alternate name
+P1,Species,carlet bolet,480,8,informational,/bolets/carlet,existing_optimize,Use exact phrase naturally
+P1,Species,apagallums,320,21,informational,/bolets/apagallums,existing_optimize,Strengthen profile and internal links
+P1,Safety species,apagallums bolet toxic,210,6,informational,/bolets/apagallums,existing_optimize,Explain dangerous small-lepiota confusion
+P1,Species,bolet de tinta,260,18,informational,/bolets/bolet-de-tinta,existing_monitor,Existing exact profile
+P1,Species,bolet rossinyol,140,10,informational,/bolets/rossinyol,existing_monitor,Existing exact profile
+P1,Terminology,bolet de soca,390,9,informational,/bolets-de-soca,existing_verify,Assign after production verification
+P1,Terminology,bolets de soca,390,9,informational,/bolets-de-soca,existing_verify,Overlapping plural variant; do not sum volumes
+P1,Species gap,sabatera,210,7,informational,/bolets/sabatera,build,Create sourced descriptive reference profile
+P1,Species gap,sabatera bolet,140,8,informational,/bolets/sabatera,build,Same planned canonical
+P1,Species gap,lleterola bolet,110,7,informational,/bolets/lleterola-vermella,build,Create sourced descriptive reference profile
+P1,Species gap,moixerno de tardor,110,8,informational,/bolets/moixerno-de-tardor,build,Keep distinct from spring moixero
+P1,Terminology gap,peu de rata,590,8,informational,/peus-de-rata,build,Publish broad safety-led explainer; do not imply blanket edibility
+P1,Education,parts d'un bolet,110,16,informational,/parts-dun-bolet,existing_monitor,Existing exact guide
+P1,Season,temporada de bolets,50,8,informational,/temporada,existing_optimize,Support with month and season pages
+P1,Local,bolets montseny,50,7,local informational,/zones/montseny,existing_optimize,Deepen evidence rather than add duplicate
+P2,Preservation,congelar bolets,20,5,informational,/conservar-bolets,existing_optimize,Expand species-specific freezing guidance
+P2,Preservation,com conservar els ceps,40,6,informational,/conservar-bolets,existing_optimize,Add a clearly linked subsection
+P2,Recipes,estofat de vedella amb bolets,320,5,informational,/receptes/estofat-de-vedella-amb-bolets,defer_build,Only if recipe strategy is approved
+P2,Recipes,rovellons a la brasa,70,5,informational,/receptes/rovellons-a-la-brasa,defer_build,Only if recipe strategy is approved
+P2,Recipes,pasta amb camagrocs,110,4,informational,/receptes/pasta-amb-camagrocs,defer_build,Only if recipe strategy is approved
+P3,Spanish,setas catalunya,260,7,informational,/es/,defer,Requires complete Spanish information architecture
+P3,Spanish,setas comestibles en cataluña,140,7,informational,/es/setas-comestibles,defer,Requires translated and maintained safety content
+P3,Spanish,mapa de setas en cataluña,70,11,informational,/es/mapa,defer,Requires complete Spanish product experience
