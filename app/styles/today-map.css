@@ -58,32 +58,15 @@
 .current-map-footer .prediction-gradient-scale > span { display: flex; justify-content: space-between; gap: 1rem; color: #777e75; font-size: var(--text-xs); }
 
 .current-instagram {
-  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 1.1rem;
   align-items: center;
   margin: 1.1rem 0 1rem;
-  overflow: hidden;
   padding: 1.2rem 1.3rem;
   border: 1px solid rgba(47, 65, 42, .2);
   border-radius: 16px;
-  background:
-    radial-gradient(circle at 88% -30%, rgba(213, 132, 80, .22), transparent 45%),
-    #f4efe3;
-}
-
-.current-instagram::after {
-  position: absolute;
-  right: 16%;
-  bottom: -2.4rem;
-  width: 8rem;
-  height: 5rem;
-  border: 1px solid rgba(78, 99, 74, .12);
-  border-radius: 50%;
-  content: "";
-  transform: rotate(-12deg);
-  pointer-events: none;
+  background: #f4efe3;
 }
 
 .current-instagram-mark {
@@ -98,15 +81,13 @@
   box-shadow: 0 9px 24px rgba(48, 72, 57, .16);
 }
 
-.current-instagram-copy { position: relative; z-index: 1; }
+.current-instagram-copy { min-width: 0; }
 .current-instagram-copy .eyebrow { margin: 0 0 .3rem; color: #a95027; }
 .current-instagram-copy h2 { margin: 0; color: #273c2d; font-size: var(--text-xl); line-height: 1.15; letter-spacing: -.025em; }
 .current-instagram-copy > p:last-child { margin: .4rem 0 0; color: #546058; font-size: var(--text-base); line-height: 1.5; }
 .current-instagram-copy strong { color: #304839; }
 
 .current-instagram-link {
-  position: relative;
-  z-index: 1;
   display: inline-flex;
   gap: .45rem;
   align-items: center;
