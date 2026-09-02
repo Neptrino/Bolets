@@ -10,7 +10,7 @@ const PRIVATE_HEADERS = {
 };
 
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ requestId: string; mediaId: string }> },
 ) {
   const user = await getAuthenticatedUser();
@@ -30,5 +30,9 @@ export async function GET(
 
   const download = await admin.storage.from("contribution-media").download(media.storage_path);
   if (download.error || !download.data) return new Response(null, { status: 404, headers: PRIVATE_HEADERS });
-  return new Response(await download.data.arrayBuffer(), { headers: PRIVATE_HEADERS });
+  const headers = new Headers(PRIVATE_HEADERS);
+  if (new URL(request.url).searchParams.get("download") === "1") {
+    headers.set("Content-Disposition", `attachment; filename="bolets-aportacio-${mediaId}.webp"`);
+  }
+  return new Response(await download.data.arrayBuffer(), { headers });
 }

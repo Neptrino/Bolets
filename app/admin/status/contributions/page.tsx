@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Download } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { CONTRIBUTION_KIND_LABELS } from "@/src/lib/contributions";
 import {
+  type AdminContributionRequest,
   readAdminContributionRequests,
   readAdminContributorAccessList,
 } from "@/src/lib/contributions/server";
@@ -23,6 +25,40 @@ const dateFormatter = new Intl.DateTimeFormat("ca-ES", {
 
 function firstValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function ContributionMediaReview({ request }: { request: AdminContributionRequest }) {
+  if (!request.media.length) return null;
+  return (
+    <div className={styles.mediaReview}>
+      <div>
+        <strong>{request.media.length} {request.media.length === 1 ? "fotografia privada" : "fotografies privades"}</strong>
+        <span>
+          {request.mediaRightsConfirmedAt
+            ? `Drets confirmats el ${dateFormatter.format(new Date(request.mediaRightsConfirmedAt))}`
+            : "Drets no registrats"}
+          {request.mediaCredit ? ` · Crèdit: ${request.mediaCredit}` : " · Sense crèdit públic"}
+        </span>
+      </div>
+      <div className={styles.mediaGrid}>
+        {request.media.map((media, index) => (
+          <figure className={styles.mediaItem} key={media.id}>
+            <Image
+              src={media.url}
+              alt={`Fotografia aportada ${index + 1}`}
+              width={media.width}
+              height={media.height}
+              unoptimized
+            />
+            <a href={`${media.url}?download=1`} download>
+              <Download size={16} aria-hidden="true" />
+              Descarrega la foto {index + 1}
+            </a>
+          </figure>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default async function AdminContributionsPage({
@@ -72,29 +108,7 @@ export default async function AdminContributionsPage({
                   <span>{request.userEmail} · {dateFormatter.format(new Date(request.createdAt))}</span>
                 </div>
                 <p className={styles.description}>{request.description}</p>
-                {request.media.length ? (
-                  <div className={styles.mediaReview}>
-                    <div>
-                      <strong>{request.media.length} {request.media.length === 1 ? "fotografia privada" : "fotografies privades"}</strong>
-                      <span>
-                        Drets confirmats el {dateFormatter.format(new Date(request.mediaRightsConfirmedAt!))}
-                        {request.mediaCredit ? ` · Crèdit: ${request.mediaCredit}` : " · Sense crèdit públic"}
-                      </span>
-                    </div>
-                    <div className={styles.mediaGrid}>
-                      {request.media.map((media, index) => (
-                        <Image
-                          key={media.id}
-                          src={media.url}
-                          alt={`Fotografia aportada ${index + 1}`}
-                          width={media.width}
-                          height={media.height}
-                          unoptimized
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
+                <ContributionMediaReview request={request} />
                 {request.evidenceUrl ? <Link className={styles.evidence} href={request.evidenceUrl} target="_blank" rel="noreferrer">Obrir l’evidència ↗</Link> : null}
                 <form action={reviewContributionAction} className={styles.reviewForm}>
                   <input type="hidden" name="requestId" value={request.id} />
@@ -144,6 +158,7 @@ export default async function AdminContributionsPage({
                 <span>{request.userEmail} · {request.status === "approved" ? "Aprovada" : "No aprovada"}</span>
               </div>
               {request.reviewNote ? <p className={styles.description}>{request.reviewNote}</p> : null}
+              <ContributionMediaReview request={request} />
             </li>
           ))}
         </ol>

@@ -57,4 +57,14 @@ describe("private contribution media route", () => {
     expect(response.headers.get("content-type")).toBe("image/webp");
     expect(response.headers.get("cache-control")).toBe("private, no-store");
   });
+
+  it("serves an explicit attachment when the admin requests a download", async () => {
+    mocks.getAuthenticatedUser.mockResolvedValue({ id: "admin-id", app_metadata: { app_role: "admin" } });
+    const response = await GET(new Request("http://localhost?download=1"), context);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-disposition")).toBe(
+      'attachment; filename="bolets-aportacio-media-id.webp"',
+    );
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
+  });
 });
