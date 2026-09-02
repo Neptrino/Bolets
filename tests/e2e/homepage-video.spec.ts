@@ -27,8 +27,8 @@ test.describe("before hydration", () => {
     await clickNativePlay(page, video);
 
     await expect.poll(
-      () => video.evaluate((element) => (element as HTMLVideoElement).paused),
-    ).toBe(false);
+      () => video.evaluate((element) => (element as HTMLVideoElement).currentTime),
+    ).toBeGreaterThan(0.05);
   });
 });
 
@@ -38,12 +38,14 @@ test("plays from one cover click after hydration", async ({ page }) => {
   const video = page.locator(".home-showcase-player video");
   const cover = page.locator(".home-showcase-cover");
   await expect(cover).toBeVisible();
+  await expect(video).not.toHaveAttribute("controls", "");
   await cover.click();
 
   await expect.poll(
-    () => video.evaluate((element) => (element as HTMLVideoElement).paused),
-  ).toBe(false);
+    () => video.evaluate((element) => (element as HTMLVideoElement).currentTime),
+  ).toBeGreaterThan(0.05);
   await expect(cover).toHaveCount(0, { timeout: 15_000 });
+  await expect(video).toHaveAttribute("controls", "");
 
   await video.evaluate((element) => (element as HTMLVideoElement).pause());
   await expect.poll(

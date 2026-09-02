@@ -1,21 +1,36 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { LoaderCircle, Play, RotateCcw } from "lucide-react";
 import { StaticMediaImage } from "@/components/static-media-image";
 import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
-const SHOWCASE_MEDIA_VERSION = "2026-09-02-cover";
+const SHOWCASE_MEDIA_VERSION = "2026-09-03-playback";
+const PLAYBACK_START_TIMEOUT_MS = 12_000;
 const subscribeToHydration = () => () => undefined;
 
 export function HomeShowcaseVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playTracked = useRef(false);
   const completionTracked = useRef(false);
+  const playbackTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hydrated = useSyncExternalStore(subscribeToHydration, () => true, () => false);
   const [playbackState, setPlaybackState] = useState<"idle" | "loading" | "playing" | "error">("idle");
 
-  const handlePlaying = () => {
+  useEffect(() => () => {
+    if (playbackTimeout.current) clearTimeout(playbackTimeout.current);
+  }, []);
+
+  const clearPlaybackTimeout = () => {
+    if (!playbackTimeout.current) return;
+    clearTimeout(playbackTimeout.current);
+    playbackTimeout.current = null;
+  };
+
+  const confirmPlaybackStarted = () => {
+    const video = videoRef.current;
+    if (!video || video.paused || video.currentTime <= 0.05) return;
+    clearPlaybackTimeout();
     setPlaybackState("playing");
     if (playTracked.current) return;
     playTracked.current = true;
@@ -25,12 +40,27 @@ export function HomeShowcaseVideo() {
   const requestPlayback = async () => {
     const video = videoRef.current;
     if (!video || playbackState === "loading") return;
+    clearPlaybackTimeout();
     setPlaybackState("loading");
+    playbackTimeout.current = setTimeout(() => {
+      playbackTimeout.current = null;
+      if (video.currentTime > 0.05 && !video.paused) {
+        confirmPlaybackStarted();
+        return;
+      }
+      setPlaybackState("error");
+    }, PLAYBACK_START_TIMEOUT_MS);
     try {
       await video.play();
     } catch {
+      clearPlaybackTimeout();
       setPlaybackState("error");
     }
+  };
+
+  const handlePlaybackError = () => {
+    clearPlaybackTimeout();
+    setPlaybackState("error");
   };
 
   const handleEnded = () => {
@@ -53,18 +83,18 @@ export function HomeShowcaseVideo() {
         <video
           key={SHOWCASE_MEDIA_VERSION}
           ref={videoRef}
-          controls
+          controls={!hydrated || playbackState === "playing"}
           muted
           playsInline
           preload="metadata"
           poster={`/media/generated/home-showcase-poster.webp?v=${SHOWCASE_MEDIA_VERSION}`}
           aria-label="Presentació de Bolets de Catalunya"
-          onPlaying={handlePlaying}
-          onError={() => setPlaybackState("error")}
+          onTimeUpdate={confirmPlaybackStarted}
+          onError={handlePlaybackError}
           onEnded={handleEnded}
         >
-          <source src={`/media/generated/home-showcase.webm?v=${SHOWCASE_MEDIA_VERSION}`} type="video/webm" />
           <source src={`/media/generated/home-showcase.mp4?v=${SHOWCASE_MEDIA_VERSION}`} type="video/mp4" />
+          <source src={`/media/generated/home-showcase.webm?v=${SHOWCASE_MEDIA_VERSION}`} type="video/webm" />
           El navegador no permet reproduir aquest vídeo.
         </video>
         {hydrated && playbackState !== "playing" ? (
