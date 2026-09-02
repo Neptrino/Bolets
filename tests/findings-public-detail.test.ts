@@ -12,6 +12,7 @@ const flagButton = readFileSync("components/findings/finding-flag-button.tsx", "
 describe("public finding detail", () => {
   it("publishes a canonical URL for the public findings overview", () => {
     expect(overviewPage).toContain('alternates: { canonical: "/troballes" }');
+    expect(overviewPage).toContain("obre els sectors d’1 km del mapa de condicions durant 7 dies");
   });
 
   it("keeps thin observation and cell-filter views out of the index while allowing discovery", () => {

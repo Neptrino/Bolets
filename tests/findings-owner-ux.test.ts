@@ -38,10 +38,9 @@ describe("owner finding interactions", () => {
     expect(personalFindings).toContain('event.key !== "Escape"');
   });
 
-  it("starts a reviewed contribution from an eligible published finding", () => {
-    expect(personalFindings).toContain("Proposar com a aportació");
-    expect(personalFindings).toContain("/compte/col-laboracio?troballa=");
-    expect(personalFindings).toContain('finding.photos.length ? (');
+  it("does not send a public finding through the separate reviewed contribution flow", () => {
+    expect(personalFindings).not.toContain("Proposar com a aportació");
+    expect(personalFindings).not.toContain("/compte/col-laboracio?troballa=");
   });
 
   it("explains that photos follow the finding publication choice", () => {

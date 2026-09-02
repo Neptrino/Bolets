@@ -1,16 +1,14 @@
 "use client";
 
 import { Camera, CheckCircle2, Clock3, ImagePlus, MapPinned, Send, ShieldCheck, Sprout, X } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   CONTRIBUTION_DESCRIPTION_MIN_LENGTH,
   CONTRIBUTION_KIND_LABELS,
-  CONTRIBUTION_KINDS,
   CONTRIBUTION_MEDIA_LIMIT,
-  type ContributionFindingOption,
-  type ContributionKind,
+  SUBMITTABLE_CONTRIBUTION_KINDS,
+  type SubmittableContributionKind,
   type ContributionRequestSummary,
 } from "@/src/lib/contributions";
 import {
@@ -19,7 +17,6 @@ import {
   uploadContributionMedia,
 } from "@/src/lib/contributions/media-client";
 import { prepareFindingPhoto } from "@/src/lib/findings/photo-client";
-import { FormSelect } from "@/components/ui/form-select";
 
 const dateFormatter = new Intl.DateTimeFormat("ca-ES", {
   day: "numeric",
@@ -94,17 +91,12 @@ export function ContributionHistory({
 }
 
 export function ContributionPanel({
-  findingOptions = [],
-  initialFindingId,
   initialPending = false,
 }: {
-  findingOptions?: ContributionFindingOption[];
-  initialFindingId?: string;
   initialPending?: boolean;
 }) {
   const router = useRouter();
-  const [kind, setKind] = useState<ContributionKind>("useful_finding");
-  const [findingId, setFindingId] = useState(initialFindingId ?? "");
+  const [kind, setKind] = useState<SubmittableContributionKind>("catalogue_correction");
   const [description, setDescription] = useState("");
   const [evidenceUrl, setEvidenceUrl] = useState("");
   const [mediaCredit, setMediaCredit] = useState("");
@@ -162,10 +154,6 @@ export function ContributionPanel({
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (kind === "useful_finding" && !findingId) {
-      setMessage("Selecciona una troballa pública ja publicada.");
-      return;
-    }
     if (kind === "reusable_media" && !media.length) {
       setMessage("Afegeix almenys una fotografia per enviar aquest tipus d’aportació.");
       return;
@@ -185,7 +173,6 @@ export function ContributionPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           kind,
-          findingId: kind === "useful_finding" ? findingId : null,
           description,
           evidenceUrl,
           mediaCredit,
@@ -196,7 +183,6 @@ export function ContributionPanel({
       const body = await response.json() as { error?: string };
       if (!response.ok) throw new Error(body.error ?? "No s’ha pogut enviar l’aportació.");
       setDescription("");
-      setFindingId("");
       setEvidenceUrl("");
       setMediaCredit("");
       setMediaRightsConfirmed(false);
@@ -227,7 +213,7 @@ export function ContributionPanel({
         <fieldset disabled={busy || pending}>
           <legend>Què vols aportar?</legend>
           <div className="contribution-kind-grid">
-            {CONTRIBUTION_KINDS.map((value) => (
+            {SUBMITTABLE_CONTRIBUTION_KINDS.map((value) => (
               <label key={value} data-selected={kind === value}>
                 <input
                   type="radio"
@@ -244,34 +230,6 @@ export function ContributionPanel({
             ))}
           </div>
         </fieldset>
-        <div className="contribution-finding-field" hidden={kind !== "useful_finding"}>
-          <div className="contribution-media-heading">
-            <MapPinned size={20} aria-hidden="true" />
-            <div>
-              <strong>Tria una troballa del teu quadern</strong>
-              <span>Ha d’estar publicada i tenir almenys una fotografia pública.</span>
-            </div>
-          </div>
-          {findingOptions.length ? (
-            <FormSelect
-              aria-label="Troballa pública que vols proposar"
-              value={findingId}
-              onValueChange={setFindingId}
-              options={findingOptions.map((finding) => ({
-                value: finding.id,
-                label: `${finding.reportedSpeciesName} · ${dateFormatter.format(new Date(`${finding.observedOn}T12:00:00`))}`,
-              }))}
-              emptyLabel="Selecciona una troballa"
-              required={kind === "useful_finding"}
-              disabled={busy || pending || kind !== "useful_finding"}
-            />
-          ) : (
-            <div className="contribution-finding-empty">
-              <p>Encara no tens cap troballa pública amb foto que puguis proposar.</p>
-              <Link href="/troballes/nova">Anotar i publicar una troballa</Link>
-            </div>
-          )}
-        </div>
         <div className="contribution-media-field" hidden={kind !== "reusable_media"}>
             <div className="contribution-media-heading">
               <Camera size={20} aria-hidden="true" />
@@ -354,9 +312,7 @@ export function ContributionPanel({
             required
             value={description}
             onChange={(event) => setDescription(event.target.value)}
-            placeholder={kind === "useful_finding"
-              ? "Explica per què aquesta troballa i les seves fotos poden ser útils per al projecte."
-              : "Descriu què has preparat, corregit o fet i com ho podem revisar."}
+            placeholder="Descriu què has preparat, corregit o fet i com ho podem revisar."
             disabled={busy || pending}
           />
           <small>
@@ -375,9 +331,7 @@ export function ContributionPanel({
             placeholder="https://…"
             disabled={busy || pending}
           />
-          <small>{kind === "useful_finding"
-            ? "La troballa ja queda vinculada; aquí pots afegir una font o una prova complementària."
-            : "Pot ser una fotografia, una font o una prova de l’acció."}</small>
+          <small>Pot ser una fotografia, una font o una prova de l’acció.</small>
         </label>
         <button className="finding-button" disabled={busy || pending}>
           <Send size={17} aria-hidden="true" />

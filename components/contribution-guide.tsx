@@ -1,16 +1,21 @@
-import { ArrowRight, Camera, NotebookPen } from "lucide-react";
+import { ArrowRight, Camera, MapPinned, NotebookPen } from "lucide-react";
 import { SectionHeader } from "@/components/page-layout";
 
 const ways = [
   {
-    icon: Camera,
-    title: "Troballes i fotografies",
-    copy: "Publica primer la troballa al teu quadern. Després pots proposar-la per a revisió o compartir una imatge reutilitzable.",
+    icon: MapPinned,
+    title: "Troballa pública",
+    copy: "Publica una troballa amb foto des del quadern i obre els sectors d’1 km durant 7 dies, sense revisió.",
   },
   {
     icon: NotebookPen,
     title: "Catàleg amb fonts",
-    copy: "Assenyala i documenta una correcció concreta d’una fitxa o d’un contingut del catàleg.",
+    copy: "Documenta una correcció concreta. Si l’aprovem, obre els sectors d’1 km i 250 m durant 30 dies.",
+  },
+  {
+    icon: Camera,
+    title: "Fotografies reutilitzables",
+    copy: "Comparteix imatges amb permís de reutilització. Si les aprovem, obren tot el detall durant 30 dies.",
   },
 ];
 
@@ -80,7 +85,7 @@ export function ContributionGuide({ showResolution = true }: { showResolution?: 
           meta="Una contribució, una revisió humana"
           title="Com funciona"
           titleId="contribution-how-title"
-          description="No hi ha punts, rànquings ni pagaments. L’accés reconeix feina concreta que fa el projecte més útil."
+          description="Les correccions i els recursos reutilitzables passen una revisió humana. No hi ha punts, rànquings ni pagaments."
         />
         <div className="contribution-steps">
           <div><span>1</span><strong>Proposa</strong><p>Descriu què aportes i adjunta un enllaç si ajuda a comprovar-ho.</p></div>
@@ -90,7 +95,7 @@ export function ContributionGuide({ showResolution = true }: { showResolution?: 
       </section>
 
       <section aria-labelledby="contribution-ways-title">
-        <SectionHeader title="Maneres de contribuir" titleId="contribution-ways-title" />
+        <SectionHeader title="Dues vies d’accés" titleId="contribution-ways-title" description="Publicar una troballa és una acció directa de 7 dies; enviar una aportació és un flux separat, revisat, de 30 dies." />
         <div className="contribution-way-grid">
           {ways.map(({ icon: Icon, title, copy }) => (
             <article key={title}>

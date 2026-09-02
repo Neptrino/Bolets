@@ -105,28 +105,6 @@ export async function listUserContributionRequests(userId: string) {
   return rows.map((row) => requestSummary(row, media.get(row.id)?.length ?? 0));
 }
 
-async function validateFindingEvidence(userId: string, findingId: string) {
-  const admin = createSupabaseAdminClient();
-  const { data: finding, error: findingError } = await admin
-    .from("user_findings")
-    .select("id")
-    .eq("id", findingId)
-    .eq("owner_id", userId)
-    .eq("publication_state", "published")
-    .eq("visibility", "public")
-    .maybeSingle();
-  if (findingError) throw findingError;
-  if (!finding) throw new Error("La troballa ha de ser teva, pública i enviada.");
-
-  const { count, error: photoError } = await admin
-    .from("user_finding_photos")
-    .select("id", { count: "exact", head: true })
-    .eq("finding_id", findingId)
-    .eq("is_public", true);
-  if (photoError) throw photoError;
-  if (!count) throw new Error("La troballa necessita almenys una fotografia pública.");
-}
-
 export async function createContributionRequest(userId: string, input: ContributionRequestInput) {
   const parsed = contributionRequestInputSchema.parse(input);
   const admin = createSupabaseAdminClient();
@@ -153,13 +131,6 @@ export async function createContributionRequest(userId: string, input: Contribut
     throw new Error("Has arribat al límit de tres sol·licituds en trenta dies.");
   }
 
-  if (parsed.findingId) {
-    if (parsed.kind !== "useful_finding") {
-      throw new Error("Només les troballes útils poden adjuntar una troballa del quadern.");
-    }
-    await validateFindingEvidence(userId, parsed.findingId);
-  }
-
   const { data, error } = await admin
     .from("contribution_requests")
     .insert({
@@ -167,7 +138,7 @@ export async function createContributionRequest(userId: string, input: Contribut
       kind: parsed.kind,
       description: parsed.description,
       evidence_url: parsed.evidenceUrl,
-      finding_id: parsed.findingId,
+      finding_id: null,
       media_credit: parsed.mediaCredit,
       media_rights_confirmed_at: parsed.mediaRightsConfirmed ? new Date().toISOString() : null,
     })

@@ -8,12 +8,19 @@ export const CONTRIBUTION_KINDS = [
 
 export type ContributionKind = (typeof CONTRIBUTION_KINDS)[number];
 
+export const SUBMITTABLE_CONTRIBUTION_KINDS = [
+  "catalogue_correction",
+  "reusable_media",
+] as const;
+
+export type SubmittableContributionKind = (typeof SUBMITTABLE_CONTRIBUTION_KINDS)[number];
+
 export const CONTRIBUTION_DESCRIPTION_MIN_LENGTH = 20;
 export const CONTRIBUTION_MEDIA_LIMIT = 4;
 export const CONTRIBUTION_MEDIA_MAX_BYTES = 4_194_304;
 
 export const CONTRIBUTION_KIND_LABELS: Record<ContributionKind, string> = {
-  useful_finding: "Troballa pública ja publicada",
+  useful_finding: "Troballa pública enviada per revisió",
   catalogue_correction: "Correcció del catàleg amb fonts fiables",
   reusable_media: "Fotografia o recurs reutilitzable de bolets",
 };
@@ -28,10 +35,9 @@ const optionalHttpsUrl = z.union([
 ]);
 
 export const contributionRequestInputSchema = z.object({
-  kind: z.enum(CONTRIBUTION_KINDS),
+  kind: z.enum(SUBMITTABLE_CONTRIBUTION_KINDS),
   description: z.string().trim().min(CONTRIBUTION_DESCRIPTION_MIN_LENGTH).max(1000),
   evidenceUrl: optionalHttpsUrl.optional().transform((value) => value || null),
-  findingId: z.union([z.literal(""), z.null(), z.uuid()]).optional().transform((value) => value || null),
   mediaCredit: z.union([z.literal(""), z.null(), z.string().trim().max(80)]).optional().transform((value) => value || null),
   mediaRightsConfirmed: z.boolean().optional().default(false),
   media: z.array(z.object({
@@ -42,13 +48,6 @@ export const contributionRequestInputSchema = z.object({
     position: z.number().int().min(0).max(CONTRIBUTION_MEDIA_LIMIT - 1),
   })).max(CONTRIBUTION_MEDIA_LIMIT).optional().default([]),
 }).superRefine((input, context) => {
-  if (input.kind !== "useful_finding" && input.findingId) {
-    context.addIssue({
-      code: "custom",
-      path: ["findingId"],
-      message: "La troballa només correspon a aquest tipus d’aportació.",
-    });
-  }
   if (input.kind === "reusable_media") {
     if (!input.media.length) {
       context.addIssue({ code: "custom", path: ["media"], message: "Afegeix almenys una fotografia." });
@@ -64,13 +63,6 @@ export const contributionRequestInputSchema = z.object({
     }
     return;
   }
-  if (input.kind === "useful_finding" && !input.findingId) {
-    context.addIssue({
-      code: "custom",
-      path: ["findingId"],
-      message: "Selecciona una troballa pública ja publicada.",
-    });
-  }
   if (input.media.length || input.mediaRightsConfirmed || input.mediaCredit) {
     context.addIssue({ code: "custom", path: ["media"], message: "Les fotografies directes corresponen a l’aportació de recursos reutilitzables." });
   }
@@ -78,12 +70,6 @@ export const contributionRequestInputSchema = z.object({
 
 export type ContributionRequestInput = z.infer<typeof contributionRequestInputSchema>;
 export type ContributionMediaUpload = ContributionRequestInput["media"][number];
-
-export type ContributionFindingOption = {
-  id: string;
-  reportedSpeciesName: string;
-  observedOn: string;
-};
 
 export type ContributionRequestStatus = "pending" | "approved" | "rejected" | "withdrawn";
 

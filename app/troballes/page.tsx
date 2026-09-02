@@ -59,6 +59,7 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
     <PageHeader eyebrow="Quadern de camp i atles compartit" title={<>Del bosc al teu mapa, <PageTitleAccent>fins i tot sense cobertura</PageTitleAccent></>} description={<span className="findings-hero-copy">
     <span>Converteix cada sortida en un record útil: afegeix fotos, indica l’espècie i recupera automàticament la data i el GPS quan la imatge els conserva. Si no tens cobertura, la troballa queda al dispositiu i se sincronitza més tard.</span>
     <span>Al teu quadern conserves l’historial; quan comparteixes, l’atles mostra només el dia i una àrea de 10 × 10 km.</span>
+    <span>Quan publiques una troballa amb almenys una foto, el teu compte obre els sectors d’1 km del mapa de condicions durant 7 dies.</span>
     <span className="findings-hero-benefits"><span>Captura sense cobertura</span><span>GPS i data automàtics</span><span>El punt exacte mai no és públic</span></span>
   </span>} actions={<div className="findings-actions"><Link className="finding-button" href="/troballes/nova">Anotar una troballa</Link><Link className="finding-button-secondary" href="/les-meves-troballes">El meu quadern</Link></div>} />
     <PublicFindingsMap species={catalogueSpecies} />

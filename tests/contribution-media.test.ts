@@ -9,17 +9,12 @@ const photo = {
 };
 
 describe("contribution media", () => {
-  it("requires an existing finding for a useful-finding contribution", () => {
-    expect(contributionRequestInputSchema.safeParse({
-      kind: "useful_finding",
-      description: "Aquesta troballa documenta bé l’espècie i el seu context.",
-      findingId: null,
-    }).success).toBe(false);
+  it("keeps public findings out of the reviewed contribution form", () => {
     expect(contributionRequestInputSchema.safeParse({
       kind: "useful_finding",
       description: "Aquesta troballa documenta bé l’espècie i el seu context.",
       findingId: "6ddaf107-64b1-494b-925a-4bd98de7a6a8",
-    }).success).toBe(true);
+    }).success).toBe(false);
   });
 
   it("requires a photo and reuse permission for reusable-media contributions", () => {

@@ -7,7 +7,6 @@ import { ContributionGuide } from "@/components/contribution-guide";
 import { ContributionHistory, ContributionPanel } from "@/components/contribution-panel";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { listUserContributionRequests, readContributorAccess } from "@/src/lib/contributions/server";
-import { readOwnerContributionFindingOptions } from "@/src/lib/findings/reads.server";
 import { getAuthenticatedUser } from "@/src/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -22,24 +21,14 @@ const dateFormatter = new Intl.DateTimeFormat("ca-ES", {
   year: "numeric",
 });
 
-export default async function AccountContributionPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ troballa?: string | string[] }>;
-}) {
+export default async function AccountContributionPage() {
   const user = await getAuthenticatedUser();
   if (!user) redirect("/acces?retorn=/compte/col-laboracio");
-  const [access, requests, findingOptions, query] = await Promise.all([
+  const [access, requests] = await Promise.all([
     readContributorAccess(user.id),
     listUserContributionRequests(user.id),
-    readOwnerContributionFindingOptions(user.id),
-    searchParams,
   ]);
   const pending = requests.some((request) => request.status === "pending");
-  const requestedFindingId = Array.isArray(query.troballa) ? query.troballa[0] : query.troballa;
-  const initialFindingId = findingOptions.some((finding) => finding.id === requestedFindingId)
-    ? requestedFindingId
-    : undefined;
 
   return (
     <PageShell className="findings-page">
@@ -80,13 +69,20 @@ export default async function AccountContributionPage({
           </Link>
         ) : null}
       </section>
+      <aside className="contribution-finding-note" aria-labelledby="contribution-finding-note-title">
+        <span className="contribution-finding-note-icon" aria-hidden="true"><MapPinned size={22} /></span>
+        <div>
+          <p>Publicació directa · sense revisió</p>
+          <h2 id="contribution-finding-note-title">Una troballa pública amb foto obre els sectors d’1 km durant 7 dies</h2>
+          <span>Es publica des del quadern i no s’envia en aquest formulari. Les fotos continuen lligades a la troballa i no passen al catàleg automàticament.</span>
+        </div>
+        <Link href="/troballes/nova">
+          Anotar una troballa <ArrowUpRight size={17} aria-hidden="true" />
+        </Link>
+      </aside>
       <div className="account-contribution-layout">
         <div className="account-content">
-          <ContributionPanel
-            findingOptions={findingOptions}
-            initialFindingId={initialFindingId}
-            initialPending={pending}
-          />
+          <ContributionPanel initialPending={pending} />
         </div>
         <ContributionGuide showResolution={false} />
       </div>
