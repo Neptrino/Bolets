@@ -574,6 +574,7 @@ export interface PredictionHistoryPoint {
 
 export type ForecastHorizonConfidence = "high" | "moderate" | "limited";
 export type ForecastHorizonDays = 1 | 2 | 3 | 4 | 5;
+export type PredictionTimelineOffset = -6 | -5 | -4 | -3 | -2 | -1 | 0 | ForecastHorizonDays;
 
 export interface PredictionForecastPoint {
   validAt: string;

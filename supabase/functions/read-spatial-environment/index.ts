@@ -224,6 +224,217 @@ async function readCellHistory(
   };
 }
 
+type TimelineCellSupport = {
+  cell_id: string;
+  region_id: string;
+  grid_size_m: number;
+  west: number;
+  south: number;
+  east: number;
+  north: number;
+  confidence: EnvironmentSnapshotRow["confidence"];
+  static_values: Record<string, unknown>;
+  weather_point_ids: string[];
+  soil_point_ids: string[];
+  condition_snapshot_date: string | null;
+};
+
+const TIMELINE_HISTORY_DAYS = 7;
+const TIMELINE_POINT_CHUNK = 120;
+
+function chunks<T>(items: T[], size: number) {
+  return Array.from(
+    { length: Math.ceil(items.length / size) },
+    (_, index) => items.slice(index * size, (index + 1) * size),
+  );
+}
+
+async function readTimelinePointHistory(
+  supabase: ReturnType<typeof createAdminClient>,
+  pointIds: string[],
+) {
+  const results = await Promise.all(chunks(pointIds, TIMELINE_POINT_CHUNK).map(async (pointChunk) => {
+    const { data, error } = await supabase
+      .from("weather_grid_snapshots")
+      .select("point_id,snapshot_date,observed_at,sources,source_resolution_m,confidence,unavailable_fields,values")
+      .in("point_id", pointChunk)
+      .order("snapshot_date", { ascending: false })
+      .limit(TIMELINE_HISTORY_DAYS * pointChunk.length);
+    if (error) throw error;
+    return data ?? [];
+  }));
+  return results.flat();
+}
+
+async function readTimelineForecastRows(
+  supabase: ReturnType<typeof createAdminClient>,
+  pointIds: string[],
+) {
+  if (!pointIds.length) return { generatedAt: null, rows: [] };
+  const { data: issue, error: issueError } = await supabase
+    .from("weather_forecast_issues")
+    .select("snapshot_date,generated_at")
+    .not("completed_at", "is", null)
+    .order("snapshot_date", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (issueError) throw issueError;
+  if (!issue) return { generatedAt: null, rows: [] };
+
+  const results = await Promise.all(chunks(pointIds, TIMELINE_POINT_CHUNK).map(async (pointChunk) => {
+    const { data, error } = await supabase
+      .from("weather_grid_forecasts")
+      .select("point_id,valid_at,horizon_hours,sources,source_resolution_m,confidence,unavailable_fields,values")
+      .eq("snapshot_date", issue.snapshot_date)
+      .eq("generated_at", issue.generated_at)
+      .in("point_id", pointChunk)
+      .order("horizon_hours", { ascending: true });
+    if (error) throw error;
+    return data ?? [];
+  }));
+  return { generatedAt: issue.generated_at, rows: results.flat() };
+}
+
+function rowsForPoints<T extends { point_id: string }>(rows: T[], pointIds: string[]) {
+  const wanted = new Set(pointIds);
+  return rows.filter((row) => wanted.has(row.point_id));
+}
+
+function completeAggregate(
+  rows: Array<EnvironmentSnapshotRow & { point_id: string }>,
+  pointIds: string[],
+) {
+  return new Set(rows.map((row) => row.point_id)).size === pointIds.length
+    ? aggregateEnvironmentRows(rows)
+    : null;
+}
+
+async function readSpatialTimelineFrame(
+  supabase: ReturnType<typeof createAdminClient>,
+  bounds: NonNullable<ReturnType<typeof bbox>>,
+  resolution: number,
+  limit: number,
+  offset: number,
+) {
+  if (resolution < 1000) throw new Error("Timeline frames require a coarse grid");
+  const { data: supports, error: supportError } = await supabase
+    .from("spatial_cell_levels")
+    .select("cell_id,region_id,grid_size_m,west,south,east,north,confidence,static_values,weather_point_ids,soil_point_ids,condition_snapshot_date")
+    .eq("grid_size_m", resolution)
+    .gte("east", bounds.west)
+    .lte("west", bounds.east)
+    .gte("north", bounds.south)
+    .lte("south", bounds.north)
+    .not("condition_observed_at", "is", null)
+    .order("cell_id", { ascending: true })
+    .limit(limit);
+  if (supportError) throw supportError;
+  const cells = (supports ?? []) as TimelineCellSupport[];
+  const weatherPointIds = [...new Set(cells.flatMap((cell) => cell.weather_point_ids))];
+  const soilPointIds = [...new Set(cells.flatMap((cell) => cell.soil_point_ids))];
+  const [atmosphereRows, soilRows, forecast] = await Promise.all([
+    readTimelinePointHistory(supabase, weatherPointIds),
+    readTimelinePointHistory(supabase, soilPointIds),
+    offset > 0
+      ? readTimelineForecastRows(supabase, soilPointIds)
+      : Promise.resolve({ generatedAt: null, rows: [] }),
+  ]);
+  const atmosphereByDate = groupHistoryRows(atmosphereRows);
+  const soilByDate = groupHistoryRows(soilRows);
+
+  const frameCells = cells.flatMap((cell) => {
+    const completeDates = [...atmosphereByDate]
+      .filter(([snapshotDate, rows]) =>
+        (!cell.condition_snapshot_date || snapshotDate <= cell.condition_snapshot_date) &&
+        new Set(rowsForPoints(rows, cell.weather_point_ids).map((row) => row.point_id)).size ===
+          cell.weather_point_ids.length
+      )
+      .map(([snapshotDate]) => snapshotDate)
+      .sort();
+    const targetDate = offset < 0
+      ? completeDates.at(offset - 1)
+      : completeDates.at(-1);
+    if (!targetDate) return [];
+    const targetAtmosphereRows = rowsForPoints(
+      atmosphereByDate.get(targetDate) ?? [],
+      cell.weather_point_ids,
+    ) as EnvironmentSnapshotRow[];
+    const targetSoilRows = rowsForPoints(
+      soilByDate.get(targetDate) ?? [],
+      cell.soil_point_ids,
+    ) as Array<EnvironmentSnapshotRow & { point_id: string }>;
+    const completeSoilRows = !cell.soil_point_ids.length ||
+        new Set(targetSoilRows.map((row) => row.point_id)).size === cell.soil_point_ids.length
+      ? targetSoilRows
+      : [];
+    const snapshot = aggregateEnvironmentRows([...targetAtmosphereRows, ...completeSoilRows]);
+    const publicSnapshot = {
+      observedAt: snapshot.observedAt,
+      source: snapshot.source,
+      sourceResolutionM: snapshot.sourceResolutionM,
+      confidence: minimumConfidence(snapshot.confidence, cell.confidence),
+      unavailableFields: snapshot.unavailableFields,
+      values: snapshot.values,
+    };
+
+    let cellForecast = null;
+    if (offset > 0 && forecast.generatedAt && cell.soil_point_ids.length) {
+      const horizons = [0, 24, 48, 72, 96, 120].slice(0, offset + 1);
+      const aggregates = horizons.map((horizonHours) => {
+        const rawHorizonRows = rowsForPoints(
+          forecast.rows.filter((row) => row.horizon_hours === horizonHours),
+          cell.soil_point_ids,
+        );
+        const horizonRows = rawHorizonRows.map((row) => ({
+          point_id: row.point_id,
+          observed_at: row.valid_at,
+          sources: row.sources,
+          source_resolution_m: row.source_resolution_m,
+          confidence: row.confidence,
+          unavailable_fields: row.unavailable_fields,
+          values: row.values,
+        })) as Array<EnvironmentSnapshotRow & { point_id: string }>;
+        const aggregate = completeAggregate(horizonRows, cell.soil_point_ids);
+        return aggregate ? {
+          validAt: aggregate.observedAt,
+          horizonHours,
+          pointCount: rawHorizonRows.length,
+          source: aggregate.source,
+          sourceResolutionM: aggregate.sourceResolutionM,
+          confidence: minimumConfidence(aggregate.confidence, cell.confidence),
+          unavailableFields: aggregate.unavailableFields,
+          values: aggregate.values,
+        } : null;
+      });
+      if (aggregates.every(Boolean)) {
+        cellForecast = {
+          generatedAt: forecast.generatedAt,
+          baseline: aggregates[0],
+          snapshots: aggregates.slice(1),
+        };
+      }
+    }
+
+    return [{
+      cellId: cell.cell_id,
+      regionId: cell.region_id,
+      gridSizeM: cell.grid_size_m,
+      bounds: [[cell.west, cell.south], [cell.east, cell.north]],
+      staticValues: scoringValues(cell.static_values),
+      snapshot: publicSnapshot,
+      forecast: cellForecast,
+    }];
+  });
+
+  return {
+    cells: frameCells,
+    truncated: cells.length === limit,
+    bounds,
+    resolution,
+    offset,
+  };
+}
+
 type HabitatRequest = {
   speciesId?: string;
   profileKey?: string;
@@ -376,6 +587,38 @@ async function readHabitatRowsForBounds(
 Deno.serve(async (request) => {
   if (request.method !== "GET") return json({ error: "Method not allowed" }, 405, { Allow: "GET" });
   const url = new URL(request.url);
+  if (url.searchParams.get("mode") === "frame") {
+    const bounds = bbox(url.searchParams);
+    const requestedLimit = Number(url.searchParams.get("limit") ?? 1000);
+    const limit = Math.min(Math.max(Number.isInteger(requestedLimit) ? requestedLimit : 1000, 1), 1000);
+    const resolution = Number(url.searchParams.get("resolution") ?? 5000);
+    const offset = Number(url.searchParams.get("offset"));
+    if (
+      !bounds || !Number.isInteger(resolution) || resolution < 1000 ||
+      !supportedResolutions.has(resolution) || !Number.isInteger(offset) ||
+      offset === 0 || offset < -6 || offset > 5
+    ) {
+      return json({ error: "Invalid spatial timeline frame request" }, 400);
+    }
+    if ((bounds.east - bounds.west) * (bounds.north - bounds.south) > maximumRequestAreaDegrees.get(resolution)!) {
+      return json({ error: "Bounding box is too large for this resolution" }, 400);
+    }
+    try {
+      const frame = await readSpatialTimelineFrame(
+        createAdminClient(),
+        bounds,
+        resolution,
+        limit,
+        offset,
+      );
+      return json(frame, 200, {
+        "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
+      });
+    } catch (error) {
+      console.error("Unable to read spatial timeline frame", error);
+      return json({ error: "Unable to load spatial timeline frame" }, 500);
+    }
+  }
   if (url.searchParams.get("mode") === "history") {
     const cellId = url.searchParams.get("cell")?.trim();
     const resolution = Number(url.searchParams.get("resolution") ?? 250);

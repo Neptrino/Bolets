@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   type GeolocateControl,
   type Map as MapLibreMap,
   type MapMouseEvent,
 } from "maplibre-gl";
 import { createRegionMap } from "@/components/region-map/map-instance";
+import { fetchPredictionCellDetail } from "@/components/region-map/prediction-detail";
 import { drawPredictionSurface } from "@/components/region-map/prediction-surface";
 import {
   basemapStyle,
@@ -46,7 +47,6 @@ import {
 import {
   boundsContain,
 } from "@/src/lib/map-grid";
-import { PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
 import {
   loadBucketedCells,
   summarizeBucketCoverage,
@@ -64,10 +64,9 @@ import {
 } from "@/src/lib/prediction-map-status";
 import type {
   OccurrenceSupportCell,
-  GlobalSpeciesScore,
   PotentialHabitatMapCell,
-  PredictionCell,
   PredictionMapCell,
+  PredictionTimelineOffset,
   SpatialGridSizeM,
 } from "@/src/lib/types";
 
@@ -89,6 +88,7 @@ export function RegionMap({
   predictionAvailable = true,
   predictionRendering = "cells",
   showReadyStatus = true,
+  showTimeline = false,
   selectedCellId,
   className = "",
   fullscreenTarget = "viewport",
@@ -97,6 +97,7 @@ export function RegionMap({
   onCellSelect,
   onCellDetailStateChange,
   onViewportStatusChange,
+  onTimelineOffsetChange,
 }: RegionMapProps) {
   const showCompatibility = habitat || mode === "compatibility";
   const globalPrediction = speciesId === GLOBAL_SPECIES_ID;
@@ -162,6 +163,7 @@ export function RegionMap({
     rememberSelection: interactive,
   });
   const [cellsVisible, setCellsVisible] = useState(true);
+  const [timelineOffset, setTimelineOffset] = useState<PredictionTimelineOffset>(0);
   const [cellOpacity, setCellOpacity] = useState(100);
   const [historicalEvidenceVisible, setHistoricalEvidenceVisible] =
     useState(true);
@@ -183,6 +185,13 @@ export function RegionMap({
       habitatCells: 0,
       records: 0,
     });
+  const changeTimelineOffset = useCallback((offset: PredictionTimelineOffset) => {
+    setTimelineOffset(offset);
+    selectedCellIdRef.current = null;
+    onCellSelect?.(undefined);
+    onCellDetailStateChange?.({ status: "idle" });
+    onTimelineOffsetChange?.(offset);
+  }, [onCellDetailStateChange, onCellSelect, onTimelineOffsetChange]);
 
   useEffect(() => {
     if (!node.current || map.current) return;
@@ -622,8 +631,10 @@ export function RegionMap({
     const localMap = map.current;
     if (!localMap || !speciesId || showCompatibility) return;
 
-    const minimumGridSizeM: SpatialGridSizeM =
-      speciesId === GLOBAL_SPECIES_ID ? GLOBAL_MINIMUM_GRID_SIZE_M : 250;
+    const minimumGridSizeM: SpatialGridSizeM = timelineOffset === 0
+      ? speciesId === GLOBAL_SPECIES_ID ? GLOBAL_MINIMUM_GRID_SIZE_M : 250
+      : 5000;
+    const timelineRun = timelineOffset !== 0;
     const locator = geolocateControl.current;
     let geolocationReloadFrame: number | undefined;
     let waitingForGeolocationMoveEnd = false;
@@ -654,7 +665,7 @@ export function RegionMap({
     // registry survive re-runs on purpose: their keys already carry species,
     // resolution and model version, so nothing can cross-contaminate, and a
     // request in progress must stay visible to the run that supersedes it.
-    cellsById.current = new Map();
+    if (!timelineRun) cellsById.current = new Map();
     completedRequestKey.current = null;
     drawCells();
     setCellState({
@@ -689,7 +700,7 @@ export function RegionMap({
         cataloniaSpatialBounds,
       );
       const urls = buckets.map((bucket) =>
-        predictionBucketUrl(bucket, speciesId, gridSizeM),
+        predictionBucketUrl(bucket, speciesId, gridSizeM, timelineOffset),
       );
       const requestKey = urls.join("|");
       if (
@@ -712,7 +723,7 @@ export function RegionMap({
         );
         drawCells();
       };
-      repaint();
+      if (!timelineRun) repaint();
 
       const missing = prioritizeBucketsAround(
         buckets.filter((_, index) => !bucketCells.current.has(urls[index])),
@@ -725,16 +736,16 @@ export function RegionMap({
       try {
         const { failed } = await loadBucketedCells<PredictionMapCell>(
           missing,
-          (bucket) => predictionBucketUrl(bucket, speciesId, gridSizeM),
+          (bucket) => predictionBucketUrl(bucket, speciesId, gridSizeM, timelineOffset),
           controller.signal,
           (payload, bucket) => {
             if (payload.truncated) truncatedBuckets.any = true;
             rememberBucket(
               bucketCells.current,
-              predictionBucketUrl(bucket, speciesId, gridSizeM),
+              predictionBucketUrl(bucket, speciesId, gridSizeM, timelineOffset),
               payload.cells,
             );
-            if (isCurrent()) {
+            if (isCurrent() && !timelineRun) {
               repaint();
               const partialCoverage = summarizeBucketCoverage(
                 cellsById.current.values(),
@@ -750,6 +761,7 @@ export function RegionMap({
           { concurrency: initialInteractive.current ? undefined : 12, inFlight: inFlightBuckets.current },
         );
         if (!isCurrent()) return;
+        if (timelineRun) repaint();
 
         const stillMissing = urls.filter((url) => !bucketCells.current.has(url)).length;
         // A viewport that resolved nothing at all is an error; one that
@@ -797,24 +809,8 @@ export function RegionMap({
       detailRequest.current?.abort();
       const controller = new AbortController();
       detailRequest.current = controller;
-      const [[west, south], [east, north]] = cell.cellBounds;
-      const params = new URLSearchParams({
-        species: speciesId,
-        west: String(west),
-        south: String(south),
-        east: String(east),
-        north: String(north),
-        limit: "16",
-        resolution: String(cell.gridSizeM),
-        cell: cell.cellId,
-        v: PREDICTION_CACHE_VERSION,
-      });
       try {
-        const payload = await fetchJsonWithRetry<{
-          cell: PredictionCell | null;
-          topSpecies?: GlobalSpeciesScore[];
-          score?: number | null;
-        }>(`/api/predictions?${params}`, controller.signal);
+        const payload = await fetchPredictionCellDetail(speciesId, cell, controller.signal);
         if (
           detailRequest.current === controller &&
           !controller.signal.aborted &&
@@ -856,7 +852,7 @@ export function RegionMap({
 
     const handleCellClick = (event: MapMouseEvent) => {
       const cell = findCell(cellsById.current.values(), event.lngLat.lng, event.lngLat.lat);
-      if (!cell) return;
+      if (!cell || timelineRun) return;
       onCellClick?.();
       selectedCellIdRef.current = cell.cellId;
       drawCells();
@@ -868,7 +864,9 @@ export function RegionMap({
       void loadCellDetails(cell);
     };
     const updatePointer = (event: MapMouseEvent) => {
-      const overCell = findCell(cellsById.current.values(), event.lngLat.lng, event.lngLat.lat);
+      const overCell = timelineRun
+        ? undefined
+        : findCell(cellsById.current.values(), event.lngLat.lng, event.lngLat.lat);
       localMap.getCanvas().style.cursor = overCell ? "pointer" : "";
     };
     const reloadGeolocatedCells = () => {
@@ -941,6 +939,7 @@ export function RegionMap({
     speciesId,
     maximumPredictionGridSizeM,
     predictionRendering,
+    timelineOffset,
     onCellClick,
     onGeolocationSuccess,
     onCellSelect,
@@ -990,8 +989,11 @@ export function RegionMap({
       showCompatibility={showCompatibility}
       showDataStatus={!onViewportStatusChange}
       showReadyStatus={showReadyStatus}
+      showTimeline={showTimeline && predictionAvailable && !showCompatibility}
       speciesId={speciesId}
       statusCopy={statusCopy}
+      timelineOffset={timelineOffset}
+      onTimelineOffsetChange={changeTimelineOffset}
     />
   );
 }

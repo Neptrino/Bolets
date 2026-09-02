@@ -317,6 +317,7 @@ async function CurrentOverview() {
             mode="prediction"
             predictionAvailable
             predictionRendering="heatmap"
+            showTimeline
             showReadyStatus={false}
             speciesId={GLOBAL_SPECIES_ID}
           />

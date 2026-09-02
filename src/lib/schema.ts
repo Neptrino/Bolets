@@ -25,6 +25,7 @@ const region = z.enum([
   "muntanyes-interiors",
   "altres"
 ]);
+export { confidence as evidenceConfidenceSchema, region as regionIdSchema };
 export const spatialGridSizeSchema = z.union([
   z.literal(250), z.literal(1000), z.literal(2500), z.literal(5000), z.literal(10000)
 ]);

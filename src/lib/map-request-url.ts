@@ -1,6 +1,10 @@
 import { formatMapCoordinate } from "@/src/lib/map-query";
 import { HABITAT_MODEL_VERSION, PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
-import type { SpatialBounds, SpatialGridSizeM } from "@/src/lib/types";
+import type {
+  PredictionTimelineOffset,
+  SpatialBounds,
+  SpatialGridSizeM,
+} from "@/src/lib/types";
 
 /**
  * A single bucket holds far fewer cells than this at every resolution, so the
@@ -36,10 +40,12 @@ export function predictionBucketUrl(
   bucket: SpatialBounds,
   speciesId: string,
   gridSizeM: SpatialGridSizeM,
+  timelineOffset: PredictionTimelineOffset = 0,
 ) {
   const params = bucketRequestParams(bucket, speciesId, gridSizeM, {
     view: "map",
     v: PREDICTION_CACHE_VERSION,
+    ...(timelineOffset === 0 ? {} : { time: String(timelineOffset) }),
   });
   return `/api/predictions?${params}`;
 }

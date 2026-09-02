@@ -71,10 +71,10 @@ export const globalSpeciesSetKey = hashKey(
     .join(";"),
 );
 
-type GlobalEnvironmentPayload = z.infer<typeof spatialGlobalEnvironmentResponseSchema>;
-type GlobalEnvironmentCell = GlobalEnvironmentPayload["cells"][number];
+export type GlobalEnvironmentPayload = z.infer<typeof spatialGlobalEnvironmentResponseSchema>;
+export type GlobalEnvironmentCell = GlobalEnvironmentPayload["cells"][number];
 
-async function fetchGlobalEnvironment(
+export async function fetchGlobalEnvironment(
   bounds: SpatialBounds,
   limit: number,
   gridSizeM: GlobalGridSizeM,
