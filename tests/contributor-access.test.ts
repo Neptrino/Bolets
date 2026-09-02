@@ -23,6 +23,10 @@ describe("contributor detailed-map access", () => {
   const rollout = readFileSync("deploy/vps/rollout.sh", "utf8");
   const sitemap = readFileSync("app/sitemap.ts", "utf8");
   const adminContributions = readFileSync("app/admin/status/contributions/page.tsx", "utf8");
+  const adminContributionStyles = readFileSync(
+    "app/admin/status/contributions/contributions.module.css",
+    "utf8",
+  );
 
   it("keeps contribution and grant tables behind the service role", () => {
     for (const table of [
@@ -58,6 +62,9 @@ describe("contributor detailed-map access", () => {
     expect(rollout).toContain("CONTRIBUTOR_ACCESS_SECRET in the status environment file");
     expect(sitemap).toContain('absoluteUrl("/col-labora")');
     expect(adminContributions).toContain("Obrir la troballa vinculada");
+    expect(adminContributionStyles).toContain('button[value="approved"]');
+    expect(adminContributionStyles).toContain("background: var(--forest-panel)");
+    expect(adminContributionStyles).not.toContain("var(--forest)");
   });
 
   it("allows only a trusted Edge Function caller to read 1 km and 250 m", () => {
