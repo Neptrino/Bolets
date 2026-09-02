@@ -162,6 +162,7 @@ const defaultMetadata: EditorialMetadata = {
 const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "species:lycoperdon-perlatum": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
   "species:calvatia-gigantea": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
+  "species:lycoperdon-utriforme": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
   "species:russula-cyanoxantha": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
   "species:lactarius-chrysorrheus": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
   "species:lactarius-torminosus": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },

@@ -61,6 +61,7 @@ export const speciesSlugs = {
   "hygrophoropsis-aurantiaca": "fals-rossinyol",
   "lycoperdon-perlatum": "pet-de-llop-perlat",
   "calvatia-gigantea": "pet-de-llop-gegant",
+  "lycoperdon-utriforme": "pet-de-llop-gros",
   "russula-cyanoxantha": "llora-aspra",
   "lactarius-chrysorrheus": "pinetell-bord",
   "lactarius-torminosus": "rovello-de-cabra",

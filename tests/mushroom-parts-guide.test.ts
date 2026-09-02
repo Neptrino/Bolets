@@ -35,7 +35,7 @@ describe("mushroom parts guide", () => {
 
   it("renders an accessible interactive anatomy explorer", () => {
     expect(html).toContain("Explora l’anatomia del bolet");
-    expect(html).toContain('/media/optimized/v7/editorial/parts-dun-bolet-infografia-v2.');
+    expect(html).toContain('/media/optimized/v8/editorial/parts-dun-bolet-infografia-v2.');
     expect(html).toContain('aria-label="Parts assenyalades del bolet"');
     expect(html).toContain('aria-controls="mushroom-part-detail mushroom-part-mobile-detail"');
     expect(html).toContain('aria-pressed="true"');

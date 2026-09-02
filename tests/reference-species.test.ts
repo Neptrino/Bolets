@@ -29,6 +29,7 @@ describe("descriptive catalogue species", () => {
   it.each([
     ["lycoperdon-perlatum", "pet-de-llop-perlat", "Pet de llop perlat", "edible_with_conditions"],
     ["calvatia-gigantea", "pet-de-llop-gegant", "Pet de llop gegant", "edible_with_conditions"],
+    ["lycoperdon-utriforme", "pet-de-llop-gros", "Pet de llop gros", "not_recommended"],
     ["russula-cyanoxantha", "llora-aspra", "Llora aspra", "excellent_edible"],
     ["lactarius-chrysorrheus", "pinetell-bord", "Pinetell bord", "inedible"],
     ["lactarius-torminosus", "rovello-de-cabra", "Rovelló de cabra", "toxic"],
@@ -50,7 +51,7 @@ describe("descriptive catalogue species", () => {
     expect(card.ecologicalConfig.seasonality).toBeNull();
     for (const asset of profile.media) {
       expect(asset.attribution).toBeTruthy();
-      expect(asset.license).toMatch(/^CC BY/);
+      expect(asset.license).toMatch(/^(CC BY|Cedida per l’autor|Domini públic)/);
       expect(statSync(join(process.cwd(), "public", asset.localPath!)).size).toBeGreaterThan(0);
     }
     const params = Promise.resolve({ slug: canonicalSlug });
@@ -74,9 +75,11 @@ describe("descriptive catalogue species", () => {
     expect(html).not.toContain("No es recomana consumir-lo");
     expect(html).not.toContain("/_next/image");
     expect(sitemap().find(item => item.url.endsWith(`/bolets/${canonicalSlug}`))?.lastModified).toEqual(new Date("2026-09-02T00:00:00+02:00"));
-    if (["lycoperdon-perlatum", "calvatia-gigantea"].includes(id)) {
-      const relatedSlug = id === "lycoperdon-perlatum" ? "pet-de-llop-gegant" : "pet-de-llop-perlat";
-      expect(html).toContain(`href="/bolets/${relatedSlug}"`);
+    if (["lycoperdon-perlatum", "calvatia-gigantea", "lycoperdon-utriforme"].includes(id)) {
+      const puffballSlugs = ["pet-de-llop-perlat", "pet-de-llop-gegant", "pet-de-llop-gros"];
+      for (const relatedSlug of puffballSlugs.filter(candidate => candidate !== canonicalSlug)) {
+        expect(html).toContain(`href="/bolets/${relatedSlug}"`);
+      }
       expect(html).toContain("Himeni");
       expect(profile.morphology.hymenium).toContain("No té làmines");
     }

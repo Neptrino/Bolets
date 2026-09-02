@@ -116,7 +116,10 @@ function escapeXml(value) {
 async function readImageDataUris(species) {
   const entries = await Promise.all(
     species.map(async ({ speciesId }) => {
-      const imagePath = path.join(mediaDirectory, `${speciesId}.webp`);
+      const editorialImagePath = path.join(siteMediaDirectory, `${speciesId}.webp`);
+      const imagePath = fs.existsSync(editorialImagePath)
+        ? editorialImagePath
+        : path.join(mediaDirectory, `${speciesId}.webp`);
       if (!fs.existsSync(imagePath)) {
         throw new Error(`Missing poster image: ${imagePath}`);
       }

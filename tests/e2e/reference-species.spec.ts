@@ -7,10 +7,11 @@ test("new reference species are searchable and have distinct profiles", async ({
   await page.goto("/bolets");
   const search = page.getByRole("textbox", { name: "Cerca espècies" });
   await search.fill("pet de llop");
-  await expect(page.locator(".directory-shell .species-card")).toHaveCount(2);
+  await expect(page.locator(".directory-shell .species-card")).toHaveCount(3);
   for (const [term, name, slug] of [
     ["Lycoperdon perlatum", "Pet de llop perlat", "pet-de-llop-perlat"],
     ["bufa del diable", "Pet de llop gegant", "pet-de-llop-gegant"],
+    ["Lycoperdon utriforme", "Pet de llop gros", "pet-de-llop-gros"],
     ["puagra llora", "Llora aspra", "llora-aspra"],
     ["Lactarius chrysorrheus", "Pinetell bord", "pinetell-bord"],
     ["Lactarius torminosus", "Rovelló de cabra", "rovello-de-cabra"],

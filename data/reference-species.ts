@@ -93,6 +93,11 @@ const originalReferenceSpeciesProfiles: ReferenceSpeciesProfile[] = [{
       edibility: "edible_with_conditions", toxicity: "La comestibilitat es limita als exemplars joves correctament identificats.", warning: true,
     },
     {
+      scientificName: "Lycoperdon utriforme", commonName: "Pet de llop gros",
+      mainDifferences: "És més gran i ample, propi sobretot de prats, i la superfície es divideix en plaques piramidals romes que formen un mosaic.",
+      edibility: "not_recommended", toxicity: "La fitxa adopta un criteri conservador perquè les fonts discrepen sobre l’interès culinari.", warning: true,
+    },
+    {
       scientificName: "Amanita phalloides", commonName: "Farinera borda",
       mainDifferences: "Una amanita encara tancada dins el vel pot semblar una bola blanca. Un tall longitudinal revela estructures de barret, làmines i peu en formació.",
       edibility: "dangerously_toxic", toxicity: "Pot causar una intoxicació mortal.", warning: true,
@@ -149,6 +154,11 @@ const originalReferenceSpeciesProfiles: ReferenceSpeciesProfile[] = [{
       scientificName: "Lycoperdon perlatum", commonName: "Pet de llop perlat",
       mainDifferences: "És més petit, en forma de pera, amb una base allargada i agullons que deixen marques en desprendre’s.",
       edibility: "edible_with_conditions", toxicity: "Només es considera comestible de jove i amb identificació segura.", warning: true,
+    },
+    {
+      scientificName: "Lycoperdon utriforme", commonName: "Pet de llop gros",
+      mainDifferences: "És més petit que el gegant, té una base ampla i la superfície jove es clivella en plaques piramidals en mosaic en lloc de ser llisa.",
+      edibility: "not_recommended", toxicity: "La fitxa adopta un criteri conservador perquè les fonts discrepen sobre l’interès culinari.", warning: true,
     },
     {
       scientificName: "Amanita phalloides", commonName: "Farinera borda",

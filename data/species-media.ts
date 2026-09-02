@@ -1,6 +1,32 @@
 import type { MediaAsset } from "@/src/lib/types";
 
 export const speciesMedia: Record<string, MediaAsset[]> = {
+  "lycoperdon-utriforme": [{
+    id: "aleix-ventayol-lycoperdon-utriforme-edited",
+    localPath: "/media/editorial/lycoperdon-utriforme.webp",
+    sourceUrl: "https://bolets.app/media/editorial/lycoperdon-utriforme.webp",
+    attribution: "Aleix Ventayol",
+    license: "Cedida per l’autor a Bolets · edició assistida amb IA",
+    identificationReference: false,
+    alt: "Pet de llop gros jove i blanc en un prat, amb les plaques piramidals de la superfície destacades per la llum baixa.",
+  }, {
+    id: "aleix-ventayol-lycoperdon-utriforme-original",
+    localPath: "/media/editorial/lycoperdon-utriforme-original.webp",
+    sourceUrl: "https://bolets.app/media/editorial/lycoperdon-utriforme-original.webp",
+    attribution: "Aleix Ventayol",
+    license: "Cedida per l’autor a Bolets",
+    identificationReference: true,
+    alt: "Fotografia original d’un pet de llop gros blanc entre l’herba, amb un mosaic dens de plaques romes i irregulars.",
+  }, {
+    id: "wikimedia-lycoperdon-utriforme-chernilevsky",
+    localPath: "/media/wikimedia/lycoperdon-utriforme-reference.webp",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Lycoperdon_utriforme%2C_Mosaic_Puffball_2010_G1.jpg",
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Lycoperdon_utriforme,_Mosaic_Puffball_2010_G1.jpg",
+    attribution: "George Chernilevsky",
+    license: "Domini públic · mida i format adaptats",
+    identificationReference: true,
+    alt: "Lycoperdon utriforme de prop de catorze centímetres, ample i blanc, amb la base lleugerament més estreta.",
+  }],
   "lycoperdon-perlatum": [{
     id: "wikimedia-single-lycoperdon-perlatum",
     localPath: "/media/wikimedia/lycoperdon-perlatum.webp",

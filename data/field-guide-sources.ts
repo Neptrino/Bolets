@@ -67,6 +67,30 @@ export const giantPuffballSources: SourceReference[] = [
   },
 ];
 
+export const mosaicPuffballSources: SourceReference[] = [
+  {
+    id: "optimot-pet-de-llop-gros",
+    title: "Pet de llop gros: denominació i descripció",
+    publisher: "Optimot · Generalitat de Catalunya · DIEC",
+    url: "https://aplicacions.llengua.gencat.cat/llc/AppJava/index.html?action=Principal&categories_avansada=&clickLink=detall&database=DIEC&databases_avansada=&idFont=10654&idHit=10654&input_cercar=Bolet&method=detall&numPagina=13&numeroResultat=125",
+    confidence: "high",
+  },
+  {
+    id: "aranzadi-lycoperdon-utriforme",
+    title: "Lycoperdon utriforme: morfologia, hàbitat i noms populars",
+    publisher: "Sociedad de Ciencias Aranzadi",
+    url: "https://www.aranzadi.eus/buscador-micologico/ficha/1-4-014.09.09.00.10.00?from=gallery",
+    confidence: "high",
+  },
+  {
+    id: "micoex-calvatia-utriformis",
+    title: "Calvatia utriformis: plaques piramidals, hàbitat i maduració",
+    publisher: "Sociedad Micológica Extremeña",
+    url: "https://micoex.org/2016/09/17/calvatia-utriformis/",
+    confidence: "high",
+  },
+];
+
 export const charcoalBurnerSources: SourceReference[] = [
   {
     id: "aranzadi-russula-cyanoxantha", title: "Russula cyanoxantha: fitxa micològica i noms populars",
