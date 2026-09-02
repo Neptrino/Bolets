@@ -20,6 +20,8 @@ describe("Instagram pinned posts", () => {
       const caption = pinnedInstagramCaption(post.series);
       expect(caption.length).toBeLessThanOrEqual(2_200);
       expect(caption).not.toContain("\\n");
+      expect(caption).not.toContain("https://bolets.app");
+      expect(caption).toContain("l’enllaç del perfil → @bolets.app");
       expect(caption).toContain(pinnedInstagramMarker(post.series));
     }
   });

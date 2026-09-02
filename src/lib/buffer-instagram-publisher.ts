@@ -44,7 +44,11 @@ export function dailyInstagramMarker(publicationDate: string) {
 }
 
 export function dailyInstagramCaption(card: DailyShareCard, publicationDate: string) {
-  return `${card.shareText}\n\n${dailyInstagramMarker(publicationDate)}\n#BoletsAtles #BoletsCatalunya`;
+  const captionBody = card.shareText
+    .replace(/\nhttps:\/\/bolets\.app(?:\/\S*)?/gu, "")
+    .trim();
+
+  return `${captionBody}\n\nMapa complet a l’enllaç del perfil → @bolets.app\n\n${dailyInstagramMarker(publicationDate)}\n#BoletsAtles #BoletsCatalunya`;
 }
 
 export async function publishDailyInstagramPrediction({

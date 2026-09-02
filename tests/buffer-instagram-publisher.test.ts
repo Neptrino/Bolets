@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   bufferInstagramPublisherConfig,
+  dailyInstagramCaption,
   dailyInstagramMarker,
   dateInCatalonia,
   isInstagramPublishRequestAuthorized,
@@ -61,6 +62,13 @@ function channelResponse() {
 }
 
 describe("Buffer Instagram daily publisher", () => {
+  it("points to the clickable profile instead of printing an inert caption URL", () => {
+    const caption = dailyInstagramCaption(card, "2026-08-31");
+
+    expect(caption).toContain("Mapa complet a l’enllaç del perfil → @bolets.app");
+    expect(caption).not.toContain("https://bolets.app");
+  });
+
   it("publishes today's verified feed and Story cards through Buffer", async () => {
     const fetchImpl = vi.fn()
       .mockResolvedValueOnce(organizationResponse())
