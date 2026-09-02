@@ -79,6 +79,14 @@
   margin: 0;
 }
 
+.account-contribution-layout .contribution-account-history {
+  margin-top: 40px;
+}
+
+.account-contribution-layout .contribution-history ol {
+  grid-template-columns: 1fr;
+}
+
 .account-contribution-layout .contribution-guide {
   gap: 40px;
 }

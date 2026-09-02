@@ -83,25 +83,25 @@ export default async function AccountContributionPage() {
       <div className="account-contribution-layout">
         <div className="account-content">
           <ContributionPanel initialPending={pending} />
+          <section className="contribution-account-history" aria-labelledby="contribution-account-history-title">
+            <SectionHeader
+              meta="Seguiment"
+              title="Historial d’aportacions"
+              titleId="contribution-account-history-title"
+              description="Consulta què has enviat, l’estat de cada revisió i quin accés ha obert cada aportació aprovada."
+            />
+            {requests.length ? (
+              <ContributionHistory
+                requests={requests}
+                activeUntil={access.level === "contributor" ? access.fineActiveUntil : null}
+              />
+            ) : (
+              <p className="contribution-history-empty">Encara no has enviat cap aportació.</p>
+            )}
+          </section>
         </div>
         <ContributionGuide showResolution={false} />
       </div>
-      <section className="contribution-account-history" aria-labelledby="contribution-account-history-title">
-        <SectionHeader
-          meta="Seguiment"
-          title="Historial d’aportacions"
-          titleId="contribution-account-history-title"
-          description="Consulta què has enviat, l’estat de cada revisió i quin accés ha obert cada aportació aprovada."
-        />
-        {requests.length ? (
-          <ContributionHistory
-            requests={requests}
-            activeUntil={access.level === "contributor" ? access.fineActiveUntil : null}
-          />
-        ) : (
-          <p className="contribution-history-empty">Encara no has enviat cap aportació.</p>
-        )}
-      </section>
     </PageShell>
   );
 }

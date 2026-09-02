@@ -34,12 +34,16 @@ describe("contribution form", () => {
   it("places account status before the form and contribution history in its own section", () => {
     const page = readFileSync("app/compte/col-laboracio/page.tsx", "utf8");
     const status = page.indexOf('className="contribution-account-status"');
-    const form = page.indexOf('className="account-contribution-layout"');
+    const layout = page.indexOf('className="account-contribution-layout"');
+    const form = page.indexOf("<ContributionPanel");
     const history = page.indexOf('className="contribution-account-history"');
+    const guide = page.indexOf("<ContributionGuide");
 
     expect(status).toBeGreaterThan(-1);
-    expect(status).toBeLessThan(form);
+    expect(status).toBeLessThan(layout);
+    expect(layout).toBeLessThan(form);
     expect(form).toBeLessThan(history);
+    expect(history).toBeLessThan(guide);
     expect(page).toContain("<ContributionHistory");
     expect(page).toContain("Una troballa pública amb foto obre els sectors d’1 km durant 7 dies");
     expect(page).toContain('href="/troballes/nova"');
