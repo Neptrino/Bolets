@@ -1,6 +1,12 @@
 import "server-only";
 
 import { getCatalogueSpecies } from "@/data/catalogue";
+import { APP_ROLES, userHasAppRole } from "@/src/lib/auth/roles";
+import {
+  resolveAdministratorAccess,
+  resolveContributorAccess,
+  type ContributorAccessRow,
+} from "@/src/lib/contributions";
 import { requireOperationalSession } from "@/src/lib/operational-status-session";
 import { createSupabaseAdminClient } from "@/src/lib/supabase/admin";
 
@@ -12,6 +18,14 @@ export type AdminUserListItem = {
   id: string;
   maskedEmail: string;
   alias: string | null;
+  role: "admin" | "member";
+  mapAccess: {
+    active: boolean;
+    level: "administrator" | "public" | "finding" | "contributor";
+    minimumResolutionM: 250 | 1000 | 2500;
+    expiresAt: string | null;
+    revokedAt: string | null;
+  };
   createdAt: string;
   lastSignInAt: string | null;
   providers: string[];
@@ -88,6 +102,10 @@ type FindingActivityRow = {
   visibility: "private" | "public";
 };
 
+type UserAccessRow = ContributorAccessRow & {
+  user_id: string;
+};
+
 type FindingListRow = FindingActivityRow & {
   id: string;
   reported_species_id: string;
@@ -136,6 +154,14 @@ function speciesName(speciesId: string | null) {
     : null;
 }
 
+function latestAccessExpiry(access: ReturnType<typeof resolveContributorAccess>) {
+  const candidates = [access.oneKmActiveUntil, access.fineActiveUntil]
+    .filter((value): value is string => value !== null);
+  return candidates.reduce<string | null>((latest, value) => (
+    !latest || Date.parse(value) > Date.parse(latest) ? value : latest
+  ), null);
+}
+
 export async function readAdminUsersPage(page: number): Promise<AdminUsersPage> {
   await requireOperationalSession();
   const admin = createSupabaseAdminClient();
@@ -148,7 +174,7 @@ export async function readAdminUsersPage(page: number): Promise<AdminUsersPage> 
 
   const users = usersResult.data.users;
   const userIds = users.map((user) => user.id);
-  const [activityResult, profileResult] = userIds.length > 0
+  const [activityResult, profileResult, accessResult] = userIds.length > 0
     ? await Promise.all([
       admin.from("user_findings")
         .select("owner_id,visibility,publication_state")
@@ -156,9 +182,12 @@ export async function readAdminUsersPage(page: number): Promise<AdminUsersPage> 
       admin.from("finding_profiles")
         .select("user_id,public_alias")
         .in("user_id", userIds),
+      admin.from("contributor_access")
+        .select("user_id,active_until,one_km_active_until,revoked_at")
+        .in("user_id", userIds),
     ])
-    : [{ data: [], error: null }, { data: [], error: null }];
-  if (activityResult.error || profileResult.error) {
+    : [{ data: [], error: null }, { data: [], error: null }, { data: [], error: null }];
+  if (activityResult.error || profileResult.error || accessResult.error) {
     throw new Error("Could not read user finding activity");
   }
 
@@ -169,15 +198,29 @@ export async function readAdminUsersPage(page: number): Promise<AdminUsersPage> 
   }
   const aliases = new Map((profileResult.data as Array<{ user_id: string; public_alias: string | null }>)
     .map((profile) => [profile.user_id, profile.public_alias]));
+  const accesses = new Map((accessResult.data as UserAccessRow[])
+    .map((access) => [access.user_id, access]));
 
   return {
     items: users.map((user) => {
       const rows = activities.get(user.id) ?? [];
       const submitted = rows.filter((row) => row.publication_state === "published");
+      const administrator = userHasAppRole(user, APP_ROLES.admin);
+      const access = administrator
+        ? resolveAdministratorAccess()
+        : resolveContributorAccess(accesses.get(user.id) ?? null);
       return {
         id: user.id,
         maskedEmail: maskAdminEmail(user.email),
         alias: aliases.get(user.id) ?? null,
+        role: administrator ? "admin" : "member",
+        mapAccess: {
+          active: access.active,
+          level: administrator ? "administrator" : access.level,
+          minimumResolutionM: access.minimumResolutionM,
+          expiresAt: administrator ? null : latestAccessExpiry(access),
+          revokedAt: access.revokedAt,
+        },
         createdAt: user.created_at,
         lastSignInAt: user.last_sign_in_at ?? null,
         providers: userProviders(user.app_metadata),

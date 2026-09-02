@@ -136,6 +136,89 @@
 .badge[data-tone="blue"] { color: var(--detail-blue); }
 .badge[data-tone="amber"] { color: var(--detail-amber); }
 .badge[data-tone="red"] { color: var(--detail-red); }
+.badge[data-tone="neutral"] { color: var(--muted); }
+
+.adminTableFrame {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 28px rgba(57, 48, 37, 0.045);
+}
+
+.adminTableFrame:focus-visible {
+  outline: 3px solid var(--apricot);
+  outline-offset: 3px;
+}
+
+.adminTable {
+  width: 100%;
+  min-width: 1040px;
+  border-collapse: collapse;
+}
+
+.adminTable th,
+.adminTable td {
+  padding: 15px 16px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.adminTable thead th {
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 900;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.adminTable tbody th {
+  min-width: 230px;
+}
+
+.adminTable tbody tr:last-child th,
+.adminTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.adminTable tbody tr:hover {
+  background: color-mix(in srgb, var(--surface-muted) 74%, transparent);
+}
+
+.adminTable strong,
+.adminTable small,
+.adminTable time {
+  display: block;
+}
+
+.adminTable tbody th > strong {
+  overflow-wrap: anywhere;
+  font-size: var(--text-base);
+}
+
+.adminTable tbody th > small,
+.tableMeta,
+.adminTable time,
+.tableMuted {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+
+.adminTable tbody th > small {
+  margin-top: 3px;
+}
+
+.tableMeta {
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+.adminTable td > strong {
+  font-size: var(--text-xs);
+}
 
 .facts {
   display: grid;

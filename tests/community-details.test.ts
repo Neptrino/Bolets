@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { pageHref, positivePage } from "@/app/admin/(private)/detail-utils";
@@ -17,5 +18,16 @@ describe("admin community details", () => {
       state: "published",
       visibility: "public",
     })).toBe("/admin/troballes?state=published&visibility=public&page=3");
+  });
+
+  it("shows user roles and expiring map access in an admin table", () => {
+    const page = readFileSync("app/admin/(private)/usuaris/page.tsx", "utf8");
+    const server = readFileSync("src/lib/community-details-server.ts", "utf8");
+    expect(page).toContain("<table");
+    expect(page).toContain("Accés al mapa");
+    expect(page).toContain("Caducitat");
+    expect(page).toContain("Sense caducitat");
+    expect(server).toContain('.from("contributor_access")');
+    expect(server).toContain("userHasAppRole(user, APP_ROLES.admin)");
   });
 });

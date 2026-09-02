@@ -26,6 +26,13 @@ const providerLabels: Record<string, string> = {
   phone: "Telèfon",
 };
 
+const accessLabels = {
+  administrator: "Tot el detall",
+  contributor: "1 km i 250 m",
+  finding: "1 km",
+  public: "Mapa públic",
+} as const;
+
 export default async function AdminUsersPage({
   searchParams,
 }: {
@@ -44,7 +51,7 @@ export default async function AdminUsersPage({
       <PageHeader
         eyebrow="Administració · comunitat"
         title={<>Usuaris <PageTitleAccent>registrats</PageTitleAccent></>}
-        description="Comptes d’accés i activitat agregada. Els correus es mostren emmascarats i no s’exposa cap dada privada de camp."
+        description="Rols, accés al mapa i activitat agregada. Els correus es mostren emmascarats i no s’exposa cap dada privada de camp."
         layout="split"
         tone="forest"
       />
@@ -54,38 +61,74 @@ export default async function AdminUsersPage({
       </div>
 
       {result.items.length > 0 ? (
-        <ol className={styles.detailList}>
-          {result.items.map((user) => (
-            <li className={styles.detailCard} key={user.id}>
-              <div className={styles.identity}>
-                <span>{user.alias ? "Àlies públic" : "Compte"}</span>
-                <strong>{user.alias ?? user.maskedEmail}</strong>
-                <small>{user.alias ? user.maskedEmail : `Identificador ${user.id.slice(0, 8)}`}</small>
-                <div className={styles.badgeRow}>
-                  {(user.providers.length > 0 ? user.providers : ["email"]).map((provider) => (
-                    <span className={styles.badge} data-tone="blue" key={provider}>
-                      {providerLabels[provider] ?? provider}
-                    </span>
-                  ))}
-                  {user.draftFindings > 0 ? (
-                    <span className={styles.badge} data-tone="amber">
-                      {numberFormatter.format(user.draftFindings)} esborranys
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-              <dl className={styles.facts}>
-                <div><dt>Alta</dt><dd>{formatDetailDate(user.createdAt)}</dd></div>
-                <div><dt>Darrer accés</dt><dd>{formatDetailDateTime(user.lastSignInAt)}</dd></div>
-                <div><dt>Troballes enviades</dt><dd>{numberFormatter.format(user.submittedFindings)}</dd></div>
-                <div>
-                  <dt>Visibilitat</dt>
-                  <dd>{numberFormatter.format(user.publicFindings)} púb. · {numberFormatter.format(user.privateFindings)} priv.</dd>
-                </div>
-              </dl>
-            </li>
-          ))}
-        </ol>
+        <div className={styles.adminTableFrame} tabIndex={0} role="region" aria-label="Taula d’usuaris registrats">
+          <table className={styles.adminTable}>
+            <caption className="visually-hidden">Usuaris registrats, rol, accés al mapa i activitat</caption>
+            <thead>
+              <tr>
+                <th scope="col">Compte</th>
+                <th scope="col">Rol</th>
+                <th scope="col">Accés al mapa</th>
+                <th scope="col">Caducitat</th>
+                <th scope="col">Troballes</th>
+                <th scope="col">Darrer accés</th>
+              </tr>
+            </thead>
+            <tbody>
+              {result.items.map((user) => {
+                const accessTone = user.mapAccess.revokedAt
+                  ? "red"
+                  : user.mapAccess.active ? "green" : "neutral";
+                return (
+                  <tr key={user.id}>
+                    <th scope="row">
+                      <strong>{user.alias ?? user.maskedEmail}</strong>
+                      <small>{user.alias ? user.maskedEmail : `ID ${user.id.slice(0, 8)}`}</small>
+                      <span className={styles.tableMeta}>
+                        {(user.providers.length > 0 ? user.providers : ["email"])
+                          .map((provider) => providerLabels[provider] ?? provider)
+                          .join(" · ")}
+                        {` · Alta ${formatDetailDate(user.createdAt)}`}
+                      </span>
+                    </th>
+                    <td>
+                      <span className={styles.badge} data-tone={user.role === "admin" ? "blue" : "neutral"}>
+                        {user.role === "admin" ? "Administració" : "Usuari"}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={styles.badge} data-tone={accessTone}>
+                        {user.mapAccess.revokedAt ? "Revocat" : accessLabels[user.mapAccess.level]}
+                      </span>
+                      <small className={styles.tableMeta}>
+                        {user.mapAccess.minimumResolutionM === 2500
+                          ? "Sectors de 2,5 km"
+                          : `Fins a ${numberFormatter.format(user.mapAccess.minimumResolutionM)} m`}
+                      </small>
+                    </td>
+                    <td>
+                      {user.mapAccess.level === "administrator" ? (
+                        <strong>Sense caducitat</strong>
+                      ) : user.mapAccess.expiresAt ? (
+                        <time dateTime={user.mapAccess.expiresAt}>{formatDetailDateTime(user.mapAccess.expiresAt)}</time>
+                      ) : (
+                        <span className={styles.tableMuted}>—</span>
+                      )}
+                    </td>
+                    <td>
+                      <strong>{numberFormatter.format(user.submittedFindings)}</strong>
+                      <small className={styles.tableMeta}>
+                        {numberFormatter.format(user.publicFindings)} púb. · {numberFormatter.format(user.privateFindings)} priv.
+                        {user.draftFindings > 0 ? ` · ${numberFormatter.format(user.draftFindings)} esb.` : ""}
+                      </small>
+                    </td>
+                    <td><time dateTime={user.lastSignInAt ?? undefined}>{formatDetailDateTime(user.lastSignInAt)}</time></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div className={styles.emptyState}>
           <strong>No hi ha usuaris en aquesta pàgina</strong>
