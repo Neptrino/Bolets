@@ -1,8 +1,12 @@
+.account-page[data-page-shell] {
+  padding-top: 32px;
+}
+
 .account-nav {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 7px;
-  margin: -20px 0 48px;
+  margin: 0 0 36px;
   padding: 7px;
   border: 1px solid var(--line);
   border-radius: 20px;
@@ -139,8 +143,12 @@
 }
 
 @media (max-width: 520px) {
+  .account-page[data-page-shell] {
+    padding-top: 24px;
+  }
+
   .account-nav {
-    margin-top: -12px;
+    margin-bottom: 32px;
   }
 
   .account-nav a {

@@ -17,13 +17,13 @@ export default async function PersonalFindingsPage() {
   const journal = await readOwnerJournalSummary(user.id);
 
   return (
-    <PageShell className="findings-page">
+    <PageShell className="findings-page account-page">
+      <AccountNav current="findings" />
       <PageHeader
         eyebrow="Mapa i llista privats"
         title={<>Les meves <PageTitleAccent>troballes</PageTitleAccent></>}
         description="Aquí pots veure el punt exacte només quan vas decidir conservar-lo. La vista pública no rep mai aquestes coordenades."
       />
-      <AccountNav current="findings" />
       <FindingAccessCta secondaryHref="/troballes" secondaryLabel="Veure l’atles públic" />
       <div className="account-journal-layout">
         <JournalSummary summary={journal} />

@@ -61,13 +61,13 @@ export default async function MyForestPage({
   const options = forestPreferenceOptions();
 
   return (
-    <PageShell className="forest-page">
+    <PageShell className="forest-page account-page">
+      <AccountNav current="forest" />
       <PageHeader
         eyebrow="Compte personal"
         title={<>El meu <PageTitleAccent>bosc</PageTitleAccent></>}
         description="Les teves espècies, els teus territoris i el resum privat de la temporada en un sol lloc. Les preferències no alteren el mapa públic."
       />
-      <AccountNav current="forest" />
       <MapDetailAccessNotice resolution={1000} inline />
       <TodayForYou
         preferences={preferences}

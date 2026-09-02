@@ -12,13 +12,13 @@ export default async function AccountPage() {
   const user = await getAuthenticatedUser();
   if (!user) redirect("/acces?retorn=/compte");
   return (
-    <PageShell className="findings-page">
+    <PageShell className="findings-page account-page">
+      <AccountNav current="account" />
       <PageHeader
         eyebrow="Compte personal"
         title={<>Compte i <PageTitleAccent>privadesa</PageTitleAccent></>}
         description="Gestiona la identitat pública, les claus d’accés, les sessions i l’eliminació de les teves dades."
       />
-      <AccountNav current="account" />
       <AccountSettings email={user.email ?? ""} />
     </PageShell>
   );

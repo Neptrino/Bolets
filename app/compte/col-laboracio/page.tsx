@@ -31,13 +31,13 @@ export default async function AccountContributionPage() {
   const pending = requests.some((request) => request.status === "pending");
 
   return (
-    <PageShell className="findings-page">
+    <PageShell className="findings-page account-page">
+      <AccountNav current="contributions" />
       <PageHeader
         eyebrow="Compte personal"
         title={<>Col·laboració i <PageTitleAccent>mapa detallat</PageTitleAccent></>}
         description="Consulta el teu nivell d’accés, proposa una aportació útil i segueix-ne la revisió."
       />
-      <AccountNav current="contributions" />
       <section
         className="contribution-account-status"
         data-active={access.active ? "true" : "false"}
@@ -69,7 +69,7 @@ export default async function AccountContributionPage() {
           </Link>
         ) : null}
       </section>
-      <aside className="contribution-finding-note" aria-labelledby="contribution-finding-note-title">
+      {access.level !== "contributor" || !access.active ? <aside className="contribution-finding-note" aria-labelledby="contribution-finding-note-title">
         <span className="contribution-finding-note-icon" aria-hidden="true"><MapPinned size={22} /></span>
         <div>
           <p>Publicació directa · sense revisió</p>
@@ -79,7 +79,7 @@ export default async function AccountContributionPage() {
         <Link href="/troballes/nova">
           Anotar una troballa <ArrowUpRight size={17} aria-hidden="true" />
         </Link>
-      </aside>
+      </aside> : null}
       <div className="account-contribution-layout">
         <div className="account-content">
           <ContributionPanel initialPending={pending} />
