@@ -23,7 +23,7 @@ test.describe("before hydration", () => {
     const video = page.locator(".home-showcase-player video");
 
     await expect(video).toHaveAttribute("controls", "");
-    await expect(page.locator(".home-showcase-poster-play")).toHaveCount(0);
+    await expect(page.locator(".home-showcase-cover")).toHaveCount(0);
     await clickNativePlay(page, video);
 
     await expect.poll(
@@ -32,21 +32,22 @@ test.describe("before hydration", () => {
   });
 });
 
-test("plays from the first native-control click after hydration", async ({ page }) => {
+test("plays from one cover click after hydration", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
 
   const video = page.locator(".home-showcase-player video");
-  await expect(page.locator(".home-showcase-poster-play")).toHaveCount(0);
-  await clickNativePlay(page, video);
+  const cover = page.locator(".home-showcase-cover");
+  await expect(cover).toBeVisible();
+  await cover.click();
 
   await expect.poll(
     () => video.evaluate((element) => (element as HTMLVideoElement).paused),
   ).toBe(false);
-  await expect(page.locator(".home-showcase-poster-play")).toHaveCount(0);
+  await expect(cover).toHaveCount(0, { timeout: 15_000 });
 
   await video.evaluate((element) => (element as HTMLVideoElement).pause());
   await expect.poll(
     () => video.evaluate((element) => (element as HTMLVideoElement).paused),
   ).toBe(true);
-  await expect(page.locator(".home-showcase-poster-play")).toHaveCount(0);
+  await expect(cover).toHaveCount(0);
 });

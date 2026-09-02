@@ -1,23 +1,36 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Play } from "lucide-react";
+import { useRef, useState, useSyncExternalStore } from "react";
+import { LoaderCircle, Play, RotateCcw } from "lucide-react";
 import { StaticMediaImage } from "@/components/static-media-image";
 import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
 const SHOWCASE_MEDIA_VERSION = "2026-09-02-cover";
+const subscribeToHydration = () => () => undefined;
 
 export function HomeShowcaseVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playTracked = useRef(false);
   const completionTracked = useRef(false);
-  const [started, setStarted] = useState(false);
+  const hydrated = useSyncExternalStore(subscribeToHydration, () => true, () => false);
+  const [playbackState, setPlaybackState] = useState<"idle" | "loading" | "playing" | "error">("idle");
 
-  const handlePlay = () => {
-    setStarted(true);
+  const handlePlaying = () => {
+    setPlaybackState("playing");
     if (playTracked.current) return;
     playTracked.current = true;
     queueUmamiEvent(UMAMI_EVENTS.homepageVideoPlay);
+  };
+
+  const requestPlayback = async () => {
+    const video = videoRef.current;
+    if (!video || playbackState === "loading") return;
+    setPlaybackState("loading");
+    try {
+      await video.play();
+    } catch {
+      setPlaybackState("error");
+    }
   };
 
   const handleEnded = () => {
@@ -43,22 +56,29 @@ export function HomeShowcaseVideo() {
           controls
           muted
           playsInline
-          preload="none"
+          preload="metadata"
           poster={`/media/generated/home-showcase-poster.webp?v=${SHOWCASE_MEDIA_VERSION}`}
           aria-label="Presentació de Bolets de Catalunya"
-          onPlay={handlePlay}
+          onPlaying={handlePlaying}
+          onError={() => setPlaybackState("error")}
           onEnded={handleEnded}
         >
           <source src={`/media/generated/home-showcase.webm?v=${SHOWCASE_MEDIA_VERSION}`} type="video/webm" />
           <source src={`/media/generated/home-showcase.mp4?v=${SHOWCASE_MEDIA_VERSION}`} type="video/mp4" />
           El navegador no permet reproduir aquest vídeo.
         </video>
-        {!started ? (
+        {hydrated && playbackState !== "playing" ? (
           <button
             type="button"
             className="home-showcase-cover"
-            aria-label="Reprodueix la presentació de Bolets de Catalunya"
-            onClick={() => void videoRef.current?.play()}
+            data-state={playbackState}
+            aria-label={playbackState === "loading"
+              ? "Carregant la presentació de Bolets de Catalunya"
+              : playbackState === "error"
+                ? "Torna a provar de reproduir la presentació de Bolets de Catalunya"
+                : "Reprodueix la presentació de Bolets de Catalunya"}
+            disabled={playbackState === "loading"}
+            onClick={() => void requestPlayback()}
           >
             <StaticMediaImage
               src="/media/generated/home-showcase-poster.webp"
@@ -67,8 +87,13 @@ export function HomeShowcaseVideo() {
               sizes="(max-width: 1280px) calc(100vw - 2rem), 1180px"
             />
             <span className="home-showcase-cover-play" aria-hidden="true">
-              <Play size={22} fill="currentColor" />
-              Veure el recorregut
+              {playbackState === "loading" ? (
+                <><LoaderCircle className="home-showcase-cover-spinner" size={22} /> Carregant el vídeo…</>
+              ) : playbackState === "error" ? (
+                <><RotateCcw size={21} /> Torna-ho a provar</>
+              ) : (
+                <><Play size={22} fill="currentColor" /> Veure el recorregut</>
+              )}
             </span>
           </button>
         ) : null}

@@ -71,6 +71,10 @@
 }
 .home-showcase-cover:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .home-showcase-cover:hover .home-showcase-cover-play { background: #183325; }
+.home-showcase-cover:disabled { cursor: wait; }
+.home-showcase-cover:disabled .home-showcase-cover-play { background: rgba(9, 23, 15, .92); }
+.home-showcase-cover-spinner { animation: home-showcase-spin 900ms linear infinite; }
+@keyframes home-showcase-spin { to { transform: rotate(360deg); } }
 .home-showcase-section + .home-intro { padding-top: 6.5rem; }
 
 @media (max-width: 860px) {
