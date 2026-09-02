@@ -31,14 +31,14 @@ function educationCaption(card: DailyShareCard, publicationDate: string) {
   const today = reading
     ? `La lectura territorial més alta d’avui és ${reading.score}/100 per a ${reading.speciesName} a ${reading.regionName}.`
     : "Avui no hi ha una lectura territorial favorable publicable.";
-  return `Com s’ha d’interpretar la predicció de Bolets Atles?\n\n${today}\n\nEl valor descriu condicions ambientals i hàbitat compatible. No confirma presència ni assenyala punts de recol·lecció. Desplaça per entendre què hi ha darrere del número.\n\nConsulta la lectura completa a https://bolets.app/bolets-avui\n\n${instagramGrowthMarker("education", publicationDate)}\n#BoletsAtles #Micologia #BoletsCatalunya #Bosc`;
+  return `Com s’ha d’interpretar la predicció de Bolets Atles?\n\n${today}\n\nEl valor descriu condicions ambientals i hàbitat compatible. No confirma presència ni assenyala punts de recol·lecció. Desplaça per entendre què hi ha darrere del número.\n\nLectura completa a l’enllaç del perfil → @bolets.app\n\n${instagramGrowthMarker("education", publicationDate)}\n#BoletsAtles #Micologia #BoletsCatalunya #Bosc`;
 }
 
 function weekendCaption(card: DailyShareCard, publicationDate: string) {
   const highlights = card.readings.slice(0, 3).map(
     (reading) => `${reading.regionName}: ${reading.speciesName} · ${reading.score}/100`,
   ).join("\n");
-  return `Com arriben les condicions al cap de setmana?\n\n${highlights || "Sense condicions favorables publicables avui."}\n\nAquesta és la lectura verificada d’avui, no una confirmació de presència. Revisa el mapa abans de sortir perquè les dades evolucionen.\n\nhttps://bolets.app/bolets-avui\n\n${instagramGrowthMarker("weekend", publicationDate)}\n#BoletsAtles #BoletsCatalunya #CapDeSetmana #Micologia`;
+  return `Com arriben les condicions al cap de setmana?\n\n${highlights || "Sense condicions favorables publicables avui."}\n\nAquesta és la lectura verificada d’avui, no una confirmació de presència. Revisa el mapa abans de sortir perquè les dades evolucionen.\n\nMapa complet a l’enllaç del perfil → @bolets.app\n\n${instagramGrowthMarker("weekend", publicationDate)}\n#BoletsAtles #BoletsCatalunya #CapDeSetmana #Micologia`;
 }
 
 export function instagramGrowthCaption(

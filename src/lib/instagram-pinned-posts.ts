@@ -14,7 +14,7 @@ Explora el catàleg d’espècies, aprèn a identificar-les, compara confusions 
 
 També pots crear el teu bosc i portar un quadern de camp privat. Les localitzacions exactes de les troballes no es publiquen ni alimenten la predicció.
 
-Comença a explorar: https://bolets.app
+Comença a explorar des de l’enllaç del perfil → @bolets.app
 
 #BoletsAtles #BoletsCatalunya #Micologia #Bosc`,
   },
@@ -33,7 +33,7 @@ La lectura 0–100 de Bolets Atles combina disponibilitat d’aigua, temperatura
 
 Mira també l’extensió territorial, l’espècie i l’evolució. La pluja sola no explica el bosc.
 
-Descobreix el mètode: https://bolets.app/metode
+Descobreix el mètode des de l’enllaç del perfil → @bolets.app
 
 #BoletsAtles #PrediccióBolets #Micologia #BoletsCatalunya`,
   },
@@ -54,7 +54,7 @@ Abans de sortir:
 — evita malmetre el sòl i emporta’t tots els residus;
 — comparteix el bosc amb respecte i sense revelar localitzacions sensibles.
 
-Consulta les recomanacions: https://bolets.app/normativa-bolets
+Consulta les recomanacions des de l’enllaç del perfil → @bolets.app
 
 #BoletsAmbCriteri #BoletsCatalunya #Micologia #RespectemElBosc`,
   },

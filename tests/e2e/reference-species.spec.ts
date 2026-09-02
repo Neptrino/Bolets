@@ -2,6 +2,39 @@ import { expect, test } from "@playwright/test";
 
 const path = "/bolets/fals-rossinyol";
 
+test("new reference species are searchable and have distinct profiles", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/bolets");
+  const search = page.getByRole("textbox", { name: "Cerca espècies" });
+  await search.fill("pet de llop");
+  await expect(page.locator(".directory-shell .species-card")).toHaveCount(3);
+  for (const [term, name, slug] of [
+    ["Lycoperdon perlatum", "Pet de llop perlat", "pet-de-llop-perlat"],
+    ["bufa del diable", "Pet de llop gegant", "pet-de-llop-gegant"],
+    ["Lycoperdon utriforme", "Pet de llop gros", "pet-de-llop-gros"],
+    ["puagra llora", "Llora aspra", "llora-aspra"],
+    ["Lactarius chrysorrheus", "Pinetell bord", "pinetell-bord"],
+    ["Lactarius torminosus", "Rovelló de cabra", "rovello-de-cabra"],
+    ["Ramaria formosa", "Peu de rata bord", "peu-de-rata-bord"],
+    ["Lactifluus rugatus", "Lleterola roja", "lleterola-roja"],
+    ["alzinenc", "Cigró", "cigro-alzinenc"],
+  ]) {
+    await search.fill(term);
+    await expect(page.locator(".directory-shell .species-card")).toHaveCount(1);
+    await page.getByRole("link", { name: `Obre la fitxa de ${name}`, exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/bolets/${slug}$`));
+    await expect(page.locator("h1")).toHaveText(name);
+    await expect(page.locator("#cuina")).toBeVisible();
+    await expect(page.locator("#ecologia")).toContainText("Perfil ecològic descriptiu");
+    await expect(page.locator('.species-page a[href^="/map"]')).toHaveCount(0);
+    const photo = page.locator(".species-gallery-stage img");
+    await expect(photo).toHaveJSProperty("complete", true);
+    await expect(photo).not.toHaveJSProperty("naturalWidth", 0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+    await page.goto("/bolets");
+  }
+});
+
 test("chanterelle details link to the false chanterelle guide", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/bolets/rossinyol");
@@ -9,7 +42,7 @@ test("chanterelle details link to the false chanterelle guide", async ({ page })
   await expect(guide).toHaveAttribute("href", "/fals-rossinyol");
   await guide.click();
   await expect(page).toHaveURL(/\/fals-rossinyol$/);
-  await expect(page.getByRole("link", { name: "Obriu la fitxa de Fals rossinyol", exact: true })).toHaveAttribute("href", path);
+  await expect(page.getByRole("link", { name: "Obre la fitxa de Fals rossinyol", exact: true })).toHaveAttribute("href", path);
 });
 
 for (const width of [1280, 800, 390]) {
@@ -44,7 +77,7 @@ for (const width of [1280, 800, 390]) {
     await expect(page.getByRole("dialog")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).not.toBeVisible();
-    for (const id of ["identificacio", "comestibilitat", "habitat", "confusions"]) {
+    for (const id of ["identificació", "cuina", "ecologia", "targeta-de-camp"]) {
       if (width > 680) {
         await page.locator(`.species-aside a[href="#${id}"]`).click();
       } else {
@@ -67,9 +100,18 @@ test("the catalogue finds false chanterelle by scientific and alternative names"
   for (const term of ["Hygrophoropsis aurantiaca", "pixacà taronja"]) {
     await search.fill(term);
     await expect(page.locator(".directory-shell .species-card")).toHaveCount(1);
-    await expect(page.getByRole("link", { name: "Obriu la fitxa de Fals rossinyol", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Obre la fitxa de Fals rossinyol", exact: true })).toBeVisible();
   }
-  await page.getByRole("link", { name: "Obriu la fitxa de Fals rossinyol", exact: true }).click();
+  await page.getByRole("link", { name: "Obre la fitxa de Fals rossinyol", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`${path}$`));
   await expect(page.locator("h1")).toHaveText("Fals rossinyol");
+});
+
+test("rovelló and rovelló de cabra have a dedicated comparison guide", async ({ page }) => {
+  await page.goto("/compare/rovello-vs-rovello-de-cabra");
+  await expect(page.locator("h1")).toContainText("Rovelló");
+  await expect(page.locator("h1")).toContainText("rovelló de cabra");
+  await expect(page.locator(".comparison-answer")).toContainText("làtex vermell vinós");
+  await expect(page.getByRole("link", { name: /Guia principal: Rovelló de cabra/ })).toHaveAttribute("href", "/bolets/rovello-de-cabra");
+  await expect(page.getByRole("link", { name: "Obrir el comparador complet" })).toHaveCount(0);
 });

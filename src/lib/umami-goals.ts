@@ -11,6 +11,7 @@ export const UMAMI_EVENTS = {
   mapCellClick: "map-cell-click",
   mapChangeSpecies: "map-change-species",
   mapGeolocationSuccess: "map-geolocation-success",
+  mapTimelineUsed: "map-timeline-used",
   speciesMapOpen: "species-map-open",
   findingFormStarted: "finding-form-started",
   appInstallStarted: "app-install-started",

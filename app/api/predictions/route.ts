@@ -12,6 +12,10 @@ import {
 import { proxyDevelopmentPublicDataGet } from "@/src/lib/development-public-data-proxy";
 import { getPredictionCells } from "@/src/lib/predictions";
 import {
+  getPredictionMapTimelineFrame,
+  isPredictionTimelineOffset,
+} from "@/src/lib/prediction-map-timeline";
+import {
   getCachedGlobalMapPredictionCells,
   getCachedSpeciesMapPredictionCells,
 } from "@/src/lib/prediction-response-cache";
@@ -102,6 +106,54 @@ async function globalPredictions(request: Request, params: URLSearchParams) {
 export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
   const speciesId = params.get("species") ?? "";
+  const timelineOffset = Number(params.get("time") ?? 0);
+  if (!isPredictionTimelineOffset(timelineOffset)) {
+    return Response.json({ error: "Invalid prediction timeline offset" }, { status: 400 });
+  }
+  if (timelineOffset === 0) {
+    const proxied = await proxyDevelopmentPublicDataGet(request, "/api/predictions");
+    if (proxied) return proxied;
+  }
+  if (timelineOffset !== 0) {
+    const species = speciesId === GLOBAL_SPECIES_ID ? null : getSpecies(speciesId);
+    if (speciesId !== GLOBAL_SPECIES_ID && !species) {
+      return Response.json({ error: "Unknown species" }, { status: 400 });
+    }
+    if (species?.predictionMode === "habitat_only") {
+      return Response.json(
+        { error: "Current fruiting predictions are not available for this species" },
+        { status: 422 },
+      );
+    }
+    if (params.has("cell")) {
+      return Response.json({ error: "Timeline cell details are not available" }, { status: 400 });
+    }
+    const parsedTimelineQuery = parseSpatialMapQuery(params, 5000);
+    if ("error" in parsedTimelineQuery) {
+      return Response.json({ error: parsedTimelineQuery.error }, { status: 400 });
+    }
+    const { query } = parsedTimelineQuery;
+    try {
+      const result = await getPredictionMapTimelineFrame(
+        speciesId,
+        query.bounds,
+        query.limit ?? 1000,
+        query.resolution,
+        timelineOffset,
+      );
+      return jsonResponse(request, result, {
+        headers: {
+          "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
+        },
+      });
+    } catch (error) {
+      console.error("Unable to calculate prediction timeline frame", error);
+      return Response.json(
+        { error: "Prediction timeline frame is temporarily unavailable" },
+        { status: 503 },
+      );
+    }
+  }
   if (speciesId === GLOBAL_SPECIES_ID) return globalPredictions(request, params);
   const species = getSpecies(speciesId);
   if (!species) return Response.json({ error: "Unknown species" }, { status: 400 });

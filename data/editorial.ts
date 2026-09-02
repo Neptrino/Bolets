@@ -160,6 +160,16 @@ const defaultMetadata: EditorialMetadata = {
 };
 
 const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
+  "species:lycoperdon-perlatum": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
+  "species:calvatia-gigantea": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
+  "species:lycoperdon-utriforme": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
+  "species:russula-cyanoxantha": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
+  "species:lactarius-chrysorrheus": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
+  "species:lactarius-torminosus": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
+  "species:ramaria-formosa": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
+  "species:lactifluus-rugatus": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
+  "species:leccinellum-lepidum": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
+  "compare:rovello-vs-rovello-de-cabra": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
   "zones-rovellons": {
     updatedAt: "2026-08-31",
   },

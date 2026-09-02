@@ -59,6 +59,15 @@ export const speciesSlugs = {
   "clitocybe-rivulosa": "candeleta-de-vorada",
   "paxillus-involutus": "paxille-toxic",
   "hygrophoropsis-aurantiaca": "fals-rossinyol",
+  "lycoperdon-perlatum": "pet-de-llop-perlat",
+  "calvatia-gigantea": "pet-de-llop-gegant",
+  "lycoperdon-utriforme": "pet-de-llop-gros",
+  "russula-cyanoxantha": "llora-aspra",
+  "lactarius-chrysorrheus": "pinetell-bord",
+  "lactarius-torminosus": "rovello-de-cabra",
+  "ramaria-formosa": "peu-de-rata-bord",
+  "lactifluus-rugatus": "lleterola-roja",
+  "leccinellum-lepidum": "cigro-alzinenc",
 } as const;
 
 const speciesIdsBySlug = new Map<string, string>(

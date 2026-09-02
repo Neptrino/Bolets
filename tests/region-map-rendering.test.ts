@@ -21,6 +21,10 @@ describe("prediction map rendering", () => {
     join(process.cwd(), "app", "bolets-avui", "page.tsx"),
     "utf8",
   );
+  const mapExplorerSource = readFileSync(
+    join(process.cwd(), "components", "map-explorer.tsx"),
+    "utf8",
+  );
 
   it("paints zero-score cells instead of leaving the map apparently empty", () => {
     expect(source).toContain("context.fillStyle = predictionMapCellColour(cell.score)");
@@ -71,12 +75,22 @@ describe("prediction map rendering", () => {
   it("never requests finer than the coarse floor for the combined map", () => {
     expect(source).toContain("contributorAccess.minimumResolutionM");
     expect(source).toContain("Math.max(GLOBAL_MINIMUM_GRID_SIZE_M, detailedMinimumGridSizeM)");
-    expect(source).toContain("predictionMinimumGridSizeM,\n        maximumPredictionGridSizeM");
+    expect(source).toContain("minimumGridSizeM,\n        maximumPredictionGridSizeM");
   });
 
   it("starts the Avui heatmap at 2.5 km resolution", () => {
     expect(todayPageSource).toContain("maximumPredictionGridSizeM={2500}");
-    expect(source).toContain("initialInteractive.current ? undefined : 12");
+  });
+
+  it("shows the prediction timeline only on the Avui overview map", () => {
+    expect(todayPageSource).toContain("showTimeline");
+    expect(mapExplorerSource).not.toContain("showTimeline");
+  });
+
+  it("coordinates timeline requests through one retrying network gate", () => {
+    expect(regionMapSource).toContain("createBucketNetworkGate()");
+    expect(regionMapSource).toContain("networkGate: bucketNetworkGate.current");
+    expect(regionMapSource).toContain("persistAfterAbort: !timelineRun, retryPasses: 2");
   });
 
   it("keeps the Avui overview static while maps remain interactive by default", () => {

@@ -56,6 +56,13 @@ export function mapStatusCopy({
     };
   }
 
+  if (cellState.incomplete) {
+    return {
+      title: "Mapa incomplet",
+      detail: "Alguns sectors no s’han pogut carregar. Mou el mapa o canvia de dia per tornar-ho a provar.",
+    };
+  }
+
   if (cellState.status === "mixed") {
     return {
       title: "Hi ha sectors amb resultats diferents",

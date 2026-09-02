@@ -46,6 +46,13 @@ describe("offline zone packs", () => {
     expect(cep.some((url) => rovello.includes(url))).toBe(false);
   });
 
+  it("adds a temporal key only to evolution and forecast frames", () => {
+    const bucket = bucketsForBounds(zone, 5000, catalonia)[0];
+    expect(predictionBucketUrl(bucket, "boletus-edulis", 5000)).not.toContain("time=");
+    expect(predictionBucketUrl(bucket, "boletus-edulis", 5000, -2)).toContain("time=-2");
+    expect(predictionBucketUrl(bucket, "boletus-edulis", 5000, 4)).toContain("time=4");
+  });
+
   it("requests nothing for a zone outside the service boundary", () => {
     expect(enumerateZonePackRequests(
       { west: 5.0, south: 44.0, east: 5.2, north: 44.2 },

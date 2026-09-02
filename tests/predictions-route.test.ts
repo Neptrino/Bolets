@@ -13,6 +13,10 @@ const accessMocks = vi.hoisted(() => ({
   hasMapResolutionCapability: vi.fn(async () => false),
 }));
 
+const timelineMocks = vi.hoisted(() => ({
+  getPredictionMapTimelineFrame: vi.fn(),
+}));
+
 vi.mock("next/cache", () => ({
   unstable_cache: (callback: (...args: never[]) => unknown) => callback,
 }));
@@ -31,6 +35,11 @@ vi.mock("@/src/lib/contributions/capability.server", () => ({
   PRIVATE_MAP_HEADERS: { "Cache-Control": "private, no-store" },
 }));
 
+vi.mock("@/src/lib/prediction-map-timeline", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/src/lib/prediction-map-timeline")>()),
+  ...timelineMocks,
+}));
+
 import { GET } from "@/app/api/predictions/route";
 
 describe("prediction API bounds", () => {
@@ -40,6 +49,7 @@ describe("prediction API bounds", () => {
     globalPredictionMocks.getGlobalCellRanking.mockReset();
     accessMocks.hasMapResolutionCapability.mockReset();
     accessMocks.hasMapResolutionCapability.mockResolvedValue(false);
+    timelineMocks.getPredictionMapTimelineFrame.mockReset();
   });
 
   it("requires contributor access for a 1 km prediction bucket", async () => {
@@ -71,6 +81,40 @@ describe("prediction API bounds", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({ error: "Invalid map resolution" });
+  });
+
+  it.each([-4, 6])("rejects unsupported timeline offset %s", async (offset) => {
+    const response = await GET(new Request(
+      `http://localhost/api/predictions?species=all&west=1&south=41&east=1.1&north=41.1&resolution=5000&time=${offset}`,
+    ));
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({ error: "Invalid prediction timeline offset" });
+  });
+
+  it("serves a cacheable combined-map forecast frame", async () => {
+    timelineMocks.getPredictionMapTimelineFrame.mockResolvedValue({
+      cells: [{ cellId: "frame-cell", score: 58 }],
+      truncated: false,
+    });
+    const response = await GET(new Request(
+      "http://localhost/api/predictions?species=all&view=map&west=1&south=41&east=1.1&north=41.1&resolution=5000&time=3",
+    ));
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("Cache-Control")).toBe(
+      "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
+    );
+    await expect(response.json()).resolves.toMatchObject({
+      cells: [{ cellId: "frame-cell", score: 58 }],
+    });
+    expect(timelineMocks.getPredictionMapTimelineFrame).toHaveBeenCalledWith(
+      "all",
+      { west: 1, south: 41, east: 1.1, north: 41.1 },
+      1000,
+      5000,
+      3,
+    );
   });
 
   it("does not expose internal model versions", async () => {

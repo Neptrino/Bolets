@@ -18,6 +18,7 @@ import { SeasonIndicator } from "@/components/season-indicator";
 import { QuerySelect } from "@/components/ui/query-select";
 import { speciesById, speciesSelectItems } from "@/data/species";
 import { comparisonPages, type ComparisonPage } from "@/data/comparison-pages";
+import { getCatalogueSpecies } from "@/data/catalogue";
 import { getEdibilityPresentation } from "@/src/lib/edibility-presentation";
 import { speciesPath } from "@/src/lib/seo";
 import { monthInTimeZone, SEASON_MONTHS } from "@/src/lib/seasonality";
@@ -79,7 +80,7 @@ const avoidComparisonStatuses = new Set<EdibilityStatus>([
 ]);
 
 function getComparisonRiskStatus(page: ComparisonPage) {
-  const species = [speciesById[page.leftSpeciesId], speciesById[page.rightSpeciesId]];
+  const species = [getCatalogueSpecies(page.leftSpeciesId), getCatalogueSpecies(page.rightSpeciesId)];
   const hasEdibleSpecies = species.some((profile) => (
     profile && edibleComparisonStatuses.has(profile.identity.edibility)
   ));

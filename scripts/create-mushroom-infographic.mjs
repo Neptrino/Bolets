@@ -23,12 +23,12 @@ const mediaDirectory = path.join(
 const width = 3508;
 const height = 4961;
 const margin = 138;
-const columns = 5;
-const columnGap = 24;
+const columns = 6;
+const columnGap = 18;
 const cardWidth = (width - margin * 2 - columnGap * (columns - 1)) / columns;
-const cardHeight = 252;
-const cardImageWidth = 238;
-const rowGap = 24;
+const cardHeight = 224;
+const cardImageWidth = 190;
+const rowGap = 18;
 const sectionHeaderHeight = 58;
 const sectionHeaderGap = 18;
 const sectionGap = 32;
@@ -116,7 +116,10 @@ function escapeXml(value) {
 async function readImageDataUris(species) {
   const entries = await Promise.all(
     species.map(async ({ speciesId }) => {
-      const imagePath = path.join(mediaDirectory, `${speciesId}.webp`);
+      const editorialImagePath = path.join(siteMediaDirectory, `${speciesId}.webp`);
+      const imagePath = fs.existsSync(editorialImagePath)
+        ? editorialImagePath
+        : path.join(mediaDirectory, `${speciesId}.webp`);
       if (!fs.existsSync(imagePath)) {
         throw new Error(`Missing poster image: ${imagePath}`);
       }
@@ -164,10 +167,10 @@ function cardSvg(item, index, x, y, colour, images) {
       <rect x="${x + cardImageWidth}" y="${y}" width="9" height="${cardHeight}" fill="${colour}"/>
       <circle cx="${x + 42}" cy="${y + 41}" r="25" fill="#fffaf0" opacity="0.96"/>
       <text x="${x + 42}" y="${y + 49}" text-anchor="middle" class="number">${number}</text>
-      <text x="${x + cardImageWidth + 34}" y="${y + 57}" class="card-meta">${escapeXml(`${seasonLabel}  ·  ${altitudeLabel}`)}</text>
-      <text x="${x + cardImageWidth + 34}" y="${y + 119}" class="common-name">${escapeXml(item.commonName)}</text>
-      <text x="${x + cardImageWidth + 34}" y="${y + 158}" class="scientific-name">${escapeXml(item.scientificName)}</text>
-      <text x="${x + cardImageWidth + 34}" y="${y + 218}" class="card-habitat">${escapeXml(habitatLabel)}</text>
+      <text x="${x + cardImageWidth + 34}" y="${y + 45}" class="card-meta">${escapeXml(`${seasonLabel}  ·  ${altitudeLabel}`)}</text>
+      <text x="${x + cardImageWidth + 34}" y="${y + 101}" class="common-name">${escapeXml(item.commonName)}</text>
+      <text x="${x + cardImageWidth + 34}" y="${y + 135}" class="scientific-name">${escapeXml(item.scientificName)}</text>
+      <text x="${x + cardImageWidth + 34}" y="${y + 194}" class="card-habitat">${escapeXml(habitatLabel)}</text>
     </g>`;
 }
 
@@ -331,10 +334,11 @@ async function main() {
   const svg = buildSvg(species, images);
 
   fs.mkdirSync(outputDirectory, { recursive: true });
-  const svgPath = path.join(outputDirectory, "bolets-catalunya-53-especies.svg");
-  const pngPath = path.join(outputDirectory, "bolets-catalunya-53-especies.png");
-  const previewPath = path.join(outputDirectory, "bolets-catalunya-53-especies-preview.png");
-  const creditsPath = path.join(outputDirectory, "bolets-catalunya-53-especies-credits.txt");
+  const filePrefix = `bolets-catalunya-${species.length}-especies`;
+  const svgPath = path.join(outputDirectory, `${filePrefix}.svg`);
+  const pngPath = path.join(outputDirectory, `${filePrefix}.png`);
+  const previewPath = path.join(outputDirectory, `${filePrefix}-preview.png`);
+  const creditsPath = path.join(outputDirectory, `${filePrefix}-credits.txt`);
   const siteMediaPath = path.join(siteMediaDirectory, "bolets-catalunya-infografia.webp");
   const siteDownloadPath = path.join(siteDownloadDirectory, "bolets-catalunya-infografia.png");
   const siteCreditsPath = path.join(siteDownloadDirectory, "bolets-catalunya-infografia-credits.txt");

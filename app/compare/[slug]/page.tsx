@@ -8,11 +8,12 @@ import { EditorialAttribution } from "@/components/editorial-attribution";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { comparisonPages, comparisonPagesBySlug } from "@/data/comparison-pages";
+import { getCatalogueSpecies } from "@/data/catalogue";
 import { getSpecies } from "@/data/species";
 import { getEdibilityPresentation } from "@/src/lib/edibility-presentation";
 import { SEASON_MONTHS } from "@/src/lib/seasonality";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, metaDescription, pageTitle, SITE_URL, speciesPath } from "@/src/lib/seo";
-import type { SpeciesProfile } from "@/src/lib/types";
+import type { CatalogueSpecies, SpeciesProfile } from "@/src/lib/types";
 
 export function generateStaticParams() {
   return comparisonPages.map(({ slug }) => ({ slug }));
@@ -44,14 +45,33 @@ function peakMonths(species: SpeciesProfile) {
   return labels.length ? labels.join(" i ") : "Sense pic definit";
 }
 
+function habitatLabel(species: CatalogueSpecies) {
+  return "scope" in species
+    ? species.ecology.habitats.join(", ")
+    : species.ecologicalConfig.habitat.forestTypes.join(", ");
+}
+
+function seasonLabel(species: CatalogueSpecies) {
+  return "scope" in species ? species.ecology.season : peakMonths(species);
+}
+
+function altitudeLabel(species: CatalogueSpecies) {
+  return "scope" in species
+    ? "No quantificada en aquesta fitxa descriptiva"
+    : `${species.ecologicalConfig.habitat.altitude.join("–")} m`;
+}
+
 export default async function ComparisonLandingPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const page = comparisonPagesBySlug[slug];
   if (!page) notFound();
 
-  const left = getSpecies(page.leftSpeciesId);
-  const right = getSpecies(page.rightSpeciesId);
+  const left = getCatalogueSpecies(page.leftSpeciesId);
+  const right = getCatalogueSpecies(page.rightSpeciesId);
   if (!left || !right) notFound();
+  const canOpenInteractiveComparison = Boolean(
+    getSpecies(page.leftSpeciesId) && getSpecies(page.rightSpeciesId),
+  );
   const leftImage = left.media.find((asset) => asset.identificationReference) ?? left.media[0];
   const rightImage = right.media.find((asset) => asset.identificationReference) ?? right.media[0];
 
@@ -61,9 +81,9 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
     ["Barret", left.morphology.cap, right.morphology.cap],
     ["Himeni", left.morphology.hymenium, right.morphology.hymenium],
     ["Carn i làtex", left.morphology.flesh, right.morphology.flesh],
-    ["Hàbitat", left.ecologicalConfig.habitat.forestTypes.join(", "), right.ecologicalConfig.habitat.forestTypes.join(", ")],
-    ["Pic de temporada", peakMonths(left), peakMonths(right)],
-    ["Altitud", `${left.ecologicalConfig.habitat.altitude.join("–")} m`, `${right.ecologicalConfig.habitat.altitude.join("–")} m`],
+    ["Hàbitat", habitatLabel(left), habitatLabel(right)],
+    ["Temporada", seasonLabel(left), seasonLabel(right)],
+    ["Altitud", altitudeLabel(left), altitudeLabel(right)],
   ];
 
   return (
@@ -145,7 +165,9 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
 
       <div className="comparison-actions">
         <Link href={speciesPath(left)} className="text-link">Guia principal: {left.identity.commonName} <ArrowUpRight size={16} /></Link>
-        <Link href={`/compare?left=${left.speciesId}&right=${right.speciesId}`} className="button moss-button">Obrir el comparador complet <ArrowRightLeft size={16} /></Link>
+        {canOpenInteractiveComparison && (
+          <Link href={`/compare?left=${left.speciesId}&right=${right.speciesId}`} className="button moss-button">Obrir el comparador complet <ArrowRightLeft size={16} /></Link>
+        )}
         <Link href={speciesPath(right)} className="text-link">Guia principal: {right.identity.commonName} <ArrowUpRight size={16} /></Link>
       </div>
 

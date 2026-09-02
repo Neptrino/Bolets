@@ -2,6 +2,7 @@ import type {
   GlobalSpeciesScore,
   MapViewMode,
   PredictionCell,
+  PredictionTimelineOffset,
   RegionId,
   SpatialBounds,
   SpatialGridSizeM,
@@ -35,6 +36,7 @@ export type RegionMapProps = {
   predictionAvailable?: boolean;
   predictionRendering?: PredictionRendering;
   showReadyStatus?: boolean;
+  showTimeline?: boolean;
   selectedCellId?: string;
   className?: string;
   fullscreenTarget?: "viewport" | "parent";
@@ -52,4 +54,5 @@ export type RegionMapProps = {
   onCellDetailStateChange?: (state: PredictionCellDetailState) => void;
   onViewportStatusChange?: (status: PredictionViewportStatus) => void;
   onDetailResolutionChange?: (gridSizeM: SpatialGridSizeM) => void;
+  onTimelineOffsetChange?: (offset: PredictionTimelineOffset) => void;
 };

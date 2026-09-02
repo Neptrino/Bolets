@@ -1,7 +1,8 @@
 import type { RefObject } from "react";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { HabitatMapLegend } from "@/components/habitat-map-legend";
-import type { MapViewMode, RegionId } from "@/src/lib/types";
+import { PredictionTimelineControl } from "@/components/prediction-timeline-control";
+import type { MapViewMode, PredictionTimelineOffset, RegionId } from "@/src/lib/types";
 import { RegionMapFrame } from "./frame";
 import { RegionMapDataStatus } from "./data-status";
 import { RegionMapLayerControls } from "./layer-controls";
@@ -43,8 +44,11 @@ export function RegionMapView({
   showCompatibility,
   showDataStatus,
   showReadyStatus,
+  showTimeline,
   speciesId,
   statusCopy,
+  timelineOffset,
+  onTimelineOffsetChange,
   cellState,
 }: {
   activeRegionCount: number;
@@ -81,8 +85,11 @@ export function RegionMapView({
   showCompatibility: boolean;
   showDataStatus: boolean;
   showReadyStatus: boolean;
+  showTimeline: boolean;
   speciesId?: string;
   statusCopy: MapStatusCopy;
+  timelineOffset: PredictionTimelineOffset;
+  onTimelineOffsetChange: (offset: PredictionTimelineOffset) => void;
   cellState: CellState;
 }) {
   return (
@@ -116,6 +123,15 @@ export function RegionMapView({
               : 0,
           }}
           aria-hidden
+        />
+      ) : null}
+      {showTimeline ? (
+        <PredictionTimelineControl
+          incomplete={cellState.incomplete}
+          loading={cellState.status === "loading"}
+          offset={timelineOffset}
+          onChange={onTimelineOffsetChange}
+          unavailable={cellState.status === "error"}
         />
       ) : null}
       {showDataStatus ? <RegionMapDataStatus

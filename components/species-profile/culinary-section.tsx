@@ -11,12 +11,12 @@ import {
 import { CulinaryRating } from "@/components/culinary-rating";
 import { EdibilityBadge } from "@/components/edibility-badge";
 import { officialSafetySource } from "@/data/editorial";
-import type { SpeciesProfile } from "@/src/lib/types";
+import type { CatalogueSpecies } from "@/src/lib/types";
 
 export function SpeciesCulinarySection({
   species,
 }: {
-  species: SpeciesProfile;
+  species: CatalogueSpecies;
 }) {
   const hasToxicLookalike = species.similarSpecies.some(
     (item) => item.warning || item.edibility.includes("toxic"),

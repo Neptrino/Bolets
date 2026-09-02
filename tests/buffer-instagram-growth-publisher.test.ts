@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  instagramGrowthCaption,
   instagramGrowthMarker,
   publishInstagramGrowthPost,
 } from "@/src/lib/buffer-instagram-growth-publisher";
@@ -55,6 +56,14 @@ function connectedBufferResponses(fetchImpl: ReturnType<typeof vi.fn<typeof fetc
 }
 
 describe("Buffer Instagram growth publisher", () => {
+  it("uses the profile link call to action in carousel and Reel captions", () => {
+    for (const kind of ["education", "weekend"] as const) {
+      const caption = instagramGrowthCaption(kind, card, "2026-09-02");
+      expect(caption).toContain("l’enllaç del perfil → @bolets.app");
+      expect(caption).not.toContain("https://bolets.app");
+    }
+  });
+
   it("publishes the five-image educational carousel on Wednesday", async () => {
     const fetchImpl = connectedBufferResponses(vi.fn<typeof fetch>())
       .mockResolvedValueOnce(response({ posts: { edges: [] } }))

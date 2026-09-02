@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { SeasonCalendar } from "@/components/season-calendar";
 import { rainfallLimitationCopy } from "@/src/lib/species-copy";
-import type { SpeciesProfile } from "@/src/lib/types";
+import type { CatalogueSpecies } from "@/src/lib/types";
 
 const catalanList = new Intl.ListFormat("ca-ES", {
   style: "long",
@@ -20,8 +20,52 @@ const catalanList = new Intl.ListFormat("ca-ES", {
 export function SpeciesEcologySection({
   species,
 }: {
-  species: SpeciesProfile;
+  species: CatalogueSpecies;
 }) {
+  if ("scope" in species) {
+    return (
+      <section id="ecologia" className="content-section ecology-section">
+        <div className="section-kicker">
+          <Sprout size={17} />
+          <span>03</span>
+        </div>
+        <div>
+          <p className="eyebrow">Perfil ecològic descriptiu</p>
+          <h2>On i quan creix</h2>
+          <div className="habitat-hero">
+            <div>
+              <span className="fact-label"><Trees size={15} aria-hidden="true" />HÀBITAT PRINCIPAL</span>
+              <b>{catalanList.format(species.ecology.habitats)}</b>
+            </div>
+            <div>
+              <span className="fact-label"><Clock3 size={15} aria-hidden="true" />TEMPORADA</span>
+              <strong>{species.ecology.season}</strong>
+              <p>Període general documentat a les fonts</p>
+            </div>
+          </div>
+          <div className="tree-tags">
+            {species.ecology.habitats.map((habitat) => <span key={habitat}>{habitat}</span>)}
+          </div>
+          <div className="disclosure-grid ecology-detail-panels">
+            <section className="species-disclosure ecology-detail-panel" aria-labelledby="descriptive-ecology-title">
+              <div className="ecology-panel-heading">
+                <span aria-hidden="true"><Layers3 size={17} /></span>
+                <div>
+                  <h3 id="descriptive-ecology-title">Hàbitat i límits de la fitxa</h3>
+                  <p>Informació documental, sense valors calculats</p>
+                </div>
+              </div>
+              <div className="disclosure-content">
+                <p>{species.ecology.description}</p>
+                <p className="rainfall-uncertainty">{species.ecology.limitations}</p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const climate = species.ecologicalConfig.climate;
   const rainfall = species.ecologicalConfig.rainfall;
   const habitat = species.ecologicalConfig.habitat;
