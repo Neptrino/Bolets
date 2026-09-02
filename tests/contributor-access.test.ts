@@ -23,6 +23,10 @@ describe("contributor detailed-map access", () => {
   const rollout = readFileSync("deploy/vps/rollout.sh", "utf8");
   const sitemap = readFileSync("app/sitemap.ts", "utf8");
   const adminContributions = readFileSync("app/admin/(private)/aportacions/page.tsx", "utf8");
+  const adminContributionDialogs = readFileSync(
+    "app/admin/(private)/aportacions/contribution-management-dialogs.tsx",
+    "utf8",
+  );
   const adminContributionStyles = readFileSync(
     "app/admin/(private)/aportacions/contributions.module.css",
     "utf8",
@@ -61,8 +65,9 @@ describe("contributor detailed-map access", () => {
     expect(migration).not.toContain("payment");
     expect(rollout).toContain("CONTRIBUTOR_ACCESS_SECRET in the status environment file");
     expect(sitemap).toContain('absoluteUrl("/col-labora")');
-    expect(adminContributions).toContain("Obrir la troballa vinculada");
-    expect(adminContributionStyles).toContain('button[value="approved"]');
+    expect(adminContributions).toContain("<table");
+    expect(adminContributionDialogs).toContain("Obrir la troballa vinculada");
+    expect(adminContributionStyles).toContain('button[name="decision"][value="approved"]');
     expect(adminContributionStyles).toContain("background: var(--forest-panel)");
     expect(adminContributionStyles).not.toContain("var(--forest)");
   });

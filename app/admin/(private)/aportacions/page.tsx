@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
-import { Download } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 import { CONTRIBUTION_KIND_LABELS } from "@/src/lib/contributions";
 import {
-  type AdminContributionRequest,
   readAdminContributionRequests,
   readAdminContributorAccessList,
 } from "@/src/lib/contributions/server";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { requireOperationalSession } from "@/src/lib/operational-status-session";
-import { reviewContributionAction, revokeContributorAction } from "./actions";
+import { ContributionReviewDialog, RevokeAccessDialog } from "./contribution-management-dialogs";
 import styles from "./contributions.module.css";
 
 export const metadata: Metadata = {
@@ -25,40 +21,6 @@ const dateFormatter = new Intl.DateTimeFormat("ca-ES", {
 
 function firstValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
-}
-
-function ContributionMediaReview({ request }: { request: AdminContributionRequest }) {
-  if (!request.media.length) return null;
-  return (
-    <div className={styles.mediaReview}>
-      <div>
-        <strong>{request.media.length} {request.media.length === 1 ? "fotografia privada" : "fotografies privades"}</strong>
-        <span>
-          {request.mediaRightsConfirmedAt
-            ? `Drets confirmats el ${dateFormatter.format(new Date(request.mediaRightsConfirmedAt))}`
-            : "Drets no registrats"}
-          {request.mediaCredit ? ` · Crèdit: ${request.mediaCredit}` : " · Sense crèdit públic"}
-        </span>
-      </div>
-      <div className={styles.mediaGrid}>
-        {request.media.map((media, index) => (
-          <figure className={styles.mediaItem} key={media.id}>
-            <Image
-              src={media.url}
-              alt={`Fotografia aportada ${index + 1}`}
-              width={media.width}
-              height={media.height}
-              unoptimized
-            />
-            <a href={`${media.url}?download=1`} download>
-              <Download size={16} aria-hidden="true" />
-              Descarrega la foto {index + 1}
-            </a>
-          </figure>
-        ))}
-      </div>
-    </div>
-  );
 }
 
 export default async function AdminContributionsPage({
@@ -99,76 +61,67 @@ export default async function AdminContributionsPage({
       <section className={styles.section}>
         <h2>Cua de revisió</h2>
         {pending.length ? (
-          <ol className={styles.queue}>
+          <div className={styles.tableFrame} tabIndex={0} role="region" aria-label="Taula d’aportacions pendents">
+            <table className={styles.table}>
+              <caption className="visually-hidden">Aportacions pendents de revisió</caption>
+              <thead><tr><th scope="col">Aportació</th><th scope="col">Compte</th><th scope="col">Enviada</th><th scope="col">Material</th><th scope="col"><span className="visually-hidden">Accions</span></th></tr></thead>
+              <tbody>
             {pending.map((request) => (
-              <li className={styles.card} data-status="pending" key={request.id}>
-                <div className={styles.identity}>
-                  <strong>{CONTRIBUTION_KIND_LABELS[request.kind]}</strong>
-                  <span>{request.userEmail} · {dateFormatter.format(new Date(request.createdAt))}</span>
-                </div>
-                <p className={styles.description}>{request.description}</p>
-                <ContributionMediaReview request={request} />
-                {request.findingId ? (
-                  <Link className={styles.evidence} href={`/troballes/${request.findingId}`} target="_blank">
-                    Obrir la troballa vinculada ↗
-                  </Link>
-                ) : null}
-                {request.evidenceUrl ? <Link className={styles.evidence} href={request.evidenceUrl} target="_blank" rel="noreferrer">Obrir l’evidència ↗</Link> : null}
-                <form action={reviewContributionAction} className={styles.reviewForm}>
-                  <input type="hidden" name="requestId" value={request.id} />
-                  <label>
-                    Nota de revisió
-                    <textarea name="reviewNote" maxLength={1000} placeholder="Obligatòria si es rebutja; opcional si s’aprova." />
-                  </label>
-                  <div className={styles.actions}>
-                    <button type="submit" name="decision" value="approved">Aprovar i afegir 30 dies</button>
-                    <button type="submit" name="decision" value="rejected">No aprovar</button>
-                  </div>
-                </form>
-              </li>
+              <tr key={request.id}>
+                <th scope="row">{CONTRIBUTION_KIND_LABELS[request.kind]}</th>
+                <td>{request.userEmail}</td>
+                <td><time dateTime={request.createdAt}>{dateFormatter.format(new Date(request.createdAt))}</time></td>
+                <td>{request.mediaCount > 0 ? `${request.mediaCount} foto${request.mediaCount === 1 ? "" : "s"}` : "—"}{request.evidenceUrl ? " · evidència" : ""}</td>
+                <td><ContributionReviewDialog request={request} /></td>
+              </tr>
             ))}
-          </ol>
+              </tbody>
+            </table>
+          </div>
         ) : <p className={styles.empty}>No hi ha cap aportació pendent.</p>}
       </section>
 
       <section className={styles.section}>
         <h2>Accessos actius</h2>
         {active.length ? (
-          <ol className={styles.queue}>
+          <div className={styles.tableFrame} tabIndex={0} role="region" aria-label="Taula d’accessos actius">
+            <table className={styles.table}>
+              <caption className="visually-hidden">Accessos temporals actius al mapa detallat</caption>
+              <thead><tr><th scope="col">Compte</th><th scope="col">Accés</th><th scope="col">Caduca</th><th scope="col"><span className="visually-hidden">Accions</span></th></tr></thead>
+              <tbody>
             {active.map((entry) => (
-              <li className={styles.card} key={entry.userId}>
-                <div className={styles.identity}>
-                  <strong>{entry.userEmail}</strong>
-                  <span>
-                    {entry.level === "contributor" ? "1 km i 250 m" : "1 km"}
-                    {" · Fins al "}{dateFormatter.format(new Date(entry.activeUntil))}
-                  </span>
-                </div>
-                <form action={revokeContributorAction} className={styles.reviewForm}>
-                  <input type="hidden" name="userId" value={entry.userId} />
-                  <label>Motiu de revocació<input name="reason" minLength={3} maxLength={1000} required /></label>
-                  <div className={styles.actions}><button type="submit" data-danger="true">Revocar l’accés</button></div>
-                </form>
-              </li>
+              <tr key={entry.userId}>
+                <th scope="row">{entry.userEmail}</th>
+                <td>{entry.level === "contributor" ? "1 km i 250 m" : "1 km"}</td>
+                <td><time dateTime={entry.activeUntil}>{dateFormatter.format(new Date(entry.activeUntil))}</time></td>
+                <td><RevokeAccessDialog userId={entry.userId} userEmail={entry.userEmail} /></td>
+              </tr>
             ))}
-          </ol>
+              </tbody>
+            </table>
+          </div>
         ) : <p className={styles.empty}>No hi ha cap accés actiu.</p>}
       </section>
 
       <section className={styles.section}>
         <h2>Revisions recents</h2>
-        <ol className={styles.queue}>
+        {recent.length ? <div className={styles.tableFrame} tabIndex={0} role="region" aria-label="Taula de revisions recents">
+          <table className={styles.table}>
+            <caption className="visually-hidden">Aportacions revisades recentment</caption>
+            <thead><tr><th scope="col">Aportació</th><th scope="col">Compte</th><th scope="col">Resultat</th><th scope="col">Revisada</th><th scope="col">Material</th></tr></thead>
+            <tbody>
           {recent.map((request) => (
-            <li className={styles.card} key={request.id}>
-              <div className={styles.identity}>
-                <strong>{CONTRIBUTION_KIND_LABELS[request.kind]}</strong>
-                <span>{request.userEmail} · {request.status === "approved" ? "Aprovada" : "No aprovada"}</span>
-              </div>
-              {request.reviewNote ? <p className={styles.description}>{request.reviewNote}</p> : null}
-              <ContributionMediaReview request={request} />
-            </li>
+            <tr key={request.id}>
+              <th scope="row">{CONTRIBUTION_KIND_LABELS[request.kind]}</th>
+              <td>{request.userEmail}</td>
+              <td><span className={styles.statusBadge} data-status={request.status}>{request.status === "approved" ? "Aprovada" : "No aprovada"}</span></td>
+              <td>{request.reviewedAt ? <time dateTime={request.reviewedAt}>{dateFormatter.format(new Date(request.reviewedAt))}</time> : "—"}</td>
+              <td>{request.mediaCount > 0 ? `${request.mediaCount} foto${request.mediaCount === 1 ? "" : "s"}` : "—"}</td>
+            </tr>
           ))}
-        </ol>
+            </tbody>
+          </table>
+        </div> : <p className={styles.empty}>Encara no hi ha revisions recents.</p>}
       </section>
     </PageShell>
   );

@@ -62,6 +62,10 @@ describe("contribution media", () => {
     );
     const processor = readFileSync("src/lib/contributions/media.server.ts", "utf8");
     const adminPage = readFileSync("app/admin/(private)/aportacions/page.tsx", "utf8");
+    const reviewDialog = readFileSync(
+      "app/admin/(private)/aportacions/contribution-management-dialogs.tsx",
+      "utf8",
+    );
 
     expect(migration).toContain("'contribution-media', 'contribution-media', false");
     expect(migration).toContain("alter table public.contribution_request_media enable row level security");
@@ -69,8 +73,9 @@ describe("contribution media", () => {
     expect(mediaRoute).toContain('user.app_metadata?.app_role === "admin"');
     expect(mediaRoute).toContain('"Cache-Control": "private, no-store"');
     expect(mediaRoute).toContain('headers.set("Content-Disposition"');
-    expect(adminPage).toContain('href={`${media.url}?download=1`}');
-    expect(adminPage).toContain("Descarrega la foto");
+    expect(adminPage).toContain("ContributionReviewDialog");
+    expect(reviewDialog).toContain('href={`${media.url}?download=1`}');
+    expect(reviewDialog).toContain("Descarrega la foto");
     expect(processor).toContain(".webp({ quality: 82 })");
     expect(processor).toContain('from("finding-photo-staging")');
   });

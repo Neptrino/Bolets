@@ -1,9 +1,9 @@
 .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.summary div { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.summary div { padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
 .summary strong, .summary span { display: block; }
 .summary strong { color: var(--ink); font-size: var(--text-xl); }
 .summary span { margin-top: 3px; color: var(--muted); font-size: var(--text-xs); }
-.section { display: grid; gap: 17px; }
+.section { display: grid; gap: 12px; }
 .section h2 { margin: 0; color: var(--ink); font-size: var(--text-xl); }
 .queue { display: grid; gap: 13px; margin: 0; padding: 0; list-style: none; }
 .card { display: grid; gap: 16px; padding: 20px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: 0 12px 30px rgba(75, 54, 33, .06); }
@@ -36,7 +36,55 @@
 .status[data-error="true"] { background: var(--danger-surface); color: var(--danger-ink); }
 .empty { padding: 20px; border: 1px dashed var(--line); border-radius: 16px; color: var(--muted); }
 
+.tableFrame { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 10px 24px rgba(75, 54, 33, .045); }
+.tableFrame:focus-visible { outline: 3px solid var(--apricot); outline-offset: 3px; }
+.table { width: 100%; min-width: 820px; border-collapse: collapse; }
+.table th, .table td { padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: var(--text-xs); text-align: left; vertical-align: middle; }
+.table thead th { padding-block: 9px; background: var(--surface-muted); color: var(--muted); font-weight: 900; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+.table tbody th { min-width: 210px; color: var(--ink); font-weight: 850; }
+.table tbody tr:hover { background: color-mix(in srgb, var(--surface-muted) 72%, transparent); }
+.table tbody tr:last-child th, .table tbody tr:last-child td { border-bottom: 0; }
+.table time { white-space: nowrap; }
+
+.tableAction { min-height: 32px; padding: 5px 10px; border: 1px solid var(--forest-panel); border-radius: var(--radius-pill); background: var(--forest-panel); color: var(--on-dark); font: inherit; font-size: var(--text-xs); font-weight: 900; cursor: pointer; }
+.tableAction:hover { border-color: var(--clay); background: var(--clay); }
+.tableAction[data-tone="danger"] { border-color: #bc7a68; background: var(--surface); color: var(--danger-ink); }
+.tableAction[data-tone="danger"]:hover { background: var(--danger-surface); }
+.tableAction:focus-visible { outline: 3px solid var(--clay); outline-offset: 3px; }
+.statusBadge { display: inline-flex; padding: 3px 7px; border: 1px solid currentColor; border-radius: var(--radius-pill); color: var(--muted); font-size: var(--text-xs); font-weight: 850; line-height: 1.1; }
+.statusBadge[data-status="approved"] { color: #2f6b4c; }
+.statusBadge[data-status="rejected"] { color: var(--danger-ink); }
+
+.reviewDialog { width: min(860px, calc(100% - 32px)); max-width: none; margin: auto; padding: 0; border: 0; border-radius: 20px; background: transparent; color: var(--ink); }
+.reviewDialog::backdrop { background: rgba(31, 36, 30, .58); backdrop-filter: blur(5px); }
+.reviewDialogCard { position: relative; display: grid; gap: 18px; max-height: min(820px, calc(100vh - 40px)); padding: 24px; overflow-y: auto; border: 1px solid rgba(89, 53, 37, .18); border-radius: 20px; background: var(--surface); box-shadow: 0 28px 80px rgba(31, 36, 30, .32); }
+.dialogClose { position: absolute; top: 12px; right: 12px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
+.dialogClose:hover { background: var(--surface-warm); color: var(--ink); }
+.dialogClose:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; }
+.dialogHeader { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; padding-right: 34px; }
+.dialogHeader > span { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 13px; background: #e2eadf; color: var(--forest-panel); }
+.dialogHeader[data-tone="danger"] > span { background: var(--danger-surface); color: var(--danger-ink); }
+.dialogHeader p, .dialogHeader h2, .dialogHeader small { margin: 0; }
+.dialogHeader p { color: var(--clay); font-size: var(--text-xs); font-weight: 900; letter-spacing: .07em; text-transform: uppercase; }
+.dialogHeader h2 { margin-top: 2px; font-size: var(--text-xl); line-height: 1.15; }
+.dialogHeader small { display: block; margin-top: 4px; color: var(--muted); font-size: var(--text-xs); }
+.dialogDescription { margin: 0; color: var(--muted); line-height: 1.5; white-space: pre-wrap; }
+.reviewLinks { display: flex; flex-wrap: wrap; gap: 8px; }
+.reviewLinks a { display: inline-flex; gap: 6px; align-items: center; color: var(--clay); font-size: var(--text-xs); font-weight: 850; text-underline-offset: 3px; }
+.reviewNote { display: grid; gap: 7px; color: var(--ink); font-size: var(--text-xs); font-weight: 900; }
+.reviewNote textarea, .reviewNote input { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-warm); color: var(--ink); font: inherit; font-size: var(--text-xs); }
+.reviewNote textarea { min-height: 78px; resize: vertical; }
+.dialogActions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.dialogActions button { min-height: 38px; padding: 8px 13px; border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--surface-warm); color: var(--ink); font: inherit; font-size: var(--text-xs); font-weight: 900; cursor: pointer; }
+.dialogActions button[name="decision"][value="approved"] { border-color: var(--forest-panel); background: var(--forest-panel); color: var(--on-dark); }
+.dialogActions button[name="decision"][value="approved"]:hover { border-color: var(--clay); background: var(--clay); }
+.dialogActions button[name="decision"][value="rejected"], .dialogActions button[data-tone="danger"] { border-color: #bc7a68; color: var(--danger-ink); }
+.dialogActions button[data-tone="danger"]:hover { background: var(--danger-surface); }
+.dialogActions button:focus-visible { outline: 3px solid var(--clay); outline-offset: 3px; }
+
 @media (max-width: 720px) {
   .summary { grid-template-columns: 1fr; }
   .mediaGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dialogActions { flex-direction: column-reverse; }
+  .dialogActions button { width: 100%; }
 }
