@@ -239,7 +239,8 @@ type TimelineCellSupport = {
   condition_snapshot_date: string | null;
 };
 
-const TIMELINE_HISTORY_DAYS = 7;
+// Production retains today plus the previous three complete grid dates.
+const TIMELINE_HISTORY_DAYS = 4;
 const TIMELINE_POINT_CHUNK = 120;
 
 function chunks<T>(items: T[], size: number) {
@@ -596,7 +597,7 @@ Deno.serve(async (request) => {
     if (
       !bounds || !Number.isInteger(resolution) || resolution < 1000 ||
       !supportedResolutions.has(resolution) || !Number.isInteger(offset) ||
-      offset === 0 || offset < -6 || offset > 5
+      offset === 0 || offset < -3 || offset > 5
     ) {
       return json({ error: "Invalid spatial timeline frame request" }, 400);
     }

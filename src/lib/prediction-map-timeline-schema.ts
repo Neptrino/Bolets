@@ -52,7 +52,7 @@ export const spatialEnvironmentFrameSchema = z.object({
   bounds: z.object({ west: z.number(), south: z.number(), east: z.number(), north: z.number() }),
   resolution: spatialGridSizeSchema,
   offset: z.union([
-    z.literal(-6), z.literal(-5), z.literal(-4), z.literal(-3), z.literal(-2), z.literal(-1),
+    z.literal(-3), z.literal(-2), z.literal(-1),
     z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5),
   ]),
 });

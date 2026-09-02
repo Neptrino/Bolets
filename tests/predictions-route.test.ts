@@ -56,9 +56,9 @@ describe("prediction API bounds", () => {
     await expect(response.json()).resolves.toEqual({ error: "Invalid map resolution" });
   });
 
-  it("rejects an unsupported timeline offset", async () => {
+  it.each([-4, 6])("rejects unsupported timeline offset %s", async (offset) => {
     const response = await GET(new Request(
-      "http://localhost/api/predictions?species=all&west=1&south=41&east=1.1&north=41.1&resolution=5000&time=6",
+      `http://localhost/api/predictions?species=all&west=1&south=41&east=1.1&north=41.1&resolution=5000&time=${offset}`,
     ));
 
     expect(response.status).toBe(400);

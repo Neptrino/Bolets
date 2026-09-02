@@ -4,7 +4,7 @@ import { LoaderCircle, Pause, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { PredictionTimelineOffset } from "@/src/lib/types";
 
-const FIRST_OFFSET: PredictionTimelineOffset = -6;
+const FIRST_OFFSET: PredictionTimelineOffset = -3;
 const LAST_OFFSET: PredictionTimelineOffset = 5;
 
 export function predictionTimelineLabel(offset: PredictionTimelineOffset) {
@@ -78,7 +78,7 @@ export function PredictionTimelineControl({
             aria-valuetext={`${label.phase}: ${label.detail}`}
           />
           <div className="prediction-timeline-scale" aria-hidden="true">
-            <span>Fa 6 dies</span>
+            <span>Fa 3 dies</span>
             <b>Avui</b>
             <span>+5 dies</span>
           </div>

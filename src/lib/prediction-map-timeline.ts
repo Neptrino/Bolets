@@ -252,7 +252,7 @@ async function getGlobalTimelineFrame(
 }
 
 export function isPredictionTimelineOffset(value: number): value is PredictionTimelineOffset {
-  return Number.isInteger(value) && value >= -6 && value <= 5;
+  return Number.isInteger(value) && value >= -3 && value <= 5;
 }
 
 export async function getPredictionMapTimelineFrame(
