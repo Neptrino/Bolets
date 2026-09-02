@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowUpRight, Eye, Grid3X3, MapPinOff, Sprout } from "lucide-react";
+import { ArrowUpRight, Eye, Grid3X3, MapPinOff, MapPinned, Sprout } from "lucide-react";
 import Link from "next/link";
 import { FindingCard } from "@/components/findings/finding-card";
 import { JsonLd } from "@/components/json-ld";
@@ -61,6 +61,15 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
     <span>Al teu quadern conserves l’historial; quan comparteixes, l’atles mostra només el dia i una àrea de 10 × 10 km.</span>
     <span className="findings-hero-benefits"><span>Captura sense cobertura</span><span>GPS i data automàtics</span><span>El punt exacte mai no és públic</span></span>
   </span>} actions={<div className="findings-actions"><Link className="finding-button" href="/troballes/nova">Anotar una troballa</Link><Link className="finding-button-secondary" href="/les-meves-troballes">El meu quadern</Link></div>} />
+    <aside className="findings-contribution-callout" aria-labelledby="findings-contribution-title">
+      <span className="findings-contribution-icon" aria-hidden="true"><MapPinned size={22} /></span>
+      <div className="findings-contribution-copy">
+        <p>Troballes i catàleg són fluxos diferents</p>
+        <h2 id="findings-contribution-title">Les fotos no passen al catàleg automàticament</h2>
+        <span>Aquí només queden publicades amb la troballa. Si després ens les proposes com a col·laboració i les aprovem, les incorporarem al catàleg i obtindràs 90 dies d’accés al mapa d’1 km i 250 m.</span>
+      </div>
+      <Link className="finding-button-secondary findings-contribution-link" href="/col-labora">Com col·laborar <ArrowUpRight size={16} aria-hidden="true" /></Link>
+    </aside>
     <PublicFindingsMap species={catalogueSpecies} />
     {!safeCell ? <section className="finding-section finding-community-reading" aria-labelledby="finding-community-reading-title">
       <SectionHeader meta="Lectura comunitària" title="Què expliquen aquestes troballes?" titleId="finding-community-reading-title" description="Són observacions compartides per la comunitat: aporten context històric i enllacen amb les fitxes del catàleg, però no indiquen on trobar bolets avui." />

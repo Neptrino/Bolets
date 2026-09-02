@@ -26,6 +26,14 @@ describe("public finding detail", () => {
     expect(detailPage).toContain('href={profileHref}');
   });
 
+  it("separates published finding photos from catalogue collaboration", () => {
+    expect(overviewPage).toContain("Les fotos no passen al catàleg automàticament");
+    expect(overviewPage).toContain("Aquí només queden publicades amb la troballa");
+    expect(overviewPage).toContain("les incorporarem al catàleg");
+    expect(overviewPage).toContain("90 dies d’accés al mapa d’1 km i 250 m");
+    expect(overviewPage).toContain('href="/col-labora"');
+  });
+
   it("renders the finding's public privacy cell without an exact point", () => {
     expect(detailPage).toContain("<PublicFindingLocationMap bounds={finding.cellBounds} />");
     expect(locationMap).toContain("fitSpatialBounds(localMap, cellBounds, false)");
