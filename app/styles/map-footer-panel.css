@@ -28,6 +28,69 @@
   scrollbar-color: rgba(169, 80, 39, 0.5) rgba(89, 53, 37, 0.08);
   scrollbar-width: thin;
 }
+/* Anchor to the actual footer height, including its responsive/loading states. */
+.map-detail-panel:has(> .map-detail-access) {
+  overflow: visible;
+}
+.map-detail-access {
+  position: absolute;
+  bottom: calc(100% + 16px);
+  left: 50%;
+  display: flex;
+  width: max-content;
+  max-width: min(720px, calc(100% - 32px));
+  align-items: center;
+  gap: 20px;
+  padding: 16px 18px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(39, 60, 48, 0.2);
+  border-radius: 16px;
+  background: rgba(255, 250, 240, 0.97);
+  color: var(--ink);
+  box-shadow: 0 6px 24px rgba(39, 60, 48, 0.18);
+}
+.map-detail-access-copy {
+  display: grid;
+  gap: 6px;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+.map-detail-access-copy strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+}
+.map-detail-access-copy svg {
+  flex-shrink: 0;
+  color: var(--clay);
+}
+.map-detail-access > a {
+  flex-shrink: 0;
+  min-height: 44px;
+  font-size: var(--text-xs);
+}
+.map-detail-access--inline {
+  position: static;
+  width: 100%;
+  max-width: none;
+  justify-content: space-between;
+  margin: -20px 0 48px;
+  transform: none;
+  box-shadow: none;
+}
+.map-detail-access--inline .map-detail-access-copy {
+  flex: 1 1 auto;
+}
+@media (max-width: 620px) {
+  .map-detail-access {
+    bottom: calc(100% + 12px);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+  }
+}
 .map-floating-card {
   position: relative;
   display: grid;

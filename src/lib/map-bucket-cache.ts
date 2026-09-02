@@ -1,6 +1,6 @@
 import type { BucketPayload } from "@/src/lib/bucket-loader";
 
-export const MAP_BUCKET_CACHE_NAME = "bolets-map-buckets-v1";
+export const MAP_BUCKET_CACHE_NAME = "bolets-map-buckets-v2";
 export const MAP_BUCKET_CACHE_TTL_MS = 60 * 60 * 1_000;
 
 const CACHED_AT_HEADER = "x-bolets-cached-at";
@@ -18,12 +18,24 @@ function requestFor(url: string) {
   return new Request(url, { method: "GET" });
 }
 
+export function isPublicMapBucketUrl(url: string) {
+  try {
+    const parsed = new URL(url, "https://bolets.local");
+    const resolution = Number(parsed.searchParams.get("resolution"));
+    return (parsed.pathname === "/api/predictions" || parsed.pathname === "/api/habitat")
+      && Number.isInteger(resolution)
+      && resolution >= 2500;
+  } catch {
+    return false;
+  }
+}
+
 export async function readMapBucketPayload<T>(
   url: string,
   now = Date.now(),
 ): Promise<BucketPayload<T> | null> {
   const storage = cacheStorage();
-  if (!storage) return null;
+  if (!storage || !isPublicMapBucketUrl(url)) return null;
 
   try {
     const cache = await storage.open(MAP_BUCKET_CACHE_NAME);
@@ -59,7 +71,7 @@ export async function writeMapBucketPayload<T>(
   now = Date.now(),
 ) {
   const storage = cacheStorage();
-  if (!storage) return;
+  if (!storage || !isPublicMapBucketUrl(url)) return;
 
   try {
     const cache = await storage.open(MAP_BUCKET_CACHE_NAME);

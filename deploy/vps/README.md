@@ -170,11 +170,52 @@ docker run --rm caddy:2.10.2-alpine \
 openssl rand -hex 32
 ```
 
-Put the Caddy hash (quoted so its dollar signs remain literal) and the unrelated
-random internal token in `status.env`, then run `chmod 600` on it. Keep the
-plaintext Basic Auth password in the password manager; the internal token is
-only a Caddy-to-Next.js and Alloy-to-Next.js credential and should never be used
-in a browser. Caddy strips any client-supplied copy of that internal header.
+Put the Caddy hash (quoted so its dollar signs remain literal), the random
+internal token and a second independently generated contributor capability
+secret in `status.env`, then run `chmod 600` on it. Keep the plaintext Basic
+Auth password in the password manager; the internal token is only a
+Caddy-to-Next.js and Alloy-to-Next.js credential and should never be used in a
+browser. Caddy strips any client-supplied copy of that internal header. The
+contributor secret signs short-lived HTTP-only map capabilities and must not be
+reused as a Supabase key.
+
+### Contribution decisions and expiry mail
+
+Approved contributions open the 1 km and 250 m maps for 90 days without a
+payment. Review decisions create idempotent email jobs in PostgreSQL; a private
+timer also queues one reminder approximately a week before access expires. The
+public proxy blocks the dispatcher route, so only the root-owned host script
+calls it from inside the application container.
+
+Verify a sending domain in Resend, then create the optional root-only mail
+configuration:
+
+```bash
+cp deploy/vps/contribution-email.env.example \
+  /opt/bolets/secrets/contribution-email.env
+chmod 600 /opt/bolets/secrets/contribution-email.env
+```
+
+Replace the example API key and use a sender address on the verified domain.
+After rollout, dispatch once and inspect the JSON result before enabling the
+timer:
+
+```bash
+sudo /opt/bolets/app/deploy/vps/dispatch-contribution-emails.sh
+sudo install -m 644 deploy/vps/bolets-contribution-emails.service \
+  /etc/systemd/system/
+sudo install -m 644 deploy/vps/bolets-contribution-emails.timer \
+  /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now bolets-contribution-emails.timer
+sudo systemctl status bolets-contribution-emails.service \
+  bolets-contribution-emails.timer
+```
+
+The dispatcher retries a queued message at most five times and uses the outbox
+deduplication key as the provider idempotency key. Inspect failures with
+`journalctl -u bolets-contribution-emails.service`; correct the sender or API
+configuration before re-queuing a permanently failed message.
 
 ### Instagram profile and daily prediction
 

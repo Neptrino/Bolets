@@ -1,4 +1,4 @@
-import { createAdminClient, finiteNumber, json } from "../_shared/pipeline.ts";
+import { createAdminClient, finiteNumber, json, requireServiceRole } from "../_shared/pipeline.ts";
 import {
   aggregateEnvironmentRows,
   type EnvironmentSnapshotRow,
@@ -15,6 +15,12 @@ const maximumRequestAreaDegrees = new Map([
   [5000, 6],
   [10000, 12.5],
 ]);
+
+function detailedRequestDenied(request: Request, resolution: number) {
+  return resolution < 2500 && !requireServiceRole(request)
+    ? json({ error: "Detailed map access requires a trusted application request" }, 403)
+    : null;
+}
 
 function numberParam(searchParams: URLSearchParams, name: string) {
   const rawValue = searchParams.get(name);
@@ -384,6 +390,8 @@ Deno.serve(async (request) => {
     if (!cellId || cellId.length > 160 || !Number.isInteger(resolution) || !supportedResolutions.has(resolution)) {
       return json({ error: "Invalid cell history request" }, 400);
     }
+    const denied = detailedRequestDenied(request, resolution);
+    if (denied) return denied;
     try {
       const history = await readCellHistory(createAdminClient(), cellId, resolution, days);
       if (!history) return json({ error: "Cell history not found" }, 404);
@@ -403,6 +411,8 @@ Deno.serve(async (request) => {
   if (!Number.isInteger(resolution) || !supportedResolutions.has(resolution)) {
     return json({ error: "Invalid map resolution" }, 400);
   }
+  const denied = detailedRequestDenied(request, resolution);
+  if (denied) return denied;
   const requestArea = (bounds.east - bounds.west) * (bounds.north - bounds.south);
   if (requestArea > maximumRequestAreaDegrees.get(resolution)!) {
     return json({ error: "Bounding box is too large for this resolution" }, 400);

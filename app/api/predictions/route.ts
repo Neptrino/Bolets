@@ -17,6 +17,12 @@ import {
 } from "@/src/lib/prediction-response-cache";
 import { jsonResponse } from "@/src/lib/json-response";
 import { withoutInternalModelVersion } from "@/src/lib/public-response";
+import {
+  detailedMapAccessDenied,
+  hasContributorDetailCapability,
+  isDetailedMapResolution,
+  PRIVATE_MAP_HEADERS,
+} from "@/src/lib/contributions/capability.server";
 
 const CACHE_HEADERS = {
   "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=600",
@@ -41,6 +47,16 @@ async function globalPredictions(request: Request, params: URLSearchParams) {
   if (!mapBoundsFitResolution(query.bounds, query.resolution)) {
     return Response.json({ error: "Bounding box is too large for this resolution" }, { status: 400 });
   }
+  const detailed = isDetailedMapResolution(query.resolution);
+  if (detailed && !await hasContributorDetailCapability()) return detailedMapAccessDenied();
+  const proxied = await proxyDevelopmentPublicDataGet(
+    request,
+    "/api/predictions",
+    process.env,
+    { privateResponse: detailed },
+  );
+  if (proxied) return proxied;
+  const responseHeaders = detailed ? PRIVATE_MAP_HEADERS : CACHE_HEADERS;
   try {
     if (requestedCellId) {
       const detail = await getGlobalCellRanking(requestedCellId, query.bounds, query.resolution);
@@ -68,7 +84,7 @@ async function globalPredictions(request: Request, params: URLSearchParams) {
       return jsonResponse(
         request,
         { cell, topSpecies, score: detail.mapCell.score },
-        { headers: CACHE_HEADERS },
+        { headers: responseHeaders },
       );
     }
     const result = await getCachedGlobalMapPredictionCells(
@@ -76,7 +92,7 @@ async function globalPredictions(request: Request, params: URLSearchParams) {
       query.limit ?? 1000,
       query.resolution,
     );
-    return jsonResponse(request, result, { headers: CACHE_HEADERS });
+    return jsonResponse(request, result, { headers: responseHeaders });
   } catch (error) {
     console.error("Unable to calculate combined prediction cells", error);
     return Response.json({ error: "Prediction cells are temporarily unavailable" }, { status: 503 });
@@ -84,9 +100,6 @@ async function globalPredictions(request: Request, params: URLSearchParams) {
 }
 
 export async function GET(request: Request) {
-  const proxied = await proxyDevelopmentPublicDataGet(request, "/api/predictions");
-  if (proxied) return proxied;
-
   const params = new URL(request.url).searchParams;
   const speciesId = params.get("species") ?? "";
   if (speciesId === GLOBAL_SPECIES_ID) return globalPredictions(request, params);
@@ -105,6 +118,16 @@ export async function GET(request: Request) {
     return Response.json({ error: parsedQuery.error }, { status: 400 });
   }
   const { query } = parsedQuery;
+  const detailed = isDetailedMapResolution(query.resolution);
+  if (detailed && !await hasContributorDetailCapability()) return detailedMapAccessDenied();
+  const proxied = await proxyDevelopmentPublicDataGet(
+    request,
+    "/api/predictions",
+    process.env,
+    { privateResponse: detailed },
+  );
+  if (proxied) return proxied;
+  const responseHeaders = detailed ? PRIVATE_MAP_HEADERS : CACHE_HEADERS;
   try {
     const limit = query.limit ?? (requestedCellId ? 16 : 1000);
     const result = compact && !requestedCellId
@@ -128,10 +151,10 @@ export async function GET(request: Request) {
     if (requestedCellId) {
       const cell = publicResult.cells.find((candidate) => candidate.cellId === requestedCellId);
       return cell
-        ? jsonResponse(request, { cell }, { headers: CACHE_HEADERS })
+        ? jsonResponse(request, { cell }, { headers: responseHeaders })
         : Response.json({ error: "Prediction cell not found" }, { status: 404 });
     }
-    return jsonResponse(request, publicResult, { headers: CACHE_HEADERS });
+    return jsonResponse(request, publicResult, { headers: responseHeaders });
   } catch (error) {
     console.error("Unable to calculate prediction cells", error);
     return Response.json({ error: "Prediction cells are temporarily unavailable" }, { status: 503 });

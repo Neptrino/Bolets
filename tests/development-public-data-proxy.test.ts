@@ -64,6 +64,33 @@ describe("development public data proxy", () => {
     });
   });
 
+  it("keeps an authorized detailed response private in local development", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (_input: URL | RequestInfo, init?: RequestInit) => {
+      const headers = new Headers(init?.headers);
+      expect(headers.get("cookie")).toBeNull();
+      expect(headers.get("authorization")).toBeNull();
+      return Response.json(
+        { cells: [{ cellId: "epsg25831:1000:336:4548" }] },
+        { headers: { "Cache-Control": "public, max-age=3600", Vary: "Accept-Encoding" } },
+      );
+    }));
+
+    const response = await proxyDevelopmentPublicDataGet(
+      new Request(
+        "http://localhost:3101/api/predictions?species=boletus-edulis&resolution=1000",
+        { headers: { Cookie: "bolets_contributor_detail=private" } },
+      ),
+      "/api/predictions",
+      { NODE_ENV: "development", BOLETS_DEV_PUBLIC_DATA_ORIGIN: "https://bolets.app" },
+      { privateResponse: true },
+    );
+
+    expect(response?.status).toBe(200);
+    expect(response?.headers.get("cache-control")).toBe("private, no-store");
+    expect(response?.headers.get("vary")).toBe("Cookie, Accept-Encoding");
+    expect(response?.headers.get("x-bolets-data-source")).toBe("production-public-api");
+  });
+
   it("fails closed for an unsafe origin", async () => {
     const response = await proxyDevelopmentPublicDataGet(
       new Request("http://localhost:3101/api/habitat?species=boletus-edulis"),

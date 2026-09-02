@@ -9,7 +9,7 @@ const bucket = (west: number): SpatialBounds => ({
   north: 41.3,
 });
 
-const url = (candidate: SpatialBounds) => `/api/predictions?west=${candidate.west}`;
+const url = (candidate: SpatialBounds) => `/api/predictions?resolution=2500&west=${candidate.west}`;
 
 function respondWith(
   handler: (requestUrl: string) => { status?: number; body?: unknown } | Promise<{ status?: number; body?: unknown }>,
@@ -142,7 +142,7 @@ describe("bucketed cell loading", () => {
 
     const outcome = await loadBucketedCells<{ cellId: string }>(
       [bucket(1.1)],
-      () => "https://bolets.test/api/predictions?west=1.1",
+      () => "https://bolets.test/api/predictions?resolution=2500&west=1.1",
       new AbortController().signal,
       (payload) => stored.push(...payload.cells.map((cell) => cell.cellId)),
     );

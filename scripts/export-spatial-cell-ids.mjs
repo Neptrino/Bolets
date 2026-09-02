@@ -8,8 +8,8 @@ function argumentValue(name) {
 }
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const anonKey = process.env.SUPABASE_ANON_KEY;
-if (!supabaseUrl || !anonKey) throw new Error("SUPABASE_URL and SUPABASE_ANON_KEY are required");
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!supabaseUrl || !serviceRoleKey) throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
 const outputPath = resolve(argumentValue("output") ?? "/tmp/bolets-spatial-cell-ids.ndjson");
 const initialBounds = (argumentValue("bbox") ?? "0.15,40.5,3.35,42.9").split(",").map(Number);
 if (initialBounds.length !== 4 || initialBounds.some((value) => !Number.isFinite(value))) throw new Error("--bbox must be west,south,east,north");
@@ -28,7 +28,7 @@ async function fetchTile([west, south, east, north], attempt = 1) {
   });
   try {
     const response = await fetch(`${supabaseUrl}/functions/v1/read-spatial-environment?${query}`, {
-      headers: { Authorization: `Bearer ${anonKey}`, apikey: anonKey },
+      headers: { Authorization: `Bearer ${serviceRoleKey}`, apikey: serviceRoleKey },
     });
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error ?? `${response.status} ${response.statusText}`);

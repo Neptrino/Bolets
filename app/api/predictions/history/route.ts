@@ -8,6 +8,12 @@ import {
 import { getPredictionCellHistory } from "@/src/lib/predictions";
 import { predictionCellHistoryRequestSchema } from "@/src/lib/prediction-history";
 import { calculateSuitability, missingModelFields } from "@/src/lib/scoring";
+import {
+  detailedMapAccessDenied,
+  hasContributorDetailCapability,
+  isDetailedMapResolution,
+  PRIVATE_MAP_HEADERS,
+} from "@/src/lib/contributions/capability.server";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -19,6 +25,8 @@ export async function POST(request: Request) {
     values: JSON.stringify(body?.values),
   });
   if (!parsed.success) return Response.json({ error: "Invalid cell history request" }, { status: 400 });
+  const detailed = isDetailedMapResolution(parsed.data.gridSizeM);
+  if (detailed && !await hasContributorDetailCapability()) return detailedMapAccessDenied();
 
   const species = getSpecies(parsed.data.speciesId);
   if (!species) return Response.json({ error: "Unknown species" }, { status: 400 });
@@ -64,16 +72,16 @@ export async function POST(request: Request) {
     const responseTimeline = localTimeline?.timeline ?? timeline;
     return jsonResponse(request, responseTimeline, {
       headers: {
-        "Cache-Control": simulated || localTimeline?.simulated
+        ...(detailed ? PRIVATE_MAP_HEADERS : { "Cache-Control": simulated || localTimeline?.simulated
           ? "no-store"
-          : "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
+          : "public, max-age=60, s-maxage=300, stale-while-revalidate=600" }),
       },
     });
   } catch (error) {
     const localTimeline = developmentTimeline();
     if (localTimeline?.simulated) {
       return jsonResponse(request, localTimeline.timeline, {
-        headers: { "Cache-Control": "no-store" },
+        headers: detailed ? PRIVATE_MAP_HEADERS : { "Cache-Control": "no-store" },
       });
     }
     console.error("Unable to calculate prediction history", error);

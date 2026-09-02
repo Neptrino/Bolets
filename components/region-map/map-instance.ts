@@ -76,7 +76,8 @@ export function createRegionMap({
           timeout: habitat ? 3_000 : 8_000,
         },
         fitBoundsOptions: {
-          maxZoom: habitat ? 11.2 : 14,
+          // Start within the public 2.5 km band; finer detail is a manual choice.
+          maxZoom: habitat ? 11.2 : 11.7,
           duration: 650,
         },
         trackUserLocation: true,

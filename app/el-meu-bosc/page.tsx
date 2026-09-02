@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AccountNav } from "@/components/account-nav";
 import { PreferenceManager } from "@/components/my-forest/preference-manager";
-import { JournalSummary, TodayForYou } from "@/components/my-forest/dashboard";
+import { TodayForYou } from "@/components/my-forest/dashboard";
+import { MapDetailAccessNotice } from "@/components/map-detail-access-notice";
 import {
   PageHeader,
   PageShell,
@@ -15,7 +16,6 @@ import {
   savedForestCombinationsWithoutReadings,
   simulateSavedForestReadings,
 } from "@/src/lib/my-forest/dashboard";
-import { readOwnerJournalSummary } from "@/src/lib/my-forest/journal.server";
 import { forestPreferenceOptions } from "@/src/lib/my-forest/preferences";
 import { readForestPreferences } from "@/src/lib/my-forest/preferences.server";
 import { monthInTimeZone } from "@/src/lib/seasonality";
@@ -37,10 +37,7 @@ export default async function MyForestPage({
   const query = await searchParams;
   const simulation = process.env.NODE_ENV === "development" && query.simula === "lectures";
 
-  const [preferences, journal] = await Promise.all([
-    readForestPreferences(user.id),
-    readOwnerJournalSummary(user.id),
-  ]);
+  const preferences = await readForestPreferences(user.id);
   let overviewUnavailable = false;
   const overviewItems = preferences.speciesIds.length && preferences.territorySlugs.length
     ? await loadCachedAreaOverview().catch(() => {
@@ -69,15 +66,15 @@ export default async function MyForestPage({
         eyebrow="Compte personal"
         title={<>El meu <PageTitleAccent>bosc</PageTitleAccent></>}
         description="Les teves espècies, els teus territoris i el resum privat de la temporada en un sol lloc. Les preferències no alteren el mapa públic."
-        actions={<Link className="finding-button-secondary" href="/compte">Compte i privadesa</Link>}
       />
+      <AccountNav current="forest" />
+      <MapDetailAccessNotice resolution={1000} inline />
       <TodayForYou
         preferences={preferences}
         readings={readings}
         unavailableCombinations={unavailableCombinations}
         simulation={simulation}
       />
-      <JournalSummary summary={journal} />
       <section className="forest-section" aria-labelledby="forest-preferences-title">
         <SectionHeader
           meta="Preferències"

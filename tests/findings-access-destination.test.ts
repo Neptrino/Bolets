@@ -6,6 +6,7 @@ describe("finding access destination", () => {
     "/el-meu-bosc",
     "/les-meves-troballes",
     "/compte",
+    "/compte/col-laboracio",
     "/moderacio",
     "/admin/status",
     "/admin/status/users",

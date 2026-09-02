@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 
 import { ArrowUpRight, CheckCircle2, Clock3, Info, ListFilter, LoaderCircle, Map as MapIcon, Trees, X } from "lucide-react";
 import Link from "next/link";
 import { ConditionComparison } from "@/components/condition-comparison";
+import { MapDetailAccessNotice } from "@/components/map-detail-access-notice";
 import {
   RegionMap,
   type PredictionCellDetailState,
@@ -94,6 +95,7 @@ export function MapExplorer({
   const detailPanelId = useId();
   const mapInfoPanelId = useId();
   const [infoOpen, setInfoOpen] = useState(false);
+  const [detailResolution, setDetailResolution] = useState<SpatialGridSizeM>(2500);
   const [viewportStatus, setViewportStatus] = useState<PredictionViewportStatus>(null);
   const [detailPanelState, setDetailPanelState] = useState({
     speciesId: speciesKey,
@@ -230,6 +232,7 @@ export function MapExplorer({
         onCellSelect={selectCell}
         onCellDetailStateChange={updateCellDetailState}
         onViewportStatusChange={mode === "prediction" ? setViewportStatus : undefined}
+        onDetailResolutionChange={setDetailResolution}
         className="full-map"
         fullscreenTarget="parent"
       />
@@ -270,11 +273,14 @@ export function MapExplorer({
           className={`map-detail-panel${detailOpen ? " is-open" : ""}`}
           aria-label={globalMode ? "Informació del sector" : "Condicions del sector"}
         >
+          {!detailOpen && !infoOpen ? <MapDetailAccessNotice resolution={detailResolution} /> : null}
           <div className="map-floating-card" aria-live="polite">
             <div className="map-floating-card-context">
               <div className="map-floating-card-label">
                 <MapIcon size={17} aria-hidden="true" />
-                <span>{selectedGridSizeM ? `Sector ${formatGridDimensions(selectedGridSizeM)}` : regionLabels[region]}</span>
+                <span>{selectedGridSizeM
+                  ? `Sector ${formatGridDimensions(selectedGridSizeM)}`
+                  : "Selecciona un sector"}</span>
               </div>
               {isLoadingCell || isLoadedCell || hasCellLoadError ? (
                 <span
@@ -431,6 +437,7 @@ export function MapExplorer({
         </aside>
       ) : (
         <aside className="map-detail-panel map-info-only-footer" aria-label="Informació del mapa">
+          {!infoOpen ? <MapDetailAccessNotice resolution={detailResolution} /> : null}
           <div className="map-floating-card">
             <div className="map-floating-card-label">
               <MapIcon size={17} aria-hidden="true" />

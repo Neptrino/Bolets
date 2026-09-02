@@ -262,7 +262,8 @@ describe("operational status", () => {
     expect(migration).toMatch(/revoke all on function public\.read_operational_status\(\)[\s\S]*from public, anon, authenticated/i);
     expect(migration).toMatch(/grant execute[\s\S]*to service_role/i);
     expect(migration).toContain("'observedPublications'");
-    expect(serviceWorker).toContain('const MAP_BUCKET_CACHE = "bolets-map-buckets-v1"');
+    expect(serviceWorker).toContain('const MAP_BUCKET_CACHE = "bolets-map-buckets-v2"');
+    expect(serviceWorker).toContain('Number(url.searchParams.get("resolution")) < 2500');
     expect(serviceWorker).toContain('url.pathname.startsWith("/api/map-tiles/icgc/")');
     expect(serviceWorker).toContain('"server.arcgisonline.com"');
     expect(migration).toContain("'forecastPublication'");

@@ -25,6 +25,7 @@ import type {
   SpatialGridSizeM,
   SuitabilityResult,
 } from "@/src/lib/types";
+import { spatialServiceConfig } from "@/src/lib/spatial-service-auth.server";
 
 const MAX_FORECAST_ANCHOR_GAP_MS = 8 * 60 * 60 * 1000;
 
@@ -34,8 +35,7 @@ export async function getPredictionCellHistory(
 ): Promise<PredictionCellTimeline> {
   const species = getSpecies(speciesId);
   if (!species) throw new Error("Unknown species");
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY)
-    throw new Error("Spatial environment service is not configured");
+  const spatialService = spatialServiceConfig(cell.gridSizeM);
 
   const query = new URLSearchParams({
     mode: "history",
@@ -45,11 +45,11 @@ export async function getPredictionCellHistory(
     historyVersion: PREDICTION_CACHE_VERSION,
   });
   const response = await fetch(
-    `${process.env.SUPABASE_URL}/functions/v1/read-spatial-environment?${query}`,
+    `${spatialService.url}/functions/v1/read-spatial-environment?${query}`,
     {
       headers: {
-        Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
-        apikey: process.env.SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${spatialService.key}`,
+        apikey: spatialService.key,
       },
       cache: "force-cache",
       next: { revalidate: 300 },
@@ -300,7 +300,7 @@ export async function getPredictionCells(
 ) {
   const species = getSpecies(speciesId);
   if (!species) throw new Error("Unknown species");
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) throw new Error("Spatial environment service is not configured");
+  const spatialService = spatialServiceConfig(gridSizeM);
   const query = new URLSearchParams({
     west: String(bounds.west), south: String(bounds.south), east: String(bounds.east), north: String(bounds.north),
     limit: String(Math.min(Math.max(Math.round(limit), 1), 1000)), resolution: String(gridSizeM),
@@ -327,8 +327,8 @@ export async function getPredictionCells(
     // payloads whenever their field contract changes.
     query.set("viewVersion", PREDICTION_CACHE_VERSION);
   }
-  const environmentRequest = fetch(`${process.env.SUPABASE_URL}/functions/v1/read-spatial-environment?${query}`, {
-    headers: { Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`, apikey: process.env.SUPABASE_ANON_KEY },
+  const environmentRequest = fetch(`${spatialService.url}/functions/v1/read-spatial-environment?${query}`, {
+    headers: { Authorization: `Bearer ${spatialService.key}`, apikey: spatialService.key },
     cache: "force-cache",
     next: { revalidate: 300 },
   });

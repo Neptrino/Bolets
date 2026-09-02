@@ -51,4 +51,5 @@ export type RegionMapProps = {
   ) => void;
   onCellDetailStateChange?: (state: PredictionCellDetailState) => void;
   onViewportStatusChange?: (status: PredictionViewportStatus) => void;
+  onDetailResolutionChange?: (gridSizeM: SpatialGridSizeM) => void;
 };

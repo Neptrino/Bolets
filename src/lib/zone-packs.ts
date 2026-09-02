@@ -3,11 +3,10 @@ import { habitatBucketUrl, predictionBucketUrl } from "@/src/lib/map-request-url
 import type { SpatialBounds, SpatialGridSizeM } from "@/src/lib/types";
 
 /**
- * The resolutions a downloaded zone covers. These are the two the map settles
- * on once someone is close enough to walk the ground: the finer one for the
- * detail, the coarser one for the approach.
+ * Offline packs contain public data only. Contributor detail is deliberately
+ * online-only so expiring or revoked access cannot survive in Cache Storage.
  */
-const ZONE_PACK_RESOLUTIONS: SpatialGridSizeM[] = [250, 1000];
+const ZONE_PACK_RESOLUTIONS: SpatialGridSizeM[] = [2500];
 
 export type ZonePackRequest = {
   url: string;

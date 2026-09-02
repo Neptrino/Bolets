@@ -8,6 +8,7 @@ import {
 } from "@/src/lib/model-versions";
 import { spatialHabitatResponseSchema } from "@/src/lib/schema";
 import type { PotentialHabitatCell, SpatialBounds, SpatialGridSizeM, SpeciesProfile } from "@/src/lib/types";
+import { spatialServiceConfig } from "@/src/lib/spatial-service-auth.server";
 
 type SpatialHabitatResponse = z.infer<typeof spatialHabitatResponseSchema>;
 
@@ -85,7 +86,7 @@ export async function getPotentialHabitatCoverage(
 ) {
   const species = getSpecies(speciesId);
   if (!species) throw new Error("Unknown species");
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) throw new Error("Spatial habitat service is not configured");
+  const spatialService = spatialServiceConfig(gridSizeM);
 
   const [altitudeCoreMin, altitudeCoreMax] = species.ecologicalConfig.habitat.altitude;
   const [altitudeMin, altitudeMax] = altitudeHabitatEnvelope(species.ecologicalConfig.habitat.altitude);
@@ -114,7 +115,7 @@ export async function getPotentialHabitatCoverage(
   }
 
   const assetBaseUrl = process.env.HABITAT_ASSET_BASE_URL;
-  if (assetBaseUrl) {
+  if (assetBaseUrl && gridSizeM >= 2500) {
     try {
       const base = assetBaseUrl.endsWith("/") ? assetBaseUrl : `${assetBaseUrl}/`;
       const boundsKey = [bounds.west, bounds.south, bounds.east, bounds.north]
@@ -137,10 +138,10 @@ export async function getPotentialHabitatCoverage(
     }
   }
 
-  const response = await fetch(`${process.env.SUPABASE_URL}/functions/v1/read-spatial-environment?${query}`, {
+  const response = await fetch(`${spatialService.url}/functions/v1/read-spatial-environment?${query}`, {
     headers: {
-      Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
-      apikey: process.env.SUPABASE_ANON_KEY
+      Authorization: `Bearer ${spatialService.key}`,
+      apikey: spatialService.key
     },
     // Static habitat is versioned by both model and profile keys in the URL.
     // Keep the service read in the Data Cache for the same lifetime advertised

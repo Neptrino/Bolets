@@ -4,6 +4,7 @@ const ACCESS_DESTINATIONS = [
   DEFAULT_ACCESS_DESTINATION,
   "/les-meves-troballes",
   "/compte",
+  "/compte/col-laboracio",
   "/moderacio",
   "/admin/status",
   "/admin/status/users",

@@ -78,6 +78,7 @@ export function buildSitemap(
       lastModified,
     })),
     { url: absoluteUrl("/metode"), lastModified },
+    { url: absoluteUrl("/col-labora"), lastModified },
     { url: absoluteUrl("/equip-editorial"), lastModified: new Date(`${getEditorialMetadata("equip-editorial").updatedAt}T00:00:00+02:00`) },
     { url: absoluteUrl("/avis-legal"), lastModified },
     { url: absoluteUrl("/zones"), lastModified },

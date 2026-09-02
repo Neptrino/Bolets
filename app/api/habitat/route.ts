@@ -8,11 +8,14 @@ import { toPotentialHabitatMapCell } from "@/src/lib/habitat-map";
 import { jsonResponse } from "@/src/lib/json-response";
 import { withoutInternalModelVersion } from "@/src/lib/public-response";
 import { proxyDevelopmentPublicDataGet } from "@/src/lib/development-public-data-proxy";
+import {
+  detailedMapAccessDenied,
+  hasContributorDetailCapability,
+  isDetailedMapResolution,
+  PRIVATE_MAP_HEADERS,
+} from "@/src/lib/contributions/capability.server";
 
 export async function GET(request: Request) {
-  const proxied = await proxyDevelopmentPublicDataGet(request, "/api/habitat");
-  if (proxied) return proxied;
-
   const params = new URL(request.url).searchParams;
   const speciesId = params.get("species") ?? "";
   const compact = params.get("view") === "map";
@@ -22,6 +25,15 @@ export async function GET(request: Request) {
     return Response.json({ error: parsedQuery.error }, { status: 400 });
   }
   const { query } = parsedQuery;
+  const detailed = isDetailedMapResolution(query.resolution);
+  if (detailed && !await hasContributorDetailCapability()) return detailedMapAccessDenied();
+  const proxied = await proxyDevelopmentPublicDataGet(
+    request,
+    "/api/habitat",
+    process.env,
+    { privateResponse: detailed },
+  );
+  if (proxied) return proxied;
 
   try {
     // Historical occurrence support is an optional context layer. Map reads
@@ -47,7 +59,7 @@ export async function GET(request: Request) {
         }
       : result;
     return jsonResponse(request, withoutInternalModelVersion(response), {
-      headers: {
+      headers: detailed ? PRIVATE_MAP_HEADERS : {
         "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
       }
     });

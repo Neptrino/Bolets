@@ -9,6 +9,10 @@ const globalPredictionMocks = vi.hoisted(() => ({
   getGlobalCellRanking: vi.fn(),
 }));
 
+const accessMocks = vi.hoisted(() => ({
+  hasContributorDetailCapability: vi.fn(async () => false),
+}));
+
 vi.mock("next/cache", () => ({
   unstable_cache: (callback: (...args: never[]) => unknown) => callback,
 }));
@@ -16,6 +20,15 @@ vi.mock("@/src/lib/predictions", () => predictionMocks);
 vi.mock("@/src/lib/global-predictions", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/src/lib/global-predictions")>()),
   ...globalPredictionMocks,
+}));
+vi.mock("@/src/lib/contributions/capability.server", () => ({
+  detailedMapAccessDenied: () => Response.json(
+    { error: "detailed_map_requires_contributor" },
+    { status: 403, headers: { "Cache-Control": "private, no-store" } },
+  ),
+  hasContributorDetailCapability: accessMocks.hasContributorDetailCapability,
+  isDetailedMapResolution: (resolution: number) => resolution < 2500,
+  PRIVATE_MAP_HEADERS: { "Cache-Control": "private, no-store" },
 }));
 
 import { GET } from "@/app/api/predictions/route";
@@ -25,6 +38,19 @@ describe("prediction API bounds", () => {
     predictionMocks.getPredictionCells.mockReset();
     globalPredictionMocks.getGlobalPredictionCells.mockReset();
     globalPredictionMocks.getGlobalCellRanking.mockReset();
+    accessMocks.hasContributorDetailCapability.mockReset();
+    accessMocks.hasContributorDetailCapability.mockResolvedValue(false);
+  });
+
+  it("requires contributor access for a 1 km prediction bucket", async () => {
+    const response = await GET(new Request(
+      "http://localhost/api/predictions?species=boletus-edulis&west=1&south=41&east=1.1&north=41.1&resolution=1000",
+    ));
+
+    expect(response.status).toBe(403);
+    expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+    await expect(response.json()).resolves.toEqual({ error: "detailed_map_requires_contributor" });
+    expect(predictionMocks.getPredictionCells).not.toHaveBeenCalled();
   });
 
   it("rejects requests with a missing coordinate", async () => {

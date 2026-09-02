@@ -65,4 +65,14 @@ describe("persistent map bucket cache", () => {
     await expect(readMapBucketPayload(url)).resolves.toBeNull();
     await expect(writeMapBucketPayload(url, payload)).resolves.toBeUndefined();
   });
+
+  it("does not persist contributor-only detailed buckets", async () => {
+    const { open } = installCacheStorage();
+    const detailedUrl = "https://bolets.test/api/predictions?resolution=1000&v=test";
+
+    await writeMapBucketPayload(detailedUrl, payload);
+
+    await expect(readMapBucketPayload(detailedUrl)).resolves.toBeNull();
+    expect(open).not.toHaveBeenCalled();
+  });
 });

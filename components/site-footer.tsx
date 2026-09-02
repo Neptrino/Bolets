@@ -51,6 +51,7 @@ export function SiteFooter() {
           <Link href="/parts-dun-bolet">Parts d’un bolet</Link>
           <Link href="/normativa-bolets">Permisos i recol·lecció</Link>
           <Link href="/preguntes-frequents-bolets">Preguntes freqüents</Link>
+          <Link href="/col-labora">Col·labora amb Bolets</Link>
           <Link href="/equip-editorial">Equip editorial</Link>
           <Link href="/avis-legal">Avís legal i privadesa</Link>
         </nav>

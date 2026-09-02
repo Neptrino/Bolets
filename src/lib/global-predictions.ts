@@ -17,6 +17,7 @@ import type {
   SuitabilityResult,
 } from "@/src/lib/types";
 import { z } from "zod";
+import { spatialServiceConfig } from "@/src/lib/spatial-service-auth.server";
 
 export {
   GLOBAL_MINIMUM_GRID_SIZE_M,
@@ -80,11 +81,7 @@ async function fetchGlobalEnvironment(
   gridSizeM: GlobalGridSizeM,
   readShapeVersion?: string,
 ): Promise<GlobalEnvironmentPayload> {
-  const baseUrl = process.env.SUPABASE_URL;
-  const anonKey = process.env.SUPABASE_ANON_KEY;
-  if (!baseUrl || !anonKey) {
-    throw new Error("Spatial environment service is not configured");
-  }
+  const spatialService = spatialServiceConfig(gridSizeM);
   const query = new URLSearchParams({
     west: String(bounds.west),
     south: String(bounds.south),
@@ -98,15 +95,15 @@ async function fetchGlobalEnvironment(
     setVersion: globalSpeciesSetKey,
     ...(readShapeVersion ? { readShapeVersion } : {}),
   });
-  const url = `${baseUrl}/functions/v1/read-spatial-environment?${query}`;
+  const url = `${spatialService.url}/functions/v1/read-spatial-environment?${query}`;
   const pending = globalEnvironmentInFlight.get(url);
   if (pending) return pending;
 
   const task = (async () => {
     const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${anonKey}`,
-        apikey: anonKey,
+        Authorization: `Bearer ${spatialService.key}`,
+        apikey: spatialService.key,
       },
       cache: "force-cache",
       next: { revalidate: 300 },

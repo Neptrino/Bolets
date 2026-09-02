@@ -5,6 +5,10 @@ interface PublicDataEnvironment {
   BOLETS_DEV_PUBLIC_DATA_ORIGIN?: string;
 }
 
+interface DevelopmentProxyOptions {
+  privateResponse?: boolean;
+}
+
 const FORWARDED_REQUEST_HEADERS = [
   "accept",
   "if-modified-since",
@@ -51,15 +55,16 @@ function unavailableResponse() {
 }
 
 /**
- * Let a local Next.js dev server read the deployed public map API without
- * pointing any local authentication, admin or mutation route at production.
- * The browser keeps using the canonical same-origin bucket URL, which also
- * preserves the cache identity shared by live and downloaded maps.
+ * Let a local Next.js dev server read the deployed map API without pointing
+ * any local authentication, admin or mutation route at production. Detailed
+ * callers must authorize locally before opting into a private response; no
+ * local cookie or authorization header is ever forwarded upstream.
  */
 export async function proxyDevelopmentPublicDataGet(
   request: Request,
   pathname: "/api/predictions" | "/api/habitat",
   environment: PublicDataEnvironment = process.env,
+  options: DevelopmentProxyOptions = {},
 ) {
   let origin: string | null;
   try {
@@ -94,6 +99,10 @@ export async function proxyDevelopmentPublicDataGet(
     for (const name of FORWARDED_RESPONSE_HEADERS) {
       const value = upstream.headers.get(name);
       if (value) responseHeaders.set(name, value);
+    }
+    if (options.privateResponse) {
+      responseHeaders.set("cache-control", "private, no-store");
+      responseHeaders.set("vary", "Cookie, Accept-Encoding");
     }
     responseHeaders.set("x-bolets-data-source", "production-public-api");
     return new Response(upstream.body, {

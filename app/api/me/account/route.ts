@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "@/src/lib/supabase/admin";
 import { createSupabaseServerClient, getAuthenticatedUser } from "@/src/lib/supabase/server";
+import { clearContributorDetailCapability } from "@/src/lib/contributions/capability.server";
 
 export async function DELETE() {
   const user = await getAuthenticatedUser();
@@ -26,6 +27,7 @@ export async function DELETE() {
   }
   const session = await createSupabaseServerClient();
   await session.auth.signOut({ scope: "global" });
+  await clearContributorDetailCapability();
   const deletion = await admin.auth.admin.deleteUser(user.id);
   if (deletion.error) return Response.json({ error: "No s’ha pogut eliminar el compte completament." }, { status: 500 });
   return Response.json({ ok: true });

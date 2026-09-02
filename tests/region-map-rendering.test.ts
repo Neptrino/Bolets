@@ -69,10 +69,9 @@ describe("prediction map rendering", () => {
   });
 
   it("never requests finer than the coarse floor for the combined map", () => {
-    expect(source).toContain(
-      'speciesId === GLOBAL_SPECIES_ID ? GLOBAL_MINIMUM_GRID_SIZE_M : 250',
-    );
-    expect(source).toContain("minimumGridSizeM,\n        maximumPredictionGridSizeM");
+    expect(source).toContain("globalPrediction && contributorAccess.active");
+    expect(source).toContain("? GLOBAL_MINIMUM_GRID_SIZE_M : detailedMinimumGridSizeM");
+    expect(source).toContain("predictionMinimumGridSizeM,\n        maximumPredictionGridSizeM");
   });
 
   it("starts the Avui heatmap at 2.5 km resolution", () => {

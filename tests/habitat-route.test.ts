@@ -5,7 +5,20 @@ const habitatMocks = vi.hoisted(() => ({
   getPotentialHabitatCoverage: vi.fn(),
 }));
 
+const accessMocks = vi.hoisted(() => ({
+  hasContributorDetailCapability: vi.fn(async () => false),
+}));
+
 vi.mock("@/src/lib/habitat", () => habitatMocks);
+vi.mock("@/src/lib/contributions/capability.server", () => ({
+  detailedMapAccessDenied: () => Response.json(
+    { error: "detailed_map_requires_contributor" },
+    { status: 403, headers: { "Cache-Control": "private, no-store" } },
+  ),
+  hasContributorDetailCapability: accessMocks.hasContributorDetailCapability,
+  isDetailedMapResolution: (resolution: number) => resolution < 2500,
+  PRIVATE_MAP_HEADERS: { "Cache-Control": "private, no-store" },
+}));
 
 import { GET } from "@/app/api/habitat/route";
 
@@ -13,6 +26,18 @@ describe("habitat API bounds", () => {
   beforeEach(() => {
     habitatMocks.getPotentialHabitatCells.mockReset();
     habitatMocks.getPotentialHabitatCoverage.mockReset();
+    accessMocks.hasContributorDetailCapability.mockReset();
+    accessMocks.hasContributorDetailCapability.mockResolvedValue(false);
+  });
+
+  it("requires contributor access for a 250 m habitat bucket", async () => {
+    const response = await GET(new Request(
+      "http://localhost/api/habitat?species=boletus-edulis&west=1&south=41&east=1.01&north=41.01&resolution=250&view=map",
+    ));
+
+    expect(response.status).toBe(403);
+    expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+    expect(habitatMocks.getPotentialHabitatCoverage).not.toHaveBeenCalled();
   });
 
   it("rejects unknown species", async () => {

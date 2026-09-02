@@ -13,14 +13,14 @@
  * forbids it.
  */
 
-const VERSION = "v3";
+const VERSION = "v4";
 const SHELL_CACHE = `bolets-shell-${VERSION}`;
 const ASSET_CACHE = `bolets-assets-${VERSION}`;
 const DATA_CACHE = `bolets-data-${VERSION}`;
 const TILE_CACHE = `bolets-tiles-${VERSION}`;
 // Client map code owns this short-lived, bounded cache. Keep it when the
 // service worker rotates its own caches.
-const MAP_BUCKET_CACHE = "bolets-map-buckets-v1";
+const MAP_BUCKET_CACHE = "bolets-map-buckets-v2";
 const CURRENT_CACHES = [
   SHELL_CACHE,
   ASSET_CACHE,
@@ -185,6 +185,13 @@ self.addEventListener("fetch", (event) => {
 
   // Everything else this worker handles is same-origin.
   if (url.origin !== self.location.origin) return;
+
+  // Contributor detail is private and online-only. Do not let an expiring or
+  // revoked 1 km/250 m response survive in either service-worker cache.
+  if (
+    (url.pathname === "/api/predictions" || url.pathname === "/api/habitat")
+    && Number(url.searchParams.get("resolution")) < 2500
+  ) return;
 
   // Private operational, account and personal-data pages must never enter an
   // offline cache. The report form is public shell; its unsent content lives

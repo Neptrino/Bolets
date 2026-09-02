@@ -13,7 +13,7 @@ describe("offline zone packs", () => {
     );
 
     // Replays what the map itself builds when a viewport sits over this zone.
-    for (const resolution of [250, 1000] as const) {
+    for (const resolution of [2500] as const) {
       for (const bucket of bucketsForBounds(zone, resolution, catalonia)) {
         expect(packed).toContain(predictionBucketUrl(bucket, "boletus-edulis", resolution));
         expect(packed).toContain(habitatBucketUrl(bucket, "boletus-edulis", resolution));
@@ -21,15 +21,21 @@ describe("offline zone packs", () => {
     }
   });
 
-  it("covers both layers at both resolutions with no duplicates", () => {
+  it("covers both layers at the public offline resolution with no duplicates", () => {
     const requests = enumerateZonePackRequests(zone, "boletus-edulis", catalonia);
     const expectedBuckets =
-      bucketsForBounds(zone, 250, catalonia).length +
-      bucketsForBounds(zone, 1000, catalonia).length;
+      bucketsForBounds(zone, 2500, catalonia).length;
 
     expect(requests).toHaveLength(expectedBuckets * 2);
     expect(new Set(requests.map((r) => r.url)).size).toBe(requests.length);
     expect(requests.filter((r) => r.layer === "predictions")).toHaveLength(expectedBuckets);
+  });
+
+  it("never includes contributor-only resolutions", () => {
+    const resolutions = enumerateZonePackRequests(zone, "boletus-edulis", catalonia)
+      .map((request) => request.resolution);
+    expect(resolutions).not.toContain(250);
+    expect(resolutions).not.toContain(1000);
   });
 
   it("keeps packs for different species apart", () => {

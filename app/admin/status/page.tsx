@@ -33,6 +33,7 @@ import { readCommunityStatus } from "@/src/lib/community-status-server";
 
 import styles from "./status.module.css";
 import { CommunityStatus } from "./community-status";
+import { DetailNav } from "./detail-nav";
 import { ResyncControls } from "./resync-controls";
 
 export const metadata: Metadata = {
@@ -144,6 +145,7 @@ export default async function OperationalStatusPage() {
           layout="split"
           tone="forest"
         />
+        <DetailNav current="status" />
         <section className={`${styles.statePanel} ${styles.critical}`} aria-labelledby="status-unavailable">
           <AlertTriangle aria-hidden="true" />
           <div>
@@ -219,6 +221,7 @@ export default async function OperationalStatusPage() {
         layout="split"
         tone="forest"
       />
+      <DetailNav current="status" />
 
       <section className={`${styles.statePanel} ${styles[summary.state]}`} aria-labelledby="overall-status" aria-live="polite">
         <StateIcon aria-hidden="true" />

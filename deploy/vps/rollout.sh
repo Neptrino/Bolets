@@ -109,6 +109,7 @@ set +a
 : "${UMAMI_WEBSITE_ID:?Set UMAMI_WEBSITE_ID in the Umami environment file}"
 : "${UMAMI_ADMIN_PASSWORD:?Set UMAMI_ADMIN_PASSWORD in the Umami environment file}"
 : "${STATUS_INTERNAL_TOKEN:?Set STATUS_INTERNAL_TOKEN in the status environment file}"
+: "${CONTRIBUTOR_ACCESS_SECRET:?Set CONTRIBUTOR_ACCESS_SECRET in the status environment file}"
 
 compose_files="-f docker-compose.yml -f $override_file"
 if [ -f "$observability_env_file" ]; then

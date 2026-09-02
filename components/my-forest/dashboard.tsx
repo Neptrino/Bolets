@@ -220,7 +220,6 @@ export function JournalSummary({ summary }: { summary: JournalSeasonSummary }) {
         title="La teva temporada"
         titleId="journal-summary-title"
         description="Resum privat de les troballes del teu compte. Les coordenades, les notes i les fotos privades no formen part d’aquest resum."
-        actions={<Link className="text-link" href="/les-meves-troballes">Obrir el quadern <ArrowUpRight size={15} aria-hidden="true" /></Link>}
       />
       {summary.total ? (
         <div className="forest-journal-card">

@@ -33,9 +33,9 @@ import { useRegionBasemap } from "@/components/region-map/use-basemap";
 import { useCollapsibleMapControls } from "@/components/region-map/use-collapsible-controls";
 import { useRegionMapStatus } from "@/components/region-map/use-viewport-status";
 import { RegionMapView } from "@/components/region-map/view";
+import { useMapResolutionAccess } from "@/components/region-map/use-resolution-access";
 import { fetchJsonWithRetry } from "@/src/lib/fetch-json";
 import {
-  GLOBAL_MINIMUM_GRID_SIZE_M,
   GLOBAL_SPECIES_ID,
 } from "@/src/lib/global-map";
 import {
@@ -68,7 +68,6 @@ import type {
   PotentialHabitatMapCell,
   PredictionCell,
   PredictionMapCell,
-  SpatialGridSizeM,
 } from "@/src/lib/types";
 
 export type { PredictionCellDetailState, PredictionViewportStatus } from "@/components/region-map/types";
@@ -97,6 +96,7 @@ export function RegionMap({
   onCellSelect,
   onCellDetailStateChange,
   onViewportStatusChange,
+  onDetailResolutionChange,
 }: RegionMapProps) {
   const showCompatibility = habitat || mode === "compatibility";
   const globalPrediction = speciesId === GLOBAL_SPECIES_ID;
@@ -174,7 +174,7 @@ export function RegionMap({
     withheld: 0,
     truncated: false,
     incomplete: false,
-    gridSizeM: 250,
+    gridSizeM: 2500,
   });
   const [habitatEvidenceState, setHabitatEvidenceState] =
     useState<HabitatEvidenceState>({
@@ -275,6 +275,9 @@ export function RegionMap({
     };
   }, [selectedRegion, speciesId]);
 
+  const { detailedMinimumGridSizeM, predictionMinimumGridSizeM } =
+    useMapResolutionAccess(map, globalPrediction, onDetailResolutionChange);
+
   useEffect(() => {
     selectedCellIdRef.current = selectedCellId ?? null;
     drawCellsRef.current();
@@ -365,15 +368,14 @@ export function RegionMap({
       withheld: 0,
       truncated: false,
       incomplete: false,
-      gridSizeM: visibleGridSize(localMap),
+      gridSizeM: visibleGridSize(localMap, detailedMinimumGridSizeM),
     });
     // One controller for the whole species/layer run; see the prediction
     // effect for why superseded viewports keep their requests.
     const controller = new AbortController();
     request.current = controller;
-
     const loadHabitat = async () => {
-      const gridSizeM = visibleGridSize(localMap);
+      const gridSizeM = visibleGridSize(localMap, detailedMinimumGridSizeM);
       const buckets = bucketsForBounds(
         visibleSpatialBounds(localMap),
         gridSizeM,
@@ -616,14 +618,11 @@ export function RegionMap({
       localMap.off("move", scheduleDrawHabitat);
       drawCellsRef.current = () => undefined;
     };
-  }, [habitat, selectedRegion, showCompatibility, speciesId]);
+  }, [detailedMinimumGridSizeM, habitat, selectedRegion, showCompatibility, speciesId]);
 
   useEffect(() => {
     const localMap = map.current;
     if (!localMap || !speciesId || showCompatibility) return;
-
-    const minimumGridSizeM: SpatialGridSizeM =
-      speciesId === GLOBAL_SPECIES_ID ? GLOBAL_MINIMUM_GRID_SIZE_M : 250;
     const locator = geolocateControl.current;
     let geolocationReloadFrame: number | undefined;
     let waitingForGeolocationMoveEnd = false;
@@ -666,7 +665,7 @@ export function RegionMap({
       incomplete: false,
       gridSizeM: visibleGridSize(
         localMap,
-        minimumGridSizeM,
+        predictionMinimumGridSizeM,
         maximumPredictionGridSizeM,
       ),
     });
@@ -679,7 +678,7 @@ export function RegionMap({
     const loadCells = async () => {
       const gridSizeM = visibleGridSize(
         localMap,
-        minimumGridSizeM,
+        predictionMinimumGridSizeM,
         maximumPredictionGridSizeM,
       );
       const viewportBounds = visibleSpatialBounds(localMap);
@@ -939,6 +938,7 @@ export function RegionMap({
   }, [
     showCompatibility,
     speciesId,
+    predictionMinimumGridSizeM,
     maximumPredictionGridSizeM,
     predictionRendering,
     onCellClick,

@@ -20,7 +20,12 @@ export function AccountSettings({ email }: { email: string }) {
     const response = await fetch("/api/me/profile", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ alias: alias.trim() || null }) });
     const body = await response.json(); setBusy(false); setMessage(response.ok ? "Àlies desat." : body.error);
   };
-  const signOut = async () => { await createSupabaseBrowserClient().auth.signOut({ scope: "global" }); router.replace("/"); router.refresh(); };
+  const signOut = async () => {
+    await fetch("/api/me/logout", { method: "POST" });
+    await createSupabaseBrowserClient().auth.signOut({ scope: "local" });
+    router.replace("/");
+    router.refresh();
+  };
   const deleteAccount = async () => {
     setBusy(true);
     setDeleteError(null);
@@ -28,7 +33,7 @@ export function AccountSettings({ email }: { email: string }) {
     if (response.ok) { const pending = await listOutboxFindings(); await Promise.all(pending.map((record) => deleteOutboxFinding(record.draft.clientReportId))); router.replace("/"); router.refresh(); }
     else { setDeleteError((await response.json()).error); setBusy(false); }
   };
-  return <div className="finding-stack">
+  return <div className="finding-stack account-content">
     <section className="finding-account-card finding-stack"><h2>Identitat pública</h2><p>Compte: <strong>{email}</strong>. El correu mai no es publica.</p><form className="finding-stack" onSubmit={save}><label className="finding-field">Àlies opcional<input minLength={3} maxLength={30} value={alias} onChange={(event) => setAlias(event.target.value)} placeholder="Per exemple, BoscEndins" /><small>Encara que tinguis àlies, decideixes troballa per troballa si es mostra.</small></label><button className="finding-button" disabled={busy}>Desar l’àlies</button></form>{message ? <p className="finding-notice">{message}</p> : null}</section>
     <PasskeySettings />
     <section className="finding-account-card finding-stack"><h2>Sessió</h2><button className="finding-button-secondary" onClick={() => void signOut()}>Tancar sessió a tots els dispositius</button></section>

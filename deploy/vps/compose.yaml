@@ -31,6 +31,8 @@ services:
     env_file:
       - path: ${BOLETS_INSTAGRAM_ENV_FILE:-/opt/bolets/secrets/instagram.env}
         required: false
+      - path: ${BOLETS_CONTRIBUTION_EMAIL_ENV_FILE:-/opt/bolets/secrets/contribution-email.env}
+        required: false
     build:
       context: ${BOLETS_APP_DIR:?Set BOLETS_APP_DIR to the checked-out Bolets repository}
       dockerfile: Dockerfile
@@ -49,6 +51,7 @@ services:
       # internal Prometheus endpoint. It is never compiled as a public value.
       SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY:?Generate the Supabase keys before starting}
       STATUS_INTERNAL_TOKEN: ${STATUS_INTERNAL_TOKEN:?Set the private status ingress token}
+      CONTRIBUTOR_ACCESS_SECRET: ${CONTRIBUTOR_ACCESS_SECRET:?Set the contributor capability secret}
       # The existing server-to-function contract uses the legacy signed anon
       # JWT in both apikey and Authorization headers.
       SUPABASE_ANON_KEY: ${ANON_KEY:?Generate the Supabase keys before starting}
