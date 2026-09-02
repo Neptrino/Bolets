@@ -6,7 +6,11 @@ import {
 } from "@/src/lib/contributions/server";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { requireOperationalSession } from "@/src/lib/operational-status-session";
-import { ContributionReviewDialog, RevokeAccessDialog } from "./contribution-management-dialogs";
+import {
+  ContributionDetailsDialog,
+  ContributionReviewDialog,
+  RevokeAccessDialog,
+} from "./contribution-management-dialogs";
 import styles from "./contributions.module.css";
 
 export const metadata: Metadata = {
@@ -108,7 +112,7 @@ export default async function AdminContributionsPage({
         {recent.length ? <div className={styles.tableFrame} tabIndex={0} role="region" aria-label="Taula de revisions recents">
           <table className={styles.table}>
             <caption className="visually-hidden">Aportacions revisades recentment</caption>
-            <thead><tr><th scope="col">Aportació</th><th scope="col">Compte</th><th scope="col">Resultat</th><th scope="col">Revisada</th><th scope="col">Material</th></tr></thead>
+            <thead><tr><th scope="col">Aportació</th><th scope="col">Compte</th><th scope="col">Resultat</th><th scope="col">Revisada</th><th scope="col">Material</th><th scope="col"><span className="visually-hidden">Accions</span></th></tr></thead>
             <tbody>
           {recent.map((request) => (
             <tr key={request.id}>
@@ -117,6 +121,7 @@ export default async function AdminContributionsPage({
               <td><span className={styles.statusBadge} data-status={request.status}>{request.status === "approved" ? "Aprovada" : "No aprovada"}</span></td>
               <td>{request.reviewedAt ? <time dateTime={request.reviewedAt}>{dateFormatter.format(new Date(request.reviewedAt))}</time> : "—"}</td>
               <td>{request.mediaCount > 0 ? `${request.mediaCount} foto${request.mediaCount === 1 ? "" : "s"}` : "—"}</td>
+              <td><ContributionDetailsDialog request={request} /></td>
             </tr>
           ))}
             </tbody>

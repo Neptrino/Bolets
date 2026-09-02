@@ -74,6 +74,7 @@ describe("contribution media", () => {
     expect(mediaRoute).toContain('"Cache-Control": "private, no-store"');
     expect(mediaRoute).toContain('headers.set("Content-Disposition"');
     expect(adminPage).toContain("ContributionReviewDialog");
+    expect(adminPage).toContain("ContributionDetailsDialog");
     expect(reviewDialog).toContain('href={`${media.url}?download=1`}');
     expect(reviewDialog).toContain("Descarrega la foto");
     expect(processor).toContain(".webp({ quality: 82 })");
