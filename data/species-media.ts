@@ -10,14 +10,6 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
     identificationReference: false,
     alt: "Pet de llop gros jove i blanc en un prat, amb les plaques piramidals de la superfície destacades per la llum baixa.",
   }, {
-    id: "aleix-ventayol-lycoperdon-utriforme-original",
-    localPath: "/media/editorial/lycoperdon-utriforme-original.webp",
-    sourceUrl: "https://bolets.app/media/editorial/lycoperdon-utriforme-original.webp",
-    attribution: "Aleix Ventayol",
-    license: "Cedida per l’autor a Bolets",
-    identificationReference: true,
-    alt: "Fotografia original d’un pet de llop gros blanc entre l’herba, amb un mosaic dens de plaques romes i irregulars.",
-  }, {
     id: "wikimedia-lycoperdon-utriforme-chernilevsky",
     localPath: "/media/wikimedia/lycoperdon-utriforme-reference.webp",
     imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Lycoperdon_utriforme%2C_Mosaic_Puffball_2010_G1.jpg",
