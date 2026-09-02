@@ -9,7 +9,7 @@ import {
   readAdminContributorAccessList,
 } from "@/src/lib/contributions/server";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
-import { DetailNav } from "../detail-nav";
+import { requireOperationalSession } from "@/src/lib/operational-status-session";
 import { reviewContributionAction, revokeContributorAction } from "./actions";
 import styles from "./contributions.module.css";
 
@@ -66,6 +66,7 @@ export default async function AdminContributionsPage({
 }: {
   searchParams: Promise<{ error?: string | string[]; updated?: string | string[] }>;
 }) {
+  await requireOperationalSession();
   const [requests, access, query] = await Promise.all([
     readAdminContributionRequests(),
     readAdminContributorAccessList(),
@@ -78,7 +79,7 @@ export default async function AdminContributionsPage({
   const updated = firstValue(query.updated);
 
   return (
-    <PageShell as="article" className="findings-page">
+    <PageShell as="article" className="findings-page admin-page">
       <PageHeader
         eyebrow="Administració · comunitat"
         title={<>Aportacions i <PageTitleAccent>mapa detallat</PageTitleAccent></>}
@@ -86,8 +87,6 @@ export default async function AdminContributionsPage({
         layout="split"
         tone="forest"
       />
-      <DetailNav current="contributions" />
-
       {error ? <p className={styles.status} data-error="true">La revisió no s’ha pogut completar. Comprova que el motiu sigui prou clar.</p> : null}
       {updated ? <p className={styles.status}>Canvi desat correctament.</p> : null}
 

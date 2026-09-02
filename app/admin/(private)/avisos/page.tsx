@@ -7,8 +7,8 @@ import {
   type AdminReportListItem,
   type AdminReportStatus,
 } from "@/src/lib/community-details-server";
+import { requireOperationalSession } from "@/src/lib/operational-status-session";
 
-import { DetailNav } from "../detail-nav";
 import {
   formatDetailDate,
   formatDetailDateTime,
@@ -66,6 +66,7 @@ export default async function AdminReportsPage({
 }: {
   searchParams: Promise<ReportSearchParams>;
 }) {
+  await requireOperationalSession();
   const query = await searchParams;
   const page = positivePage(query.page);
   const status = parseStatus(query.status);
@@ -74,14 +75,14 @@ export default async function AdminReportsPage({
   const first = result.total === 0 ? 0 : (result.page - 1) * result.pageSize + 1;
   const last = Math.min(result.total, result.page * result.pageSize);
   const presets: Array<{ label: string; href: string; status?: AdminReportStatus }> = [
-    { label: "Tots", href: "/admin/status/reports" },
-    { label: "Oberts", href: "/admin/status/reports?status=open", status: "open" },
-    { label: "Resolts", href: "/admin/status/reports?status=resolved", status: "resolved" },
-    { label: "Desestimats", href: "/admin/status/reports?status=dismissed", status: "dismissed" },
+    { label: "Tots", href: "/admin/avisos" },
+    { label: "Oberts", href: "/admin/avisos?status=open", status: "open" },
+    { label: "Resolts", href: "/admin/avisos?status=resolved", status: "resolved" },
+    { label: "Desestimats", href: "/admin/avisos?status=dismissed", status: "dismissed" },
   ];
 
   return (
-    <PageShell as="article" className={styles.detailShell}>
+    <PageShell as="article" className={`admin-page ${styles.detailShell}`}>
       <PageHeader
         eyebrow="Administració · moderació"
         title={<>Avisos de <PageTitleAccent>moderació</PageTitleAccent></>}
@@ -89,8 +90,6 @@ export default async function AdminReportsPage({
         layout="split"
         tone="forest"
       />
-      <DetailNav current="reports" />
-
       <nav className={styles.filterBar} aria-label="Filtres d’avisos">
         {presets.map((preset) => (
           <Link href={preset.href} aria-current={status === preset.status ? "page" : undefined} key={preset.href}>
@@ -144,11 +143,11 @@ export default async function AdminReportsPage({
 
       <nav className={styles.pager} aria-label="Paginació d’avisos">
         {result.page > 1 ? (
-          <Link href={pageHref("/admin/status/reports", result.page - 1, { status })}>← Anterior</Link>
+          <Link href={pageHref("/admin/avisos", result.page - 1, { status })}>← Anterior</Link>
         ) : <span />}
         <span>Pàgina {numberFormatter.format(result.page)} de {numberFormatter.format(totalPages)}</span>
         {result.page < totalPages ? (
-          <Link href={pageHref("/admin/status/reports", result.page + 1, { status })}>Següent →</Link>
+          <Link href={pageHref("/admin/avisos", result.page + 1, { status })}>Següent →</Link>
         ) : <span />}
       </nav>
     </PageShell>

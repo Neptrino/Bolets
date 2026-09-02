@@ -194,6 +194,16 @@ export async function readAdminContributionRequests() {
   }));
 }
 
+export async function readPendingContributionCount() {
+  const admin = createSupabaseAdminClient();
+  const { count, error } = await admin
+    .from("contribution_requests")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
+  if (error) throw error;
+  return count ?? 0;
+}
+
 export type AdminContributorAccess = {
   userId: string;
   userEmail: string;

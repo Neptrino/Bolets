@@ -11,7 +11,7 @@ export async function POST() {
   await clearContributorDetailCapability();
   const response = new NextResponse(null, {
     status: 303,
-    headers: { Location: "/acces?retorn=%2Fadmin%2Fstatus" },
+    headers: { Location: "/acces?retorn=%2Fadmin" },
   });
   response.headers.set("Cache-Control", "private, no-store");
   return response;

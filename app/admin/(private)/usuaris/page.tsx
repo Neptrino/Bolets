@@ -3,8 +3,8 @@ import Link from "next/link";
 
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { readAdminUsersPage } from "@/src/lib/community-details-server";
+import { requireOperationalSession } from "@/src/lib/operational-status-session";
 
-import { DetailNav } from "../detail-nav";
 import {
   formatDetailDate,
   formatDetailDateTime,
@@ -31,6 +31,7 @@ export default async function AdminUsersPage({
 }: {
   searchParams: Promise<{ page?: string | string[] }>;
 }) {
+  await requireOperationalSession();
   const query = await searchParams;
   const page = positivePage(query.page);
   const result = await readAdminUsersPage(page);
@@ -39,7 +40,7 @@ export default async function AdminUsersPage({
   const last = Math.min(result.total, result.page * result.pageSize);
 
   return (
-    <PageShell as="article" className={styles.detailShell}>
+    <PageShell as="article" className={`admin-page ${styles.detailShell}`}>
       <PageHeader
         eyebrow="Administració · comunitat"
         title={<>Usuaris <PageTitleAccent>registrats</PageTitleAccent></>}
@@ -47,8 +48,6 @@ export default async function AdminUsersPage({
         layout="split"
         tone="forest"
       />
-      <DetailNav current="users" />
-
       <div className={styles.overviewLine}>
         <strong>{numberFormatter.format(result.total)} usuaris</strong>
         <span>Mostrant {numberFormatter.format(first)}–{numberFormatter.format(last)}</span>
@@ -95,9 +94,9 @@ export default async function AdminUsersPage({
       )}
 
       <nav className={styles.pager} aria-label="Paginació d’usuaris">
-        {result.page > 1 ? <Link href={pageHref("/admin/status/users", result.page - 1)}>← Anterior</Link> : <span />}
+        {result.page > 1 ? <Link href={pageHref("/admin/usuaris", result.page - 1)}>← Anterior</Link> : <span />}
         <span>Pàgina {numberFormatter.format(result.page)} de {numberFormatter.format(totalPages)}</span>
-        {result.page < totalPages ? <Link href={pageHref("/admin/status/users", result.page + 1)}>Següent →</Link> : <span />}
+        {result.page < totalPages ? <Link href={pageHref("/admin/usuaris", result.page + 1)}>Següent →</Link> : <span />}
       </nav>
     </PageShell>
   );

@@ -22,9 +22,9 @@ export async function reviewContributionAction(formData: FormData) {
     decision: formData.get("decision"),
     reviewNote: formData.get("reviewNote") ?? "",
   });
-  if (!parsed.success) redirect("/admin/status/contributions?error=invalid-review");
+  if (!parsed.success) redirect("/admin/aportacions?error=invalid-review");
   if (parsed.data.decision === "rejected" && parsed.data.reviewNote.length < 3) {
-    redirect("/admin/status/contributions?error=rejection-reason");
+    redirect("/admin/aportacions?error=rejection-reason");
   }
   await reviewContributionRequest(
     parsed.data.requestId,
@@ -32,8 +32,9 @@ export async function reviewContributionAction(formData: FormData) {
     parsed.data.reviewNote || null,
     reviewer,
   );
-  revalidatePath("/admin/status/contributions");
-  redirect(`/admin/status/contributions?updated=${parsed.data.decision}`);
+  revalidatePath("/admin/aportacions");
+  revalidatePath("/admin");
+  redirect(`/admin/aportacions?updated=${parsed.data.decision}`);
 }
 
 const revokeSchema = z.object({
@@ -47,8 +48,9 @@ export async function revokeContributorAction(formData: FormData) {
     userId: formData.get("userId"),
     reason: formData.get("reason"),
   });
-  if (!parsed.success) redirect("/admin/status/contributions?error=revocation-reason");
+  if (!parsed.success) redirect("/admin/aportacions?error=revocation-reason");
   await revokeContributorAccess(parsed.data.userId, parsed.data.reason, reviewer);
-  revalidatePath("/admin/status/contributions");
-  redirect("/admin/status/contributions?updated=revoked");
+  revalidatePath("/admin/aportacions");
+  revalidatePath("/admin");
+  redirect("/admin/aportacions?updated=revoked");
 }

@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const detailPage = readFileSync("app/troballes/[id]/page.tsx", "utf8");
 const overviewPage = readFileSync("app/troballes/page.tsx", "utf8");
 const newFindingPage = readFileSync("app/troballes/nova/page.tsx", "utf8");
+const findingAccessCta = readFileSync("components/findings/finding-access-cta.tsx", "utf8");
 const locationMap = readFileSync("components/findings/public-finding-location-map.tsx", "utf8");
 const findingCard = readFileSync("components/findings/finding-card.tsx", "utf8");
 const reportForm = readFileSync("components/findings/finding-report-form.tsx", "utf8");
@@ -12,7 +13,8 @@ const flagButton = readFileSync("components/findings/finding-flag-button.tsx", "
 describe("public finding detail", () => {
   it("publishes a canonical URL for the public findings overview", () => {
     expect(overviewPage).toContain('alternates: { canonical: "/troballes" }');
-    expect(overviewPage).toContain("obre els sectors d’1 km del mapa de condicions durant 7 dies");
+    expect(overviewPage).toContain("<FindingAccessCta");
+    expect(findingAccessCta).toContain("obre el mapa d’1 km durant 7 dies");
   });
 
   it("keeps thin observation and cell-filter views out of the index while allowing discovery", () => {
@@ -30,12 +32,11 @@ describe("public finding detail", () => {
 
   it("explains the catalogue collaboration distinction beside the new finding form", () => {
     expect(overviewPage).not.toContain("Les fotos no passen al catàleg automàticament");
-    expect(newFindingPage).toContain("Les fotos no passen al catàleg automàticament");
-    expect(newFindingPage).toContain("Aquí només queden publicades amb la troballa");
-    expect(newFindingPage).toContain("incorporar al catàleg");
-    expect(newFindingPage).toContain("mapa d’1 km durant 7 dies");
+    expect(newFindingPage).toContain("Les fotos no entren al catàleg");
+    expect(newFindingPage).toContain("Si després les proposes i les aprovem");
+    expect(newFindingPage).toContain("Publica una troballa amb foto: 1 km durant 7 dies");
     expect(newFindingPage).toContain("250 m durant 30 dies");
-    expect(newFindingPage).toContain('href="/col-labora"');
+    expect(newFindingPage).toContain('href="/compte/col-laboracio"');
   });
 
   it("renders the finding's public privacy cell without an exact point", () => {

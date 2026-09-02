@@ -22,7 +22,6 @@ import {
 } from "@/src/lib/social-growth-assets";
 import { weekendReelDurationSeconds } from "@/src/lib/weekend-reel-render";
 
-import { DetailNav } from "../detail-nav";
 import { formatDetailDateTime, numberFormatter } from "../detail-utils";
 import styles from "../details.module.css";
 import plannerStyles from "./instagram.module.css";
@@ -151,7 +150,7 @@ export default async function AdminInstagramPage() {
   }));
 
   return (
-    <PageShell as="article" className={styles.detailShell}>
+    <PageShell as="article" className={`admin-page ${styles.detailShell}`}>
       <PageHeader
         eyebrow="Administració · taula de publicació"
         title={<>Pla visual d’<PageTitleAccent>Instagram</PageTitleAccent></>}
@@ -159,8 +158,6 @@ export default async function AdminInstagramPage() {
         layout="split"
         tone="forest"
       />
-      <DetailNav current="instagram" />
-
       <section className={plannerStyles.plannerSection} aria-labelledby="instagram-planner-title">
         <div className={plannerStyles.plannerHeading}>
           <div>

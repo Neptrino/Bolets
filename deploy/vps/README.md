@@ -297,7 +297,7 @@ sudo systemctl list-timers 'bolets-instagram*'
 Do not start either growth service merely to test it: the endpoint intentionally
 rejects the wrong weekday, while a successful scheduled call publishes at once.
 Preview the signed image and Reel routes instead. The authenticated admin report
-at `/admin/status/instagram` shows the latest 30-day metrics returned by Buffer.
+at `/admin/publicacio` shows the latest 30-day metrics returned by Buffer.
 
 ## 3. Check out Bolets and validate Compose
 
@@ -492,7 +492,7 @@ Web Vitals are collected only for analytics-eligible public pages through
 Umami's performance report.
 
 The private operational dashboard is available at
-`https://bolets.app/admin/status`. It reuses the normal Supabase Auth sign-in
+`https://bolets.app/admin/operacions`. It reuses the normal Supabase Auth sign-in
 and authorizes the server-validated user through the non-user-editable
 `app_metadata.app_role` value. The `admin` role is required for every dashboard
 read and mutation; the separate internal token remains reserved for the private

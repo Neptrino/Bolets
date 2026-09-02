@@ -5,14 +5,6 @@
   --detail-red: #8b3d2f;
 }
 
-.detailNav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin: -28px 0 52px;
-}
-
-.detailNav a,
 .filterBar a,
 .pager a {
   display: inline-flex;
@@ -27,17 +19,6 @@
   text-decoration: none;
 }
 
-.detailNav a {
-  padding: 7px 14px;
-}
-
-.detailNav a[aria-current="page"] {
-  border-color: var(--forest-panel);
-  background: var(--forest-panel);
-  color: var(--on-dark);
-}
-
-.detailNav a:focus-visible,
 .filterBar a:focus-visible,
 .pager a:focus-visible,
 .publicLink:focus-visible {

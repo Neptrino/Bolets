@@ -277,9 +277,9 @@ describe("operational status", () => {
     expect(serviceWorker).toMatch(/pathname === "\/admin"[\s\S]*startsWith\("\/admin\/"\)[\s\S]*return/);
     expect(sessionGuard).toContain("getAuthenticatedUser");
     expect(sessionGuard).toContain("APP_ROLES.admin");
-    expect(sessionGuard).toContain("/acces?retorn=%2Fadmin%2Fstatus");
+    expect(sessionGuard).toContain("/acces?retorn=%2Fadmin");
     expect(roleMigration).toContain("raw_app_meta_data");
-    expect(logoutRoute).toContain('Location: "/acces?retorn=%2Fadmin%2Fstatus"');
+    expect(logoutRoute).toContain('Location: "/acces?retorn=%2Fadmin"');
     expect(logoutRoute).toContain('signOut({ scope: "global" })');
   });
 });

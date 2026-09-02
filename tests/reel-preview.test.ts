@@ -4,7 +4,7 @@ import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { ReelPreview } from "@/app/admin/status/instagram/reel-preview";
+import { ReelPreview } from "@/app/admin/(private)/publicacio/reel-preview";
 
 describe("Instagram Reel preview", () => {
   let container: HTMLDivElement;

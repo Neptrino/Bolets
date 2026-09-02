@@ -7,8 +7,8 @@ import {
   type AdminFindingFilters,
   type AdminFindingListItem,
 } from "@/src/lib/community-details-server";
+import { requireOperationalSession } from "@/src/lib/operational-status-session";
 
-import { DetailNav } from "../detail-nav";
 import {
   formatDetailDate,
   formatDetailDateTime,
@@ -82,6 +82,7 @@ export default async function AdminFindingsPage({
 }: {
   searchParams: Promise<FindingSearchParams>;
 }) {
+  await requireOperationalSession();
   const query = await searchParams;
   const page = positivePage(query.page);
   const filters = parseFilters(query);
@@ -91,17 +92,17 @@ export default async function AdminFindingsPage({
   const last = Math.min(result.total, result.page * result.pageSize);
   const paginationValues = filterValues(filters);
   const presets: Array<{ label: string; href: string; filters: AdminFindingFilters }> = [
-    { label: "Totes", href: "/admin/status/findings", filters: {} },
-    { label: "Enviades", href: "/admin/status/findings?state=published", filters: { publicationState: "published" } },
-    { label: "Públiques", href: "/admin/status/findings?state=published&visibility=public", filters: { publicationState: "published", visibility: "public" } },
-    { label: "Privades", href: "/admin/status/findings?state=published&visibility=private", filters: { publicationState: "published", visibility: "private" } },
-    { label: "Esborranys", href: "/admin/status/findings?state=draft", filters: { publicationState: "draft" } },
-    { label: "Pendents de consens", href: "/admin/status/findings?state=published&verification=pending", filters: { publicationState: "published", verificationStatus: "pending" } },
-    { label: "Amb avisos", href: "/admin/status/findings?flagged=open", filters: { flagged: "open" } },
+    { label: "Totes", href: "/admin/troballes", filters: {} },
+    { label: "Enviades", href: "/admin/troballes?state=published", filters: { publicationState: "published" } },
+    { label: "Públiques", href: "/admin/troballes?state=published&visibility=public", filters: { publicationState: "published", visibility: "public" } },
+    { label: "Privades", href: "/admin/troballes?state=published&visibility=private", filters: { publicationState: "published", visibility: "private" } },
+    { label: "Esborranys", href: "/admin/troballes?state=draft", filters: { publicationState: "draft" } },
+    { label: "Pendents de consens", href: "/admin/troballes?state=published&verification=pending", filters: { publicationState: "published", verificationStatus: "pending" } },
+    { label: "Amb avisos", href: "/admin/troballes?flagged=open", filters: { flagged: "open" } },
   ];
 
   return (
-    <PageShell as="article" className={styles.detailShell}>
+    <PageShell as="article" className={`admin-page ${styles.detailShell}`}>
       <PageHeader
         eyebrow="Administració · comunitat"
         title={<>Troballes <PageTitleAccent>comunicades</PageTitleAccent></>}
@@ -109,8 +110,6 @@ export default async function AdminFindingsPage({
         layout="split"
         tone="forest"
       />
-      <DetailNav current="findings" />
-
       <nav className={styles.filterBar} aria-label="Filtres de troballes">
         {presets.map((preset) => (
           <Link href={preset.href} aria-current={isPreset(filters, preset.filters) ? "page" : undefined} key={preset.href}>
@@ -176,11 +175,11 @@ export default async function AdminFindingsPage({
 
       <nav className={styles.pager} aria-label="Paginació de troballes">
         {result.page > 1 ? (
-          <Link href={pageHref("/admin/status/findings", result.page - 1, paginationValues)}>← Anterior</Link>
+          <Link href={pageHref("/admin/troballes", result.page - 1, paginationValues)}>← Anterior</Link>
         ) : <span />}
         <span>Pàgina {numberFormatter.format(result.page)} de {numberFormatter.format(totalPages)}</span>
         {result.page < totalPages ? (
-          <Link href={pageHref("/admin/status/findings", result.page + 1, paginationValues)}>Següent →</Link>
+          <Link href={pageHref("/admin/troballes", result.page + 1, paginationValues)}>Següent →</Link>
         ) : <span />}
       </nav>
     </PageShell>

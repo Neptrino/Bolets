@@ -61,7 +61,7 @@ describe("contribution media", () => {
       "utf8",
     );
     const processor = readFileSync("src/lib/contributions/media.server.ts", "utf8");
-    const adminPage = readFileSync("app/admin/status/contributions/page.tsx", "utf8");
+    const adminPage = readFileSync("app/admin/(private)/aportacions/page.tsx", "utf8");
 
     expect(migration).toContain("'contribution-media', 'contribution-media', false");
     expect(migration).toContain("alter table public.contribution_request_media enable row level security");

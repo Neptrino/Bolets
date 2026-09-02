@@ -10,7 +10,6 @@ import {
   Droplets,
   History,
   Layers3,
-  LogOut,
   RefreshCw,
   Route,
   ServerCog,
@@ -29,15 +28,12 @@ import {
   readOperationalStatus,
 } from "@/src/lib/operational-status-server";
 import { requireOperationalSession } from "@/src/lib/operational-status-session";
-import { readCommunityStatus } from "@/src/lib/community-status-server";
 
 import styles from "./status.module.css";
-import { CommunityStatus } from "./community-status";
-import { DetailNav } from "./detail-nav";
 import { ResyncControls } from "./resync-controls";
 
 export const metadata: Metadata = {
-  title: "Estat operatiu",
+  title: "Operacions del sistema · Administració",
   description: "Tauler privat de l'estat de les dades de Bolets.",
   robots: {
     index: false,
@@ -122,30 +118,20 @@ function statusLabel(status: string) {
 export default async function OperationalStatusPage() {
   await requireOperationalSession();
 
-  const [statusResult, communityResult] = await Promise.allSettled([
-    readOperationalStatus(),
-    readCommunityStatus(),
-  ]);
-  const community = communityResult.status === "fulfilled" ? communityResult.value : null;
-  const communityError = communityResult.status === "rejected"
-    ? communityResult.reason instanceof Error
-      ? communityResult.reason.message
-      : "No s'han pogut consultar les dades de comunitat."
-    : null;
+  const [statusResult] = await Promise.allSettled([readOperationalStatus()]);
 
   if (statusResult.status === "rejected") {
     const error = statusResult.reason;
     const message = error instanceof Error ? error.message : "No s'ha pogut consultar l'estat operatiu.";
     return (
-      <PageShell as="article" className={styles.shell}>
+      <PageShell as="article" className={`admin-page ${styles.shell}`}>
         <PageHeader
-          eyebrow="Sala de màquines · accés privat"
-          title={<>Estat <PageTitleAccent>operatiu</PageTitleAccent></>}
+          eyebrow="Administració · sala de màquines"
+          title={<>Operacions del <PageTitleAccent>sistema</PageTitleAccent></>}
           description="Lectura directa de la base de dades, les cues d'ingestió i el pressupost de proveïdor."
           layout="split"
           tone="forest"
         />
-        <DetailNav current="status" />
         <section className={`${styles.statePanel} ${styles.critical}`} aria-labelledby="status-unavailable">
           <AlertTriangle aria-hidden="true" />
           <div>
@@ -154,7 +140,6 @@ export default async function OperationalStatusPage() {
             <span>{message}</span>
           </div>
         </section>
-        <CommunityStatus status={community} error={communityError} />
         <section className={styles.section} aria-labelledby="manual-commands">
           <SectionHeader
             meta="Comandes manuals"
@@ -213,16 +198,14 @@ export default async function OperationalStatusPage() {
     && Date.parse(status.forecastPublication.validThrough) > Date.parse(status.generatedAt);
 
   return (
-    <PageShell as="article" className={styles.shell}>
+    <PageShell as="article" className={`admin-page ${styles.shell}`}>
       <PageHeader
-        eyebrow="Sala de màquines · accés privat"
-        title={<>Estat <PageTitleAccent>operatiu</PageTitleAccent></>}
-        description="Una lectura en viu de la comunitat, l'atmosfera publicada, les ingestes en curs, l'ús del proveïdor i les incidències recents."
+        eyebrow="Administració · sala de màquines"
+        title={<>Operacions del <PageTitleAccent>sistema</PageTitleAccent></>}
+        description="Una lectura en viu de l’atmosfera publicada, les ingestes en curs, l’ús del proveïdor i les incidències recents."
         layout="split"
         tone="forest"
       />
-      <DetailNav current="status" />
-
       <section className={`${styles.statePanel} ${styles[summary.state]}`} aria-labelledby="overall-status" aria-live="polite">
         <StateIcon aria-hidden="true" />
         <div className={styles.stateCopy}>
@@ -234,15 +217,10 @@ export default async function OperationalStatusPage() {
           <span>Comprovat</span>
           <time dateTime={status.generatedAt}>{formatDateTime(status.generatedAt)}</time>
           <div className={styles.stateActions}>
-            <a href="/admin/status"><RefreshCw aria-hidden="true" /> Actualitza</a>
-            <form action="/admin/session/logout" method="post">
-              <button type="submit"><LogOut aria-hidden="true" /> Surt</button>
-            </form>
+            <a href="/admin/operacions"><RefreshCw aria-hidden="true" /> Actualitza</a>
           </div>
         </div>
       </section>
-
-      <CommunityStatus status={community} error={communityError} />
 
       <section className={styles.section} aria-labelledby="manual-commands">
         <SectionHeader

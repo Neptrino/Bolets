@@ -8,11 +8,13 @@ describe("finding access destination", () => {
     "/compte/col-laboracio",
     "/compte/privadesa",
     "/moderacio",
-    "/admin/status",
-    "/admin/status/users",
-    "/admin/status/findings",
-    "/admin/status/reports",
-    "/admin/status/instagram",
+    "/admin",
+    "/admin/usuaris",
+    "/admin/troballes",
+    "/admin/avisos",
+    "/admin/aportacions",
+    "/admin/publicacio",
+    "/admin/operacions",
   ])("accepts %s", (destination) => {
     expect(resolveAccessDestination(destination)).toBe(destination);
   });

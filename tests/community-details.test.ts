@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { pageHref, positivePage } from "@/app/admin/status/detail-utils";
+import { pageHref, positivePage } from "@/app/admin/(private)/detail-utils";
 import { maskAdminEmail } from "@/src/lib/community-details-server";
 
 describe("admin community details", () => {
@@ -13,9 +13,9 @@ describe("admin community details", () => {
   it("normalizes invalid pages and preserves detail filters in pagination links", () => {
     expect(positivePage("-3")).toBe(1);
     expect(positivePage("4")).toBe(4);
-    expect(pageHref("/admin/status/findings", 3, {
+    expect(pageHref("/admin/troballes", 3, {
       state: "published",
       visibility: "public",
-    })).toBe("/admin/status/findings?state=published&visibility=public&page=3");
+    })).toBe("/admin/troballes?state=published&visibility=public&page=3");
   });
 });

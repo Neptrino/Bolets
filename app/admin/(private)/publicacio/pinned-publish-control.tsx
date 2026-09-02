@@ -20,7 +20,7 @@ export function PinnedPublishControl({ initialPublishedCount }: { initialPublish
     setError(null);
     setMessage(null);
     try {
-      const response = await fetch("/admin/status/instagram/publish-pinned", {
+      const response = await fetch("/admin/publicacio/publish-pinned", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });

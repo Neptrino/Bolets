@@ -1,0 +1,164 @@
+.dashboard {
+  display: grid;
+  gap: 58px;
+}
+
+.prioritySection,
+.communitySection {
+  display: grid;
+  gap: 22px;
+}
+
+.priorityGrid,
+.communityGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.priorityGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.priorityGrid > a {
+  --card-tone: var(--forest-panel);
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 6px 13px;
+  align-items: center;
+  min-height: 190px;
+  padding: 22px;
+  border: 1px solid color-mix(in srgb, var(--card-tone) 35%, var(--line));
+  border-top: 5px solid var(--card-tone);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: 0 14px 34px rgba(75, 54, 33, .06);
+}
+
+.priorityGrid > a[data-tone="clay"],
+.priorityGrid > a[data-tone="attention"] { --card-tone: var(--clay); }
+.priorityGrid > a[data-tone="red"],
+.priorityGrid > a[data-tone="critical"] { --card-tone: var(--danger-ink); }
+.priorityGrid > a[data-tone="running"] { --card-tone: #355f75; }
+.priorityGrid > a[data-tone="healthy"] { --card-tone: #2f6b4c; }
+
+.priorityGrid > a > svg:first-child {
+  color: var(--card-tone);
+}
+
+.priorityGrid > a > svg:last-child {
+  color: var(--muted);
+}
+
+.priorityGrid span {
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.priorityGrid strong {
+  grid-column: 1 / -1;
+  color: var(--ink);
+  font-size: var(--text-2xl);
+  line-height: 1.15;
+}
+
+.priorityGrid small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+}
+
+.priorityGrid > a:hover {
+  border-color: var(--card-tone);
+  transform: translateY(-2px);
+}
+
+.priorityGrid > a:focus-visible,
+.communityCard:focus-visible {
+  outline: 3px solid var(--apricot);
+  outline-offset: 3px;
+}
+
+.communityGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.communityCard {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px 12px;
+  align-items: start;
+  padding: 20px;
+  border: 1px solid rgba(66, 92, 73, .22);
+  border-radius: 17px;
+  background: #eef1e8;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.communityCard > svg {
+  grid-row: 1 / 4;
+  color: var(--clay);
+}
+
+.communityCard span,
+.communityCard strong,
+.communityCard small {
+  display: block;
+}
+
+.communityCard span {
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 850;
+}
+
+.communityCard strong {
+  margin-top: 2px;
+  color: var(--ink);
+  font-size: var(--text-2xl);
+}
+
+.communityCard small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+}
+
+.communityUnavailable {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid rgba(139, 61, 47, .25);
+  border-radius: 16px;
+  background: var(--danger-surface);
+  color: var(--danger-ink);
+}
+
+.communityUnavailable strong,
+.communityUnavailable span {
+  display: block;
+}
+
+.communityUnavailable span {
+  margin-top: 3px;
+  font-size: var(--text-xs);
+}
+
+@media (max-width: 950px) {
+  .priorityGrid { grid-template-columns: 1fr; }
+  .priorityGrid > a { min-height: 0; }
+  .communityGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .communityGrid { grid-template-columns: 1fr; }
+}

@@ -13,7 +13,7 @@ vi.mock("@/src/lib/operational-status-auth", () => ({
 }));
 vi.mock("@/src/lib/operational-resync-server", () => ({ dispatchOperationalResync }));
 
-import { POST } from "@/app/admin/status/resync/route";
+import { POST } from "@/app/admin/(private)/operacions/resync/route";
 
 const migration = readFileSync(
   join(
@@ -29,11 +29,11 @@ const installer = readFileSync(
   "utf8",
 );
 const clientControls = readFileSync(
-  join(process.cwd(), "app", "admin", "status", "resync-controls.tsx"),
+  join(process.cwd(), "app", "admin", "(private)", "operacions", "resync-controls.tsx"),
   "utf8",
 );
 const statusPage = readFileSync(
-  join(process.cwd(), "app", "admin", "status", "page.tsx"),
+  join(process.cwd(), "app", "admin", "(private)", "operacions", "page.tsx"),
   "utf8",
 );
 const serverDispatcher = readFileSync(
@@ -47,7 +47,7 @@ function request(
   options: { origin?: string } = {},
 ) {
   address += 1;
-  return new NextRequest("https://bolets.app/admin/status/resync", {
+  return new NextRequest("https://bolets.app/admin/operacions/resync", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -93,7 +93,7 @@ describe("private operational resync controls", () => {
   it("keeps operational credentials out of the client controls", () => {
     expect(clientControls).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
     expect(clientControls).not.toContain("ingestion_token");
-    expect(clientControls).toContain('fetch("/admin/status/resync"');
+    expect(clientControls).toContain('fetch("/admin/operacions/resync"');
     expect(serverDispatcher).toContain("SUPABASE_SERVICE_ROLE_KEY");
     expect(serverDispatcher).toContain("dispatch_operational_resync");
   });

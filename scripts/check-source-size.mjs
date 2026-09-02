@@ -27,7 +27,7 @@ const hardLimitExceptions = new Set([
 // have been considered. Keep the reason beside the exception so additions do
 // not turn this into an unexplained allowlist.
 const reviewedRuntimeFiles = new Map([
-  ["app/admin/status/page.tsx", "one private operational status composition"],
+  ["app/admin/(private)/operacions/page.tsx", "one private operational status composition"],
   ["app/metode/page.tsx", "one ordered technical-method document"],
   ["app/zones/ceps/page.tsx", "one editorial territorial dossier"],
   ["components/condition-comparison.tsx", "orchestrates extracted reading data and score presentation"],

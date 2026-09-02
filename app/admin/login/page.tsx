@@ -22,15 +22,15 @@ export const metadata: Metadata = {
 
 export default async function OperationalLoginPage() {
   const user = await getAuthenticatedUser();
-  if (!user) redirect("/acces?retorn=%2Fadmin%2Fstatus");
-  if (userHasAppRole(user, APP_ROLES.admin)) redirect("/admin/status");
+  if (!user) redirect("/acces?retorn=%2Fadmin");
+  if (userHasAppRole(user, APP_ROLES.admin)) redirect("/admin");
 
   return (
     <PageShell as="article" className={styles.shell}>
       <PageHeader
         eyebrow="Sala de màquines · accés privat"
-        title={<>Accés <PageTitleAccent>operatiu</PageTitleAccent></>}
-        description="El tauler reutilitza el compte de Bolets i només admet usuaris amb rol d’administració."
+        title={<>Accés d’<PageTitleAccent>administració</PageTitleAccent></>}
+        description="L’àrea privada reutilitza el compte de Bolets i només admet usuaris amb rol d’administració."
         tone="forest"
       />
 

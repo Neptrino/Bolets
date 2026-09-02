@@ -22,9 +22,9 @@ describe("contributor detailed-map access", () => {
   const habitatReader = readFileSync("src/lib/habitat.ts", "utf8");
   const rollout = readFileSync("deploy/vps/rollout.sh", "utf8");
   const sitemap = readFileSync("app/sitemap.ts", "utf8");
-  const adminContributions = readFileSync("app/admin/status/contributions/page.tsx", "utf8");
+  const adminContributions = readFileSync("app/admin/(private)/aportacions/page.tsx", "utf8");
   const adminContributionStyles = readFileSync(
-    "app/admin/status/contributions/contributions.module.css",
+    "app/admin/(private)/aportacions/contributions.module.css",
     "utf8",
   );
 

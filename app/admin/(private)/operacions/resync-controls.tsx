@@ -87,7 +87,7 @@ export function ResyncControls() {
     setPendingTarget(target);
     setMessage(null);
     try {
-      const response = await fetch("/admin/status/resync", {
+      const response = await fetch("/admin/operacions/resync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ target }),

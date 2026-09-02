@@ -6,11 +6,13 @@ const ACCESS_DESTINATIONS = [
   "/compte/col-laboracio",
   "/compte/privadesa",
   "/moderacio",
-  "/admin/status",
-  "/admin/status/users",
-  "/admin/status/findings",
-  "/admin/status/reports",
-  "/admin/status/instagram",
+  "/admin",
+  "/admin/usuaris",
+  "/admin/troballes",
+  "/admin/avisos",
+  "/admin/aportacions",
+  "/admin/publicacio",
+  "/admin/operacions",
 ] as const;
 
 export type AccessDestination = (typeof ACCESS_DESTINATIONS)[number];
