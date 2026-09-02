@@ -18,12 +18,12 @@ export default function NewFindingPage() {
       <aside className="findings-contribution-callout" aria-labelledby="findings-contribution-title">
         <span className="findings-contribution-icon" aria-hidden="true"><MapPinned size={22} /></span>
         <div className="findings-contribution-copy">
-          <p>Troballes i catàleg són fluxos diferents</p>
-          <h2 id="findings-contribution-title">Les fotos no passen al catàleg automàticament</h2>
-          <span>Aquí només queden publicades amb la troballa i no passen al catàleg automàticament. Una troballa pública amb foto obre el mapa d’1 km durant 7 dies. Si després ens proposes les imatges com a col·laboració i les aprovem, les podrem incorporar al catàleg i obriràs també 250 m durant 30 dies.</span>
+          <p>Mapa detallat</p>
+          <h2 id="findings-contribution-title">Publica una troballa amb foto: 1 km durant 7 dies</h2>
+          <span>Les fotos no entren al catàleg. Si després les proposes i les aprovem, obrim també 250 m durant 30 dies.</span>
         </div>
-        <Link className="finding-button-secondary findings-contribution-link" href="/col-labora">
-          Com col·laborar <ArrowUpRight size={16} aria-hidden="true" />
+        <Link className="finding-button-secondary findings-contribution-link" href="/compte/col-laboracio">
+          Proposar fotos <ArrowUpRight size={16} aria-hidden="true" />
         </Link>
       </aside>
       <FindingReportForm species={catalogueSpecies} />

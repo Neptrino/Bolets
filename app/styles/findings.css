@@ -46,6 +46,7 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 16px;
   align-items: center;
+  margin-bottom: 32px;
   padding: 18px 20px;
   border: 1px solid rgba(66, 92, 73, .28);
   border-radius: 20px;
