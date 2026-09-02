@@ -22,6 +22,8 @@ describe("contribution form", () => {
     expect(html).toContain("eliminar metadades com la ubicació");
     expect(html).toContain("Proposa una col·laboració");
     expect(html).toContain("Troballa pública ja publicada");
+    expect(html.match(/Si s’aprova: \+30 dies/g)).toHaveLength(3);
+    expect(html.match(/sectors d’1 km i 250 m/g)).toHaveLength(3);
     expect(html).toContain("Encara no tens cap troballa pública amb foto");
     expect(html).toContain('href="/troballes/nova"');
     expect(html).not.toContain("contribution-access-state");

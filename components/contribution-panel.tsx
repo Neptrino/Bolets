@@ -236,7 +236,10 @@ export function ContributionPanel({
                   checked={kind === value}
                   onChange={() => setKind(value)}
                 />
-                <span>{CONTRIBUTION_KIND_LABELS[value]}</span>
+                <span className="contribution-kind-copy">
+                  <strong>{CONTRIBUTION_KIND_LABELS[value]}</strong>
+                  <small>Si s’aprova: +30 dies · sectors d’1 km i 250 m</small>
+                </span>
               </label>
             ))}
           </div>
