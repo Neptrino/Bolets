@@ -309,6 +309,7 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
       cacheSeconds,
       publicationDate: requestUrl.searchParams.get("date"),
       requestedSlide: Number(requestUrl.searchParams.get("slide")),
+      speciesId: requestUrl.searchParams.get("speciesId"),
     });
   }
   const growthSeries = isSocialGrowthSeries(requestedGrowthSeries) ? requestedGrowthSeries : null;

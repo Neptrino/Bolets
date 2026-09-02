@@ -3,6 +3,7 @@ import Image from "next/image";
 
 import { socialGrowthSlideCount } from "@/components/social-growth-card";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
+import { catalogueSpecies } from "@/data/catalogue";
 import {
   dailyInstagramCaption,
 } from "@/src/lib/buffer-instagram-publisher";
@@ -18,6 +19,7 @@ import {
   INSTAGRAM_SPECIES_SLIDE_COUNT,
   instagramSpeciesPublicationForDate,
 } from "@/src/lib/instagram-species-series";
+import { readInstagramSpeciesPublicationOverrides } from "@/src/lib/instagram-species-publication-controls.server";
 import { readInstagramPerformanceReport } from "@/src/lib/instagram-performance-server";
 import { requireOperationalSession } from "@/src/lib/operational-status-session";
 import {
@@ -32,6 +34,10 @@ import styles from "../details.module.css";
 import plannerStyles from "./instagram.module.css";
 import { InstagramPerformancePosts } from "./instagram-performance-posts";
 import { ReelPreview } from "./reel-preview";
+import {
+  SpeciesPublicationControl,
+  SpeciesPublicationControls,
+} from "./species-publication-control";
 
 export const dynamic = "force-dynamic";
 
@@ -113,6 +119,26 @@ function nextScheduleLabel(targetWeekday: number | null, targetHour: number, now
   return nextSchedule(targetWeekday, targetHour, now).label;
 }
 
+function nextSpeciesSchedules(now = new Date(), count = 6) {
+  const first = INSTAGRAM_SPECIES_PUBLICATION_WEEKDAYS
+    .map((weekday) => nextSchedule(weekday, 19, now))
+    .sort((left, right) => left.date.localeCompare(right.date))[0]!;
+  const firstValue = Date.parse(`${first.date}T00:00:00.000Z`);
+  const schedules: Array<{ date: string; label: string }> = [];
+  for (let days = 0; schedules.length < count; days += 1) {
+    const value = firstValue + days * 24 * 60 * 60 * 1_000;
+    const civilDate = new Date(value);
+    if (!INSTAGRAM_SPECIES_PUBLICATION_WEEKDAYS.includes(
+      civilDate.getUTCDay() as (typeof INSTAGRAM_SPECIES_PUBLICATION_WEEKDAYS)[number],
+    )) continue;
+    schedules.push({
+      date: civilDate.toISOString().slice(0, 10),
+      label: `${scheduleDate.format(civilDate)} · 19:00`,
+    });
+  }
+  return schedules;
+}
+
 function formatMetric(value: number, unit: string | null) {
   return unit === "percentage"
     ? `${numberFormatter.format(value)}%`
@@ -121,12 +147,15 @@ function formatMetric(value: number, unit: string | null) {
 
 export default async function AdminInstagramPage() {
   await requireOperationalSession();
-  const [cardResult, reportResult] = await Promise.allSettled([
+  const speciesSchedules = nextSpeciesSchedules();
+  const [cardResult, reportResult, controlsResult] = await Promise.allSettled([
     loadDailyShareCard("catalunya"),
     readInstagramPerformanceReport(),
+    readInstagramSpeciesPublicationOverrides(speciesSchedules.map((schedule) => schedule.date)),
   ]);
   const card = cardResult.status === "fulfilled" ? cardResult.value : null;
   const report = reportResult.status === "fulfilled" ? reportResult.value : null;
+  const speciesOverrides = controlsResult.status === "fulfilled" ? controlsResult.value : new Map();
   if (cardResult.status === "rejected") {
     console.error("Instagram planning preview failed", {
       message: cardResult.reason instanceof Error ? cardResult.reason.message : "Unknown error",
@@ -135,6 +164,11 @@ export default async function AdminInstagramPage() {
   if (reportResult.status === "rejected") {
     console.error("Instagram performance report failed", {
       message: reportResult.reason instanceof Error ? reportResult.reason.message : "Unknown error",
+    });
+  }
+  if (controlsResult.status === "rejected") {
+    console.error("Instagram species publication controls failed", {
+      message: controlsResult.reason instanceof Error ? controlsResult.reason.message : "Unknown error",
     });
   }
 
@@ -151,19 +185,34 @@ export default async function AdminInstagramPage() {
         (_, index) => signedSocialGrowthImagePath(previewable, "education", index + 1, educationTopic.id),
       )
     : [];
-  const speciesPosts = INSTAGRAM_SPECIES_PUBLICATION_WEEKDAYS
-    .map((weekday) => nextSchedule(weekday, 19))
-    .sort((left, right) => left.date.localeCompare(right.date))
+  const speciesOptions = catalogueSpecies.map((species) => ({
+    label: `${species.identity.commonName} · ${species.identity.scientificName}`,
+    value: species.speciesId,
+  }));
+  const speciesPosts = speciesSchedules
     .map((schedule) => {
-      const publication = instagramSpeciesPublicationForDate(schedule.date);
+      const override = speciesOverrides.get(schedule.date);
+      const publication = instagramSpeciesPublicationForDate(schedule.date, override?.speciesId);
       return {
         ...publication,
+        caption: previewable
+          ? instagramGrowthCaption("species", previewable, schedule.date, {
+              captionOverride: override?.captionOverride,
+              speciesId: override?.speciesId,
+            })
+          : "",
         images: previewable
           ? Array.from(
               { length: INSTAGRAM_SPECIES_SLIDE_COUNT },
-              (_, index) => signedSpeciesInstagramImagePath(previewable, schedule.date, index + 1),
+              (_, index) => signedSpeciesInstagramImagePath(
+                previewable,
+                schedule.date,
+                index + 1,
+                override?.speciesId,
+              ),
             )
           : [],
+        override,
         schedule,
       };
     });
@@ -222,14 +271,30 @@ export default async function AdminInstagramPage() {
                 </div>
               </section>
 
+              <SpeciesPublicationControls speciesOptions={speciesOptions}>
               {speciesPosts.map((post) => (
-                <section className={plannerStyles.previewBlock} key={post.publicationDate}>
+                <section
+                  className={plannerStyles.previewBlock}
+                  data-cancelled={post.override?.status === "cancelled" || undefined}
+                  key={post.publicationDate}
+                >
                   <header className={plannerStyles.previewHeader}>
                     <div>
                       <span>Espècie {post.position}/{post.total} · Carrusel</span>
                       <h3>{post.profile.commonName} · {post.profile.scientificName}</h3>
                     </div>
-                    <time>{post.schedule.label}</time>
+                    <aside className={plannerStyles.previewScheduleControl}>
+                      <time>{post.schedule.label}</time>
+                      {controlsResult.status === "fulfilled" ? <SpeciesPublicationControl
+                        automaticSpeciesId={post.automaticSpeciesId}
+                        captionOverride={post.override?.captionOverride ?? null}
+                        hasOverride={Boolean(post.override)}
+                        key={`${post.publicationDate}-${post.override?.updatedAt ?? "automatic"}`}
+                        publicationDate={post.publicationDate}
+                        speciesId={post.profile.speciesId}
+                        status={post.override?.status ?? "scheduled"}
+                      /> : <span className={plannerStyles.controlsUnavailable}>Controls no disponibles</span>}
+                    </aside>
                   </header>
                   <div className={plannerStyles.carouselRail} aria-label={`Cinc diapositives sobre ${post.profile.commonName}`}>
                     {post.images.map((imagePath, index) => (
@@ -247,10 +312,11 @@ export default async function AdminInstagramPage() {
                   </div>
                   <details className={plannerStyles.captionPreview}>
                     <summary>Veure el text del carrusel</summary>
-                    <p>{instagramGrowthCaption("species", previewable, post.publicationDate)}</p>
+                    <p>{post.caption}</p>
                   </details>
                 </section>
               ))}
+              </SpeciesPublicationControls>
 
               <section className={plannerStyles.previewBlock}>
                 <header className={plannerStyles.previewHeader}>

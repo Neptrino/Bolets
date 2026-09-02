@@ -15,16 +15,18 @@ export async function instagramSpeciesImageResponse({
   cacheSeconds,
   publicationDate,
   requestedSlide,
+  speciesId,
 }: {
   cacheSeconds: number;
   publicationDate: string | null;
   requestedSlide: number;
+  speciesId?: string | null;
 }) {
   if (!publicationDate) return new Response("Species publication date required", { status: 400 });
 
   let publication: ReturnType<typeof instagramSpeciesPublicationForDate>;
   try {
-    publication = instagramSpeciesPublicationForDate(publicationDate);
+    publication = instagramSpeciesPublicationForDate(publicationDate, speciesId);
   } catch {
     return new Response("Invalid species publication date", { status: 400 });
   }

@@ -17,6 +17,7 @@ import {
   signedWeekendReelPath,
 } from "@/src/lib/social-growth-assets";
 import { INSTAGRAM_SPECIES_SLIDE_COUNT } from "@/src/lib/instagram-species-series";
+import { readInstagramSpeciesPublicationOverride } from "@/src/lib/instagram-species-publication-controls.server";
 import { absoluteUrl } from "@/src/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -50,6 +51,16 @@ async function runPublication(kind: InstagramGrowthPublication) {
   const publicationDate = card.observedAt
     ? dateInCatalonia(new Date(card.observedAt))
     : null;
+  const speciesOverride = kind === "species" && publicationDate
+    ? await readInstagramSpeciesPublicationOverride(publicationDate)
+    : null;
+  if (speciesOverride?.status === "cancelled") {
+    return {
+      kind,
+      publicationDate,
+      status: "cancelled" as const,
+    };
+  }
   return publishInstagramGrowthPost({
     card,
     config: bufferInstagramPublisherConfig(),
@@ -66,6 +77,8 @@ async function runPublication(kind: InstagramGrowthPublication) {
       : undefined,
     kind,
     reelUrl: kind === "weekend" ? absoluteUrl(signedWeekendReelPath(card)) : undefined,
+    speciesCaptionOverride: speciesOverride?.captionOverride,
+    speciesId: speciesOverride?.speciesId,
     speciesImageUrls: kind === "species" && publicationDate
       ? Array.from(
           { length: INSTAGRAM_SPECIES_SLIDE_COUNT },
@@ -73,6 +86,7 @@ async function runPublication(kind: InstagramGrowthPublication) {
             card,
             publicationDate,
             index + 1,
+            speciesOverride?.speciesId,
           )),
         )
       : undefined,

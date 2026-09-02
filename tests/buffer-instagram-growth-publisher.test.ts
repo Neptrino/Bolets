@@ -73,6 +73,17 @@ describe("Buffer Instagram growth publisher", () => {
     expect(waterCaption).not.toBe(habitatCaption);
   });
 
+  it("keeps the idempotence marker on an edited species caption", () => {
+    const caption = instagramGrowthCaption("species", card, "2026-09-03", {
+      captionOverride: "Text revisat per a la publicació.",
+      speciesId: "boletus-edulis",
+    });
+
+    expect(caption).toBe(
+      `Text revisat per a la publicació.\n\n${instagramGrowthMarker("species", "2026-09-03")}`,
+    );
+  });
+
   it("publishes the five-image educational carousel on Wednesday", async () => {
     const fetchImpl = connectedBufferResponses(vi.fn<typeof fetch>())
       .mockResolvedValueOnce(response({ posts: { edges: [] } }))
@@ -147,6 +158,8 @@ describe("Buffer Instagram growth publisher", () => {
       fetchImpl,
       kind: "species",
       now: new Date("2026-09-03T17:00:00.000Z"),
+      speciesCaptionOverride: "Avui expliquem com reconèixer el cep.",
+      speciesId: "boletus-edulis",
       speciesImageUrls: images,
     })).resolves.toMatchObject({
       status: "published",
@@ -163,7 +176,7 @@ describe("Buffer Instagram growth publisher", () => {
       metadata: { instagram: { shouldShareToFeed: true, type: "post" } },
     });
     expect(createBody.variables.input.text).toContain(instagramGrowthMarker("species", "2026-09-03"));
-    expect(createBody.variables.input.text).toContain("l’enllaç del perfil → @bolets.app");
+    expect(createBody.variables.input.text).toContain("Avui expliquem com reconèixer el cep.");
   });
 
   it("does not duplicate a publication with the same channel date marker", async () => {

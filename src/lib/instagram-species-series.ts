@@ -1,4 +1,4 @@
-import { catalogueSpecies } from "@/data/catalogue";
+import { catalogueSpecies, getCatalogueSpecies } from "@/data/catalogue";
 import { toSpeciesFieldCardProfile } from "@/src/lib/species-field-card";
 
 export const INSTAGRAM_SPECIES_SLIDE_COUNT = 5;
@@ -20,7 +20,10 @@ function publicationDateValue(publicationDate: string) {
   return value;
 }
 
-export function instagramSpeciesPublicationForDate(publicationDate: string) {
+export function instagramSpeciesPublicationForDate(
+  publicationDate: string,
+  speciesId?: string | null,
+) {
   const value = publicationDateValue(publicationDate);
   const weekday = new Date(value).getUTCDay();
   const slot = INSTAGRAM_SPECIES_PUBLICATION_WEEKDAYS.indexOf(
@@ -36,10 +39,13 @@ export function instagramSpeciesPublicationForDate(publicationDate: string) {
   const sequence = week * INSTAGRAM_SPECIES_PUBLICATION_WEEKDAYS.length
     + slot
     + SERIES_EPOCH_OFFSET;
-  const index = ((sequence % catalogueSpecies.length) + catalogueSpecies.length) % catalogueSpecies.length;
-  const species = catalogueSpecies[index]!;
+  const automaticIndex = ((sequence % catalogueSpecies.length) + catalogueSpecies.length) % catalogueSpecies.length;
+  const species = speciesId ? getCatalogueSpecies(speciesId) : catalogueSpecies[automaticIndex];
+  if (!species) throw new Error(`Unknown Instagram species: ${speciesId}`);
+  const index = catalogueSpecies.findIndex((candidate) => candidate.speciesId === species.speciesId);
 
   return {
+    automaticSpeciesId: catalogueSpecies[automaticIndex]!.speciesId,
     position: index + 1,
     profile: toSpeciesFieldCardProfile(species),
     publicationDate,

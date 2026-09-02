@@ -40,11 +40,13 @@ export function signedSpeciesInstagramImagePath(
   card: DailyShareCard,
   publicationDate: string,
   slide: number,
+  speciesId?: string | null,
 ) {
   const url = new URL(signedDailyShareImagePath(card, "feed"), "https://bolets.app");
   url.searchParams.set("series", "species");
   url.searchParams.set("date", publicationDate);
   url.searchParams.set("slide", String(slide));
-  url.searchParams.set("speciesVersion", "1");
+  if (speciesId) url.searchParams.set("speciesId", speciesId);
+  url.searchParams.set("speciesVersion", "2");
   return `${url.pathname}${url.search}`;
 }

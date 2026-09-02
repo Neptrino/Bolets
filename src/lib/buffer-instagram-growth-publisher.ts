@@ -48,8 +48,8 @@ function weekendCaption(card: DailyShareCard, publicationDate: string) {
   return `Com arriben les condicions al cap de setmana?\n\n${highlights || "Sense condicions favorables publicables avui."}\n\nAquesta és la lectura verificada d’avui, no una confirmació de presència. Revisa el mapa abans de sortir perquè les dades evolucionen.\n\nMapa complet a l’enllaç del perfil → @bolets.app\n\n${instagramGrowthMarker("weekend", publicationDate)}\n#BoletsAtles #BoletsCatalunya #CapDeSetmana #Micologia`;
 }
 
-function speciesCaption(publicationDate: string) {
-  const publication = instagramSpeciesPublicationForDate(publicationDate);
+function speciesCaption(publicationDate: string, speciesId?: string | null) {
+  const publication = instagramSpeciesPublicationForDate(publicationDate, speciesId);
   const profile = publication.profile;
   const keys = profile.keyFeatures.join(" · ");
   const comparison = profile.lookalike
@@ -62,9 +62,19 @@ export function instagramGrowthCaption(
   kind: InstagramGrowthPublication,
   card: DailyShareCard,
   publicationDate: string,
+  options: { captionOverride?: string | null; speciesId?: string | null } = {},
 ) {
   if (kind === "education") return educationCaption(card, publicationDate);
-  if (kind === "species") return speciesCaption(publicationDate);
+  if (kind === "species") {
+    const marker = instagramGrowthMarker("species", publicationDate);
+    const customCaption = options.captionOverride?.trim();
+    if (customCaption) {
+      return customCaption.includes(marker)
+        ? customCaption
+        : `${customCaption}\n\n${marker}`;
+    }
+    return speciesCaption(publicationDate, options.speciesId);
+  }
   return weekendCaption(card, publicationDate);
 }
 
@@ -76,6 +86,8 @@ export async function publishInstagramGrowthPost({
   kind,
   now = new Date(),
   reelUrl,
+  speciesCaptionOverride,
+  speciesId,
   speciesImageUrls,
 }: {
   card: DailyShareCard;
@@ -85,6 +97,8 @@ export async function publishInstagramGrowthPost({
   kind: InstagramGrowthPublication;
   now?: Date;
   reelUrl?: string;
+  speciesCaptionOverride?: string | null;
+  speciesId?: string | null;
   speciesImageUrls?: string[];
 }) {
   if (!card.available || !card.observedAt || card.isPreview) {
@@ -132,7 +146,10 @@ export async function publishInstagramGrowthPost({
     );
   }
 
-  const caption = instagramGrowthCaption(kind, card, publicationDate);
+  const caption = instagramGrowthCaption(kind, card, publicationDate, {
+    captionOverride: speciesCaptionOverride,
+    speciesId,
+  });
   if (caption.length > 2_200) {
     throw new BufferPublicationError(
       "The Instagram growth caption exceeds 2,200 characters",

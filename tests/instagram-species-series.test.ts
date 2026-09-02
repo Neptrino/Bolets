@@ -41,6 +41,19 @@ describe("Instagram species series", () => {
     );
   });
 
+  it("can replace one scheduled species without changing the automatic sequence", () => {
+    const automatic = instagramSpeciesPublicationForDate("2026-09-03");
+    const changed = instagramSpeciesPublicationForDate("2026-09-03", "boletus-edulis");
+
+    expect(automatic.profile.commonName).toBe("Apagallums");
+    expect(changed.profile.commonName).toBe("Cep");
+    expect(changed.automaticSpeciesId).toBe(automatic.profile.speciesId);
+    expect(instagramSpeciesPublicationForDate("2026-09-07").profile.speciesId)
+      .toBe(catalogueSpecies[1]?.speciesId);
+    expect(() => instagramSpeciesPublicationForDate("2026-09-03", "not-in-the-catalogue"))
+      .toThrow("Unknown Instagram species");
+  });
+
   it("keeps the VPS timer and publisher wired to the species publication kind", () => {
     const timer = readFileSync("deploy/vps/bolets-instagram-species.timer", "utf8");
     const publisher = readFileSync("deploy/vps/publish-instagram-growth.sh", "utf8");
