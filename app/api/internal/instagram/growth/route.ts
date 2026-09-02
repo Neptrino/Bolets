@@ -2,6 +2,7 @@ import { socialGrowthSlideCount } from "@/components/social-growth-card";
 import {
   BufferPublicationError,
   bufferInstagramPublisherConfig,
+  dateInCatalonia,
   isInstagramPublishRequestAuthorized,
 } from "@/src/lib/buffer-client";
 import {
@@ -9,6 +10,7 @@ import {
   type InstagramGrowthPublication,
 } from "@/src/lib/buffer-instagram-growth-publisher";
 import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
+import { instagramEducationTopicForDate } from "@/src/lib/instagram-education";
 import {
   signedSocialGrowthImagePath,
   signedWeekendReelPath,
@@ -40,13 +42,21 @@ async function runPublication(kind: InstagramGrowthPublication) {
       "prediction_unavailable",
     );
   }
+  const educationTopic = card.observedAt
+    ? instagramEducationTopicForDate(dateInCatalonia(new Date(card.observedAt)))
+    : null;
   return publishInstagramGrowthPost({
     card,
     config: bufferInstagramPublisherConfig(),
     educationImageUrls: kind === "education"
       ? Array.from(
           { length: socialGrowthSlideCount("education") },
-          (_, index) => absoluteUrl(signedSocialGrowthImagePath(card, "education", index + 1)),
+          (_, index) => absoluteUrl(signedSocialGrowthImagePath(
+            card,
+            "education",
+            index + 1,
+            educationTopic?.id,
+          )),
         )
       : undefined,
     kind,

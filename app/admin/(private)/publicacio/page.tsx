@@ -12,6 +12,7 @@ import {
 import { dateInCatalonia } from "@/src/lib/buffer-client";
 import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
 import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
+import { instagramEducationTopicForDate } from "@/src/lib/instagram-education";
 import { readInstagramPerformanceReport } from "@/src/lib/instagram-performance-server";
 import { requireOperationalSession } from "@/src/lib/operational-status-session";
 import {
@@ -83,7 +84,7 @@ const scheduleDate = new Intl.DateTimeFormat("ca-ES", {
   weekday: "long",
 });
 
-function nextScheduleLabel(targetWeekday: number | null, targetHour: number, now = new Date()) {
+function nextSchedule(targetWeekday: number | null, targetHour: number, now = new Date()) {
   const parts = Object.fromEntries(
     localClock.formatToParts(now).map((part) => [part.type, part.value]),
   );
@@ -96,7 +97,14 @@ function nextScheduleLabel(targetWeekday: number | null, targetHour: number, now
   let daysAhead = targetWeekday === null ? 0 : (targetWeekday - currentWeekday + 7) % 7;
   if (daysAhead === 0 && hour >= targetHour) daysAhead = targetWeekday === null ? 1 : 7;
   const civilDate = new Date(Date.UTC(year, month - 1, day + daysAhead));
-  return `${scheduleDate.format(civilDate)} · ${String(targetHour).padStart(2, "0")}:00`;
+  return {
+    date: civilDate.toISOString().slice(0, 10),
+    label: `${scheduleDate.format(civilDate)} · ${String(targetHour).padStart(2, "0")}:00`,
+  };
+}
+
+function nextScheduleLabel(targetWeekday: number | null, targetHour: number, now = new Date()) {
+  return nextSchedule(targetWeekday, targetHour, now).label;
 }
 
 function formatMetric(value: number, unit: string | null) {
@@ -129,10 +137,12 @@ export default async function AdminInstagramPage() {
     .sort((left, right) => preferredMetrics.indexOf(left.key) - preferredMetrics.indexOf(right.key)) ?? [];
   const previewable = card?.available && card.observedAt && !card.isPreview ? card : null;
   const publicationDate = previewable ? dateInCatalonia(new Date(previewable.observedAt!)) : null;
+  const educationSchedule = nextSchedule(3, 19);
+  const educationTopic = instagramEducationTopicForDate(educationSchedule.date);
   const educationImages = previewable
     ? Array.from(
         { length: socialGrowthSlideCount("education") },
-        (_, index) => signedSocialGrowthImagePath(previewable, "education", index + 1),
+        (_, index) => signedSocialGrowthImagePath(previewable, "education", index + 1, educationTopic.id),
       )
     : [];
   return (
@@ -192,8 +202,8 @@ export default async function AdminInstagramPage() {
 
               <section className={plannerStyles.previewBlock}>
                 <header className={plannerStyles.previewHeader}>
-                  <div><span>Dimecres · Carrusel</span><h3>Com llegir la predicció</h3></div>
-                  <time>{nextScheduleLabel(3, 19)}</time>
+                  <div><span>Dimecres · Carrusel</span><h3>{educationTopic.title}</h3></div>
+                  <time>{educationSchedule.label}</time>
                 </header>
                 <div className={plannerStyles.carouselRail} aria-label="Cinc diapositives del carrusel educatiu">
                   {educationImages.map((imagePath, index) => (
@@ -211,7 +221,7 @@ export default async function AdminInstagramPage() {
                 </div>
                 <details className={plannerStyles.captionPreview}>
                   <summary>Veure el text del carrusel</summary>
-                  <p>{instagramGrowthCaption("education", previewable, publicationDate)}</p>
+                  <p>{instagramGrowthCaption("education", previewable, educationSchedule.date)}</p>
                 </details>
               </section>
 

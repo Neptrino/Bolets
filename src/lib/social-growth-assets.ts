@@ -1,6 +1,7 @@
 import type { SocialGrowthSeries } from "@/components/social-growth-card";
 import type { DailyShareCard } from "@/src/lib/daily-share-cards";
 import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
+import type { InstagramEducationTopicId } from "@/src/lib/instagram-education";
 import type { PinnedInstagramSeries } from "@/src/lib/instagram-pinned-posts";
 
 export function pinnedInstagramImagePath(series: PinnedInstagramSeries) {
@@ -11,12 +12,16 @@ export function signedSocialGrowthImagePath(
   card: DailyShareCard,
   series: SocialGrowthSeries,
   slide: number,
+  educationTopicId?: InstagramEducationTopicId,
 ) {
   const format = series === "weekend" ? "story" : "feed";
   const url = new URL(signedDailyShareImagePath(card, format), "https://bolets.app");
   url.searchParams.set("series", series);
   url.searchParams.set("slide", String(slide));
-  url.searchParams.set("growthVersion", "2");
+  if (series === "education" && educationTopicId) {
+    url.searchParams.set("topic", educationTopicId);
+  }
+  url.searchParams.set("growthVersion", "3");
   return `${url.pathname}${url.search}`;
 }
 

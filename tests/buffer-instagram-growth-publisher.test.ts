@@ -64,6 +64,15 @@ describe("Buffer Instagram growth publisher", () => {
     }
   });
 
+  it("changes the educational caption with the weekly curriculum", () => {
+    const waterCaption = instagramGrowthCaption("education", card, "2026-09-02");
+    const habitatCaption = instagramGrowthCaption("education", card, "2026-09-09");
+
+    expect(waterCaption).toContain("Ha plogut. Vol dir que ja hi haurà bolets?");
+    expect(habitatCaption).toContain("Bon temps per a bolets… però per a quina espècie?");
+    expect(waterCaption).not.toBe(habitatCaption);
+  });
+
   it("publishes the five-image educational carousel on Wednesday", async () => {
     const fetchImpl = connectedBufferResponses(vi.fn<typeof fetch>())
       .mockResolvedValueOnce(response({ posts: { edges: [] } }))

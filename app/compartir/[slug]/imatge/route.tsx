@@ -10,6 +10,11 @@ import {
 import { DAILY_OVERVIEW_REVALIDATE_SECONDS } from "@/src/lib/current-overview";
 import { isLocalFavourablePreview, loadDailyShareCard, loadFavourableDailySharePreviewCard, type DailyShareCard, type DailyShareFormat } from "@/src/lib/daily-share-cards";
 import { hasSignedDailySharePayload, readSignedDailyShareCard } from "@/src/lib/daily-share-image-payload-server";
+import {
+  instagramEducationTopicForDate,
+  isInstagramEducationTopicId,
+} from "@/src/lib/instagram-education";
+import { dateInCatalonia } from "@/src/lib/buffer-client";
 import { getSuitabilityBand, suitabilityScale } from "@/src/lib/suitability-scale";
 import { renderSocialCurrentMapDataUrl } from "@/src/lib/social-current-map-server";
 
@@ -304,6 +309,15 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
     if (slide < 1 || slide > socialGrowthSlideCount(growthSeries)) {
       return new Response("Invalid social slide", { status: 400 });
     }
+    const requestedEducationTopic = requestUrl.searchParams.get("topic");
+    if (growthSeries === "education" && requestedEducationTopic && !isInstagramEducationTopicId(requestedEducationTopic)) {
+      return new Response("Invalid education topic", { status: 400 });
+    }
+    const educationTopicId = growthSeries === "education"
+      ? (isInstagramEducationTopicId(requestedEducationTopic)
+          ? requestedEducationTopic
+          : instagramEducationTopicForDate(dateInCatalonia(new Date(card.observedAt))).id)
+      : undefined;
     const dimensions = growthSeries === "weekend"
       ? { width: 1080, height: 1920 }
       : { width: 1080, height: 1350 };
@@ -325,7 +339,13 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
       }
     }
     const image = new ImageResponse(
-      <SocialGrowthCard card={card} mapImageUrl={mapImageUrl} series={growthSeries} slide={slide} />,
+      <SocialGrowthCard
+        card={card}
+        educationTopicId={educationTopicId}
+        mapImageUrl={mapImageUrl}
+        series={growthSeries}
+        slide={slide}
+      />,
       dimensions,
     );
     image.headers.set(

@@ -8,6 +8,7 @@ import {
   weekdayInCatalonia,
   type BufferInstagramPublisherConfig,
 } from "@/src/lib/buffer-client";
+import { instagramEducationTopicForDate } from "@/src/lib/instagram-education";
 
 export type InstagramGrowthPublication = "education" | "weekend";
 
@@ -27,11 +28,12 @@ export function instagramGrowthMarker(kind: InstagramGrowthPublication, publicat
 }
 
 function educationCaption(card: DailyShareCard, publicationDate: string) {
+  const topic = instagramEducationTopicForDate(publicationDate);
   const reading = card.readings[0];
   const today = reading
     ? `La lectura territorial més alta d’avui és ${reading.score}/100 per a ${reading.speciesName} a ${reading.regionName}.`
     : "Avui no hi ha una lectura territorial favorable publicable.";
-  return `Com s’ha d’interpretar la predicció de Bolets Atles?\n\n${today}\n\nEl valor descriu condicions ambientals i hàbitat compatible. No confirma presència ni assenyala punts de recol·lecció. Desplaça per entendre què hi ha darrere del número.\n\nLectura completa a l’enllaç del perfil → @bolets.app\n\n${instagramGrowthMarker("education", publicationDate)}\n#BoletsAtles #Micologia #BoletsCatalunya #Bosc`;
+  return `${topic.captionIntro}\n\n${today}\n\n${topic.captionBody} Desplaça per veure la lliçó completa.\n\nLectura completa a l’enllaç del perfil → @bolets.app\n\n${instagramGrowthMarker("education", publicationDate)}\n#BoletsAtles #Micologia #BoletsCatalunya #Bosc`;
 }
 
 function weekendCaption(card: DailyShareCard, publicationDate: string) {

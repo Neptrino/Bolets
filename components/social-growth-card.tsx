@@ -4,38 +4,15 @@ import {
   pinnedInstagramPost,
   type PinnedInstagramSeries,
 } from "@/src/lib/instagram-pinned-posts";
+import {
+  instagramEducationTopic,
+  type InstagramEducationTopicId,
+} from "@/src/lib/instagram-education";
 import { getSuitabilityBand } from "@/src/lib/suitability-scale";
 
 export type SocialGrowthSeries = "education" | "weekend";
 
 const slideCopy = {
-  education: [
-    {
-      eyebrow: "Com llegir la predicció",
-      title: "Què vol dir el número d’avui?",
-      body: "És una lectura de condicions per a la fructificació. No és un recompte de bolets ni una promesa de trobar-ne.",
-    },
-    {
-      eyebrow: "Pas 1 · la intensitat",
-      title: "0–100 mesura condicions, no presència",
-      body: "Com més alt és el valor, més favorables són les condicions ambientals i l’hàbitat compatible del sector.",
-    },
-    {
-      eyebrow: "Pas 2 · el context",
-      title: "La pluja sola no és suficient",
-      body: "La lectura combina disponibilitat d’aigua, temperatura, exposició i compatibilitat ecològica de cada espècie.",
-    },
-    {
-      eyebrow: "Pas 3 · els límits",
-      title: "Una lectura territorial no localitza bolets",
-      body: "Mostrem sectors amplis. No publiquem punts de recol·lecció ni convertim una predicció en una observació.",
-    },
-    {
-      eyebrow: "Explora amb criteri",
-      title: "Compara espècies i zones al mapa",
-      body: "Consulta les dades vigents, revisa la cobertura territorial i planifica sempre una sortida responsable.",
-    },
-  ],
   weekend: [
     {
       eyebrow: "Preparació del cap de setmana",
@@ -68,10 +45,10 @@ const slideCopy = {
       body: "Respecta el bosc, la normativa local i els límits de recol·lecció.",
     },
   ],
-} satisfies Record<SocialGrowthSeries, Array<{ eyebrow: string; title: string; body: string }>>;
+} satisfies Record<Exclude<SocialGrowthSeries, "education">, Array<{ eyebrow: string; title: string; body: string }>>;
 
 export function socialGrowthSlideCount(series: SocialGrowthSeries) {
-  return slideCopy[series].length;
+  return series === "education" ? 5 : slideCopy.weekend.length;
 }
 
 export function isSocialGrowthSeries(value: string | null): value is SocialGrowthSeries {
@@ -210,24 +187,30 @@ function ReadingPanel({ card, vertical }: { card: DailyShareCard; vertical: bool
 
 export function SocialGrowthCard({
   card,
+  educationTopicId = "reading",
   mapImageUrl,
   series,
   slide,
 }: {
   card: DailyShareCard;
+  educationTopicId?: InstagramEducationTopicId;
   mapImageUrl?: string;
   series: SocialGrowthSeries;
   slide: number;
 }) {
-  const safeSlide = Math.min(Math.max(slide, 1), slideCopy[series].length);
-  const copy = slideCopy[series][safeSlide - 1];
+  const seriesSlides = series === "education"
+    ? instagramEducationTopic(educationTopicId).slides
+    : slideCopy.weekend;
+  const safeSlide = Math.min(Math.max(slide, 1), seriesSlides.length);
+  const copy = seriesSlides[safeSlide - 1];
   const vertical = series === "weekend";
   const reading = card.readings[0];
   const band = reading ? getSuitabilityBand(reading.score) : null;
-  const showReadings = (series === "weekend" && safeSlide === 2)
-    || (series === "education" && safeSlide === 1);
+  const educationVisual = series === "education" && "visual" in copy ? copy.visual : undefined;
+  const showReadings = (series === "weekend" && safeSlide === 2) || educationVisual === "readings";
   const showOverviewMap = series === "weekend" && safeSlide === 3;
   const showTopSpecies = series === "weekend" && safeSlide === 4;
+  const showExtent = educationVisual === "extent";
 
   return (
     <div style={{ display: "flex", position: "relative", width: "100%", height: "100%", overflow: "hidden", flexDirection: "column", padding: vertical ? "82px 70px 96px" : "58px 58px 66px", color: "#fff7e8", background: "linear-gradient(145deg, #102a1b 0%, #173b27 58%, #4d3927 100%)", fontFamily: "sans-serif" }}>
@@ -239,10 +222,10 @@ export function SocialGrowthCard({
           <BrandMark />
           <span style={{ fontSize: vertical ? 28 : 24, fontWeight: 900, letterSpacing: "0.11em", textTransform: "uppercase" }}>Bolets Atles</span>
         </div>
-        <span style={{ color: "#d7dec7", fontSize: vertical ? 24 : 20 }}>{safeSlide}/{slideCopy[series].length}</span>
+        <span style={{ color: "#d7dec7", fontSize: vertical ? 24 : 20 }}>{safeSlide}/{seriesSlides.length}</span>
       </div>
 
-      <div style={{ display: "flex", position: "relative", flex: 1, flexDirection: "column", justifyContent: showReadings || showOverviewMap || showTopSpecies ? "flex-start" : "center", paddingTop: showOverviewMap || showTopSpecies ? 62 : vertical ? 115 : 76 }}>
+      <div style={{ display: "flex", position: "relative", flex: 1, flexDirection: "column", justifyContent: showReadings || showOverviewMap || showTopSpecies || showExtent ? "flex-start" : "center", paddingTop: showOverviewMap || showTopSpecies ? 62 : vertical ? 115 : 76 }}>
         <span style={{ color: "#f2a766", fontSize: vertical ? 29 : 24, fontWeight: 900, letterSpacing: "0.12em", textTransform: "uppercase" }}>{copy.eyebrow}</span>
         <span style={{ maxWidth: "94%", marginTop: vertical ? 25 : 18, color: "#fff7e8", fontSize: showOverviewMap || showTopSpecies ? 70 : vertical ? 82 : 66, lineHeight: 0.98, fontWeight: 900, letterSpacing: "-0.05em" }}>{copy.title}</span>
         <span style={{ maxWidth: "92%", marginTop: showOverviewMap || showTopSpecies ? 25 : vertical ? 35 : 27, color: "#d7dec7", fontSize: showOverviewMap || showTopSpecies ? 29 : vertical ? 35 : 28, lineHeight: 1.32 }}>{copy.body}</span>
@@ -255,10 +238,21 @@ export function SocialGrowthCard({
           <CataloniaOverviewPanel mapImageUrl={mapImageUrl} />
         ) : showTopSpecies ? (
           <TopSpeciesPanel card={card} />
-        ) : safeSlide === 2 && series === "education" && reading ? (
+        ) : educationVisual === "score" && reading ? (
           <div style={{ display: "flex", alignItems: "flex-end", marginTop: 60 }}>
             <span style={{ color: band?.color, fontSize: 180, lineHeight: 0.8, fontWeight: 900, letterSpacing: "-0.08em" }}>{reading.score}</span>
             <span style={{ color: "#d7dec7", fontSize: 34, marginLeft: 10 }}>/100 avui</span>
+          </div>
+        ) : showExtent && reading ? (
+          <div style={{ display: "flex", width: "100%", marginTop: 52, gap: 18 }}>
+            <div style={{ display: "flex", flex: 1, flexDirection: "column", padding: "28px 30px", border: "1px solid rgba(255,247,232,0.22)", borderRadius: 25, background: "rgba(255,247,232,0.08)" }}>
+              <span style={{ color: band?.color, fontSize: 76, fontWeight: 900 }}>{reading.score}</span>
+              <span style={{ color: "#d7dec7", fontSize: 22 }}>millor sector /100</span>
+            </div>
+            <div style={{ display: "flex", flex: 1, flexDirection: "column", padding: "28px 30px", border: "1px solid rgba(255,247,232,0.22)", borderRadius: 25, background: "rgba(255,247,232,0.08)" }}>
+              <span style={{ color: "#fff7e8", fontSize: 76, fontWeight: 900 }}>{percentLabel(reading.positiveCellShare)}</span>
+              <span style={{ color: "#d7dec7", fontSize: 22 }}>sectors amb senyal</span>
+            </div>
           </div>
         ) : null}
       </div>
