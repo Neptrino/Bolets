@@ -227,28 +227,10 @@ export function ContributionPanel() {
       <div className="contribution-panel-heading">
         <span aria-hidden="true"><Sprout size={22} /></span>
         <div>
-          <p>Col·laboració activa</p>
-          <h2 id="contribution-title">Obre el mapa d’1 km i 250 m</h2>
+          <p>Nova aportació</p>
+          <h2 id="contribution-title">Proposa una col·laboració</h2>
         </div>
       </div>
-
-      {state?.access.active && state.access.activeUntil ? (
-        <div className="contribution-access-state" data-tone="active">
-          <CheckCircle2 size={22} aria-hidden="true" />
-          <div>
-            <strong>Detall del mapa obert</strong>
-            <span>Fins al {dateFormatter.format(new Date(state.access.activeUntil))}. Una nova aportació aprovada hi afegeix 90 dies.</span>
-          </div>
-        </div>
-      ) : (
-        <div className="contribution-access-state">
-          <MapPinned size={22} aria-hidden="true" />
-          <div>
-            <strong>El mapa públic mostra sectors de 2,5 km</strong>
-            <span>Una aportació aprovada obre els sectors d’1 km i 250 m durant 90 dies.</span>
-          </div>
-        </div>
-      )}
 
       <form className="contribution-form" onSubmit={submit}>
         <fieldset disabled={busy || pending}>

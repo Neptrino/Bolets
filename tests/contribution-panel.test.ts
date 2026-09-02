@@ -14,6 +14,9 @@ describe("contribution form", () => {
     expect(html).toContain("Triar fotografies");
     expect(html).toContain('accept="image/*"');
     expect(html).toContain("eliminar metadades com la ubicació");
+    expect(html).toContain("Proposa una col·laboració");
+    expect(html).not.toContain("contribution-access-state");
+    expect(html).not.toContain("El mapa públic mostra sectors de 2,5 km");
   });
 
   it("makes an approved contribution and its active detailed-map access explicit", () => {
