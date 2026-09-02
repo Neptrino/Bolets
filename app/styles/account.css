@@ -96,6 +96,25 @@
   grid-template-columns: 1fr;
 }
 
+.account-contribution-layout .contribution-way-grid {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid rgba(66, 92, 73, .22);
+  border-radius: 20px;
+  background: #eef1e8;
+  box-shadow: 0 14px 34px rgba(75, 54, 33, .06);
+}
+
+.account-contribution-layout .contribution-way-grid article {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.account-contribution-layout .contribution-way-grid article + article {
+  border-top: 1px solid rgba(66, 92, 73, .22);
+}
+
 .account-contribution-layout .contribution-resolution-grid {
   grid-template-columns: 1fr;
   gap: 30px;

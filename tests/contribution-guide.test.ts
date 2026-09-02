@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -29,5 +30,13 @@ describe("shared contribution guide", () => {
     expect(html).not.toContain("De 2,5 km a 250 m");
     expect(html).toContain("Com funciona");
     expect(html).toContain("Dues vies d’accés");
+  });
+
+  it("groups the access routes into one card in the account layout", () => {
+    const accountStyles = readFileSync("app/styles/account.css", "utf8");
+
+    expect(accountStyles).toContain(".account-contribution-layout .contribution-way-grid {");
+    expect(accountStyles).toContain("overflow: hidden;");
+    expect(accountStyles).toContain(".account-contribution-layout .contribution-way-grid article + article");
   });
 });
