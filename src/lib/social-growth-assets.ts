@@ -35,3 +35,16 @@ export function signedWeekendReelPath(card: DailyShareCard) {
   url.searchParams.set("reelVersion", "5");
   return `${url.pathname}${url.search}`;
 }
+
+export function signedSpeciesInstagramImagePath(
+  card: DailyShareCard,
+  publicationDate: string,
+  slide: number,
+) {
+  const url = new URL(signedDailyShareImagePath(card, "feed"), "https://bolets.app");
+  url.searchParams.set("series", "species");
+  url.searchParams.set("date", publicationDate);
+  url.searchParams.set("slide", String(slide));
+  url.searchParams.set("speciesVersion", "1");
+  return `${url.pathname}${url.search}`;
+}

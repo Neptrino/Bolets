@@ -13,8 +13,10 @@ import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
 import { instagramEducationTopicForDate } from "@/src/lib/instagram-education";
 import {
   signedSocialGrowthImagePath,
+  signedSpeciesInstagramImagePath,
   signedWeekendReelPath,
 } from "@/src/lib/social-growth-assets";
+import { INSTAGRAM_SPECIES_SLIDE_COUNT } from "@/src/lib/instagram-species-series";
 import { absoluteUrl } from "@/src/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +25,7 @@ export const runtime = "nodejs";
 const activePublications = new Map<InstagramGrowthPublication, Promise<unknown>>();
 
 function isGrowthPublication(value: unknown): value is InstagramGrowthPublication {
-  return value === "education" || value === "weekend";
+  return value === "education" || value === "species" || value === "weekend";
 }
 
 function noStoreJson(data: unknown, status = 200) {
@@ -45,6 +47,9 @@ async function runPublication(kind: InstagramGrowthPublication) {
   const educationTopic = card.observedAt
     ? instagramEducationTopicForDate(dateInCatalonia(new Date(card.observedAt)))
     : null;
+  const publicationDate = card.observedAt
+    ? dateInCatalonia(new Date(card.observedAt))
+    : null;
   return publishInstagramGrowthPost({
     card,
     config: bufferInstagramPublisherConfig(),
@@ -61,6 +66,16 @@ async function runPublication(kind: InstagramGrowthPublication) {
       : undefined,
     kind,
     reelUrl: kind === "weekend" ? absoluteUrl(signedWeekendReelPath(card)) : undefined,
+    speciesImageUrls: kind === "species" && publicationDate
+      ? Array.from(
+          { length: INSTAGRAM_SPECIES_SLIDE_COUNT },
+          (_, index) => absoluteUrl(signedSpeciesInstagramImagePath(
+            card,
+            publicationDate,
+            index + 1,
+          )),
+        )
+      : undefined,
   });
 }
 

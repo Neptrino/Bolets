@@ -277,8 +277,9 @@ host downtime. Inspect failures with
 `journalctl -u bolets-instagram.service`; do not add blind POST retries because
 an interrupted response can occur after Buffer has accepted the publication.
 
-The growth schedule adds an educational carousel on Wednesday at 19:00 and a
-short weekend Reel on Friday at 18:00. Both jobs use the same signed current-day
+The growth schedule adds species field-guide carousels on Monday and Thursday
+at 19:00, an educational carousel on Wednesday at 19:00 and a short weekend
+Reel on Friday at 18:00. All jobs use the same signed current-day
 overview, reject off-schedule invocations and check a format-specific date
 marker before publishing. Install them after the application image includes
 `ffmpeg`, which renders the signed Reel frames into the public MP4 consumed by
@@ -288,9 +289,10 @@ Buffer:
 sudo install -m 755 deploy/vps/publish-instagram-growth.sh /opt/bolets/app/deploy/vps/
 sudo install -m 644 deploy/vps/bolets-instagram-growth@.service /etc/systemd/system/
 sudo install -m 644 deploy/vps/bolets-instagram-education.timer /etc/systemd/system/
+sudo install -m 644 deploy/vps/bolets-instagram-species.timer /etc/systemd/system/
 sudo install -m 644 deploy/vps/bolets-instagram-weekend.timer /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now bolets-instagram-education.timer bolets-instagram-weekend.timer
+sudo systemctl enable --now bolets-instagram-education.timer bolets-instagram-species.timer bolets-instagram-weekend.timer
 sudo systemctl list-timers 'bolets-instagram*'
 ```
 

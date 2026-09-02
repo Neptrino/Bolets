@@ -13,10 +13,16 @@ import { dateInCatalonia } from "@/src/lib/buffer-client";
 import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
 import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
 import { instagramEducationTopicForDate } from "@/src/lib/instagram-education";
+import {
+  INSTAGRAM_SPECIES_PUBLICATION_WEEKDAYS,
+  INSTAGRAM_SPECIES_SLIDE_COUNT,
+  instagramSpeciesPublicationForDate,
+} from "@/src/lib/instagram-species-series";
 import { readInstagramPerformanceReport } from "@/src/lib/instagram-performance-server";
 import { requireOperationalSession } from "@/src/lib/operational-status-session";
 import {
   signedSocialGrowthImagePath,
+  signedSpeciesInstagramImagePath,
   signedWeekendReelPath,
 } from "@/src/lib/social-growth-assets";
 import { weekendReelDurationSeconds } from "@/src/lib/weekend-reel-render";
@@ -145,6 +151,22 @@ export default async function AdminInstagramPage() {
         (_, index) => signedSocialGrowthImagePath(previewable, "education", index + 1, educationTopic.id),
       )
     : [];
+  const speciesPosts = INSTAGRAM_SPECIES_PUBLICATION_WEEKDAYS
+    .map((weekday) => nextSchedule(weekday, 19))
+    .sort((left, right) => left.date.localeCompare(right.date))
+    .map((schedule) => {
+      const publication = instagramSpeciesPublicationForDate(schedule.date);
+      return {
+        ...publication,
+        images: previewable
+          ? Array.from(
+              { length: INSTAGRAM_SPECIES_SLIDE_COUNT },
+              (_, index) => signedSpeciesInstagramImagePath(previewable, schedule.date, index + 1),
+            )
+          : [],
+        schedule,
+      };
+    });
   return (
     <PageShell as="article" className={`admin-page ${styles.detailShell}`}>
       <PageHeader
@@ -199,6 +221,36 @@ export default async function AdminInstagramPage() {
                   </details>
                 </div>
               </section>
+
+              {speciesPosts.map((post) => (
+                <section className={plannerStyles.previewBlock} key={post.publicationDate}>
+                  <header className={plannerStyles.previewHeader}>
+                    <div>
+                      <span>Espècie {post.position}/{post.total} · Carrusel</span>
+                      <h3>{post.profile.commonName} · {post.profile.scientificName}</h3>
+                    </div>
+                    <time>{post.schedule.label}</time>
+                  </header>
+                  <div className={plannerStyles.carouselRail} aria-label={`Cinc diapositives sobre ${post.profile.commonName}`}>
+                    {post.images.map((imagePath, index) => (
+                      <figure className={plannerStyles.carouselFrame} key={imagePath}>
+                        <Image
+                          alt={`Diapositiva ${index + 1} de ${post.images.length} sobre ${post.profile.commonName}`}
+                          height={1350}
+                          src={imagePath}
+                          unoptimized
+                          width={1080}
+                        />
+                        <figcaption>{index + 1}/{post.images.length}</figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                  <details className={plannerStyles.captionPreview}>
+                    <summary>Veure el text del carrusel</summary>
+                    <p>{instagramGrowthCaption("species", previewable, post.publicationDate)}</p>
+                  </details>
+                </section>
+              ))}
 
               <section className={plannerStyles.previewBlock}>
                 <header className={plannerStyles.previewHeader}>

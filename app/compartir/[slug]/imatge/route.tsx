@@ -14,6 +14,7 @@ import {
   instagramEducationTopicForDate,
   isInstagramEducationTopicId,
 } from "@/src/lib/instagram-education";
+import { instagramSpeciesImageResponse } from "@/src/lib/instagram-species-image-server";
 import { dateInCatalonia } from "@/src/lib/buffer-client";
 import { getSuitabilityBand, suitabilityScale } from "@/src/lib/suitability-scale";
 import { renderSocialCurrentMapDataUrl } from "@/src/lib/social-current-map-server";
@@ -296,8 +297,19 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
   const homeHeroUrl = `data:image/jpeg;base64,${homeHero.toString("base64")}`;
 
   const requestedGrowthSeries = requestUrl.searchParams.get("series");
-  if (requestedGrowthSeries && !isSocialGrowthSeries(requestedGrowthSeries)) {
+  const isSpeciesSeries = requestedGrowthSeries === "species";
+  if (requestedGrowthSeries && !isSpeciesSeries && !isSocialGrowthSeries(requestedGrowthSeries)) {
     return new Response("Invalid social series", { status: 400 });
+  }
+  if (isSpeciesSeries) {
+    if (!signedCard || isPreview || !card.available || !card.observedAt) {
+      return new Response("Verified signed card required", { status: 400 });
+    }
+    return instagramSpeciesImageResponse({
+      cacheSeconds,
+      publicationDate: requestUrl.searchParams.get("date"),
+      requestedSlide: Number(requestUrl.searchParams.get("slide")),
+    });
   }
   const growthSeries = isSocialGrowthSeries(requestedGrowthSeries) ? requestedGrowthSeries : null;
   if (growthSeries) {
