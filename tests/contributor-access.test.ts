@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 describe("contributor detailed-map access", () => {
   const migration = readFileSync(
-    "supabase/migrations/20260901200908_contributor_access.sql",
+    "supabase/migrations/20260901223000_contributor_access.sql",
     "utf8",
   );
   const tieredMigration = readFileSync(
