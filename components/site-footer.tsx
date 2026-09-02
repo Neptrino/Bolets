@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { Coffee } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { CurrentSeasonGuideLink } from "@/components/current-season-guide-link";
 import { InstagramMark } from "@/components/instagram-mark";
 import { InstallApp } from "@/components/install-app";
 import { seasonGuides } from "@/src/lib/season-guides";
 import { monthInTimeZone } from "@/src/lib/seasonality";
+import { resolveSupportUrl } from "@/src/lib/support";
 
 const seasonalFooterGuides = seasonGuides.map(({ path, cardTitle, months }) => ({
   path,
@@ -14,6 +16,7 @@ const seasonalFooterGuides = seasonGuides.map(({ path, cardTitle, months }) => (
 
 export function SiteFooter() {
   const initialMonth = monthInTimeZone();
+  const supportUrl = resolveSupportUrl(process.env.SUPPORT_URL);
 
   return (
     <footer className="site-footer">
@@ -35,6 +38,20 @@ export function SiteFooter() {
           >
             <InstagramMark /> Instagram
           </Link>
+          {supportUrl ? (
+            <div className="site-footer-support">
+              <p>Ajuda’ns a mantenir l’atles obert i actualitzat.</p>
+              <a
+                href={supportUrl}
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                aria-label="Convida’ns a un cafè (s’obre en una pestanya nova)"
+              >
+                <Coffee size={17} strokeWidth={2.2} aria-hidden="true" />
+                Convida’ns a un cafè
+              </a>
+            </div>
+          ) : null}
         </div>
         <nav className="site-footer-links" aria-label="Guies i informació editorial">
           <Link href="/bolets-avui">Bolets avui</Link>

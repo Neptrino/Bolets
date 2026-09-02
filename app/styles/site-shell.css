@@ -166,6 +166,44 @@ h3 {
 .site-footer-social:hover {
   text-decoration: underline;
 }
+.site-footer-support {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  padding-top: 3px;
+}
+.site-footer-support p {
+  max-width: 32ch;
+  margin: 0;
+  color: rgba(255, 247, 232, 0.68);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+.site-footer-support a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid rgba(255, 247, 232, 0.2);
+  border-radius: var(--radius-pill);
+  background: var(--pumpkin);
+  color: var(--ink);
+  font-size: var(--text-xs);
+  font-weight: 850;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+.site-footer-support a:hover {
+  transform: translateY(-2px);
+  background: var(--apricot);
+}
+.site-footer-support a:focus-visible {
+  outline: 3px solid var(--paper);
+  outline-offset: 3px;
+}
 .site-footer-links {
   display: grid;
   grid-template-columns: repeat(3, max-content);

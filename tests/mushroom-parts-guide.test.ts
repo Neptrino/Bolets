@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import MushroomPartsGuidePage, { metadata } from "@/app/parts-dun-bolet/page";
 import { buildSitemap as sitemap } from "@/app/sitemap";
 import { getEditorialMetadata } from "@/data/editorial";
+import { STATIC_MEDIA_VERSION } from "@/src/lib/static-media";
 
 describe("mushroom parts guide", () => {
   const html = renderToStaticMarkup(createElement(MushroomPartsGuidePage));
@@ -35,7 +36,7 @@ describe("mushroom parts guide", () => {
 
   it("renders an accessible interactive anatomy explorer", () => {
     expect(html).toContain("Explora l’anatomia del bolet");
-    expect(html).toContain('/media/optimized/v9/editorial/parts-dun-bolet-infografia-v2.');
+    expect(html).toContain(`/media/optimized/${STATIC_MEDIA_VERSION}/editorial/parts-dun-bolet-infografia-v2.`);
     expect(html).toContain('aria-label="Parts assenyalades del bolet"');
     expect(html).toContain('aria-controls="mushroom-part-detail mushroom-part-mobile-detail"');
     expect(html).toContain('aria-pressed="true"');

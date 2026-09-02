@@ -122,6 +122,17 @@ try {
   });
 
   await captureScene({
+    name: "06-avui",
+    path: "/bolets-avui",
+    ready: ".current-leader",
+    action: async (page) => {
+      await page.waitForTimeout(900);
+      await smoothScroll(page, ".current-map-overview", 2_400);
+      await page.waitForTimeout(1_300);
+    },
+  });
+
+  await captureScene({
     name: "02-map",
     path: "/map?species=lactarius-deliciosus",
     ready: ".maplibregl-canvas",
@@ -154,6 +165,17 @@ try {
         : "main section:nth-of-type(2)";
       await smoothScroll(page, target, 2_300);
       await page.waitForTimeout(1_400);
+    },
+  });
+
+  await captureScene({
+    name: "07-guides",
+    path: "/guies",
+    ready: ".guides-species-module",
+    action: async (page) => {
+      await page.waitForTimeout(850);
+      await smoothScroll(page, ".guides-directory", 2_400);
+      await page.waitForTimeout(1_300);
     },
   });
 

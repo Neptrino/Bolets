@@ -31,18 +31,26 @@ type TourScene = {
 const scenes: TourScene[] = [
   {
     clip: "captures/01-home.webm",
-    duration: 180,
+    duration: 150,
     kicker: "ABANS DE SORTIR",
     title: "Llegeix el territori",
     accent: "abans de trepitjar-lo.",
   },
   {
+    clip: "captures/06-avui.webm",
+    duration: 210,
+    kicker: "LA LECTURA D’AVUI",
+    title: "Descobreix on comença",
+    accent: "la millor oportunitat.",
+    note: "Compara territoris i espècies amb les dades més recents.",
+    align: "right",
+  },
+  {
     clip: "captures/04-catalogue.webm",
     duration: 180,
     kicker: "CATÀLEG VIU",
-    title: "Explora 53 fitxes",
+    title: "Explora 62 fitxes",
     accent: "per espècie i temporada.",
-    align: "right",
   },
   {
     clip: "captures/03-species.webm",
@@ -50,31 +58,41 @@ const scenes: TourScene[] = [
     kicker: "UNA MATEIXA ECOLOGIA",
     title: "Entén l’hàbitat",
     accent: "que necessita cada espècie.",
+    align: "right",
+  },
+  {
+    clip: "captures/07-guides.webm",
+    duration: 180,
+    kicker: "GUIES LOCALS",
+    title: "Passa del mapa",
+    accent: "al bosc concret.",
+    note: "Context de bosc, temporada i espècie, sense publicar punts.",
   },
   {
     clip: "captures/02-map.webm",
-    duration: 240,
+    duration: 210,
     kicker: "CONDICIONS ACTUALS",
     title: "Compara espècies",
     accent: "cel·la per cel·la.",
     note: "La puntuació serveix per comparar: no confirma presència.",
+    align: "right",
   },
   {
     clip: "captures/05-findings.webm",
-    duration: 175,
+    duration: 150,
     kicker: "EL TEU QUADERN DE CAMP",
     title: "Desa les troballes",
     accent: "fins i tot sense cobertura.",
     note: "El punt exacte és només teu.",
-    align: "right",
   },
 ];
 
-const closingDuration = 120;
+const openingDuration = 90;
+const closingDuration = 90;
 const sceneStarts = scenes.map((_, sceneIndex) => scenes
   .slice(0, sceneIndex)
-  .reduce((sum, scene) => sum + scene.duration, 0));
-const closingStart = scenes.reduce((sum, scene) => sum + scene.duration, 0);
+  .reduce((sum, scene) => sum + scene.duration, openingDuration));
+const closingStart = scenes.reduce((sum, scene) => sum + scene.duration, openingDuration);
 export const SHOWCASE_DURATION = closingStart + closingDuration;
 
 const fontFamily = '"Avenir Next", "Nunito Sans", ui-sans-serif, system-ui, sans-serif';
@@ -227,6 +245,56 @@ function ProductScene({ scene }: { scene: TourScene }) {
   );
 }
 
+function OpeningScene() {
+  const frame = useCurrentFrame();
+  const opacity = interpolate(frame, [0, 14, openingDuration - 12, openingDuration], [0, 1, 1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const rise = interpolate(frame, [6, 28], [34, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+  const scale = interpolate(frame, [0, openingDuration], [1.02, 1.05], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <AbsoluteFill style={{ overflow: "hidden", color: colours.cream, background: colours.forestDeep, opacity }}>
+      <Img
+        src={staticFile("captures/01-home-start.png")}
+        style={{ width: "100%", height: "100%", objectFit: "cover", filter: "blur(1px) saturate(0.82)", transform: `scale(${scale})` }}
+      />
+      <AbsoluteFill style={{
+        background: "linear-gradient(110deg, rgba(9, 23, 15, 0.92) 0%, rgba(9, 23, 15, 0.76) 48%, rgba(9, 23, 15, 0.48) 100%)",
+      }} />
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        display: "grid",
+        placeContent: "center",
+        justifyItems: "center",
+        textAlign: "center",
+        fontFamily,
+        transform: `translateY(${rise}px)`,
+      }}>
+        <div style={{ color: colours.orangeLight, fontSize: 21, fontWeight: 900, letterSpacing: "0.18em" }}>
+          BOLETS · ATLES · CATALUNYA
+        </div>
+        <div style={{ marginTop: 22, fontSize: 98, fontWeight: 850, letterSpacing: "-0.055em", lineHeight: 0.96 }}>
+          Del bosc<br />
+          <span style={{ color: colours.orangeLight, fontStyle: "italic", fontWeight: 600 }}>al mapa.</span>
+        </div>
+        <div style={{ marginTop: 30, color: "rgba(244, 236, 215, 0.82)", fontSize: 25, fontWeight: 700 }}>
+          Espècies · guies · condicions d’avui
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+}
+
 function ClosingScene() {
   const frame = useCurrentFrame();
   const opacity = interpolate(frame, [0, 18, closingDuration - 14, closingDuration], [0, 1, 1, 0], {
@@ -295,6 +363,9 @@ function Progress() {
 export function HomeShowcase() {
   return (
     <AbsoluteFill style={{ background: colours.forestDeep }}>
+      <Sequence from={0} durationInFrames={openingDuration}>
+        <OpeningScene />
+      </Sequence>
       {scenes.map((scene, sceneIndex) => (
         <Sequence key={scene.clip} from={sceneStarts[sceneIndex]} durationInFrames={scene.duration}>
           <ProductScene scene={scene} />
