@@ -22,11 +22,18 @@ describe("administrator navigation", () => {
     ]) expect(html).toContain(`href="${href}"`);
     expect(html).toMatch(/<a[^>]*aria-current="page"[^>]*href="\/admin"/);
     expect(html).toContain('action="/admin/session/logout"');
+    expect(html).not.toContain(">BO<");
   });
 
   it("renders the shared navigation from the protected admin layout", () => {
     const source = readFileSync("app/admin/(private)/layout.tsx", "utf8");
     expect(source).toContain("<AdminNav />");
     expect(source).toContain("requireOperationalSession");
+  });
+
+  it("provides immediate feedback while a dynamic admin section loads", () => {
+    const source = readFileSync("app/admin/(private)/loading.tsx", "utf8");
+    expect(source).toContain("Carregant la secció");
+    expect(source).toContain('role="status"');
   });
 });

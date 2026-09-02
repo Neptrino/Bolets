@@ -35,10 +35,6 @@ export function AdminNav() {
 
   return (
     <nav className={styles.adminNav} aria-label="Seccions de l’administració">
-      <Link className={styles.adminBrand} href="/admin" aria-label="Inici de l’administració">
-        <span>BO</span>
-        <strong>Administració</strong>
-      </Link>
       <div className={styles.adminLinks}>
         {sections.map(({ href, label, icon: Icon, exact }) => {
           const current = exact ? pathname === href : pathname.startsWith(href);
