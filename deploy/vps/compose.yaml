@@ -40,6 +40,7 @@ services:
         NEXT_PUBLIC_UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID:?Set the public Umami website ID}
         NEXT_PUBLIC_SUPABASE_URL: ${SUPABASE_PUBLIC_URL:?Set the public Supabase URL}
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${ANON_KEY:?Generate the Supabase keys before starting}
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:?Set the Turnstile site key}
     restart: unless-stopped
     init: true
     environment:
@@ -47,11 +48,15 @@ services:
       SUPABASE_URL: http://api-gw:8000
       NEXT_PUBLIC_SUPABASE_URL: ${SUPABASE_PUBLIC_URL:?Set the public Supabase URL}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${ANON_KEY:?Generate the Supabase keys before starting}
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:?Set the Turnstile site key}
       # Used only by the private server-rendered operations page and its
       # internal Prometheus endpoint. It is never compiled as a public value.
       SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY:?Generate the Supabase keys before starting}
       STATUS_INTERNAL_TOKEN: ${STATUS_INTERNAL_TOKEN:?Set the private status ingress token}
       CONTRIBUTOR_ACCESS_SECRET: ${CONTRIBUTOR_ACCESS_SECRET:?Set the contributor capability secret}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:?Set the Turnstile secret key}
+      TURNSTILE_HOSTNAMES: ${TURNSTILE_HOSTNAMES:-bolets.app,www.bolets.app}
+      ABUSE_RATE_LIMIT_SECRET: ${ABUSE_RATE_LIMIT_SECRET:?Set the abuse rate-limit HMAC secret}
       # The existing server-to-function contract uses the legacy signed anon
       # JWT in both apikey and Authorization headers.
       SUPABASE_ANON_KEY: ${ANON_KEY:?Generate the Supabase keys before starting}

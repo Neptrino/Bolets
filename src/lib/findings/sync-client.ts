@@ -27,7 +27,9 @@ function uploadPhoto(blob: Blob, path: string, accessToken: string) {
   });
 }
 
-async function syncRecord(record: FindingOutboxRecord, accessToken: string, userId: string) {
+class TurnstileRequiredError extends Error {}
+
+async function syncRecord(record: FindingOutboxRecord, accessToken: string, userId: string, turnstileToken?: string | null) {
   await updateOutboxFinding(record.draft.clientReportId, { state: "syncing", error: null });
   const begin = await fetch("/api/findings/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(record.draft) });
   const beginBody = await begin.json();
@@ -44,29 +46,40 @@ async function syncRecord(record: FindingOutboxRecord, accessToken: string, user
     await uploadPhoto(photo.blob, path, accessToken);
     photos.push({ id: photo.id, stagingPath: path, position: photo.position });
   }
-  const finalize = await fetch(`/api/findings/${findingId}/finalize`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ photos }) });
+  const finalize = await fetch(`/api/findings/${findingId}/finalize`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ photos, ...(turnstileToken ? { turnstileToken } : {}) }),
+  });
   const finalizeBody = await finalize.json();
+  if (finalizeBody.code === "turnstile_required") throw new TurnstileRequiredError(finalizeBody.error);
   if (!finalize.ok) throw new Error(finalizeBody.error ?? "No s’ha pogut publicar la troballa.");
   queueUmamiEvent(UMAMI_EVENTS.findingAdded);
   await deleteOutboxFinding(record.draft.clientReportId);
   return finalizeBody.oneKmAccessUntil as string | null;
 }
 
-export async function syncFindingOutbox() {
-  if (!navigator.onLine) return { synced: 0, pending: (await listOutboxFindings()).length, needsLogin: false, oneKmAccessUntil: null };
+export async function syncFindingOutbox(turnstileToken?: string | null) {
+  if (!navigator.onLine) return { synced: 0, pending: (await listOutboxFindings()).length, needsLogin: false, turnstileRequired: false, oneKmAccessUntil: null };
   const client = createSupabaseBrowserClient();
   const { data } = await client.auth.getSession();
   const records = await listOutboxFindings();
-  if (!data.session) return { synced: 0, pending: records.length, needsLogin: records.length > 0, oneKmAccessUntil: null };
+  if (!data.session) return { synced: 0, pending: records.length, needsLogin: records.length > 0, turnstileRequired: false, oneKmAccessUntil: null };
   let synced = 0;
   let oneKmAccessUntil: string | null = null;
+  let turnstileRequired = false;
   for (const record of records) {
     try {
-      oneKmAccessUntil = await syncRecord(record, data.session.access_token, data.session.user.id) ?? oneKmAccessUntil;
+      oneKmAccessUntil = await syncRecord(record, data.session.access_token, data.session.user.id, turnstileToken) ?? oneKmAccessUntil;
       synced += 1;
     } catch (error) {
+      if (error instanceof TurnstileRequiredError) {
+        turnstileRequired = true;
+        await updateOutboxFinding(record.draft.clientReportId, { state: "queued", error: error.message });
+        break;
+      }
       await updateOutboxFinding(record.draft.clientReportId, { state: "failed", error: error instanceof Error ? error.message : "Error de sincronització" });
     }
   }
-  return { synced, pending: (await listOutboxFindings()).length, needsLogin: false, oneKmAccessUntil };
+  return { synced, pending: (await listOutboxFindings()).length, needsLogin: false, turnstileRequired, oneKmAccessUntil };
 }

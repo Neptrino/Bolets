@@ -43,7 +43,15 @@ export async function grantFindingMapAccess(findingId: string, ownerId: string) 
   return data as string | null;
 }
 
-export async function publishFinding(findingId: string, ownerId: string, photos: Array<FindingPhotoUpload & { path: string; width: number; height: number; byteSize: number }>) {
+export async function publishFinding(findingId: string, ownerId: string, photos: Array<FindingPhotoUpload & {
+  path: string;
+  width: number;
+  height: number;
+  byteSize: number;
+  contentSha256: string;
+  perceptualHash: string;
+  duplicateReviewState: "clear" | "exact_self" | "near";
+}>) {
   const admin = createSupabaseAdminClient();
   const owned = await assertFindingOwner(findingId, ownerId);
   if (!owned || owned.publication_state !== "draft") throw new Error("Finding is not an editable draft");
@@ -51,15 +59,59 @@ export async function publishFinding(findingId: string, ownerId: string, photos:
     const { error: photoError } = await admin.from("user_finding_photos").insert(photos.map((photo) => ({
       id: photo.id, finding_id: findingId, storage_path: photo.path,
       position: photo.position, width: photo.width, height: photo.height, byte_size: photo.byteSize,
+      content_sha256: photo.contentSha256,
+      perceptual_hash: photo.perceptualHash,
+      duplicate_review_state: photo.duplicateReviewState,
     })));
     if (photoError) throw new Error("Could not attach processed photos");
   }
-  const { error } = await admin.from("user_findings").update({ publication_state: "published", updated_at: new Date().toISOString() })
-    .eq("id", findingId).eq("owner_id", ownerId).eq("publication_state", "draft");
-  if (error) throw new Error("Could not publish finding");
+  const { data: accessUntil, error } = await admin.rpc("publish_user_finding", {
+    p_finding_id: findingId,
+    p_owner_id: ownerId,
+  });
+  if (error) {
+    if (photos.length) await admin.from("user_finding_photos").delete().in("id", photos.map((photo) => photo.id));
+    if (error.message.includes("Daily public finding limit reached")) {
+      throw new Error("Has arribat al límit de publicacions públiques d’avui. Les troballes privades continuen disponibles.");
+    }
+    if (error.message.includes("temporarily paused")) {
+      throw new Error("La publicació pública d’aquest compte està temporalment pausada.");
+    }
+    throw new Error("No s’ha pogut publicar la troballa.");
+  }
+  const duplicateStates = new Set(photos.map((photo) => photo.duplicateReviewState).filter((state) => state !== "clear"));
+  for (const duplicateState of duplicateStates) {
+    const { error: signalError } = await admin.from("finding_abuse_signals").insert({
+      finding_id: findingId,
+      user_id: ownerId,
+      kind: duplicateState === "near" ? "near_duplicate" : "repeated_content",
+      metadata: { source: "photo_fingerprint" },
+      status: "open",
+    });
+    if (signalError && signalError.code !== "23505") {
+      console.error("[findings] duplicate review signal failed", { findingId, code: signalError.code });
+    }
+  }
   const consensus = await admin.rpc("recompute_user_finding_consensus", { p_finding_id: findingId });
-  if (consensus.error) throw new Error("Could not initialize validation status");
-  return grantFindingMapAccess(findingId, ownerId);
+  if (consensus.error) console.error("[findings] consensus initialization failed", { findingId, code: consensus.error.code });
+  return accessUntil as string | null;
+}
+
+export async function updateFindingPrivacy(
+  findingId: string,
+  ownerId: string,
+  visibility?: "private" | "public",
+  showAlias?: boolean,
+) {
+  const admin = createSupabaseAdminClient();
+  const { data, error } = await admin.rpc("update_owner_finding_privacy", {
+    p_finding_id: findingId,
+    p_owner_id: ownerId,
+    p_visibility: visibility ?? null,
+    p_show_alias: showAlias ?? null,
+  });
+  if (error) throw new Error("Could not update finding privacy");
+  return data as string | null;
 }
 
 export async function voteOnFinding(findingId: string, voterId: string, speciesId: string) {

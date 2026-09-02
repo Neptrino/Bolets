@@ -461,6 +461,11 @@ mismatches all fail the rollout before Edge Functions or the app are replaced.
 The app uses the internal gateway URL; its server credentials never travel
 through public DNS.
 
+The private status environment also supplies `TURNSTILE_SITE_KEY`,
+`TURNSTILE_SECRET_KEY`, `TURNSTILE_HOSTNAMES=bolets.app,www.bolets.app`, and a
+separate random `ABUSE_RATE_LIMIT_SECRET`. The public site key is compiled into
+the browser bundle; the two secrets remain server-only.
+
 After this first rollout succeeds, add the DNS-only
 `analytics.bolets.app -> 51.255.40.179` record. Verify
 `https://analytics.bolets.app/api/heartbeat`, sign in with `admin` and the

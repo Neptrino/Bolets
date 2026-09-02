@@ -2,7 +2,7 @@
 
 import { BookOpen, CalendarClock, Camera, CheckCircle2, Info, LocateFixed, LockKeyhole, MapPin, MapPinned, Plus, Save, ShieldCheck, Sparkles, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { CatalogueSpecies } from "@/src/lib/types";
 import type { FindingQuantityBand, LocalFindingPhoto } from "@/src/lib/findings/types";
 import {
@@ -19,6 +19,9 @@ import { syncFindingOutbox } from "@/src/lib/findings/sync-client";
 import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 import { FormSelect } from "@/components/ui/form-select";
 import { FindingLocationPreview } from "./finding-location-preview";
+import { TurnstileWidget } from "./turnstile-widget";
+
+const FINDING_TURNSTILE_ACTION = "finding_publish";
 
 type PreparedPhoto = LocalFindingPhoto & {
   dateTime: PhotoDateTime | null;
@@ -113,6 +116,8 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
   const [online, setOnline] = useState(true);
   const [locating, setLocating] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [turnstileRequired, setTurnstileRequired] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [message, setMessage] = useState<{ text: string; tone: "success" | "danger" } | null>(null);
   const selected = useMemo(() => species.find((item) => item.speciesId === speciesId), [species, speciesId]);
   const hasDetectedData = Boolean(photoLocation || photoDateTime);
@@ -127,6 +132,18 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
       window.removeEventListener("offline", updateConnectivity);
     };
   }, []);
+
+  useEffect(() => {
+    if (!online) return;
+    let active = true;
+    void fetch("/api/findings/verification", { cache: "no-store" })
+      .then((response) => response.ok ? response.json() : null)
+      .then((body) => { if (active && body) setTurnstileRequired(body.required === true); })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, [online]);
+
+  const receiveTurnstileToken = useCallback((token: string | null) => setTurnstileToken(token), []);
 
   const locate = () => {
     setLocating(true);
@@ -263,6 +280,10 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
       if (!speciesId) speciesSelectRef.current?.focus();
       return;
     }
+    if (publish && turnstileRequired && !turnstileToken) {
+      setMessage({ text: "Completa la verificació anti-brossa abans de publicar.", tone: "danger" });
+      return;
+    }
     setBusy(true);
     setMessage(null);
     const clientReportId = crypto.randomUUID();
@@ -289,8 +310,12 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
         updatedAt: new Date().toISOString(),
       });
       queueUmamiEvent(UMAMI_EVENTS.findingDraftSaved);
-      const result = await syncFindingOutbox();
-      if (result.pending === 0) {
+      const result = await syncFindingOutbox(turnstileToken);
+      setTurnstileToken(null);
+      if (result.turnstileRequired) setTurnstileRequired(true);
+      if (result.turnstileRequired) {
+        setMessage({ text: "Completa la verificació anti-brossa per acabar de publicar la troballa.", tone: "danger" });
+      } else if (result.pending === 0) {
         setMessage({
           text: result.oneKmAccessUntil
             ? "Troballa publicada. Has obert els sectors d’1 km durant 7 dies."
@@ -435,6 +460,11 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
           <h2>5. Publicació</h2>
           <label className="finding-choice"><input type="checkbox" checked={publish} onChange={(event) => setPublish(event.target.checked)} /><span>Compartir la troballa a l’atles públic<small>Es publiquen totes les fotos, el dia i una zona aproximada de 10 × 10 km, mai el punt exacte ni les notes.</small></span></label>
           <label className="finding-choice"><input type="checkbox" checked={showAlias} onChange={(event) => rememberShowAliasPreference(event.target.checked)} /><span>Mostrar el meu àlies públic<small>La publicació és anònima si no l’actives. Recordarem aquesta elecció en aquest dispositiu.</small></span></label>
+          {publish && online && turnstileRequired ? <div className="finding-verification-card">
+            <strong>Comprovació anti-brossa</strong>
+            <small>La demanem a la primera publicació o quan detectem activitat poc habitual.</small>
+            <TurnstileWidget action={FINDING_TURNSTILE_ACTION} onToken={receiveTurnstileToken} />
+          </div> : null}
           {message?.tone === "success" ? <div className="finding-save-success">
             <CheckCircle2 size={24} aria-hidden="true" />
             <div className="finding-save-success-copy" role="status">

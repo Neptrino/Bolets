@@ -29,6 +29,11 @@ describe("finding input schemas", () => {
     expect(findingFinalizeSchema.safeParse({ photos: [{ id: validDraft.clientReportId, stagingPath: "someone-else/photo.webp", position: 0 }] }).success).toBe(false);
   });
 
+  it("accepts only bounded Turnstile tokens", () => {
+    expect(findingFinalizeSchema.safeParse({ photos: [], turnstileToken: "verified-token" }).success).toBe(true);
+    expect(findingFinalizeSchema.safeParse({ photos: [], turnstileToken: "x".repeat(2049) }).success).toBe(false);
+  });
+
   it("accepts privacy changes only for the whole finding or its alias", () => {
     expect(findingPrivacyPatchSchema.safeParse({ visibility: "private" }).success).toBe(true);
     expect(findingPrivacyPatchSchema.safeParse({ showAlias: true }).success).toBe(true);

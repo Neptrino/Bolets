@@ -110,6 +110,9 @@ set +a
 : "${UMAMI_ADMIN_PASSWORD:?Set UMAMI_ADMIN_PASSWORD in the Umami environment file}"
 : "${STATUS_INTERNAL_TOKEN:?Set STATUS_INTERNAL_TOKEN in the status environment file}"
 : "${CONTRIBUTOR_ACCESS_SECRET:?Set CONTRIBUTOR_ACCESS_SECRET in the status environment file}"
+: "${TURNSTILE_SITE_KEY:?Set TURNSTILE_SITE_KEY in the status environment file}"
+: "${TURNSTILE_SECRET_KEY:?Set TURNSTILE_SECRET_KEY in the status environment file}"
+: "${ABUSE_RATE_LIMIT_SECRET:?Set ABUSE_RATE_LIMIT_SECRET in the status environment file}"
 
 compose_files="-f docker-compose.yml -f $override_file"
 if [ -f "$observability_env_file" ]; then

@@ -3,6 +3,9 @@ import { findingFinalizeSchema } from "@/src/lib/findings/schema";
 import { assertFindingOwner, grantFindingMapAccess, publishFinding } from "@/src/lib/findings/mutations.server";
 import { createSupabaseAdminClient } from "@/src/lib/supabase/admin";
 import { getAuthenticatedUser } from "@/src/lib/supabase/server";
+import { consumeRateLimit, requestIp } from "@/src/lib/abuse-rate-limit.server";
+import { fingerprintFindingPhoto } from "@/src/lib/findings/photo-fingerprint.server";
+import { findingTurnstileRequired, verifyFindingTurnstile } from "@/src/lib/turnstile.server";
 
 export const runtime = "nodejs";
 
@@ -21,8 +24,39 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   const uniquePositions = new Set(parsed.data.photos.map((photo) => photo.position));
   if (uniquePositions.size !== parsed.data.photos.length) return Response.json({ error: "Hi ha fotografies duplicades." }, { status: 400 });
 
+  const [networkAllowed, accountAllowed] = await Promise.all([
+    consumeRateLimit(`ip:${requestIp(request)}`, "finding_publish_ip", 600, 20),
+    consumeRateLimit(`user:${user.id}`, "finding_publish_user", 600, 10),
+  ]).catch(() => [false, false]);
+  if (!networkAllowed || !accountAllowed) {
+    return Response.json({ error: "Hi ha massa intents de publicació seguits. Torna-ho a provar d’aquí a uns minuts." }, { status: 429 });
+  }
+
+  if (owned.visibility === "public" && await findingTurnstileRequired(user.id)) {
+    if (!parsed.data.turnstileToken) {
+      return Response.json({ code: "turnstile_required", error: "Completa la verificació abans de publicar." }, { status: 428 });
+    }
+    try {
+      await verifyFindingTurnstile(parsed.data.turnstileToken, requestIp(request));
+    } catch (error) {
+      return Response.json({
+        code: "turnstile_required",
+        error: error instanceof Error ? error.message : "No s’ha pogut verificar la publicació.",
+      }, { status: 400 });
+    }
+  }
+
   const admin = createSupabaseAdminClient();
-  const processed: Array<typeof parsed.data.photos[number] & { path: string; width: number; height: number; byteSize: number }> = [];
+  const processed: Array<typeof parsed.data.photos[number] & {
+    path: string;
+    width: number;
+    height: number;
+    byteSize: number;
+    contentSha256: string;
+    perceptualHash: string;
+    duplicateReviewState: "clear" | "exact_self" | "near";
+  }> = [];
+  const batchHashes = new Set<string>();
   try {
     for (const photo of parsed.data.photos) {
       const expected = `${user.id}/${id}/${photo.id}.webp`;
@@ -32,10 +66,20 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       const output = await sharp(await staged.data.arrayBuffer()).rotate().resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
       const metadata = await sharp(output).metadata();
       if (!metadata.width || !metadata.height || output.byteLength > 4_194_304) throw new Error("La fotografia processada és massa gran.");
+      const fingerprint = await fingerprintFindingPhoto(output, user.id);
+      if (batchHashes.has(fingerprint.contentSha256)) fingerprint.duplicateReviewState = "exact_self";
+      batchHashes.add(fingerprint.contentSha256);
       const finalPath = `${id}/${photo.id}.webp`;
       const upload = await admin.storage.from("finding-photos").upload(finalPath, output, { contentType: "image/webp", cacheControl: "31536000", upsert: true });
       if (upload.error) throw new Error("No s’ha pogut protegir la fotografia.");
-      processed.push({ ...photo, path: finalPath, width: metadata.width, height: metadata.height, byteSize: output.byteLength });
+      processed.push({
+        ...photo,
+        ...fingerprint,
+        path: finalPath,
+        width: metadata.width,
+        height: metadata.height,
+        byteSize: output.byteLength,
+      });
     }
     const oneKmAccessUntil = await publishFinding(id, user.id, processed);
     if (parsed.data.photos.length) await admin.storage.from("finding-photo-staging").remove(parsed.data.photos.map((photo) => photo.stagingPath));

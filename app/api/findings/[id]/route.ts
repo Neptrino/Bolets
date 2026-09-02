@@ -1,6 +1,6 @@
 import { findingPrivacyPatchSchema } from "@/src/lib/findings/schema";
 import { readPublicFinding } from "@/src/lib/findings/reads.server";
-import { assertFindingOwner, grantFindingMapAccess } from "@/src/lib/findings/mutations.server";
+import { assertFindingOwner, updateFindingPrivacy } from "@/src/lib/findings/mutations.server";
 import { createSupabaseAdminClient } from "@/src/lib/supabase/admin";
 import { getAuthenticatedUser } from "@/src/lib/supabase/server";
 
@@ -17,19 +17,17 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   if (!await assertFindingOwner(id, user.id)) return Response.json({ error: "Troballa no trobada." }, { status: 404 });
   const parsed = findingPrivacyPatchSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "El canvi de privacitat no és vàlid." }, { status: 400 });
-  const admin = createSupabaseAdminClient();
-  if (parsed.data.visibility || parsed.data.showAlias !== undefined) {
-    const { error } = await admin.from("user_findings").update({
-      ...(parsed.data.visibility ? { visibility: parsed.data.visibility } : {}),
-      ...(parsed.data.showAlias !== undefined ? { show_alias: parsed.data.showAlias } : {}),
-      updated_at: new Date().toISOString(),
-    }).eq("id", id).eq("owner_id", user.id);
-    if (error) return Response.json({ error: "No s’ha pogut canviar la privacitat." }, { status: 400 });
+  try {
+    const oneKmAccessUntil = await updateFindingPrivacy(
+      id,
+      user.id,
+      parsed.data.visibility,
+      parsed.data.showAlias,
+    );
+    return Response.json({ ok: true, oneKmAccessUntil });
+  } catch {
+    return Response.json({ error: "No s’ha pogut canviar la privacitat." }, { status: 400 });
   }
-  const oneKmAccessUntil = parsed.data.visibility === "public"
-    ? await grantFindingMapAccess(id, user.id)
-    : null;
-  return Response.json({ ok: true, oneKmAccessUntil });
 }
 
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {

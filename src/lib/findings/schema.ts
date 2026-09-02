@@ -27,6 +27,7 @@ export const findingFinalizeSchema = z.object({
     stagingPath: z.string().regex(/^[0-9a-f-]{36}\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.webp$/),
     position: z.number().int().min(0).max(3),
   })).max(4),
+  turnstileToken: z.string().min(1).max(2048).optional(),
 });
 
 export const findingVoteSchema = z.object({

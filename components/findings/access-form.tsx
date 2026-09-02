@@ -87,12 +87,16 @@ export function AccessForm({ googleEnabled }: { googleEnabled: boolean }) {
     event.preventDefault();
     setBusy("email");
     setMessage(null);
-    const { error } = await createSupabaseBrowserClient().auth.signInWithOtp({
-      email,
-      options: { shouldCreateUser: true },
+    const response = await fetch("/api/auth/email-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
     });
     setBusy(null);
-    if (error) setMessage("No hem pogut enviar el codi. Torna-ho a provar d’aquí a uns minuts.");
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      setMessage(body?.error ?? "No hem pogut enviar el codi. Torna-ho a provar d’aquí a uns minuts.");
+    }
     else {
       queueUmamiEvent(UMAMI_EVENTS.signupStarted);
       setStep("code");
