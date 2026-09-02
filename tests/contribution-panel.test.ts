@@ -21,9 +21,27 @@ describe("contribution form", () => {
     expect(html).toContain('accept="image/*"');
     expect(html).toContain("eliminar metadades com la ubicació");
     expect(html).toContain("Proposa una col·laboració");
+    expect(html).toContain("Troballa pública ja publicada");
+    expect(html).toContain("Encara no tens cap troballa pública amb foto");
+    expect(html).toContain('href="/troballes/nova"');
     expect(html).not.toContain("contribution-access-state");
     expect(html).not.toContain("El mapa públic mostra sectors de 2,5 km");
     expect(html).not.toContain("contribution-history");
+  });
+
+  it("preselects a published finding when the proposal starts from the journal", () => {
+    const html = renderToStaticMarkup(createElement(ContributionPanel, {
+      findingOptions: [{
+        id: "6ddaf107-64b1-494b-925a-4bd98de7a6a8",
+        reportedSpeciesName: "Cep",
+        observedOn: "2026-09-02",
+      }],
+      initialFindingId: "6ddaf107-64b1-494b-925a-4bd98de7a6a8",
+    }));
+
+    expect(html).toContain("Tria una troballa del teu quadern");
+    expect(html).toContain("Cep · 2 de setembre del 2026");
+    expect(html).not.toContain("Encara no tens cap troballa pública amb foto");
   });
 
   it("places account status before the form and contribution history in its own section", () => {

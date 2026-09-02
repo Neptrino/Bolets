@@ -10,6 +10,7 @@ import type {
   PublicFinding,
   PublicFindingCell,
 } from "@/src/lib/findings/types";
+import type { ContributionFindingOption } from "@/src/lib/contributions";
 import type { SpatialBounds } from "@/src/lib/types";
 
 type FindingRow = {
@@ -216,6 +217,33 @@ export async function readOwnerFindingsPage(
       quantityBand: detail?.quantity_band ?? null, privateNotes: detail?.private_notes ?? null }];
   });
   return { findings, total: count ?? findings.length };
+}
+
+export async function readOwnerContributionFindingOptions(
+  ownerId: string,
+): Promise<ContributionFindingOption[]> {
+  const admin = createSupabaseAdminClient();
+  const { data, error } = await admin.from("user_findings")
+    .select("id,reported_species_id,observed_on")
+    .eq("owner_id", ownerId)
+    .eq("visibility", "public")
+    .eq("publication_state", "published")
+    .order("observed_on", { ascending: false })
+    .limit(100);
+  if (error) throw new Error("Could not read contribution finding options");
+  const rows = data as Array<Pick<FindingRow, "id" | "reported_species_id" | "observed_on">>;
+  if (!rows.length) return [];
+  const { data: photos, error: photoError } = await admin.from("user_finding_photos")
+    .select("finding_id")
+    .in("finding_id", rows.map((row) => row.id))
+    .eq("is_public", true);
+  if (photoError) throw new Error("Could not read contribution finding photos");
+  const withPhotos = new Set((photos as Array<{ finding_id: string }>).map((photo) => photo.finding_id));
+  return rows.flatMap((row) => withPhotos.has(row.id) ? [{
+    id: row.id,
+    reportedSpeciesName: speciesName(row.reported_species_id)!,
+    observedOn: row.observed_on,
+  }] : []);
 }
 
 export async function readOwnerFindingMap(ownerId: string): Promise<OwnerFindingMapItem[]> {

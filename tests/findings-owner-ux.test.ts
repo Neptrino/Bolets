@@ -38,6 +38,12 @@ describe("owner finding interactions", () => {
     expect(personalFindings).toContain('event.key !== "Escape"');
   });
 
+  it("starts a reviewed contribution from an eligible published finding", () => {
+    expect(personalFindings).toContain("Proposar com a aportació");
+    expect(personalFindings).toContain("/compte/col-laboracio?troballa=");
+    expect(personalFindings).toContain('finding.photos.length ? (');
+  });
+
   it("explains that photos follow the finding publication choice", () => {
     expect(reportForm).toContain("Es publiquen totes les fotos");
     expect(reportForm).toContain("Només es veuen si decideixes publicar-la.");

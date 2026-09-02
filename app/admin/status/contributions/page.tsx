@@ -109,6 +109,11 @@ export default async function AdminContributionsPage({
                 </div>
                 <p className={styles.description}>{request.description}</p>
                 <ContributionMediaReview request={request} />
+                {request.findingId ? (
+                  <Link className={styles.evidence} href={`/troballes/${request.findingId}`} target="_blank">
+                    Obrir la troballa vinculada ↗
+                  </Link>
+                ) : null}
                 {request.evidenceUrl ? <Link className={styles.evidence} href={request.evidenceUrl} target="_blank" rel="noreferrer">Obrir l’evidència ↗</Link> : null}
                 <form action={reviewContributionAction} className={styles.reviewForm}>
                   <input type="hidden" name="requestId" value={request.id} />

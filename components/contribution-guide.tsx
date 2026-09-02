@@ -5,7 +5,7 @@ const ways = [
   {
     icon: Camera,
     title: "Troballes i fotografies",
-    copy: "Comparteix una troballa útil amb fotografies públiques adequades o una imatge que puguem reutilitzar.",
+    copy: "Publica primer la troballa al teu quadern. Després pots proposar-la per a revisió o compartir una imatge reutilitzable.",
   },
   {
     icon: NotebookPen,

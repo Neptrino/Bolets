@@ -242,6 +242,11 @@ export function PersonalFindings() {
             {viewHref ? <Link className="finding-personal-entry" href={viewHref} aria-label={`Obrir la troballa de ${finding.reportedSpeciesName}`}>{summary}</Link> : <div className="finding-personal-entry">{summary}</div>}
             <span className="finding-visibility-badge" data-visibility={finding.visibility}>{finding.visibility === "public" ? <MapPinned size={17} aria-hidden="true" /> : <LockKeyhole size={17} aria-hidden="true" />}{finding.visibility === "public" ? "Publicada" : "Privada"}</span>
             <FindingActionsMenu label={`Accions per a ${finding.reportedSpeciesName}`}>
+              {finding.visibility === "public" && finding.publicationState === "published" && finding.photos.length ? (
+                <Link href={`/compte/col-laboracio?troballa=${encodeURIComponent(finding.id)}#nova-aportacio`}>
+                  Proposar com a aportació
+                </Link>
+              ) : null}
               {finding.visibility === "public" ? <button type="button" onClick={() => void changeAliasVisibility(finding)}>{finding.showAlias ? "Amagar el meu àlies" : "Mostrar el meu àlies"}</button> : null}
               <button type="button" onClick={() => void changePrivacy(finding)}>{finding.visibility === "public" ? "Retirar de l’atles" : "Publicar a l’atles"}</button>
               <button type="button" data-tone="danger" onClick={() => { setDeleteError(null); setDeleteTarget({ kind: "synced", finding }); }}>Eliminar</button>

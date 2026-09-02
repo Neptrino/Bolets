@@ -363,8 +363,8 @@
 .finding-personal-menu summary::-webkit-details-marker { display: none; }
 .finding-personal-menu[open] summary { border-color: var(--finding-green); background: #eef2e9; }
 .finding-personal-menu-panel { position: absolute; z-index: 5; top: calc(100% + 7px); right: 0; display: grid; width: 220px; padding: 7px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: 0 18px 45px rgba(39, 60, 48, .2); }
-.finding-personal-menu-panel button { padding: 10px 11px; border: 0; border-radius: 9px; background: transparent; color: var(--ink); font: inherit; font-size: var(--text-xs); font-weight: 800; text-align: left; cursor: pointer; }
-.finding-personal-menu-panel button:hover, .finding-personal-menu-panel button:focus-visible { outline: 0; background: var(--surface-warm); }
+.finding-personal-menu-panel button, .finding-personal-menu-panel a { padding: 10px 11px; border: 0; border-radius: 9px; background: transparent; color: var(--ink); font: inherit; font-size: var(--text-xs); font-weight: 800; text-align: left; text-decoration: none; cursor: pointer; }
+.finding-personal-menu-panel button:hover, .finding-personal-menu-panel button:focus-visible, .finding-personal-menu-panel a:hover, .finding-personal-menu-panel a:focus-visible { outline: 0; background: var(--surface-warm); }
 .finding-personal-menu-panel button[data-tone="danger"] { color: var(--danger-ink); }
 .finding-pagination { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding-top: 3px; }
 .finding-pagination p { margin: 0; color: var(--muted); font-size: var(--text-xs); }

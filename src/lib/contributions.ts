@@ -13,7 +13,7 @@ export const CONTRIBUTION_MEDIA_LIMIT = 4;
 export const CONTRIBUTION_MEDIA_MAX_BYTES = 4_194_304;
 
 export const CONTRIBUTION_KIND_LABELS: Record<ContributionKind, string> = {
-  useful_finding: "Troballa útil amb fotografies públiques adequades",
+  useful_finding: "Troballa pública ja publicada",
   catalogue_correction: "Correcció del catàleg amb fonts fiables",
   reusable_media: "Fotografia o recurs reutilitzable de bolets",
 };
@@ -42,6 +42,13 @@ export const contributionRequestInputSchema = z.object({
     position: z.number().int().min(0).max(CONTRIBUTION_MEDIA_LIMIT - 1),
   })).max(CONTRIBUTION_MEDIA_LIMIT).optional().default([]),
 }).superRefine((input, context) => {
+  if (input.kind !== "useful_finding" && input.findingId) {
+    context.addIssue({
+      code: "custom",
+      path: ["findingId"],
+      message: "La troballa només correspon a aquest tipus d’aportació.",
+    });
+  }
   if (input.kind === "reusable_media") {
     if (!input.media.length) {
       context.addIssue({ code: "custom", path: ["media"], message: "Afegeix almenys una fotografia." });
@@ -57,6 +64,13 @@ export const contributionRequestInputSchema = z.object({
     }
     return;
   }
+  if (input.kind === "useful_finding" && !input.findingId) {
+    context.addIssue({
+      code: "custom",
+      path: ["findingId"],
+      message: "Selecciona una troballa pública ja publicada.",
+    });
+  }
   if (input.media.length || input.mediaRightsConfirmed || input.mediaCredit) {
     context.addIssue({ code: "custom", path: ["media"], message: "Les fotografies directes corresponen a l’aportació de recursos reutilitzables." });
   }
@@ -64,6 +78,12 @@ export const contributionRequestInputSchema = z.object({
 
 export type ContributionRequestInput = z.infer<typeof contributionRequestInputSchema>;
 export type ContributionMediaUpload = ContributionRequestInput["media"][number];
+
+export type ContributionFindingOption = {
+  id: string;
+  reportedSpeciesName: string;
+  observedOn: string;
+};
 
 export type ContributionRequestStatus = "pending" | "approved" | "rejected" | "withdrawn";
 

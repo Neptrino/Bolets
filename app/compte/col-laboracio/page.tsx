@@ -7,6 +7,7 @@ import { ContributionGuide } from "@/components/contribution-guide";
 import { ContributionHistory, ContributionPanel } from "@/components/contribution-panel";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { listUserContributionRequests, readContributorAccess } from "@/src/lib/contributions/server";
+import { readOwnerContributionFindingOptions } from "@/src/lib/findings/reads.server";
 import { getAuthenticatedUser } from "@/src/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -21,14 +22,24 @@ const dateFormatter = new Intl.DateTimeFormat("ca-ES", {
   year: "numeric",
 });
 
-export default async function AccountContributionPage() {
+export default async function AccountContributionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ troballa?: string | string[] }>;
+}) {
   const user = await getAuthenticatedUser();
   if (!user) redirect("/acces?retorn=/compte/col-laboracio");
-  const [access, requests] = await Promise.all([
+  const [access, requests, findingOptions, query] = await Promise.all([
     readContributorAccess(user.id),
     listUserContributionRequests(user.id),
+    readOwnerContributionFindingOptions(user.id),
+    searchParams,
   ]);
   const pending = requests.some((request) => request.status === "pending");
+  const requestedFindingId = Array.isArray(query.troballa) ? query.troballa[0] : query.troballa;
+  const initialFindingId = findingOptions.some((finding) => finding.id === requestedFindingId)
+    ? requestedFindingId
+    : undefined;
 
   return (
     <PageShell className="findings-page">
@@ -71,7 +82,11 @@ export default async function AccountContributionPage() {
       </section>
       <div className="account-contribution-layout">
         <div className="account-content">
-          <ContributionPanel initialPending={pending} />
+          <ContributionPanel
+            findingOptions={findingOptions}
+            initialFindingId={initialFindingId}
+            initialPending={pending}
+          />
         </div>
         <ContributionGuide showResolution={false} />
       </div>
