@@ -26,8 +26,10 @@ describe("admin community details", () => {
     expect(page).toContain("<table");
     expect(page).toContain("Accés al mapa");
     expect(page).toContain("Caducitat");
+    expect(page).toContain("Aportacions");
     expect(page).toContain("Sense caducitat");
     expect(server).toContain('.from("contributor_access")');
+    expect(server).toContain('.from("contribution_requests")');
     expect(server).toContain("userHasAppRole(user, APP_ROLES.admin)");
   });
 });

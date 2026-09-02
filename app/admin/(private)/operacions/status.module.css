@@ -733,8 +733,8 @@
 
 .tableFrame table { width: 100%; border-collapse: collapse; }
 .tableFrame th,
-.tableFrame td { padding: 13px 16px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
-.tableFrame thead th { color: var(--muted); font-size: var(--text-xs); letter-spacing: 0.07em; text-transform: uppercase; }
+.tableFrame td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+.tableFrame thead th { padding-block: 9px; color: var(--muted); font-size: var(--text-xs); letter-spacing: 0.07em; text-transform: uppercase; }
 .tableFrame tbody th { font-size: var(--text-xs); }
 .tableFrame td { color: var(--muted); font-size: var(--text-xs); }
 .tableFrame tbody tr:last-child th,

@@ -9,7 +9,7 @@
 - Preserve the single source of truth for species ecology and prediction-model configuration.
 - Reserve mathematical symbols such as `H`, `F`, `O`, `P`, `W`, `T`, and `E` for the technical method and internal documentation. In normal product interfaces, use complete plain-language labels and explain the relationship without requiring users to decode a formula.
 - Build standard light content pages with `PageShell`, `PageHeader`, and `SectionHeader`; extend their narrow layout/tone variants instead of adding page-specific title, gutter, or vertical-spacing rules. Keep full-bleed home, species, map, method, and territorial heroes explicit when their composition is genuinely different.
-- Prefer accessible, horizontally scrollable tables for comparable admin collections; reserve cards for dashboard priorities, summaries, or records whose actions cannot be scanned usefully as columns.
+- Prefer accessible, horizontally scrollable and compact tables for comparable admin collections; reserve cards for dashboard priorities, summaries, or records whose actions cannot be scanned usefully as columns.
 - Use solid background colours throughout the product interface; do not use CSS gradients for page, section, card, banner, or control backgrounds.
 - Keep the MapLibre stylesheet imported from `app/globals.css`, not from the client map component: its control stack must be ready beneath the prediction canvas for map gestures and controls to remain usable.
 - Do not ship native browser popup UI for product selectors or confirmations. Use shared accessible site components instead of bare `<select>` elements or `window.alert`, `window.confirm`, and `window.prompt`; preserve native form semantics underneath when the component library supports them.

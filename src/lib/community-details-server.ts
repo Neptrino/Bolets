@@ -29,6 +29,12 @@ export type AdminUserListItem = {
   createdAt: string;
   lastSignInAt: string | null;
   providers: string[];
+  contributions: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+  };
   submittedFindings: number;
   publicFindings: number;
   privateFindings: number;
@@ -106,6 +112,11 @@ type UserAccessRow = ContributorAccessRow & {
   user_id: string;
 };
 
+type ContributionActivityRow = {
+  user_id: string;
+  status: "pending" | "approved" | "rejected" | "withdrawn";
+};
+
 type FindingListRow = FindingActivityRow & {
   id: string;
   reported_species_id: string;
@@ -174,7 +185,7 @@ export async function readAdminUsersPage(page: number): Promise<AdminUsersPage> 
 
   const users = usersResult.data.users;
   const userIds = users.map((user) => user.id);
-  const [activityResult, profileResult, accessResult] = userIds.length > 0
+  const [activityResult, profileResult, accessResult, contributionResult] = userIds.length > 0
     ? await Promise.all([
       admin.from("user_findings")
         .select("owner_id,visibility,publication_state")
@@ -185,10 +196,13 @@ export async function readAdminUsersPage(page: number): Promise<AdminUsersPage> 
       admin.from("contributor_access")
         .select("user_id,active_until,one_km_active_until,revoked_at")
         .in("user_id", userIds),
+      admin.from("contribution_requests")
+        .select("user_id,status")
+        .in("user_id", userIds),
     ])
-    : [{ data: [], error: null }, { data: [], error: null }, { data: [], error: null }];
-  if (activityResult.error || profileResult.error || accessResult.error) {
-    throw new Error("Could not read user finding activity");
+    : [{ data: [], error: null }, { data: [], error: null }, { data: [], error: null }, { data: [], error: null }];
+  if (activityResult.error || profileResult.error || accessResult.error || contributionResult.error) {
+    throw new Error("Could not read user activity");
   }
 
   const activities = new Map<string, FindingActivityRow[]>();
@@ -200,11 +214,16 @@ export async function readAdminUsersPage(page: number): Promise<AdminUsersPage> 
     .map((profile) => [profile.user_id, profile.public_alias]));
   const accesses = new Map((accessResult.data as UserAccessRow[])
     .map((access) => [access.user_id, access]));
+  const contributions = new Map<string, ContributionActivityRow[]>();
+  for (const contribution of contributionResult.data as ContributionActivityRow[]) {
+    contributions.set(contribution.user_id, [...(contributions.get(contribution.user_id) ?? []), contribution]);
+  }
 
   return {
     items: users.map((user) => {
       const rows = activities.get(user.id) ?? [];
       const submitted = rows.filter((row) => row.publication_state === "published");
+      const userContributions = contributions.get(user.id) ?? [];
       const administrator = userHasAppRole(user, APP_ROLES.admin);
       const access = administrator
         ? resolveAdministratorAccess()
@@ -224,6 +243,12 @@ export async function readAdminUsersPage(page: number): Promise<AdminUsersPage> 
         createdAt: user.created_at,
         lastSignInAt: user.last_sign_in_at ?? null,
         providers: userProviders(user.app_metadata),
+        contributions: {
+          total: userContributions.length,
+          pending: userContributions.filter((contribution) => contribution.status === "pending").length,
+          approved: userContributions.filter((contribution) => contribution.status === "approved").length,
+          rejected: userContributions.filter((contribution) => contribution.status === "rejected").length,
+        },
         submittedFindings: submitted.length,
         publicFindings: submitted.filter((row) => row.visibility === "public").length,
         privateFindings: submitted.filter((row) => row.visibility === "private").length,

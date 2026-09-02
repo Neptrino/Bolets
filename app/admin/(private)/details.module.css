@@ -153,19 +153,20 @@
 
 .adminTable {
   width: 100%;
-  min-width: 1040px;
+  min-width: 1160px;
   border-collapse: collapse;
 }
 
 .adminTable th,
 .adminTable td {
-  padding: 15px 16px;
+  padding: 10px 12px;
   border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: middle;
 }
 
 .adminTable thead th {
+  padding-block: 9px;
   background: var(--surface-muted);
   color: var(--muted);
   font-size: var(--text-xs);
@@ -176,7 +177,7 @@
 }
 
 .adminTable tbody th {
-  min-width: 230px;
+  min-width: 210px;
 }
 
 .adminTable tbody tr:last-child th,
@@ -208,16 +209,20 @@
 }
 
 .adminTable tbody th > small {
-  margin-top: 3px;
+  margin-top: 1px;
 }
 
 .tableMeta {
-  margin-top: 6px;
-  line-height: 1.35;
+  margin-top: 3px;
+  line-height: 1.2;
 }
 
 .adminTable td > strong {
   font-size: var(--text-xs);
+}
+
+.adminTable .badge {
+  padding: 3px 7px;
 }
 
 .facts {

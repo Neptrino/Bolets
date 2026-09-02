@@ -33,6 +33,19 @@ const accessLabels = {
   public: "Mapa públic",
 } as const;
 
+function contributionSummary(contributions: {
+  pending: number;
+  approved: number;
+  rejected: number;
+}) {
+  const parts = [
+    contributions.pending > 0 ? `${numberFormatter.format(contributions.pending)} pend.` : null,
+    contributions.approved > 0 ? `${numberFormatter.format(contributions.approved)} aprov.` : null,
+    contributions.rejected > 0 ? `${numberFormatter.format(contributions.rejected)} rebutj.` : null,
+  ].filter((part): part is string => part !== null);
+  return parts.join(" · ") || "—";
+}
+
 export default async function AdminUsersPage({
   searchParams,
 }: {
@@ -51,7 +64,7 @@ export default async function AdminUsersPage({
       <PageHeader
         eyebrow="Administració · comunitat"
         title={<>Usuaris <PageTitleAccent>registrats</PageTitleAccent></>}
-        description="Rols, accés al mapa i activitat agregada. Els correus es mostren emmascarats i no s’exposa cap dada privada de camp."
+        description="Rols, accés al mapa, aportacions i activitat agregada. Els correus es mostren emmascarats i no s’exposa cap dada privada de camp."
         layout="split"
         tone="forest"
       />
@@ -63,13 +76,14 @@ export default async function AdminUsersPage({
       {result.items.length > 0 ? (
         <div className={styles.adminTableFrame} tabIndex={0} role="region" aria-label="Taula d’usuaris registrats">
           <table className={styles.adminTable}>
-            <caption className="visually-hidden">Usuaris registrats, rol, accés al mapa i activitat</caption>
+            <caption className="visually-hidden">Usuaris registrats, rol, accés al mapa, aportacions i activitat</caption>
             <thead>
               <tr>
                 <th scope="col">Compte</th>
                 <th scope="col">Rol</th>
                 <th scope="col">Accés al mapa</th>
                 <th scope="col">Caducitat</th>
+                <th scope="col">Aportacions</th>
                 <th scope="col">Troballes</th>
                 <th scope="col">Darrer accés</th>
               </tr>
@@ -83,7 +97,7 @@ export default async function AdminUsersPage({
                   <tr key={user.id}>
                     <th scope="row">
                       <strong>{user.alias ?? user.maskedEmail}</strong>
-                      <small>{user.alias ? user.maskedEmail : `ID ${user.id.slice(0, 8)}`}</small>
+                      {user.alias ? <small>{user.maskedEmail}</small> : null}
                       <span className={styles.tableMeta}>
                         {(user.providers.length > 0 ? user.providers : ["email"])
                           .map((provider) => providerLabels[provider] ?? provider)
@@ -114,6 +128,10 @@ export default async function AdminUsersPage({
                       ) : (
                         <span className={styles.tableMuted}>—</span>
                       )}
+                    </td>
+                    <td>
+                      <strong>{numberFormatter.format(user.contributions.total)}</strong>
+                      <small className={styles.tableMeta}>{contributionSummary(user.contributions)}</small>
                     </td>
                     <td>
                       <strong>{numberFormatter.format(user.submittedFindings)}</strong>
