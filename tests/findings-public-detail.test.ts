@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const detailPage = readFileSync("app/troballes/[id]/page.tsx", "utf8");
 const overviewPage = readFileSync("app/troballes/page.tsx", "utf8");
+const newFindingPage = readFileSync("app/troballes/nova/page.tsx", "utf8");
 const locationMap = readFileSync("components/findings/public-finding-location-map.tsx", "utf8");
 const findingCard = readFileSync("components/findings/finding-card.tsx", "utf8");
 const reportForm = readFileSync("components/findings/finding-report-form.tsx", "utf8");
@@ -26,12 +27,13 @@ describe("public finding detail", () => {
     expect(detailPage).toContain('href={profileHref}');
   });
 
-  it("separates published finding photos from catalogue collaboration", () => {
-    expect(overviewPage).toContain("Les fotos no passen al catàleg automàticament");
-    expect(overviewPage).toContain("Aquí només queden publicades amb la troballa");
-    expect(overviewPage).toContain("les incorporarem al catàleg");
-    expect(overviewPage).toContain("90 dies d’accés al mapa d’1 km i 250 m");
-    expect(overviewPage).toContain('href="/col-labora"');
+  it("explains the catalogue collaboration distinction beside the new finding form", () => {
+    expect(overviewPage).not.toContain("Les fotos no passen al catàleg automàticament");
+    expect(newFindingPage).toContain("Les fotos no passen al catàleg automàticament");
+    expect(newFindingPage).toContain("Aquí només queden publicades amb la troballa");
+    expect(newFindingPage).toContain("les incorporarem al catàleg");
+    expect(newFindingPage).toContain("90 dies d’accés al mapa d’1 km i 250 m");
+    expect(newFindingPage).toContain('href="/col-labora"');
   });
 
   it("renders the finding's public privacy cell without an exact point", () => {
