@@ -63,10 +63,11 @@ export default async function AccountContributionPage() {
                 : "Una troballa pública amb foto obre 1 km durant 7 dies; una aportació aprovada obre també 250 m durant 30 dies."}
           </span>
         </div>
-        <Link href={access.active ? "/map" : "#nova-aportacio"}>
-          {access.active ? "Obrir el mapa" : "Proposar una aportació"}
-          <ArrowUpRight size={17} aria-hidden="true" />
-        </Link>
+        {access.active ? (
+          <Link href="/map">
+            Obrir el mapa <ArrowUpRight size={17} aria-hidden="true" />
+          </Link>
+        ) : null}
       </section>
       <div className="account-contribution-layout">
         <div className="account-content">
