@@ -13,7 +13,7 @@ export async function GET() {
   if (!user) return Response.json({ error: "Authentication required" }, { status: 401, headers: PRIVATE_HEADERS });
   try {
     const [access, requests] = await Promise.all([
-      readContributorAccess(user.id),
+      readContributorAccess(user),
       listUserContributionRequests(user.id),
     ]);
     return Response.json({ access, requests }, { headers: PRIVATE_HEADERS });

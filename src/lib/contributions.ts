@@ -96,6 +96,7 @@ export type ContributionMediaSummary = {
 
 export type ContributorAccessSummary = {
   authenticated: boolean;
+  administrator: boolean;
   active: boolean;
   level: "public" | "finding" | "contributor";
   minimumResolutionM: 250 | 1000 | 2500;
@@ -125,6 +126,7 @@ export function resolveContributorAccess(
   if (!revokedAt && fineExpiry > now) {
     return {
       authenticated: true,
+      administrator: false,
       active: true,
       level: "contributor",
       minimumResolutionM: 250,
@@ -137,6 +139,7 @@ export function resolveContributorAccess(
   if (!revokedAt && Math.max(fineExpiry, oneKmExpiry) > now) {
     return {
       authenticated: true,
+      administrator: false,
       active: true,
       level: "finding",
       minimumResolutionM: 1000,
@@ -148,6 +151,7 @@ export function resolveContributorAccess(
   }
   return {
     authenticated: true,
+    administrator: false,
     active: false,
     level: "public",
     minimumResolutionM: 2500,
@@ -155,5 +159,19 @@ export function resolveContributorAccess(
     oneKmActiveUntil: effectiveOneKmUntil,
     fineActiveUntil,
     revokedAt,
+  };
+}
+
+export function resolveAdministratorAccess(): ContributorAccessSummary {
+  return {
+    authenticated: true,
+    administrator: true,
+    active: true,
+    level: "contributor",
+    minimumResolutionM: 250,
+    activeUntil: null,
+    oneKmActiveUntil: null,
+    fineActiveUntil: null,
+    revokedAt: null,
   };
 }

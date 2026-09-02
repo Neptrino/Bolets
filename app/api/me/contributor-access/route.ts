@@ -1,5 +1,6 @@
 import {
   clearContributorDetailCapability,
+  setAdministratorDetailCapability,
   setContributorDetailCapability,
 } from "@/src/lib/contributions/capability.server";
 import { readContributorAccess } from "@/src/lib/contributions/server";
@@ -14,6 +15,7 @@ export async function GET() {
     return Response.json(
       {
         authenticated: false,
+        administrator: false,
         active: false,
         level: "public",
         minimumResolutionM: 2500,
@@ -27,8 +29,10 @@ export async function GET() {
   }
 
   try {
-    const access = await readContributorAccess(user.id);
-    if (
+    const access = await readContributorAccess(user);
+    if (access.administrator) {
+      await setAdministratorDetailCapability();
+    } else if (
       access.active
       && access.activeUntil
       && (access.minimumResolutionM === 250 || access.minimumResolutionM === 1000)

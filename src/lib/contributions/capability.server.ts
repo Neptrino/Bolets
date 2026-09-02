@@ -26,12 +26,12 @@ function signature(payload: string) {
   return createHmac("sha256", capabilitySecret()).update(payload).digest("base64url");
 }
 
-function encodeCapability(activeUntil: string, minimumResolutionM: 250 | 1000) {
-  const accessExpiry = Math.floor(new Date(activeUntil).getTime() / 1000);
-  const expiresAt = Math.min(
-    accessExpiry,
-    Math.floor(Date.now() / 1000) + CAPABILITY_SECONDS,
-  );
+function encodeCapability(activeUntil: string | null, minimumResolutionM: 250 | 1000) {
+  const sessionExpiry = Math.floor(Date.now() / 1000) + CAPABILITY_SECONDS;
+  const accessExpiry = activeUntil
+    ? Math.floor(new Date(activeUntil).getTime() / 1000)
+    : sessionExpiry;
+  const expiresAt = Math.min(accessExpiry, sessionExpiry);
   const payload = Buffer.from(JSON.stringify({
     version: 2,
     expiresAt,
@@ -62,8 +62,8 @@ function verifyCapability(token: string | undefined) {
   }
 }
 
-export async function setContributorDetailCapability(
-  activeUntil: string,
+async function setDetailCapability(
+  activeUntil: string | null,
   minimumResolutionM: 250 | 1000,
 ) {
   const cookieStore = await cookies();
@@ -75,6 +75,17 @@ export async function setContributorDetailCapability(
     path: "/api",
     expires: new Date(expiresAt * 1000),
   });
+}
+
+export async function setContributorDetailCapability(
+  activeUntil: string,
+  minimumResolutionM: 250 | 1000,
+) {
+  await setDetailCapability(activeUntil, minimumResolutionM);
+}
+
+export async function setAdministratorDetailCapability() {
+  await setDetailCapability(null, 250);
 }
 
 export async function clearContributorDetailCapability() {

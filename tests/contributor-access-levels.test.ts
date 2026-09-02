@@ -1,9 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { resolveContributorAccess } from "@/src/lib/contributions";
+import { resolveAdministratorAccess, resolveContributorAccess } from "@/src/lib/contributions";
 
 const now = Date.parse("2026-09-02T08:00:00.000Z");
 
 describe("contributor map access levels", () => {
+  it("gives administrators permanent full-detail access", () => {
+    expect(resolveAdministratorAccess()).toEqual({
+      authenticated: true,
+      administrator: true,
+      active: true,
+      level: "contributor",
+      minimumResolutionM: 250,
+      activeUntil: null,
+      oneKmActiveUntil: null,
+      fineActiveUntil: null,
+      revokedAt: null,
+    });
+  });
+
   it("defaults to the public 2.5 km floor", () => {
     expect(resolveContributorAccess(null, now)).toMatchObject({
       level: "public",

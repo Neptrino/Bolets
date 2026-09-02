@@ -8,6 +8,7 @@ export type ContributorMapAccess = ContributorAccessSummary & { checked: boolean
 const publicAccess: ContributorMapAccess = {
   checked: false,
   authenticated: false,
+  administrator: false,
   active: false,
   level: "public",
   minimumResolutionM: 2500,
@@ -28,6 +29,7 @@ function loadAccess(force = false) {
       const received = await response.json() as Partial<ContributorAccessSummary>;
       rememberedAccess = {
         authenticated: Boolean(received.authenticated),
+        administrator: Boolean(received.administrator),
         active: Boolean(received.active),
         level: received.level ?? (received.active ? "contributor" : "public"),
         minimumResolutionM: received.minimumResolutionM ?? (received.active ? 250 : 2500),

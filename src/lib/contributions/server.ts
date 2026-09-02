@@ -3,12 +3,14 @@ import "server-only";
 import type { User } from "@supabase/supabase-js";
 import {
   contributionRequestInputSchema,
+  resolveAdministratorAccess,
   resolveContributorAccess,
   type ContributionMediaSummary,
   type ContributionRequestInput,
   type ContributionRequestSummary,
   type ContributorAccessSummary,
 } from "@/src/lib/contributions";
+import { APP_ROLES, userHasAppRole } from "@/src/lib/auth/roles";
 import { protectContributionMedia } from "@/src/lib/contributions/media.server";
 import { createSupabaseAdminClient } from "@/src/lib/supabase/admin";
 
@@ -80,12 +82,15 @@ async function readRequestMedia(requestIds: string[]) {
   return rowsByRequest;
 }
 
-export async function readContributorAccess(userId: string): Promise<ContributorAccessSummary> {
+export async function readContributorAccess(
+  user: Pick<User, "id" | "app_metadata">,
+): Promise<ContributorAccessSummary> {
+  if (userHasAppRole(user, APP_ROLES.admin)) return resolveAdministratorAccess();
   const admin = createSupabaseAdminClient();
   const { data, error } = await admin
     .from("contributor_access")
     .select("active_until,one_km_active_until,revoked_at")
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .maybeSingle();
   if (error) throw error;
   return resolveContributorAccess(data ?? null);

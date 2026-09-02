@@ -25,7 +25,7 @@ export default async function AccountContributionPage() {
   const user = await getAuthenticatedUser();
   if (!user) redirect("/acces?retorn=/compte/col-laboracio");
   const [access, requests] = await Promise.all([
-    readContributorAccess(user.id),
+    readContributorAccess(user),
     listUserContributionRequests(user.id),
   ]);
   const pending = requests.some((request) => request.status === "pending");
@@ -49,14 +49,18 @@ export default async function AccountContributionPage() {
         <div>
           <p>Estat del mapa detallat</p>
           <h2 id="contribution-account-status-title">
-            {access.level === "contributor" && access.activeUntil
+            {access.administrator
+              ? "Accés d’administració: sectors d’1 km i 250 m"
+              : access.level === "contributor" && access.activeUntil
               ? `Sectors d’1 km i 250 m fins al ${dateFormatter.format(new Date(access.activeUntil))}`
               : access.level === "finding" && access.activeUntil
                 ? `Sectors d’1 km fins al ${dateFormatter.format(new Date(access.activeUntil))}`
               : "Mapa públic amb sectors de 2,5 km"}
           </h2>
           <span>
-            {access.level === "contributor"
+            {access.administrator
+              ? "El rol d’administració té accés a tot el detall disponible."
+              : access.level === "contributor"
               ? "Tens obert tot el detall disponible. Una nova aportació aprovada hi afegeix 30 dies."
               : access.level === "finding"
                 ? "La troballa pública amb foto ha obert 1 km durant 7 dies. Una aportació aprovada obre també 250 m."
