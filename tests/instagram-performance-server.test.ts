@@ -44,6 +44,14 @@ describe("Instagram performance report", () => {
                 status: "sent",
                 sentAt: "2026-08-31T10:00:00.000Z",
                 metadata: { type: "post" },
+                assets: [
+                  { __typename: "ImageAsset", source: "https://example.com/untrusted.jpg" },
+                  { __typename: "VideoAsset", source: "https://bolets.app/social/reel.mp4" },
+                  {
+                    __typename: "ImageAsset",
+                    source: "https://bolets.app/compartir/catalunya/imatge?payload=signed",
+                  },
+                ],
                 metrics: [
                   { type: "reach", name: "Reach", value: 104, unit: "count" },
                   { type: "shares", name: "Shares", value: 2, unit: "count" },
@@ -75,6 +83,7 @@ describe("Instagram performance report", () => {
       id: "post-1",
       caption: "A top post",
       format: "post",
+      thumbnailPath: "/compartir/catalunya/imatge?payload=signed",
       publishedAt: "2026-08-31T10:00:00.000Z",
       reach: 104,
       shares: 2,

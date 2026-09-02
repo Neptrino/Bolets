@@ -12,11 +12,9 @@ import {
 import { dateInCatalonia } from "@/src/lib/buffer-client";
 import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
 import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
-import { pinnedInstagramCaption, pinnedInstagramPosts } from "@/src/lib/instagram-pinned-posts";
 import { readInstagramPerformanceReport } from "@/src/lib/instagram-performance-server";
 import { requireOperationalSession } from "@/src/lib/operational-status-session";
 import {
-  pinnedInstagramImagePath,
   signedSocialGrowthImagePath,
   signedWeekendReelPath,
 } from "@/src/lib/social-growth-assets";
@@ -25,7 +23,7 @@ import { weekendReelDurationSeconds } from "@/src/lib/weekend-reel-render";
 import { formatDetailDateTime, numberFormatter } from "../detail-utils";
 import styles from "../details.module.css";
 import plannerStyles from "./instagram.module.css";
-import { PinnedPublishControl } from "./pinned-publish-control";
+import { InstagramPerformancePosts } from "./instagram-performance-posts";
 import { ReelPreview } from "./reel-preview";
 
 export const dynamic = "force-dynamic";
@@ -62,12 +60,6 @@ const catalanMetricLabels: Record<string, string> = {
   saves: "Desats",
   shares: "Comparticions",
   views: "Visualitzacions",
-};
-
-const formatLabels: Record<string, string> = {
-  post: "Publicació",
-  reel: "Reel",
-  story: "Story",
 };
 
 const weekdayNumber = new Intl.DateTimeFormat("en", {
@@ -143,12 +135,6 @@ export default async function AdminInstagramPage() {
         (_, index) => signedSocialGrowthImagePath(previewable, "education", index + 1),
       )
     : [];
-  const pinnedImages = pinnedInstagramPosts.map((post) => ({
-    ...post,
-    caption: pinnedInstagramCaption(post.series),
-    imagePath: pinnedInstagramImagePath(post.series),
-  }));
-
   return (
     <PageShell as="article" className={`admin-page ${styles.detailShell}`}>
       <PageHeader
@@ -168,37 +154,6 @@ export default async function AdminInstagramPage() {
         </div>
 
         <div className={plannerStyles.publicationPlan}>
-          <section className={`${plannerStyles.previewBlock} ${plannerStyles.pinnedBlock}`}>
-            <header className={plannerStyles.previewHeader}>
-              <div><span>Perfil · 3 publicacions fixades</span><h3>La portada permanent del compte</h3></div>
-              <PinnedPublishControl initialPublishedCount={report?.pinnedPosts.length ?? 0} />
-            </header>
-            <div className={plannerStyles.pinnedIntro}>
-              <p>Presenten què és Bolets Atles, com s’interpreta i amb quin criteri cal sortir al bosc.</p>
-              <span>Publicació única · després es fixen al perfil</span>
-            </div>
-            <div className={plannerStyles.pinnedGrid} aria-label="Tres publicacions que es fixaran al perfil">
-              {pinnedImages.map((post) => (
-                <article className={plannerStyles.pinnedPost} key={post.series}>
-                  <figure className={plannerStyles.pinnedFrame}>
-                    <Image
-                      alt={`Portada de la publicació fixada ${post.number}: ${post.shortTitle}`}
-                      height={1350}
-                      src={post.imagePath}
-                      unoptimized
-                      width={1080}
-                    />
-                    <figcaption>{post.number} · {post.shortTitle}</figcaption>
-                  </figure>
-                  <details className={plannerStyles.captionPreview}>
-                    <summary>Veure el text</summary>
-                    <p>{post.caption}</p>
-                  </details>
-                </article>
-              ))}
-            </div>
-          </section>
-
           {previewable && publicationDate ? (
             <>
               <section className={plannerStyles.previewBlock}>
@@ -313,24 +268,15 @@ export default async function AdminInstagramPage() {
               ))}
             </dl>
 
-            <h3 className={plannerStyles.reportSubheading}>Publicacions amb més abast</h3>
+            <div className={plannerStyles.performanceHeading}>
+              <div>
+                <span>Rànquing del període</span>
+                <h3>Publicacions amb més abast</h3>
+              </div>
+              <p>Ordenades per les persones úniques que les han vist.</p>
+            </div>
             {report.topPosts.length > 0 ? (
-              <ol className={styles.detailList}>
-                {report.topPosts.map((post) => (
-                  <li className={styles.socialPost} key={post.id}>
-                    <div>
-                      <span className={styles.badge} data-tone="green">{formatLabels[post.format] ?? post.format}</span>
-                      <strong>{post.caption || "Publicació sense text"}</strong>
-                      <small>{formatDetailDateTime(post.publishedAt)}</small>
-                    </div>
-                    <dl>
-                      <div><dt>Abast</dt><dd>{numberFormatter.format(post.reach)}</dd></div>
-                      <div><dt>Comparticions</dt><dd>{numberFormatter.format(post.shares)}</dd></div>
-                      <div><dt>Desats</dt><dd>{numberFormatter.format(post.saves)}</dd></div>
-                    </dl>
-                  </li>
-                ))}
-              </ol>
+              <InstagramPerformancePosts posts={report.topPosts} />
             ) : (
               <div className={styles.emptyState}>
                 <strong>Encara no hi ha mètriques per publicació</strong>

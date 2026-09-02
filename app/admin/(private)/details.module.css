@@ -327,8 +327,7 @@
   background: var(--surface);
 }
 
-.metricGrid dt,
-.socialPost dt {
+.metricGrid dt {
   color: var(--muted);
   font-size: var(--text-xs);
   font-weight: 800;
@@ -350,54 +349,10 @@
   font-size: var(--text-xl);
 }
 
-.socialPost {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
-  gap: 22px;
-  padding: 19px 20px;
-  border: 1px solid var(--line);
-  border-radius: 15px;
-  background: var(--surface);
-}
-
-.socialPost > div {
-  display: grid;
-  gap: 7px;
-}
-
-.socialPost strong {
-  font-size: var(--text-sm);
-  line-height: 1.4;
-}
-
-.socialPost small {
-  color: var(--muted);
-  font-size: var(--text-xs);
-}
-
-.socialPost > dl {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin: 0;
-}
-
-.socialPost > dl > div {
-  padding-left: 10px;
-  border-left: 1px solid var(--line);
-}
-
-.socialPost dd {
-  margin: 4px 0 0;
-  font-size: var(--text-base);
-  font-weight: 900;
-}
-
 @media (max-width: 900px) {
   .detailCard { grid-template-columns: 1fr; }
   .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .metricGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .socialPost { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 560px) {
@@ -405,7 +360,6 @@
   .detailCard { padding: 17px; }
   .facts { grid-template-columns: 1fr; }
   .metricGrid { grid-template-columns: 1fr; }
-  .socialPost > dl { grid-template-columns: 1fr; }
   .pager { align-items: stretch; flex-direction: column; }
   .pager a { justify-content: center; }
   .pager span { order: -1; }

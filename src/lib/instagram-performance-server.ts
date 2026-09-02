@@ -23,6 +23,7 @@ export interface InstagramTopPost {
   id: string;
   caption: string;
   format: string;
+  thumbnailPath: string | null;
   publishedAt: string | null;
   reach: number;
   shares: number;
@@ -68,6 +69,20 @@ function metricValue(metrics: Array<{ type?: unknown; name?: unknown; value?: un
     return normalizedKeys.some((expected) => key === expected || key.includes(expected));
   });
   return metricNumber(metric?.value);
+}
+
+function thumbnailPath(assets: Array<{ __typename?: unknown; source?: unknown }> | undefined) {
+  for (const asset of assets ?? []) {
+    if (asset.__typename !== "ImageAsset" || typeof asset.source !== "string") continue;
+    try {
+      const source = new URL(asset.source);
+      if (source.protocol !== "https:" || source.hostname !== "bolets.app") continue;
+      return `${source.pathname}${source.search}`;
+    } catch {
+      continue;
+    }
+  }
+  return null;
 }
 
 export async function readInstagramPerformanceReport({
@@ -123,8 +138,9 @@ export async function readInstagramPerformanceReport({
       id: post.id as string,
       caption: typeof post.text === "string"
         ? post.text.replace(/\s+/g, " ").trim().slice(0, 120)
-        : "Publicació sense text",
+        : "Text no disponible a Buffer",
       format: typeof post.metadata?.type === "string" ? post.metadata.type : "post",
+      thumbnailPath: thumbnailPath(post.assets),
       publishedAt: typeof post.sentAt === "string" ? post.sentAt : null,
       reach: metricValue(post.metrics, ["reach", "impressions", "views"]),
       shares: metricValue(post.metrics, ["shares", "share"]),

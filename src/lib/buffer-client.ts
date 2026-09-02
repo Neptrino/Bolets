@@ -36,7 +36,7 @@ export interface BufferPostSummary {
   text?: unknown;
   status?: unknown;
   metadata?: { type?: unknown } | null;
-  assets?: Array<{ source?: unknown }>;
+  assets?: Array<{ __typename?: unknown; source?: unknown }>;
   metrics?: Array<{ type?: unknown; name?: unknown; value?: unknown; unit?: unknown }>;
   metricsUpdatedAt?: unknown;
 }
@@ -268,6 +268,7 @@ export async function readRecentInstagramPosts({
               ... on InstagramPostMetadata { type }
             }
             assets {
+              __typename
               ... on ImageAsset { source }
               ... on VideoAsset { source }
             }
