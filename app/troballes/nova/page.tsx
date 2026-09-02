@@ -20,7 +20,7 @@ export default function NewFindingPage() {
         <div className="findings-contribution-copy">
           <p>Troballes i catàleg són fluxos diferents</p>
           <h2 id="findings-contribution-title">Les fotos no passen al catàleg automàticament</h2>
-          <span>Aquí només queden publicades amb la troballa. Si després ens les proposes com a col·laboració i les aprovem, les incorporarem al catàleg i obtindràs 90 dies d’accés al mapa d’1 km i 250 m.</span>
+          <span>Aquí només queden publicades amb la troballa i no passen al catàleg automàticament. Una troballa pública amb foto obre el mapa d’1 km durant 7 dies. Si després ens proposes les imatges com a col·laboració i les aprovem, les podrem incorporar al catàleg i obriràs també 250 m durant 30 dies.</span>
         </div>
         <Link className="finding-button-secondary findings-contribution-link" href="/col-labora">
           Com col·laborar <ArrowUpRight size={16} aria-hidden="true" />

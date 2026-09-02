@@ -31,8 +31,9 @@ describe("public finding detail", () => {
     expect(overviewPage).not.toContain("Les fotos no passen al catàleg automàticament");
     expect(newFindingPage).toContain("Les fotos no passen al catàleg automàticament");
     expect(newFindingPage).toContain("Aquí només queden publicades amb la troballa");
-    expect(newFindingPage).toContain("les incorporarem al catàleg");
-    expect(newFindingPage).toContain("90 dies d’accés al mapa d’1 km i 250 m");
+    expect(newFindingPage).toContain("incorporar al catàleg");
+    expect(newFindingPage).toContain("mapa d’1 km durant 7 dies");
+    expect(newFindingPage).toContain("250 m durant 30 dies");
     expect(newFindingPage).toContain('href="/col-labora"');
   });
 

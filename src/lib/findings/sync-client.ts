@@ -34,7 +34,7 @@ async function syncRecord(record: FindingOutboxRecord, accessToken: string, user
   if (!begin.ok) throw new Error(beginBody.error ?? "No s’ha pogut iniciar la sincronització.");
   if (beginBody.state === "published") {
     await deleteOutboxFinding(record.draft.clientReportId);
-    return;
+    return null;
   }
   const findingId = beginBody.id as string;
   await updateOutboxFinding(record.draft.clientReportId, { serverFindingId: findingId });
@@ -49,22 +49,24 @@ async function syncRecord(record: FindingOutboxRecord, accessToken: string, user
   if (!finalize.ok) throw new Error(finalizeBody.error ?? "No s’ha pogut publicar la troballa.");
   queueUmamiEvent(UMAMI_EVENTS.findingAdded);
   await deleteOutboxFinding(record.draft.clientReportId);
+  return finalizeBody.oneKmAccessUntil as string | null;
 }
 
 export async function syncFindingOutbox() {
-  if (!navigator.onLine) return { synced: 0, pending: (await listOutboxFindings()).length, needsLogin: false };
+  if (!navigator.onLine) return { synced: 0, pending: (await listOutboxFindings()).length, needsLogin: false, oneKmAccessUntil: null };
   const client = createSupabaseBrowserClient();
   const { data } = await client.auth.getSession();
   const records = await listOutboxFindings();
-  if (!data.session) return { synced: 0, pending: records.length, needsLogin: records.length > 0 };
+  if (!data.session) return { synced: 0, pending: records.length, needsLogin: records.length > 0, oneKmAccessUntil: null };
   let synced = 0;
+  let oneKmAccessUntil: string | null = null;
   for (const record of records) {
     try {
-      await syncRecord(record, data.session.access_token, data.session.user.id);
+      oneKmAccessUntil = await syncRecord(record, data.session.access_token, data.session.user.id) ?? oneKmAccessUntil;
       synced += 1;
     } catch (error) {
       await updateOutboxFinding(record.draft.clientReportId, { state: "failed", error: error instanceof Error ? error.message : "Error de sincronització" });
     }
   }
-  return { synced, pending: (await listOutboxFindings()).length, needsLogin: false };
+  return { synced, pending: (await listOutboxFindings()).length, needsLogin: false, oneKmAccessUntil };
 }

@@ -10,7 +10,7 @@ import { withoutInternalModelVersion } from "@/src/lib/public-response";
 import { proxyDevelopmentPublicDataGet } from "@/src/lib/development-public-data-proxy";
 import {
   detailedMapAccessDenied,
-  hasContributorDetailCapability,
+  hasMapResolutionCapability,
   isDetailedMapResolution,
   PRIVATE_MAP_HEADERS,
 } from "@/src/lib/contributions/capability.server";
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
   }
   const { query } = parsedQuery;
   const detailed = isDetailedMapResolution(query.resolution);
-  if (detailed && !await hasContributorDetailCapability()) return detailedMapAccessDenied();
+  if (detailed && !await hasMapResolutionCapability(query.resolution)) return detailedMapAccessDenied();
   const proxied = await proxyDevelopmentPublicDataGet(
     request,
     "/api/habitat",

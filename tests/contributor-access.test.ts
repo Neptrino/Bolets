@@ -6,6 +6,10 @@ describe("contributor detailed-map access", () => {
     "supabase/migrations/20260901200908_contributor_access.sql",
     "utf8",
   );
+  const tieredMigration = readFileSync(
+    "supabase/migrations/20260902064059_tiered_map_access.sql",
+    "utf8",
+  );
   const edgeReader = readFileSync(
     "supabase/functions/read-spatial-environment/index.ts",
     "utf8",
@@ -31,7 +35,11 @@ describe("contributor detailed-map access", () => {
     );
     expect(mediaMigration).toContain("media_rights_confirmed_at");
     expect(mediaMigration).toContain("contribution_request_media");
-    expect(migration).toContain("interval '90 days'");
+    expect(tieredMigration).toContain("interval '7 days'");
+    expect(tieredMigration).toContain("interval '30 days'");
+    expect(tieredMigration).toContain("grant_finding_map_access");
+    expect(tieredMigration).toContain("finding_access_grants");
+    expect(tieredMigration).toContain("from public, anon, authenticated");
     expect(migration).toContain("'expiry_reminder'");
     expect(migration).not.toContain("payment");
     expect(rollout).toContain("CONTRIBUTOR_ACCESS_SECRET in the status environment file");

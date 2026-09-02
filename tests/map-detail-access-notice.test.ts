@@ -5,7 +5,12 @@ import type { Map as MapLibreMap } from "maplibre-gl";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { SpatialGridSizeM } from "@/src/lib/types";
 
-const access = vi.hoisted(() => ({ checked: true, active: false }));
+const access = vi.hoisted(() => ({
+  checked: true,
+  active: false,
+  level: "public" as "public" | "finding" | "contributor",
+  minimumResolutionM: 2500 as 250 | 1000 | 2500,
+}));
 vi.mock("@/components/use-contributor-map-access", () => ({
   useContributorMapAccess: () => access,
 }));
@@ -40,6 +45,8 @@ function MapHarness({ combined = false }: { combined?: boolean }) {
 beforeEach(() => {
   access.checked = true;
   access.active = false;
+  access.level = "public";
+  access.minimumResolutionM = 2500;
   zoom = 11.7;
   wideViewport = false;
   listeners.clear();
@@ -66,9 +73,9 @@ describe("contextual map detail prompt", () => {
     expect(container.querySelector("a")).toBeNull();
     zoom = 11.8;
     await act(async () => listeners.get("zoom")?.());
-    expect(container.querySelector("a")?.getAttribute("href")).toBe("/col-labora");
-    expect(container.textContent).toContain("2,5 km");
-    expect(container.textContent).toContain("sense pagar");
+    expect(container.querySelector("a")?.getAttribute("href")).toBe("/troballes/nova");
+    expect(container.textContent).toContain("1 km");
+    expect(container.textContent).toContain("7 dies");
     expect(container.firstElementChild?.getAttribute("data-minimum")).toBe("2500");
     zoom = 11.7;
     await act(async () => listeners.get("zoom")?.());
@@ -95,9 +102,23 @@ describe("contextual map detail prompt", () => {
     expect(container.querySelector("a")).toBeNull();
     access.checked = true;
     access.active = true;
+    access.level = "contributor";
+    access.minimumResolutionM = 250;
     await act(async () => root.render(createElement(MapHarness)));
     expect(container.querySelector("a")).toBeNull();
     expect(container.firstElementChild?.getAttribute("data-minimum")).toBe("250");
+  });
+
+  it("prompts a finding-level account only when the viewport reaches 250 m", async () => {
+    access.active = true;
+    access.level = "finding";
+    access.minimumResolutionM = 1000;
+    await act(async () => root.render(createElement(MapDetailAccessNotice, { resolution: 1000 })));
+    expect(container.querySelector("a")).toBeNull();
+    await act(async () => root.render(createElement(MapDetailAccessNotice, { resolution: 250 })));
+    expect(container.querySelector("a")?.getAttribute("href")).toBe("/compte/col-laboracio");
+    expect(container.textContent).toContain("250 m");
+    expect(container.textContent).toContain("30 dies");
   });
 
   it("keeps the combined map's 1 km detail floor and cleans up map subscriptions", async () => {

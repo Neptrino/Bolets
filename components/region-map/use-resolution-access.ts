@@ -12,9 +12,12 @@ export function useMapResolutionAccess(
   onDetailResolutionChange?: (gridSizeM: SpatialGridSizeM) => void,
 ) {
   const contributorAccess = useContributorMapAccess();
-  const detailedMinimumGridSizeM: SpatialGridSizeM = contributorAccess.active ? 250 : 2500;
-  const predictionMinimumGridSizeM: SpatialGridSizeM = globalPrediction && contributorAccess.active
-    ? GLOBAL_MINIMUM_GRID_SIZE_M : detailedMinimumGridSizeM;
+  const detailedMinimumGridSizeM: SpatialGridSizeM = contributorAccess.checked
+    ? contributorAccess.minimumResolutionM
+    : 2500;
+  const predictionMinimumGridSizeM: SpatialGridSizeM = globalPrediction
+    ? Math.max(GLOBAL_MINIMUM_GRID_SIZE_M, detailedMinimumGridSizeM) as SpatialGridSizeM
+    : detailedMinimumGridSizeM;
 
   useEffect(() => {
     const localMap = map.current;

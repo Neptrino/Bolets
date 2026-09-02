@@ -69,8 +69,8 @@ describe("prediction map rendering", () => {
   });
 
   it("never requests finer than the coarse floor for the combined map", () => {
-    expect(source).toContain("globalPrediction && contributorAccess.active");
-    expect(source).toContain("? GLOBAL_MINIMUM_GRID_SIZE_M : detailedMinimumGridSizeM");
+    expect(source).toContain("contributorAccess.minimumResolutionM");
+    expect(source).toContain("Math.max(GLOBAL_MINIMUM_GRID_SIZE_M, detailedMinimumGridSizeM)");
     expect(source).toContain("predictionMinimumGridSizeM,\n        maximumPredictionGridSizeM");
   });
 

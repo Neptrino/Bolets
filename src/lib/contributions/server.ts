@@ -3,6 +3,7 @@ import "server-only";
 import type { User } from "@supabase/supabase-js";
 import {
   contributionRequestInputSchema,
+  resolveContributorAccess,
   type ContributionMediaSummary,
   type ContributionRequestInput,
   type ContributionRequestSummary,
@@ -83,21 +84,11 @@ export async function readContributorAccess(userId: string): Promise<Contributor
   const admin = createSupabaseAdminClient();
   const { data, error } = await admin
     .from("contributor_access")
-    .select("active_until,revoked_at")
+    .select("active_until,one_km_active_until,revoked_at")
     .eq("user_id", userId)
     .maybeSingle();
   if (error) throw error;
-  const activeUntil = data?.active_until ?? null;
-  return {
-    authenticated: true,
-    active: Boolean(
-      activeUntil
-      && !data?.revoked_at
-      && new Date(activeUntil).getTime() > Date.now(),
-    ),
-    activeUntil,
-    revokedAt: data?.revoked_at ?? null,
-  };
+  return resolveContributorAccess(data ?? null);
 }
 
 export async function listUserContributionRequests(userId: string) {
@@ -231,6 +222,8 @@ export type AdminContributorAccess = {
   userId: string;
   userEmail: string;
   activeUntil: string;
+  level: ContributorAccessSummary["level"];
+  minimumResolutionM: ContributorAccessSummary["minimumResolutionM"];
   active: boolean;
   revokedAt: string | null;
   revokeReason: string | null;
@@ -240,17 +233,20 @@ export async function readAdminContributorAccessList() {
   const admin = createSupabaseAdminClient();
   const { data, error } = await admin
     .from("contributor_access")
-    .select("user_id,active_until,revoked_at,revoke_reason")
-    .order("active_until", { ascending: false })
+    .select("user_id,active_until,one_km_active_until,revoked_at,revoke_reason")
+    .order("updated_at", { ascending: false })
     .limit(100);
   if (error) throw error;
   return Promise.all((data ?? []).map(async (row) => {
     const user = await admin.auth.admin.getUserById(row.user_id);
+    const access = resolveContributorAccess(row);
     return {
       userId: row.user_id,
       userEmail: user.data.user?.email ?? "Compte sense correu",
-      activeUntil: row.active_until,
-      active: !row.revoked_at && new Date(row.active_until).getTime() > Date.now(),
+      activeUntil: access.activeUntil ?? row.active_until ?? row.one_km_active_until,
+      active: access.active,
+      level: access.level,
+      minimumResolutionM: access.minimumResolutionM,
       revokedAt: row.revoked_at,
       revokeReason: row.revoke_reason,
     } satisfies AdminContributorAccess;

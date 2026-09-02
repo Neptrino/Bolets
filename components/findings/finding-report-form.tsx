@@ -291,7 +291,12 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
       queueUmamiEvent(UMAMI_EVENTS.findingDraftSaved);
       const result = await syncFindingOutbox();
       if (result.pending === 0) {
-        setMessage({ text: "Troballa sincronitzada. Ja la tens al teu quadern.", tone: "success" });
+        setMessage({
+          text: result.oneKmAccessUntil
+            ? "Troballa publicada. Has obert els sectors d’1 km durant 7 dies."
+            : "Troballa sincronitzada. Ja la tens al teu quadern.",
+          tone: "success",
+        });
       } else if (result.needsLogin) {
         setMessage({ text: "Troballa desada al dispositiu. Inicia sessió quan tinguis cobertura per sincronitzar-la.", tone: "success" });
       } else {

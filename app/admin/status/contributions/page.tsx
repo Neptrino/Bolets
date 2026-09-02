@@ -117,7 +117,7 @@ export default async function AdminContributionsPage({
                     <textarea name="reviewNote" maxLength={1000} placeholder="Obligatòria si es rebutja; opcional si s’aprova." />
                   </label>
                   <div className={styles.actions}>
-                    <button type="submit" name="decision" value="approved">Aprovar i afegir 90 dies</button>
+                    <button type="submit" name="decision" value="approved">Aprovar i afegir 30 dies</button>
                     <button type="submit" name="decision" value="rejected">No aprovar</button>
                   </div>
                 </form>
@@ -135,7 +135,10 @@ export default async function AdminContributionsPage({
               <li className={styles.card} key={entry.userId}>
                 <div className={styles.identity}>
                   <strong>{entry.userEmail}</strong>
-                  <span>Fins al {dateFormatter.format(new Date(entry.activeUntil))}</span>
+                  <span>
+                    {entry.level === "contributor" ? "1 km i 250 m" : "1 km"}
+                    {" · Fins al "}{dateFormatter.format(new Date(entry.activeUntil))}
+                  </span>
                 </div>
                 <form action={revokeContributorAction} className={styles.reviewForm}>
                   <input type="hidden" name="userId" value={entry.userId} />

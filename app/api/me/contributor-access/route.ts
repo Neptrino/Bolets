@@ -12,15 +12,28 @@ export async function GET() {
   if (!user) {
     await clearContributorDetailCapability();
     return Response.json(
-      { authenticated: false, active: false, activeUntil: null, revokedAt: null },
+      {
+        authenticated: false,
+        active: false,
+        level: "public",
+        minimumResolutionM: 2500,
+        activeUntil: null,
+        oneKmActiveUntil: null,
+        fineActiveUntil: null,
+        revokedAt: null,
+      },
       { headers: { "Cache-Control": "private, no-store" } },
     );
   }
 
   try {
     const access = await readContributorAccess(user.id);
-    if (access.active && access.activeUntil) {
-      await setContributorDetailCapability(access.activeUntil);
+    if (
+      access.active
+      && access.activeUntil
+      && (access.minimumResolutionM === 250 || access.minimumResolutionM === 1000)
+    ) {
+      await setContributorDetailCapability(access.activeUntil, access.minimumResolutionM);
     } else {
       await clearContributorDetailCapability();
     }

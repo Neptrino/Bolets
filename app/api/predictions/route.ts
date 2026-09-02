@@ -19,7 +19,7 @@ import { jsonResponse } from "@/src/lib/json-response";
 import { withoutInternalModelVersion } from "@/src/lib/public-response";
 import {
   detailedMapAccessDenied,
-  hasContributorDetailCapability,
+  hasMapResolutionCapability,
   isDetailedMapResolution,
   PRIVATE_MAP_HEADERS,
 } from "@/src/lib/contributions/capability.server";
@@ -48,7 +48,7 @@ async function globalPredictions(request: Request, params: URLSearchParams) {
     return Response.json({ error: "Bounding box is too large for this resolution" }, { status: 400 });
   }
   const detailed = isDetailedMapResolution(query.resolution);
-  if (detailed && !await hasContributorDetailCapability()) return detailedMapAccessDenied();
+  if (detailed && !await hasMapResolutionCapability(query.resolution)) return detailedMapAccessDenied();
   const proxied = await proxyDevelopmentPublicDataGet(
     request,
     "/api/predictions",
@@ -119,7 +119,7 @@ export async function GET(request: Request) {
   }
   const { query } = parsedQuery;
   const detailed = isDetailedMapResolution(query.resolution);
-  if (detailed && !await hasContributorDetailCapability()) return detailedMapAccessDenied();
+  if (detailed && !await hasMapResolutionCapability(query.resolution)) return detailedMapAccessDenied();
   const proxied = await proxyDevelopmentPublicDataGet(
     request,
     "/api/predictions",

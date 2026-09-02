@@ -33,6 +33,16 @@ export async function assertFindingOwner(findingId: string, ownerId: string) {
   return data as { id: string; revision: number; visibility: "private" | "public"; publication_state: string };
 }
 
+export async function grantFindingMapAccess(findingId: string, ownerId: string) {
+  const admin = createSupabaseAdminClient();
+  const { data, error } = await admin.rpc("grant_finding_map_access", {
+    p_finding_id: findingId,
+    p_user_id: ownerId,
+  });
+  if (error) throw new Error("Could not grant finding map access");
+  return data as string | null;
+}
+
 export async function publishFinding(findingId: string, ownerId: string, photos: Array<FindingPhotoUpload & { path: string; width: number; height: number; byteSize: number }>) {
   const admin = createSupabaseAdminClient();
   const owned = await assertFindingOwner(findingId, ownerId);
@@ -49,6 +59,7 @@ export async function publishFinding(findingId: string, ownerId: string, photos:
   if (error) throw new Error("Could not publish finding");
   const consensus = await admin.rpc("recompute_user_finding_consensus", { p_finding_id: findingId });
   if (consensus.error) throw new Error("Could not initialize validation status");
+  return grantFindingMapAccess(findingId, ownerId);
 }
 
 export async function voteOnFinding(findingId: string, voterId: string, speciesId: string) {

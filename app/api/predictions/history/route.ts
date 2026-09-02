@@ -10,7 +10,7 @@ import { predictionCellHistoryRequestSchema } from "@/src/lib/prediction-history
 import { calculateSuitability, missingModelFields } from "@/src/lib/scoring";
 import {
   detailedMapAccessDenied,
-  hasContributorDetailCapability,
+  hasMapResolutionCapability,
   isDetailedMapResolution,
   PRIVATE_MAP_HEADERS,
 } from "@/src/lib/contributions/capability.server";
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   });
   if (!parsed.success) return Response.json({ error: "Invalid cell history request" }, { status: 400 });
   const detailed = isDetailedMapResolution(parsed.data.gridSizeM);
-  if (detailed && !await hasContributorDetailCapability()) return detailedMapAccessDenied();
+  if (detailed && !await hasMapResolutionCapability(parsed.data.gridSizeM)) return detailedMapAccessDenied();
 
   const species = getSpecies(parsed.data.speciesId);
   if (!species) return Response.json({ error: "Unknown species" }, { status: 400 });

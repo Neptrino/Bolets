@@ -91,6 +91,63 @@ export type ContributionMediaSummary = {
 export type ContributorAccessSummary = {
   authenticated: boolean;
   active: boolean;
+  level: "public" | "finding" | "contributor";
+  minimumResolutionM: 250 | 1000 | 2500;
   activeUntil: string | null;
+  oneKmActiveUntil: string | null;
+  fineActiveUntil: string | null;
   revokedAt: string | null;
 };
+
+export type ContributorAccessRow = {
+  active_until: string | null;
+  one_km_active_until: string | null;
+  revoked_at: string | null;
+};
+
+export function resolveContributorAccess(
+  row: ContributorAccessRow | null,
+  now = Date.now(),
+): ContributorAccessSummary {
+  const revokedAt = row?.revoked_at ?? null;
+  const fineActiveUntil = row?.active_until ?? null;
+  const storedOneKmUntil = row?.one_km_active_until ?? null;
+  const fineExpiry = fineActiveUntil ? new Date(fineActiveUntil).getTime() : 0;
+  const oneKmExpiry = storedOneKmUntil ? new Date(storedOneKmUntil).getTime() : 0;
+  const effectiveOneKmUntil = fineExpiry >= oneKmExpiry ? fineActiveUntil : storedOneKmUntil;
+
+  if (!revokedAt && fineExpiry > now) {
+    return {
+      authenticated: true,
+      active: true,
+      level: "contributor",
+      minimumResolutionM: 250,
+      activeUntil: fineActiveUntil,
+      oneKmActiveUntil: effectiveOneKmUntil,
+      fineActiveUntil,
+      revokedAt,
+    };
+  }
+  if (!revokedAt && Math.max(fineExpiry, oneKmExpiry) > now) {
+    return {
+      authenticated: true,
+      active: true,
+      level: "finding",
+      minimumResolutionM: 1000,
+      activeUntil: effectiveOneKmUntil,
+      oneKmActiveUntil: effectiveOneKmUntil,
+      fineActiveUntil,
+      revokedAt,
+    };
+  }
+  return {
+    authenticated: true,
+    active: false,
+    level: "public",
+    minimumResolutionM: 2500,
+    activeUntil: null,
+    oneKmActiveUntil: effectiveOneKmUntil,
+    fineActiveUntil,
+    revokedAt,
+  };
+}

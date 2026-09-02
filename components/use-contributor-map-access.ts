@@ -9,7 +9,11 @@ const publicAccess: ContributorMapAccess = {
   checked: false,
   authenticated: false,
   active: false,
+  level: "public",
+  minimumResolutionM: 2500,
   activeUntil: null,
+  oneKmActiveUntil: null,
+  fineActiveUntil: null,
   revokedAt: null,
 };
 
@@ -21,7 +25,17 @@ function loadAccess(force = false) {
   pendingAccess ??= fetch("/api/me/contributor-access", { cache: "no-store" })
     .then(async (response) => {
       if (!response.ok) throw new Error("Contributor access unavailable");
-      rememberedAccess = await response.json() as ContributorAccessSummary;
+      const received = await response.json() as Partial<ContributorAccessSummary>;
+      rememberedAccess = {
+        authenticated: Boolean(received.authenticated),
+        active: Boolean(received.active),
+        level: received.level ?? (received.active ? "contributor" : "public"),
+        minimumResolutionM: received.minimumResolutionM ?? (received.active ? 250 : 2500),
+        activeUntil: received.activeUntil ?? null,
+        oneKmActiveUntil: received.oneKmActiveUntil ?? received.activeUntil ?? null,
+        fineActiveUntil: received.fineActiveUntil ?? received.activeUntil ?? null,
+        revokedAt: received.revokedAt ?? null,
+      };
       return rememberedAccess;
     })
     .finally(() => { pendingAccess = null; });

@@ -6,7 +6,7 @@ const habitatMocks = vi.hoisted(() => ({
 }));
 
 const accessMocks = vi.hoisted(() => ({
-  hasContributorDetailCapability: vi.fn(async () => false),
+  hasMapResolutionCapability: vi.fn(async () => false),
 }));
 
 vi.mock("@/src/lib/habitat", () => habitatMocks);
@@ -15,7 +15,7 @@ vi.mock("@/src/lib/contributions/capability.server", () => ({
     { error: "detailed_map_requires_contributor" },
     { status: 403, headers: { "Cache-Control": "private, no-store" } },
   ),
-  hasContributorDetailCapability: accessMocks.hasContributorDetailCapability,
+  hasMapResolutionCapability: accessMocks.hasMapResolutionCapability,
   isDetailedMapResolution: (resolution: number) => resolution < 2500,
   PRIVATE_MAP_HEADERS: { "Cache-Control": "private, no-store" },
 }));
@@ -26,8 +26,8 @@ describe("habitat API bounds", () => {
   beforeEach(() => {
     habitatMocks.getPotentialHabitatCells.mockReset();
     habitatMocks.getPotentialHabitatCoverage.mockReset();
-    accessMocks.hasContributorDetailCapability.mockReset();
-    accessMocks.hasContributorDetailCapability.mockResolvedValue(false);
+    accessMocks.hasMapResolutionCapability.mockReset();
+    accessMocks.hasMapResolutionCapability.mockResolvedValue(false);
   });
 
   it("requires contributor access for a 250 m habitat bucket", async () => {

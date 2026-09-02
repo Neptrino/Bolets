@@ -5,7 +5,7 @@ import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout
 
 export const metadata: Metadata = {
   title: "Col·labora amb Bolets",
-  description: "Ajuda a millorar Bolets i obre durant 90 dies el detall d’1 km i 250 m del mapa.",
+  description: "Publica una troballa per obrir 1 km o proposa una aportació revisada per obrir també 250 m.",
   alternates: { canonical: "/col-labora" },
 };
 
@@ -18,8 +18,8 @@ export default function ContributePage() {
         description={
           <span className="contribution-hero-copy">
             <span>
-              El mapa públic mostra sectors de 2,5 km. Quan aprovem una aportació útil,
-              el teu compte pot consultar sectors d’1 km i 250 m durant 90 dies.
+              El mapa públic mostra sectors de 2,5 km. Una troballa pública amb foto obre
+              1 km durant 7 dies; una aportació aprovada obre també 250 m durant 30 dies.
             </span>
             <Link className="button" href="/compte/col-laboracio">Proposar una aportació</Link>
           </span>

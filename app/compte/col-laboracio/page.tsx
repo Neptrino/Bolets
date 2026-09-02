@@ -35,7 +35,7 @@ export default async function AccountContributionPage() {
       <PageHeader
         eyebrow="Compte personal"
         title={<>Col·laboració i <PageTitleAccent>mapa detallat</PageTitleAccent></>}
-        description="Proposa una aportació útil, consulta’n la revisió i comprova fins quan tens obert el detall d’1 km i 250 m."
+        description="Consulta el teu nivell d’accés, proposa una aportació útil i segueix-ne la revisió."
       />
       <AccountNav current="contributions" />
       <section
@@ -49,14 +49,18 @@ export default async function AccountContributionPage() {
         <div>
           <p>Estat del mapa detallat</p>
           <h2 id="contribution-account-status-title">
-            {access.active && access.activeUntil
-              ? `Accés actiu fins al ${dateFormatter.format(new Date(access.activeUntil))}`
+            {access.level === "contributor" && access.activeUntil
+              ? `Sectors d’1 km i 250 m fins al ${dateFormatter.format(new Date(access.activeUntil))}`
+              : access.level === "finding" && access.activeUntil
+                ? `Sectors d’1 km fins al ${dateFormatter.format(new Date(access.activeUntil))}`
               : "Mapa públic amb sectors de 2,5 km"}
           </h2>
           <span>
-            {access.active
-              ? "Pots consultar els sectors d’1 km i 250 m. Una nova aportació aprovada ampliarà l’accés."
-              : "Una aportació aprovada obre els sectors d’1 km i 250 m durant el període indicat."}
+            {access.level === "contributor"
+              ? "Tens obert tot el detall disponible. Una nova aportació aprovada hi afegeix 30 dies."
+              : access.level === "finding"
+                ? "La troballa pública amb foto ha obert 1 km durant 7 dies. Una aportació aprovada obre també 250 m."
+                : "Una troballa pública amb foto obre 1 km durant 7 dies; una aportació aprovada obre també 250 m durant 30 dies."}
           </span>
         </div>
         <Link href={access.active ? "/map" : "#nova-aportacio"}>
@@ -80,7 +84,7 @@ export default async function AccountContributionPage() {
         {requests.length ? (
           <ContributionHistory
             requests={requests}
-            activeUntil={access.active ? access.activeUntil : null}
+            activeUntil={access.level === "contributor" ? access.fineActiveUntil : null}
           />
         ) : (
           <p className="contribution-history-empty">Encara no has enviat cap aportació.</p>

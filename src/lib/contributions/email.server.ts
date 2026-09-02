@@ -67,7 +67,7 @@ function messageFor(row: OutboxRow) {
   return {
     subject: "El detall del mapa de Bolets caduca aviat",
     heading: "Queda aproximadament una setmana d’accés",
-    body: `L’accés als sectors d’1 km i 250 m caduca el ${activeUntil ? dateFormatter.format(new Date(activeUntil)) : "dia indicat al compte"}. Una nova aportació aprovada hi afegeix 90 dies.`,
+    body: `L’accés als sectors d’1 km i 250 m caduca el ${activeUntil ? dateFormatter.format(new Date(activeUntil)) : "dia indicat al compte"}. Una nova aportació aprovada hi afegeix 30 dies.`,
     note: null,
   };
 }

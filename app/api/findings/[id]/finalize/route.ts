@@ -1,6 +1,6 @@
 import sharp from "sharp";
 import { findingFinalizeSchema } from "@/src/lib/findings/schema";
-import { assertFindingOwner, publishFinding } from "@/src/lib/findings/mutations.server";
+import { assertFindingOwner, grantFindingMapAccess, publishFinding } from "@/src/lib/findings/mutations.server";
 import { createSupabaseAdminClient } from "@/src/lib/supabase/admin";
 import { getAuthenticatedUser } from "@/src/lib/supabase/server";
 
@@ -12,7 +12,10 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   const { id } = await context.params;
   const owned = await assertFindingOwner(id, user.id);
   if (!owned) return Response.json({ error: "Troballa no trobada." }, { status: 404 });
-  if (owned.publication_state === "published") return Response.json({ id, state: "published" });
+  if (owned.publication_state === "published") {
+    const oneKmAccessUntil = await grantFindingMapAccess(id, user.id);
+    return Response.json({ id, state: "published", oneKmAccessUntil });
+  }
   const parsed = findingFinalizeSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "La llista de fotografies no és vàlida." }, { status: 400 });
   const uniquePositions = new Set(parsed.data.photos.map((photo) => photo.position));
@@ -34,9 +37,9 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       if (upload.error) throw new Error("No s’ha pogut protegir la fotografia.");
       processed.push({ ...photo, path: finalPath, width: metadata.width, height: metadata.height, byteSize: output.byteLength });
     }
-    await publishFinding(id, user.id, processed);
+    const oneKmAccessUntil = await publishFinding(id, user.id, processed);
     if (parsed.data.photos.length) await admin.storage.from("finding-photo-staging").remove(parsed.data.photos.map((photo) => photo.stagingPath));
-    return Response.json({ id, state: "published" });
+    return Response.json({ id, state: "published", oneKmAccessUntil });
   } catch (error) {
     if (processed.length) await admin.storage.from("finding-photos").remove(processed.map((photo) => photo.path));
     return Response.json({ error: error instanceof Error ? error.message : "No s’ha pogut publicar la troballa." }, { status: 400 });

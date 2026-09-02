@@ -10,7 +10,7 @@ const globalPredictionMocks = vi.hoisted(() => ({
 }));
 
 const accessMocks = vi.hoisted(() => ({
-  hasContributorDetailCapability: vi.fn(async () => false),
+  hasMapResolutionCapability: vi.fn(async () => false),
 }));
 
 vi.mock("next/cache", () => ({
@@ -26,7 +26,7 @@ vi.mock("@/src/lib/contributions/capability.server", () => ({
     { error: "detailed_map_requires_contributor" },
     { status: 403, headers: { "Cache-Control": "private, no-store" } },
   ),
-  hasContributorDetailCapability: accessMocks.hasContributorDetailCapability,
+  hasMapResolutionCapability: accessMocks.hasMapResolutionCapability,
   isDetailedMapResolution: (resolution: number) => resolution < 2500,
   PRIVATE_MAP_HEADERS: { "Cache-Control": "private, no-store" },
 }));
@@ -38,8 +38,8 @@ describe("prediction API bounds", () => {
     predictionMocks.getPredictionCells.mockReset();
     globalPredictionMocks.getGlobalPredictionCells.mockReset();
     globalPredictionMocks.getGlobalCellRanking.mockReset();
-    accessMocks.hasContributorDetailCapability.mockReset();
-    accessMocks.hasContributorDetailCapability.mockResolvedValue(false);
+    accessMocks.hasMapResolutionCapability.mockReset();
+    accessMocks.hasMapResolutionCapability.mockResolvedValue(false);
   });
 
   it("requires contributor access for a 1 km prediction bucket", async () => {

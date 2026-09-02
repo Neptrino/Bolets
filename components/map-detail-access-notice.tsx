@@ -13,16 +13,24 @@ export function MapDetailAccessNotice({
   inline?: boolean;
 }) {
   const access = useContributorMapAccess();
-  if (!access.checked || access.active || resolution >= 2500) return null;
+  if (!access.checked || resolution >= access.minimumResolutionM) return null;
+  const findingLevel = access.level === "finding";
 
   return (
     <div className={`map-detail-access${inline ? " map-detail-access--inline" : ""}`}>
       <div className="map-detail-access-copy" role="status">
-        <strong><LockKeyhole size={16} aria-hidden="true" />Vols veure el mapa amb més detall?</strong>
-        <span>El mapa públic mostra sectors de 2,5 km. Col·labora per veure’n de més petits, sense pagar.</span>
+        <strong>
+          <LockKeyhole size={16} aria-hidden="true" />
+          {findingLevel ? "Vols arribar als sectors de 250 m?" : "Vols veure sectors d’1 km?"}
+        </strong>
+        <span>
+          {findingLevel
+            ? "Proposa una aportació útil: si l’aprovem, obriràs també els sectors de 250 m durant 30 dies."
+            : "Publica una troballa amb una foto pública i obriràs els sectors d’1 km durant 7 dies."}
+        </span>
       </div>
-      <Link href="/col-labora" className="button">
-        Com obtenir més detall <ArrowUpRight size={16} aria-hidden="true" />
+      <Link href={findingLevel ? "/compte/col-laboracio" : "/troballes/nova"} className="button">
+        {findingLevel ? "Proposar una aportació" : "Publicar una troballa"} <ArrowUpRight size={16} aria-hidden="true" />
       </Link>
     </div>
   );

@@ -24,14 +24,14 @@ const mapResolutions = [
   {
     resolution: "1000",
     distance: "1 km",
-    access: "Amb accés",
-    description: "Més detall per entendre el bosc del voltant.",
+    access: "Troballa pública · 7 dies",
+    description: "Publica una troballa amb una fotografia pública.",
   },
   {
     resolution: "250",
     distance: "250 m",
-    access: "Amb més zoom",
-    description: "La quadrícula més fina disponible al mapa.",
+    access: "Aportació aprovada · 30 dies",
+    description: "La revisió humana obre tot el detall disponible.",
   },
 ] as const;
 
@@ -85,7 +85,7 @@ export function ContributionGuide({ showResolution = true }: { showResolution?: 
         <div className="contribution-steps">
           <div><span>1</span><strong>Proposa</strong><p>Descriu què aportes i adjunta un enllaç si ajuda a comprovar-ho.</p></div>
           <div><span>2</span><strong>Revisem</strong><p>Comprovem que sigui original, verificable i prou útil per incorporar-la.</p></div>
-          <div><span>3</span><strong>Obrim el detall</strong><p>L’aprovació afegeix 90 dies des de la data de caducitat vigent o des d’avui.</p></div>
+          <div><span>3</span><strong>Obrim tot el detall</strong><p>L’aprovació afegeix 30 dies d’accés als sectors d’1 km i 250 m.</p></div>
         </div>
       </section>
 

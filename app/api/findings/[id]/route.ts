@@ -1,6 +1,6 @@
 import { findingPrivacyPatchSchema } from "@/src/lib/findings/schema";
 import { readPublicFinding } from "@/src/lib/findings/reads.server";
-import { assertFindingOwner } from "@/src/lib/findings/mutations.server";
+import { assertFindingOwner, grantFindingMapAccess } from "@/src/lib/findings/mutations.server";
 import { createSupabaseAdminClient } from "@/src/lib/supabase/admin";
 import { getAuthenticatedUser } from "@/src/lib/supabase/server";
 
@@ -26,7 +26,10 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     }).eq("id", id).eq("owner_id", user.id);
     if (error) return Response.json({ error: "No s’ha pogut canviar la privacitat." }, { status: 400 });
   }
-  return Response.json({ ok: true });
+  const oneKmAccessUntil = parsed.data.visibility === "public"
+    ? await grantFindingMapAccess(id, user.id)
+    : null;
+  return Response.json({ ok: true, oneKmAccessUntil });
 }
 
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
