@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowUpRight, Eye, Grid3X3, MapPinOff, Sprout } from "lucide-react";
+import { ArrowUpRight, Eye, FlaskConical, Grid3X3, Sprout } from "lucide-react";
 import Link from "next/link";
 import { FindingAccessCta } from "@/components/findings/finding-access-cta";
 import { FindingCard } from "@/components/findings/finding-card";
@@ -62,7 +62,7 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
     <div className="findings-hero-copy findings-hero-details">
       <span>Fes fotos al bosc i completa la troballa a casa: recuperem la data i el GPS quan la imatge els conserva, i sense cobertura queda desada al dispositiu.</span>
       <span>Al teu quadern conserves l’historial; a l’atles només mostrem el dia i una àrea de 10 × 10 km.</span>
-      <span className="findings-hero-benefits"><span>Captura sense cobertura</span><span>GPS i data automàtics</span><span>El punt exacte mai no és públic</span></span>
+      <span className="findings-hero-benefits"><span>Captura sense cobertura</span><span>GPS i data automàtics</span><span>El punt exacte mai no és públic</span><span>Pot ajudar a millorar el model</span></span>
     </div>
     <PublicFindingsMap species={catalogueSpecies} />
     {!safeCell ? <section className="finding-section finding-community-reading" aria-labelledby="finding-community-reading-title">
@@ -81,7 +81,7 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
       <ul className="finding-community-limits">
         <li><Eye size={19} aria-hidden="true" /><span><strong>Identificació declarada</strong><small>El nom l’indica qui publica. La fitxa ajuda a contrastar trets, però no valida la fotografia.</small></span></li>
         <li><Grid3X3 size={19} aria-hidden="true" /><span><strong>Privadesa de 10 × 10 km</strong><small>La vista pública mostra una zona aproximada i el dia; mai no publica el punt exacte ni l’hora.</small></span></li>
-        <li><MapPinOff size={19} aria-hidden="true" /><span><strong>Separades del mapa de condicions</strong><small>Les troballes no canvien les condicions mostrades ni confirmen presència actual.</small></span></li>
+        <li><FlaskConical size={19} aria-hidden="true" /><span><strong>Poden millorar el model</strong><small>No canvien el mapa immediatament. Les observacions generalitzades es poden utilitzar per avaluar i ajustar futures versions del model.</small></span></li>
       </ul>
     </section> : null}
     <section className="finding-section"><SectionHeader meta={safeCell ? "Zona seleccionada" : "Publicacions recents"} title={safeCell ? "Troballes d’aquesta zona aproximada de 10 km" : "Últimes troballes compartides"} description="El nom de cada troballa és la identificació indicada per qui l’ha publicada; no ha estat verificat." actions={safeCell ? <Link className="finding-button-secondary" href="/troballes">Veure totes</Link> : null} />

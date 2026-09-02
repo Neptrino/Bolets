@@ -458,7 +458,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
 
         <section className="finding-step">
           <h2>5. Publicació</h2>
-          <label className="finding-choice"><input type="checkbox" checked={publish} onChange={(event) => setPublish(event.target.checked)} /><span>Compartir la troballa a l’atles públic<small>Es publiquen totes les fotos, el dia i una zona aproximada de 10 × 10 km, mai el punt exacte ni les notes.</small></span></label>
+          <label className="finding-choice"><input type="checkbox" checked={publish} onChange={(event) => setPublish(event.target.checked)} /><span>Compartir la troballa a l’atles públic<small>Es publiquen totes les fotos, el dia i una zona aproximada de 10 × 10 km, mai el punt exacte ni les notes. Aquesta versió generalitzada es pot utilitzar per avaluar i millorar futures versions del model.</small></span></label>
           <label className="finding-choice"><input type="checkbox" checked={showAlias} onChange={(event) => rememberShowAliasPreference(event.target.checked)} /><span>Mostrar el meu àlies públic<small>La publicació és anònima si no l’actives. Recordarem aquesta elecció en aquest dispositiu.</small></span></label>
           {publish && online && turnstileRequired ? <div className="finding-verification-card">
             <strong>Comprovació anti-brossa</strong>
@@ -493,7 +493,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
           <li><Camera size={20} aria-hidden="true" /><span><strong>Les fotos van amb la troballa</strong><small>Només es veuen si decideixes publicar-la.</small></span></li>
           <li><LockKeyhole size={20} aria-hidden="true" /><span><strong>La decisió sempre és teva</strong><small>Pots conservar-la privada o retirar-la de l’atles quan vulguis.</small></span></li>
         </ul>
-        <p className="finding-privacy-note"><Info size={16} aria-hidden="true" /> Les troballes no modifiquen el mapa de condicions ni el de terreny adequat.</p>
+        <p className="finding-privacy-note"><Info size={16} aria-hidden="true" /> No canvien el mapa immediatament. Les troballes publicades es poden utilitzar, de manera agregada i generalitzada, per avaluar i millorar futures versions del model.</p>
       </aside>
     </form>
   );

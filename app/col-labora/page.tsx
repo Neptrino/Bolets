@@ -21,6 +21,10 @@ export default function ContributePage() {
               El mapa públic mostra sectors de 2,5 km. Una troballa pública amb foto obre
               1 km durant 7 dies; una aportació aprovada obre també 250 m durant 30 dies.
             </span>
+            <span>
+              Les troballes publicades també poden aportar dades generalitzades per avaluar
+              i millorar futures versions del model.
+            </span>
             <Link className="button" href="/compte/col-laboracio">Proposar una aportació</Link>
           </span>
         }
