@@ -34,6 +34,35 @@ if find "$status_env_file" -perm /077 -print -quit | grep -q .; then
   exit 77
 fi
 
+# These HMAC keys are local to this host: generate them once in the existing
+# root-only environment instead of making a release depend on copied secrets.
+ensure_local_status_secret() (
+  key=$1
+  count=$(grep -c "^${key}=" "$status_env_file" || true)
+  if [ "$count" -gt 1 ]; then
+    echo "The status environment must contain at most one ${key} entry" >&2
+    exit 78
+  fi
+  if [ "$count" -eq 1 ]; then
+    value=$(sed -n "s/^${key}=//p" "$status_env_file")
+    if [ -z "$value" ]; then
+      echo "The status environment contains an empty ${key} entry" >&2
+      exit 78
+    fi
+    exit 0
+  fi
+  if ! command -v openssl >/dev/null 2>&1; then
+    echo "OpenSSL is required to generate ${key}" >&2
+    exit 69
+  fi
+  umask 077
+  printf '%s=%s\n' "$key" "$(openssl rand -hex 32)" >> "$status_env_file"
+  echo "Generated the missing host-local ${key}"
+)
+
+ensure_local_status_secret CONTRIBUTOR_ACCESS_SECRET
+ensure_local_status_secret ABUSE_RATE_LIMIT_SECRET
+
 if [ -f "$instagram_env_file" ] &&
    find "$instagram_env_file" -perm /077 -print -quit | grep -q .; then
   echo "The Instagram environment file must not be accessible by group or other users" >&2

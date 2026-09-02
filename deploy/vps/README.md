@@ -463,8 +463,11 @@ through public DNS.
 
 The private status environment also supplies `TURNSTILE_SITE_KEY`,
 `TURNSTILE_SECRET_KEY`, `TURNSTILE_HOSTNAMES=bolets.app,www.bolets.app`, and a
-separate random `ABUSE_RATE_LIMIT_SECRET`. The public site key is compiled into
-the browser bundle; the two secrets remain server-only.
+separate random `ABUSE_RATE_LIMIT_SECRET`. If the contributor-capability or
+abuse-rate-limit HMAC key is absent, the root rollout generates it once with
+OpenSSL and persists it in the existing mode-`0600` status file. Externally
+issued Turnstile credentials still fail closed when absent. The public site key
+is compiled into the browser bundle; all secret keys remain server-only.
 
 After this first rollout succeeds, add the DNS-only
 `analytics.bolets.app -> 51.255.40.179` record. Verify
