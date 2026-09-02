@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowUpRight, Eye, Grid3X3, MapPinOff, Sprout } from "lucide-react";
+import { ArrowUpRight, Camera, Eye, Grid3X3, MapPinOff, Sprout } from "lucide-react";
 import Link from "next/link";
 import { FindingCard } from "@/components/findings/finding-card";
 import { JsonLd } from "@/components/json-ld";
@@ -56,12 +56,24 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
         itemListElement: speciesSummaries.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.speciesName, url: absoluteUrl(item.href) })),
       },
     }} /> : null}
-    <PageHeader eyebrow="Quadern de camp i atles compartit" title={<>Del bosc al teu mapa, <PageTitleAccent>fins i tot sense cobertura</PageTitleAccent></>} description={<span className="findings-hero-copy">
-    <span>Converteix cada sortida en un record útil: afegeix fotos, indica l’espècie i recupera automàticament la data i el GPS quan la imatge els conserva. Si no tens cobertura, la troballa queda al dispositiu i se sincronitza més tard.</span>
-    <span>Al teu quadern conserves l’historial; quan comparteixes, l’atles mostra només el dia i una àrea de 10 × 10 km.</span>
-    <span>Quan publiques una troballa amb almenys una foto, el teu compte obre els sectors d’1 km del mapa de condicions durant 7 dies.</span>
-    <span className="findings-hero-benefits"><span>Captura sense cobertura</span><span>GPS i data automàtics</span><span>El punt exacte mai no és públic</span></span>
-  </span>} actions={<div className="findings-actions"><Link className="finding-button" href="/troballes/nova">Anotar una troballa</Link><Link className="finding-button-secondary" href="/les-meves-troballes">El meu quadern</Link></div>} />
+    <PageHeader className="findings-page-header" eyebrow="Quadern de camp i atles compartit" title={<>Del bosc al teu mapa, <PageTitleAccent>fins i tot sense cobertura</PageTitleAccent></>} />
+    <aside className="findings-publish-cta" aria-labelledby="findings-publish-cta-title">
+      <span className="findings-publish-cta-icon"><Camera size={23} aria-hidden="true" /></span>
+      <div className="findings-publish-cta-copy">
+        <p>Obre més detall</p>
+        <h2 id="findings-publish-cta-title">Una troballa amb foto obre el mapa d’1 km durant 7 dies</h2>
+        <span>La foto i el dia poden ser públics; el punt exacte i les notes continuen sent privats.</span>
+      </div>
+      <div className="findings-publish-cta-actions">
+        <Link className="finding-button" href="/troballes/nova">Afegir una troballa <ArrowUpRight size={17} aria-hidden="true" /></Link>
+        <Link href="/les-meves-troballes">Obrir el meu quadern</Link>
+      </div>
+    </aside>
+    <div className="findings-hero-copy findings-hero-details">
+      <span>Fes fotos al bosc i completa la troballa a casa: recuperem la data i el GPS quan la imatge els conserva, i sense cobertura queda desada al dispositiu.</span>
+      <span>Al teu quadern conserves l’historial; a l’atles només mostrem el dia i una àrea de 10 × 10 km.</span>
+      <span className="findings-hero-benefits"><span>Captura sense cobertura</span><span>GPS i data automàtics</span><span>El punt exacte mai no és públic</span></span>
+    </div>
     <PublicFindingsMap species={catalogueSpecies} />
     {!safeCell ? <section className="finding-section finding-community-reading" aria-labelledby="finding-community-reading-title">
       <SectionHeader meta="Lectura comunitària" title="Què expliquen aquestes troballes?" titleId="finding-community-reading-title" description="Són observacions compartides per la comunitat: aporten context històric i enllacen amb les fitxes del catàleg, però no indiquen on trobar bolets avui." />
