@@ -58,9 +58,7 @@ export function SiteHeader() {
       pathname === prefix || pathname.startsWith(`${prefix}/`),
     );
   const accountIsCurrent = pathname === "/acces"
-    || pathname.startsWith("/compte")
-    || pathname.startsWith("/el-meu-bosc")
-    || pathname.startsWith("/les-meves-troballes");
+    || pathname.startsWith("/compte");
 
   return (
     <header className="site-header">
@@ -76,7 +74,7 @@ export function SiteHeader() {
       </nav>
       <Link href="/map" className="header-map-link"><Map size={16} aria-hidden="true" /> <span>Mapa de condicions</span></Link>
       <Link
-        href="/el-meu-bosc"
+        href="/compte/bosc"
         className="header-account-link"
         aria-current={accountIsCurrent ? "page" : undefined}
         title="Entrar o obrir El meu bosc"
@@ -98,7 +96,7 @@ export function SiteHeader() {
           <X className="menu-icon menu-icon-close" size={20} aria-hidden="true" />
         </summary>
         <nav id="mobile-navigation-panel" className="mobile-nav-panel" aria-label="Navegació mòbil">
-          <Link href="/el-meu-bosc" className="mobile-nav-account" aria-current={accountIsCurrent ? "page" : undefined} onClick={closeMobileNav}><UserRound size={18} aria-hidden="true" /> El meu bosc</Link>
+          <Link href="/compte/bosc" className="mobile-nav-account" aria-current={accountIsCurrent ? "page" : undefined} onClick={closeMobileNav}><UserRound size={18} aria-hidden="true" /> El meu bosc</Link>
           {links.map((link) => <Link key={link.href} href={link.href} className={link.featured ? "primary-nav-today" : undefined} aria-current={isCurrentLink(link) ? "page" : undefined} onClick={closeMobileNav}>{link.mobileLabel}</Link>)}
         </nav>
       </details>

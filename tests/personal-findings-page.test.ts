@@ -15,7 +15,7 @@ vi.mock("@/components/findings/personal-findings", () => ({
   PersonalFindings: () => createElement("section", { "data-personal-findings": true }),
 }));
 
-import PersonalFindingsPage from "@/app/les-meves-troballes/page";
+import PersonalFindingsPage from "@/app/compte/troballes/page";
 
 describe("private journal page", () => {
   it("places the season summary before the finding archive", async () => {

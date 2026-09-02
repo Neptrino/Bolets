@@ -6,14 +6,14 @@ export type AccountSection = "forest" | "findings" | "contributions" | "account"
 const accountSections = [
   {
     id: "forest",
-    href: "/el-meu-bosc",
+    href: "/compte/bosc",
     label: "El meu bosc",
     description: "Lectures i preferències",
     icon: Sprout,
   },
   {
     id: "findings",
-    href: "/les-meves-troballes",
+    href: "/compte/troballes",
     label: "Quadern",
     description: "Troballes privades",
     icon: BookOpen,
@@ -27,7 +27,7 @@ const accountSections = [
   },
   {
     id: "account",
-    href: "/compte",
+    href: "/compte/privadesa",
     label: "Compte i privadesa",
     description: "Identitat, accés i dades",
     icon: UserRound,

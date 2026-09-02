@@ -23,7 +23,7 @@ describe("El meu bosc dashboard states", () => {
     }));
     expect(html).toContain("Previsualització local");
     expect(html).toContain("no descriuen condicions reals i no es desen");
-    expect(html).toContain('href="/el-meu-bosc"');
+    expect(html).toContain('href="/compte/bosc"');
   });
 
   it("keeps model-window metadata out of available reading cards", () => {

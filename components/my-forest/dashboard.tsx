@@ -173,7 +173,7 @@ export function TodayForYou({
         <aside className="forest-simulation-note">
           <FlaskConical size={18} aria-hidden="true" />
           <p><strong>Previsualització local.</strong> Aquestes valoracions i superfícies són simulades per revisar la interfície; no descriuen condicions reals i no es desen.</p>
-          <Link href="/el-meu-bosc">Veure les dades reals</Link>
+          <Link href="/compte/bosc">Veure les dades reals</Link>
         </aside>
       ) : null}
       {availableReadings.length ? (

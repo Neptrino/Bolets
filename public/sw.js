@@ -200,7 +200,6 @@ self.addEventListener("fetch", (event) => {
     || url.pathname.startsWith("/admin/")
     || url.pathname === "/acces"
     || url.pathname.startsWith("/compte")
-    || url.pathname.startsWith("/les-meves-troballes")
     || url.pathname.startsWith("/moderacio")
     || url.pathname.startsWith("/api/me/")
     || url.pathname.startsWith("/api/moderation/");

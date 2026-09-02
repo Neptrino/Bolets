@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export default async function PersonalFindingsPage() {
   const user = await getAuthenticatedUser();
-  if (!user) redirect("/acces?retorn=/les-meves-troballes");
+  if (!user) redirect("/acces?retorn=/compte/troballes");
   const journal = await readOwnerJournalSummary(user.id);
 
   return (

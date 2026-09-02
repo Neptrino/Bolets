@@ -33,7 +33,7 @@ visible in Mailpit at `http://127.0.0.1:54324`.
 Passkeys are enabled locally and are deliberately bound to
 `http://localhost:3101`; use that hostname rather than `127.0.0.1` when
 enrolling or signing in with one. A user first enters with an email code, then
-adds a passkey from `/compte`. Passkeys are still an experimental Supabase Auth
+adds a passkey from `/compte/privadesa`. Passkeys are still an experimental Supabase Auth
 API, so the email code remains the recovery path.
 
 Google sign-in requires a Web OAuth client that cannot be committed to the

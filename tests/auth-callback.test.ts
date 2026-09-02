@@ -18,10 +18,10 @@ describe("OAuth callback", () => {
   });
 
   it("exchanges the PKCE code and redirects to the allowlisted destination", async () => {
-    const response = await GET(new NextRequest("https://bolets.app/auth/callback?code=abc&retorn=%2Fcompte"));
+    const response = await GET(new NextRequest("https://bolets.app/auth/callback?code=abc&retorn=%2Fcompte%2Fprivadesa"));
 
     expect(exchangeCodeForSession).toHaveBeenCalledWith("abc");
-    expect(response.headers.get("location")).toBe("https://bolets.app/compte");
+    expect(response.headers.get("location")).toBe("https://bolets.app/compte/privadesa");
     expect(response.headers.get("cache-control")).toBe("private, no-store");
   });
 
@@ -37,7 +37,7 @@ describe("OAuth callback", () => {
     });
 
     const response = await GET(new NextRequest(
-      "https://bolets.app/auth/callback?code=new-user&retorn=%2Fcompte",
+      "https://bolets.app/auth/callback?code=new-user&retorn=%2Fcompte%2Fprivadesa",
     ));
 
     expect(response.cookies.get("bolets_signup_goal")?.value).toBe("1");
@@ -46,32 +46,32 @@ describe("OAuth callback", () => {
   it("does not accept an external return destination", async () => {
     const response = await GET(new NextRequest("https://bolets.app/auth/callback?code=abc&retorn=https%3A%2F%2Fexample.com"));
 
-    expect(response.headers.get("location")).toBe("https://bolets.app/el-meu-bosc");
+    expect(response.headers.get("location")).toBe("https://bolets.app/compte/bosc");
   });
 
   it("returns to the access page with a safe error when exchange fails", async () => {
     exchangeCodeForSession.mockResolvedValue({ error: new Error("invalid code") });
-    const response = await GET(new NextRequest("https://bolets.app/auth/callback?code=bad&retorn=%2Fcompte"));
+    const response = await GET(new NextRequest("https://bolets.app/auth/callback?code=bad&retorn=%2Fcompte%2Fprivadesa"));
 
-    expect(response.headers.get("location")).toBe("https://bolets.app/acces?retorn=%2Fcompte&error=oauth");
+    expect(response.headers.get("location")).toBe("https://bolets.app/acces?retorn=%2Fcompte%2Fprivadesa&error=oauth");
   });
 
   it("uses the trusted forwarded origin behind the production proxy", async () => {
     exchangeCodeForSession.mockResolvedValue({ error: new Error("invalid code") });
     const response = await GET(new NextRequest(
-      "https://0.0.0.0:3000/auth/callback?code=bad&retorn=%2Fcompte",
+      "https://0.0.0.0:3000/auth/callback?code=bad&retorn=%2Fcompte%2Fprivadesa",
       { headers: { "x-forwarded-host": "bolets.app", "x-forwarded-proto": "https" } },
     ));
 
-    expect(response.headers.get("location")).toBe("https://bolets.app/acces?retorn=%2Fcompte&error=oauth");
+    expect(response.headers.get("location")).toBe("https://bolets.app/acces?retorn=%2Fcompte%2Fprivadesa&error=oauth");
   });
 
   it("does not trust an arbitrary forwarded host", async () => {
     const response = await GET(new NextRequest(
-      "https://0.0.0.0:3000/auth/callback?code=abc&retorn=%2Fcompte",
+      "https://0.0.0.0:3000/auth/callback?code=abc&retorn=%2Fcompte%2Fprivadesa",
       { headers: { "x-forwarded-host": "example.com", "x-forwarded-proto": "https" } },
     ));
 
-    expect(response.headers.get("location")).toBe("https://bolets.app/compte");
+    expect(response.headers.get("location")).toBe("https://bolets.app/compte/privadesa");
   });
 });

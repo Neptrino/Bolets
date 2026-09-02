@@ -38,7 +38,7 @@ function installPrivacyGuard(pageUrl: string) {
 describe("Umami analytics", () => {
   it("excludes private route families from page-view analytics", () => {
     expect(isUmamiBlockedPath("/compte")).toBe(true);
-    expect(isUmamiBlockedPath("/les-meves-troballes/123")).toBe(true);
+    expect(isUmamiBlockedPath("/compte/troballes/123")).toBe(true);
     expect(isUmamiBlockedPath("/bolets/rovello")).toBe(false);
   });
 

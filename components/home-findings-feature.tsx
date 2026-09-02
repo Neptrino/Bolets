@@ -17,7 +17,7 @@ export function HomeFindingsFeature() {
           </ul>
           <div className="home-findings-actions">
             <Link href="/troballes/nova" className="button">Anota una troballa <ArrowUpRight size={17} /></Link>
-            <Link href="/les-meves-troballes" className="text-link">Obre el teu quadern <NotebookPen size={16} /></Link>
+            <Link href="/compte/troballes" className="text-link">Obre el teu quadern <NotebookPen size={16} /></Link>
           </div>
         </div>
 

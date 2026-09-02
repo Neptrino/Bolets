@@ -473,7 +473,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
             </div>
             <div className="finding-save-success-actions">
               <button className="finding-button" type="button" onClick={startAnotherFinding}><Plus size={18} aria-hidden="true" /> Anotar-ne una altra</button>
-              <Link className="finding-button-secondary" href="/les-meves-troballes"><BookOpen size={18} aria-hidden="true" /> Obrir el meu quadern</Link>
+              <Link className="finding-button-secondary" href="/compte/troballes"><BookOpen size={18} aria-hidden="true" /> Obrir el meu quadern</Link>
             </div>
           </div> : <>
             {message ? <p className="finding-notice" data-tone={message.tone}>{message.text}</p> : null}

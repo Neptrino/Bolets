@@ -33,7 +33,7 @@ export default async function MyForestPage({
   searchParams: Promise<{ simula?: string | string[] }>;
 }) {
   const user = await getAuthenticatedUser();
-  if (!user) redirect("/acces?retorn=/el-meu-bosc");
+  if (!user) redirect("/acces?retorn=/compte/bosc");
   const query = await searchParams;
   const simulation = process.env.NODE_ENV === "development" && query.simula === "lectures";
 

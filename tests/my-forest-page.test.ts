@@ -25,7 +25,7 @@ vi.mock("@/components/map-detail-access-notice", async () => {
   };
 });
 
-import MyForestPage from "@/app/el-meu-bosc/page";
+import MyForestPage from "@/app/compte/bosc/page";
 
 describe("El meu bosc page actions", () => {
   it("uses the shared account navigation and detail-access banner", async () => {
@@ -34,7 +34,7 @@ describe("El meu bosc page actions", () => {
     expect(header).not.toContain('href="/compte"');
     expect(header).not.toContain('href="/col-labora"');
     expect(html).toContain('aria-label="Seccions del compte"');
-    expect(html).toMatch(/<a[^>]*aria-current="page"[^>]*href="\/el-meu-bosc"/);
+    expect(html).toMatch(/<a[^>]*aria-current="page"[^>]*href="\/compte\/bosc"/);
     expect(html).toContain('data-map-detail-access="true"');
     expect(html).toContain('data-resolution="1000"');
     expect(html).toContain('data-inline="true"');

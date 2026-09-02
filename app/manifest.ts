@@ -19,7 +19,7 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ["navigation", "utilities", "education"],
     shortcuts: [
       { name: "Anota una troballa", short_name: "Nova troballa", url: "/troballes/nova", icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }] },
-      { name: "Les meves troballes", short_name: "El meu quadern", url: "/les-meves-troballes", icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }] },
+      { name: "Les meves troballes", short_name: "El meu quadern", url: "/compte/troballes", icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }] },
     ],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },

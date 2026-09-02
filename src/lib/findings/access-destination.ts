@@ -1,10 +1,10 @@
-export const DEFAULT_ACCESS_DESTINATION = "/el-meu-bosc";
+export const DEFAULT_ACCESS_DESTINATION = "/compte/bosc";
 
 const ACCESS_DESTINATIONS = [
   DEFAULT_ACCESS_DESTINATION,
-  "/les-meves-troballes",
-  "/compte",
+  "/compte/troballes",
   "/compte/col-laboracio",
+  "/compte/privadesa",
   "/moderacio",
   "/admin/status",
   "/admin/status/users",

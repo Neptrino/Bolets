@@ -43,7 +43,7 @@ export default async function OperationalLoginPage() {
         </div>
 
         <div className={styles.actions}>
-          <Link href="/compte">Torna al compte</Link>
+          <Link href="/compte/bosc">Torna al compte</Link>
           <form action="/admin/session/logout" method="post">
             <button type="submit">Canvia de compte</button>
           </form>

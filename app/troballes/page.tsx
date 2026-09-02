@@ -58,7 +58,7 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
       },
     }} /> : null}
     <PageHeader className="findings-page-header" eyebrow="Quadern de camp i atles compartit" title={<>Del bosc al teu mapa, <PageTitleAccent>fins i tot sense cobertura</PageTitleAccent></>} />
-    <FindingAccessCta secondaryHref="/les-meves-troballes" secondaryLabel="Obrir el meu quadern" />
+    <FindingAccessCta secondaryHref="/compte/troballes" secondaryLabel="Obrir el meu quadern" />
     <div className="findings-hero-copy findings-hero-details">
       <span>Fes fotos al bosc i completa la troballa a casa: recuperem la data i el GPS quan la imatge els conserva, i sense cobertura queda desada al dispositiu.</span>
       <span>Al teu quadern conserves l’historial; a l’atles només mostrem el dia i una àrea de 10 × 10 km.</span>

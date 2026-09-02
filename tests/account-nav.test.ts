@@ -10,10 +10,10 @@ describe("account navigation", () => {
     const html = renderToStaticMarkup(createElement(AccountNav, { current }));
 
     expect(html).toContain('aria-label="Seccions del compte"');
-    expect(html).toContain('href="/el-meu-bosc"');
-    expect(html).toContain('href="/les-meves-troballes"');
+    expect(html).toContain('href="/compte/bosc"');
+    expect(html).toContain('href="/compte/troballes"');
     expect(html).toContain('href="/compte/col-laboracio"');
-    expect(html).toContain('href="/compte"');
+    expect(html).toContain('href="/compte/privadesa"');
     expect(html.match(/aria-current="page"/g)).toHaveLength(1);
   });
 });
