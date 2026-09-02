@@ -242,6 +242,10 @@ configure_goal_reports() {
     "map-geolocation-success" \
     "The main map successfully received a device location."
   ensure_goal_report \
+    "Map timeline used" \
+    "map-timeline-used" \
+    "A visitor deliberately played or changed the prediction map timeline."
+  ensure_goal_report \
     "Species map open" \
     "species-map-open" \
     "A map link on a species profile was selected."

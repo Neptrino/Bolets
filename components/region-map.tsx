@@ -47,10 +47,8 @@ import {
 import {
   boundsContain,
 } from "@/src/lib/map-grid";
-import {
-  loadBucketedCells,
-  summarizeBucketCoverage,
-} from "@/src/lib/bucket-loader";
+import { createBucketNetworkGate, loadBucketedCells,
+  summarizeBucketCoverage } from "@/src/lib/bucket-loader";
 import {
   bucketsForBounds,
   prioritizeBucketsAround,
@@ -138,6 +136,7 @@ export function RegionMap({
   // Requests in progress, shared across overlapping viewports so a pan never
   // asks for a bucket another pan is already fetching.
   const inFlightBuckets = useRef(new Map<string, Promise<void>>());
+  const bucketNetworkGate = useRef(createBucketNetworkGate());
   const batchId = useRef(0);
   const cellsById = useRef(new Map<string, PredictionMapCell>());
   const habitatCellsById = useRef(new Map<string, PotentialHabitatMapCell>());
@@ -758,7 +757,8 @@ export function RegionMap({
               });
             }
           },
-          { concurrency: initialInteractive.current ? undefined : 12, inFlight: inFlightBuckets.current },
+          { inFlight: inFlightBuckets.current, networkGate: bucketNetworkGate.current,
+            persistAfterAbort: !timelineRun, retryPasses: 2 },
         );
         if (!isCurrent()) return;
         if (timelineRun) repaint();

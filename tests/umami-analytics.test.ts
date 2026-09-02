@@ -216,6 +216,7 @@ describe("Umami analytics", () => {
     expect(bootstrap).toContain('"homepage-video-complete"');
     expect(bootstrap).toContain('"homepage-map-cta-click"');
     expect(bootstrap).toContain('"map-geolocation-success"');
+    expect(bootstrap).toContain('"map-timeline-used"');
     expect(bootstrap).toContain('"species-map-open"');
     expect(bootstrap).toContain('"finding-form-started"');
     expect(bootstrap).toContain('"app-installed"');
@@ -229,6 +230,7 @@ describe("Umami analytics", () => {
     expect(bootstrap).toContain('"Homepage video complete"');
     expect(bootstrap).toContain('"Homepage map CTA click"');
     expect(bootstrap).toContain('"Map geolocation success"');
+    expect(bootstrap).toContain('"Map timeline used"');
     expect(bootstrap).toContain('"Species map open"');
     expect(bootstrap).toContain('"Finding form started"');
     expect(bootstrap).toContain('"App installed"');
@@ -254,6 +256,8 @@ describe("Umami analytics", () => {
     const mapExplorer = readFileSync("components/map-explorer.tsx", "utf8");
     expect(mapExplorer)
       .toContain("queueUmamiEvent(UMAMI_EVENTS.mapGeolocationSuccess)");
+    expect(readFileSync("components/prediction-timeline-control.tsx", "utf8"))
+      .toContain("queueUmamiEvent(UMAMI_EVENTS.mapTimelineUsed)");
     expect(readFileSync("components/region-map.tsx", "utf8"))
       .toContain("onGeolocationSuccess?.()");
     expect(readFileSync("app/bolets/[slug]/page.tsx", "utf8"))

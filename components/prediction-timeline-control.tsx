@@ -1,11 +1,16 @@
 "use client";
 
 import { LoaderCircle, Pause, Play } from "lucide-react";
-import { useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 import type { PredictionTimelineOffset } from "@/src/lib/types";
 
 const FIRST_OFFSET: PredictionTimelineOffset = -3;
 const LAST_OFFSET: PredictionTimelineOffset = 5;
+
+export function predictionTimelinePosition(offset: PredictionTimelineOffset) {
+  return ((offset - FIRST_OFFSET) / (LAST_OFFSET - FIRST_OFFSET)) * 100;
+}
 
 export function predictionTimelineLabel(offset: PredictionTimelineOffset) {
   if (offset === 0) return { phase: "Avui", detail: "Condicions observades" };
@@ -23,19 +28,31 @@ export function predictionTimelineLabel(offset: PredictionTimelineOffset) {
 }
 
 export function PredictionTimelineControl({
+  incomplete,
   loading,
   unavailable,
   offset,
   onChange,
 }: {
+  incomplete: boolean;
   loading: boolean;
   unavailable: boolean;
   offset: PredictionTimelineOffset;
   onChange: (offset: PredictionTimelineOffset) => void;
 }) {
   const [playing, setPlaying] = useState(false);
-  const activePlaying = playing && !unavailable;
+  const usageTracked = useRef(false);
+  const activePlaying = playing && !unavailable && !incomplete;
   const label = predictionTimelineLabel(offset);
+  const timelineStyle = {
+    "--prediction-timeline-today-position": `${predictionTimelinePosition(0)}%`,
+  } as CSSProperties;
+
+  function trackTimelineUsage() {
+    if (usageTracked.current) return;
+    usageTracked.current = true;
+    queueUmamiEvent(UMAMI_EVENTS.mapTimelineUsed);
+  }
 
   useEffect(() => {
     if (!activePlaying || loading) return;
@@ -46,20 +63,29 @@ export function PredictionTimelineControl({
   }, [activePlaying, loading, offset, onChange]);
 
   return (
-    <section className="prediction-timeline" aria-label="Evolució i previsió del mapa">
+    <section
+      className="prediction-timeline"
+      style={timelineStyle}
+      aria-label="Evolució i previsió del mapa"
+    >
       <div className="prediction-timeline-heading" aria-live="polite">
         <span>{label.phase}</span>
-        <strong>{unavailable ? "Fotograma no disponible" : label.detail}</strong>
+        <strong>{unavailable
+          ? "Fotograma no disponible"
+          : incomplete ? "Fotograma incomplet" : label.detail}</strong>
         {loading ? <LoaderCircle className="prediction-timeline-loader" size={15} aria-label="Carregant el fotograma" /> : null}
       </div>
       <div className="prediction-timeline-controls">
         <button
           type="button"
           className="prediction-timeline-play"
-          onClick={() => setPlaying((current) => !current)}
+          onClick={() => {
+            trackTimelineUsage();
+            setPlaying((current) => !current);
+          }}
           aria-label={activePlaying ? "Pausa l’animació" : "Reprodueix l’animació"}
           aria-pressed={activePlaying}
-          disabled={unavailable}
+          disabled={unavailable || incomplete}
         >
           {activePlaying ? <Pause size={18} aria-hidden /> : <Play size={18} aria-hidden />}
         </button>
@@ -71,6 +97,7 @@ export function PredictionTimelineControl({
             step="1"
             value={offset}
             onChange={(event) => {
+              trackTimelineUsage();
               setPlaying(false);
               onChange(Number(event.currentTarget.value) as PredictionTimelineOffset);
             }}

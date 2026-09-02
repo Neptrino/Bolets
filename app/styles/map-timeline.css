@@ -134,7 +134,7 @@
 
 .prediction-timeline-scale b {
   position: absolute;
-  left: 54.545%;
+  left: var(--prediction-timeline-today-position);
   color: #fff9ea;
   transform: translateX(-50%);
 }

@@ -127,6 +127,7 @@ export function RegionMapView({
       ) : null}
       {showTimeline ? (
         <PredictionTimelineControl
+          incomplete={cellState.incomplete}
           loading={cellState.status === "loading"}
           offset={timelineOffset}
           onChange={onTimelineOffsetChange}

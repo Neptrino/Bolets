@@ -11,6 +11,9 @@ import type { SpatialBounds } from "@/src/lib/types";
  */
 const DEFAULT_CONCURRENCY = 4;
 const CACHE_LOOKUP_CONCURRENCY = 32;
+const DEFAULT_RETRY_DELAY_MS = 600;
+
+export type BucketNetworkGate = <R>(task: () => Promise<R>) => Promise<R>;
 
 function concurrencyGate(limit: number) {
   let active = 0;
@@ -40,6 +43,25 @@ function concurrencyGate(limit: number) {
   };
 }
 
+export function createBucketNetworkGate(limit = DEFAULT_CONCURRENCY): BucketNetworkGate {
+  return concurrencyGate(Math.max(1, Math.floor(limit)));
+}
+
+function waitForRetryPass(signal: AbortSignal, delayMs: number) {
+  if (signal.aborted) return Promise.resolve(false);
+  return new Promise<boolean>((resolve) => {
+    const onAbort = () => {
+      globalThis.clearTimeout(timer);
+      resolve(false);
+    };
+    const timer = globalThis.setTimeout(() => {
+      signal.removeEventListener("abort", onAbort);
+      resolve(true);
+    }, delayMs);
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
 export type BucketPayload<T> = {
   cells: T[];
   truncated: boolean;
@@ -64,7 +86,16 @@ export async function loadBucketedCells<T>(
   buildUrl: (bucket: SpatialBounds) => string,
   signal: AbortSignal,
   onBucketSettled: (payload: BucketPayload<T>, bucket: SpatialBounds) => void,
-  { concurrency = DEFAULT_CONCURRENCY, attempts = 2, timeoutMs, inFlight }: {
+  {
+    concurrency = DEFAULT_CONCURRENCY,
+    attempts = 2,
+    timeoutMs,
+    inFlight,
+    networkGate,
+    persistAfterAbort = true,
+    retryPasses = 0,
+    retryDelayMs = DEFAULT_RETRY_DELAY_MS,
+  }: {
     concurrency?: number;
     attempts?: number;
     timeoutMs?: number;
@@ -74,81 +105,103 @@ export async function loadBucketedCells<T>(
      * of issuing a second one for the same ground.
      */
     inFlight?: Map<string, Promise<void>>;
+    networkGate?: BucketNetworkGate;
+    /** Keep paid-for viewport requests alive for later pans. Timeline frames opt out. */
+    persistAfterAbort?: boolean;
+    /** Additional passes over only the buckets that failed. */
+    retryPasses?: number;
+    retryDelayMs?: number;
   } = {},
 ): Promise<BucketLoadOutcome> {
   const networkConcurrency = Math.max(1, Math.floor(concurrency));
-  const withNetworkSlot = concurrencyGate(networkConcurrency);
-  let nextIndex = 0;
+  const withNetworkSlot = networkGate ?? createBucketNetworkGate(networkConcurrency);
+  let pendingBuckets = buckets;
   let succeeded = 0;
   let failed = 0;
+  const maximumRetryPasses = Math.max(0, Math.floor(retryPasses));
 
-  const runWorker = async () => {
-    while (nextIndex < buckets.length) {
-      if (signal.aborted) return;
-      const bucket = buckets[nextIndex];
-      nextIndex += 1;
-      const url = buildUrl(bucket);
-      const pending = inFlight?.get(url);
-      if (pending) {
-        // The owning batch stores the payload; waiting here only needs to know
-        // whether the bucket became available.
+  for (let retryPass = 0; ; retryPass += 1) {
+    let nextIndex = 0;
+    const failedBuckets: SpatialBounds[] = [];
+    const runWorker = async () => {
+      while (nextIndex < pendingBuckets.length) {
+        if (signal.aborted) return;
+        const bucket = pendingBuckets[nextIndex];
+        nextIndex += 1;
+        const url = buildUrl(bucket);
+        const pending = inFlight?.get(url);
+        if (pending) {
+          // The owning batch stores the payload; waiting here only needs to know
+          // whether the bucket became available.
+          try {
+            await pending;
+            if (signal.aborted) return;
+            succeeded += 1;
+          } catch {
+            if (signal.aborted) return;
+            failedBuckets.push(bucket);
+          }
+          continue;
+        }
+        const task = (async () => {
+          const cached = await readMapBucketPayload<T>(url);
+          if (!persistAfterAbort && signal.aborted) return;
+          if (cached) {
+            onBucketSettled(cached, bucket);
+            return;
+          }
+          // Panning keeps paid-for work alive; timeline changes cancel obsolete
+          // frames so they cannot occupy the shared request gate in the background.
+          const payload = await withNetworkSlot(() => {
+            if (!persistAfterAbort && signal.aborted)
+              throw signal.reason ?? new DOMException("Aborted", "AbortError");
+            return fetchJsonWithRetry<BucketPayload<T>>(
+              url,
+              persistAfterAbort ? new AbortController().signal : signal,
+              attempts,
+              timeoutMs,
+            );
+          });
+          onBucketSettled(payload, bucket);
+          await writeMapBucketPayload(url, payload);
+        })();
+        inFlight?.set(url, task);
         try {
-          await pending;
+          await task;
+          if (signal.aborted) return;
           succeeded += 1;
         } catch {
-          failed += 1;
+          if (signal.aborted) return;
+          failedBuckets.push(bucket);
+        } finally {
+          if (inFlight?.get(url) === task) inFlight.delete(url);
         }
-        continue;
       }
-      const task = (async () => {
-        const cached = await readMapBucketPayload<T>(url);
-        if (cached) {
-          onBucketSettled(cached, bucket);
-          return;
-        }
-        // Deliberately not the run's signal. A registered request outlives the
-        // viewport that asked for it, and a later viewport may be waiting on
-        // it: cancelling it when this run is superseded would fail that
-        // waiter's bucket for no reason. `fetchJsonWithRetry` applies its own
-        // deadline, so nothing here can hang.
-        const payload = await withNetworkSlot(() =>
-          fetchJsonWithRetry<BucketPayload<T>>(
-            url,
-            new AbortController().signal,
-            attempts,
-            timeoutMs,
-          ),
-        );
-        // Always store, even if this run no longer cares. The response is
-        // already paid for and the next viewport over this ground will use it.
-        onBucketSettled(payload, bucket);
-        await writeMapBucketPayload(url, payload);
-      })();
-      inFlight?.set(url, task);
-      try {
-        await task;
-        if (signal.aborted) return;
-        succeeded += 1;
-      } catch {
-        if (signal.aborted) return;
-        failed += 1;
-      } finally {
-        if (inFlight?.get(url) === task) inFlight.delete(url);
-      }
-    }
-  };
+    };
 
-  await Promise.all(
-    Array.from(
-      {
-        length: Math.min(
-          Math.max(CACHE_LOOKUP_CONCURRENCY, networkConcurrency),
-          buckets.length,
-        ),
-      },
-      runWorker,
-    ),
-  );
+    await Promise.all(
+      Array.from(
+        {
+          length: Math.min(
+            Math.max(CACHE_LOOKUP_CONCURRENCY, networkConcurrency),
+            pendingBuckets.length,
+          ),
+        },
+        runWorker,
+      ),
+    );
+    if (signal.aborted || failedBuckets.length === 0) break;
+    if (retryPass >= maximumRetryPasses) {
+      failed = failedBuckets.length;
+      break;
+    }
+    const shouldRetry = await waitForRetryPass(
+      signal,
+      Math.max(0, retryDelayMs) * 2 ** retryPass,
+    );
+    if (!shouldRetry) break;
+    pendingBuckets = failedBuckets;
+  }
   return { succeeded, failed };
 }
 

@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { loadBucketedCells, summarizeBucketCoverage } from "@/src/lib/bucket-loader";
+import {
+  createBucketNetworkGate,
+  loadBucketedCells,
+  summarizeBucketCoverage,
+} from "@/src/lib/bucket-loader";
 import type { SpatialBounds } from "@/src/lib/types";
 
 const bucket = (west: number): SpatialBounds => ({
@@ -68,6 +72,28 @@ describe("bucketed cell loading", () => {
 
     expect(outcome).toEqual({ succeeded: 2, failed: 1 });
     expect(merged).toHaveLength(2);
+  });
+
+  it("automatically retries only missing buckets", async () => {
+    const attempts = new Map<string, number>();
+    respondWith((requestUrl) => {
+      const count = (attempts.get(requestUrl) ?? 0) + 1;
+      attempts.set(requestUrl, count);
+      return requestUrl.includes("west=1.2") && count === 1
+        ? { status: 503 }
+        : { body: { cells: [{ cellId: requestUrl }], truncated: false } };
+    });
+
+    const outcome = await loadBucketedCells(
+      [bucket(1.1), bucket(1.2), bucket(1.3)],
+      url,
+      new AbortController().signal,
+      () => undefined,
+      { attempts: 1, retryPasses: 1, retryDelayMs: 0 },
+    );
+
+    expect(outcome).toEqual({ succeeded: 3, failed: 0 });
+    expect([...attempts.values()].sort()).toEqual([1, 1, 2]);
   });
 
   it("keeps a superseded batch's response but stops counting it", async () => {
@@ -209,6 +235,69 @@ describe("bucketed cell loading", () => {
 
     expect(outcome).toEqual({ succeeded: 12, failed: 0 });
     expect(maximumRequests).toBe(3);
+  });
+
+  it("shares one concurrency limit across simultaneous frame loads", async () => {
+    let activeRequests = 0;
+    let maximumRequests = 0;
+    respondWith(async () => {
+      activeRequests += 1;
+      maximumRequests = Math.max(maximumRequests, activeRequests);
+      await new Promise((resolve) => setTimeout(resolve, 2));
+      activeRequests -= 1;
+      return { body: { cells: [], truncated: false } };
+    });
+    const networkGate = createBucketNetworkGate(2);
+    const signal = new AbortController().signal;
+
+    await Promise.all([
+      loadBucketedCells(
+        [bucket(1.1), bucket(1.2), bucket(1.3)],
+        (candidate) => `/api/predictions?frame=1&west=${candidate.west}`,
+        signal,
+        () => undefined,
+        { concurrency: 4, networkGate },
+      ),
+      loadBucketedCells(
+        [bucket(1.1), bucket(1.2), bucket(1.3)],
+        (candidate) => `/api/predictions?frame=2&west=${candidate.west}`,
+        signal,
+        () => undefined,
+        { concurrency: 4, networkGate },
+      ),
+    ]);
+
+    expect(maximumRequests).toBe(2);
+  });
+
+  it("cancels queued obsolete frame buckets", async () => {
+    let release = () => undefined as void;
+    const held = new Promise<void>((resolve) => {
+      release = () => resolve();
+    });
+    const requested: string[] = [];
+    respondWith(async (requestUrl) => {
+      requested.push(requestUrl);
+      await held;
+      return { body: { cells: [], truncated: false } };
+    });
+    const controller = new AbortController();
+    const loading = loadBucketedCells(
+      [bucket(1.1), bucket(1.2), bucket(1.3)],
+      url,
+      controller.signal,
+      () => undefined,
+      {
+        networkGate: createBucketNetworkGate(1),
+        persistAfterAbort: false,
+      },
+    );
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    controller.abort();
+    release();
+
+    await expect(loading).resolves.toEqual({ succeeded: 0, failed: 0 });
+    expect(requested).toHaveLength(1);
   });
 
   it("still delivers a bucket inherited from a run that was superseded", async () => {
