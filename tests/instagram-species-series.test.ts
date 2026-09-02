@@ -1,28 +1,20 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { catalogueSpecies } from "@/data/catalogue";
 import {
   INSTAGRAM_SPECIES_SLIDE_COUNT,
-  instagramSpeciesPublicationForDate,
+  instagramSpeciesPublicationForSpecies,
 } from "@/src/lib/instagram-species-series";
-
-function dateAfter(start: string, days: number) {
-  const value = Date.parse(`${start}T00:00:00.000Z`) + days * 24 * 60 * 60 * 1_000;
-  return new Date(value).toISOString().slice(0, 10);
-}
 
 describe("Instagram species series", () => {
   it("publishes one five-slide field guide for every catalogue species", () => {
     expect(catalogueSpecies).toHaveLength(62);
     expect(INSTAGRAM_SPECIES_SLIDE_COUNT).toBe(5);
 
-    let dayOffset = 0;
-    const publications = Array.from({ length: 62 }, (_, index) => {
-      const publication = instagramSpeciesPublicationForDate(dateAfter("2026-09-03", dayOffset));
-      dayOffset += index % 2 === 0 ? 4 : 3;
-      return publication;
-    });
+    const publications = catalogueSpecies.map((species) => (
+      instagramSpeciesPublicationForSpecies(species.speciesId)
+    ));
 
     expect(publications).toHaveLength(62);
     expect(new Set(publications.map((publication) => publication.profile.speciesId)).size).toBe(62);
@@ -32,36 +24,20 @@ describe("Instagram species series", () => {
     expect(publications.every((publication) => publication.profile.imagePath.endsWith(".webp"))).toBe(true);
   });
 
-  it("accepts only Monday and Thursday dates", () => {
-    expect(() => instagramSpeciesPublicationForDate("2026-09-02")).toThrow(
-      "run only on Monday and Thursday",
-    );
-    expect(() => instagramSpeciesPublicationForDate("2026-02-31")).toThrow(
-      "Invalid Instagram species publication date",
-    );
-  });
-
-  it("can replace one scheduled species without changing the automatic sequence", () => {
-    const automatic = instagramSpeciesPublicationForDate("2026-09-03");
-    const changed = instagramSpeciesPublicationForDate("2026-09-03", "boletus-edulis");
-
-    expect(automatic.profile.commonName).toBe("Apagallums");
-    expect(changed.profile.commonName).toBe("Cep");
-    expect(changed.automaticSpeciesId).toBe(automatic.profile.speciesId);
-    expect(instagramSpeciesPublicationForDate("2026-09-07").profile.speciesId)
-      .toBe(catalogueSpecies[1]?.speciesId);
-    expect(() => instagramSpeciesPublicationForDate("2026-09-03", "not-in-the-catalogue"))
+  it("resolves a manually selected catalogue species", () => {
+    expect(instagramSpeciesPublicationForSpecies("boletus-edulis").profile.commonName).toBe("Cep");
+    expect(() => instagramSpeciesPublicationForSpecies("not-in-the-catalogue"))
       .toThrow("Unknown Instagram species");
   });
 
-  it("keeps the VPS timer and publisher wired to the species publication kind", () => {
-    const timer = readFileSync("deploy/vps/bolets-instagram-species.timer", "utf8");
+  it("retires the automatic species timer and keeps only manual Buffer queueing", () => {
     const publisher = readFileSync("deploy/vps/publish-instagram-growth.sh", "utf8");
     const rollout = readFileSync("deploy/vps/rollout.sh", "utf8");
 
-    expect(timer).toContain("OnCalendar=Mon,Thu *-*-* 19:00:00 Europe/Madrid");
-    expect(timer).toContain("bolets-instagram-growth@species.service");
-    expect(publisher).toContain("education|species|weekend");
-    expect(rollout).toContain("bolets-instagram-species.timer");
+    expect(existsSync("deploy/vps/bolets-instagram-species.timer")).toBe(false);
+    expect(publisher).toContain("education|weekend");
+    expect(publisher).not.toContain("education|species|weekend");
+    expect(rollout).toContain("disable --now bolets-instagram-species.timer");
+    expect(rollout).not.toContain("install -m 644 \"$app_dir/deploy/vps/bolets-instagram-species.timer\"");
   });
 });

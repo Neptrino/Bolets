@@ -73,17 +73,6 @@ describe("Buffer Instagram growth publisher", () => {
     expect(waterCaption).not.toBe(habitatCaption);
   });
 
-  it("keeps the idempotence marker on an edited species caption", () => {
-    const caption = instagramGrowthCaption("species", card, "2026-09-03", {
-      captionOverride: "Text revisat per a la publicació.",
-      speciesId: "boletus-edulis",
-    });
-
-    expect(caption).toBe(
-      `Text revisat per a la publicació.\n\n${instagramGrowthMarker("species", "2026-09-03")}`,
-    );
-  });
-
   it("publishes the five-image educational carousel on Wednesday", async () => {
     const fetchImpl = connectedBufferResponses(vi.fn<typeof fetch>())
       .mockResolvedValueOnce(response({ posts: { edges: [] } }))
@@ -141,42 +130,6 @@ describe("Buffer Instagram growth publisher", () => {
       assets: [{ video: { url: "https://bolets.app/compartir/catalunya/reel?signed=yes" } }],
       metadata: { instagram: { shouldShareToFeed: true, type: "reel" } },
     });
-  });
-
-  it("publishes the scheduled species field-guide carousel on Monday or Thursday", async () => {
-    const thursdayCard = { ...card, observedAt: "2026-09-03T06:00:00.000Z" };
-    const fetchImpl = connectedBufferResponses(vi.fn<typeof fetch>())
-      .mockResolvedValueOnce(response({ posts: { edges: [] } }))
-      .mockResolvedValueOnce(response({
-        createPost: { __typename: "PostActionSuccess", post: { id: "species-1" } },
-      }));
-    const images = Array.from({ length: 5 }, (_, index) => `https://bolets.app/species-${index + 1}.png`);
-
-    await expect(publishInstagramGrowthPost({
-      card: thursdayCard,
-      config,
-      fetchImpl,
-      kind: "species",
-      now: new Date("2026-09-03T17:00:00.000Z"),
-      speciesCaptionOverride: "Avui expliquem com reconèixer el cep.",
-      speciesId: "boletus-edulis",
-      speciesImageUrls: images,
-    })).resolves.toMatchObject({
-      status: "published",
-      postId: "species-1",
-      publicationDate: "2026-09-03",
-      kind: "species",
-    });
-
-    const createBody = JSON.parse(String(fetchImpl.mock.calls[3]?.[1]?.body)) as {
-      variables: { input: Record<string, unknown> };
-    };
-    expect(createBody.variables.input).toMatchObject({
-      assets: images.map((url) => ({ image: { url } })),
-      metadata: { instagram: { shouldShareToFeed: true, type: "post" } },
-    });
-    expect(createBody.variables.input.text).toContain(instagramGrowthMarker("species", "2026-09-03"));
-    expect(createBody.variables.input.text).toContain("Avui expliquem com reconèixer el cep.");
   });
 
   it("does not duplicate a publication with the same channel date marker", async () => {

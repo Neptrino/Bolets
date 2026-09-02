@@ -3,9 +3,9 @@ set -eu
 
 publication_kind=${1:-}
 case "$publication_kind" in
-  education|species|weekend) ;;
+  education|weekend) ;;
   *)
-    echo "Expected publication kind: education, species or weekend" >&2
+    echo "Expected publication kind: education or weekend" >&2
     exit 64
     ;;
 esac

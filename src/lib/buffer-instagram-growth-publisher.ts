@@ -9,18 +9,13 @@ import {
   type BufferInstagramPublisherConfig,
 } from "@/src/lib/buffer-client";
 import { instagramEducationTopicForDate } from "@/src/lib/instagram-education";
-import { instagramSpeciesPublicationForDate } from "@/src/lib/instagram-species-series";
 
-export type InstagramGrowthPublication = "education" | "species" | "weekend";
+export type InstagramGrowthPublication = "education" | "weekend";
 
 const publicationConfig = {
   education: {
     markerLabel: "Publicació educativa",
     weekdays: ["Wed"],
-  },
-  species: {
-    markerLabel: "Fitxa d’espècie",
-    weekdays: ["Mon", "Thu"],
   },
   weekend: {
     markerLabel: "Previsió del cap de setmana",
@@ -48,33 +43,12 @@ function weekendCaption(card: DailyShareCard, publicationDate: string) {
   return `Com arriben les condicions al cap de setmana?\n\n${highlights || "Sense condicions favorables publicables avui."}\n\nAquesta és la lectura verificada d’avui, no una confirmació de presència. Revisa el mapa abans de sortir perquè les dades evolucionen.\n\nMapa complet a l’enllaç del perfil → @bolets.app\n\n${instagramGrowthMarker("weekend", publicationDate)}\n#BoletsAtles #BoletsCatalunya #CapDeSetmana #Micologia`;
 }
 
-function speciesCaption(publicationDate: string, speciesId?: string | null) {
-  const publication = instagramSpeciesPublicationForDate(publicationDate, speciesId);
-  const profile = publication.profile;
-  const keys = profile.keyFeatures.join(" · ");
-  const comparison = profile.lookalike
-    ? `Compara’l especialment amb ${profile.lookalike.commonName}.`
-    : "Confirma sempre més d’un tret abans d’identificar-lo.";
-  return `${publication.position}/${publication.total} · ${profile.commonName}\n${profile.scientificName}\n\n${profile.shortDescription}\n\nClaus d’identificació: ${keys}. ${comparison}\n\n${profile.edibilityLabel}. La comestibilitat només és rellevant després d’una identificació segura.\n\nFitxa completa a l’enllaç del perfil → @bolets.app\n\n${instagramGrowthMarker("species", publicationDate)}\n#BoletsAtles #BoletsCatalunya #Micologia #IdentificacioDeBolets`;
-}
-
 export function instagramGrowthCaption(
   kind: InstagramGrowthPublication,
   card: DailyShareCard,
   publicationDate: string,
-  options: { captionOverride?: string | null; speciesId?: string | null } = {},
 ) {
   if (kind === "education") return educationCaption(card, publicationDate);
-  if (kind === "species") {
-    const marker = instagramGrowthMarker("species", publicationDate);
-    const customCaption = options.captionOverride?.trim();
-    if (customCaption) {
-      return customCaption.includes(marker)
-        ? customCaption
-        : `${customCaption}\n\n${marker}`;
-    }
-    return speciesCaption(publicationDate, options.speciesId);
-  }
   return weekendCaption(card, publicationDate);
 }
 
@@ -86,9 +60,6 @@ export async function publishInstagramGrowthPost({
   kind,
   now = new Date(),
   reelUrl,
-  speciesCaptionOverride,
-  speciesId,
-  speciesImageUrls,
 }: {
   card: DailyShareCard;
   config: BufferInstagramPublisherConfig;
@@ -97,9 +68,6 @@ export async function publishInstagramGrowthPost({
   kind: InstagramGrowthPublication;
   now?: Date;
   reelUrl?: string;
-  speciesCaptionOverride?: string | null;
-  speciesId?: string | null;
-  speciesImageUrls?: string[];
 }) {
   if (!card.available || !card.observedAt || card.isPreview) {
     throw new BufferPublicationError(
@@ -131,13 +99,6 @@ export async function publishInstagramGrowthPost({
       "instagram_growth_assets_invalid",
     );
   }
-  if (kind === "species" && speciesImageUrls?.length !== 5) {
-    throw new BufferPublicationError(
-      "The species carousel requires exactly five signed images",
-      500,
-      "instagram_growth_assets_invalid",
-    );
-  }
   if (kind === "weekend" && !reelUrl) {
     throw new BufferPublicationError(
       "The weekend Reel requires a signed video URL",
@@ -146,10 +107,7 @@ export async function publishInstagramGrowthPost({
     );
   }
 
-  const caption = instagramGrowthCaption(kind, card, publicationDate, {
-    captionOverride: speciesCaptionOverride,
-    speciesId,
-  });
+  const caption = instagramGrowthCaption(kind, card, publicationDate);
   if (caption.length > 2_200) {
     throw new BufferPublicationError(
       "The Instagram growth caption exceeds 2,200 characters",
@@ -173,10 +131,9 @@ export async function publishInstagramGrowthPost({
     return { status: "already_published" as const, postId: existing.id, publicationDate, kind };
   }
 
-  const carouselImageUrls = kind === "education" ? educationImageUrls : speciesImageUrls;
   const assets = kind === "weekend"
     ? [{ video: { url: reelUrl! } }]
-    : carouselImageUrls!.map((url) => ({ image: { url } }));
+    : educationImageUrls!.map((url) => ({ image: { url } }));
   const postId = await createBufferInstagramPost({
     assets,
     caption,

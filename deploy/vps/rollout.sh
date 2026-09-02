@@ -203,15 +203,18 @@ docker compose -f docker-compose.yml -f "$override_file" exec -T app node -e '
     });
 '
 
+# Species carousels are ordered manually in Buffer. Remove the former timer so
+# an older installation cannot create duplicate scheduled posts.
+systemctl disable --now bolets-instagram-species.timer 2>/dev/null || true
+rm -f /etc/systemd/system/bolets-instagram-species.timer
+
 if [ -f "$instagram_env_file" ]; then
   install -m 644 "$app_dir/deploy/vps/bolets-instagram-growth@.service" /etc/systemd/system/
   install -m 644 "$app_dir/deploy/vps/bolets-instagram-education.timer" /etc/systemd/system/
-  install -m 644 "$app_dir/deploy/vps/bolets-instagram-species.timer" /etc/systemd/system/
   install -m 644 "$app_dir/deploy/vps/bolets-instagram-weekend.timer" /etc/systemd/system/
   systemctl daemon-reload
   systemctl enable --now \
     bolets-instagram-education.timer \
-    bolets-instagram-species.timer \
     bolets-instagram-weekend.timer
 fi
 

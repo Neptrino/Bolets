@@ -52,3 +52,14 @@ export function instagramSpeciesPublicationForDate(
     total: catalogueSpecies.length,
   };
 }
+
+export function instagramSpeciesPublicationForSpecies(speciesId: string) {
+  const species = getCatalogueSpecies(speciesId);
+  if (!species) throw new Error(`Unknown Instagram species: ${speciesId}`);
+  const index = catalogueSpecies.findIndex((candidate) => candidate.speciesId === speciesId);
+  return {
+    position: index + 1,
+    profile: toSpeciesFieldCardProfile(species),
+    total: catalogueSpecies.length,
+  };
+}

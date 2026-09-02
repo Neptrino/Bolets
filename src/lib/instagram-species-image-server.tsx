@@ -9,6 +9,7 @@ import { InstagramSpeciesCard } from "@/components/instagram-species-card";
 import {
   INSTAGRAM_SPECIES_SLIDE_COUNT,
   instagramSpeciesPublicationForDate,
+  instagramSpeciesPublicationForSpecies,
 } from "@/src/lib/instagram-species-series";
 
 export async function instagramSpeciesImageResponse({
@@ -24,9 +25,11 @@ export async function instagramSpeciesImageResponse({
 }) {
   if (!publicationDate) return new Response("Species publication date required", { status: 400 });
 
-  let publication: ReturnType<typeof instagramSpeciesPublicationForDate>;
+  let publication;
   try {
-    publication = instagramSpeciesPublicationForDate(publicationDate, speciesId);
+    publication = speciesId
+      ? { ...instagramSpeciesPublicationForSpecies(speciesId), publicationDate }
+      : instagramSpeciesPublicationForDate(publicationDate);
   } catch {
     return new Response("Invalid species publication date", { status: 400 });
   }

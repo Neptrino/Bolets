@@ -299,6 +299,7 @@ export async function createBufferInstagramPost({
   channelId,
   config,
   fetchImpl,
+  mode = "shareNow",
   type,
 }: {
   assets: Array<{ image: { url: string } } | { video: { url: string } }>;
@@ -306,6 +307,7 @@ export async function createBufferInstagramPost({
   channelId: string;
   config: BufferInstagramPublisherConfig;
   fetchImpl: typeof fetch;
+  mode?: "addToQueue" | "shareNow";
   type: "post" | "story" | "reel";
 }) {
   const result = await bufferGraphql<{
@@ -331,7 +333,7 @@ export async function createBufferInstagramPost({
             type,
           },
         },
-        mode: "shareNow",
+        mode,
         schedulingType: "automatic",
         text: caption,
       },

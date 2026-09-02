@@ -277,29 +277,33 @@ host downtime. Inspect failures with
 `journalctl -u bolets-instagram.service`; do not add blind POST retries because
 an interrupted response can occur after Buffer has accepted the publication.
 
-The growth schedule adds species field-guide carousels on Monday and Thursday
-at 19:00, an educational carousel on Wednesday at 19:00 and a short weekend
-Reel on Friday at 18:00. All jobs use the same signed current-day
-overview, reject off-schedule invocations and check a format-specific date
-marker before publishing. Install them after the application image includes
-`ffmpeg`, which renders the signed Reel frames into the public MP4 consumed by
-Buffer:
+The automated growth schedule adds an educational carousel on Wednesday at
+19:00 and a short weekend Reel on Friday at 18:00. Species field guides are
+added manually from `/admin/publicacio` to Buffer's next available queue slot,
+so their order, dates, text and cancellation stay editable in Buffer. Configure
+two weekly Instagram posting slots in Buffer (for example Monday and Thursday
+at 19:00) before building that queue. The automated jobs use the same signed
+current-day overview, reject off-schedule invocations and check a
+format-specific date marker before publishing. Install them after the
+application image includes `ffmpeg`, which renders the signed Reel frames into
+the public MP4 consumed by Buffer:
 
 ```bash
 sudo install -m 755 deploy/vps/publish-instagram-growth.sh /opt/bolets/app/deploy/vps/
 sudo install -m 644 deploy/vps/bolets-instagram-growth@.service /etc/systemd/system/
 sudo install -m 644 deploy/vps/bolets-instagram-education.timer /etc/systemd/system/
-sudo install -m 644 deploy/vps/bolets-instagram-species.timer /etc/systemd/system/
 sudo install -m 644 deploy/vps/bolets-instagram-weekend.timer /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now bolets-instagram-education.timer bolets-instagram-species.timer bolets-instagram-weekend.timer
+sudo systemctl enable --now bolets-instagram-education.timer bolets-instagram-weekend.timer
 sudo systemctl list-timers 'bolets-instagram*'
 ```
 
 Do not start either growth service merely to test it: the endpoint intentionally
 rejects the wrong weekday, while a successful scheduled call publishes at once.
 Preview the signed image and Reel routes instead. The authenticated admin report
-at `/admin/publicacio` shows the latest 30-day metrics returned by Buffer.
+at `/admin/publicacio` creates species carousels in the Buffer queue and shows
+the latest 30-day metrics returned by Buffer. Open Buffer at
+`https://publish.buffer.com/` to manage the resulting calendar.
 
 ## 3. Check out Bolets and validate Compose
 
