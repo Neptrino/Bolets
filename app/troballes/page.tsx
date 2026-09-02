@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { ArrowUpRight, Camera, Eye, Grid3X3, MapPinOff, Sprout } from "lucide-react";
+import { ArrowUpRight, Eye, Grid3X3, MapPinOff, Sprout } from "lucide-react";
 import Link from "next/link";
+import { FindingAccessCta } from "@/components/findings/finding-access-cta";
 import { FindingCard } from "@/components/findings/finding-card";
 import { JsonLd } from "@/components/json-ld";
 import { PublicFindingsMap } from "@/components/findings/public-findings-map";
@@ -57,18 +58,7 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
       },
     }} /> : null}
     <PageHeader className="findings-page-header" eyebrow="Quadern de camp i atles compartit" title={<>Del bosc al teu mapa, <PageTitleAccent>fins i tot sense cobertura</PageTitleAccent></>} />
-    <aside className="findings-publish-cta" aria-labelledby="findings-publish-cta-title">
-      <span className="findings-publish-cta-icon"><Camera size={23} aria-hidden="true" /></span>
-      <div className="findings-publish-cta-copy">
-        <p>Obre més detall</p>
-        <h2 id="findings-publish-cta-title">Una troballa amb foto obre el mapa d’1 km durant 7 dies</h2>
-        <span>La foto i el dia poden ser públics; el punt exacte i les notes continuen sent privats.</span>
-      </div>
-      <div className="findings-publish-cta-actions">
-        <Link className="finding-button" href="/troballes/nova">Afegir una troballa <ArrowUpRight size={17} aria-hidden="true" /></Link>
-        <Link href="/les-meves-troballes">Obrir el meu quadern</Link>
-      </div>
-    </aside>
+    <FindingAccessCta secondaryHref="/les-meves-troballes" secondaryLabel="Obrir el meu quadern" />
     <div className="findings-hero-copy findings-hero-details">
       <span>Fes fotos al bosc i completa la troballa a casa: recuperem la data i el GPS quan la imatge els conserva, i sense cobertura queda desada al dispositiu.</span>
       <span>Al teu quadern conserves l’historial; a l’atles només mostrem el dia i una àrea de 10 × 10 km.</span>

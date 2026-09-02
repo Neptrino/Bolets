@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AccountNav } from "@/components/account-nav";
+import { FindingAccessCta } from "@/components/findings/finding-access-cta";
 import { PersonalFindings } from "@/components/findings/personal-findings";
 import { JournalSummary } from "@/components/my-forest/dashboard";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
@@ -22,9 +22,9 @@ export default async function PersonalFindingsPage() {
         eyebrow="Mapa i llista privats"
         title={<>Les meves <PageTitleAccent>troballes</PageTitleAccent></>}
         description="Aquí pots veure el punt exacte només quan vas decidir conservar-lo. La vista pública no rep mai aquestes coordenades."
-        actions={<Link className="finding-button" href="/troballes/nova">Anotar-ne una</Link>}
       />
       <AccountNav current="findings" />
+      <FindingAccessCta secondaryHref="/troballes" secondaryLabel="Veure l’atles públic" />
       <div className="account-journal-layout">
         <JournalSummary summary={journal} />
         <PersonalFindings />
