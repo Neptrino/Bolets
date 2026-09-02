@@ -31,49 +31,65 @@ const dateTimeFormat = new Intl.DateTimeFormat("ca-ES", {
   timeZone: "Europe/Madrid",
 });
 
-function ReadingCard({
-  reading,
+function AvailableReadingGroups({
+  readings,
   simulation,
 }: {
-  reading: SavedForestReading;
+  readings: SavedForestReading[];
   simulation: boolean;
 }) {
-  const summary = reading.summary;
-  if (reading.status !== "available" || !summary) return null;
+  const groups = new Map<string, {
+    name: string;
+    path: string;
+    type: string;
+    readings: SavedForestReading[];
+  }>();
+  for (const reading of readings) {
+    const group = groups.get(reading.territorySlug) ?? {
+      name: reading.territoryName,
+      path: reading.territoryPath,
+      type: reading.territoryType,
+      readings: [],
+    };
+    group.readings.push(reading);
+    groups.set(reading.territorySlug, group);
+  }
 
   return (
-    <article className={`forest-reading is-${reading.status}`}>
-      <header>
-        <div>
-          <p>
-            <MapPinned size={14} aria-hidden="true" />
-            {reading.territoryType} <span>·</span> <Link href={reading.territoryPath}>{reading.territoryName}</Link>
-          </p>
-          <h3>{reading.speciesName}</h3>
-        </div>
-        {simulation ? <span className="forest-simulation-badge">Simulació</span> : null}
-      </header>
-      <div className="forest-reading-score">
-        <span><strong>{summary.bestCell.score}</strong><small>/100</small></span>
-        <p><strong>{opportunityLabel(summary.bestCell.score)}</strong><small>Millor sector del territori</small></p>
-      </div>
-      <dl className="forest-reading-coverage">
-        <div>
-          <dt>Territori positiu</dt>
-          <dd><strong>{Math.round(summary.positiveCellShare * 100)}%</strong><small>{summary.positiveCellCount} de {summary.scoredCellCount} sectors</small></dd>
-        </div>
-        <div>
-          <dt>Territori amb 20 o més</dt>
-          <dd><strong>{Math.round(summary.score20CellShare * 100)}%</strong><small>{summary.score20CellCount} de {summary.scoredCellCount} sectors</small></dd>
-        </div>
-      </dl>
-      <footer>
-        <p><Clock3 size={14} aria-hidden="true" /> {simulation
-          ? "Dades simulades"
-          : `Dades de ${dateTimeFormat.format(new Date(summary.snapshot.observedAt))}`}</p>
-        <Link href={reading.mapPath}><MapIcon size={15} aria-hidden="true" /> Veure el mapa <ArrowUpRight size={14} aria-hidden="true" /></Link>
-      </footer>
-    </article>
+    <div className="forest-reading-groups">
+      {[...groups.entries()].map(([slug, group]) => {
+        const observedAt = group.readings[0]?.summary?.snapshot.observedAt;
+        return <section className="forest-reading-group" aria-labelledby={`reading-${slug}`} key={slug}>
+          <header>
+            <div>
+              <p><MapPinned size={14} aria-hidden="true" /> {group.type}</p>
+              <h3 id={`reading-${slug}`}><Link href={group.path}>{group.name}</Link></h3>
+            </div>
+            <p className="forest-reading-updated"><Clock3 size={14} aria-hidden="true" /> {simulation
+              ? "Dades simulades"
+              : observedAt ? `Dades de ${dateTimeFormat.format(new Date(observedAt))}` : "Dades actuals"}</p>
+            {simulation ? <span className="forest-simulation-badge">Simulació</span> : null}
+          </header>
+          <div className="forest-reading-columns" aria-hidden="true">
+            <span>Espècie</span><span>Millor sector</span><span>Extensió del territori</span><span />
+          </div>
+          <ul>{group.readings.map((reading) => {
+            const summary = reading.summary!;
+            return <li key={reading.speciesId}>
+              <strong className="forest-reading-species">{reading.speciesName}</strong>
+              <span className="forest-reading-score"><strong>{summary.bestCell.score}</strong><small>/100 · {opportunityLabel(summary.bestCell.score)}</small></span>
+              <dl className="forest-reading-coverage">
+                <div><dt>Positius</dt><dd>{Math.round(summary.positiveCellShare * 100)}% <small>{summary.positiveCellCount} sectors</small></dd></div>
+                <div><dt>Amb 20 o més</dt><dd>{Math.round(summary.score20CellShare * 100)}% <small>{summary.score20CellCount} sectors</small></dd></div>
+              </dl>
+              <Link href={reading.mapPath} aria-label={`Veure al mapa: ${reading.speciesName} ${reading.territoryName}`}>
+                <MapIcon size={15} aria-hidden="true" /> Veure el mapa <ArrowUpRight size={14} aria-hidden="true" />
+              </Link>
+            </li>;
+          })}</ul>
+        </section>;
+      })}
+    </div>
   );
 }
 
@@ -177,9 +193,7 @@ export function TodayForYou({
         </aside>
       ) : null}
       {availableReadings.length ? (
-        <div className="forest-readings">{availableReadings.map((reading) => (
-          <ReadingCard reading={reading} simulation={simulation} key={`${reading.territorySlug}:${reading.speciesId}`} />
-        ))}</div>
+        <AvailableReadingGroups readings={availableReadings} simulation={simulation} />
       ) : null}
       {compactReadings.length ? <CompactReadingGroups readings={compactReadings} /> : null}
       {!readings.length ? (

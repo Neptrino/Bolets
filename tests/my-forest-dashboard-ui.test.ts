@@ -52,8 +52,10 @@ describe("El meu bosc dashboard states", () => {
       simulation: true,
     }));
     expect(html).toContain("Veure el mapa");
-    expect(html).toContain("Territori positiu");
-    expect(html).toContain("Territori amb 20 o més");
+    expect(html).toContain("Positius");
+    expect(html).toContain("Amb 20 o més");
+    expect(html).toContain("forest-reading-group");
+    expect(html).not.toContain("forest-reading is-");
     expect(html).not.toContain("Factor més limitant");
     expect(html).not.toContain("Pluja de 26 dies");
     expect(html).not.toContain("temperatura de 20 dies");
