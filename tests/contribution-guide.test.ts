@@ -19,4 +19,13 @@ describe("shared contribution guide", () => {
     expect(html.match(/class="contribution-resolution-shot"/g)).toHaveLength(3);
     expect(html.match(/class="contribution-steps"/g)).toHaveLength(1);
   });
+
+  it("omits the public map explanation in the focused account layout", () => {
+    const html = renderToStaticMarkup(createElement(ContributionGuide, { showResolution: false }));
+
+    expect(html).not.toContain("contribution-resolution-shot");
+    expect(html).not.toContain("De 2,5 km a 250 m");
+    expect(html).toContain("Com funciona");
+    expect(html).toContain("Maneres de contribuir");
+  });
 });

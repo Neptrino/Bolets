@@ -27,7 +27,7 @@ export default async function AccountContributionPage() {
         <div className="account-content">
           <ContributionPanel />
         </div>
-        <ContributionGuide />
+        <ContributionGuide showResolution={false} />
       </div>
     </PageShell>
   );

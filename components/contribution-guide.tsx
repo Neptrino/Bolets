@@ -35,43 +35,45 @@ const mapResolutions = [
   },
 ] as const;
 
-export function ContributionGuide() {
+export function ContributionGuide({ showResolution = true }: { showResolution?: boolean }) {
   return (
     <div className="contribution-guide">
-      <section className="contribution-resolution" aria-labelledby="contribution-resolution-title">
-        <SectionHeader
-          meta="La mateixa zona, més detall"
-          title="De 2,5 km a 250 m"
-          titleId="contribution-resolution-title"
-          description="L’aprovació no canvia el model ni la seva certesa: obre quadrats més petits per explorar la mateixa lectura amb més precisió espacial."
-        />
-        <div className="contribution-resolution-grid">
-          {mapResolutions.map(({ resolution, distance, access, description }, index) => (
-            <div className="contribution-resolution-stage" key={resolution}>
-              <figure data-resolution={resolution}>
-                <div
-                  className="contribution-resolution-shot"
-                  role="img"
-                  aria-label={`Exemple del mapa del Montseny amb sectors de ${distance}`}
-                >
-                  <span className="contribution-resolution-cells" aria-hidden="true" />
-                  <span className="contribution-resolution-place">Montseny</span>
-                  <span className="contribution-resolution-size">{distance}</span>
-                </div>
-                <figcaption>
-                  <span>{access}</span>
-                  <strong>{distance} × {distance}</strong>
-                  <p>{description}</p>
-                </figcaption>
-              </figure>
-              {index < mapResolutions.length - 1 ? (
-                <ArrowRight className="contribution-resolution-arrow" size={22} aria-hidden="true" />
-              ) : null}
-            </div>
-          ))}
-        </div>
-        <p className="contribution-resolution-attribution">Exemple visual sobre cartografia de l’ICGC.</p>
-      </section>
+      {showResolution ? (
+        <section className="contribution-resolution" aria-labelledby="contribution-resolution-title">
+          <SectionHeader
+            meta="La mateixa zona, més detall"
+            title="De 2,5 km a 250 m"
+            titleId="contribution-resolution-title"
+            description="L’aprovació no canvia el model ni la seva certesa: obre quadrats més petits per explorar la mateixa lectura amb més precisió espacial."
+          />
+          <div className="contribution-resolution-grid">
+            {mapResolutions.map(({ resolution, distance, access, description }, index) => (
+              <div className="contribution-resolution-stage" key={resolution}>
+                <figure data-resolution={resolution}>
+                  <div
+                    className="contribution-resolution-shot"
+                    role="img"
+                    aria-label={`Exemple del mapa del Montseny amb sectors de ${distance}`}
+                  >
+                    <span className="contribution-resolution-cells" aria-hidden="true" />
+                    <span className="contribution-resolution-place">Montseny</span>
+                    <span className="contribution-resolution-size">{distance}</span>
+                  </div>
+                  <figcaption>
+                    <span>{access}</span>
+                    <strong>{distance} × {distance}</strong>
+                    <p>{description}</p>
+                  </figcaption>
+                </figure>
+                {index < mapResolutions.length - 1 ? (
+                  <ArrowRight className="contribution-resolution-arrow" size={22} aria-hidden="true" />
+                ) : null}
+              </div>
+            ))}
+          </div>
+          <p className="contribution-resolution-attribution">Exemple visual sobre cartografia de l’ICGC.</p>
+        </section>
+      ) : null}
 
       <section className="contribution-explainer" aria-labelledby="contribution-how-title">
         <SectionHeader
