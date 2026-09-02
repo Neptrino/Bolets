@@ -13,7 +13,7 @@ import {
   Sprout,
 } from "lucide-react";
 import { SectionHeader } from "@/components/page-layout";
-import { opportunityLabel } from "@/src/lib/scoring";
+import { getSuitabilityBand } from "@/src/lib/suitability-scale";
 import type {
   ForestPreferences,
   JournalSeasonSummary,
@@ -75,9 +75,10 @@ function AvailableReadingGroups({
           </div>
           <ul>{group.readings.map((reading) => {
             const summary = reading.summary!;
+            const band = getSuitabilityBand(summary.bestCell.score);
             return <li key={reading.speciesId}>
               <strong className="forest-reading-species">{reading.speciesName}</strong>
-              <span className="forest-reading-score"><strong>{summary.bestCell.score}</strong><small>/100 · {opportunityLabel(summary.bestCell.score)}</small></span>
+              <span className="forest-reading-score" style={{ color: band.color }}><strong>{summary.bestCell.score}</strong><small>/100 · {band.label.toLocaleLowerCase("ca")}</small></span>
               <dl className="forest-reading-coverage">
                 <div><dt>Positius</dt><dd>{Math.round(summary.positiveCellShare * 100)}% <small>{summary.positiveCellCount} sectors</small></dd></div>
                 <div><dt>Amb 20 o més</dt><dd>{Math.round(summary.score20CellShare * 100)}% <small>{summary.score20CellCount} sectors</small></dd></div>

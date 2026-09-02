@@ -22,7 +22,7 @@
 .forest-reading-species { font-size: var(--text-base); }
 .forest-reading-score { display: flex; gap: 5px; align-items: baseline; color: var(--moss); }
 .forest-reading-score > strong { font-size: var(--text-xl); line-height: 1; }
-.forest-reading-score > small { color: #58705d; font-size: var(--text-xs); font-weight: 850; }
+.forest-reading-score > small { color: inherit; font-size: var(--text-xs); font-weight: 850; opacity: .84; }
 .forest-reading-coverage { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 0; }
 .forest-reading-coverage div { display: grid; gap: 2px; }
 .forest-reading-coverage dt { color: var(--muted); font-size: var(--text-xs); }

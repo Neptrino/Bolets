@@ -56,6 +56,7 @@ describe("El meu bosc dashboard states", () => {
     expect(html).toContain("Amb 20 o més");
     expect(html).toContain("forest-reading-group");
     expect(html).not.toContain("forest-reading is-");
+    expect(html).toContain('color:#88a84f');
     expect(html).not.toContain("Factor més limitant");
     expect(html).not.toContain("Pluja de 26 dies");
     expect(html).not.toContain("temperatura de 20 dies");
