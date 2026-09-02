@@ -21,6 +21,10 @@ describe("prediction map rendering", () => {
     join(process.cwd(), "app", "bolets-avui", "page.tsx"),
     "utf8",
   );
+  const mapExplorerSource = readFileSync(
+    join(process.cwd(), "components", "map-explorer.tsx"),
+    "utf8",
+  );
 
   it("paints zero-score cells instead of leaving the map apparently empty", () => {
     expect(source).toContain("context.fillStyle = predictionMapCellColour(cell.score)");
@@ -77,6 +81,11 @@ describe("prediction map rendering", () => {
 
   it("starts the Avui heatmap at 2.5 km resolution", () => {
     expect(todayPageSource).toContain("maximumPredictionGridSizeM={2500}");
+  });
+
+  it("shows the prediction timeline only on the Avui overview map", () => {
+    expect(todayPageSource).toContain("showTimeline");
+    expect(mapExplorerSource).not.toContain("showTimeline");
   });
 
   it("coordinates timeline requests through one retrying network gate", () => {

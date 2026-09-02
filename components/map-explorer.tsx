@@ -223,7 +223,6 @@ export function MapExplorer({
         speciesId={speciesKey}
         mode={mode}
         predictionAvailable={species ? species.predictionMode === "current" : true}
-        showTimeline={mode === "prediction"}
         showReadyStatus={false}
         selectedCellId={selectedCellId}
         onCellClick={trackCellClick}
