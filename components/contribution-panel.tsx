@@ -1,7 +1,8 @@
 "use client";
 
 import { Camera, CheckCircle2, Clock3, ImagePlus, MapPinned, Send, ShieldCheck, Sprout, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import {
   CONTRIBUTION_DESCRIPTION_MIN_LENGTH,
   CONTRIBUTION_KIND_LABELS,
@@ -9,7 +10,6 @@ import {
   CONTRIBUTION_MEDIA_LIMIT,
   type ContributionKind,
   type ContributionRequestSummary,
-  type ContributorAccessSummary,
 } from "@/src/lib/contributions";
 import {
   removeStagedContributionMedia,
@@ -17,11 +17,6 @@ import {
   uploadContributionMedia,
 } from "@/src/lib/contributions/media-client";
 import { prepareFindingPhoto } from "@/src/lib/findings/photo-client";
-
-type ContributionState = {
-  access: ContributorAccessSummary;
-  requests: ContributionRequestSummary[];
-};
 
 const dateFormatter = new Intl.DateTimeFormat("ca-ES", {
   day: "numeric",
@@ -35,12 +30,6 @@ const statusLabel: Record<ContributionRequestSummary["status"], string> = {
   rejected: "No aprovada",
   withdrawn: "Retirada",
 };
-
-async function fetchContributionState() {
-  const response = await fetch("/api/me/contributions", { cache: "no-store" });
-  if (!response.ok) throw new Error("No s’han pogut carregar les aportacions.");
-  return response.json() as Promise<ContributionState>;
-}
 
 function ContributionStatusIcon({ status }: { status: ContributionRequestSummary["status"] }) {
   if (status === "approved") return <CheckCircle2 size={19} aria-hidden="true" />;
@@ -62,7 +51,6 @@ export function ContributionHistory({
 
   return (
     <div className="contribution-history">
-      <h3>Historial d’aportacions</h3>
       <ol>
         {requests.map((request) => {
           const statusDate = request.reviewedAt ?? request.createdAt;
@@ -102,8 +90,8 @@ export function ContributionHistory({
   );
 }
 
-export function ContributionPanel() {
-  const [state, setState] = useState<ContributionState | null>(null);
+export function ContributionPanel({ initialPending = false }: { initialPending?: boolean }) {
+  const router = useRouter();
   const [kind, setKind] = useState<ContributionKind>("useful_finding");
   const [description, setDescription] = useState("");
   const [evidenceUrl, setEvidenceUrl] = useState("");
@@ -112,23 +100,9 @@ export function ContributionPanel() {
   const [media, setMedia] = useState<PreparedContributionMedia[]>([]);
   const mediaRef = useRef(media);
   const [busy, setBusy] = useState(false);
+  const [submittedPending, setSubmittedPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-
-  const load = useCallback(async () => {
-    setState(await fetchContributionState());
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    void fetchContributionState()
-      .then((nextState) => {
-        if (!cancelled) setState(nextState);
-      })
-      .catch((error: unknown) => {
-        if (!cancelled) setMessage(error instanceof Error ? error.message : "No s’han pogut carregar les aportacions.");
-      });
-    return () => { cancelled = true; };
-  }, []);
+  const pending = initialPending || submittedPending;
 
   useEffect(() => {
     mediaRef.current = media;
@@ -210,8 +184,9 @@ export function ContributionPanel() {
       setMediaRightsConfirmed(false);
       media.forEach((item) => URL.revokeObjectURL(item.preview));
       setMedia([]);
+      setSubmittedPending(true);
       setMessage("Aportació enviada. La revisarem abans d’obrir el detall del mapa.");
-      await load();
+      router.refresh();
     } catch (error) {
       await removeStagedContributionMedia(stagedPaths);
       setMessage(error instanceof Error ? error.message : "No s’ha pogut enviar l’aportació.");
@@ -220,10 +195,8 @@ export function ContributionPanel() {
     }
   };
 
-  const pending = state?.requests.some((request) => request.status === "pending") ?? false;
-
   return (
-    <section className="contribution-panel" id="collaboracio" aria-labelledby="contribution-title">
+    <section className="contribution-panel" id="nova-aportacio" aria-labelledby="contribution-title">
       <div className="contribution-panel-heading">
         <span aria-hidden="true"><Sprout size={22} /></span>
         <div>
@@ -360,13 +333,6 @@ export function ContributionPanel() {
       </form>
 
       {message ? <p className="finding-notice" role="status">{message}</p> : null}
-
-      {state ? (
-        <ContributionHistory
-          requests={state.requests}
-          activeUntil={state.access.active ? state.access.activeUntil : null}
-        />
-      ) : null}
     </section>
   );
 }

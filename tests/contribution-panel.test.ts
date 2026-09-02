@@ -1,6 +1,12 @@
+import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ refresh: vi.fn() }),
+}));
+
 import { ContributionHistory, ContributionPanel } from "@/components/contribution-panel";
 
 describe("contribution form", () => {
@@ -17,6 +23,19 @@ describe("contribution form", () => {
     expect(html).toContain("Proposa una col·laboració");
     expect(html).not.toContain("contribution-access-state");
     expect(html).not.toContain("El mapa públic mostra sectors de 2,5 km");
+    expect(html).not.toContain("contribution-history");
+  });
+
+  it("places account status before the form and contribution history in its own section", () => {
+    const page = readFileSync("app/compte/col-laboracio/page.tsx", "utf8");
+    const status = page.indexOf('className="contribution-account-status"');
+    const form = page.indexOf('className="account-contribution-layout"');
+    const history = page.indexOf('className="contribution-account-history"');
+
+    expect(status).toBeGreaterThan(-1);
+    expect(status).toBeLessThan(form);
+    expect(form).toBeLessThan(history);
+    expect(page).toContain("<ContributionHistory");
   });
 
   it("makes an approved contribution and its active detailed-map access explicit", () => {
