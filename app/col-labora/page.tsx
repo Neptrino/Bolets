@@ -18,8 +18,8 @@ export default function ContributePage() {
         description={
           <span className="contribution-hero-copy">
             <span>
-              El mapa públic continua disponible amb sectors de 2,5 km. Quan aprovem una
-              aportació útil, el teu compte pot consultar sectors d’1 km i 250 m durant 90 dies.
+              El mapa públic mostra sectors de 2,5 km. Quan aprovem una aportació útil,
+              el teu compte pot consultar sectors d’1 km i 250 m durant 90 dies.
             </span>
             <Link className="button" href="/compte/col-laboracio">Proposar una aportació</Link>
           </span>
