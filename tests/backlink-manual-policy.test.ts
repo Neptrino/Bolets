@@ -1,11 +1,27 @@
 import { describe, expect, it } from "vitest";
 
-import { backlinkRescanMode, manualApprovalBlocker } from "@/src/lib/backlinks/manual-policy";
+import {
+  backlinkRescanMode,
+  isManuallyReviewedContact,
+  manualApprovalBlocker,
+} from "@/src/lib/backlinks/manual-policy";
 
 describe("manual backlink decisions", () => {
   it("allows an uncontacted low-score prospect because score is intentionally not a hard gate", () => {
     expect(manualApprovalBlocker({
       contactEmail: "editorial@example.cat",
+      domain: "example.cat",
+      existingLink: false,
+      sendCount: 0,
+      status: "discovered",
+    })).toBeNull();
+  });
+
+  it("allows a human-reviewed organizational mailbox on the prospect domain", () => {
+    expect(isManuallyReviewedContact("casesdecolonies@fundesplai.org", "www.fundesplai.org")).toBe(true);
+    expect(manualApprovalBlocker({
+      contactEmail: "casesdecolonies@fundesplai.org",
+      domain: "www.fundesplai.org",
       existingLink: false,
       sendCount: 0,
       status: "discovered",
@@ -15,12 +31,14 @@ describe("manual backlink decisions", () => {
   it("keeps mailbox and existing-link safeguards mandatory", () => {
     expect(manualApprovalBlocker({
       contactEmail: "persona@example.cat",
+      domain: "another-organization.cat",
       existingLink: false,
       sendCount: 0,
       status: "discovered",
     })).toBe("invalid-contact");
     expect(manualApprovalBlocker({
       contactEmail: "premsa@example.cat",
+      domain: "example.cat",
       existingLink: true,
       sendCount: 0,
       status: "discovered",
@@ -30,6 +48,7 @@ describe("manual backlink decisions", () => {
   it("locks a prospect after any recorded send", () => {
     expect(manualApprovalBlocker({
       contactEmail: "info@example.cat",
+      domain: "example.cat",
       existingLink: false,
       sendCount: 1,
       status: "sent",
