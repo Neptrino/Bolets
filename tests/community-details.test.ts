@@ -40,7 +40,7 @@ describe("admin community details", () => {
     const dialog = readFileSync("app/admin/(private)/usuaris/user-access-dialog.tsx", "utf8");
     const actions = readFileSync("app/admin/(private)/usuaris/actions.ts", "utf8");
     const server = readFileSync("src/lib/contributions/server.ts", "utf8");
-    const migration = readFileSync("supabase/migrations/20260902191600_admin_manual_map_access.sql", "utf8");
+    const migration = readFileSync("supabase/migrations/20260903123701_admin_manual_map_access_ordered.sql", "utf8");
     expect(page).toContain("UserAccessDialog");
     expect(page).toContain('<th scope="col">Accions</th>');
     expect(dialog).toContain("Gestionar accés");
