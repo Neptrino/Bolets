@@ -17,6 +17,7 @@ import {
   positivePage,
 } from "../detail-utils";
 import styles from "../details.module.css";
+import { FindingAdminActions } from "./finding-admin-actions";
 
 export const metadata: Metadata = {
   title: "Troballes comunicades · Administració",
@@ -25,9 +26,11 @@ export const metadata: Metadata = {
 };
 
 type FindingSearchParams = {
+  error?: string | string[];
   flagged?: string | string[];
   page?: string | string[];
   state?: string | string[];
+  updated?: string | string[];
   verification?: string | string[];
   visibility?: string | string[];
 };
@@ -86,6 +89,8 @@ export default async function AdminFindingsPage({
   const query = await searchParams;
   const page = positivePage(query.page);
   const filters = parseFilters(query);
+  const error = firstValue(query.error);
+  const updated = firstValue(query.updated);
   const result = await readAdminFindingsPage(page, filters);
   const totalPages = Math.max(1, Math.ceil(result.total / result.pageSize));
   const first = result.total === 0 ? 0 : (result.page - 1) * result.pageSize + 1;
@@ -110,6 +115,14 @@ export default async function AdminFindingsPage({
         layout="split"
         tone="forest"
       />
+      {error ? (
+        <p className={styles.actionNotice} data-tone="error">
+          No s’ha pogut retirar la troballa. Pot haver canviat o ja no ser pública.
+        </p>
+      ) : null}
+      {updated === "hidden" ? (
+        <p className={styles.actionNotice}>Troballa retirada del públic correctament.</p>
+      ) : null}
       <nav className={styles.filterBar} aria-label="Filtres de troballes">
         {presets.map((preset) => (
           <Link href={preset.href} aria-current={isPreset(filters, preset.filters) ? "page" : undefined} key={preset.href}>
@@ -124,48 +137,91 @@ export default async function AdminFindingsPage({
       </div>
 
       {result.items.length > 0 ? (
-        <ol className={styles.detailList}>
-          {result.items.map((finding) => (
-            <li
-              className={styles.detailCard}
-              data-alert={finding.openFlagCount > 0}
-              data-state={finding.publicationState}
-              key={finding.id}
-            >
-              <div className={styles.identity}>
-                <span>Espècie comunicada</span>
-                <strong>
-                  {finding.visibility === "public" && finding.publicationState === "published"
-                    ? <Link className={styles.publicLink} href={`/troballes/${finding.id}`}>{finding.reportedSpeciesName}</Link>
-                    : finding.reportedSpeciesName}
-                </strong>
-                <small>{finding.reporterLabel} · enviada {formatDetailDateTime(finding.createdAt)}</small>
-                <div className={styles.badgeRow}>
-                  <span className={styles.badge} data-tone={finding.publicationState === "published" ? "green" : finding.publicationState === "draft" ? "amber" : "red"}>
-                    {stateLabel(finding.publicationState)}
-                  </span>
-                  <span className={styles.badge} data-tone={finding.visibility === "public" ? "blue" : undefined}>
-                    {finding.visibility === "public" ? "Pública" : "Privada"}
-                  </span>
-                  <span className={styles.badge} data-tone={finding.verificationStatus === "contested" ? "red" : finding.verificationStatus === "community_supported" ? "green" : undefined}>
-                    {verificationLabel(finding.verificationStatus)}
-                  </span>
-                  {finding.openFlagCount > 0 ? (
-                    <span className={styles.badge} data-tone="red">
-                      {numberFormatter.format(finding.openFlagCount)} avisos oberts
+        <div className={styles.adminTableFrame} tabIndex={0} role="region" aria-label="Taula de troballes comunicades">
+          <table className={`${styles.adminTable} ${styles.findingsTable}`}>
+            <caption className="visually-hidden">
+              Troballes comunicades, publicació, visibilitat, data observada, validació comunitària i avisos
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Troballa</th>
+                <th scope="col">Publicació</th>
+                <th scope="col">Visibilitat</th>
+                <th scope="col">Observada</th>
+                <th scope="col">Validació</th>
+                <th scope="col">Vots</th>
+                <th scope="col">Avisos</th>
+                <th scope="col"><span className="visually-hidden">Accions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              {result.items.map((finding) => (
+                <tr
+                  data-alert={finding.openFlagCount > 0}
+                  data-state={finding.publicationState}
+                  key={finding.id}
+                >
+                  <th scope="row">
+                    <strong>
+                      <Link className={styles.publicLink} href={`/admin/troballes/${finding.id}`}>
+                        {finding.reportedSpeciesName}
+                      </Link>
+                    </strong>
+                    <small>{finding.reporterLabel}</small>
+                    <time className={styles.tableMeta} dateTime={finding.createdAt}>
+                      Enviada {formatDetailDateTime(finding.createdAt)}
+                    </time>
+                  </th>
+                  <td>
+                    <span className={styles.badge} data-tone={finding.publicationState === "published" ? "green" : finding.publicationState === "draft" ? "amber" : "red"}>
+                      {stateLabel(finding.publicationState)}
                     </span>
-                  ) : null}
-                </div>
-              </div>
-              <dl className={styles.facts}>
-                <div><dt>Observada</dt><dd>{formatDetailDate(finding.observedOn)}</dd></div>
-                <div><dt>Vots</dt><dd>{numberFormatter.format(finding.voteCount)}</dd></div>
-                <div><dt>Vots de consens</dt><dd>{numberFormatter.format(finding.consensusVoteCount)}</dd></div>
-                <div><dt>Identificació consensuada</dt><dd>{finding.consensusSpeciesName ?? "—"}</dd></div>
-              </dl>
-            </li>
-          ))}
-        </ol>
+                  </td>
+                  <td>
+                    <span className={styles.badge} data-tone={finding.visibility === "public" ? "blue" : "neutral"}>
+                      {finding.visibility === "public" ? "Pública" : "Privada"}
+                    </span>
+                  </td>
+                  <td>
+                    <time dateTime={finding.observedOn}>{formatDetailDate(finding.observedOn)}</time>
+                  </td>
+                  <td>
+                    <span className={styles.badge} data-tone={finding.verificationStatus === "contested" ? "red" : finding.verificationStatus === "community_supported" ? "green" : "neutral"}>
+                      {verificationLabel(finding.verificationStatus)}
+                    </span>
+                    {finding.consensusSpeciesName ? (
+                      <small className={styles.tableMeta}>{finding.consensusSpeciesName}</small>
+                    ) : null}
+                  </td>
+                  <td>
+                    <strong>{numberFormatter.format(finding.voteCount)}</strong>
+                    <small className={styles.tableMeta}>
+                      {numberFormatter.format(finding.consensusVoteCount)} de consens
+                    </small>
+                  </td>
+                  <td>
+                    {finding.openFlagCount > 0 ? (
+                      <span className={styles.badge} data-tone="red">
+                        {numberFormatter.format(finding.openFlagCount)} oberts
+                      </span>
+                    ) : (
+                      <span className={styles.tableMuted}>—</span>
+                    )}
+                  </td>
+                  <td>
+                    <FindingAdminActions
+                      findingId={finding.id}
+                      findingName={finding.reportedSpeciesName}
+                      openFlagCount={finding.openFlagCount}
+                      publicationState={finding.publicationState}
+                      visibility={finding.visibility}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div className={styles.emptyState}>
           <strong>No hi ha troballes amb aquest filtre</strong>

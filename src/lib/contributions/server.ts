@@ -266,3 +266,24 @@ export async function revokeContributorAccess(userId: string, reason: string, re
   if (error) throw error;
   return data === true;
 }
+
+export type ManualMapAccessLevel = "finding" | "contributor";
+
+export async function grantManualMapAccess(
+  userId: string,
+  accessLevel: ManualMapAccessLevel,
+  durationDays: number,
+  reason: string,
+  reviewer: User,
+) {
+  const admin = createSupabaseAdminClient();
+  const { data, error } = await admin.rpc("grant_manual_map_access", {
+    p_user_id: userId,
+    p_access_level: accessLevel,
+    p_duration_days: durationDays,
+    p_reason: reason,
+    p_reviewer_id: reviewer.id,
+  });
+  if (error) throw error;
+  return data as string;
+}

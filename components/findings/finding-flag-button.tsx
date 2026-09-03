@@ -83,7 +83,7 @@ export function FindingFlagButton({ findingId }: { findingId: string }) {
           <p id={descriptionId}>Explica’ns què cal revisar. No hi incloguis dades personals ni sensibles.</p>
         </div>
         <div className="finding-field"><span>Tipus de problema</span>
-          <FormSelect aria-label="Tipus de problema" value={reason} onValueChange={(value) => setReason(value as FlagReason)} options={[{ value: "other", label: "Informació incorrecta" }, { value: "privacy", label: "Privadesa" }, { value: "unsafe", label: "Contingut insegur" }, { value: "spam", label: "Contingut brossa" }]} />
+          <FormSelect aria-label="Tipus de problema" value={reason} onValueChange={(value) => setReason(value as FlagReason)} options={[{ value: "other", label: "Informació incorrecta" }, { value: "privacy", label: "Privadesa" }, { value: "unsafe", label: "Contingut insegur" }, { value: "spam", label: "Contingut brossa" }]} portalContainer={dialog} />
         </div>
         <label className="finding-field">Detalls opcionals
           <textarea value={detail} maxLength={500} onChange={(event) => setDetail(event.target.value)} placeholder="Què hauríem de revisar?" />

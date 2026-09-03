@@ -2,7 +2,7 @@
 
 import { Select } from "@base-ui/react/select";
 import { Check, ChevronDown } from "lucide-react";
-import type { Ref } from "react";
+import type { Ref, RefObject } from "react";
 
 export type FormSelectOption = {
   value: string;
@@ -18,6 +18,7 @@ type FormSelectProps = {
   required?: boolean;
   className?: string;
   triggerRef?: Ref<HTMLButtonElement>;
+  portalContainer?: HTMLElement | ShadowRoot | RefObject<HTMLElement | ShadowRoot | null> | null;
   "aria-label": string;
 };
 
@@ -30,6 +31,7 @@ export function FormSelect({
   required = false,
   className,
   triggerRef,
+  portalContainer,
   "aria-label": ariaLabel,
 }: FormSelectProps) {
   const items = emptyLabel
@@ -49,7 +51,7 @@ export function FormSelect({
         <Select.Value className="form-select-value" placeholder={emptyLabel ?? "Selecciona una opció"} />
         <Select.Icon className="form-select-icon"><ChevronDown size={18} aria-hidden="true" /></Select.Icon>
       </Select.Trigger>
-      <Select.Portal>
+      <Select.Portal container={portalContainer}>
         <Select.Positioner className="form-select-positioner" sideOffset={7} align="start" alignItemWithTrigger={false}>
           <Select.Popup className="form-select-popup">
             <Select.List className="form-select-list">
