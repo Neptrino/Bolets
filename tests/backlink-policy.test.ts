@@ -158,4 +158,43 @@ describe("backlink outreach policy", () => {
     `, "https://www.elnacional.cat/ca/gourmeteria/article.html");
     expect(page.outboundLinkCount).toBe(0);
   });
+
+  it("does not count share controls, comment forms, consent links, or related modules", () => {
+    const page = inspectHtml(`
+      <html><head><title>Comença la temporada de bolets</title></head><body>
+      <div class="entry-content with-share">
+        <div class="share-float">
+          <a aria-label="Share on Pinterest"
+            href="https://www.pinterest.com/pin/create/bookmarklet/?url=https%3A%2F%2Fmedi.example.cat%2Farticle">Pinterest</a>
+        </div>
+        <div class="content-inner">
+          <p>Article sense cap citació externa.</p>
+          <a href="https://medi.example.cat/un-altre-article">Un altre article del mateix mitjà</a>
+        </div>
+      </div>
+      <div class="related-posts"><a href="https://partner.example.org/promo">Contingut relacionat</a></div>
+      <form class="comment-form">
+        <div class="recaptcha-opt-in">
+          <a href="https://policies.google.com/privacy">Privacy Policy</a>
+          <a href="https://policies.google.com/terms">Terms of Use</a>
+        </div>
+      </form>
+      </body></html>
+    `, "https://medi.example.cat/comenca-la-temporada-de-bolets/");
+    expect(page.outboundLinkCount).toBe(0);
+  });
+
+  it("counts distinct editorial sources inside the article while ignoring sponsored links", () => {
+    const page = inspectHtml(`
+      <html><head><title>Guia de bolets</title></head><body>
+      <main><article>
+        <p>Segons <a href="https://research.example.org/study#results">aquest estudi</a>, la temporada canvia.</p>
+        <p>Vegeu també <a href="https://data.example.edu/report.pdf">les dades públiques</a>.</p>
+        <a rel="sponsored" href="https://shop.example.com/cistells">Compra un cistell</a>
+        <aside><a href="https://newsletter.example.net/signup">Butlletí</a></aside>
+      </article></main>
+      </body></html>
+    `, "https://news.example.cat/guia-bolets");
+    expect(page.outboundLinkCount).toBe(2);
+  });
 });

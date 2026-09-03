@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, ArrowDown, ArrowUp, CalendarClock, ChevronLeft, ChevronRight, ExternalLink, History, Link2, PauseCircle, RefreshCw, Search, Send, ShieldCheck, X } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, CalendarClock, ChevronLeft, ChevronRight, ExternalLink, History, Link2, PauseCircle, Search, Send, ShieldCheck, X } from "lucide-react";
 
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { readBacklinkDashboard, readBacklinkProspectDetail } from "@/src/lib/backlinks/admin.server";
@@ -21,6 +21,7 @@ import { requireOperationalSession } from "@/src/lib/operational-status-session"
 import { runBacklinkAutomationAction } from "./actions";
 import { BacklinkDetailContent } from "./backlink-detail-content";
 import { BacklinkSettingsForm } from "./backlink-settings-form";
+import { RunBacklinkCycleButton } from "./run-cycle-button";
 import styles from "./backlinks.module.css";
 import { BacklinkSidePanel } from "./side-panel";
 
@@ -54,6 +55,15 @@ function braveBatchLabel(searches: BacklinkSearchContext[], planned = false) {
 
 function firstSearchParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] ?? null : value ?? null;
+}
+
+function runStatusLabel(status: string) {
+  if (status === "succeeded") return "completat";
+  if (status === "partial") return "completat amb incidències";
+  if (status === "running") return "en curs";
+  if (status === "failed") return "fallit";
+  if (status === "disabled") return "aturat";
+  return status;
 }
 
 function databaseErrorDetails(error: unknown) {
@@ -148,6 +158,21 @@ export default async function AdminBacklinksPage({
   const firstResult = page.total === 0 ? 0 : (page.page - 1) * page.pageSize + 1;
   const lastResult = Math.min(page.total, page.page * page.pageSize);
   const filtersActive = Boolean(tableQuery.search || tableQuery.status);
+  const updateNotice = firstSearchParam(rawSearchParams.updated);
+  const errorNotice = firstSearchParam(rawSearchParams.error);
+  const runNotice = errorNotice === "run-failed"
+    ? { tone: "error", title: "El cicle ha fallat", detail: "Revisa la darrera execució i torna-ho a provar." }
+    : updateNotice === "run-busy"
+      ? { tone: "info", title: "Ja hi ha un cicle en curs", detail: "No se n’ha iniciat cap duplicat. Torna a carregar el tauler quan acabi." }
+      : updateNotice === "run-disabled"
+        ? { tone: "info", title: "L’automatització està en pausa", detail: "Activa el descobriment abans d’executar un cicle." }
+        : updateNotice === "run" && dashboard.recentRun
+          ? {
+              tone: dashboard.recentRun.status === "failed" ? "error" : "success",
+              title: `Cicle ${runStatusLabel(dashboard.recentRun.status)}`,
+              detail: `${dashboard.recentRun.addedCount} afegides · ${dashboard.recentRun.inspectedCount} inspeccionades · ${dashboard.recentRun.sentCount} enviades · ${dashboard.recentRun.failedCount} errors`,
+            }
+          : null;
   const detailReturnTo = selectedProspect
     ? backlinkDetailHref(selectedProspect.id, { ...tableQuery, page: page.page })
     : backlinkTableHref(tableQuery, { page: page.page });
@@ -171,11 +196,15 @@ export default async function AdminBacklinksPage({
             <small>{automationDescription}</small>
           </div>
           <form action={runBacklinkAutomationAction}>
-            <button type="submit" disabled={!configured || !dashboard.settings.enabled}>
-              <RefreshCw aria-hidden="true" /> Executa un cicle ara
-            </button>
+            <RunBacklinkCycleButton disabled={!configured || !dashboard.settings.enabled} />
           </form>
         </section>
+        {runNotice ? (
+          <div className={styles.runFeedback} data-tone={runNotice.tone} role={runNotice.tone === "error" ? "alert" : "status"}>
+            <strong>{runNotice.title}</strong>
+            <span>{runNotice.detail}</span>
+          </div>
+        ) : null}
         <section className={styles.searchSchedule} aria-label="Darrera cerca i cerca programada">
           <article>
             <History aria-hidden="true" />
@@ -309,7 +338,7 @@ export default async function AdminBacklinksPage({
 
       {dashboard.recentRun ? (
         <aside className={styles.runNote}>
-          <strong>Darrera execució: {dashboard.recentRun.status}</strong>
+          <strong>Darrera execució: {runStatusLabel(dashboard.recentRun.status)}</strong>
           <span>{dashboard.recentRun.inspectedCount} inspeccionades · {dashboard.recentRun.sentCount} enviades · {dashboard.recentRun.linkedCount} enllaços nous · {dashboard.recentRun.failedCount} errors</span>
           {dashboard.recentRun.detail ? <small>{dashboard.recentRun.detail}</small> : null}
         </aside>

@@ -10,10 +10,17 @@ import { normalizeEmail } from "@/src/lib/backlinks/policy";
 const USER_AGENT = "BoletsAtles-Outreach/1.0 (+https://bolets.app/equip-editorial)";
 const MAX_BYTES = 512_000;
 const NON_EDITORIAL_EXTERNAL_HOSTS = [
-  "facebook.com", "instagram.com", "linkedin.com", "pinterest.", "tiktok.com",
+  "facebook.com", "instagram.com", "linkedin.com", "pinterest.com", "tiktok.com",
   "t.me", "telegram.me", "twitter.com", "whatsapp.com", "x.com", "youtube.com",
   "profile.google.com",
 ];
+const NON_EDITORIAL_CONTAINER_TAGS = new Set(["aside", "dialog", "footer", "form", "header", "nav"]);
+const VOID_HTML_TAGS = new Set([
+  "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param",
+  "source", "track", "wbr",
+]);
+const NON_EDITORIAL_SCOPE = /(?:^|[\s_-])(?:ads?|advert(?:isement)?|author|breadcrumb|captcha|comment(?:s|form)?|consent|cookie|gdpr|newsletter|pagination|pager|promo|recaptcha|recommend(?:ed|ations?)?|related|share|sharing|sidebar|social|subscribe|tags?|toolbar|utility)(?:$|[\s_-])/i;
+const EDITORIAL_CONTENT_SCOPE = /(?:article[-_]body|article[-_]content|articlebody|content[-_]inner|entry[-_]content|post[-_]body|post[-_]content|story[-_]body|story[-_]content)/i;
 
 function privateIpv4(address: string) {
   const parts = address.split(".").map(Number);
@@ -205,19 +212,81 @@ function relatedHost(candidate: string, source: string) {
   return candidateDomain === sourceDomain;
 }
 
+function listedHost(candidate: string, listed: string) {
+  return candidate === listed || candidate.endsWith(`.${listed}`);
+}
+
+function scopeAttributes(tag: string) {
+  return ["class", "id", "itemprop", "role", "aria-label"]
+    .map((name) => attribute(tag, name))
+    .filter(Boolean)
+    .join(" ");
+}
+
+function editorialRootMode(html: string): "marked" | "article" | "main" | "all" {
+  for (const match of html.matchAll(/<[a-z][^>]*>/gi)) {
+    if (EDITORIAL_CONTENT_SCOPE.test(scopeAttributes(match[0]))) return "marked";
+  }
+  if (/<article\b/i.test(html)) return "article";
+  if (/<main\b/i.test(html)) return "main";
+  return "all";
+}
+
 function outboundEditorialLinkCount(html: string, base: URL) {
   const siteHost = new URL(SITE_URL).hostname;
-  const editorialHtml = html.replace(/<(nav|header|footer|aside)\b[^>]*>[\s\S]*?<\/\1>/gi, " ");
+  const structuralHtml = html
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<(script|style|noscript|svg|template)\b[^>]*>[\s\S]*?<\/\1>/gi, " ");
+  const rootMode = editorialRootMode(structuralHtml);
   const links = new Set<string>();
-  for (const match of editorialHtml.matchAll(/<a\b[^>]*href\s*=\s*["']([^"']+)["'][^>]*>/gi)) {
-    try {
-      const linked = new URL(decodeHtml(match[1]!), base);
-      if (!["http:", "https:"].includes(linked.protocol)) continue;
-      if (relatedHost(linked.hostname, base.hostname) || relatedHost(linked.hostname, siteHost)) continue;
-      if (NON_EDITORIAL_EXTERNAL_HOSTS.some((part) => linked.hostname === part || linked.hostname.endsWith(`.${part}`))) continue;
-      linked.hash = "";
-      links.add(linked.toString());
-    } catch { /* Ignore malformed and unsupported links. */ }
+
+  type Scope = { tag: string; excluded: boolean; markedRoot: boolean; articleRoot: boolean; mainRoot: boolean };
+  const scopes: Scope[] = [];
+  for (const match of structuralHtml.matchAll(/<\/?([a-z][\w:-]*)\b[^>]*>/gi)) {
+    const tagMarkup = match[0];
+    const tag = match[1]!.toLowerCase();
+    if (tagMarkup.startsWith("</")) {
+      let openingIndex = -1;
+      for (let index = scopes.length - 1; index >= 0; index -= 1) {
+        if (scopes[index]?.tag === tag) {
+          openingIndex = index;
+          break;
+        }
+      }
+      if (openingIndex >= 0) scopes.length = openingIndex;
+      continue;
+    }
+
+    const parent = scopes.at(-1);
+    const markers = scopeAttributes(tagMarkup);
+    const scope: Scope = {
+      tag,
+      excluded: Boolean(parent?.excluded || NON_EDITORIAL_CONTAINER_TAGS.has(tag) || NON_EDITORIAL_SCOPE.test(markers)),
+      markedRoot: Boolean(parent?.markedRoot || EDITORIAL_CONTENT_SCOPE.test(markers)),
+      articleRoot: Boolean(parent?.articleRoot || tag === "article"),
+      mainRoot: Boolean(parent?.mainRoot || tag === "main"),
+    };
+    const inEditorialContent = rootMode === "all"
+      || (rootMode === "marked" && scope.markedRoot)
+      || (rootMode === "article" && scope.articleRoot)
+      || (rootMode === "main" && scope.mainRoot);
+
+    if (tag === "a" && !scope.excluded && inEditorialContent) {
+      const href = attribute(tagMarkup, "href");
+      if (href) {
+        try {
+          const linked = new URL(href, base);
+          if (!["http:", "https:"].includes(linked.protocol)) continue;
+          if (relatedHost(linked.hostname, base.hostname) || relatedHost(linked.hostname, siteHost)) continue;
+          if (NON_EDITORIAL_EXTERNAL_HOSTS.some((host) => listedHost(linked.hostname, host))) continue;
+          if (/\bsponsored\b/i.test(attribute(tagMarkup, "rel"))) continue;
+          linked.hash = "";
+          links.add(linked.toString());
+        } catch { /* Ignore malformed and unsupported links. */ }
+      }
+    }
+
+    if (!VOID_HTML_TAGS.has(tag) && !tagMarkup.endsWith("/>")) scopes.push(scope);
   }
   return Math.min(links.size, 500);
 }

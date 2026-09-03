@@ -51,7 +51,14 @@
   cursor: pointer;
 }
 .statusBand button:disabled { cursor: not-allowed; opacity: .45; }
+.statusBand button[data-pending="true"] svg { animation: settings-saving-spin 900ms linear infinite; }
 .statusBand button:focus-visible, .saveButton:focus-visible, .settingsForm input:focus-visible, .searchForm button:focus-visible, .statusFilters a:focus-visible, .tableFrame a:focus-visible, .pager a:focus-visible, .backLink:focus-visible, .detailLead a:focus-visible, .detailFacts a:focus-visible, .deliveryList summary:focus-visible, .manualControl input:focus-visible, .manualControl textarea:focus-visible, .manualControl button:focus-visible, .rescanControl button:focus-visible, .domainControl input:focus-visible, .domainControl button:focus-visible { outline: 3px solid var(--apricot); outline-offset: 3px; }
+
+.runFeedback { display: grid; gap: 3px; padding: 12px 15px; border-left: 4px solid var(--forest-panel); background: var(--surface-muted); }
+.runFeedback strong { font-size: var(--text-sm); }
+.runFeedback span { color: var(--muted); font-size: var(--text-xs); line-height: 1.45; }
+.runFeedback[data-tone="error"] { border-left-color: var(--danger-ink); background: var(--danger-surface); color: var(--danger-ink); }
+.runFeedback[data-tone="error"] span { color: inherit; }
 
 .searchSchedule { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-muted); }
 .searchSchedule article { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; padding: 14px 16px; }
@@ -417,4 +424,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .sidePanel { animation: none; }
+  .statusBand button[data-pending="true"] svg { animation: none; }
 }

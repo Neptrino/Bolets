@@ -97,10 +97,18 @@ export async function updateBacklinkSettingsAction(
 
 export async function runBacklinkAutomationAction() {
   await requireOperationalSession();
-  await runBacklinkAutomation();
+  let outcome = "run";
+  try {
+    const result = await runBacklinkAutomation();
+    if (result.status === "busy") outcome = "run-busy";
+    if (result.status === "disabled") outcome = "run-disabled";
+  } catch (error) {
+    console.error("Manual backlink cycle failed", error);
+    redirect("/admin/enllacos?error=run-failed");
+  }
   revalidatePath("/admin/enllacos");
   revalidatePath("/admin");
-  redirect("/admin/enllacos?updated=run");
+  redirect(`/admin/enllacos?updated=${outcome}`);
 }
 
 export async function overrideBacklinkProspectAction(formData: FormData) {
