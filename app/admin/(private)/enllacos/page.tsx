@@ -21,6 +21,7 @@ import { requireOperationalSession } from "@/src/lib/operational-status-session"
 import { runBacklinkAutomationAction } from "./actions";
 import { BacklinkDetailContent } from "./backlink-detail-content";
 import { BacklinkSettingsForm } from "./backlink-settings-form";
+import { BacklinkTableActions } from "./backlink-table-actions";
 import { RunBacklinkCycleButton } from "./run-cycle-button";
 import styles from "./backlinks.module.css";
 import { BacklinkSidePanel } from "./side-panel";
@@ -64,6 +65,21 @@ function runStatusLabel(status: string) {
   if (status === "failed") return "fallit";
   if (status === "disabled") return "aturat";
   return status;
+}
+
+function tableActionNotice(updated: string | null, error: string | null) {
+  const errors: Record<string, string> = {
+    "already-contacted": "No s’ha canviat: ja hi ha hagut un intent d’enviament.",
+    "domain-cooldown": "No s’ha aprovat: el domini encara és dins del període de refredament.",
+    "domain-pending": "No s’ha aprovat: ja hi ha un altre correu pendent per a aquest domini.",
+    "existing-link": "No s’ha aprovat: la pàgina ja enllaça Bolets Atles.",
+    "invalid-contact": "No s’ha aprovat: primer cal desar una adreça de correu vàlida.",
+    suppressed: "No s’ha aprovat: el correu o el domini és a la llista de supressió.",
+  };
+  if (error && errors[error]) return { tone: "error", message: errors[error] };
+  if (updated === "manual-approve") return { tone: "success", message: "Oportunitat aprovada i preparada per enviar." };
+  if (updated === "manual-exclude") return { tone: "success", message: "Oportunitat descartada i retirada de la llista activa." };
+  return null;
 }
 
 function databaseErrorDetails(error: unknown) {
@@ -160,6 +176,7 @@ export default async function AdminBacklinksPage({
   const filtersActive = Boolean(tableQuery.search || tableQuery.status);
   const updateNotice = firstSearchParam(rawSearchParams.updated);
   const errorNotice = firstSearchParam(rawSearchParams.error);
+  const quickNotice = tableActionNotice(updateNotice, errorNotice);
   const runNotice = errorNotice === "run-failed"
     ? { tone: "error", title: "El cicle ha fallat", detail: "Revisa la darrera execució i torna-ho a provar." }
     : updateNotice === "run-busy"
@@ -284,6 +301,11 @@ export default async function AdminBacklinksPage({
             {filtersActive ? <Link href="/admin/enllacos" className={styles.clearFilters}><X aria-hidden="true" /> Neteja</Link> : null}
           </nav>
         </div>
+        {quickNotice ? (
+          <p className={styles.tableFeedback} data-tone={quickNotice.tone} role={quickNotice.tone === "error" ? "alert" : "status"}>
+            {quickNotice.message}
+          </p>
+        ) : null}
         <div className={styles.collectionSummary} aria-live="polite">
           <strong>{page.total} {page.total === 1 ? "resultat" : "resultats"}</strong>
           <span>Mostrant {firstResult}–{lastResult}</span>
@@ -299,6 +321,7 @@ export default async function AdminBacklinksPage({
                   <th>Contacte</th>
                   <th>Destinació</th>
                   <SortHeader query={tableQuery} sort="updated">Actualitzat</SortHeader>
+                  <th>Accions</th>
                 </tr>
               </thead>
               <tbody>
@@ -323,6 +346,19 @@ export default async function AdminBacklinksPage({
                     <td>{prospect.contactEmail ?? "—"}<small>{prospect.sendCount ? `${prospect.sendCount} enviament${prospect.sendCount > 1 ? "s" : ""}` : "Sense contactar"}</small></td>
                     <td><span className={styles.targetTitle}>{prospect.targetTitle}</span></td>
                     <td><time dateTime={prospect.updatedAt}>{formatDate(prospect.updatedAt)}</time><small>Comprovat {formatDate(prospect.lastCheckedAt)}</small></td>
+                    <td>
+                      {prospect.sendCount === 0 && ["discovered", "ready"].includes(prospect.status) ? (
+                        <BacklinkTableActions
+                          canApprove={Boolean(prospect.contactEmail) && prospect.manualDecision !== "approved"}
+                          approvalDisabledReason={!prospect.contactEmail
+                            ? "Cal desar un correu abans d’aprovar"
+                            : prospect.manualDecision === "approved" ? "Ja està aprovada manualment" : null}
+                          pageTitle={prospect.pageTitle}
+                          prospectId={prospect.id}
+                          returnTo={backlinkTableHref(tableQuery, { page: page.page })}
+                        />
+                      ) : <span className={styles.noQuickAction}>—</span>}
+                    </td>
                   </tr>
                 ))}
               </tbody>
