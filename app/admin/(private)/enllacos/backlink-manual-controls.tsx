@@ -18,6 +18,7 @@ const errorMessages: Record<string, string> = {
   "missing-config": "Falta la configuració privada necessària per regenerar el correu.",
   "not-found": "L’oportunitat ja no existeix.",
   "protected-suppression": "Aquest bloqueig prové d’una baixa protegida i no es pot retirar.",
+  "recipient-used": "Aquesta bústia ja té un correu enviat o reservat per una altra oportunitat.",
   suppressed: "Aquest correu o domini és a la llista de supressió i no es pot aprovar.",
 };
 

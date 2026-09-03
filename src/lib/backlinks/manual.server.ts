@@ -16,6 +16,7 @@ import {
   isValidManualContact,
   manualApprovalBlocker,
 } from "@/src/lib/backlinks/manual-policy";
+import { isBacklinkRecipientReserved } from "@/src/lib/backlinks/recipient-history.server";
 import { isBacklinkSuppressed } from "@/src/lib/backlinks/suppression.server";
 import { SITE_URL } from "@/src/lib/seo";
 import type { BacklinkStatus } from "@/src/lib/backlinks/types";
@@ -57,6 +58,7 @@ export type BacklinkManualErrorCode =
   | "missing-config"
   | "not-found"
   | "protected-suppression"
+  | "recipient-used"
   | "rescan-failed"
   | "suppressed";
 
@@ -153,6 +155,9 @@ async function automaticStatus(row: ProspectRow, email: string | null, settings:
   if (!email) return { status: "discovered" as const, reason: "missing-contact" };
   if (!isRoleMailbox(email)) return { status: "discovered" as const, reason: "personal-mailbox" };
   if (await isBacklinkSuppressed(email, row.domain)) return { status: "suppressed" as const, reason: "suppression-list" };
+  if (await isBacklinkRecipientReserved(email, { prospectId: row.id })) {
+    return { status: "suppressed" as const, reason: "recipient-already-contacted" };
+  }
   if (row.score < settings.minimum_score) return { status: "discovered" as const, reason: "low-score" };
   if (await domainCoolingDown(row, settings.domain_cooldown_days)) {
     return { status: "discovered" as const, reason: "domain-cooldown" };
@@ -173,6 +178,7 @@ export async function approveBacklinkProspect(id: string, note: string, userId: 
   const email = row.contact_email && normalizeEmail(row.contact_email);
   if (!email) fail("invalid-contact");
   if (await isBacklinkSuppressed(email, row.domain)) fail("suppressed");
+  if (await isBacklinkRecipientReserved(email, { prospectId: row.id })) fail("recipient-used");
   if (await domainCoolingDown(row, settings.domain_cooldown_days)) fail("domain-cooldown");
   if (await domainHasPendingOutreach(row)) fail("domain-pending");
   const now = new Date().toISOString();
@@ -277,6 +283,7 @@ async function pendingMessageForContact(row: ProspectRow, email: string) {
     last_error: null,
     updated_at: new Date().toISOString(),
   }).eq("id", pending.id).eq("status", "pending").eq("attempt_count", 0);
+  if (updateError?.code === "23505") fail("recipient-used");
   if (updateError) throw updateError;
 }
 
@@ -286,6 +293,7 @@ export async function updateBacklinkContact(id: string, rawEmail: string, note: 
   const email = normalizeEmail(rawEmail);
   if (!email) fail("invalid-contact");
   if (await isBacklinkSuppressed(email, row.domain)) fail("suppressed");
+  if (await isBacklinkRecipientReserved(email, { prospectId: row.id })) fail("recipient-used");
   await pendingMessageForContact(row, email);
   const automatic = await automaticStatus(row, email, settings);
   const nextStatus = row.manual_decision === "approved"
@@ -331,6 +339,9 @@ async function manualApprovalStatus(row: ProspectRow, email: string | null, sett
   }
   if (await isBacklinkSuppressed(email, row.domain)) {
     return { status: "suppressed" as const, reason: "suppression-list" };
+  }
+  if (await isBacklinkRecipientReserved(email, { prospectId: row.id })) {
+    return { status: "suppressed" as const, reason: "recipient-already-contacted" };
   }
   if (await domainCoolingDown(row, settings.domain_cooldown_days)) {
     return { status: "discovered" as const, reason: "domain-cooldown" };

@@ -74,6 +74,7 @@ function tableActionNotice(updated: string | null, error: string | null) {
     "domain-pending": "No s’ha aprovat: ja hi ha un altre correu pendent per a aquest domini.",
     "existing-link": "No s’ha aprovat: la pàgina ja enllaça Bolets Atles.",
     "invalid-contact": "No s’ha aprovat: primer cal desar una adreça de correu vàlida.",
+    "recipient-used": "No s’ha aprovat: aquesta bústia ja té un correu enviat o reservat.",
     suppressed: "No s’ha aprovat: el correu o el domini és a la llista de supressió.",
   };
   if (error && errors[error]) return { tone: "error", message: errors[error] };

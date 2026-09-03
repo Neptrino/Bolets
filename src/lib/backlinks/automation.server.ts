@@ -7,7 +7,9 @@ import { createSupabaseAdminClient } from "@/src/lib/supabase/admin";
 import { SITE_URL } from "@/src/lib/seo";
 import { searchBraveWeb } from "@/src/lib/backlinks/brave.server";
 import { inspectPublicPage } from "@/src/lib/backlinks/crawler.server";
+import { dispatchBacklinkOutbox } from "@/src/lib/backlinks/delivery.server";
 import { backlinkDomainKey } from "@/src/lib/backlinks/domain-control";
+import { isBacklinkRecipientReserved } from "@/src/lib/backlinks/recipient-history.server";
 import { isBacklinkSuppressed, readSuppressedBacklinkDomains } from "@/src/lib/backlinks/suppression.server";
 import {
   automaticEligibility,
@@ -16,6 +18,7 @@ import {
   explainCandidateScore,
   isRoleMailbox,
   normalizeCandidateUrl,
+  normalizeEmail,
 } from "@/src/lib/backlinks/policy";
 import {
   BRAVE_RESULTS_PER_PAGE,
@@ -131,7 +134,8 @@ async function discoverCampaign(
       // independently fetched from the public target page.
       const page = await inspectPublicPage(candidate.pageUrl, "Recurs públic sobre bolets");
       inspected += 1;
-      const contactEmail = page.emails.find(isRoleMailbox) ?? page.emails[0] ?? null;
+      const detectedEmail = page.emails.find(isRoleMailbox) ?? page.emails[0] ?? null;
+      const contactEmail = detectedEmail ? normalizeEmail(detectedEmail) : null;
       const pageUrl = normalizeCandidateUrl(page.finalUrl) ?? candidate.pageUrl;
       const domain = new URL(pageUrl).hostname;
       const candidateInput = {
@@ -147,9 +151,16 @@ async function discoverCampaign(
       const scoreExplanation = explainCandidateScore(candidateInput);
       const policy = automaticEligibility(candidateInput, settings.minimumScore);
       const suppressed = await isBacklinkSuppressed(contactEmail, domain);
-      const coolingDown = policy.eligible ? await domainCoolingDown(domain, settings.domainCooldownDays) : false;
-      const status = page.existingLink ? "linked" : suppressed ? "suppressed" : policy.eligible && !coolingDown ? "ready" : "discovered";
-      const reason = suppressed ? "suppression-list" : coolingDown ? "domain-cooldown" : policy.reason;
+      const recipientReserved = await isBacklinkRecipientReserved(contactEmail);
+      const coolingDown = policy.eligible && !recipientReserved
+        ? await domainCoolingDown(domain, settings.domainCooldownDays)
+        : false;
+      const status = page.existingLink
+        ? "linked"
+        : suppressed || recipientReserved ? "suppressed" : policy.eligible && !coolingDown ? "ready" : "discovered";
+      const reason = suppressed
+        ? "suppression-list"
+        : recipientReserved ? "recipient-already-contacted" : coolingDown ? "domain-cooldown" : policy.reason;
       const now = new Date().toISOString();
       const { error } = await admin.from("backlink_prospects").insert({
         campaign_id: campaign.id,
@@ -192,8 +203,16 @@ function campaignFor(row: ProspectRow) {
   return BACKLINK_CAMPAIGNS.find((campaign) => campaign.id === row.campaign_id) ?? null;
 }
 
+async function suppressReservedRecipient(row: ProspectRow) {
+  const { error } = await createSupabaseAdminClient().from("backlink_prospects").update({
+    status: "suppressed", status_reason: "recipient-already-contacted",
+    next_action_at: null, updated_at: new Date().toISOString(),
+  }).eq("id", row.id).eq("send_count", 0);
+  if (error) throw error;
+}
+
 async function queueMessage(row: ProspectRow, settings: BacklinkSettings) {
-  const email = row.contact_email;
+  const email = row.contact_email ? normalizeEmail(row.contact_email) : null;
   const campaign = campaignFor(row);
   const secret = process.env.BACKLINK_UNSUBSCRIBE_SECRET;
   if (!email || !campaign || !secret) return false;
@@ -201,6 +220,10 @@ async function queueMessage(row: ProspectRow, settings: BacklinkSettings) {
     await createSupabaseAdminClient().from("backlink_prospects").update({
       status: "suppressed", status_reason: "suppression-list", next_action_at: null, updated_at: new Date().toISOString(),
     }).eq("id", row.id);
+    return false;
+  }
+  if (await isBacklinkRecipientReserved(email, { prospectId: row.id })) {
+    await suppressReservedRecipient(row);
     return false;
   }
   if (
@@ -226,6 +249,10 @@ async function queueMessage(row: ProspectRow, settings: BacklinkSettings) {
   });
   if (!error) return true;
   if (error.code !== "23505") throw error;
+  if (await isBacklinkRecipientReserved(email, { prospectId: row.id })) {
+    await suppressReservedRecipient(row);
+    return false;
+  }
   const { data: restored, error: restoreError } = await createSupabaseAdminClient()
     .from("backlink_outbox")
     .update({
@@ -242,6 +269,10 @@ async function queueMessage(row: ProspectRow, settings: BacklinkSettings) {
     .eq("status", "cancelled")
     .eq("attempt_count", 0)
     .select("id");
+  if (restoreError?.code === "23505") {
+    await suppressReservedRecipient(row);
+    return false;
+  }
   if (restoreError) throw restoreError;
   return Boolean(restored?.length);
 }
@@ -298,112 +329,6 @@ async function queueReady(settings: BacklinkSettings) {
   let queued = 0;
   for (const row of (data ?? []) as ProspectRow[]) queued += await queueMessage(row, settings) ? 1 : 0;
   return queued;
-}
-
-async function sentInLastDay() {
-  const { count, error } = await createSupabaseAdminClient()
-    .from("backlink_outbox")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "sent")
-    .gte("sent_at", new Date(Date.now() - 86_400_000).toISOString());
-  if (error) throw error;
-  return count ?? 0;
-}
-
-async function dispatchOutbox(settings: BacklinkSettings) {
-  if (!settings.autoSend) return { sent: 0, failed: 0 };
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.BACKLINK_EMAIL_FROM;
-  const replyTo = process.env.BACKLINK_REPLY_TO;
-  const secret = process.env.BACKLINK_UNSUBSCRIBE_SECRET;
-  if (!apiKey || !from || !secret) throw new Error("Backlink email delivery is not configured");
-  const available = Math.max(0, settings.dailySendLimit - await sentInLastDay());
-  if (!available) return { sent: 0, failed: 0 };
-  const admin = createSupabaseAdminClient();
-  const { data, error } = await admin.from("backlink_outbox")
-    .select("id,prospect_id,message_kind,recipient,subject,body_text,dedupe_key,attempt_count")
-    .eq("status", "pending").eq("message_kind", "initial").lte("deliver_after", new Date().toISOString())
-    .order("created_at", { ascending: true }).limit(available);
-  if (error) throw error;
-  let sent = 0;
-  let failed = 0;
-  for (const message of data ?? []) {
-    const { data: claimed, error: claimError } = await admin.from("backlink_outbox").update({
-      status: "sending", updated_at: new Date().toISOString(),
-    }).eq("id", message.id).eq("status", "pending").select("id").maybeSingle();
-    if (claimError) throw claimError;
-    if (!claimed) continue;
-    const { data: prospect, error: prospectError } = await admin.from("backlink_prospects")
-      .select("domain,status,manual_decision,contact_email,send_count,campaign_id,organization,page_title,page_url")
-      .eq("id", message.prospect_id)
-      .maybeSingle();
-    if (prospectError) throw prospectError;
-    const campaign = prospect ? BACKLINK_CAMPAIGNS.find((candidate) => candidate.id === prospect.campaign_id) : null;
-    const blocked = !prospect
-      || !campaign
-      || prospect.status !== "ready"
-      || prospect.manual_decision === "excluded"
-      || prospect.contact_email !== message.recipient
-      || prospect.send_count > 0
-      || await isBacklinkSuppressed(message.recipient, prospect.domain);
-    if (blocked) {
-      await admin.from("backlink_outbox").update({
-        status: "cancelled", last_error: "prospect-not-sendable", updated_at: new Date().toISOString(),
-      }).eq("id", message.id).eq("status", "sending");
-      continue;
-    }
-    const token = createUnsubscribeToken(message.prospect_id, message.recipient, secret);
-    const unsubscribeUrl = `${SITE_URL}/api/backlinks/unsubscribe?token=${encodeURIComponent(token)}`;
-    const outboundMessage = buildOutreachMessage({
-      campaign, unsubscribeUrl, organization: prospect.organization,
-      pageTitle: prospect.page_title, pageUrl: prospect.page_url,
-    });
-    await admin.from("backlink_outbox").update({
-      attempt_count: message.attempt_count + 1,
-      subject: outboundMessage.subject,
-      body_text: outboundMessage.text,
-      updated_at: new Date().toISOString(),
-    }).eq("id", message.id).eq("status", "sending");
-    let safeToRetry = false;
-    try {
-      const response = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", "Idempotency-Key": message.dedupe_key },
-        body: JSON.stringify({
-          from, to: [message.recipient], reply_to: replyTo || undefined,
-          subject: outboundMessage.subject, text: outboundMessage.text, html: outboundMessage.html,
-          headers: { "List-Unsubscribe": `<${unsubscribeUrl}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" },
-          tags: [{ name: "category", value: "backlink_outreach" }],
-        }),
-        signal: AbortSignal.timeout(10_000),
-      });
-      if (!response.ok) {
-        safeToRetry = response.status === 429 || response.status >= 500;
-        throw new Error(`Resend returned ${response.status}: ${(await response.text()).slice(0, 300)}`);
-      }
-      const provider = await response.json() as { id?: string };
-      const now = new Date().toISOString();
-      await admin.from("backlink_outbox").update({
-        status: "sent", provider_message_id: provider.id ?? null,
-        last_error: null, sent_at: now, updated_at: now,
-      }).eq("id", message.id);
-      await admin.from("backlink_prospects").update({
-        status: "sent", status_reason: "initial-sent",
-        send_count: 1, first_sent_at: now, last_sent_at: now,
-        next_action_at: null,
-        updated_at: now,
-      }).eq("id", message.prospect_id);
-      sent += 1;
-    } catch (sendError) {
-      await admin.from("backlink_outbox").update({
-        status: safeToRetry && message.attempt_count + 1 < 5 ? "pending" : "failed",
-        last_error: (sendError instanceof Error ? sendError.message : "Delivery failed").slice(0, 500),
-        updated_at: new Date().toISOString(),
-      }).eq("id", message.id);
-      failed += 1;
-    }
-  }
-  return { sent, failed };
 }
 
 export async function runBacklinkAutomation() {
@@ -465,7 +390,7 @@ export async function runBacklinkAutomation() {
     const verification = await verifyProspects();
     linked += verification.linked; failed += verification.failed;
     queued += await queueReady(settings);
-    const delivery = await dispatchOutbox(settings);
+    const delivery = await dispatchBacklinkOutbox(settings);
     sent += delivery.sent; failed += delivery.failed;
     const status = errors.length ? "partial" : "succeeded";
     const completedAt = new Date().toISOString();
