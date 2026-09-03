@@ -1,28 +1,24 @@
-import { isRoleMailbox, normalizeEmail } from "@/src/lib/backlinks/policy";
-import { backlinkDomainKey } from "@/src/lib/backlinks/domain-control";
+import { normalizeEmail } from "@/src/lib/backlinks/policy";
 import type { BacklinkManualDecision, BacklinkStatus } from "@/src/lib/backlinks/types";
 
 export type ManualApprovalBlocker = "already-contacted" | "existing-link" | "invalid-contact";
 
-export function isManuallyReviewedContact(value: string, prospectDomain: string) {
-  const email = normalizeEmail(value);
-  if (!email) return false;
-  if (isRoleMailbox(email)) return true;
-  const emailDomain = email.slice(email.lastIndexOf("@") + 1);
-  return backlinkDomainKey(emailDomain) === backlinkDomainKey(prospectDomain);
+export function isValidManualContact(value: string) {
+  return Boolean(normalizeEmail(value));
 }
 
 export function manualApprovalBlocker(input: {
   contactEmail: string | null;
-  domain: string;
   existingLink: boolean;
   sendCount: number;
   status: BacklinkStatus;
 }): ManualApprovalBlocker | null {
   if (input.sendCount > 0 || ["sent", "linked", "lost"].includes(input.status)) return "already-contacted";
   if (input.existingLink) return "existing-link";
+  // The required approval note is the human review. Automatic sending keeps its
+  // stricter role-mailbox policy; this path only requires valid email syntax.
   const email = input.contactEmail && normalizeEmail(input.contactEmail);
-  if (!email || !isManuallyReviewedContact(email, input.domain)) return "invalid-contact";
+  if (!email) return "invalid-contact";
   return null;
 }
 

@@ -13,7 +13,7 @@ import {
 } from "@/src/lib/backlinks/policy";
 import {
   backlinkRescanMode,
-  isManuallyReviewedContact,
+  isValidManualContact,
   manualApprovalBlocker,
 } from "@/src/lib/backlinks/manual-policy";
 import { isBacklinkSuppressed } from "@/src/lib/backlinks/suppression.server";
@@ -165,7 +165,6 @@ export async function approveBacklinkProspect(id: string, note: string, userId: 
   const [row, settings] = await Promise.all([readProspect(id), readSettings()]);
   const blocker = manualApprovalBlocker({
     contactEmail: row.contact_email,
-    domain: row.domain,
     existingLink: row.existing_link,
     sendCount: row.send_count,
     status: row.status,
@@ -285,7 +284,7 @@ export async function updateBacklinkContact(id: string, rawEmail: string, note: 
   const [row, settings] = await Promise.all([readProspect(id), readSettings()]);
   assertUncontacted(row);
   const email = normalizeEmail(rawEmail);
-  if (!email || !isManuallyReviewedContact(email, row.domain)) fail("invalid-contact");
+  if (!email) fail("invalid-contact");
   if (await isBacklinkSuppressed(email, row.domain)) fail("suppressed");
   await pendingMessageForContact(row, email);
   const automatic = await automaticStatus(row, email, settings);
@@ -327,7 +326,7 @@ async function hasManualContact(row: ProspectRow) {
 }
 
 async function manualApprovalStatus(row: ProspectRow, email: string | null, settings: SettingsRow) {
-  if (!email || !isManuallyReviewedContact(email, row.domain)) {
+  if (!email || !isValidManualContact(email)) {
     return { status: "discovered" as const, reason: "manual-approval-invalid-contact" };
   }
   if (await isBacklinkSuppressed(email, row.domain)) {

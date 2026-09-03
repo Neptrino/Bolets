@@ -12,7 +12,7 @@ const errorMessages: Record<string, string> = {
   "domain-not-blocked": "Aquest domini ja no està bloquejat.",
   "domain-pending": "Ja hi ha un altre correu pendent per a aquest domini.",
   "existing-link": "La pàgina ja enllaça Bolets Atles; no cal preparar cap contacte.",
-  "invalid-contact": "Cal un correu institucional vàlid: una bústia general o una adreça del mateix domini que el web.",
+  "invalid-contact": "Cal una adreça de correu vàlida abans de poder desar-la o aprovar-la.",
   "invalid-manual-action": "La decisió o el motiu no són vàlids.",
   "manual-action": "No s’ha pogut aplicar el canvi manual.",
   "missing-config": "Falta la configuració privada necessària per regenerar el correu.",
@@ -94,7 +94,7 @@ export function BacklinkManualControls({
         <label>
           Correu de contacte
           <input name="contactEmail" type="email" maxLength={254} required disabled={immutableState} defaultValue={prospect.contactEmail ?? ""} placeholder="editorial@exemple.cat" />
-          <small>Les bústies no reconegudes automàticament només s’enviaran després d’una aprovació manual.</small>
+          <small>Es pot desar qualsevol adreça vàlida. Si no passa la política automàtica, només quedarà preparada després d’una aprovació manual amb motiu.</small>
         </label>
         <label>
           Font o motiu del canvi
