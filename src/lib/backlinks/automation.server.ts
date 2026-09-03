@@ -5,17 +5,27 @@ import { randomUUID } from "node:crypto";
 import { BACKLINK_CAMPAIGNS, type BacklinkCampaign } from "@/data/backlink-campaigns";
 import { createSupabaseAdminClient } from "@/src/lib/supabase/admin";
 import { SITE_URL } from "@/src/lib/seo";
+import { searchBraveWeb } from "@/src/lib/backlinks/brave.server";
 import { inspectPublicPage } from "@/src/lib/backlinks/crawler.server";
+import { backlinkDomainKey } from "@/src/lib/backlinks/domain-control";
+import { isBacklinkSuppressed, readSuppressedBacklinkDomains } from "@/src/lib/backlinks/suppression.server";
 import {
   automaticEligibility,
   buildOutreachMessage,
   createUnsubscribeToken,
+  explainCandidateScore,
   isRoleMailbox,
   normalizeCandidateUrl,
 } from "@/src/lib/backlinks/policy";
+import {
+  BRAVE_RESULTS_PER_PAGE,
+  nextBacklinkCampaignCursor,
+  nextBraveSearchOffset,
+  planBacklinkSearches,
+  parseBacklinkSearchOffsets,
+} from "@/src/lib/backlinks/search-pagination";
 import type { BacklinkSettings } from "@/src/lib/backlinks/types";
 
-type SearchResult = { url?: string };
 type ProspectRow = {
   id: string;
   campaign_id: string;
@@ -39,8 +49,8 @@ function settingsFromRow(row: Record<string, unknown>): BacklinkSettings {
     dailySendLimit: Number(row.daily_send_limit),
     minimumScore: Number(row.minimum_score),
     domainCooldownDays: Number(row.domain_cooldown_days),
-    followUpDelayDays: Number(row.follow_up_delay_days),
     campaignCursor: Number(row.campaign_cursor),
+    searchOffsets: parseBacklinkSearchOffsets(row.search_offsets),
     lastRunAt: typeof row.last_run_at === "string" ? row.last_run_at : null,
   };
 }
@@ -50,26 +60,6 @@ async function readSettings() {
   const { data, error } = await admin.from("backlink_automation_settings").select("*").eq("singleton", true).single();
   if (error) throw error;
   return settingsFromRow(data as Record<string, unknown>);
-}
-
-async function braveSearch(campaign: BacklinkCampaign) {
-  const key = process.env.BRAVE_SEARCH_API_KEY;
-  if (!key) throw new Error("BRAVE_SEARCH_API_KEY is missing");
-  const query = new URLSearchParams({
-    q: campaign.query,
-    count: "12",
-    country: "es",
-    search_lang: "ca",
-    safesearch: "strict",
-  });
-  const response = await fetch(`https://api.search.brave.com/res/v1/web/search?${query}`, {
-    cache: "no-store",
-    headers: { Accept: "application/json", "X-Subscription-Token": key },
-    signal: AbortSignal.timeout(10_000),
-  });
-  if (!response.ok) throw new Error(`Brave Search returned ${response.status}: ${(await response.text()).slice(0, 240)}`);
-  const payload = await response.json() as { web?: { results?: SearchResult[] } };
-  return payload.web?.results ?? [];
 }
 
 async function mapLimit<T, R>(items: T[], limit: number, task: (item: T, index: number) => Promise<R>) {
@@ -82,17 +72,6 @@ async function mapLimit<T, R>(items: T[], limit: number, task: (item: T, index: 
     }
   }));
   return results;
-}
-
-async function isSuppressed(email: string, domain: string) {
-  const admin = createSupabaseAdminClient();
-  const { data, error } = await admin
-    .from("backlink_suppressions")
-    .select("id")
-    .or(`and(kind.eq.email,value.eq.${email}),and(kind.eq.domain,value.eq.${domain})`)
-    .limit(1);
-  if (error) throw error;
-  return Boolean(data?.length);
 }
 
 async function domainCoolingDown(domain: string, days: number) {
@@ -121,23 +100,30 @@ async function domainHasPendingOutreach(domain: string) {
   return Boolean(data?.length);
 }
 
-async function discoverCampaign(campaign: BacklinkCampaign, settings: BacklinkSettings) {
+async function discoverCampaign(
+  campaign: BacklinkCampaign,
+  settings: BacklinkSettings,
+  queryText: string,
+  offset: number,
+  suppressedDomains: ReadonlySet<string>,
+) {
   const admin = createSupabaseAdminClient();
-  const searchResults = await braveSearch(campaign);
-  const candidates = searchResults.flatMap((result) => {
+  const search = await searchBraveWeb(queryText, offset);
+  const normalizedCandidates = search.results.flatMap((result) => {
     const pageUrl = result.url ? normalizeCandidateUrl(result.url) : null;
     return pageUrl ? [{ pageUrl }] : [];
   });
+  const candidates = [...new Map(normalizedCandidates.map((candidate) => [candidate.pageUrl, candidate])).values()]
+    .filter((candidate) => !suppressedDomains.has(backlinkDomainKey(new URL(candidate.pageUrl).hostname)));
   const urls = candidates.map((candidate) => candidate.pageUrl);
   const existing = urls.length
     ? await admin.from("backlink_prospects").select("page_url").in("page_url", urls)
     : { data: [], error: null };
   if (existing.error) throw existing.error;
   const known = new Set((existing.data ?? []).map((row) => row.page_url));
-  const fresh = candidates.filter((candidate) => !known.has(candidate.pageUrl)).slice(0, 8);
+  const fresh = candidates.filter((candidate) => !known.has(candidate.pageUrl)).slice(0, BRAVE_RESULTS_PER_PAGE);
   let inspected = 0;
   let failed = 0;
-  let ready = 0;
 
   await mapLimit(fresh, 2, async (candidate) => {
     try {
@@ -148,22 +134,26 @@ async function discoverCampaign(campaign: BacklinkCampaign, settings: BacklinkSe
       const contactEmail = page.emails.find(isRoleMailbox) ?? page.emails[0] ?? null;
       const pageUrl = normalizeCandidateUrl(page.finalUrl) ?? candidate.pageUrl;
       const domain = new URL(pageUrl).hostname;
-      const policy = automaticEligibility({
+      const candidateInput = {
         campaign,
         pageUrl,
         title: page.title,
         pageText: page.pageText,
         contactEmail,
+        outboundLinkCount: page.outboundLinkCount,
+        contentPublishedAt: page.contentPublishedAt, contentModifiedAt: page.contentModifiedAt,
         hasExistingLink: Boolean(page.existingLink),
-      }, settings.minimumScore);
-      const suppressed = contactEmail ? await isSuppressed(contactEmail, domain) : false;
+      };
+      const scoreExplanation = explainCandidateScore(candidateInput);
+      const policy = automaticEligibility(candidateInput, settings.minimumScore);
+      const suppressed = await isBacklinkSuppressed(contactEmail, domain);
       const coolingDown = policy.eligible ? await domainCoolingDown(domain, settings.domainCooldownDays) : false;
       const status = page.existingLink ? "linked" : suppressed ? "suppressed" : policy.eligible && !coolingDown ? "ready" : "discovered";
       const reason = suppressed ? "suppression-list" : coolingDown ? "domain-cooldown" : policy.reason;
       const now = new Date().toISOString();
       const { error } = await admin.from("backlink_prospects").insert({
         campaign_id: campaign.id,
-        search_query: campaign.query,
+        search_query: queryText,
         page_url: pageUrl,
         domain,
         page_title: page.title,
@@ -171,6 +161,9 @@ async function discoverCampaign(campaign: BacklinkCampaign, settings: BacklinkSe
         organization: page.organization,
         contact_email: contactEmail,
         contact_source_url: page.contactSourceUrl,
+        outbound_link_count: page.outboundLinkCount,
+        content_published_at: page.contentPublishedAt, content_modified_at: page.contentModifiedAt,
+        score_explanation: scoreExplanation,
         target_url: new URL(campaign.targetPath, SITE_URL).toString(),
         target_title: campaign.targetTitle,
         score: policy.score,
@@ -184,7 +177,6 @@ async function discoverCampaign(campaign: BacklinkCampaign, settings: BacklinkSe
         next_action_at: status === "ready" ? now : null,
       });
       if (error) throw error;
-      if (status === "ready") ready += 1;
     } catch (error) {
       failed += 1;
       console.warn("Backlink prospect inspection failed", {
@@ -193,28 +185,28 @@ async function discoverCampaign(campaign: BacklinkCampaign, settings: BacklinkSe
       });
     }
   });
-  return { discovered: fresh.length, inspected, ready, failed };
+  return { discovered: fresh.length, inspected, failed, moreResultsAvailable: search.moreResultsAvailable };
 }
 
 function campaignFor(row: ProspectRow) {
   return BACKLINK_CAMPAIGNS.find((campaign) => campaign.id === row.campaign_id) ?? null;
 }
 
-async function queueMessage(row: ProspectRow, settings: BacklinkSettings, followUp: boolean) {
+async function queueMessage(row: ProspectRow, settings: BacklinkSettings) {
   const email = row.contact_email;
   const campaign = campaignFor(row);
   const secret = process.env.BACKLINK_UNSUBSCRIBE_SECRET;
   if (!email || !campaign || !secret) return false;
-  if (await isSuppressed(email, row.domain)) {
+  if (await isBacklinkSuppressed(email, row.domain)) {
     await createSupabaseAdminClient().from("backlink_prospects").update({
       status: "suppressed", status_reason: "suppression-list", next_action_at: null, updated_at: new Date().toISOString(),
     }).eq("id", row.id);
     return false;
   }
-  if (!followUp && (
+  if (
     await domainCoolingDown(row.domain, settings.domainCooldownDays)
     || await domainHasPendingOutreach(row.domain)
-  )) return false;
+  ) return false;
   const token = createUnsubscribeToken(row.id, email, secret);
   const unsubscribeUrl = `${SITE_URL}/baixa-comunicacions?token=${encodeURIComponent(token)}`;
   const message = buildOutreachMessage({
@@ -223,22 +215,38 @@ async function queueMessage(row: ProspectRow, settings: BacklinkSettings, follow
     pageTitle: row.page_title,
     pageUrl: row.page_url,
     unsubscribeUrl,
-    followUp,
   });
-  const kind = followUp ? "follow_up" : "initial";
   const { error } = await createSupabaseAdminClient().from("backlink_outbox").insert({
     prospect_id: row.id,
-    message_kind: kind,
+    message_kind: "initial",
     recipient: email,
     subject: message.subject,
     body_text: message.text,
-    dedupe_key: `backlink-${kind}-${row.id}`,
+    dedupe_key: `backlink-initial-${row.id}`,
   });
-  if (error && error.code !== "23505") throw error;
-  return !error;
+  if (!error) return true;
+  if (error.code !== "23505") throw error;
+  const { data: restored, error: restoreError } = await createSupabaseAdminClient()
+    .from("backlink_outbox")
+    .update({
+      recipient: email,
+      subject: message.subject,
+      body_text: message.text,
+      status: "pending",
+      deliver_after: new Date().toISOString(),
+      last_error: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("prospect_id", row.id)
+    .eq("message_kind", "initial")
+    .eq("status", "cancelled")
+    .eq("attempt_count", 0)
+    .select("id");
+  if (restoreError) throw restoreError;
+  return Boolean(restored?.length);
 }
 
-async function verifyProspects(settings: BacklinkSettings) {
+async function verifyProspects() {
   const admin = createSupabaseAdminClient();
   const { data, error } = await admin
     .from("backlink_prospects")
@@ -269,10 +277,6 @@ async function verifyProspects(settings: BacklinkSettings) {
           existing_link: false, link_rel: null, link_anchor: null,
           lost_at: wasLinked ? now : null, last_checked_at: now, updated_at: now,
         }).eq("id", row.id);
-        if (row.status === "sent" && row.send_count === 1 && row.first_sent_at) {
-          const dueAt = Date.parse(row.first_sent_at) + settings.followUpDelayDays * 86_400_000;
-          if (dueAt <= Date.now()) await queueMessage(row, settings, true);
-        }
       }
     } catch {
       failed += 1;
@@ -292,7 +296,7 @@ async function queueReady(settings: BacklinkSettings) {
     .limit(settings.dailySendLimit);
   if (error) throw error;
   let queued = 0;
-  for (const row of (data ?? []) as ProspectRow[]) queued += await queueMessage(row, settings, false) ? 1 : 0;
+  for (const row of (data ?? []) as ProspectRow[]) queued += await queueMessage(row, settings) ? 1 : 0;
   return queued;
 }
 
@@ -318,22 +322,40 @@ async function dispatchOutbox(settings: BacklinkSettings) {
   const admin = createSupabaseAdminClient();
   const { data, error } = await admin.from("backlink_outbox")
     .select("id,prospect_id,message_kind,recipient,subject,body_text,dedupe_key,attempt_count")
-    .eq("status", "pending").lte("deliver_after", new Date().toISOString())
+    .eq("status", "pending").eq("message_kind", "initial").lte("deliver_after", new Date().toISOString())
     .order("created_at", { ascending: true }).limit(available);
   if (error) throw error;
   let sent = 0;
   let failed = 0;
   for (const message of data ?? []) {
-    const { data: prospect } = await admin.from("backlink_prospects").select("domain").eq("id", message.prospect_id).single();
-    if (!prospect || await isSuppressed(message.recipient, prospect.domain)) {
-      await admin.from("backlink_outbox").update({ status: "cancelled", last_error: "suppressed", updated_at: new Date().toISOString() }).eq("id", message.id);
+    const { data: claimed, error: claimError } = await admin.from("backlink_outbox").update({
+      status: "sending", updated_at: new Date().toISOString(),
+    }).eq("id", message.id).eq("status", "pending").select("id").maybeSingle();
+    if (claimError) throw claimError;
+    if (!claimed) continue;
+    const { data: prospect, error: prospectError } = await admin.from("backlink_prospects")
+      .select("domain,status,manual_decision,contact_email,send_count")
+      .eq("id", message.prospect_id)
+      .maybeSingle();
+    if (prospectError) throw prospectError;
+    const blocked = !prospect
+      || prospect.status !== "ready"
+      || prospect.manual_decision === "excluded"
+      || prospect.contact_email !== message.recipient
+      || prospect.send_count > 0
+      || await isBacklinkSuppressed(message.recipient, prospect.domain);
+    if (blocked) {
+      await admin.from("backlink_outbox").update({
+        status: "cancelled", last_error: "prospect-not-sendable", updated_at: new Date().toISOString(),
+      }).eq("id", message.id).eq("status", "sending");
       continue;
     }
     const token = createUnsubscribeToken(message.prospect_id, message.recipient, secret);
     const unsubscribeUrl = `${SITE_URL}/api/backlinks/unsubscribe?token=${encodeURIComponent(token)}`;
     await admin.from("backlink_outbox").update({
-      status: "sending", attempt_count: message.attempt_count + 1, updated_at: new Date().toISOString(),
-    }).eq("id", message.id).eq("status", "pending");
+      attempt_count: message.attempt_count + 1,
+      updated_at: new Date().toISOString(),
+    }).eq("id", message.id).eq("status", "sending");
     let safeToRetry = false;
     try {
       const response = await fetch("https://api.resend.com/emails", {
@@ -357,12 +379,10 @@ async function dispatchOutbox(settings: BacklinkSettings) {
         status: "sent", provider_message_id: provider.id ?? null,
         last_error: null, sent_at: now, updated_at: now,
       }).eq("id", message.id);
-      const isInitial = message.message_kind === "initial";
       await admin.from("backlink_prospects").update({
-        status: "sent", status_reason: isInitial ? "initial-sent" : "follow-up-sent",
-        send_count: isInitial ? 1 : 2, first_sent_at: isInitial ? now : undefined,
-        last_sent_at: now,
-        next_action_at: isInitial ? new Date(Date.now() + settings.followUpDelayDays * 86_400_000).toISOString() : null,
+        status: "sent", status_reason: "initial-sent",
+        send_count: 1, first_sent_at: now, last_sent_at: now,
+        next_action_at: null,
         updated_at: now,
       }).eq("id", message.prospect_id);
       sent += 1;
@@ -392,31 +412,49 @@ export async function runBacklinkAutomation() {
   const now = new Date();
   const { data: lease, error: leaseError } = await admin.from("backlink_automation_settings").update({
     lease_token: leaseToken,
-    lease_until: new Date(now.getTime() + 15 * 60_000).toISOString(),
+    lease_until: new Date(now.getTime() + 25 * 60_000).toISOString(),
   }).eq("singleton", true).lt("lease_until", now.toISOString()).select("singleton");
   if (leaseError) throw leaseError;
   if (!lease?.length) {
     return { status: "busy", discovered: 0, inspected: 0, queued: 0, sent: 0, linked: 0, failed: 0 };
   }
+  const searchPlans = planBacklinkSearches(BACKLINK_CAMPAIGNS, settings.campaignCursor, settings.searchOffsets);
+  const suppressedDomains = await readSuppressedBacklinkDomains();
+  const searches = searchPlans.map((plan) => plan.search);
+  const firstSearch = searches[0]!;
   const { data: run, error: runError } = await admin.from("backlink_automation_runs")
-    .insert({ status: "running" }).select("id").single();
+    .insert({
+      status: "running",
+      campaign_id: firstSearch.campaignId,
+      search_query: firstSearch.query,
+      search_offset: firstSearch.offset,
+      search_page_count: 0,
+      searches,
+    }).select("id").single();
   if (runError) {
     await admin.from("backlink_automation_settings").update({ lease_token: null, lease_until: new Date(0).toISOString() })
       .eq("singleton", true).eq("lease_token", leaseToken);
     throw runError;
   }
-  let discovered = 0, inspected = 0, queued = 0, sent = 0, linked = 0, failed = 0;
+  let discovered = 0, inspected = 0, queued = 0, sent = 0, linked = 0, failed = 0, searchedPageCount = 0;
+  const nextCampaignCursor = nextBacklinkCampaignCursor(settings.campaignCursor, BACKLINK_CAMPAIGNS.length, searchPlans.length);
+  let nextSearchOffsets = settings.searchOffsets;
   const errors: string[] = [];
   try {
-    const campaign = BACKLINK_CAMPAIGNS[settings.campaignCursor % BACKLINK_CAMPAIGNS.length]!;
-    try {
-      const discovery = await discoverCampaign(campaign, settings);
-      discovered += discovery.discovered; inspected += discovery.inspected; failed += discovery.failed;
-    } catch (error) {
-      failed += 1;
-      errors.push(error instanceof Error ? error.message : "Discovery failed");
+    for (const { campaign, offsetKey, search } of searchPlans) {
+      try {
+        const discovery = await discoverCampaign(campaign, settings, search.query, search.offset, suppressedDomains);
+        searchedPageCount += 1;
+        search.pageCount = 1;
+        discovered += discovery.discovered; inspected += discovery.inspected; failed += discovery.failed;
+        const nextOffset = nextBraveSearchOffset(search.offset, discovery.moreResultsAvailable);
+        nextSearchOffsets = { ...nextSearchOffsets, [offsetKey]: nextOffset };
+      } catch (error) {
+        failed += 1;
+        errors.push(`${campaign.id}: ${error instanceof Error ? error.message : "Discovery failed"}`);
+      }
     }
-    const verification = await verifyProspects(settings);
+    const verification = await verifyProspects();
     linked += verification.linked; failed += verification.failed;
     queued += await queueReady(settings);
     const delivery = await dispatchOutbox(settings);
@@ -426,10 +464,13 @@ export async function runBacklinkAutomation() {
     await admin.from("backlink_automation_runs").update({
       status, discovered_count: discovered, inspected_count: inspected, queued_count: queued,
       sent_count: sent, linked_count: linked, failed_count: failed,
+      search_page_count: searchedPageCount,
+      searches,
       detail: errors.join(" · ").slice(0, 1000) || null, completed_at: completedAt,
     }).eq("id", run.id);
     await admin.from("backlink_automation_settings").update({
-      campaign_cursor: (settings.campaignCursor + 1) % BACKLINK_CAMPAIGNS.length,
+      campaign_cursor: nextCampaignCursor,
+      search_offsets: nextSearchOffsets,
       last_run_at: completedAt, updated_at: completedAt,
       lease_token: null, lease_until: new Date(0).toISOString(),
     }).eq("singleton", true).eq("lease_token", leaseToken);
@@ -438,6 +479,8 @@ export async function runBacklinkAutomation() {
     await admin.from("backlink_automation_runs").update({
       status: "failed", discovered_count: discovered, inspected_count: inspected,
       queued_count: queued, sent_count: sent, linked_count: linked, failed_count: failed + 1,
+      search_page_count: searchedPageCount,
+      searches,
       detail: (error instanceof Error ? error.message : "Automation failed").slice(0, 1000),
       completed_at: new Date().toISOString(),
     }).eq("id", run.id);

@@ -2,12 +2,18 @@ import "server-only";
 
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
+import { getDomain } from "tldts";
 
 import { SITE_URL } from "@/src/lib/seo";
 import { normalizeEmail } from "@/src/lib/backlinks/policy";
 
 const USER_AGENT = "BoletsAtles-Outreach/1.0 (+https://bolets.app/equip-editorial)";
 const MAX_BYTES = 512_000;
+const NON_EDITORIAL_EXTERNAL_HOSTS = [
+  "facebook.com", "instagram.com", "linkedin.com", "pinterest.", "tiktok.com",
+  "t.me", "telegram.me", "twitter.com", "whatsapp.com", "x.com", "youtube.com",
+  "profile.google.com",
+];
 
 function privateIpv4(address: string) {
   const parts = address.split(".").map(Number);
@@ -124,6 +130,56 @@ function organizationName(html: string, host: string) {
   return (value || host.replace(/^www\./, "").split(".")[0] || host).slice(0, 300);
 }
 
+function normalizedContentDate(value: unknown) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}/.test(value.trim())) return null;
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp) || timestamp > Date.now() + 86_400_000) return null;
+  return new Date(timestamp).toISOString();
+}
+
+function structuredContentDates(html: string) {
+  const published: string[] = [];
+  const modified: string[] = [];
+  for (const match of html.matchAll(/<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    try {
+      const parsed = JSON.parse(match[1]!.trim()) as unknown;
+      const roots = Array.isArray(parsed) ? parsed : parsed && typeof parsed === "object" && Array.isArray((parsed as Record<string, unknown>)["@graph"])
+        ? (parsed as Record<string, unknown>)["@graph"] as unknown[]
+        : [parsed];
+      for (const root of roots) {
+        if (!root || typeof root !== "object" || Array.isArray(root)) continue;
+        const node = root as Record<string, unknown>;
+        const types = Array.isArray(node["@type"]) ? node["@type"] : [node["@type"]];
+        if (!types.some((type) => typeof type === "string" && /(article|posting|webpage)/i.test(type))) continue;
+        const publishedAt = normalizedContentDate(node.datePublished);
+        const modifiedAt = normalizedContentDate(node.dateModified);
+        if (publishedAt) published.push(publishedAt);
+        if (modifiedAt) modified.push(modifiedAt);
+      }
+    } catch { /* Ignore malformed third-party structured data. */ }
+  }
+  return { published, modified };
+}
+
+function contentDates(html: string) {
+  const structured = structuredContentDates(html);
+  const published = [...structured.published];
+  const modified = [...structured.modified];
+  for (const match of html.matchAll(/<meta\b[^>]*>/gi)) {
+    const tag = match[0];
+    const key = (attribute(tag, "property") || attribute(tag, "name") || attribute(tag, "itemprop")).toLowerCase();
+    const value = normalizedContentDate(attribute(tag, "content"));
+    if (!value) continue;
+    if (/published|publishdate|pub_date|datecreated|created/.test(key)) published.push(value);
+    if (/modified|lastmod|updated/.test(key)) modified.push(value);
+  }
+  const latest = (values: string[]) => values.sort((left, right) => Date.parse(right) - Date.parse(left))[0] ?? null;
+  const publishedAt = latest(published);
+  const modifiedCandidate = latest(modified);
+  const modifiedAt = modifiedCandidate && (!publishedAt || Date.parse(modifiedCandidate) >= Date.parse(publishedAt)) ? modifiedCandidate : null;
+  return { publishedAt, modifiedAt };
+}
+
 function emailsIn(html: string) {
   const decoded = decodeHtml(html).replace(/\s+(?:\[at\]|\(at\))\s+/gi, "@");
   const matches = decoded.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) ?? [];
@@ -143,6 +199,29 @@ function contactLinks(html: string, base: URL) {
     .slice(0, 2);
 }
 
+function relatedHost(candidate: string, source: string) {
+  const candidateDomain = getDomain(candidate) ?? candidate.replace(/^www\./, "");
+  const sourceDomain = getDomain(source) ?? source.replace(/^www\./, "");
+  return candidateDomain === sourceDomain;
+}
+
+function outboundEditorialLinkCount(html: string, base: URL) {
+  const siteHost = new URL(SITE_URL).hostname;
+  const editorialHtml = html.replace(/<(nav|header|footer|aside)\b[^>]*>[\s\S]*?<\/\1>/gi, " ");
+  const links = new Set<string>();
+  for (const match of editorialHtml.matchAll(/<a\b[^>]*href\s*=\s*["']([^"']+)["'][^>]*>/gi)) {
+    try {
+      const linked = new URL(decodeHtml(match[1]!), base);
+      if (!["http:", "https:"].includes(linked.protocol)) continue;
+      if (relatedHost(linked.hostname, base.hostname) || relatedHost(linked.hostname, siteHost)) continue;
+      if (NON_EDITORIAL_EXTERNAL_HOSTS.some((part) => linked.hostname === part || linked.hostname.endsWith(`.${part}`))) continue;
+      linked.hash = "";
+      links.add(linked.toString());
+    } catch { /* Ignore malformed and unsupported links. */ }
+  }
+  return Math.min(links.size, 500);
+}
+
 export function inspectHtml(html: string, pageUrl: string, fallbackTitle = "Recurs sobre bolets") {
   const url = new URL(pageUrl);
   const siteHost = new URL(SITE_URL).hostname;
@@ -160,12 +239,16 @@ export function inspectHtml(html: string, pageUrl: string, fallbackTitle = "Recu
       }
     } catch { /* Ignore malformed author links. */ }
   }
+  const dates = contentDates(html);
   return {
     title: pageTitle(html, fallbackTitle),
     organization: organizationName(html, url.hostname),
     pageText: textContent(html).slice(0, 30_000),
     emails: emailsIn(html),
     contactLinks: contactLinks(html, url),
+    outboundLinkCount: outboundEditorialLinkCount(html, url),
+    contentPublishedAt: dates.publishedAt,
+    contentModifiedAt: dates.modifiedAt,
     existingLink,
   };
 }

@@ -31,7 +31,7 @@ if (!token) {
 const response = await fetch("http://127.0.0.1:3000/api/internal/backlinks", {
   method: "POST",
   headers: { Authorization: `Bearer ${token}` },
-  signal: AbortSignal.timeout(180_000),
+  signal: AbortSignal.timeout(1_200_000),
 });
 console.log(await response.text());
 if (!response.ok) process.exit(1);

@@ -111,6 +111,22 @@
   line-height: 1.65;
 }
 
+.compact {
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.compact .sectionTitle {
+  font-size: var(--text-2xl);
+  line-height: 1.15;
+}
+
+.compact .sectionDescription {
+  margin-top: 7px;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
 .sectionActions {
   display: flex;
   flex-wrap: wrap;

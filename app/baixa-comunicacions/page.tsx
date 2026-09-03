@@ -31,7 +31,7 @@ export default async function UnsubscribePage({
       {!done && params.token ? (
         <form action={suppressBacklinkAction} className={styles.panel}>
           <input type="hidden" name="token" value={params.token} />
-          <p>La baixa cancel·la també qualsevol seguiment que encara estigui pendent.</p>
+          <p>La baixa bloqueja qualsevol comunicació editorial futura amb aquesta adreça.</p>
           <button type="submit">Confirma la baixa</button>
         </form>
       ) : null}

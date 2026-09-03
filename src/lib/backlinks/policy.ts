@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 import type { BacklinkCampaign } from "@/data/backlink-campaigns";
+import type { BacklinkScoreExplanation } from "@/src/lib/backlinks/types";
 import { SITE_URL } from "@/src/lib/seo";
 
 const BLOCKED_HOST_PARTS = [
@@ -24,6 +25,9 @@ export type CandidateInput = {
   title: string;
   pageText: string;
   contactEmail: string | null;
+  outboundLinkCount: number;
+  contentPublishedAt: string | null;
+  contentModifiedAt: string | null;
   hasExistingLink: boolean;
 };
 
@@ -57,17 +61,54 @@ export function isRoleMailbox(value: string) {
   return ROLE_MAILBOXES.has(local);
 }
 
-export function scoreCandidate(input: CandidateInput) {
+function outboundLinkPropensityScore(count: number) {
+  if (count === 0) return -20;
+  if (count === 1) return -8;
+  if (count === 2) return 2;
+  if (count >= 3) return 6;
+  return 0;
+}
+
+function contentFreshnessFactor(input: CandidateInput, now: Date) {
+  const effectiveDate = input.contentModifiedAt ?? input.contentPublishedAt;
+  const timestamp = effectiveDate ? Date.parse(effectiveDate) : Number.NaN;
+  const ageYears = (now.getTime() - timestamp) / (365.25 * 24 * 60 * 60 * 1000);
+  const points = !Number.isFinite(ageYears) || ageYears < 0 ? 0 : ageYears >= 8 ? -18 : ageYears >= 5 ? -8 : 0;
+  return {
+    id: "content-freshness" as const,
+    points,
+    evidence: effectiveDate ? [effectiveDate, input.contentModifiedAt ? "modified" : "published"] : [],
+  };
+}
+
+export function explainCandidateScore(input: CandidateInput, now = new Date()): BacklinkScoreExplanation {
   const host = new URL(input.pageUrl).hostname;
   const haystack = `${input.title} ${input.pageText.slice(0, 20_000)}`.toLocaleLowerCase("ca");
-  const termHits = input.campaign.topicTerms.filter((term) => haystack.includes(term.toLocaleLowerCase("ca"))).length;
-  let score = 30;
-  score += Math.min(termHits * 8, 32);
-  score += INSTITUTIONAL_HOST_MARKERS.some((marker) => host.includes(marker)) ? 14 : 0;
-  score += input.contactEmail && isRoleMailbox(input.contactEmail) ? 14 : 0;
-  score -= input.hasExistingLink ? 100 : 0;
-  score -= /\b(fòrum|forum|comentaris|classified|casino|aposta|betting)\b/i.test(haystack) ? 40 : 0;
-  return Math.max(0, Math.min(100, score));
+  const matchedTerms = input.campaign.topicTerms.filter((term) => haystack.includes(term.toLocaleLowerCase("ca")));
+  const institutionalMarker = INSTITUTIONAL_HOST_MARKERS.find((marker) => host.includes(marker));
+  const roleMailbox = Boolean(input.contactEmail && isRoleMailbox(input.contactEmail));
+  const lowQualityMatch = haystack.match(/\b(fòrum|forum|comentaris|classified|casino|aposta|betting)\b/i)?.[0];
+  const factors: BacklinkScoreExplanation["factors"] = [
+    { id: "base", points: 30, evidence: [] },
+    { id: "topic-relevance", points: Math.min(matchedTerms.length * 8, 32), evidence: matchedTerms },
+    { id: "institutional-domain", points: institutionalMarker ? 14 : 0, evidence: institutionalMarker ? [institutionalMarker] : [] },
+    { id: "role-mailbox", points: roleMailbox ? 14 : 0, evidence: input.contactEmail ? [input.contactEmail] : [] },
+    { id: "external-link-propensity", points: outboundLinkPropensityScore(input.outboundLinkCount), evidence: [String(input.outboundLinkCount)] },
+    contentFreshnessFactor(input, now),
+    { id: "existing-link", points: input.hasExistingLink ? -100 : 0, evidence: [] },
+    { id: "low-quality-signal", points: lowQualityMatch ? -40 : 0, evidence: lowQualityMatch ? [lowQualityMatch] : [] },
+  ];
+  const rawScore = factors.reduce((sum, factor) => sum + factor.points, 0);
+  return {
+    version: "backlink-score-v3",
+    rawScore,
+    finalScore: Math.max(0, Math.min(100, rawScore)),
+    factors,
+  };
+}
+
+export function scoreCandidate(input: CandidateInput, now = new Date()) {
+  return explainCandidateScore(input, now).finalScore;
 }
 
 export function automaticEligibility(input: CandidateInput, minimumScore: number) {
@@ -85,7 +126,6 @@ export function buildOutreachMessage(input: {
   pageTitle: string;
   pageUrl: string;
   unsubscribeUrl: string;
-  followUp: boolean;
 }) {
   const targetUrl = new URL(input.campaign.targetPath, SITE_URL).toString();
   const greeting = `Hola, equip de ${input.organization},`;
@@ -94,12 +134,8 @@ export function buildOutreachMessage(input: {
   const request = "Si creieu que pot ser útil als vostres lectors, podeu citar-lo com a recurs complementari. No demanem cap intercanvi ni oferim cap compensació.";
   const closing = `Si no encaixa, no cal que respongueu. No tornarem a escriure sobre aquesta pàgina. Podeu evitar qualsevol comunicació futura aquí: ${input.unsubscribeUrl}`;
   return {
-    subject: input.followUp
-      ? `Recordatori breu: ${input.campaign.targetTitle}`
-      : `Recurs sobre bolets per a «${input.pageTitle.slice(0, 72)}»`,
-    text: input.followUp
-      ? `${greeting}\n\nFa uns dies us vam compartir aquest recurs per si complementava la vostra pàgina:\n${targetUrl}\n\n${request}\n\n${closing}\n\nGràcies,\nEquip de Bolets Atles`
-      : `${greeting}\n\n${context}\n\n${resource}\n\n${request}\n\n${closing}\n\nGràcies,\nEquip de Bolets Atles`,
+    subject: `Recurs sobre bolets per a «${input.pageTitle.slice(0, 72)}»`,
+    text: `${greeting}\n\n${context}\n\n${resource}\n\n${request}\n\n${closing}\n\nGràcies,\nEquip de Bolets Atles`,
   };
 }
 

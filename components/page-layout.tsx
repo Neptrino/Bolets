@@ -30,6 +30,7 @@ type SectionHeaderProps = {
   actions?: ReactNode;
   description?: ReactNode;
   className?: string;
+  size?: "default" | "compact";
 };
 
 function joinClassNames(...classNames: Array<string | undefined>) {
@@ -99,10 +100,11 @@ export function SectionHeader({
   actions,
   description,
   className,
+  size = "default",
 }: SectionHeaderProps) {
   return (
     <header
-      className={joinClassNames(styles.sectionHeader, className)}
+      className={joinClassNames(styles.sectionHeader, styles[size], className)}
       data-section-header
     >
       <div className={styles.sectionHeading}>
