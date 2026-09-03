@@ -334,11 +334,13 @@ async function dispatchOutbox(settings: BacklinkSettings) {
     if (claimError) throw claimError;
     if (!claimed) continue;
     const { data: prospect, error: prospectError } = await admin.from("backlink_prospects")
-      .select("domain,status,manual_decision,contact_email,send_count")
+      .select("domain,status,manual_decision,contact_email,send_count,campaign_id,organization,page_title,page_url")
       .eq("id", message.prospect_id)
       .maybeSingle();
     if (prospectError) throw prospectError;
+    const campaign = prospect ? BACKLINK_CAMPAIGNS.find((candidate) => candidate.id === prospect.campaign_id) : null;
     const blocked = !prospect
+      || !campaign
       || prospect.status !== "ready"
       || prospect.manual_decision === "excluded"
       || prospect.contact_email !== message.recipient
@@ -352,8 +354,14 @@ async function dispatchOutbox(settings: BacklinkSettings) {
     }
     const token = createUnsubscribeToken(message.prospect_id, message.recipient, secret);
     const unsubscribeUrl = `${SITE_URL}/api/backlinks/unsubscribe?token=${encodeURIComponent(token)}`;
+    const outboundMessage = buildOutreachMessage({
+      campaign, unsubscribeUrl, organization: prospect.organization,
+      pageTitle: prospect.page_title, pageUrl: prospect.page_url,
+    });
     await admin.from("backlink_outbox").update({
       attempt_count: message.attempt_count + 1,
+      subject: outboundMessage.subject,
+      body_text: outboundMessage.text,
       updated_at: new Date().toISOString(),
     }).eq("id", message.id).eq("status", "sending");
     let safeToRetry = false;
@@ -363,7 +371,7 @@ async function dispatchOutbox(settings: BacklinkSettings) {
         headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", "Idempotency-Key": message.dedupe_key },
         body: JSON.stringify({
           from, to: [message.recipient], reply_to: replyTo || undefined,
-          subject: message.subject, text: message.body_text,
+          subject: outboundMessage.subject, text: outboundMessage.text, html: outboundMessage.html,
           headers: { "List-Unsubscribe": `<${unsubscribeUrl}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" },
           tags: [{ name: "category", value: "backlink_outreach" }],
         }),

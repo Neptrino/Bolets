@@ -121,7 +121,28 @@ describe("backlink outreach policy", () => {
     expect(message.subject).toBe("Recurs sobre bolets per a «Guia de bolets»");
     expect(message.text).toContain("No tornarem a escriure sobre aquesta pàgina.");
     expect(message.text).toContain("Podeu evitar qualsevol comunicació futura aquí:");
+    expect(message.text).toContain("Aleix Ventayol\nAutor i responsable de l’atles");
+    expect(message.text).toContain("Bolets Atles\nMapa, condicions i fitxes de bolets de Catalunya\nbolets.app");
+    expect(message.text).not.toContain("Equip de Bolets Atles");
+    expect(message.html).toContain('src="https://bolets.app/icons/icon-192.png"');
+    expect(message.html).toContain("border-left:2px solid #c45a2a");
+    expect(message.html).toContain("Autor i responsable de l’atles");
     expect(message.text).not.toContain("Recordatori");
+  });
+
+  it("escapes discovered page content in the HTML email", () => {
+    const message = buildOutreachMessage({
+      campaign,
+      organization: "Associació <script>alert(1)</script>",
+      pageTitle: "Guia <b>de bolets</b>",
+      pageUrl: "https://example.cat/guia?tipus=cep&zona=bosc",
+      unsubscribeUrl: "https://bolets.app/baixa-comunicacions?token=a&b=c",
+    });
+    expect(message.html).not.toContain("<script>");
+    expect(message.html).not.toContain("<b>de bolets</b>");
+    expect(message.html).toContain("Guia &lt;b&gt;de bolets&lt;/b&gt;");
+    expect(message.html).toContain("tipus=cep&amp;zona=bosc");
+    expect(message.html).toContain("token=a&amp;b=c");
   });
 
   it("extracts public contact details and existing link attributes", () => {

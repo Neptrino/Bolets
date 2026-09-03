@@ -120,6 +120,41 @@ export function automaticEligibility(input: CandidateInput, minimumScore: number
   return { eligible: true, score, reason: "policy-passed" };
 }
 
+const OUTREACH_SIGNATURE_TEXT = [
+  "Aleix Ventayol",
+  "Autor i responsable de l’atles",
+  "Bolets Atles",
+  "Mapa, condicions i fitxes de bolets de Catalunya",
+  "bolets.app",
+].join("\n");
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[character]!);
+}
+
+function outreachSignatureHtml() {
+  const siteUrl = escapeHtml(SITE_URL);
+  const iconUrl = escapeHtml(new URL("/icons/icon-192.png", SITE_URL).toString());
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:18px;border-collapse:collapse;font-family:Arial,sans-serif;color:#393733">
+  <tr>
+    <td style="padding-right:14px;vertical-align:middle"><a href="${siteUrl}" style="text-decoration:none"><img src="${iconUrl}" width="72" height="72" alt="Bolets Atles" style="display:block;width:72px;height:72px;border:0;border-radius:16px"></a></td>
+    <td style="padding-left:14px;border-left:2px solid #c45a2a;vertical-align:middle">
+      <div style="font-size:16px;font-weight:700;line-height:1.35">Aleix Ventayol</div>
+      <div style="font-size:13px;line-height:1.45;color:#6b675f">Autor i responsable de l’atles</div>
+      <div style="font-size:14px;font-weight:700;line-height:1.45"><a href="${siteUrl}" style="color:#8c4a2f;text-decoration:none">Bolets Atles</a></div>
+      <div style="font-size:13px;line-height:1.45;color:#6b675f">Mapa, condicions i fitxes de bolets de Catalunya</div>
+      <div style="font-size:13px;font-weight:700;line-height:1.45"><a href="${siteUrl}" style="color:#c45a2a;text-decoration:none">bolets.app</a></div>
+    </td>
+  </tr>
+</table>`;
+}
+
 export function buildOutreachMessage(input: {
   campaign: BacklinkCampaign;
   organization: string;
@@ -133,9 +168,19 @@ export function buildOutreachMessage(input: {
   const resource = `A Bolets Atles mantenim ${input.campaign.resourceSummary}: ${input.campaign.targetTitle} (${targetUrl}).`;
   const request = "Si creieu que pot ser útil als vostres lectors, podeu citar-lo com a recurs complementari. No demanem cap intercanvi ni oferim cap compensació.";
   const closing = `Si no encaixa, no cal que respongueu. No tornarem a escriure sobre aquesta pàgina. Podeu evitar qualsevol comunicació futura aquí: ${input.unsubscribeUrl}`;
+  const html = `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.55;color:#393733">
+  <p>${escapeHtml(greeting)}</p>
+  <p>Hem trobat la vostra pàgina «${escapeHtml(input.pageTitle)}» (<a href="${escapeHtml(input.pageUrl)}" style="color:#31523f">${escapeHtml(input.pageUrl)}</a>) mentre revisàvem recursos públics sobre bolets a Catalunya.</p>
+  <p>A Bolets Atles mantenim ${escapeHtml(input.campaign.resourceSummary)}: <a href="${escapeHtml(targetUrl)}" style="color:#31523f">${escapeHtml(input.campaign.targetTitle)}</a>.</p>
+  <p>${escapeHtml(request)}</p>
+  <p>Si no encaixa, no cal que respongueu. No tornarem a escriure sobre aquesta pàgina. Podeu evitar qualsevol comunicació futura <a href="${escapeHtml(input.unsubscribeUrl)}" style="color:#31523f">aquí</a>.</p>
+  <p style="margin-bottom:0">Gràcies,</p>
+  ${outreachSignatureHtml()}
+</div>`;
   return {
     subject: `Recurs sobre bolets per a «${input.pageTitle.slice(0, 72)}»`,
-    text: `${greeting}\n\n${context}\n\n${resource}\n\n${request}\n\n${closing}\n\nGràcies,\nEquip de Bolets Atles`,
+    text: `${greeting}\n\n${context}\n\n${resource}\n\n${request}\n\n${closing}\n\nGràcies,\n${OUTREACH_SIGNATURE_TEXT}`,
+    html,
   };
 }
 
