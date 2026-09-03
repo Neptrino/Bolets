@@ -37,6 +37,10 @@ function Fact({ label, value }: { label: string; value: React.ReactNode }) {
   return <div><dt>{label}</dt><dd>{value}</dd></div>;
 }
 
+function emailPreviewDocument(html: string) {
+  return `<!doctype html><html lang="ca"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#fff">${html}</body></html>`;
+}
+
 const scoreFactorLabels: Record<BacklinkScoreFactorId, string> = {
   base: "Base de la candidatura",
   "topic-relevance": "Rellevància temàtica",
@@ -181,7 +185,16 @@ export function BacklinkDetailContent({
             <div>
               <span><strong>A:</strong> {prospect.emailPreview.recipient}</span>
               <span><strong>Assumpte:</strong> {prospect.emailPreview.subject}</span>
-              <pre>{prospect.emailPreview.body}</pre>
+              <iframe
+                className={styles.messagePreviewFrame}
+                sandbox=""
+                srcDoc={emailPreviewDocument(prospect.emailPreview.html)}
+                title={`Previsualització del correu per a ${prospect.emailPreview.recipient}`}
+              />
+              <details className={styles.plainTextPreview}>
+                <summary>Mostra la versió de text pla</summary>
+                <pre>{prospect.emailPreview.body}</pre>
+              </details>
             </div>
           </article>
         ) : <div className={styles.detailEmpty}>No hi ha cap correu pendent per a l’estat actual.</div>}

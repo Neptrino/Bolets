@@ -98,6 +98,7 @@ function mapProspect(row: Record<string, unknown>): BacklinkProspect {
       recipient: prospect.contactEmail!,
       subject: emailPreview.subject,
       body: emailPreview.text,
+      html: emailPreview.html,
     } : null,
   };
 }

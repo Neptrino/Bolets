@@ -63,6 +63,7 @@ export type BacklinkProspect = {
     recipient: string;
     subject: string;
     body: string;
+    html: string;
   } | null;
 };
 

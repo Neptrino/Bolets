@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -10,6 +12,13 @@ import {
 } from "@/src/lib/backlinks/admin-table";
 
 describe("backlink admin table state", () => {
+  it("shows the formatted outbound email while retaining a plain-text fallback", () => {
+    const detail = readFileSync("app/admin/(private)/enllacos/backlink-detail-content.tsx", "utf8");
+    expect(detail).toContain("srcDoc={emailPreviewDocument(prospect.emailPreview.html)}");
+    expect(detail).toContain("Mostra la versió de text pla");
+    expect(detail).toContain("sandbox=\"\"");
+  });
+
   it("normalizes invalid query parameters", () => {
     expect(parseBacklinkTableQuery({ page: "-4", status: "unknown", sort: "recipient", dir: "sideways" }))
       .toEqual({ page: 1, search: "", status: null, sort: "updated", direction: "desc" });
