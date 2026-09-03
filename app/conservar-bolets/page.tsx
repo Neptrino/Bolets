@@ -60,6 +60,25 @@ const preservationSpecies = [
   return species;
 });
 
+const preservationDetails: Record<string, { id: string; guidance: string }> = {
+  "boletus-edulis": {
+    id: "conservar-ceps",
+    guidance: "Talla els ceps sans a làmines per assecar-los o cuina’ls breument abans de congelar-los. Descarta les parts toves o parasitades i etiqueta cada porció.",
+  },
+  "lactarius-sanguifluus": {
+    id: "conservar-rovellons",
+    guidance: "Neteja els rovellons sense deixar-los en remull, cuina’ls abans de congelar i separa les porcions. La conserva no corregeix una identificació dubtosa.",
+  },
+  "craterellus-lutescens": {
+    id: "congelar-camagrocs",
+    guidance: "Els camagrocs es poden assecar ben estesos o congelar després d’una cocció breu. Revisa els plecs, el peu buit i qualsevol exemplar barrejat abans de conservar-los.",
+  },
+  "hygrophorus-latitabundus": {
+    id: "conservar-llenegues",
+    guidance: "Neteja amb cura la superfície viscosa, cuina les llenegues abans de congelar-les i evita guardar exemplars passats o identificats només pel tacte del barret.",
+  },
+};
+
 const faqs = [
   {
     question: "Es poden congelar els bolets crus?",
@@ -174,9 +193,12 @@ export default function PreserveMushroomsPage() {
         />
         <div className="preservation-species-list">
           {preservationSpecies.map((species) => (
-            <article key={species.speciesId}>
+            <article id={preservationDetails[species.speciesId]?.id} key={species.speciesId}>
               <div><strong>{species.identity.commonName}</strong><em>{species.identity.scientificName}</em></div>
-              <p>{species.culinaryProfile.kind === "culinary" ? species.culinaryProfile.preservation.join(" · ") : ""}</p>
+              <div className="preservation-species-copy">
+                <p>{preservationDetails[species.speciesId]?.guidance}</p>
+                <small>{species.culinaryProfile.kind === "culinary" ? species.culinaryProfile.preservation.join(" · ") : ""}</small>
+              </div>
               <Link href={speciesPath(species)} className="text-link">Veure la fitxa <ArrowUpRight size={15} /></Link>
             </article>
           ))}

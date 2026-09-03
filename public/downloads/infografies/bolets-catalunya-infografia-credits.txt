@@ -171,7 +171,7 @@ Llengua de bou (Hydnum repandum)
 Lleterola roja (Lactifluus rugatus)
   Fotografia: Andrea Monsalve
   Llicència: CC BY 4.0
-  Font: https://www.inaturalist.org/photos/457279762
+  Font: https://inaturalist-open-data.s3.amazonaws.com/photos/457279762/original.jpg
 
 Llora aspra (Russula cyanoxantha)
   Fotografia: Jerzy Opioła

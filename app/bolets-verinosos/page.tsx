@@ -82,6 +82,9 @@ export default function PoisonousMushroomsPage() {
           <Link href="/compare/ou-de-reig-vs-reig-bord"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Ou de reig o reig bord</strong><small>Làmines, peu, volva i risc de confusió</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/compare/rossinyol-vs-bolet-olivera"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Rossinyol o bolet d’olivera</strong><small>Plecs, làmines, substrat i toxicitat</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/compare/cep-vs-matagent"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Cep o matagent</strong><small>Porus, peu, canvi de color i seguretat</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link href="/compare/fredolic-vs-fredolic-metzinos"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Fredolic o fredolic metzinós</strong><small>Mida, robustesa, escates i risc digestiu</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link href="/compare/murgola-vs-bolet-greix"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Múrgola o bolet de greix</strong><small>Barret, interior i una confusió perillosa</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link href="/compare/rovello-vs-rovello-de-cabra"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Rovelló o rovelló de cabra</strong><small>Làtex, marge del barret i arbre associat</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
         </nav>
       </section>
 

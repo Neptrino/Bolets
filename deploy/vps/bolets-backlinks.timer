@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Bolets editorial backlink automation every day
+
+[Timer]
+OnCalendar=*-*-* 10:20:00 Europe/Madrid
+RandomizedDelaySec=10m
+Persistent=true
+Unit=bolets-backlinks.service
+
+[Install]
+WantedBy=timers.target

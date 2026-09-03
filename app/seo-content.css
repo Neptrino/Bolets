@@ -458,6 +458,9 @@
 .preservation-species-list strong { color: #304839; font-size: var(--text-lg); }
 .preservation-species-list em { color: #687066; font-size: var(--text-xs); }
 .preservation-species-list p { margin: 0; color: #525e53; line-height: 1.55; }
+.preservation-species-copy { display: grid; gap: .35rem; }
+.preservation-species-copy small { color: #687066; font-size: var(--text-xs); line-height: 1.5; }
+.preservation-species-list article[id] { scroll-margin-top: 7rem; }
 .preservation-cold-chain { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 2rem; margin-top: 4.5rem; padding: 1.5rem; border-radius: 16px; background: #304839; color: #fffaf0; }
 .preservation-cold-chain h2 { margin: .3rem 0 0; color: inherit; font-size: var(--display-xs); line-height: 1.15; }
 .preservation-cold-chain > div:last-child { display: grid; gap: .7rem; }

@@ -228,6 +228,143 @@
   margin-top: 0;
 }
 
+.current-search-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(16rem, .75fr);
+  gap: 2rem;
+  align-items: start;
+  margin: 0 0 2.5rem;
+  padding: 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 253, 247, .62);
+}
+.current-search-intro h2 {
+  margin: .3rem 0 .55rem;
+  color: var(--forest-panel);
+  font-size: var(--text-xl);
+}
+.current-search-intro p:last-child {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-base);
+  line-height: 1.65;
+}
+.current-search-intro nav {
+  display: grid;
+  gap: .55rem;
+}
+.current-search-intro nav a {
+  display: flex;
+  gap: .65rem;
+  justify-content: space-between;
+  padding: .7rem .8rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--bark);
+  font-size: var(--text-base);
+  font-weight: 800;
+  text-decoration: none;
+}
+.current-search-intro nav a:hover { color: var(--clay); }
+
+.species-name-section { margin-bottom: 4rem; }
+.species-name-glossary { margin-top: 1.5rem; }
+.species-name-search {
+  display: grid;
+  gap: .55rem;
+  max-width: 42rem;
+  color: var(--bark);
+  font-size: var(--text-base);
+  font-weight: 850;
+}
+.species-name-search-control {
+  display: flex;
+  gap: .7rem;
+  align-items: center;
+  padding: .75rem .9rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+}
+.species-name-search-control svg { flex: 0 0 auto; color: var(--clay); }
+.species-name-search-control input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+}
+.species-name-result-count {
+  margin: 1rem 0 .65rem;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+.species-name-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.species-name-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 253, 247, .55);
+}
+.species-name-table th,
+.species-name-table td {
+  padding: .9rem 1rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+  font-size: var(--text-base);
+}
+.species-name-table thead th {
+  background: var(--forest-panel);
+  color: var(--on-dark);
+  font-size: var(--text-sm);
+}
+.species-name-table tbody tr:last-child > * { border-bottom: 0; }
+.species-name-table tbody th { min-width: 13rem; color: var(--forest-panel); }
+.species-name-table tbody th a { color: inherit; }
+.species-name-table small {
+  display: block;
+  margin-top: .25rem;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: 1.45;
+}
+.species-name-table td > strong { color: var(--bark); }
+.species-name-unverified { color: var(--muted); font-style: italic; }
+.species-name-empty { color: var(--muted); font-size: var(--text-base); }
+
+.species-language-names {
+  margin-top: 1.2rem;
+  padding: 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: rgba(244, 239, 229, .58);
+}
+.species-language-names > div:first-child {
+  display: flex;
+  gap: .55rem;
+  align-items: center;
+  color: var(--forest-panel);
+  font-size: var(--text-base);
+  font-weight: 900;
+}
+.species-language-names dl { display: grid; gap: .55rem; margin: .9rem 0; }
+.species-language-names dl div { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: .8rem; }
+.species-language-names dt { color: var(--muted); font-size: var(--text-sm); font-weight: 800; }
+.species-language-names dd { margin: 0; color: var(--ink); font-size: var(--text-base); line-height: 1.45; }
+
+.rain-faq { margin-top: 4.5rem; }
+.rain-faq > div { display: grid; gap: .65rem; margin-top: 1.35rem; }
+.rain-faq details { padding: .95rem 1rem; border: 1px solid var(--line); border-radius: 11px; background: rgba(255, 252, 244, .5); }
+.rain-faq summary { cursor: pointer; color: var(--forest-panel); font-size: var(--text-base); font-weight: 850; }
+.rain-faq p { margin: .75rem 0 0; color: var(--muted); font-size: var(--text-base); line-height: 1.65; }
+
 @media (max-width: 900px) {
   .intent-reading-grid {
     grid-template-columns: 1fr;
@@ -244,6 +381,7 @@
   .season-year > a:nth-child(-n + 6) {
     border-bottom: 1px solid var(--line);
   }
+  .current-search-intro { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 680px) {
@@ -272,4 +410,7 @@
   .season-year > a:nth-last-child(-n + 3) {
     border-bottom: 0;
   }
+  .species-name-table th,
+  .species-name-table td { padding: .75rem; }
+  .species-language-names dl div { grid-template-columns: 1fr; gap: .2rem; }
 }

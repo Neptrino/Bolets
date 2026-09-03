@@ -123,6 +123,15 @@ export default function CollectingRulesGuidePage() {
           <section><h3>4. Comprova l’arribada</h3><p>Verifica les pistes obertes, la senyalització i l’aparcament autoritzat amb la informació local. Poder arribar a un bosc a peu no implica poder-hi circular amb vehicle o estacionar-hi en qualsevol punt. Una taxa d’aparcament o d’accés motoritzat no és un permís de recol·lecció.</p></section>
         </div>
       </section>
+      <section className="seo-guide-section" aria-labelledby="collecting-equipment">
+        <SectionHeader title="Equip bàsic per anar a buscar bolets" titleId="collecting-equipment" meta="Cistell, orientació i tornada segura" />
+        <div className="seo-guide-grid">
+          <section><h3>Cistell rígid i airejat</h3><p>L’ACSA recomana un cistell, preferentment de vímet, que eviti aixafar els bolets. El recipient no fa segur un exemplar mal identificat i no justifica remoure la fullaraca.</p></section>
+          <section><h3>Orientació i bateria</h3><p>Porta un mapa o una aplicació d’orientació, bateria suficient i una alternativa que no depengui de cobertura. Comparteix l’itinerari previst i fixa una hora de tornada.</p></section>
+          <section><h3>Roba, aigua i visibilitat</h3><p>Adapta el calçat i la roba al terreny, porta aigua, menjar i una peça visible. No confiïs en una previsió de bolets com si fos una previsió meteorològica o d’accés.</p></section>
+          <section><h3>Ganivet, no rasclet</h3><p>Si portes una eina de tall, guarda-la amb seguretat. No utilitzis rasclets ni eines per remoure el sòl o la molsa: malmeten el bosc i no ajuden a identificar l’exemplar.</p></section>
+        </div>
+      </section>
       <section className="seo-guide-section" aria-labelledby="collecting-care">
         <SectionHeader title="Deixa el bosc en bon estat" titleId="collecting-care" meta="Recol·lecció responsable" />
         <p>La Xarxa de Parcs Naturals recomana no remoure la terra ni malmetre el bosc amb eines quan es busquen bolets, i collir només els que es coneixen bé. Recull les teves deixalles i respecta l’entorn. <a href={collectingSources.parks.url}>Consulta les recomanacions de recol·lecció de la Xarxa de Parcs.</a></p>

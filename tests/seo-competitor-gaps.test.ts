@@ -59,10 +59,10 @@ describe("mushroom preservation guide", () => {
   it("is indexed with truthful editorial metadata", () => {
     const editorial = getEditorialMetadata("conservar-bolets");
     expect(editorial.publishedAt).toBe("2026-08-31");
-    expect(editorial.updatedAt).toBe("2026-08-31");
+    expect(editorial.updatedAt).toBe("2026-09-03");
     expect(publicEditorialItems).toContain("conservar-bolets");
     expect(sitemap().filter((entry) => entry.url.endsWith("/conservar-bolets"))).toEqual([
-      { url: "https://bolets.app/conservar-bolets", lastModified: new Date("2026-08-31T00:00:00+02:00") },
+      { url: "https://bolets.app/conservar-bolets", lastModified: new Date("2026-09-03T00:00:00+02:00") },
     ]);
   });
 

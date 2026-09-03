@@ -54,6 +54,21 @@ const exampleSpecies = [
   "marasmius-oreades",
 ].map((id) => getSpecies(id)).filter(isDefined);
 
+const rainFaqs = [
+  {
+    question: "Quants dies després de ploure surten els bolets?",
+    answer: "No hi ha un nombre de dies vàlid per a totes les espècies i boscos. La humitat prèvia del sòl, la temperatura, el vent, la temporada i el repartiment de la pluja poden avançar, retardar o impedir la fructificació.",
+  },
+  {
+    question: "Un sol xàfec és suficient perquè surtin bolets?",
+    answer: "Sovint no. Un sòl molt sec pot necessitar diversos episodis o pluja sostinguda, mentre que la calor i el vent poden fer perdre ràpidament la humitat guanyada.",
+  },
+  {
+    question: "On es poden consultar les condicions actuals?",
+    answer: "El mapa i el resum de bolets avui comparen condicions ambientals per espècie i territori. No indiquen presència, abundància ni una data garantida de fructificació.",
+  },
+] as const;
+
 function evidenceNote(sourceId: string) {
   switch (sourceId) {
     case "agreda-2016-climate-sporocarps":
@@ -72,14 +87,22 @@ export default function MushroomsAfterRainPage() {
     <PageShell as="article">
       <JsonLd data={{
         "@context": "https://schema.org",
-        "@type": "Article",
-        headline: "Quan surten els bolets després de ploure?",
-        description: metadata.description,
-        url: absoluteUrl("/quan-surten-els-bolets-despres-de-ploure"),
-        inLanguage: "ca",
-        publisher: { "@id": `${SITE_URL}/#organization` },
-        citation: hydrothermalScientificSources.map((source) => source.url),
-        ...editorialArticleFields("quan-surten-els-bolets-despres-de-ploure"),
+        "@graph": [
+          {
+            "@type": "Article",
+            headline: "Quan surten els bolets després de ploure?",
+            description: metadata.description,
+            url: absoluteUrl("/quan-surten-els-bolets-despres-de-ploure"),
+            inLanguage: "ca",
+            publisher: { "@id": `${SITE_URL}/#organization` },
+            citation: hydrothermalScientificSources.map((source) => source.url),
+            ...editorialArticleFields("quan-surten-els-bolets-despres-de-ploure"),
+          },
+          {
+            "@type": "FAQPage",
+            mainEntity: rainFaqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })),
+          },
+        ],
       }} />
       <PageHeader
         eyebrow={<><CloudRain size={15} /> Pluja i fructificació</>}
@@ -171,6 +194,11 @@ export default function MushroomsAfterRainPage() {
           </article>)}
         </div>
         <aside className="rain-model-caveat"><ShieldCheck size={21} aria-hidden="true" /><p><strong>Límit important.</strong> Les valoracions permeten comparar condicions, però encara no les hem contrastat amb prou observacions de camp a Catalunya. No són una probabilitat de trobar bolets.</p></aside>
+      </section>
+
+      <section className="rain-faq" aria-labelledby="rain-faq-title">
+        <SectionHeader meta="Preguntes freqüents" title="Pluja, espera i condicions actuals" titleId="rain-faq-title" />
+        <div>{rainFaqs.map((faq) => <details key={faq.question}><summary>{faq.question}</summary><p>{faq.answer}</p></details>)}</div>
       </section>
 
       <nav className="rain-guide-actions" aria-label="Continuar explorant les condicions dels bolets">

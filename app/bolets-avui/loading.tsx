@@ -7,6 +7,7 @@ export default function MushroomsTodayLoading() {
       <PageHeader
         eyebrow={<><Map size={15} /> Condicions actuals per territori</>}
         title={<>On hi ha millors condicions<br /><PageTitleAccent>per als bolets avui?</PageTitleAccent></>}
+        titleAs="div"
         description="Comparem les espècies comestibles de temporada i destaquem el sector més favorable de cada territori. La valoració combina el bosc, el sòl i el temps recent; no confirma que hi hagi bolets."
         layout="split"
       />

@@ -69,18 +69,24 @@ describe("rain response guide", () => {
     const jsonLdMatch = html.match(/<script type="application\/ld\+json">(.+?)<\/script>/s);
     expect(jsonLdMatch).not.toBeNull();
     const jsonLd = JSON.parse(jsonLdMatch![1]!) as {
-      description: string;
-      citation: string[];
-      dateModified: string;
+      "@graph": Array<{
+        "@type": string;
+        description?: string;
+        citation?: string[];
+        dateModified?: string;
+      }>;
     };
-    expect(jsonLd.description).toContain("La pluja no activa un compte enrere");
-    expect(jsonLd.citation).toEqual(hydrothermalScientificSources.map((source) => source.url));
-    expect(jsonLd.dateModified).toBe("2026-08-14");
-    expect(getEditorialMetadata("quan-surten-els-bolets-despres-de-ploure").updatedAt).toBe("2026-08-14");
+    const article = jsonLd["@graph"].find((entry) => entry["@type"] === "Article");
+    const faq = jsonLd["@graph"].find((entry) => entry["@type"] === "FAQPage");
+    expect(article?.description).toContain("La pluja no activa un compte enrere");
+    expect(article?.citation).toEqual(hydrothermalScientificSources.map((source) => source.url));
+    expect(article?.dateModified).toBe("2026-09-03");
+    expect(faq).toBeDefined();
+    expect(getEditorialMetadata("quan-surten-els-bolets-despres-de-ploure").updatedAt).toBe("2026-09-03");
 
     const sitemapEntry = sitemap().find((entry) =>
       entry.url.endsWith("/quan-surten-els-bolets-despres-de-ploure")
     );
-    expect(sitemapEntry?.lastModified).toEqual(new Date("2026-08-14T00:00:00+02:00"));
+    expect(sitemapEntry?.lastModified).toEqual(new Date("2026-09-03T00:00:00+02:00"));
   });
 });

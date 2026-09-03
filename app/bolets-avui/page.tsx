@@ -450,6 +450,19 @@ export default function MushroomsTodayPage() {
       <Suspense fallback={<CurrentOverviewLoading />}>
         <CurrentOverview />
       </Suspense>
+      <section className="current-search-intro" aria-labelledby="current-search-intro-title">
+        <div>
+          <p className="eyebrow">Com interpretar la lectura</p>
+          <h2 id="current-search-intro-title">Condicions de bolets avui, aquesta setmana i per territori</h2>
+          <p>Aquesta pàgina compara lectures recents de pluja, temperatura, hàbitat i temporada. No confirma que hi hagi bolets: serveix per ordenar territoris i decidir quines espècies i boscos convé estudiar abans de sortir.</p>
+        </div>
+        <nav aria-label="Guies relacionades amb les condicions actuals">
+          <Link href="/map">Mapa de bolets de Catalunya <ArrowUpRight size={15} aria-hidden="true" /></Link>
+          <Link href="/quan-surten-els-bolets-despres-de-ploure">Quan surten després de ploure <ArrowUpRight size={15} aria-hidden="true" /></Link>
+          <Link href="/zones/ceps">Ceps de Catalunya <ArrowUpRight size={15} aria-hidden="true" /></Link>
+          <Link href="/zones/rovellons">Rovellons a Catalunya <ArrowUpRight size={15} aria-hidden="true" /></Link>
+        </nav>
+      </section>
       <p className="prediction-zone-note">Prepares una sortida? Consulta les <Link href="/preguntes-frequents-bolets#on-buscar" className="text-link">preguntes freqüents sobre on buscar bolets i com interpretar el mapa.</Link></p>
     </PageShell>
   );

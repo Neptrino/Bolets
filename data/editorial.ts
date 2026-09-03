@@ -186,7 +186,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   },
   "normativa-bolets": {
     publishedAt: "2026-08-27",
-    updatedAt: "2026-08-27",
+    updatedAt: "2026-09-03",
   },
   "bolets-de-soca": {
     publishedAt: "2026-08-27",
@@ -197,7 +197,11 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-08-27",
   },
   "bolets": {
-    updatedAt: "2026-08-31",
+    updatedAt: "2026-09-03",
+  },
+  "noms-de-bolets-catala-castella": {
+    publishedAt: "2026-09-03",
+    updatedAt: "2026-09-03",
   },
   "equip-editorial": {
     updatedAt: "2026-08-27",
@@ -206,25 +210,25 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-08-31",
   },
   "bolets-verinosos": {
-    updatedAt: "2026-08-26",
+    updatedAt: "2026-09-03",
   },
   "bolets-de-primavera": {
-    updatedAt: "2026-08-31",
+    updatedAt: "2026-09-03",
   },
   "bolets-d-estiu": {
-    updatedAt: "2026-08-31",
+    updatedAt: "2026-09-03",
   },
   "bolets-de-tardor": {
-    updatedAt: "2026-08-31",
+    updatedAt: "2026-09-03",
   },
   "bolets-d-hivern": {
-    updatedAt: "2026-08-31",
+    updatedAt: "2026-09-03",
   },
   "temporada": {
     updatedAt: "2026-08-31",
   },
   "bolets-avui": {
-    updatedAt: "2026-08-31",
+    updatedAt: "2026-09-03",
   },
   "species:craterellus-lutescens": { updatedAt: "2026-08-31" },
   "species:boletus-edulis": { updatedAt: "2026-08-31" },
@@ -236,10 +240,10 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "species:hygrophorus-russula": { updatedAt: "2026-08-31" },
   "conservar-bolets": {
     publishedAt: "2026-08-31",
-    updatedAt: "2026-08-31",
+    updatedAt: "2026-09-03",
   },
   "quan-surten-els-bolets-despres-de-ploure": {
-    updatedAt: "2026-08-14",
+    updatedAt: "2026-09-03",
   },
   "parts-dun-bolet": {
     updatedAt: "2026-08-31",
@@ -275,6 +279,7 @@ export function editorialArticleFields(contentId: string) {
 
 export const publicEditorialItems = [
   "bolets",
+  "noms-de-bolets-catala-castella",
   "bolets-comestibles",
   "bolets-verinosos",
   "temporada",

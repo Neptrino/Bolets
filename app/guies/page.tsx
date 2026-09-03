@@ -147,6 +147,12 @@ export default function GuidesPage() {
         <strong>Obrir la guia <ArrowUpRight size={17} aria-hidden="true" /></strong>
       </Link>
 
+      <Link href="/noms-de-bolets-catala-castella" className="location-species-feature location-current-feature">
+        <span><BookOpenText size={18} aria-hidden="true" /> Glossari</span>
+        <div><h2>Noms de bolets en català i castellà</h2><p>Compara noms populars, variants i noms científics sense convertir una traducció en una identificació.</p></div>
+        <strong>Consultar el glossari <ArrowUpRight size={17} aria-hidden="true" /></strong>
+      </Link>
+
       <aside className="location-safety-note">
         <Trees size={22} />
         <div><strong>Hàbitat potencial, no una coordenada.</strong><p>Les guies no confirmen presència actual ni substitueixen una identificació experta. Abans de sortir, <Link href="/normativa-bolets">comprova els permisos i l’accés al bosc</Link>.</p></div>

@@ -13,6 +13,14 @@ import { EdibilityBadge } from "@/components/edibility-badge";
 import { officialSafetySource } from "@/data/editorial";
 import type { CatalogueSpecies } from "@/src/lib/types";
 
+function preservationGuideHref(speciesId: string) {
+  if (speciesId === "boletus-edulis") return "/conservar-bolets#conservar-ceps";
+  if (speciesId === "lactarius-sanguifluus" || speciesId === "lactarius-deliciosus") return "/conservar-bolets#conservar-rovellons";
+  if (speciesId === "craterellus-lutescens") return "/conservar-bolets#congelar-camagrocs";
+  if (speciesId === "hygrophorus-latitabundus") return "/conservar-bolets#conservar-llenegues";
+  return "/conservar-bolets";
+}
+
 export function SpeciesCulinarySection({
   species,
 }: {
@@ -122,7 +130,7 @@ export function SpeciesCulinarySection({
           </article>
         </div>
         <p>
-          <Link href="/conservar-bolets" className="text-link">
+          <Link href={preservationGuideHref(species.speciesId)} className="text-link">
             Guia per conservar i congelar bolets amb seguretat <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         </p>

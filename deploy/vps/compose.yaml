@@ -33,6 +33,8 @@ services:
         required: false
       - path: ${BOLETS_CONTRIBUTION_EMAIL_ENV_FILE:-/opt/bolets/secrets/contribution-email.env}
         required: false
+      - path: ${BOLETS_BACKLINK_ENV_FILE:-/opt/bolets/secrets/backlink.env}
+        required: false
     build:
       context: ${BOLETS_APP_DIR:?Set BOLETS_APP_DIR to the checked-out Bolets repository}
       dockerfile: Dockerfile

@@ -6,6 +6,7 @@ import {
   Flag,
   HandHeart,
   Home,
+  Link2,
   LogOut,
   Megaphone,
   Users,
@@ -27,6 +28,7 @@ const sections: ReadonlyArray<{
   { href: "/admin/avisos", label: "Avisos", icon: Flag },
   { href: "/admin/aportacions", label: "Aportacions", icon: HandHeart },
   { href: "/admin/publicacio", label: "Publicació", icon: Megaphone },
+  { href: "/admin/enllacos", label: "Enllaços", icon: Link2 },
   { href: "/admin/operacions", label: "Operacions", icon: Activity },
 ];
 

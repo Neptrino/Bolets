@@ -1,0 +1,14 @@
+[Unit]
+Description=Discover, contact, and verify Bolets editorial backlink opportunities
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+ConditionPathExists=/opt/bolets/secrets/backlink.env
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+TimeoutStartSec=8m
+ExecStart=/opt/bolets/app/deploy/vps/dispatch-backlinks.sh

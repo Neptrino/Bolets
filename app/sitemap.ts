@@ -38,6 +38,9 @@ const preservationGuideLastModified = new Date(
 const seasonPagesLastModified = new Date(
   `${getEditorialMetadata("temporada").updatedAt}T00:00:00+02:00`,
 );
+const speciesNamesLastModified = new Date(
+  `${getEditorialMetadata("noms-de-bolets-catala-castella").updatedAt}T00:00:00+02:00`,
+);
 
 export function buildSitemap(
   currentOverviewLastModified = editorialCurrentOverviewLastModified,
@@ -45,6 +48,7 @@ export function buildSitemap(
   const pages: MetadataRoute.Sitemap = [
     { url: absoluteUrl(), lastModified, images: [absoluteUrl("/media/generated/home-hero-boletus-v2.webp")] },
     { url: absoluteUrl("/bolets"), lastModified: new Date(`${getEditorialMetadata("bolets").updatedAt}T00:00:00+02:00`) },
+    { url: absoluteUrl("/noms-de-bolets-catala-castella"), lastModified: speciesNamesLastModified },
     { url: absoluteUrl("/bolets/infografia"), lastModified, images: [absoluteUrl("/media/editorial/bolets-catalunya-infografia.webp")] },
     { url: absoluteUrl("/bolets-avui"), lastModified: currentOverviewLastModified },
     ...seasonGuides.map((guide) => ({

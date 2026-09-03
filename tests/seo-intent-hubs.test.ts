@@ -36,8 +36,8 @@ describe("edible and poisonous search-intent hubs", () => {
     }
     expect(poisonousMetadata.alternates?.canonical).toBe("/bolets-verinosos");
     expect(poisonousMetadata.description?.length).toBeLessThanOrEqual(155);
-    expect(getEditorialMetadata("bolets-verinosos").updatedAt).toBe("2026-08-26");
+    expect(getEditorialMetadata("bolets-verinosos").updatedAt).toBe("2026-09-03");
     expect(sitemap().find((entry) => entry.url.endsWith("/bolets-verinosos"))?.lastModified)
-      .toEqual(new Date("2026-08-26T00:00:00+02:00"));
+      .toEqual(new Date("2026-09-03T00:00:00+02:00"));
   });
 });

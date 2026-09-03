@@ -17,6 +17,7 @@ import {
 } from "@/data/catalogue";
 import { getSpecies } from "@/data/species";
 import { speciesSlugForId } from "@/data/species-slugs";
+import { getSpanishSpeciesNames } from "@/data/species-common-names";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { isRegionId } from "@/data/regions";
 import {
@@ -85,6 +86,7 @@ export async function generateMetadata({
   const description = species.seo?.description ?? speciesDescription(species);
   const image = speciesImage(species);
   const title = species.seo?.title ?? pageTitle(`${species.identity.commonName}: identificació, hàbitat i temporada`);
+  const spanishNames = getSpanishSpeciesNames(species.speciesId);
 
   return {
     title,
@@ -94,6 +96,7 @@ export async function generateMetadata({
       species.identity.commonName,
       species.identity.scientificName,
       ...species.identity.alternateNames,
+      ...(spanishNames ? [spanishNames.primary, ...(spanishNames.alternatives ?? [])] : []),
       ...(species.seo?.keywords ?? []),
       `hàbitat ${species.identity.commonName}`,
       `temporada ${species.identity.commonName}`,
@@ -152,6 +155,7 @@ export default async function SpeciesPage({
     : seasonSummary(species.ecologicalConfig.seasonality);
   const canonicalUrl = `${SITE_URL}${speciesPath(species)}`;
   const image = speciesImage(species);
+  const spanishNames = getSpanishSpeciesNames(species.speciesId);
   const visibleSections = scoredSpecies
     ? sections
     : sections.filter((section) => section !== "Distribució");
@@ -182,6 +186,7 @@ export default async function SpeciesPage({
                 alternateName: [
                   species.identity.commonName,
                   ...species.identity.alternateNames,
+                  ...(spanishNames ? [spanishNames.primary, ...(spanishNames.alternatives ?? [])] : []),
                 ],
                 taxonRank: "species",
                 parentTaxon: {

@@ -1,0 +1,43 @@
+.shell {
+  display: grid;
+  gap: 26px;
+  max-width: 820px;
+}
+
+.panel,
+.error {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.panel p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.panel button {
+  min-height: 44px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--forest-panel);
+  color: var(--on-dark);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.panel button:focus-visible {
+  outline: 3px solid var(--apricot);
+  outline-offset: 3px;
+}
+
+.error {
+  color: var(--danger-ink);
+  font-size: var(--text-sm);
+}

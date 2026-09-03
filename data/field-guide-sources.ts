@@ -166,10 +166,10 @@ export const ramariaFormosaSources: SourceReference[] = [
 
 export const wrinkledMilkcapSources: SourceReference[] = [
   {
-    id: "gbif-lactifluus-rugatus",
-    title: "Lactifluus rugatus: nom acceptat, sinònims i nom català",
-    publisher: "GBIF · Catalogue of Life",
-    url: "https://www.gbif.org/taxon/3RSLS",
+    id: "species-fungorum-lactifluus-rugatus",
+    title: "Lactifluus rugatus: nom acceptat i sinònims",
+    publisher: "Species Fungorum · Royal Botanic Gardens, Kew",
+    url: "https://www.speciesfungorum.org/names/NamesRecord.asp?RecordId=564628",
     confidence: "high",
   },
   {
@@ -190,10 +190,10 @@ export const wrinkledMilkcapSources: SourceReference[] = [
 
 export const holmOakBoleteSources: SourceReference[] = [
   {
-    id: "gbif-leccinellum-lepidum",
-    title: "Leccinellum lepidum: nom acceptat, sinònims i nom català",
-    publisher: "GBIF · Catalogue of Life",
-    url: "https://www.gbif.org/taxon/6P5F2",
+    id: "species-fungorum-leccinellum-lepidum",
+    title: "Leccinellum lepidum: nom acceptat i sinònims",
+    publisher: "Species Fungorum · Royal Botanic Gardens, Kew",
+    url: "https://www.speciesfungorum.org/names/NamesRecord.asp?RecordId=486593",
     confidence: "high",
   },
   {

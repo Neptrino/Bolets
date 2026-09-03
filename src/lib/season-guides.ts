@@ -14,6 +14,8 @@ export interface SeasonGuide {
   rangeLabel: string;
   rangeSentence: string;
   representativeMonth: Month;
+  seoTitle?: string;
+  seoDescription?: string;
   intro: string;
   conditionTitle: string;
   conditionText: string;
@@ -40,6 +42,8 @@ export const seasonGuides = [
     rangeLabel: "Març–juny",
     rangeSentence: "de març a juny",
     representativeMonth: "abr",
+    seoTitle: "Bolets de primavera a Catalunya: espècies i mesos",
+    seoDescription: "Guia dels bolets de primavera a Catalunya, de març a juny: múrgoles, moixerons, cama-secs, hàbitat, identificació i condicions actuals.",
     intro: "La primavera combina sòls encara frescos, desglaç, pluges irregulars i un escalfament progressiu que afavoreix espècies molt diferents segons l’altitud.",
     conditionTitle: "Una temporada curta i canviant",
     conditionText: "La temperatura del sòl, la humitat prèvia i les gelades tardanes poden avançar o interrompre la fructificació en pocs dies.",
@@ -63,6 +67,8 @@ export const seasonGuides = [
     rangeLabel: "Juny–agost",
     rangeSentence: "de juny a agost",
     representativeMonth: "jul",
+    seoTitle: "Bolets d’estiu: espècies a Catalunya",
+    seoDescription: "Quins bolets surten a l’estiu a Catalunya? Calendari de juny a agost amb ceps d’estiu, ous de reig, hàbitat i condicions després de ploure.",
     intro: "L’estiu pot activar ceps, ous de reig i altres espècies quan les tempestes rehidraten un sòl que encara conserva humitat, sobretot en boscos frescos i zones de muntanya.",
     conditionTitle: "Tempestes útils, calor limitada",
     conditionText: "Un xàfec aïllat no sempre és suficient. La humitat anterior, les nits moderades, el vent i la durada de la calor determinen si el sòl respon.",
@@ -87,6 +93,8 @@ export const seasonGuides = [
     rangeLabel: "Setembre–novembre",
     rangeSentence: "de setembre a novembre",
     representativeMonth: "oct",
+    seoTitle: "Bolets de tardor a Catalunya: espècies i temporada",
+    seoDescription: "Guia dels bolets de tardor a Catalunya, de setembre a novembre: rovellons, camagrocs, fredolics, llenegues, ceps i condicions actuals.",
     intro: "La tardor concentra la diversitat més gran del catàleg, però una data al calendari no garanteix fructificació: cal que pluja, temperatura i humitat del sòl coincideixin.",
     conditionTitle: "La temporada més ampla",
     conditionText: "Les primeres pluges poden activar espècies primerenques, mentre que el fred progressiu, les gelades i els períodes secs desplacen o tanquen cada finestra.",
@@ -113,6 +121,8 @@ export const seasonGuides = [
     rangeLabel: "Desembre–febrer",
     rangeSentence: "de desembre a febrer",
     representativeMonth: "gen",
+    seoTitle: "Bolets d’hivern: espècies a Catalunya",
+    seoDescription: "Guia dels bolets d’hivern a Catalunya, de desembre a febrer: llenegues, marçots, espècies de fred, hàbitat i efecte de les gelades.",
     intro: "L’hivern redueix l’activitat, però no deixa el calendari buit. Algunes espècies toleren temperatures baixes o aprofiten períodes suaus en boscos humits i zones de poca altitud.",
     conditionTitle: "Fred, gelades i finestres suaus",
     conditionText: "Les gelades persistents limiten moltes espècies. L’orientació, l’altitud i uns dies temperats poden crear diferències importants dins una mateixa regió.",
@@ -162,8 +172,8 @@ export function speciesForSeasonGuide(guide: SeasonGuide) {
 
 export function seasonGuideMetadata(guide: SeasonGuide): Metadata {
   const count = speciesForSeasonGuide(guide).length;
-  const title = pageTitle(`${guide.cardTitle} a Catalunya: espècies i calendari`);
-  const description = metaDescription(`Guia de ${count} espècies de ${guide.cardTitle.toLocaleLowerCase("ca")} a Catalunya amb calendari ${guide.rangeSentence}, hàbitat, identificació i condicions ecològiques.`);
+  const title = pageTitle(guide.seoTitle ?? `${guide.cardTitle} a Catalunya: espècies i calendari`);
+  const description = metaDescription(guide.seoDescription ?? `Guia de ${count} espècies de ${guide.cardTitle.toLocaleLowerCase("ca")} a Catalunya amb calendari ${guide.rangeSentence}, hàbitat, identificació i condicions ecològiques.`);
 
   return {
     title,

@@ -217,6 +217,40 @@ deduplication key as the provider idempotency key. Inspect failures with
 `journalctl -u bolets-contribution-emails.service`; correct the sender or API
 configuration before re-queuing a permanently failed message.
 
+### Editorial backlink automation
+
+The private `/admin/enllacos` page controls a fail-closed outreach pipeline. It
+uses Brave Search to discover relevant public Catalan resources, contacts only
+role-based editorial or institutional mailboxes that pass the configured score,
+allows one follow-up, and verifies acquired or removed links. It never purchases
+links, posts comments, or creates reciprocal-link pages.
+
+Create the dedicated secret file before enabling the pipeline in the admin UI:
+
+```bash
+cp deploy/vps/backlink.env.example /opt/bolets/secrets/backlink.env
+chmod 600 /opt/bolets/secrets/backlink.env
+```
+
+Use a verified Resend sender and generate a separate high-entropy
+`BACKLINK_UNSUBSCRIBE_SECRET`. The Brave key remains server-only. Install the
+daily timer after the new environment has been included in the app container:
+
+```bash
+sudo install -m 755 deploy/vps/dispatch-backlinks.sh /opt/bolets/app/deploy/vps/
+sudo install -m 644 deploy/vps/bolets-backlinks.service /etc/systemd/system/
+sudo install -m 644 deploy/vps/bolets-backlinks.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now bolets-backlinks.timer
+sudo systemctl status bolets-backlinks.service bolets-backlinks.timer
+```
+
+The system starts paused in the database. Confirm that all three configuration
+indicators are green in `/admin/enllacos`, save the desired daily limit, and only
+then activate it. Run `sudo systemctl start bolets-backlinks.service` for an
+immediate first cycle. Caddy blocks the internal trigger from the public internet;
+the service calls it over the loopback-only application listener.
+
 ### Instagram profile and daily prediction
 
 The footer links through `/instagram`, which resolves the configured profile at

@@ -10,6 +10,7 @@
     "start": "next start --port 3101",
     "lint": "eslint . && npm run source:size",
     "source:size": "node scripts/check-source-size.mjs",
+    "seo:audit": "node scripts/audit-seo-routes.mjs",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

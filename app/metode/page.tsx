@@ -521,7 +521,7 @@ export default function MethodPage() {
                     <div><dt>Ús</dt><dd>distribució + hàbitat efectiu</dd></div>
                     <div><dt>Llicència</dt><dd>CC BY 4.0</dd></div>
                   </dl>
-                  <a href="https://www.icgc.cat/ca/Geoinformacio-i-mapes/Geoinformacio-en-linia-Geoserveis/WMS-i-WCS-Elevacions/WCS-del-Model-dElevacions-del-Terreny" target="_blank" rel="noreferrer">Fitxa oficial <ExternalLink size={14} /></a>
+                  <a href="https://www.icgc.cat/ca/Geoinformacio-i-mapes/Dades-i-productes/Elevacions/Elevacions-territorial/Models-delevacions" target="_blank" rel="noreferrer">Fitxa oficial <ExternalLink size={14} /></a>
                 </article>
 
                 <article className="method-source-card">
@@ -663,7 +663,7 @@ export default function MethodPage() {
                   <div><dt>Llicència</dt><dd>CC BY-NC 4.0</dd></div>
                   <div><dt>Ús en la puntuació</dt><dd>cap</dd></div>
                 </dl>
-                <a href="https://www.gbif.org/dataset/8583f4f6-f762-11e1-a439-00145eb45e9a" target="_blank" rel="noreferrer">Fitxa i llicència <ExternalLink size={14} /></a>
+                <a href="https://ipt.gbif.es/resource?r=fungacat" target="_blank" rel="noreferrer">Fitxa i llicència <ExternalLink size={14} /></a>
               </article>
             </div>
 

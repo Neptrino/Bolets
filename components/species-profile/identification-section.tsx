@@ -8,6 +8,7 @@ import {
   RefreshCw,
   ShieldAlert,
   Wind,
+  Languages,
 } from "lucide-react";
 import { EdibilityBadge } from "@/components/edibility-badge";
 import {
@@ -17,8 +18,10 @@ import {
   MushroomStemIcon,
 } from "@/components/mushroom-anatomy-icons";
 import { comparisonPagesForSpecies } from "@/data/comparison-pages";
+import { getSpanishSpeciesNames } from "@/data/species-common-names";
 import { getReferenceSpeciesByScientificName } from "@/data/reference-species";
 import { getSpeciesByScientificName } from "@/data/species";
+import { commonNameDisplayLabel } from "@/src/lib/common-name";
 import { speciesPath } from "@/src/lib/seo";
 import type { CatalogueSpecies } from "@/src/lib/types";
 
@@ -31,6 +34,7 @@ export function SpeciesIdentificationSection({
     (item) => item.warning || item.edibility.includes("toxic"),
   );
   const speciesComparisons = comparisonPagesForSpecies(species.speciesId);
+  const spanishNames = getSpanishSpeciesNames(species.speciesId);
 
   return (
 <section id="identificació" className="content-section">
@@ -86,6 +90,16 @@ export function SpeciesIdentificationSection({
       {species.morphology.keyFeatures.map((feature) => (
         <b key={feature}>{feature}</b>
       ))}
+    </div>
+
+    <div className="species-language-names">
+      <div><Languages size={19} aria-hidden="true" /><span>Noms en català i castellà</span></div>
+      <dl>
+        <div><dt>Català</dt><dd>{[species.identity.commonName, ...species.identity.alternateNames].join(" · ")}</dd></div>
+        <div><dt>Castellà</dt><dd lang="es">{spanishNames ? [commonNameDisplayLabel(spanishNames.primary, "es-ES"), ...(spanishNames.alternatives ?? [])].join(" · ") : "Sense equivalència verificada"}</dd></div>
+        <div><dt>Nom científic</dt><dd><i>{species.identity.scientificName}</i></dd></div>
+      </dl>
+      <Link href="/noms-de-bolets-catala-castella" className="text-link">Consultar el glossari complet <ArrowUpRight size={15} aria-hidden="true" /></Link>
     </div>
 
     <div className="content-subsection lookalikes-subsection">

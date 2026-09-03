@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, CookingPot, Images, Leaf, Map, ShieldAlert, Snowflake, Sprout, Sun } from "lucide-react";
+import { ArrowUpRight, CalendarDays, CookingPot, Images, Languages, Leaf, Map, ShieldAlert, Snowflake, Sprout, Sun } from "lucide-react";
 import { PageHeader, PageShell, SectionHeader } from "@/components/page-layout";
 import { SpeciesDirectory } from "@/components/species-directory";
 import { JsonLd } from "@/components/json-ld";
@@ -12,7 +12,7 @@ import { DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
   title: "Tipus de bolets de Catalunya: guia d’espècies",
-  description: `Descobreix ${speciesAlphabetical.length} tipus de bolets de Catalunya per comestibilitat, temporada i hàbitat, amb fitxes d’identificació i confusions.`,
+  description: `Guia de ${speciesAlphabetical.length} tipus de bolets de Catalunya: comestibles, tòxics i no comestibles, amb fotos, noms, temporada, hàbitat i confusions.`,
   alternates: { canonical: "/bolets" },
   openGraph: {
     url: "/bolets",
@@ -48,7 +48,7 @@ export default function SpeciesIndexPage() {
             <Images size={18} aria-hidden="true" /> Veure la infografia <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         }
-        description={<>{speciesAlphabetical.length} fitxes amb fotografies, noms, comestibilitat, hàbitat, temporada i espècies semblants.</>}
+        description={<>{speciesAlphabetical.length} fitxes de bolets comestibles, tòxics i no comestibles amb fotografies, noms, hàbitat, temporada i espècies semblants.</>}
       />
       <SpeciesDirectory
         species={speciesAlphabetical.map(toSpeciesCardProfile)}
@@ -75,6 +75,7 @@ export default function SpeciesIndexPage() {
             <Link href="/bolets/llenega"><Sprout size={18} /><span><strong>Llenega</strong><small>Pinedes calcàries i temporada</small></span><ArrowUpRight size={16} /></Link>
             <Link href="/bolets-de-soca"><Leaf size={18} /><span><strong>Bolets de soca</strong><small>Espècies de la fusta i fitxes del catàleg</small></span><ArrowUpRight size={16} /></Link>
             <Link href="/fals-rossinyol"><ShieldAlert size={18} /><span><strong>Fals rossinyol</strong><small>Noms, fonts i confusions</small></span><ArrowUpRight size={16} /></Link>
+            <Link href="/noms-de-bolets-catala-castella"><Languages size={18} /><span><strong>Noms en català i castellà</strong><small>Glossari amb noms científics i variants</small></span><ArrowUpRight size={16} /></Link>
           </nav>
         </section>
         <section className="species-tools-navigation" aria-labelledby="species-tools-title">
