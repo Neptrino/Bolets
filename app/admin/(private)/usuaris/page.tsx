@@ -13,6 +13,7 @@ import {
   positivePage,
 } from "../detail-utils";
 import styles from "../details.module.css";
+import { UserAccessDialog } from "./user-access-dialog";
 
 export const metadata: Metadata = {
   title: "Usuaris registrats · Administració",
@@ -49,11 +50,17 @@ function contributionSummary(contributions: {
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string | string[] }>;
+  searchParams: Promise<{
+    error?: string | string[];
+    page?: string | string[];
+    updated?: string | string[];
+  }>;
 }) {
   await requireOperationalSession();
   const query = await searchParams;
   const page = positivePage(query.page);
+  const error = Array.isArray(query.error) ? query.error[0] : query.error;
+  const updated = Array.isArray(query.updated) ? query.updated[0] : query.updated;
   const result = await readAdminUsersPage(page);
   const totalPages = Math.max(1, Math.ceil(result.total / result.pageSize));
   const first = result.total === 0 ? 0 : (result.page - 1) * result.pageSize + 1;
@@ -64,10 +71,20 @@ export default async function AdminUsersPage({
       <PageHeader
         eyebrow="Administració · comunitat"
         title={<>Usuaris <PageTitleAccent>registrats</PageTitleAccent></>}
-        description="Rols, accés al mapa, aportacions i activitat agregada. Els correus es mostren emmascarats i no s’exposa cap dada privada de camp."
+        description="Rols, accés al mapa, aportacions i activitat agregada. El correu complet identifica cada compte; no s’exposa cap dada privada de camp."
         layout="split"
         tone="forest"
       />
+      {error ? (
+        <p className={styles.actionNotice} data-tone="error">
+          No s’ha pogut actualitzar l’accés. Comprova el motiu i torna-ho a provar.
+        </p>
+      ) : null}
+      {updated === "granted" ? (
+        <p className={styles.actionNotice}>Accés al mapa concedit correctament.</p>
+      ) : updated === "revoked" ? (
+        <p className={styles.actionNotice}>Accessos temporals retirats correctament.</p>
+      ) : null}
       <div className={styles.overviewLine}>
         <strong>{numberFormatter.format(result.total)} usuaris</strong>
         <span>Mostrant {numberFormatter.format(first)}–{numberFormatter.format(last)}</span>
@@ -86,6 +103,7 @@ export default async function AdminUsersPage({
                 <th scope="col">Aportacions</th>
                 <th scope="col">Troballes</th>
                 <th scope="col">Darrer accés</th>
+                <th scope="col">Accions</th>
               </tr>
             </thead>
             <tbody>
@@ -96,8 +114,8 @@ export default async function AdminUsersPage({
                 return (
                   <tr key={user.id}>
                     <th scope="row">
-                      <strong>{user.alias ?? user.maskedEmail}</strong>
-                      {user.alias ? <small>{user.maskedEmail}</small> : null}
+                      <strong>{user.alias ?? user.email}</strong>
+                      {user.alias ? <small>{user.email}</small> : null}
                       <span className={styles.tableMeta}>
                         {(user.providers.length > 0 ? user.providers : ["email"])
                           .map((provider) => providerLabels[provider] ?? provider)
@@ -141,6 +159,16 @@ export default async function AdminUsersPage({
                       </small>
                     </td>
                     <td><time dateTime={user.lastSignInAt ?? undefined}>{formatDetailDateTime(user.lastSignInAt)}</time></td>
+                    <td>
+                      <UserAccessDialog
+                        accessActive={user.mapAccess.active}
+                        accessLabel={accessLabels[user.mapAccess.level]}
+                        expiresAt={user.mapAccess.expiresAt}
+                        isAdministrator={user.role === "admin"}
+                        userId={user.id}
+                        userLabel={user.email}
+                      />
+                    </td>
                   </tr>
                 );
               })}

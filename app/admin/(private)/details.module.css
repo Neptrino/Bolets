@@ -225,6 +225,23 @@
   padding: 3px 7px;
 }
 
+.findingsTable tbody tr > :first-child {
+  border-left: 4px solid var(--detail-green);
+}
+
+.findingsTable tbody tr[data-state="draft"] > :first-child {
+  border-left-color: var(--detail-amber);
+}
+
+.findingsTable tbody tr[data-state="hidden"] > :first-child,
+.findingsTable tbody tr[data-alert="true"] > :first-child {
+  border-left-color: var(--detail-red);
+}
+
+.findingsTable td:nth-child(5) {
+  min-width: 180px;
+}
+
 .facts {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -272,6 +289,35 @@
   color: var(--muted);
   font-size: var(--text-sm);
   line-height: 1.5;
+}
+
+.actionNotice {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--detail-green) 32%, var(--line));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--detail-green) 9%, var(--surface));
+  color: var(--detail-green);
+  font-size: var(--text-sm);
+  font-weight: 750;
+}
+
+.actionNotice[data-tone="error"] {
+  border-color: color-mix(in srgb, var(--detail-red) 34%, var(--line));
+  background: var(--danger-surface);
+  color: var(--danger-ink);
+}
+
+.filterContext {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+
+.filterContext a {
+  color: var(--clay);
+  font-weight: 850;
+  text-underline-offset: 3px;
 }
 
 .emptyState {

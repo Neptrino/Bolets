@@ -16,7 +16,7 @@ export const ADMIN_REPORTS_PAGE_SIZE = 40;
 
 export type AdminUserListItem = {
   id: string;
-  maskedEmail: string;
+  email: string;
   alias: string | null;
   role: "admin" | "member";
   mapAccess: {
@@ -139,18 +139,6 @@ type ReportRow = {
   resolved_at: string | null;
 };
 
-export function maskAdminEmail(email: string | undefined) {
-  if (!email) return "Sense correu";
-  const separator = email.lastIndexOf("@");
-  if (separator <= 0) return "Correu no disponible";
-  const local = email.slice(0, separator);
-  const domain = email.slice(separator + 1);
-  const visibleLocal = local.length === 1
-    ? local
-    : `${local[0]}${local.length > 2 ? "…" : ""}${local.at(-1)}`;
-  return `${visibleLocal}@${domain}`;
-}
-
 function userProviders(appMetadata: Record<string, unknown>) {
   const providers = appMetadata.providers;
   if (Array.isArray(providers)) {
@@ -230,7 +218,7 @@ export async function readAdminUsersPage(page: number): Promise<AdminUsersPage> 
         : resolveContributorAccess(accesses.get(user.id) ?? null);
       return {
         id: user.id,
-        maskedEmail: maskAdminEmail(user.email),
+        email: user.email ?? "Sense correu",
         alias: aliases.get(user.id) ?? null,
         role: administrator ? "admin" : "member",
         mapAccess: {
@@ -339,6 +327,7 @@ export async function readAdminFindingsPage(
 export async function readAdminReportsPage(
   page: number,
   status?: AdminReportStatus,
+  findingId?: string,
 ): Promise<AdminReportsPage> {
   await requireOperationalSession();
   const admin = createSupabaseAdminClient();
@@ -348,6 +337,7 @@ export async function readAdminReportsPage(
     .select("id,finding_id,reporter_id,reason,detail,status,created_at,resolved_at", { count: "exact" })
     .order("created_at", { ascending: false });
   if (status) query = query.eq("status", status);
+  if (findingId) query = query.eq("finding_id", findingId);
   const { data, error, count } = await query.range(offset, offset + ADMIN_REPORTS_PAGE_SIZE - 1);
   if (error) throw new Error(`Could not read moderation reports: ${error.message}`);
   const rows = data as ReportRow[];
@@ -400,4 +390,33 @@ export async function readAdminReportsPage(
     pageSize: ADMIN_REPORTS_PAGE_SIZE,
     total: count ?? rows.length,
   };
+}
+
+export async function moderateAdminFindingFlag(
+  reportId: string,
+  decision: "hide" | "dismiss",
+) {
+  const moderator = await requireOperationalSession();
+  const admin = createSupabaseAdminClient();
+  const { data, error } = await admin.rpc("moderate_user_finding", {
+    p_flag_id: reportId,
+    p_action: decision,
+    p_moderator_id: moderator.id,
+  });
+  if (error) throw new Error(`Could not moderate finding flag: ${error.message}`);
+  return data === true;
+}
+
+export async function hideAdminFinding(findingId: string) {
+  await requireOperationalSession();
+  const admin = createSupabaseAdminClient();
+  const { data, error } = await admin.from("user_findings")
+    .update({ publication_state: "hidden", updated_at: new Date().toISOString() })
+    .eq("id", findingId)
+    .eq("visibility", "public")
+    .eq("publication_state", "published")
+    .select("id")
+    .maybeSingle();
+  if (error) throw new Error(`Could not hide finding: ${error.message}`);
+  return data !== null;
 }

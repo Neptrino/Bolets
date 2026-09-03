@@ -39,6 +39,6 @@ describe("custom browser controls", () => {
 
     expect(select).toContain('from "@base-ui/react/select"');
     expect(select).toContain("<Select.Trigger");
-    expect(select).toContain("<Select.Portal>");
+    expect(select).toContain("<Select.Portal");
   });
 });

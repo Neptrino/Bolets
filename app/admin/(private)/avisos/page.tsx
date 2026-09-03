@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { z } from "zod";
 
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import {
@@ -17,6 +18,7 @@ import {
   positivePage,
 } from "../detail-utils";
 import styles from "../details.module.css";
+import { ReportModerationControls } from "./report-moderation-controls";
 
 export const metadata: Metadata = {
   title: "Avisos de moderació · Administració",
@@ -25,8 +27,11 @@ export const metadata: Metadata = {
 };
 
 type ReportSearchParams = {
+  error?: string | string[];
+  finding?: string | string[];
   page?: string | string[];
   status?: string | string[];
+  updated?: string | string[];
 };
 
 function firstValue(value: string | string[] | undefined) {
@@ -70,7 +75,11 @@ export default async function AdminReportsPage({
   const query = await searchParams;
   const page = positivePage(query.page);
   const status = parseStatus(query.status);
-  const result = await readAdminReportsPage(page, status);
+  const error = firstValue(query.error);
+  const updated = firstValue(query.updated);
+  const parsedFindingId = z.uuid().safeParse(firstValue(query.finding));
+  const findingId = parsedFindingId.success ? parsedFindingId.data : undefined;
+  const result = await readAdminReportsPage(page, status, findingId);
   const totalPages = Math.max(1, Math.ceil(result.total / result.pageSize));
   const first = result.total === 0 ? 0 : (result.page - 1) * result.pageSize + 1;
   const last = Math.min(result.total, result.page * result.pageSize);
@@ -90,6 +99,21 @@ export default async function AdminReportsPage({
         layout="split"
         tone="forest"
       />
+      {error ? (
+        <p className={styles.actionNotice} data-tone="error">
+          No s’ha pogut completar la moderació. L’avís pot haver canviat o ja estar resolt.
+        </p>
+      ) : null}
+      {updated === "hide" ? (
+        <p className={styles.actionNotice}>Troballa ocultada i avisos oberts resolts.</p>
+      ) : updated === "dismiss" ? (
+        <p className={styles.actionNotice}>Avís desestimat. La troballa no s’ha modificat.</p>
+      ) : null}
+      {findingId ? (
+        <p className={styles.filterContext}>
+          Mostrant només els avisos de la troballa seleccionada. <Link href="/admin/avisos?status=open">Veure tots els avisos oberts</Link>
+        </p>
+      ) : null}
       <nav className={styles.filterBar} aria-label="Filtres d’avisos">
         {presets.map((preset) => (
           <Link href={preset.href} aria-current={status === preset.status ? "page" : undefined} key={preset.href}>
@@ -130,6 +154,9 @@ export default async function AdminReportsPage({
                   <div><dt>Resolució</dt><dd>{formatDetailDateTime(report.resolvedAt)}</dd></div>
                   <div><dt>Estat de la troballa</dt><dd>{findingStateLabel(report.findingPublicationState)}</dd></div>
                 </dl>
+                {report.status === "open" ? (
+                  <ReportModerationControls findingName={report.findingSpeciesName} reportId={report.id} />
+                ) : null}
               </div>
             </li>
           ))}
@@ -143,11 +170,11 @@ export default async function AdminReportsPage({
 
       <nav className={styles.pager} aria-label="Paginació d’avisos">
         {result.page > 1 ? (
-          <Link href={pageHref("/admin/avisos", result.page - 1, { status })}>← Anterior</Link>
+          <Link href={pageHref("/admin/avisos", result.page - 1, { finding: findingId, status })}>← Anterior</Link>
         ) : <span />}
         <span>Pàgina {numberFormatter.format(result.page)} de {numberFormatter.format(totalPages)}</span>
         {result.page < totalPages ? (
-          <Link href={pageHref("/admin/avisos", result.page + 1, { status })}>Següent →</Link>
+          <Link href={pageHref("/admin/avisos", result.page + 1, { finding: findingId, status })}>Següent →</Link>
         ) : <span />}
       </nav>
     </PageShell>
