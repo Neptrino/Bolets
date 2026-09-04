@@ -5,9 +5,6 @@ import { socialGrowthSlideCount } from "@/components/social-growth-card";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { catalogueSpecies } from "@/data/catalogue";
 import {
-  dailyInstagramCaption,
-} from "@/src/lib/buffer-instagram-publisher";
-import {
   instagramGrowthCaption,
 } from "@/src/lib/buffer-instagram-growth-publisher";
 import { dateInCatalonia } from "@/src/lib/buffer-client";
@@ -192,35 +189,21 @@ export default async function AdminInstagramPage() {
             <>
               <section className={plannerStyles.previewBlock}>
                 <header className={plannerStyles.previewHeader}>
-                  <div><span>Diari · Feed + Story</span><h3>Predicció del dia</h3></div>
+                  <div><span>Diari · Story</span><h3>Predicció del dia</h3></div>
                   <time>{nextScheduleLabel(null, 7)}</time>
                 </header>
-                <div className={plannerStyles.dailyPreviewGrid}>
-                  <figure className={plannerStyles.feedFrame}>
-                    <Image
-                      alt="Previsualització de la pròxima publicació diària al feed"
-                      height={1350}
-                      loading="eager"
-                      src={signedDailyShareImagePath(previewable, "feed")}
-                      unoptimized
-                      width={1080}
-                    />
-                    <figcaption>Feed · 4:5</figcaption>
-                  </figure>
+                <div className={plannerStyles.dailyStoryPreview}>
                   <figure className={plannerStyles.storyFrame}>
                     <Image
                       alt="Previsualització de la pròxima Story diària"
                       height={1920}
+                      loading="eager"
                       src={signedDailyShareImagePath(previewable, "story")}
                       unoptimized
                       width={1080}
                     />
                     <figcaption>Story · 9:16</figcaption>
                   </figure>
-                  <details className={plannerStyles.captionPreview}>
-                    <summary>Veure el text del feed</summary>
-                    <p>{dailyInstagramCaption(previewable, publicationDate)}</p>
-                  </details>
                 </div>
               </section>
 

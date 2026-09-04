@@ -254,13 +254,12 @@ the service calls it over the loopback-only application listener.
 ### Instagram profile and daily prediction
 
 The footer links through `/instagram`, which resolves the configured profile at
-request time. The daily publisher sends the signed 1080 × 1350 feed card and
-1080 × 1920 Story card to Buffer only when their verified observation belongs
-to the current civil day in `Europe/Madrid`. Before creating either item, it
-reads the channel's recent posts for the feed date marker and the dated Story
-asset identity, ignoring refreshes to its signed prediction payload, so
-restarting or manually invoking the timer does not publish the same day twice.
-Missing, withheld and stale predictions fail closed.
+request time. The daily publisher sends only the signed 1080 × 1920 Story card
+to Buffer when its verified observation belongs to the current civil day in
+`Europe/Madrid`. Before creating it, the publisher reads the channel's recent
+posts for the dated Story asset identity, ignoring refreshes to its signed
+prediction payload, so restarting or manually invoking the timer does not
+publish the same day twice. Missing, withheld and stale predictions fail closed.
 
 The account must be an Instagram Professional account for automatic publishing.
 In Buffer, use **New channel → Instagram → Connect with Instagram** and sign in

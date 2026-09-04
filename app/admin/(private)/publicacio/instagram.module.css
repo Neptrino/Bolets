@@ -50,9 +50,7 @@
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 22px;
-  background:
-    radial-gradient(circle at 94% 4%, color-mix(in srgb, var(--apricot) 15%, transparent), transparent 32%),
-    var(--surface);
+  background: var(--surface);
   box-shadow: 0 18px 50px rgba(57, 48, 37, 0.065);
 }
 
@@ -88,15 +86,12 @@
   white-space: nowrap;
 }
 
-.dailyPreviewGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(150px, 0.65fr) minmax(240px, 0.85fr);
-  gap: 22px;
-  align-items: start;
+.dailyStoryPreview {
+  display: flex;
+  justify-content: center;
   padding: 24px;
 }
 
-.feedFrame,
 .storyFrame,
 .carouselFrame,
 .reelFrame {
@@ -109,7 +104,6 @@
   box-shadow: 0 16px 40px rgba(25, 31, 27, 0.2);
 }
 
-.feedFrame img,
 .storyFrame img,
 .carouselFrame img,
 .reelFrame video {
@@ -118,7 +112,6 @@
   height: auto;
 }
 
-.feedFrame figcaption,
 .storyFrame figcaption,
 .carouselFrame figcaption,
 .reelFrame figcaption {
@@ -529,14 +522,6 @@
 }
 
 @media (max-width: 900px) {
-  .dailyPreviewGrid {
-    grid-template-columns: minmax(0, 1fr) minmax(160px, 0.55fr);
-  }
-
-  .dailyPreviewGrid > .captionPreview {
-    grid-column: 1 / -1;
-  }
-
   .carouselRail {
     grid-auto-columns: minmax(270px, 52%);
   }
@@ -571,7 +556,6 @@
     text-align: left;
   }
 
-  .dailyPreviewGrid,
   .reelPreviewGrid {
     grid-template-columns: 1fr;
   }

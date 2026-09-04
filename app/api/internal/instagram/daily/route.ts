@@ -29,12 +29,10 @@ async function runPublication() {
       "prediction_unavailable",
     );
   }
-  const imageUrl = absoluteUrl(signedDailyShareImagePath(card, "feed"));
   const storyImageUrl = absoluteUrl(signedDailyShareImagePath(card, "story"));
   return publishDailyInstagramPrediction({
     card,
     config: bufferInstagramPublisherConfig(),
-    imageUrl,
     storyImageUrl,
   });
 }

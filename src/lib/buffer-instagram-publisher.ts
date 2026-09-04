@@ -21,7 +21,6 @@ export {
 export interface InstagramPublicationResult {
   status: "already_published" | "published";
   publicationDate: string;
-  feed: { status: "already_published" | "published"; postId: string };
   story: { status: "already_published" | "published"; postId: string };
 }
 
@@ -39,30 +38,16 @@ function sameDailyStoryAsset(candidate: unknown, expected: string) {
   }
 }
 
-export function dailyInstagramMarker(publicationDate: string) {
-  return `Publicació diària · ${publicationDate}`;
-}
-
-export function dailyInstagramCaption(card: DailyShareCard, publicationDate: string) {
-  const captionBody = card.shareText
-    .replace(/\nhttps:\/\/bolets\.app(?:\/\S*)?/gu, "")
-    .trim();
-
-  return `${captionBody}\n\nMapa complet a l’enllaç del perfil → @bolets.app\n\n${dailyInstagramMarker(publicationDate)}\n#BoletsAtles #BoletsCatalunya`;
-}
-
 export async function publishDailyInstagramPrediction({
   card,
   config,
   fetchImpl = fetch,
-  imageUrl,
   storyImageUrl,
   now = new Date(),
 }: {
   card: DailyShareCard;
   config: BufferInstagramPublisherConfig;
   fetchImpl?: typeof fetch;
-  imageUrl: string;
   storyImageUrl: string;
   now?: Date;
 }): Promise<InstagramPublicationResult> {
@@ -83,26 +68,13 @@ export async function publishDailyInstagramPrediction({
     );
   }
 
-  const caption = dailyInstagramCaption(card, publicationDate);
-  if (caption.length > 2_200) {
-    throw new BufferPublicationError(
-      "The daily Instagram caption exceeds 2,200 characters",
-      500,
-      "instagram_caption_too_long",
-    );
-  }
-
   const { channelId, organizationId } = await findInstagramChannel(config, fetchImpl);
-  const marker = dailyInstagramMarker(publicationDate);
   const posts = await readRecentInstagramPosts({
     channelId,
     config,
     fetchImpl,
     organizationId,
   });
-  const existingFeed = posts.find(
-    (post) => typeof post.text === "string" && post.text.includes(marker),
-  );
   const existingStory = posts.find((post) => {
     const publishedAt = post.sentAt ?? post.createdAt;
     return post.metadata?.type === "story"
@@ -110,22 +82,8 @@ export async function publishDailyInstagramPrediction({
       && typeof publishedAt === "string"
       && dateInCatalonia(new Date(publishedAt)) === publicationDate;
   });
-  const feedPostId = typeof existingFeed?.id === "string" ? existingFeed.id : null;
   const storyPostId = typeof existingStory?.id === "string" ? existingStory.id : null;
 
-  const feed = feedPostId
-    ? { status: "already_published" as const, postId: feedPostId }
-    : {
-        status: "published" as const,
-        postId: await createBufferInstagramPost({
-          assets: [{ image: { url: imageUrl } }],
-          caption,
-          channelId,
-          config,
-          fetchImpl,
-          type: "post",
-        }),
-      };
   const story = storyPostId
     ? { status: "already_published" as const, postId: storyPostId }
     : {
@@ -140,11 +98,8 @@ export async function publishDailyInstagramPrediction({
         }),
       };
   return {
-    status: feed.status === "already_published" && story.status === "already_published"
-      ? "already_published"
-      : "published",
+    status: story.status,
     publicationDate,
-    feed,
     story,
   };
 }
