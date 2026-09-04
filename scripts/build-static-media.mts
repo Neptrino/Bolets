@@ -11,6 +11,7 @@ const publicDirectory = join(process.cwd(), "public");
 const mediaDirectory = join(publicDirectory, "media");
 const outputDirectory = join(mediaDirectory, "optimized");
 const sourceDirectories = [
+  join(mediaDirectory, "contributed"),
   join(mediaDirectory, "boletus-edulis"),
   join(mediaDirectory, "editorial"),
   join(mediaDirectory, "generated"),

@@ -1,5 +1,7 @@
 import type { MediaAsset } from "@/src/lib/types";
 
+// Own field photographs are listed before the Wikimedia identification reference so the gallery opens on them.
+
 export const speciesMedia: Record<string, MediaAsset[]> = {
   "lycoperdon-utriforme": [{
     id: "aleix-ventayol-lycoperdon-utriforme-edited",
@@ -82,6 +84,15 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
   ],
   "boletus-pinophilus": [
     {
+      id: "aleix-boletus-pinophilus-field-20250913",
+      localPath: "/media/contributed/boletus-pinophilus-field-aleix-20250913.webp",
+      sourceUrl: "https://bolets.app/bolets/cep-rogenc",
+      attribution: "Aleix Ventayol",
+      license: "© Aleix Ventayol",
+      identificationReference: false,
+      alt: "Boletus pinophilus: Ceps acabats de collir sobre l’herba amb pinassa; dos barrets vinosos foscos i un de més clar amb el peu blanc i gruixut.",
+    },
+    {
       id: "wikimedia-boletus-pinophilus3",
       localPath: "/media/wikimedia/boletus-pinophilus.webp",
       imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Boletus_pinophilus3.JPG/1280px-Boletus_pinophilus3.JPG",
@@ -117,6 +128,24 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
     }
   ],
   "lactarius-deliciosus": [
+    {
+      id: "aleix-lactarius-deliciosus-field-20241124",
+      localPath: "/media/contributed/lactarius-deliciosus-field-aleix-20241124.webp",
+      sourceUrl: "https://bolets.app/bolets/pinetell",
+      attribution: "Aleix Ventayol",
+      license: "© Aleix Ventayol",
+      identificationReference: false,
+      alt: "Lactarius deliciosus: Barret ataronjat amb cercles concèntrics i el centre deprimit; les làmines i el peu clars es veuen entre l’herba curta.",
+    },
+    {
+      id: "aleix-lactarius-deliciosus-field-20250913",
+      localPath: "/media/contributed/lactarius-deliciosus-field-aleix-20250913.webp",
+      sourceUrl: "https://bolets.app/bolets/pinetell",
+      attribution: "Aleix Ventayol",
+      license: "© Aleix Ventayol",
+      identificationReference: false,
+      alt: "Lactarius deliciosus: Barret taronja amb taques més clares mig amagat entre la molsa i la pinassa, fotografiat des de dalt.",
+    },
     {
       id: "wikimedia-lactarius-deliciosus",
       localPath: "/media/wikimedia/lactarius-deliciosus.webp",
@@ -190,6 +219,24 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
   ],
   "macrolepiota-procera": [
     {
+      id: "aleix-macrolepiota-procera-field-20241103",
+      localPath: "/media/contributed/macrolepiota-procera-field-aleix-20241103.webp",
+      sourceUrl: "https://bolets.app/bolets/apagallums",
+      attribution: "Aleix Ventayol",
+      license: "© Aleix Ventayol",
+      identificationReference: false,
+      alt: "Macrolepiota procera: Exemplar alt a contrallum de l’alba en un prat, amb el barret escatós obert, l’anell doble i el peu amb dibuix de pell de serp.",
+    },
+    {
+      id: "aleix-macrolepiota-procera-field-20260822",
+      localPath: "/media/generated/macrolepiota-procera-field-aleix-v1.webp",
+      sourceUrl: "https://bolets.app/bolets/apagallums",
+      attribution: "Aleix Ventayol",
+      license: "© Aleix Ventayol",
+      identificationReference: false,
+      alt: "Macrolepiota procera amb el barret escatós obert entre l’herba d’un prat.",
+    },
+    {
       id: "wikimedia-macrolepiota-procera",
       localPath: "/media/wikimedia/macrolepiota-procera.webp",
       imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Parasol-Macrolepiota-procera.jpg/1280px-Parasol-Macrolepiota-procera.jpg",
@@ -237,6 +284,15 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
     }
   ],
   "marasmius-oreades": [
+    {
+      id: "aleix-marasmius-oreades-field-20260513",
+      localPath: "/media/contributed/marasmius-oreades-field-aleix-20260513.webp",
+      sourceUrl: "https://bolets.app/bolets/camasec",
+      attribution: "Aleix Ventayol",
+      license: "© Aleix Ventayol",
+      identificationReference: false,
+      alt: "Marasmius oreades: Grup de barrets ocre amb mamelló central i peus prims i clars entre l’herba alta d’un prat.",
+    },
     {
       id: "wikimedia-marasmius-oreades",
       localPath: "/media/wikimedia/marasmius-oreades.webp",

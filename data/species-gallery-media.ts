@@ -335,15 +335,6 @@ export const speciesGalleryMedia: Record<string, MediaAsset[]> = {
   ],
   "macrolepiota-procera": [
     {
-      id: "aleix-macrolepiota-procera-field-20260822",
-      localPath: "/media/generated/macrolepiota-procera-field-aleix-v1.webp",
-      sourceUrl: "https://bolets.app/bolets/apagallums",
-      attribution: "Aleix Ventayol",
-      license: "© Aleix Ventayol",
-      identificationReference: false,
-      alt: "Macrolepiota procera amb el barret escatós obert entre l’herba d’un prat.",
-    },
-    {
       id: "wikimedia-macrolepiota-procera-gallery-2",
       localPath: "/media/wikimedia/gallery/wikimedia-macrolepiota-procera-gallery-2.webp",
       imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Macrolepiota-procera.jpg/1920px-Macrolepiota-procera.jpg",
