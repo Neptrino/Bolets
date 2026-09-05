@@ -1,6 +1,7 @@
 .git
 .github
 .next
+.static
 .supabase
 .vercel
 coverage

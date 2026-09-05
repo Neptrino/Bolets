@@ -2,7 +2,7 @@
 Description=Warm published public Bolets map caches
 After=docker.service
 Requires=docker.service
-ConditionPathIsExecutable=/opt/bolets/app/deploy/vps/warm-map-cache.sh
+ConditionFileIsExecutable=/opt/bolets/app/deploy/vps/warm-map-cache.sh
 
 [Service]
 Type=oneshot

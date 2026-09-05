@@ -92,3 +92,26 @@ upstream precompressed-sidecar HTTP 206 regression; the release retains Caddy's
 on-the-fly compression instead. The pinned production Alloy validator accepted
 the new independent runtime scrape. Local card repeats returned first bytes in
 4–6 ms; production timings must be checked after rollout.
+
+
+## Production verification
+
+The initial release `b3e853c` passed the complete deployment workflow and became
+healthy on 5 September at about 07:23 UTC. Three-request samples found:
+
+| Request | First response TTFB | Subsequent TTFB |
+| --- | --- | --- |
+| Generated cep card | 3.10 s | 153–172 ms |
+| Five-day combined-map forecast bucket | 1.03 s | 139–172 ms |
+| Current combined-map bucket | 152 ms | 146–150 ms |
+| Reported optimized WebP | 239 ms | 126–143 ms |
+
+Cold card rendering remains about three seconds. Static responses carried the
+immutable cache header and exact original bytes. A fresh Chromium session
+confirmed service-worker control and successfully opened the same image offline
+with HTTP 200 and all 354,586 bytes.
+
+The first timer start exposed a misspelled systemd condition directive before
+the active-release symlink switched. The follow-up uses `ConditionFileIsExecutable`
+and adds real systemd unit validation to CI, treating warnings as failures.
+Exported `.static` files are excluded from subsequent Docker build contexts.

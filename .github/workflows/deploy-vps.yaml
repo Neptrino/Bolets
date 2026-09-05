@@ -43,6 +43,9 @@ jobs:
       - name: Verify static serving and timing-log privacy
         run: node scripts/verify-caddy-performance.mjs
 
+      - name: Validate map cache service units
+        run: sh scripts/verify-map-cache-units.sh
+
       - name: Run type checks
         run: npm run typecheck
 
