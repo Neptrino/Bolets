@@ -96,13 +96,15 @@ function Leader({ reading, photo }: { reading?: Reading; photo?: WeekendPhoto })
   if (!reading) return <Heading eyebrow="02 / L’espècie">Sense lectura publicable.</Heading>;
   return <div style={{ ...column, width: "100%" }}>
     <Heading eyebrow={reading.score === 0 ? "02 / Sense senyal positiu" : "02 / La lectura que destaca"}>{reading.speciesName}</Heading>
-    <Photo photo={photo} height={360} />
-    <span style={{ marginTop: 24, fontSize: 44, lineHeight: 1.1, fontWeight: 900 }}>{reading.regionName}</span>
-    <div style={{ display: "flex", alignItems: "center", gap: 30, marginTop: 24, marginBottom: 22 }}>
-      <span style={{ fontSize: 148, lineHeight: 1, fontWeight: 900, letterSpacing: "-0.06em" }}>{reading.score}</span>
-      <div style={{ ...column, gap: 8 }}>
-        <span style={{ fontSize: 30, fontWeight: 800 }}>millor sector /100</span>
-        <span style={{ fontSize: 29, color: color.inkMuted }}>{reading.score === 0 ? "Sense senyal positiu" : `Oportunitat ${getSuitabilityBand(reading.score).label.toLowerCase()}`}</span>
+    <Photo photo={photo} height={620} />
+    <div style={{ display: "flex", alignItems: "center", gap: 28, marginTop: 22, marginBottom: 22 }}>
+      <div style={{ ...column, flex: 1, gap: 10 }}>
+        <span style={{ fontSize: 40, lineHeight: 1.1, fontWeight: 900 }}>{reading.regionName}</span>
+        <span style={{ fontSize: 26, color: color.inkMuted }}>{reading.score === 0 ? "Sense senyal positiu" : `Oportunitat ${getSuitabilityBand(reading.score).label.toLowerCase()}`}</span>
+      </div>
+      <div style={{ ...column, alignItems: "flex-end", gap: 8 }}>
+        <span style={{ fontSize: 112, lineHeight: 1, fontWeight: 900, letterSpacing: "-0.06em" }}>{reading.score}</span>
+        <span style={{ fontSize: 23, fontWeight: 800 }}>millor sector /100</span>
       </div>
     </div>
     <Extent reading={reading} />
