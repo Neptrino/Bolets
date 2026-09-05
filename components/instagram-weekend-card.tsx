@@ -20,9 +20,9 @@ export interface WeekendPhoto {
 }
 
 function Heading({ eyebrow, children, light = false }: { eyebrow: string; children: ReactNode; light?: boolean }) {
-  return <div style={{ ...column, marginBottom: 40 }}>
+  return <div style={{ ...column, width: "100%", marginBottom: 40 }}>
     <span style={{ color: light ? color.orange : color.inkMuted, fontSize: 27, fontWeight: 800, letterSpacing: "0.09em", textTransform: "uppercase" }}>{eyebrow}</span>
-    <span style={{ marginTop: 18, fontSize: 88, fontWeight: 900, lineHeight: 0.98, letterSpacing: "-0.055em" }}>{children}</span>
+    <span style={{ width: 898, whiteSpace: "normal", wordBreak: "break-word", marginTop: 18, fontSize: 88, fontWeight: 900, lineHeight: 0.98, letterSpacing: "-0.055em" }}>{children}</span>
   </div>;
 }
 
@@ -98,8 +98,8 @@ function Leader({ reading, photo }: { reading?: Reading; photo?: WeekendPhoto })
     <Heading eyebrow={reading.score === 0 ? "02 / Sense senyal positiu" : "02 / La lectura que destaca"}>{reading.speciesName}</Heading>
     <Photo photo={photo} height={620} />
     <div style={{ display: "flex", alignItems: "center", gap: 28, marginTop: 22, marginBottom: 22 }}>
-      <div style={{ ...column, flex: 1, gap: 10 }}>
-        <span style={{ fontSize: 40, lineHeight: 1.1, fontWeight: 900 }}>{reading.regionName}</span>
+      <div style={{ ...column, width: 590, flexShrink: 0, gap: 10 }}>
+        <span style={{ width: 590, whiteSpace: "normal", wordBreak: "break-word", fontSize: 40, lineHeight: 1.1, fontWeight: 900 }}>{reading.regionName}</span>
         <span style={{ fontSize: 26, color: color.inkMuted }}>{reading.score === 0 ? "Sense senyal positiu" : `Oportunitat ${getSuitabilityBand(reading.score).label.toLowerCase()}`}</span>
       </div>
       <div style={{ ...column, alignItems: "flex-end", gap: 8 }}>
