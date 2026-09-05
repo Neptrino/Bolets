@@ -1,0 +1,11 @@
+[Unit]
+Description=Check for new Bolets map publications
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=1min
+RandomizedDelaySec=10s
+Unit=bolets-map-cache.service
+
+[Install]
+WantedBy=timers.target

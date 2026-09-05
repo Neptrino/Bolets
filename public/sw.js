@@ -114,24 +114,40 @@ async function trimTileCache() {
   await Promise.all(keys.slice(0, excess).map((key) => cache.delete(key)));
 }
 
+/**
+ * Cache writes consume the entire response body. Keep them alive separately
+ * from respondWith so HTML/images can stream immediately, and storage quota
+ * failures cannot turn a successful network response into an offline fallback.
+ */
+function respondWithCaching(event, handler) {
+  const writes = [];
+  const store = (write) => writes.push(write.catch(() => undefined));
+  const response = handler(event.request, store);
+  event.respondWith(response);
+  event.waitUntil(response.then(() => Promise.all(writes), () => undefined));
+}
+
 /** Cache first: the answer cannot go stale without its URL changing. */
-async function cacheFirst(request, cacheName) {
+async function cacheFirst(request, cacheName, store) {
   const cached = await caches.match(request);
   if (cached) return cached;
   const response = await fetch(request);
-  if (response.ok) await putStamped(cacheName, request, response.clone());
+  if (response.ok) store(putStamped(cacheName, request, response.clone()));
   return response;
 }
 
 /** Opportunistic tile caching, bounded, never pre-fetched. */
-async function tileFirst(request) {
+async function tileFirst(request, store) {
   const cached = await caches.match(request);
   if (cached) return cached;
   const response = await fetch(request);
   if (response.ok) {
-    const cache = await caches.open(TILE_CACHE);
-    await cache.put(request, response.clone());
-    await trimTileCache();
+    const copy = response.clone();
+    store((async () => {
+      const cache = await caches.open(TILE_CACHE);
+      await cache.put(request, copy);
+      await trimTileCache();
+    })());
   }
   return response;
 }
@@ -140,10 +156,10 @@ async function tileFirst(request) {
  * Network first: today's scores when the network answers, yesterday's clearly
  * dated copy when it does not.
  */
-async function networkFirst(request, cacheName) {
+async function networkFirst(request, cacheName, store) {
   try {
     const response = await fetch(request);
-    if (response.ok) await putStamped(cacheName, request, response.clone());
+    if (response.ok) store(putStamped(cacheName, request, response.clone()));
     return response;
   } catch (error) {
     const cached = await caches.match(request);
@@ -153,10 +169,10 @@ async function networkFirst(request, cacheName) {
 }
 
 /** Navigations fall back to the last copy of that page, then to the shell. */
-async function navigate(request) {
+async function navigate(request, store) {
   try {
     const response = await fetch(request);
-    if (response.ok) await putStamped(SHELL_CACHE, request, response.clone());
+    if (response.ok) store(putStamped(SHELL_CACHE, request, response.clone()));
     return response;
   } catch (error) {
     const cached = await caches.match(request);
@@ -179,7 +195,7 @@ self.addEventListener("fetch", (event) => {
     TILE_HOSTS.has(url.hostname)
     || url.pathname.startsWith("/api/map-tiles/icgc/")
   ) {
-    event.respondWith(tileFirst(request));
+    respondWithCaching(event, tileFirst);
     return;
   }
 
@@ -205,29 +221,37 @@ self.addEventListener("fetch", (event) => {
     || url.pathname.startsWith("/api/moderation/");
   if (privatePath) return;
 
+  // Versioned catalogue images remain immutable even when opened in their
+  // own tab. Check before navigations so they use the asset cache, not a fresh
+  // network request and another full-body write to the document cache.
+  if (/^\/media\/optimized\/v\d+\/.+\.webp$/.test(url.pathname)) {
+    respondWithCaching(event, (request, store) => cacheFirst(request, ASSET_CACHE, store));
+    return;
+  }
+
   if (request.mode === "navigate") {
-    event.respondWith(navigate(request));
+    respondWithCaching(event, navigate);
     return;
   }
 
   if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/")) {
-    event.respondWith(cacheFirst(request, ASSET_CACHE));
+    respondWithCaching(event, (request, store) => cacheFirst(request, ASSET_CACHE, store));
     return;
   }
 
   if (url.pathname === "/api/predictions") {
-    event.respondWith(networkFirst(request, DATA_CACHE));
+    respondWithCaching(event, (request, store) => networkFirst(request, DATA_CACHE, store));
     return;
   }
 
   if (url.pathname === "/api/findings") {
-    event.respondWith(networkFirst(request, DATA_CACHE));
+    respondWithCaching(event, (request, store) => networkFirst(request, DATA_CACHE, store));
     return;
   }
 
   if (url.pathname === "/api/habitat" || url.pathname === "/api/occurrences") {
     // Both carry their model version in the URL, so a cached answer can only
     // be the answer for that version.
-    event.respondWith(cacheFirst(request, DATA_CACHE));
+    respondWithCaching(event, (request, store) => cacheFirst(request, DATA_CACHE, store));
   }
 });

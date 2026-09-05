@@ -12,10 +12,10 @@ import {
 import { proxyDevelopmentPublicDataGet } from "@/src/lib/development-public-data-proxy";
 import { getPredictionCells } from "@/src/lib/predictions";
 import {
-  getPredictionMapTimelineFrame,
   isPredictionTimelineOffset,
 } from "@/src/lib/prediction-map-timeline";
 import {
+  getCachedPredictionMapTimelineFrame,
   getCachedGlobalMapPredictionCells,
   getCachedSpeciesMapPredictionCells,
 } from "@/src/lib/prediction-response-cache";
@@ -134,7 +134,7 @@ export async function GET(request: Request) {
     }
     const { query } = parsedTimelineQuery;
     try {
-      const result = await getPredictionMapTimelineFrame(
+      const result = await getCachedPredictionMapTimelineFrame(
         speciesId,
         query.bounds,
         query.limit ?? 1000,

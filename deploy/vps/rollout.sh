@@ -62,6 +62,7 @@ ensure_local_status_secret() (
 
 ensure_local_status_secret CONTRIBUTOR_ACCESS_SECRET
 ensure_local_status_secret ABUSE_RATE_LIMIT_SECRET
+ensure_local_status_secret CACHE_WARM_SECRET
 
 if [ -f "$instagram_env_file" ] &&
    find "$instagram_env_file" -perm /077 -print -quit | grep -q .; then
@@ -176,6 +177,13 @@ cd "$supabase_dir"
 docker compose $compose_files config --quiet
 # shellcheck disable=SC2086
 docker compose $compose_files build app
+# Export immutable public files from the candidate image before Caddy starts.
+# The runtime mount contains only these allowlisted build artifacts.
+install -d -m 755 "$app_dir/.static"
+# shellcheck disable=SC2086
+docker compose $compose_files run --rm --no-deps --user 0 \
+  --volume "$app_dir/.static:/export" --entrypoint node app \
+  scripts/export-static-assets.mjs /export
 "$app_dir/deploy/vps/apply-database-migrations.sh" "$app_dir"
 "$app_dir/deploy/vps/sync-functions.sh" "$app_dir" "$supabase_dir"
 # shellcheck disable=SC2086
@@ -217,5 +225,13 @@ if [ -f "$instagram_env_file" ]; then
     bolets-instagram-education.timer \
     bolets-instagram-weekend.timer
 fi
+
+install -m 644 "$app_dir/deploy/vps/bolets-map-cache.service" /etc/systemd/system/
+install -m 644 "$app_dir/deploy/vps/bolets-map-cache.timer" /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now bolets-map-cache.timer
+# Generation reads may lag by 30 seconds. The timer retries without making a
+# provider interruption an application deployment failure.
+"$app_dir/deploy/vps/warm-map-cache.sh" || echo "Map warming will retry on the timer" >&2
 
 echo "Bolets rollout completed"

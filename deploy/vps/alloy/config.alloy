@@ -55,6 +55,23 @@ prometheus.scrape "bolets_operations" {
   }
 }
 
+// Keep runtime health observable even while the database status RPC is down.
+prometheus.scrape "bolets_runtime" {
+  targets = [{
+    "__address__" = "app:3000",
+    "instance"    = sys.env("BOLETS_OBSERVABILITY_INSTANCE"),
+    "job"         = "bolets-runtime",
+  }]
+  metrics_path    = "/api/internal/runtime-metrics"
+  scrape_interval = "60s"
+  scrape_timeout  = "5s"
+  forward_to      = [prometheus.remote_write.grafana_cloud.receiver]
+  authorization {
+    type        = "Bearer"
+    credentials = sys.env("STATUS_INTERNAL_TOKEN")
+  }
+}
+
 prometheus.remote_write "grafana_cloud" {
   endpoint {
     url = sys.env("GRAFANA_CLOUD_PROMETHEUS_URL")

@@ -40,6 +40,9 @@ jobs:
       - name: Run lint checks
         run: npm run lint
 
+      - name: Verify static serving and timing-log privacy
+        run: node scripts/verify-caddy-performance.mjs
+
       - name: Run type checks
         run: npm run typecheck
 

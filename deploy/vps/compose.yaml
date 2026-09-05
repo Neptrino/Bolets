@@ -47,6 +47,7 @@ services:
     restart: unless-stopped
     init: true
     environment:
+      BOLETS_RUNTIME_METRICS: "1"
       NODE_ENV: production
       SUPABASE_URL: http://api-gw:8000
       NEXT_PUBLIC_SUPABASE_URL: ${SUPABASE_PUBLIC_URL:?Set the public Supabase URL}
@@ -55,6 +56,7 @@ services:
       # Used only by the private server-rendered operations page and its
       # internal Prometheus endpoint. It is never compiled as a public value.
       SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY:?Generate the Supabase keys before starting}
+      CACHE_WARM_SECRET: ${CACHE_WARM_SECRET:?Set the private cache warming credential}
       STATUS_INTERNAL_TOKEN: ${STATUS_INTERNAL_TOKEN:?Set the private status ingress token}
       CONTRIBUTOR_ACCESS_SECRET: ${CONTRIBUTOR_ACCESS_SECRET:?Set the contributor capability secret}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:?Set the Turnstile secret key}
@@ -118,6 +120,11 @@ services:
       start_period: 30s
 
   caddy:
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     image: caddy:2.10.2-alpine
     restart: unless-stopped
     environment:
@@ -131,6 +138,7 @@ services:
       - "443:443/udp"
     volumes:
       - ${BOLETS_APP_DIR}/deploy/vps/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${BOLETS_APP_DIR}/.static:/srv/bolets-static:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on:

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getPredictionMapTimelineFrame } from "@/src/lib/prediction-map-timeline";
 import { unstable_cache } from "next/cache";
 import { readCurrentOverviewGeneration } from "@/src/lib/current-overview-generation-server";
 import {
@@ -9,17 +10,24 @@ import {
 import type { GlobalGridSizeM } from "@/src/lib/global-map";
 import { PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
 import { getPredictionCells } from "@/src/lib/predictions";
-import type { SpatialBounds, SpatialGridSizeM } from "@/src/lib/types";
+import type { PredictionTimelineOffset, SpatialBounds, SpatialGridSizeM } from "@/src/lib/types";
 
 const GENERATION_REVALIDATE_SECONDS = 30;
 const GENERATION_BOUND_RESPONSE_REVALIDATE_SECONDS = 24 * 60 * 60;
 const RAW_RESPONSE_REVALIDATE_SECONDS = 300;
 
-const readCachedPredictionGeneration = unstable_cache(
-  () => readCurrentOverviewGeneration(),
-  ["prediction-api-generation-v1"],
+const readGeneration = unstable_cache(
+  async () => ({ generation: await readCurrentOverviewGeneration(), storedAt: Date.now() }),
+  ["prediction-api-generation-v2"],
   { revalidate: GENERATION_REVALIDATE_SECONDS },
 );
+
+export async function readCachedPredictionGeneration() {
+  const cached = await readGeneration();
+  return Date.now() - cached.storedAt >= GENERATION_REVALIDATE_SECONDS * 1000
+    ? readCurrentOverviewGeneration()
+    : cached.generation;
+}
 
 const loadCachedGlobalMapPredictionCells = unstable_cache(
   (
@@ -96,4 +104,41 @@ export function getCachedSpeciesMapPredictionCells(
     gridSizeM,
     PREDICTION_CACHE_VERSION,
   );
+}
+
+type TimelineResult = Awaited<ReturnType<typeof getPredictionMapTimelineFrame>>;
+const timelinePending = new Map<string, Promise<{ computedAt: number; result: TimelineResult }>>();
+
+function computeTimelineFrame(
+  speciesId: string, bounds: SpatialBounds, limit: number, gridSizeM: SpatialGridSizeM,
+  offset: Exclude<PredictionTimelineOffset, 0>,
+) {
+  const key = JSON.stringify([speciesId, bounds, limit, gridSizeM, offset]);
+  let task = timelinePending.get(key);
+  if (!task) {
+    task = getPredictionMapTimelineFrame(speciesId, bounds, limit, gridSizeM, offset)
+      .then((result) => ({ computedAt: Date.now(), result }))
+      .finally(() => { timelinePending.delete(key); });
+    timelinePending.set(key, task);
+  }
+  return task;
+}
+
+const loadTimelineFrame = unstable_cache((
+  speciesId: string, bounds: SpatialBounds, limit: number, gridSizeM: SpatialGridSizeM,
+  offset: Exclude<PredictionTimelineOffset, 0>, model: string, speciesSet: string,
+) => {
+  void model; void speciesSet;
+  return computeTimelineFrame(speciesId, bounds, limit, gridSizeM, offset);
+}, ["prediction-api-timeline-v1"], { revalidate: 60, tags: ["prediction-api-map"] });
+
+export async function getCachedPredictionMapTimelineFrame(
+  speciesId: string, bounds: SpatialBounds, limit: number, gridSizeM: SpatialGridSizeM,
+  offset: Exclude<PredictionTimelineOffset, 0>,
+) {
+  const cached = await loadTimelineFrame(speciesId, bounds, limit, gridSizeM, offset,
+    PREDICTION_CACHE_VERSION, globalSpeciesSetKey);
+  return (Date.now() - cached.computedAt >= 60_000
+    ? await computeTimelineFrame(speciesId, bounds, limit, gridSizeM, offset)
+    : cached).result;
 }

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getEnvironmentFrame } from "@/src/lib/prediction-environment-frame";
 import type { z } from "zod";
 import { getSpecies } from "@/data/species";
 import { habitatScoringValues } from "@/supabase/functions/_shared/habitat-scoring-values";
@@ -27,46 +28,6 @@ type EnvironmentFrameCell = EnvironmentFrame["cells"][number];
 
 const MAX_FORECAST_AGE_MS = 36 * 60 * 60 * 1000;
 const MAX_FORECAST_ANCHOR_GAP_MS = 8 * 60 * 60 * 1000;
-
-function environmentFrameUrl(
-  bounds: SpatialBounds,
-  limit: number,
-  gridSizeM: SpatialGridSizeM,
-  offset: Exclude<PredictionTimelineOffset, 0>,
-) {
-  const query = new URLSearchParams({
-    mode: "frame",
-    west: String(bounds.west),
-    south: String(bounds.south),
-    east: String(bounds.east),
-    north: String(bounds.north),
-    limit: String(Math.min(Math.max(Math.round(limit), 1), 1000)),
-    resolution: String(gridSizeM),
-    offset: String(offset),
-  });
-  return `${process.env.SUPABASE_URL}/functions/v1/read-spatial-environment?${query}`;
-}
-
-async function getEnvironmentFrame(
-  bounds: SpatialBounds,
-  limit: number,
-  gridSizeM: SpatialGridSizeM,
-  offset: Exclude<PredictionTimelineOffset, 0>,
-) {
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-    throw new Error("Spatial environment service is not configured");
-  }
-  const response = await fetch(environmentFrameUrl(bounds, limit, gridSizeM, offset), {
-    headers: {
-      Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
-      apikey: process.env.SUPABASE_ANON_KEY,
-    },
-    cache: "force-cache",
-    next: { revalidate: 300 },
-  });
-  if (!response.ok) throw new Error(`Spatial timeline frame returned ${response.status}`);
-  return spatialEnvironmentFrameSchema.parse(await response.json());
-}
 
 function frameEnvironment(
   cell: EnvironmentFrameCell,

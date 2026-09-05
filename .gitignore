@@ -24,3 +24,5 @@ workers/**/worker-configuration.d.ts
 video/render/
 .claude/
 .codex-tmp/node_modules
+
+.static/

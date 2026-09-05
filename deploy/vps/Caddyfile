@@ -1,6 +1,14 @@
 {
 	email {$TLS_EMAIL}
 	admin off
+	# Error logs must not retain request URLs, credentials or client identities.
+	log default {
+		format filter {
+			request delete
+			resp_headers delete
+			wrap json
+		}
+	}
 }
 
 {$APP_DOMAIN}, www.{$APP_DOMAIN} {
@@ -10,6 +18,61 @@
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
 		-Server
+	}
+
+	# Only fixed public route groups are recorded. No raw path, query, header,
+	# IP, referrer or response header survives the encoder.
+	map {path} {bolets_route_group} {
+		~^/media/optimized/ static
+		~^/_next/static/ static
+		~^/icons/ static
+		~^/bolets/[^/]+/targeta$ field-card
+		~^/bolets(/[^/]+)?$ species
+		~^/zones(/[^/]+){0,3}$ territory
+		~^/map(/[^/]+)?$ map
+		/bolets-avui current
+		/api/predictions map-data
+		/ home
+		default excluded
+	}
+	log public_timing {
+		output stdout
+		format filter {
+			request delete
+			resp_headers delete
+			user_id delete
+			wrap json
+		}
+	}
+	@excluded_timing expression `{bolets_route_group} == "excluded" || !({http.request.method} in ["GET", "HEAD"]) || {http.request.header.DNT} == "1"`
+	log_skip @excluded_timing
+	@private_referrer header_regexp Referer ^https?://[^/]+/(admin|acces|compte|moderacio|troballes/nova)(/|\?|$)
+	log_skip @private_referrer
+	@private_map_timing {
+		path /api/predictions
+		not query resolution=2500 resolution=5000 resolution=10000
+	}
+	log_skip @private_map_timing
+	log_append route_group {bolets_route_group}
+	log_append upstream_duration_ms {rp.upstream.duration_ms}
+	log_append upstream_latency_ms {rp.upstream.latency_ms}
+
+	@immutable_assets path /media/optimized/* /_next/static/*
+	handle @immutable_assets {
+		root * /srv/bolets-static
+		header Cache-Control "public, max-age=31536000, immutable" {
+			match status 200 206 304
+		}
+		# Caddy 2.10.2 precompressed sidecars return 206; use encode above.
+		file_server
+	}
+	@icons path /icons/*
+	handle @icons {
+		root * /srv/bolets-static
+		header Cache-Control "public, max-age=3600" {
+			match status 200 206 304
+		}
+		file_server
 	}
 
 	@admin path /admin /admin/*

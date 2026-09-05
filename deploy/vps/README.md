@@ -737,3 +737,54 @@ Before every Supabase update:
 
 Supabase's `update.sh` preserves `.env` and data but does not back up PostgreSQL
 or Storage.
+
+
+## Response latency and cache maintenance
+
+Each rollout exports only optimized media, Next.js static files and icons from
+its built image into `<release>/.static`, then mounts that directory read-only
+in Caddy. These requests bypass Node.js. Versioned media and build chunks keep
+immutable one-year headers; unversioned icons use one hour. Missing files return
+404 without falling through to application rendering. Caddy 2.10.2 has a
+precompressed-sidecar 206 regression, so compression remains in the existing
+`encode` handler. `scripts/verify-caddy-performance.mjs` exercises these paths,
+HTTP 200 responses and privacy filters in an isolated Docker container in CI.
+
+Species field cards are rendered once per content identity into the app's
+`.next/cache/field-cards` directory. Each species occupies one file, writes are
+atomic, concurrent requests share work and different cold renders are serialized.
+Catalogue/image changes invalidate the entry; each immutable application release
+starts with its own cache. Rendering failures can retry and storage failures do
+not prevent delivery of a successfully generated image.
+
+Timeline environment responses are schema-validated and gzip-compressed before
+entering Next.js's 2 MiB Data Cache. The raw upstream fetch has a ten-second
+abort deadline and no competing raw fetch-cache entry. The environment has a
+five-minute freshness limit and scored responses have a one-minute limit,
+in addition to the existing public HTTP cache headers. Cache keys remain stable rather than creating a new disk file per minute.
+Expired entries refresh before delivery. Scoring retains every
+forecast correction input and rechecks forecast age when recomputed.
+
+`bolets-map-cache.timer` checks approximately every minute for completed coarse
+and territorial publication markers. Its private POST route uses the separately
+generated `CACHE_WARM_SECRET` in the root-only status environment. A run warms
+only the canonical combined-map 5 km and 10 km buckets (at most 64), with two
+concurrent reads and a 90-second scheduling budget. Concurrent triggers coalesce;
+partial runs and publication changes retry. Unchanged generations do no scoring
+work. Rollout invokes the same warmer once; failure leaves the timer to retry.
+The service is skipped on rollback to a release without the warming script.
+
+Caddy public timing logs contain only fixed route groups, status, size, total
+duration and upstream header/response durations. Private/unknown routes, detailed
+map requests, Do Not Track and private referrers are excluded. Request objects
+and response headers are removed from both access and error logs before they
+reach stdout or Alloy. Docker rotates Caddy logs at 10 MiB with three files.
+
+`BOLETS_RUNTIME_METRICS=1` enables a 20 ms event-loop sampler at server startup.
+The authenticated `/api/internal/runtime-metrics` endpoint exports minute-window
+p99/max delay, utilization and process RSS/heap, without request identifiers or
+route context. Alloy scrapes this independently of the database-dependent
+operations endpoint. The first complete minute establishes the initial sample.
+Useful initial investigation thresholds are repeated public response durations
+over one second and event-loop max delays above 0.2 seconds; tune alerts against
+actual traffic rather than treating these as availability guarantees.

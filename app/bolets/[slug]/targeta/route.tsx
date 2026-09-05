@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import { cachedFieldCard } from "@/src/lib/field-card-cache";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
@@ -199,14 +201,21 @@ export async function GET(
 
   const card = toSpeciesFieldCardProfile(species);
   const image = await readFile(join(process.cwd(), "public", card.imagePath.slice(1)));
-  // ImageResponse does not decode embedded WebP. Convert the version-controlled
-  // catalogue source in memory; the completed card is cached at the response.
-  const jpeg = await sharp(image).jpeg({ quality: 90, mozjpeg: true }).toBuffer();
-  const imageDataUrl = `data:image/jpeg;base64,${jpeg.toString("base64")}`;
-  const response = new ImageResponse(
-    <FieldCardArtwork card={card} imageDataUrl={imageDataUrl} />,
-    { width: 1080, height: 1350 },
-  );
+  const identity = `field-card-v1:${JSON.stringify(card)}:${createHash("sha256").update(image).digest("hex")}`;
+  const png = await cachedFieldCard(species.speciesId, identity, async () => {
+    // ImageResponse cannot decode WebP; resize before embedding to avoid
+    // decoding a full camera photograph for a 1080 × 500 display area.
+    const jpeg = await sharp(image).resize({ width: 1080, withoutEnlargement: true })
+      .jpeg({ quality: 90 }).toBuffer();
+    const rendered = new ImageResponse(
+      <FieldCardArtwork card={card} imageDataUrl={`data:image/jpeg;base64,${jpeg.toString("base64")}`} />,
+      { width: 1080, height: 1350 },
+    );
+    return Buffer.from(await rendered.arrayBuffer());
+  });
+  const response = new Response(new Uint8Array(png), {
+    headers: { "Content-Type": "image/png" },
+  });
   response.headers.set(
     "Cache-Control",
     "public, s-maxage=3600, stale-while-revalidate=86400",
