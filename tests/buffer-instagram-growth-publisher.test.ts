@@ -69,8 +69,11 @@ describe("Buffer Instagram growth publisher", () => {
     const habitatCaption = instagramGrowthCaption("education", card, "2026-09-09");
 
     expect(waterCaption).toContain("Ha plogut. Vol dir que ja hi haurà bolets?");
-    expect(habitatCaption).toContain("Bon temps per a bolets… però per a quina espècie?");
+    expect(habitatCaption).toContain("Una foto del barret deixa moltes preguntes obertes.");
     expect(waterCaption).not.toBe(habitatCaption);
+    expect(habitatCaption).not.toContain("lectura territorial més alta");
+    expect(habitatCaption).toContain("https://www.mushroomexpert.com/studying.html");
+    expect(habitatCaption).toContain("sense revisió micològica independent");
   });
 
   it("publishes the five-image educational carousel on Wednesday", async () => {

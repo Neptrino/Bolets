@@ -8,7 +8,7 @@ import type { DailyShareCard } from "@/src/lib/daily-share-cards";
 async function main() {
   const folder = resolve("artifacts/instagram/daily-style-preview");
   await mkdir(folder, { recursive: true });
-  const card: DailyShareCard = { slug: "catalunya", title: "Catalunya", eyebrow: "Mostra", available: true, isPreview: true, observedAt: "2026-09-05T06:00:00Z", scope: "overview", scopeLabel: "Catalunya", mapPath: "/map", shareText: "MOSTRA", readings: ["Cerdanya", "Ripollès", "Berguedà"].map((regionName, i) => ({ speciesId: "boletus-edulis", speciesName: "Cep", regionName, score: 64 - i, label: "Alta", positiveCellShare: 0.42, score20CellShare: 0.18 })) };
+  const card: DailyShareCard = { slug: "catalunya", title: "Catalunya", eyebrow: "Mostra", available: true, isPreview: true, observedAt: "2026-09-05T06:00:00Z", scope: "overview", scopeLabel: "Catalunya", mapPath: "/map", shareText: "MOSTRA", readings: ["Cerdanya", "Ripollès", "Berguedà"].map((regionName, i) => ({ speciesId: "boletus-edulis", speciesName: "Cep", regionName, score: [83, 56, 24][i], label: ["Molt alta", "Mitjana", "Baixa"][i], positiveCellShare: 0.42, score20CellShare: 0.18 })) };
   const thumbs = [];
   for (const format of ["story", "feed"] as const) {
     const bytes = Buffer.from(await (await renderInstagramDailyCard({ card, format })).arrayBuffer());

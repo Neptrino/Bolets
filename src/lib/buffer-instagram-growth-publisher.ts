@@ -29,6 +29,9 @@ export function instagramGrowthMarker(kind: InstagramGrowthPublication, publicat
 
 function educationCaption(card: DailyShareCard, publicationDate: string) {
   const topic = instagramEducationTopicForDate(publicationDate);
+  if (topic.source) {
+    return `${topic.captionIntro}\n\n${topic.captionBody}\n\nDesa la pauta per a la pròxima sortida. Guia: bolets.app${topic.guidePath}\nGuies a l’enllaç del perfil → @bolets.app\n\nFont: ${topic.source.label} — ${topic.source.url}\nPauta d’observació, sense revisió micològica independent. No confirma identificació ni comestibilitat.\n\n${instagramGrowthMarker("education", publicationDate)}\n#BoletsAtles #Micologia #BoletsCatalunya #Bosc`;
+  }
   const reading = card.readings[0];
   const today = reading
     ? `La lectura territorial més alta d’avui és ${reading.score}/100 per a ${reading.speciesName} a ${reading.regionName}.`

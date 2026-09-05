@@ -1,3 +1,4 @@
+import { InstagramFieldDiagram } from "@/components/instagram-field-diagram";
 import { BrandMark } from "@/components/brand-mark";
 import { InstagramCover } from "@/components/instagram-cover";
 import { InstagramEditorialMotif } from "@/components/instagram-editorial-motif";
@@ -26,7 +27,7 @@ export function InstagramEducationCard({ card, topicId, slide }: { card: DailySh
   const current = Math.min(Math.max(slide, 1), topic.slides.length);
   const copy: InstagramEducationSlide = topic.slides[current - 1];
   const cover = educationCovers[topicId];
-  if (current === 1) return <InstagramCover brief={cover} draft={card.isPreview} footer="Guia · Desplaça per entendre-ho · 1/5" />;
+  if (current === 1) return <InstagramCover brief={cover} draft={card.isPreview} visual={topic.source ? <InstagramFieldDiagram topicId={topicId} light={cover.tone === "forest"} /> : undefined} footer="Guia · Desplaça per entendre-ho · 1/5" />;
   const light = current === 5;
   const foreground = light ? p.cream : p.forest;
   return <div style={{ display: "flex", flexDirection: "column", position: "relative", width: 1080, height: 1350, padding: "58px", background: light ? p.forest : p.cream, color: foreground, fontFamily: INSTAGRAM_FONT_FAMILY }}>
@@ -40,14 +41,15 @@ export function InstagramEducationCard({ card, topicId, slide }: { card: DailySh
       <span style={{ fontSize: t.body, lineHeight: 1.35, marginTop: 30 }}>{copy.body}</span>
     </div>
     <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "center", minHeight: 380 }}>
-      {copy.visual ? <ReadingExample card={card} /> : current === 5 ? <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      {copy.points ? <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: 18 }}>{topic.source && (current === 2 || (topicId === "field-underside" && current === 3)) ? <div style={{ display: "flex", marginBottom: 24 }}><InstagramFieldDiagram topicId={topicId} slide={current} light={light} /></div> : null}{copy.points.map((point, index) => <div key={point.label} style={{ display: "flex", gap: 26, padding: "32px", background: light ? p.moss : p.creamSoft, borderLeft: `10px solid ${p.orange}` }}><span style={{ fontSize: 42, fontWeight: 900, color: light ? p.orangeLight : p.clay }}>0{index + 1}</span><div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}><span style={{ fontSize: 38, fontWeight: 900 }}>{point.label}</span><span style={{ fontSize: 32, lineHeight: 1.25 }}>{point.detail}</span></div></div>)}</div> : copy.visual ? <ReadingExample card={card} /> : current === 5 ? <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <span style={{ fontSize: 104, fontWeight: 900, letterSpacing: "-0.06em", color: p.orangeLight }}>bolets.app</span>
         <span style={{ fontSize: t.body }}>La lectura completa, a l’enllaç del perfil.</span>
       </div> : <InstagramEditorialMotif motif={cover.motif} light={light} />}
     </div>
     <div style={{ display: "flex", flexDirection: "column", gap: 12, borderTop: `2px solid ${light ? p.moss : "#d3cfba"}`, paddingTop: 22 }}>
       {copy.visual && card.observedAt ? <span style={{ fontSize: t.small }}>Lectura del {dateFormat.format(new Date(card.observedAt))}</span> : null}
-      <span style={{ fontSize: t.small }}>Condicions, no presència. Una lectura no identifica bolets.</span>
+      {topic.source ? <span style={{ fontSize: 20 }}>Font: {topic.source.label} · Fonts completes al peu del post.</span> : null}
+      <span style={{ fontSize: t.small }}>{topic.source ? "Pauta d’observació. No confirma identificació ni comestibilitat." : "Condicions, no presència. Una lectura no identifica bolets."}</span>
     </div>
   </div>;
 }
