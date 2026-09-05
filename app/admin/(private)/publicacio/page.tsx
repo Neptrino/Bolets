@@ -10,7 +10,6 @@ import {
 import { dateInCatalonia } from "@/src/lib/buffer-client";
 import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
 import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
-import { instagramEducationTopicForDate } from "@/src/lib/instagram-education";
 import {
   INSTAGRAM_SPECIES_SLIDE_COUNT,
   instagramSpeciesPublicationForSpecies,
@@ -142,14 +141,6 @@ export default async function AdminInstagramPage() {
     .sort((left, right) => preferredMetrics.indexOf(left.key) - preferredMetrics.indexOf(right.key)) ?? [];
   const previewable = card?.available && card.observedAt && !card.isPreview ? card : null;
   const publicationDate = previewable ? dateInCatalonia(new Date(previewable.observedAt!)) : null;
-  const educationSchedule = nextSchedule(3, 19);
-  const educationTopic = instagramEducationTopicForDate(educationSchedule.date);
-  const educationImages = previewable
-    ? Array.from(
-        { length: socialGrowthSlideCount("education") },
-        (_, index) => signedSocialGrowthImagePath(previewable, "education", index + 1, educationTopic.id),
-      )
-    : [];
   // The picker opens on what the forest is doing now: species in their peak
   // month first, then good months, so one post a week follows the season.
   const seasonRanking = instagramSpeciesSeasonRanking(publicationDate ?? dateInCatalonia(new Date()));
@@ -213,31 +204,6 @@ export default async function AdminInstagramPage() {
                 initialSpeciesId={initialSpeciesPublication.profile.speciesId}
                 speciesOptions={speciesOptions}
               />
-
-              <section className={plannerStyles.previewBlock}>
-                <header className={plannerStyles.previewHeader}>
-                  <div><span>Dimecres · Carrusel</span><h3>{educationTopic.title}</h3></div>
-                  <time>{educationSchedule.label}</time>
-                </header>
-                <div className={plannerStyles.carouselRail} aria-label="Cinc diapositives del carrusel educatiu">
-                  {educationImages.map((imagePath, index) => (
-                    <figure className={plannerStyles.carouselFrame} key={imagePath}>
-                      <Image
-                        alt={`Diapositiva ${index + 1} de ${educationImages.length} del carrusel educatiu`}
-                        height={1350}
-                        src={imagePath}
-                        unoptimized
-                        width={1080}
-                      />
-                      <figcaption>{index + 1}/{educationImages.length}</figcaption>
-                    </figure>
-                  ))}
-                </div>
-                <details className={plannerStyles.captionPreview}>
-                  <summary>Veure el text del carrusel</summary>
-                  <p>{instagramGrowthCaption("education", previewable, educationSchedule.date)}</p>
-                </details>
-              </section>
 
               <section className={plannerStyles.previewBlock}>
                 <header className={plannerStyles.previewHeader}>

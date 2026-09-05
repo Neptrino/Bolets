@@ -76,37 +76,11 @@ describe("Buffer Instagram growth publisher", () => {
     expect(habitatCaption).toContain("sense revisió micològica independent");
   });
 
-  it("publishes the five-image educational carousel on Wednesday", async () => {
-    const fetchImpl = connectedBufferResponses(vi.fn<typeof fetch>())
-      .mockResolvedValueOnce(response({ posts: { edges: [] } }))
-      .mockResolvedValueOnce(response({
-        createPost: { __typename: "PostActionSuccess", post: { id: "carousel-1" } },
-      }));
-    const images = Array.from({ length: 5 }, (_, index) => `https://bolets.app/slide-${index + 1}.png`);
-
-    await expect(publishInstagramGrowthPost({
-      card,
-      config,
-      educationImageUrls: images,
-      fetchImpl,
-      kind: "education",
-      now: new Date("2026-09-02T17:00:00.000Z"),
-    })).resolves.toEqual({
-      status: "published",
-      postId: "carousel-1",
-      publicationDate: "2026-09-02",
-      kind: "education",
-    });
-
-    const createBody = JSON.parse(String(fetchImpl.mock.calls[3]?.[1]?.body)) as {
-      variables: { input: Record<string, unknown> };
-    };
-    expect(createBody.variables.input).toMatchObject({
-      assets: images.map((url) => ({ image: { url } })),
-      metadata: { instagram: { shouldShareToFeed: true, type: "post" } },
-      mode: "shareNow",
-    });
-    expect(createBody.variables.input.text).toContain(instagramGrowthMarker("education", "2026-09-02"));
+  it("rejects retired education posts before any Buffer request", async () => {
+    const fetchImpl = vi.fn<typeof fetch>();
+    await expect(publishInstagramGrowthPost({ card, config, kind: "education", fetchImpl, now: new Date("2026-09-02T17:00:00Z") }))
+      .rejects.toMatchObject({ code: "instagram_education_disabled", status: 410 });
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
   it("publishes the signed weekend video as a Reel on Friday", async () => {
@@ -136,19 +110,19 @@ describe("Buffer Instagram growth publisher", () => {
   });
 
   it("does not duplicate a publication with the same channel date marker", async () => {
-    const marker = instagramGrowthMarker("education", "2026-09-02");
+    const marker = instagramGrowthMarker("weekend", "2026-09-04");
     const fetchImpl = connectedBufferResponses(vi.fn<typeof fetch>())
       .mockResolvedValueOnce(response({
         posts: { edges: [{ node: { id: "existing-1", text: `Caption\n${marker}`, status: "sent" } }] },
       }));
 
     await expect(publishInstagramGrowthPost({
-      card,
+      card: { ...card, observedAt: "2026-09-04T06:00:00Z" },
       config,
-      educationImageUrls: Array.from({ length: 5 }, (_, index) => `https://bolets.app/${index}.png`),
+      reelUrl: "https://bolets.app/reel.mp4",
       fetchImpl,
-      kind: "education",
-      now: new Date("2026-09-02T17:00:00.000Z"),
+      kind: "weekend",
+      now: new Date("2026-09-04T17:00:00.000Z"),
     })).resolves.toMatchObject({ status: "already_published", postId: "existing-1" });
     expect(fetchImpl).toHaveBeenCalledTimes(3);
   });
@@ -158,9 +132,9 @@ describe("Buffer Instagram growth publisher", () => {
     await expect(publishInstagramGrowthPost({
       card: { ...card, observedAt: "2026-09-01T06:00:00.000Z" },
       config,
-      educationImageUrls: Array.from({ length: 5 }, (_, index) => `https://bolets.app/${index}.png`),
+      reelUrl: "https://bolets.app/reel.mp4",
       fetchImpl,
-      kind: "education",
+      kind: "weekend",
       now: new Date("2026-09-01T17:00:00.000Z"),
     })).rejects.toMatchObject({ code: "instagram_growth_off_schedule", status: 409 });
     expect(fetchImpl).not.toHaveBeenCalled();

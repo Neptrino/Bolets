@@ -1,8 +1,6 @@
-import { socialGrowthSlideCount } from "@/components/social-growth-card";
 import {
   BufferPublicationError,
   bufferInstagramPublisherConfig,
-  dateInCatalonia,
   isInstagramPublishRequestAuthorized,
 } from "@/src/lib/buffer-client";
 import {
@@ -10,9 +8,7 @@ import {
   type InstagramGrowthPublication,
 } from "@/src/lib/buffer-instagram-growth-publisher";
 import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
-import { instagramEducationTopicForDate } from "@/src/lib/instagram-education";
 import {
-  signedSocialGrowthImagePath,
   signedWeekendReelPath,
 } from "@/src/lib/social-growth-assets";
 import { absoluteUrl } from "@/src/lib/seo";
@@ -42,23 +38,9 @@ async function runPublication(kind: InstagramGrowthPublication) {
       "prediction_unavailable",
     );
   }
-  const educationTopic = card.observedAt
-    ? instagramEducationTopicForDate(dateInCatalonia(new Date(card.observedAt)))
-    : null;
   return publishInstagramGrowthPost({
     card,
     config: bufferInstagramPublisherConfig(),
-    educationImageUrls: kind === "education"
-      ? Array.from(
-          { length: socialGrowthSlideCount("education") },
-          (_, index) => absoluteUrl(signedSocialGrowthImagePath(
-            card,
-            "education",
-            index + 1,
-            educationTopic?.id,
-          )),
-        )
-      : undefined,
     kind,
     reelUrl: kind === "weekend" ? absoluteUrl(signedWeekendReelPath(card)) : undefined,
   });
@@ -80,6 +62,7 @@ export async function POST(request: Request) {
     // Invalid JSON is handled by the same bounded validation response below.
   }
   if (!kind) return noStoreJson({ error: "invalid_publication_kind" }, 400);
+  if (kind === "education") return noStoreJson({ error: "instagram_education_disabled" }, 410);
 
   try {
     let publication = activePublications.get(kind);

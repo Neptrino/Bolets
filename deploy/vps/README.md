@@ -310,8 +310,9 @@ host downtime. Inspect failures with
 `journalctl -u bolets-instagram.service`; do not add blind POST retries because
 an interrupted response can occur after Buffer has accepted the publication.
 
-The automated growth schedule adds an educational carousel on Wednesday at
-19:00 and a short weekend Reel on Friday at 18:00. Species field guides are
+The automated growth schedule publishes a short weekend Reel on Friday at
+18:00. Educational carousels are retired; the rollout removes their old timer
+and the API rejects education requests before loading data or contacting Buffer. Species field guides are
 added manually from `/admin/publicacio` to Buffer's next available queue slot,
 so their order, dates, text and cancellation stay editable in Buffer. Configure
 two weekly Instagram posting slots in Buffer (for example Monday and Thursday
@@ -324,14 +325,15 @@ the public MP4 consumed by Buffer:
 ```bash
 sudo install -m 755 deploy/vps/publish-instagram-growth.sh /opt/bolets/app/deploy/vps/
 sudo install -m 644 deploy/vps/bolets-instagram-growth@.service /etc/systemd/system/
-sudo install -m 644 deploy/vps/bolets-instagram-education.timer /etc/systemd/system/
+sudo systemctl disable --now bolets-instagram-education.timer || true
+sudo rm -f /etc/systemd/system/bolets-instagram-education.timer
 sudo install -m 644 deploy/vps/bolets-instagram-weekend.timer /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now bolets-instagram-education.timer bolets-instagram-weekend.timer
+sudo systemctl enable --now bolets-instagram-weekend.timer
 sudo systemctl list-timers 'bolets-instagram*'
 ```
 
-Do not start either growth service merely to test it: the endpoint intentionally
+Do not start the growth service merely to test it: the endpoint intentionally
 rejects the wrong weekday, while a successful scheduled call publishes at once.
 Preview the signed image and Reel routes instead. The authenticated admin report
 at `/admin/publicacio` creates species carousels in the Buffer queue and shows
