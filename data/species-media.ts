@@ -89,7 +89,7 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
       sourceUrl: "https://bolets.app/equip-editorial#autoria",
       attribution: "Aleix Ventayol",
       license: "© Aleix Ventayol",
-      identificationReference: true,
+      identificationReference: false,
       alt: "Boletus pinophilus: Ceps acabats de collir sobre l’herba amb pinassa; dos barrets vinosos foscos i un de més clar amb el peu blanc i gruixut.",
     },
     {
@@ -99,7 +99,7 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Boletus_pinophilus3.JPG",
       attribution: "Paffka",
       license: "CC BY-SA 3.0",
-      identificationReference: false,
+      identificationReference: true,
       alt: "Exemplars de Boletus pinophilus sobre el terra del bosc."
     }
   ],
