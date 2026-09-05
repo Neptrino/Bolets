@@ -58,7 +58,6 @@ export function instagramGrowthCaption(
 export async function publishInstagramGrowthPost({
   card,
   config,
-  educationImageUrls,
   fetchImpl = fetch,
   kind,
   now = new Date(),
@@ -72,6 +71,9 @@ export async function publishInstagramGrowthPost({
   now?: Date;
   reelUrl?: string;
 }) {
+  if (kind === "education") {
+    throw new BufferPublicationError("Educational publishing has been disabled", 410, "instagram_education_disabled");
+  }
   if (!card.available || !card.observedAt || card.isPreview) {
     throw new BufferPublicationError(
       "There is no verified current prediction for the growth publication",
@@ -93,13 +95,6 @@ export async function publishInstagramGrowthPost({
       `The ${kind} publication may only run on its scheduled weekday`,
       409,
       "instagram_growth_off_schedule",
-    );
-  }
-  if (kind === "education" && educationImageUrls?.length !== 5) {
-    throw new BufferPublicationError(
-      "The educational carousel requires exactly five signed images",
-      500,
-      "instagram_growth_assets_invalid",
     );
   }
   if (kind === "weekend" && !reelUrl) {
@@ -134,16 +129,14 @@ export async function publishInstagramGrowthPost({
     return { status: "already_published" as const, postId: existing.id, publicationDate, kind };
   }
 
-  const assets = kind === "weekend"
-    ? [{ video: { url: reelUrl! } }]
-    : educationImageUrls!.map((url) => ({ image: { url } }));
+  const assets = [{ video: { url: reelUrl! } }];
   const postId = await createBufferInstagramPost({
     assets,
     caption,
     channelId,
     config,
     fetchImpl,
-    type: kind === "weekend" ? "reel" : "post",
+    type: "reel",
   });
   return { status: "published" as const, postId, publicationDate, kind };
 }

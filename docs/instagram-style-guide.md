@@ -92,15 +92,8 @@ Daily score panels use the shared condition-band colour for the actual value;
 verified zero stays neutral. Keep the maximum and both territorial coverage
 figures together. Never recolour data to make a post more varied.
 
-From 9 September 2026, Wednesday carousels rotate through practical field lessons
-in `src/lib/instagram-field-lessons.ts`. Historic topic identifiers remain valid
-for signed links. Every new lesson needs a concrete observation question,
-specific comparison or checklist, a useful final takeaway, a checked source and
-a complete guide. Captions cite the source and disclose the absence of independent
-mycological review. Do not insert unrelated current scores or turn an observation
-aid into an identification/edibility guarantee. The four initial lessons cover
-photographs, underside structures, a rossinyol comparison and wood substrates;
-expand the sourced collection as new lessons are prepared.
-
-Render all five slides with `scripts/preview-instagram-field-lessons.tsx` and
-inspect them before changing the rotation. Previews are labelled MOSTRA.
+Educational carousels were retired on 6 September 2026 at the user’s request.
+Do not schedule them, show them in the publishing planner or re-enable their
+server timer. Historic rendering helpers remain only for existing signed links;
+the publishing endpoint and publisher reject new education posts. The active
+plan contains the daily Story, manually queued species posts and weekend Reel.

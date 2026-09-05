@@ -73,7 +73,10 @@ describe("Instagram species series", () => {
     const rollout = readFileSync("deploy/vps/rollout.sh", "utf8");
 
     expect(existsSync("deploy/vps/bolets-instagram-species.timer")).toBe(false);
-    expect(publisher).toContain("education|weekend");
+    expect(publisher).toContain("weekend) ;;");
+    expect(publisher).not.toContain("education|weekend");
+    expect(existsSync("deploy/vps/bolets-instagram-education.timer")).toBe(false);
+    expect(rollout).toContain("disable --now bolets-instagram-education.timer");
     expect(publisher).not.toContain("education|species|weekend");
     expect(rollout).toContain("disable --now bolets-instagram-species.timer");
     expect(rollout).not.toContain("install -m 644 \"$app_dir/deploy/vps/bolets-instagram-species.timer\"");
