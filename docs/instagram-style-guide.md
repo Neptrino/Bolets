@@ -77,3 +77,7 @@ Regenerate a local, explicitly simulated daily preview with `npx tsx scripts/pre
 The automatic Reel runs for 20 seconds at 30 fps. Map and species shots have a restrained 1.8% eased push/pull, while territorial comparison and extent figures stay still. Section changes use 600 ms directional transitions and dissolves; the final frame returns to the opening for looping. Keep the map, observation date, legend and attribution inside the existing safe margins. Do not animate condition scores or imply that the camera movement represents changing observations.
 
 The server generates motion from one decoded image per scene, supersamples moving shots, and limits filter/encoder threads. The existing rendering timeout remains in force. Bump `reelVersion` in `src/lib/social-growth-assets.ts` for motion-only changes, keeping existing publication markers intact.
+
+## Original field photographs and admin editor
+
+Open `/admin/publicacio/fotos` from Publicació to prepare personal photographs. Use clean photographs by default, with an optional discreet wordmark or small logo and text. Reserve full text panels for short educational headlines and field-note slides. Keep observations in the Instagram caption or a later carousel slide, and preserve required image attribution. The local and online editors share Fotografia, Titular and Peu de camp presets, four branding choices, top/bottom text placement and the shared palette and fonts. Photos are processed in the browser; JPG/transparent PNG downloads are manual, with no automatic publishing.

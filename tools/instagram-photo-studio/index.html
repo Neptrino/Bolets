@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ca">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bolets · Estudi de fotos</title><link rel="icon" href="./brand.svg"><link rel="stylesheet" href="./tokens.css"><link rel="stylesheet" href="./studio.css"></head>
+<body>
+  <header class="masthead"><a href="/" class="wordmark"><img src="./brand.svg" alt="" width="36" height="36">bolets.app <span>/ estudi</span></a><span class="local-badge">● Local · Sense pujades</span></header>
+  <main>
+    <div class="intro"><div><p class="eyebrow">DE LIGHTROOM A INSTAGRAM</p><h1>La teva foto.<br><span>El bosc, protagonista.</span></h1></div><p>Acaba d’editar la llum a Lightroom.<br>Aquí, deixa que la foto parli.</p></div>
+    <div class="workspace">
+      <section class="preview-panel" aria-label="Previsualització de la publicació">
+        <div class="preview-toolbar"><span id="file-name">Cap foto seleccionada</span><span id="dimensions">1080 × 1350</span></div>
+        <div class="stage" id="drop-zone">
+          <canvas id="preview" width="1080" height="1350" aria-label="Previsualització de la foto amb la marca i el peu de camp"></canvas>
+          <div class="empty" id="empty"><span class="empty-mark">↗</span><h2>Porta el bosc aquí.</h2><p>Arrossega un JPG, PNG o WebP exportat de Lightroom.</p><button class="primary" type="button" id="choose-empty">Tria una foto</button><button class="secondary" type="button" id="overlay-only">Prepara només les capes</button></div>
+        </div>
+        <div class="preview-bottom"><span id="crop-hint">La imatge es queda al teu navegador.</span><button type="button" class="text-button" id="choose-photo">Canvia la foto</button></div>
+        <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+      </section>
+      <aside class="controls" aria-label="Disseny i exportació">
+        <fieldset><legend><span>01</span> Format i enquadrament</legend><div class="segmented"><label><input type="radio" name="format" value="feed" checked><span>Post · 4:5</span></label><label><input type="radio" name="format" value="story"><span>Story · 9:16</span></label></div>
+          <div class="range-row"><label for="zoom">Zoom</label><output id="zoom-value">100%</output></div><input id="zoom" type="range" min="1" max="3" step="0.01" value="1">
+          <div class="crop-axes"><label>Horitzontal<input id="pan-x" aria-label="Posició horitzontal" type="range" min="-1" max="1" step="0.01" value="0"></label><label>Vertical<input id="pan-y" aria-label="Posició vertical" type="range" min="-1" max="1" step="0.01" value="0"></label></div>
+          <button type="button" class="text-button" id="reset-crop">Restableix l’enquadrament</button>
+        </fieldset>
+        <fieldset><legend><span>02</span> Composició</legend>
+          <div class="presets">
+            <label><input type="radio" name="preset" value="photo" checked><span><strong>Fotografia</strong><small>La imatge, sense panell de text.</small></span></label>
+            <label><input type="radio" name="preset" value="headline"><span><strong>Titular</strong><small>Una pregunta o una idea breu.</small></span></label>
+            <label><input type="radio" name="preset" value="field"><span><strong>Peu de camp</strong><small>Un detall per explicar o compartir.</small></span></label>
+          </div>
+          <p id="preset-hint" class="control-note">La foto porta el missatge. Escriu l’observació al peu de la publicació d’Instagram.</p>
+        </fieldset>
+        <fieldset><legend><span>03</span> Signatura i color</legend>
+          <div class="segmented"><label><input type="radio" name="branding" value="none"><span>Sense marca</span></label><label><input type="radio" name="branding" value="wordmark" checked><span>Discreta</span></label><label><input type="radio" name="branding" value="signature"><span>Logo + text</span></label><label><input type="radio" name="branding" value="badge"><span>Segell</span></label></div>
+          <div class="segmented"><label><input type="radio" name="tone" value="forest"><span>Fosc</span></label><label><input type="radio" name="tone" value="cream" checked><span>Clar</span></label></div>
+          <p class="control-note">Tria una signatura clara sobre fons fosc, o fosca sobre fons clar. El color també s’aplica al panell.</p>
+        </fieldset>
+        <fieldset id="text-controls" hidden><legend><span>04</span> Text de la imatge</legend>
+          <div class="segmented"><label><input type="radio" name="placement" value="top"><span>A dalt</span></label><label><input type="radio" name="placement" value="bottom" checked><span>A baix</span></label></div>
+          <div id="field-label"><label for="eyebrow">Etiqueta</label><input id="eyebrow" type="text" value="NOTA DE CAMP" maxlength="32"></div>
+          <label for="title">Títol</label><input id="title" type="text" placeholder="Mira de prop." maxlength="70">
+          <div id="field-observation"><label for="caption">La teva observació</label><textarea id="caption" rows="2" maxlength="180" placeholder="Què has vist al bosc?"></textarea></div>
+          <p class="control-note">Canviar de composició conserva els textos. Només s’exporten els que veus a la imatge.</p>
+        </fieldset>
+        <fieldset><legend>Crèdit de la foto</legend><label for="credit">Autor i llicència <span class="optional">quan calgui</span></label><input id="credit" type="text" maxlength="140" placeholder="Foto: nom de l’autor"><p class="control-note">Si hi escrius un crèdit, es manté visible en totes les composicions.</p></fieldset>
+        <div class="export"><button id="export-photo" type="button" class="primary" disabled>Desa la foto · JPG <span>↗</span></button><button id="export-overlay" type="button" class="secondary" disabled>Desa només les capes · PNG</button><p>PNG transparent per a la marca d’aigua de Lightroom Classic. Mateix format i enquadrament.</p></div>
+      </aside>
+    </div>
+    <p id="status" class="status" role="status" aria-live="polite">Carregant les tipografies…</p>
+    <footer>BOLETS · ESTUDI LOCAL <span>Les fotos no es pugen ni es publiquen automàticament.</span></footer>
+  </main>
+  <script type="module" src="./studio.mjs"></script>
+</body></html>
