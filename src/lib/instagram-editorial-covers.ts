@@ -5,6 +5,10 @@ import type { PinnedInstagramSeries } from "@/src/lib/instagram-pinned-posts";
 // Short covers introduce the existing sourced lessons. Explanations and safety
 // limits remain in the curriculum/captions, not duplicated in these headlines.
 export const educationCovers = {
+  "field-photos": { layout: "question", eyebrow: "Quadern de camp", title: "Quines fotos falten?", subtitle: "Quatre enquadraments per documentar un bolet.", motif: "field", tone: "orange" },
+  "field-underside": { layout: "question", eyebrow: "Aprèn a observar", title: "Mira sota el barret", subtitle: "Làmines, plecs, porus o agulles?", motif: "field", tone: "cream" },
+  "field-lookalike": { layout: "question", eyebrow: "Rossinyol i fals rossinyol", title: "Taronja no és suficient", subtitle: "Una diferència que es veu per sota.", motif: "field", tone: "orange" },
+  "field-wood": { layout: "question", eyebrow: "Ecologia de camp", title: "No retallis el tronc", subtitle: "La fusta també explica el bolet.", motif: "trees", tone: "forest" },
   reading: { layout: "question", eyebrow: "Llegeix el mapa", title: "Què vol dir aquest número?", subtitle: "Una lectura de condicions. Aprèn a interpretar-la.", motif: "scale", tone: "cream" },
   water: { layout: "question", eyebrow: "El bosc, explicat", title: "Ha plogut. I ara?", subtitle: "La pluja és només una part de la història.", motif: "water", tone: "orange" },
   habitat: { layout: "question", eyebrow: "El bosc, explicat", title: "Bon temps. Però quin bosc?", subtitle: "Cada espècie necessita un hàbitat compatible.", motif: "trees", tone: "cream" },

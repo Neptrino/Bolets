@@ -81,3 +81,22 @@ The server generates motion from one decoded image per scene, supersamples movin
 ## Original field photographs and admin editor
 
 Open `/admin/publicacio/fotos` from Publicació to prepare personal photographs. Use clean photographs by default, with an optional discreet wordmark or small logo and text. Reserve full text panels for short educational headlines and field-note slides. Keep observations in the Instagram caption or a later carousel slide, and preserve required image attribution. The local and online editors share Fotografia, Titular and Peu de camp presets, four branding choices, top/bottom text placement and the shared palette and fonts. Photos are processed in the browser; JPG/transparent PNG downloads are manual, with no automatic publishing.
+
+## Daily colour and field lessons
+
+Daily score panels use the shared condition-band colour for the actual value;
+verified zero stays neutral. Keep the maximum and both territorial coverage
+figures together. Never recolour data to make a post more varied.
+
+From 9 September 2026, Wednesday carousels rotate through practical field lessons
+in `src/lib/instagram-field-lessons.ts`. Historic topic identifiers remain valid
+for signed links. Every new lesson needs a concrete observation question,
+specific comparison or checklist, a useful final takeaway, a checked source and
+a complete guide. Captions cite the source and disclose the absence of independent
+mycological review. Do not insert unrelated current scores or turn an observation
+aid into an identification/edibility guarantee. The four initial lessons cover
+photographs, underside structures, a rossinyol comparison and wood substrates;
+expand the sourced collection as new lessons are prepared.
+
+Render all five slides with `scripts/preview-instagram-field-lessons.tsx` and
+inspect them before changing the rotation. Previews are labelled MOSTRA.

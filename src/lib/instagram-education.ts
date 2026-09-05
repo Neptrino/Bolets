@@ -1,3 +1,5 @@
+import { instagramFieldLessons } from "@/src/lib/instagram-field-lessons";
+
 export type InstagramEducationVisual = "readings" | "score" | "extent";
 
 export type InstagramEducationSlide = {
@@ -5,6 +7,7 @@ export type InstagramEducationSlide = {
   title: string;
   body: string;
   visual?: InstagramEducationVisual;
+  points?: readonly { label: string; detail: string }[];
 };
 
 export type InstagramEducationTopic = {
@@ -13,9 +16,11 @@ export type InstagramEducationTopic = {
   captionIntro: string;
   captionBody: string;
   slides: readonly InstagramEducationSlide[];
+  source?: { label: string; url: string };
+  guidePath?: string;
 };
 
-export const instagramEducationTopics = [
+const legacyEducationTopics = [
   {
     id: "reading",
     title: "Com llegir el número d’avui",
@@ -96,9 +101,11 @@ export const instagramEducationTopics = [
   },
 ] as const satisfies readonly InstagramEducationTopic[];
 
+export const instagramEducationTopics = [...legacyEducationTopics, ...instagramFieldLessons] as const;
+
 export type InstagramEducationTopicId = typeof instagramEducationTopics[number]["id"];
 
-const topicById = new Map<InstagramEducationTopicId, typeof instagramEducationTopics[number]>(
+const topicById = new Map<InstagramEducationTopicId, InstagramEducationTopic>(
   instagramEducationTopics.map((topic) => [topic.id, topic]),
 );
 
@@ -116,7 +123,7 @@ export function instagramEducationTopic(id: InstagramEducationTopicId) {
   return topicById.get(id)!;
 }
 
-export function instagramEducationTopicForDate(publicationDate: string) {
+export function instagramEducationTopicForDate(publicationDate: string): InstagramEducationTopic & { id: InstagramEducationTopicId } {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)) {
     throw new Error(`Invalid Instagram education publication date: ${publicationDate}`);
   }
@@ -124,8 +131,13 @@ export function instagramEducationTopicForDate(publicationDate: string) {
   if (!Number.isFinite(date) || new Date(date).toISOString().slice(0, 10) !== publicationDate) {
     throw new Error(`Invalid Instagram education publication date: ${publicationDate}`);
   }
+  // Preserve historic signed topics; new Wednesdays teach practical field skills.
+  const fieldEpoch = Date.UTC(2026, 8, 9);
+  if (date >= fieldEpoch) {
+    return instagramFieldLessons[Math.floor((date - fieldEpoch) / WEEK_MS) % instagramFieldLessons.length];
+  }
   const week = Math.floor((date - EDUCATION_EPOCH) / WEEK_MS);
-  const index = ((week + EDUCATION_EPOCH_OFFSET) % instagramEducationTopics.length
-    + instagramEducationTopics.length) % instagramEducationTopics.length;
-  return instagramEducationTopics[index];
+  const index = ((week + EDUCATION_EPOCH_OFFSET) % legacyEducationTopics.length
+    + legacyEducationTopics.length) % legacyEducationTopics.length;
+  return legacyEducationTopics[index];
 }

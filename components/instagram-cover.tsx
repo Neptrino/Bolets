@@ -1,15 +1,17 @@
+import type { ReactNode } from "react";
 import { BrandMark } from "@/components/brand-mark";
 import { InstagramEditorialMotif } from "@/components/instagram-editorial-motif";
 import type { InstagramCoverBrief } from "@/src/lib/instagram-cover-brief";
 import { INSTAGRAM_FONT_FAMILY, instagramFormats, instagramPalette as p, instagramTitleSize, instagramType as t, type InstagramFormat } from "@/src/lib/instagram-design";
 import type { InstagramReferencePhoto } from "@/src/lib/instagram-image-assets";
 
-export function InstagramCover({ brief, photo, format = "feed", draft = false, footer }: {
+export function InstagramCover({ brief, photo, format = "feed", draft = false, footer, visual }: {
   brief: InstagramCoverBrief;
   photo?: InstagramReferencePhoto;
   format?: InstagramFormat;
   draft?: boolean;
   footer?: string;
+  visual?: ReactNode;
 }) {
   const box = instagramFormats[format];
   const isPhoto = brief.layout === "photo";
@@ -37,7 +39,7 @@ export function InstagramCover({ brief, photo, format = "feed", draft = false, f
     </div> : <div style={{ display: "flex", position: "absolute", left: box.left, right: box.right, top: box.top + 120, height: frameHeight - 120, flexDirection: "column" }}>
       <span style={{ fontSize: t.label, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>{brief.eyebrow}</span>
       <span style={{ marginTop: 22, fontSize: instagramTitleSize(brief.title), lineHeight: 0.98, fontWeight: 900, letterSpacing: "-0.05em" }}>{brief.title}</span>
-      <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "center", minHeight: 360 }}><InstagramEditorialMotif motif={brief.motif} light={light} /></div>
+      <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "center", minHeight: 360 }}>{visual ?? <InstagramEditorialMotif motif={brief.motif} light={light} />}</div>
       <span style={{ fontSize: t.body, lineHeight: 1.3, maxWidth: 880 }}>{brief.subtitle}</span>
       <span style={{ marginTop: 36, paddingTop: 20, borderTop: `2px solid ${foreground}`, fontSize: t.small }}>{footer ?? "Guia · Desplaça per continuar"}</span>
     </div>}
