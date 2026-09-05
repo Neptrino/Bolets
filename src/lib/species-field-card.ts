@@ -62,6 +62,8 @@ export interface SpeciesFieldCardProfile {
   lookalike: Pick<SimilarSpecies, "commonName" | "scientificName" | "mainDifferences" | "edibility"> | null;
   imagePath: string;
   imageAlt: string;
+  imageAttribution: string | null;
+  imageLicense: string | null;
 }
 
 function selectLookalike(
@@ -131,5 +133,7 @@ export function toSpeciesFieldCardProfile(
     lookalike: selectLookalike(species),
     imagePath: referenceImage.localPath,
     imageAlt: referenceImage.alt,
+    imageAttribution: referenceImage.attribution.trim() || null,
+    imageLicense: referenceImage.license.trim() || null,
   };
 }

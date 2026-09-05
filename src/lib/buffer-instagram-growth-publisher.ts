@@ -38,9 +38,9 @@ function educationCaption(card: DailyShareCard, publicationDate: string) {
 
 function weekendCaption(card: DailyShareCard, publicationDate: string) {
   const highlights = card.readings.slice(0, 3).map(
-    (reading) => `${reading.regionName}: ${reading.speciesName} · ${reading.score}/100`,
+    (reading) => `${reading.regionName}: ${reading.speciesName} · ${reading.score}/100 al millor sector · ${Math.round(reading.positiveCellShare * 100)}% amb senyal`,
   ).join("\n");
-  return `Com arriben les condicions al cap de setmana?\n\n${highlights || "Sense condicions favorables publicables avui."}\n\nAquesta és la lectura verificada d’avui, no una confirmació de presència. Revisa el mapa abans de sortir perquè les dades evolucionen.\n\nMapa complet a l’enllaç del perfil → @bolets.app\n\n${instagramGrowthMarker("weekend", publicationDate)}\n#BoletsAtles #BoletsCatalunya #CapDeSetmana #Micologia`;
+  return `Aquest cap de setmana, bolets? Mira el senyal abans de sortir.\n\n${highlights || "Sense condicions favorables publicables avui."}\n\nAquesta és la lectura verificada d’avui, no una confirmació de presència. Revisa el mapa abans de sortir perquè les dades evolucionen.\n\nDesa-ho per dissabte i envia-ho a qui vindrà amb tu.\nMapa complet a l’enllaç del perfil → @bolets.app\n\n${instagramGrowthMarker("weekend", publicationDate)}\n#BoletsAtles #BoletsCatalunya #CapDeSetmana #Micologia`;
 }
 
 export function instagramGrowthCaption(

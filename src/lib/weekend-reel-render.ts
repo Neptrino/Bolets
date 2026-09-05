@@ -1,4 +1,4 @@
-export const WEEKEND_REEL_SLIDE_SECONDS = [2.4, 3.4, 3.8, 3.6, 2.6, 2.4] as const;
+export const WEEKEND_REEL_SLIDE_SECONDS = [4, 4.4, 4, 3.6, 2.6] as const;
 export const WEEKEND_REEL_TRANSITION_SECONDS = 0.35;
 
 function slideDurations(slideCount: number) {

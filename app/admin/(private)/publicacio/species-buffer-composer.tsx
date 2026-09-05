@@ -82,9 +82,9 @@ export function SpeciesBufferComposer({
   return <section className={styles.bufferComposer} aria-labelledby="buffer-species-title">
     <header className={styles.bufferComposerHeader}>
       <div>
-        <span>Catàleg · 62 espècies</span>
+        <span>Catàleg · 62 espècies · ordre de temporada</span>
         <h3 id="buffer-species-title">Prepara la cua d’espècies</h3>
-        <p>Afegeix-les en l’ordre que vulguis. Buffer les col·locarà al següent espai lliure del seu calendari.</p>
+        <p>Primer les espècies en pic aquest mes. Amb una a la setmana n’hi ha prou: Buffer la col·locarà al següent espai lliure del seu calendari.</p>
       </div>
       <a className={styles.bufferLink} href={BUFFER_PUBLISH_URL} target="_blank" rel="noreferrer">
         Obre Buffer <ExternalLink aria-hidden="true" />

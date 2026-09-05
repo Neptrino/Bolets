@@ -8,10 +8,25 @@ import {
   type BufferInstagramPublisherConfig,
 } from "@/src/lib/buffer-client";
 import { instagramSpeciesPublicationForSpecies } from "@/src/lib/instagram-species-series";
+import { speciesPath } from "@/src/lib/seo";
 
 export function instagramSpeciesQueueMarker(speciesId: string) {
   const { profile } = instagramSpeciesPublicationForSpecies(speciesId);
   return `Fitxa d’espècie · ${profile.scientificName}`;
+}
+
+function speciesHashtag(commonName: string) {
+  return commonName
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join("");
+}
+
+function lowerFirst(value: string) {
+  return value.charAt(0).toLowerCase() + value.slice(1);
 }
 
 export function instagramSpeciesQueueCaption(
@@ -26,11 +41,27 @@ export function instagramSpeciesQueueCaption(
     return customCaption.includes(marker) ? customCaption : `${customCaption}\n\n${marker}`;
   }
 
-  const keys = profile.keyFeatures.join(" · ");
+  const cues = profile.keyFeatures.map((feature, index) => `${index + 1}. ${feature}`).join("\n");
   const comparison = profile.lookalike
-    ? `Compara’l especialment amb ${profile.lookalike.commonName}.`
+    ? `Confusió habitual: ${lowerFirst(profile.lookalike.commonName)} (${profile.lookalike.scientificName}). ${profile.lookalike.mainDifferences}`
     : "Confirma sempre més d’un tret abans d’identificar-lo.";
-  return `${publication.position}/${publication.total} · ${profile.commonName}\n${profile.scientificName}\n\n${profile.shortDescription}\n\nClaus d’identificació: ${keys}. ${comparison}\n\n${profile.edibilityLabel}. La comestibilitat només és rellevant després d’una identificació segura.\n\nFitxa completa a l’enllaç del perfil → @bolets.app\n\n${marker}\n#BoletsAtles #BoletsCatalunya #Micologia #IdentificacioDeBolets`;
+  const context = [
+    profile.habitatTypes.length > 0 ? lowerFirst(profile.habitatTypes.join(" i ")) : null,
+    `millor moment ${profile.bestMonthsLabel}`,
+    profile.altitude ? `entre ${profile.altitude[0]} i ${profile.altitude[1]} m` : null,
+  ].filter(Boolean).join(" · ");
+  const credit = profile.imageAttribution
+    ? `\nFoto: ${profile.imageAttribution}${profile.imageLicense ? ` · ${profile.imageLicense}` : ""}`
+    : "";
+  const hashtags = [
+    "#Bolets",
+    "#BoletsCatalunya",
+    `#${speciesHashtag(profile.commonName)}`,
+    "#Micologia",
+    "#IdentificacioDeBolets",
+    "#BoletsApp",
+  ];
+  return `${profile.commonName} (${profile.scientificName}): guia ràpida d’identificació.\n\n${profile.shortDescription}\n\nTres trets per començar:\n${cues}\n\n${comparison}\n\nOn i quan: ${context}.\n\n${profile.edibilityLabel}. La comestibilitat només compta després d’una identificació segura; davant del dubte, no en mengis.\n\nFitxa completa, temporada i mapa de probabilitat: bolets.app${speciesPath(profile)} (enllaç al perfil)${credit}\n\n${marker}\n${hashtags.join(" ")}`;
 }
 
 export async function queueInstagramSpeciesPost({

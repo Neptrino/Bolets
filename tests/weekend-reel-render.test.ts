@@ -8,23 +8,23 @@ import {
 
 describe("weekend Reel rendering", () => {
   it("holds the information-heavy middle slides longer", () => {
-    expect(WEEKEND_REEL_SLIDE_SECONDS).toEqual([2.4, 3.4, 3.8, 3.6, 2.6, 2.4]);
+    expect(WEEKEND_REEL_SLIDE_SECONDS).toEqual([4, 4.4, 4, 3.6, 2.6]);
     expect(WEEKEND_REEL_SLIDE_SECONDS[1]).toBeGreaterThan(WEEKEND_REEL_SLIDE_SECONDS[0]);
-    expect(WEEKEND_REEL_SLIDE_SECONDS[2]).toBeGreaterThan(WEEKEND_REEL_SLIDE_SECONDS[5]);
+    expect(WEEKEND_REEL_SLIDE_SECONDS[2]).toBeGreaterThan(WEEKEND_REEL_SLIDE_SECONDS[4]);
     expect(WEEKEND_REEL_SLIDE_SECONDS[3]).toBeGreaterThan(WEEKEND_REEL_SLIDE_SECONDS[4]);
   });
 
-  it("crossfades six vertical frames into a 16.45-second H.264 video", () => {
-    const slides = Array.from({ length: 6 }, (_, index) => `/tmp/slide-${index + 1}.png`);
+  it("crossfades five vertical frames into a 17.2-second H.264 video", () => {
+    const slides = Array.from({ length: 5 }, (_, index) => `/tmp/slide-${index + 1}.png`);
     const args = weekendReelFfmpegArgs(slides, "/tmp/reel.mp4");
     const filter = args[args.indexOf("-filter_complex") + 1];
 
-    expect(weekendReelDurationSeconds(6)).toBeCloseTo(16.45);
-    expect(filter.match(/xfade=transition=fade/g)).toHaveLength(5);
-    expect(filter).toContain("offset=2.05");
-    expect(filter).toContain("offset=5.1");
-    expect(filter).toContain("offset=14.05");
-    expect(args.slice(-3)).toEqual(["16.45", "-y", "/tmp/reel.mp4"]);
+    expect(weekendReelDurationSeconds(5)).toBeCloseTo(17.2);
+    expect(filter.match(/xfade=transition=fade/g)).toHaveLength(4);
+    expect(filter).toContain("offset=3.65");
+    expect(filter).toContain("offset=7.7");
+    expect(filter).toContain("offset=14.6");
+    expect(args.slice(-3)).toEqual(["17.2", "-y", "/tmp/reel.mp4"]);
   });
 
   it("rejects a sequence that cannot transition", () => {

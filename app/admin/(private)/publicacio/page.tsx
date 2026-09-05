@@ -3,7 +3,6 @@ import Image from "next/image";
 
 import { socialGrowthSlideCount } from "@/components/social-growth-card";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
-import { catalogueSpecies } from "@/data/catalogue";
 import {
   instagramGrowthCaption,
 } from "@/src/lib/buffer-instagram-growth-publisher";
@@ -14,6 +13,7 @@ import { instagramEducationTopicForDate } from "@/src/lib/instagram-education";
 import {
   INSTAGRAM_SPECIES_SLIDE_COUNT,
   instagramSpeciesPublicationForSpecies,
+  instagramSpeciesSeasonRanking,
 } from "@/src/lib/instagram-species-series";
 import { readInstagramPerformanceReport } from "@/src/lib/instagram-performance-server";
 import { requireOperationalSession } from "@/src/lib/operational-status-session";
@@ -149,12 +149,11 @@ export default async function AdminInstagramPage() {
         (_, index) => signedSocialGrowthImagePath(previewable, "education", index + 1, educationTopic.id),
       )
     : [];
-  const speciesOptions = catalogueSpecies.map((species) => ({
-    label: `${species.identity.commonName} · ${species.identity.scientificName}`,
-    value: species.speciesId,
-  }));
-  const initialSpecies = catalogueSpecies[0]!;
-  const initialSpeciesPublication = instagramSpeciesPublicationForSpecies(initialSpecies.speciesId);
+  // The picker opens on what the forest is doing now: species in their peak
+  // month first, then good months, so one post a week follows the season.
+  const seasonRanking = instagramSpeciesSeasonRanking(publicationDate ?? dateInCatalonia(new Date()));
+  const speciesOptions = seasonRanking.map((entry) => ({ label: entry.label, value: entry.speciesId }));
+  const initialSpeciesPublication = instagramSpeciesPublicationForSpecies(seasonRanking[0]!.speciesId);
   const initialSpeciesImages = previewable && publicationDate
     ? Array.from(
         { length: INSTAGRAM_SPECIES_SLIDE_COUNT },
@@ -251,7 +250,7 @@ export default async function AdminInstagramPage() {
                   />
                   <div className={plannerStyles.reelNotes}>
                     <span>Publicació automàtica</span>
-                    <strong>Sis pantalles verticals, transicions suaus, mapa generalitzat i context del bolet líder.</strong>
+                    <strong>Cinc pantalles: mapa Avui, territoris, espècie, extensió del senyal i consulta actualitzada.</strong>
                     <p>Es comparteix també al feed. No incorpora música, adhesius ni localitzacions precises.</p>
                     <details className={plannerStyles.captionPreview}>
                       <summary>Veure el text del Reel</summary>
