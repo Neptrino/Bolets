@@ -71,3 +71,9 @@ The admin preview and server publishing triggers share the production image rout
 `src/lib/instagram-template-version.ts` versions all generated media URLs, including the daily Story and Reel, without changing the date/species idempotency markers. Bump it whenever published artwork changes. Existing media already copied into Buffer does not refresh by changing a server renderer; inspect the queue separately before a rollout. Manually prepared campaign media is a separate editorial workflow.
 
 Regenerate a local, explicitly simulated daily preview with `npx tsx scripts/preview-instagram-daily.tsx`. No preview command publishes or queues a post.
+
+## Weekend motion
+
+The automatic Reel runs for 20 seconds at 30 fps. Map and species shots have a restrained 1.8% eased push/pull, while territorial comparison and extent figures stay still. Section changes use 600 ms directional transitions and dissolves; the final frame returns to the opening for looping. Keep the map, observation date, legend and attribution inside the existing safe margins. Do not animate condition scores or imply that the camera movement represents changing observations.
+
+The server generates motion from one decoded image per scene, supersamples moving shots, and limits filter/encoder threads. The existing rendering timeout remains in force. Bump `reelVersion` in `src/lib/social-growth-assets.ts` for motion-only changes, keeping existing publication markers intact.
