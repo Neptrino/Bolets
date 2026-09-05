@@ -346,17 +346,24 @@ describe("species profiles", () => {
     expect(localMedia.every((asset) => !asset.identificationReference)).toBe(true);
   });
 
-  it("provides an attributed Wikimedia reference image for every species", () => {
+  it("provides exactly one attributed, locally stored reference image for every species", () => {
     for (const profile of speciesProfiles) {
-      const referenceImage = profile.media.find((asset) => asset.identificationReference);
-      expect(referenceImage, profile.speciesId).toBeDefined();
-      expect(referenceImage?.imageUrl).toMatch(/^https:\/\/upload\.wikimedia\.org\//);
-      expect(referenceImage?.sourceUrl).toMatch(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
-      expect(referenceImage?.localPath).toMatch(/^\/media\/wikimedia\/[a-z0-9-]+\.webp$/);
-      expect(existsSync(join(process.cwd(), "public", referenceImage?.localPath ?? ""))).toBe(true);
-      expect(referenceImage?.attribution.length).toBeGreaterThan(0);
-      expect(referenceImage?.license.length).toBeGreaterThan(0);
-      expect(referenceImage?.alt.length).toBeGreaterThan(0);
+      const references = profile.media.filter((asset) => asset.identificationReference);
+      expect(references, profile.speciesId).toHaveLength(1);
+      const referenceImage = references[0]!;
+      if (referenceImage.license.startsWith("©")) {
+        // Own field photograph: provenance is the catalogue page itself.
+        expect(referenceImage.sourceUrl, profile.speciesId).toMatch(/^https:\/\/bolets\.app\//);
+        expect(referenceImage.localPath, profile.speciesId).toMatch(/^\/media\/contributed\/[a-z0-9-]+\.webp$/);
+      } else {
+        expect(referenceImage.imageUrl, profile.speciesId).toMatch(/^https:\/\/upload\.wikimedia\.org\//);
+        expect(referenceImage.sourceUrl, profile.speciesId).toMatch(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+        expect(referenceImage.localPath, profile.speciesId).toMatch(/^\/media\/wikimedia\/[a-z0-9-]+\.webp$/);
+      }
+      expect(existsSync(join(process.cwd(), "public", referenceImage.localPath ?? ""))).toBe(true);
+      expect(referenceImage.attribution.length).toBeGreaterThan(0);
+      expect(referenceImage.license.length).toBeGreaterThan(0);
+      expect(referenceImage.alt.length).toBeGreaterThan(0);
     }
   });
 

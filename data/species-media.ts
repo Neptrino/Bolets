@@ -86,10 +86,10 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
     {
       id: "aleix-boletus-pinophilus-field-20250913",
       localPath: "/media/contributed/boletus-pinophilus-field-aleix-20250913.webp",
-      sourceUrl: "https://bolets.app/bolets/cep-rogenc",
+      sourceUrl: "https://bolets.app/equip-editorial#autoria",
       attribution: "Aleix Ventayol",
       license: "© Aleix Ventayol",
-      identificationReference: false,
+      identificationReference: true,
       alt: "Boletus pinophilus: Ceps acabats de collir sobre l’herba amb pinassa; dos barrets vinosos foscos i un de més clar amb el peu blanc i gruixut.",
     },
     {
@@ -99,7 +99,7 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Boletus_pinophilus3.JPG",
       attribution: "Paffka",
       license: "CC BY-SA 3.0",
-      identificationReference: true,
+      identificationReference: false,
       alt: "Exemplars de Boletus pinophilus sobre el terra del bosc."
     }
   ],
@@ -131,16 +131,16 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
     {
       id: "aleix-lactarius-deliciosus-field-20241124",
       localPath: "/media/contributed/lactarius-deliciosus-field-aleix-20241124.webp",
-      sourceUrl: "https://bolets.app/bolets/pinetell",
+      sourceUrl: "https://bolets.app/equip-editorial#autoria",
       attribution: "Aleix Ventayol",
       license: "© Aleix Ventayol",
-      identificationReference: false,
+      identificationReference: true,
       alt: "Lactarius deliciosus: Barret ataronjat amb cercles concèntrics i el centre deprimit; les làmines i el peu clars es veuen entre l’herba curta.",
     },
     {
       id: "aleix-lactarius-deliciosus-field-20250913",
       localPath: "/media/contributed/lactarius-deliciosus-field-aleix-20250913.webp",
-      sourceUrl: "https://bolets.app/bolets/pinetell",
+      sourceUrl: "https://bolets.app/equip-editorial#autoria",
       attribution: "Aleix Ventayol",
       license: "© Aleix Ventayol",
       identificationReference: false,
@@ -153,7 +153,7 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Lactarius_deliciosus.jpg",
       attribution: "Eric Steinert",
       license: "CC BY-SA 3.0",
-      identificationReference: true,
+      identificationReference: false,
       alt: "Exemplars taronja de Lactarius deliciosus al bosc."
     }
   ],
@@ -221,16 +221,16 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
     {
       id: "aleix-macrolepiota-procera-field-20241103",
       localPath: "/media/contributed/macrolepiota-procera-field-aleix-20241103.webp",
-      sourceUrl: "https://bolets.app/bolets/apagallums",
+      sourceUrl: "https://bolets.app/equip-editorial#autoria",
       attribution: "Aleix Ventayol",
       license: "© Aleix Ventayol",
-      identificationReference: false,
+      identificationReference: true,
       alt: "Macrolepiota procera: Exemplar alt a contrallum de l’alba en un prat, amb el barret escatós obert, l’anell doble i el peu amb dibuix de pell de serp.",
     },
     {
       id: "aleix-macrolepiota-procera-field-20260822",
       localPath: "/media/generated/macrolepiota-procera-field-aleix-v1.webp",
-      sourceUrl: "https://bolets.app/bolets/apagallums",
+      sourceUrl: "https://bolets.app/equip-editorial#autoria",
       attribution: "Aleix Ventayol",
       license: "© Aleix Ventayol",
       identificationReference: false,
@@ -243,7 +243,7 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Parasol-Macrolepiota-procera.jpg",
       attribution: "Holger Krisp",
       license: "CC BY 3.0",
-      identificationReference: true,
+      identificationReference: false,
       alt: "Macrolepiota procera alta amb el barret obert en un prat."
     }
   ],
@@ -287,10 +287,10 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
     {
       id: "aleix-marasmius-oreades-field-20260513",
       localPath: "/media/contributed/marasmius-oreades-field-aleix-20260513.webp",
-      sourceUrl: "https://bolets.app/bolets/camasec",
+      sourceUrl: "https://bolets.app/equip-editorial#autoria",
       attribution: "Aleix Ventayol",
       license: "© Aleix Ventayol",
-      identificationReference: false,
+      identificationReference: true,
       alt: "Marasmius oreades: Grup de barrets ocre amb mamelló central i peus prims i clars entre l’herba alta d’un prat.",
     },
     {
@@ -300,7 +300,7 @@ export const speciesMedia: Record<string, MediaAsset[]> = {
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Michigan_Marasmius_oreades.jpg",
       attribution: "Alan Rockefeller",
       license: "CC BY 4.0",
-      identificationReference: true,
+      identificationReference: false,
       alt: "Grup de Marasmius oreades creixent entre l’herba."
     }
   ],
