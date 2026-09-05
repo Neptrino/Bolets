@@ -84,6 +84,10 @@ Open `/admin/publicacio/fotos` from Publicació to prepare personal photographs.
 
 ## Daily colour and field lessons
 
+The daily summary retains the original photo header, compact territorial ranking,
+rounded rows and labelled condition scale. It is a deliberate exception to the
+newer typographic cover style: the user prefers the earlier composition. Preserve
+its regular type treatment and photo shading when updating other series.
 Daily score panels use the shared condition-band colour for the actual value;
 verified zero stays neutral. Keep the maximum and both territorial coverage
 figures together. Never recolour data to make a post more varied.
