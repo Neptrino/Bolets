@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 
 import { socialGrowthSlideCount } from "@/components/social-growth-card";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
@@ -173,6 +174,7 @@ export default async function AdminInstagramPage() {
         description="Previsualitza les peces previstes, comprova les dades vigents i revisa després com han funcionat."
         layout="split"
         tone="forest"
+        actions={<Link href="/admin/publicacio/fotos">Obre l’estudi de fotos →</Link>}
       />
       <section className={plannerStyles.plannerSection} aria-labelledby="instagram-planner-title">
         <div className={plannerStyles.plannerHeading}>
