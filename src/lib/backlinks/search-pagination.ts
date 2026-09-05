@@ -1,6 +1,8 @@
 export const BRAVE_RESULTS_PER_PAGE = 20;
 export const BRAVE_MAX_OFFSET = 9;
 export const BACKLINK_SEARCHES_PER_RUN = 10;
+export const BACKLINK_INSPECTIONS_PER_SEARCH = 4;
+export const BACKLINK_INSPECTIONS_PER_RUN = BACKLINK_SEARCHES_PER_RUN * BACKLINK_INSPECTIONS_PER_SEARCH;
 
 export function parseBacklinkSearchOffsets(value: unknown) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};

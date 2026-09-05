@@ -3,7 +3,11 @@
 import { AlertCircle, CheckCircle2, LoaderCircle } from "lucide-react";
 import { useActionState, useEffect, useRef, useState } from "react";
 
-import { BACKLINK_SEARCHES_PER_RUN, BRAVE_RESULTS_PER_PAGE } from "@/src/lib/backlinks/search-pagination";
+import {
+  BACKLINK_INSPECTIONS_PER_RUN,
+  BACKLINK_INSPECTIONS_PER_SEARCH,
+  BACKLINK_SEARCHES_PER_RUN,
+} from "@/src/lib/backlinks/search-pagination";
 
 import {
   updateBacklinkSettingsAction,
@@ -92,7 +96,7 @@ export function BacklinkSettingsForm({ settings, configured }: BacklinkSettingsF
         <div className={styles.settingsGroupBody}>
           <label className={styles.checkControl}>
             <input type="checkbox" name="enabled" defaultChecked={settings.enabled} />
-            <span><strong>Descobriment i verificació</strong><small>Executa {BACKLINK_SEARCHES_PER_RUN} consultes diferents i revisa fins a {BACKLINK_SEARCHES_PER_RUN * BRAVE_RESULTS_PER_PAGE} resultats nous de Brave per cicle; després els puntua i revalida les oportunitats contactades.</small></span>
+            <span><strong>Descobriment i verificació</strong><small>Executa {BACKLINK_SEARCHES_PER_RUN} consultes diferents i inspecciona fins a {BACKLINK_INSPECTIONS_PER_RUN} pàgines noves per cicle ({BACKLINK_INSPECTIONS_PER_SEARCH} per consulta); desa el progrés després de cada consulta.</small></span>
           </label>
           <label className={styles.checkControl}>
             <input type="checkbox" name="autoSend" defaultChecked={settings.autoSend} />

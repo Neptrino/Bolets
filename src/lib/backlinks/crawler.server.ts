@@ -5,7 +5,7 @@ import { isIP } from "node:net";
 import { getDomain } from "tldts";
 
 import { SITE_URL } from "@/src/lib/seo";
-import { normalizeEmail } from "@/src/lib/backlinks/policy";
+import { isRoleMailbox, normalizeEmail } from "@/src/lib/backlinks/policy";
 
 const USER_AGENT = "BoletsAtles-Outreach/1.0 (+https://bolets.app/equip-editorial)";
 const MAX_BYTES = 512_000;
@@ -187,10 +187,14 @@ function contentDates(html: string) {
   return { publishedAt, modifiedAt };
 }
 
-function emailsIn(html: string) {
-  const decoded = decodeHtml(html).replace(/\s+(?:\[at\]|\(at\))\s+/gi, "@");
+function emailsIn(html: string, pageHost: string) {
+  const searchableHtml = html.replace(/<(script|style|noscript|svg|template)\b[^>]*>[\s\S]*?<\/\1>/gi, " ");
+  const decoded = decodeHtml(searchableHtml).replace(/\s+(?:\[at\]|\(at\))\s+/gi, "@");
   const matches = decoded.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) ?? [];
-  return [...new Set(matches.map(normalizeEmail).filter((email): email is string => Boolean(email)))];
+  return [...new Set(matches
+    .map(normalizeEmail)
+    .filter((email): email is string => Boolean(email))
+    .filter((email) => relatedHost(email.split("@")[1]!, pageHost)))];
 }
 
 function contactLinks(html: string, base: URL) {
@@ -313,7 +317,7 @@ export function inspectHtml(html: string, pageUrl: string, fallbackTitle = "Recu
     title: pageTitle(html, fallbackTitle),
     organization: organizationName(html, url.hostname),
     pageText: textContent(html).slice(0, 30_000),
-    emails: emailsIn(html),
+    emails: emailsIn(html, url.hostname),
     contactLinks: contactLinks(html, url),
     outboundLinkCount: outboundEditorialLinkCount(html, url),
     contentPublishedAt: dates.publishedAt,
@@ -345,13 +349,20 @@ export async function inspectPublicPage(pageUrl: string, fallbackTitle: string) 
   }
   const page = await fetchPublicText(pageUrl);
   const inspection = inspectHtml(page.text, page.url, fallbackTitle);
-  if (inspection.emails.length || inspection.existingLink) return { ...inspection, finalUrl: page.url, contactSourceUrl: page.url };
+  if (inspection.emails.some(isRoleMailbox) || inspection.existingLink) {
+    return { ...inspection, finalUrl: page.url, contactSourceUrl: page.url };
+  }
   for (const contactUrl of inspection.contactLinks) {
     try {
       const contact = await fetchPublicText(contactUrl);
       const contactInspection = inspectHtml(contact.text, contact.url, fallbackTitle);
       if (contactInspection.emails.length) {
-        return { ...inspection, emails: contactInspection.emails, finalUrl: page.url, contactSourceUrl: contact.url };
+        return {
+          ...inspection,
+          emails: [...new Set([...contactInspection.emails, ...inspection.emails])],
+          finalUrl: page.url,
+          contactSourceUrl: contact.url,
+        };
       }
     } catch { /* Keep the original prospect when a contact page is unavailable. */ }
   }

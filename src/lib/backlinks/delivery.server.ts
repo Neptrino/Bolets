@@ -2,7 +2,10 @@ import "server-only";
 
 import { BACKLINK_CAMPAIGNS } from "@/data/backlink-campaigns";
 import { buildOutreachMessage, createUnsubscribeToken, normalizeEmail } from "@/src/lib/backlinks/policy";
-import { isBacklinkRecipientReserved } from "@/src/lib/backlinks/recipient-history.server";
+import {
+  isBacklinkRecipientReserved,
+  suppressOtherBacklinkProspectsForRecipient,
+} from "@/src/lib/backlinks/recipient-history.server";
 import { isBacklinkSuppressed } from "@/src/lib/backlinks/suppression.server";
 import type { BacklinkSettings } from "@/src/lib/backlinks/types";
 import { SITE_URL } from "@/src/lib/seo";
@@ -111,6 +114,7 @@ export async function dispatchBacklinkOutbox(settings: BacklinkSettings) {
         next_action_at: null,
         updated_at: now,
       }).eq("id", message.prospect_id);
+      await suppressOtherBacklinkProspectsForRecipient(message.recipient, message.prospect_id, new Date(now));
       sent += 1;
     } catch (sendError) {
       await admin.from("backlink_outbox").update({

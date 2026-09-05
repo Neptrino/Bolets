@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  BACKLINK_INSPECTIONS_PER_RUN,
+  BACKLINK_INSPECTIONS_PER_SEARCH,
   BRAVE_MAX_OFFSET,
   BRAVE_RESULTS_PER_PAGE,
   BACKLINK_SEARCHES_PER_RUN,
@@ -18,6 +20,8 @@ describe("backlink Brave search pagination", () => {
     expect(BRAVE_RESULTS_PER_PAGE).toBe(20);
     expect(BRAVE_MAX_OFFSET).toBe(9);
     expect(BACKLINK_SEARCHES_PER_RUN).toBe(10);
+    expect(BACKLINK_INSPECTIONS_PER_SEARCH).toBe(4);
+    expect(BACKLINK_INSPECTIONS_PER_RUN).toBe(40);
   });
 
   it("rotates to a different campaign every cycle", () => {

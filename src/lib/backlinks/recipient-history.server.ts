@@ -21,3 +21,27 @@ export async function isBacklinkRecipientReserved(
   if (error) throw error;
   return Boolean(data?.length);
 }
+
+export async function suppressOtherBacklinkProspectsForRecipient(
+  email: string,
+  sentProspectId: string,
+  now = new Date(),
+) {
+  const recipient = normalizeEmail(email);
+  if (!recipient) return 0;
+  const { data, error } = await createSupabaseAdminClient()
+    .from("backlink_prospects")
+    .update({
+      status: "suppressed",
+      status_reason: "recipient-already-contacted",
+      next_action_at: null,
+      updated_at: now.toISOString(),
+    })
+    .eq("contact_email", recipient)
+    .neq("id", sentProspectId)
+    .eq("send_count", 0)
+    .in("status", ["discovered", "ready", "failed"])
+    .select("id");
+  if (error) throw error;
+  return data?.length ?? 0;
+}

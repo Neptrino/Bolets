@@ -164,6 +164,19 @@ describe("backlink outreach policy", () => {
     expect(page.existingLink).toEqual({ rel: "nofollow", anchor: "Mapa actual" });
   });
 
+  it("ignores embedded and third-party contact addresses", () => {
+    const page = inspectHtml(`
+      <html><head><title>Notícia de bolets</title>
+      <script>window.adContact = "estrategia.digital@pi360.es";</script></head>
+      <body><main><article><p>Temporada de bolets.</p></article></main>
+      <footer>
+        <a href="mailto:estrategia.digital@pi360.es">Publicitat</a>
+        <a href="mailto:redaccio@diaridegirona.cat">Redacció</a>
+      </footer></body></html>
+    `, "https://www.diaridegirona.cat/catalunya/bolets.html");
+    expect(page.emails).toEqual(["redaccio@diaridegirona.cat"]);
+  });
+
   it("does not mistake sister sites or social controls for editorial citations", () => {
     const page = inspectHtml(`
       <html><head><title>Guia de tardor</title></head><body>

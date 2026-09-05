@@ -21,12 +21,16 @@ import {
   normalizeEmail,
 } from "@/src/lib/backlinks/policy";
 import {
-  BRAVE_RESULTS_PER_PAGE,
+  BACKLINK_INSPECTIONS_PER_SEARCH,
   nextBacklinkCampaignCursor,
   nextBraveSearchOffset,
   planBacklinkSearches,
   parseBacklinkSearchOffsets,
 } from "@/src/lib/backlinks/search-pagination";
+import {
+  BACKLINK_DISCOVERY_BUDGET_MS,
+  BACKLINK_RUN_STALE_AFTER_MS,
+} from "@/src/lib/backlinks/run-state";
 import type { BacklinkSettings } from "@/src/lib/backlinks/types";
 
 type ProspectRow = {
@@ -124,7 +128,9 @@ async function discoverCampaign(
     : { data: [], error: null };
   if (existing.error) throw existing.error;
   const known = new Set((existing.data ?? []).map((row) => row.page_url));
-  const fresh = candidates.filter((candidate) => !known.has(candidate.pageUrl)).slice(0, BRAVE_RESULTS_PER_PAGE);
+  const freshCandidates = candidates.filter((candidate) => !known.has(candidate.pageUrl));
+  const fresh = freshCandidates.slice(0, BACKLINK_INSPECTIONS_PER_SEARCH);
+  let discovered = 0;
   let inspected = 0;
   let failed = 0;
 
@@ -188,6 +194,7 @@ async function discoverCampaign(
         next_action_at: status === "ready" ? now : null,
       });
       if (error) throw error;
+      discovered += 1;
     } catch (error) {
       failed += 1;
       console.warn("Backlink prospect inspection failed", {
@@ -196,7 +203,13 @@ async function discoverCampaign(
       });
     }
   });
-  return { discovered: fresh.length, inspected, failed, moreResultsAvailable: search.moreResultsAvailable };
+  return {
+    discovered,
+    inspected,
+    failed,
+    moreResultsAvailable: search.moreResultsAvailable,
+    hasUninspectedCandidates: freshCandidates.length > fresh.length,
+  };
 }
 
 function campaignFor(row: ProspectRow) {
@@ -331,8 +344,46 @@ async function queueReady(settings: BacklinkSettings) {
   return queued;
 }
 
+type BacklinkRunProgress = {
+  discovered: number;
+  inspected: number;
+  queued: number;
+  sent: number;
+  linked: number;
+  failed: number;
+  searches: Array<{ campaignId: string; query: string; offset: number; pageCount: number }>;
+  errors: string[];
+};
+
+async function closeStaleBacklinkRuns(now: Date) {
+  const cutoff = new Date(now.getTime() - BACKLINK_RUN_STALE_AFTER_MS).toISOString();
+  const { error } = await createSupabaseAdminClient().from("backlink_automation_runs").update({
+    status: "failed",
+    detail: "The worker stopped before completing the cycle; saved progress was retained.",
+    completed_at: now.toISOString(),
+  }).eq("status", "running").lt("started_at", cutoff);
+  if (error) throw error;
+}
+
+async function checkpointBacklinkRun(runId: string, progress: BacklinkRunProgress) {
+  const { error } = await createSupabaseAdminClient().from("backlink_automation_runs").update({
+    discovered_count: progress.discovered,
+    inspected_count: progress.inspected,
+    queued_count: progress.queued,
+    sent_count: progress.sent,
+    linked_count: progress.linked,
+    failed_count: progress.failed,
+    search_page_count: progress.searches.reduce((sum, search) => sum + search.pageCount, 0),
+    searches: progress.searches,
+    detail: progress.errors.join(" · ").slice(0, 1000) || null,
+  }).eq("id", runId).eq("status", "running");
+  if (error) throw error;
+}
+
 export async function runBacklinkAutomation() {
   const admin = createSupabaseAdminClient();
+  const startedAt = new Date();
+  await closeStaleBacklinkRuns(startedAt);
   const settings = await readSettings();
   if (!settings.enabled) {
     const { data: run, error: runError } = await admin.from("backlink_automation_runs")
@@ -370,28 +421,42 @@ export async function runBacklinkAutomation() {
     throw runError;
   }
   let discovered = 0, inspected = 0, queued = 0, sent = 0, linked = 0, failed = 0, searchedPageCount = 0;
-  const nextCampaignCursor = nextBacklinkCampaignCursor(settings.campaignCursor, BACKLINK_CAMPAIGNS.length, searchPlans.length);
+  let attemptedSearchCount = 0;
   let nextSearchOffsets = settings.searchOffsets;
   const errors: string[] = [];
+  const discoveryDeadline = startedAt.getTime() + BACKLINK_DISCOVERY_BUDGET_MS;
   try {
     for (const { campaign, offsetKey, search } of searchPlans) {
+      if (Date.now() >= discoveryDeadline) {
+        errors.push("cycle-budget: remaining searches deferred to the next run");
+        break;
+      }
+      attemptedSearchCount += 1;
       try {
         const discovery = await discoverCampaign(campaign, settings, search.query, search.offset, suppressedDomains);
         searchedPageCount += 1;
         search.pageCount = 1;
         discovered += discovery.discovered; inspected += discovery.inspected; failed += discovery.failed;
-        const nextOffset = nextBraveSearchOffset(search.offset, discovery.moreResultsAvailable);
+        const nextOffset = discovery.hasUninspectedCandidates
+          ? search.offset
+          : nextBraveSearchOffset(search.offset, discovery.moreResultsAvailable);
         nextSearchOffsets = { ...nextSearchOffsets, [offsetKey]: nextOffset };
       } catch (error) {
         failed += 1;
         errors.push(`${campaign.id}: ${error instanceof Error ? error.message : "Discovery failed"}`);
       }
+      await checkpointBacklinkRun(run.id, {
+        discovered, inspected, queued, sent, linked, failed, searches, errors,
+      });
     }
     const verification = await verifyProspects();
     linked += verification.linked; failed += verification.failed;
     queued += await queueReady(settings);
     const delivery = await dispatchBacklinkOutbox(settings);
     sent += delivery.sent; failed += delivery.failed;
+    const nextCampaignCursor = attemptedSearchCount
+      ? nextBacklinkCampaignCursor(settings.campaignCursor, BACKLINK_CAMPAIGNS.length, attemptedSearchCount)
+      : settings.campaignCursor;
     const status = errors.length ? "partial" : "succeeded";
     const completedAt = new Date().toISOString();
     await admin.from("backlink_automation_runs").update({

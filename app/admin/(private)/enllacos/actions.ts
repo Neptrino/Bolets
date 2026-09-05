@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { z } from "zod";
 
 import { updateBacklinkSettings } from "@/src/lib/backlinks/admin.server";
@@ -97,18 +98,16 @@ export async function updateBacklinkSettingsAction(
 
 export async function runBacklinkAutomationAction() {
   await requireOperationalSession();
-  let outcome = "run";
-  try {
-    const result = await runBacklinkAutomation();
-    if (result.status === "busy") outcome = "run-busy";
-    if (result.status === "disabled") outcome = "run-disabled";
-  } catch (error) {
-    console.error("Manual backlink cycle failed", error);
-    redirect("/admin/enllacos?error=run-failed");
-  }
-  revalidatePath("/admin/enllacos");
-  revalidatePath("/admin");
-  redirect(`/admin/enllacos?updated=${outcome}`);
+  after(async () => {
+    try {
+      await runBacklinkAutomation();
+      revalidatePath("/admin/enllacos");
+      revalidatePath("/admin");
+    } catch (error) {
+      console.error("Manual backlink cycle failed", error);
+    }
+  });
+  redirect("/admin/enllacos?updated=run-started");
 }
 
 export async function overrideBacklinkProspectAction(formData: FormData) {

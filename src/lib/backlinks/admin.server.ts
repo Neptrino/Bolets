@@ -11,6 +11,7 @@ import {
   parseBacklinkSearchOffsets,
   planBacklinkSearches,
 } from "@/src/lib/backlinks/search-pagination";
+import { displayBacklinkRun } from "@/src/lib/backlinks/run-state";
 import type {
   BacklinkDashboard,
   BacklinkDelivery,
@@ -158,7 +159,7 @@ export async function readBacklinkDashboard(table: BacklinkTableQuery): Promise<
   const prospectsResult = page === requestedPage ? initialProspectsResult : await readProspects(page);
   if (prospectsResult.error) throw prospectsResult.error;
   const counts = Object.fromEntries(statusCountResults.map(({ status, result }) => [status, result.count ?? 0]));
-  const run = runResult.data;
+  const run = displayBacklinkRun(runResult.data);
   const additionsResult = run?.started_at
     ? await admin.from("backlink_prospects").select("id", { count: "exact", head: true })
       .gte("discovered_at", run.started_at)

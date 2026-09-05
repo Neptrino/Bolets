@@ -180,11 +180,9 @@ export default async function AdminBacklinksPage({
   const quickNotice = tableActionNotice(updateNotice, errorNotice);
   const runNotice = errorNotice === "run-failed"
     ? { tone: "error", title: "El cicle ha fallat", detail: "Revisa la darrera execució i torna-ho a provar." }
-    : updateNotice === "run-busy"
-      ? { tone: "info", title: "Ja hi ha un cicle en curs", detail: "No se n’ha iniciat cap duplicat. Torna a carregar el tauler quan acabi." }
-      : updateNotice === "run-disabled"
-        ? { tone: "info", title: "L’automatització està en pausa", detail: "Activa el descobriment abans d’executar un cicle." }
-        : updateNotice === "run" && dashboard.recentRun
+    : updateNotice === "run-started"
+      ? { tone: "info", title: "Cicle sol·licitat", detail: "S’executa en segon pla. Torna a carregar el tauler per veure el progrés desat després de cada consulta." }
+      : updateNotice === "run" && dashboard.recentRun
           ? {
               tone: dashboard.recentRun.status === "failed" ? "error" : "success",
               title: `Cicle ${runStatusLabel(dashboard.recentRun.status)}`,
