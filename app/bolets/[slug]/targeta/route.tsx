@@ -199,6 +199,12 @@ export async function GET(
     });
   }
 
+  // Bound the variants so arbitrary requests cannot create unbounded renders
+  // or cache files. The default remains the full downloadable PNG.
+  const preview = new URL(request.url).searchParams.get("preview");
+  if (preview !== null && preview !== "384" && preview !== "768") {
+    return new Response("Invalid preview size", { status: 400 });
+  }
   const card = toSpeciesFieldCardProfile(species);
   const image = await readFile(join(process.cwd(), "public", card.imagePath.slice(1)));
   const identity = `field-card-v1:${JSON.stringify(card)}:${createHash("sha256").update(image).digest("hex")}`;
@@ -213,12 +219,17 @@ export async function GET(
     );
     return Buffer.from(await rendered.arrayBuffer());
   });
-  const response = new Response(new Uint8Array(png), {
-    headers: { "Content-Type": "image/png" },
+  const imageBytes = preview === null ? png : await cachedFieldCard(
+    `${species.speciesId}-preview-${preview}`,
+    `${identity}:preview-webp-v1:${preview}`,
+    () => sharp(png).resize({ width: Number(preview) }).webp({ quality: 82 }).toBuffer(),
+  );
+  const response = new Response(new Uint8Array(imageBytes), {
+    headers: { "Content-Type": preview === null ? "image/png" : "image/webp" },
   });
   response.headers.set(
     "Cache-Control",
-    "public, s-maxage=3600, stale-while-revalidate=86400",
+    "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
   );
   return response;
 }

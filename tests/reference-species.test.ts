@@ -176,7 +176,7 @@ describe("descriptive catalogue species", () => {
     expect(html).not.toContain("Mapa actual");
     expect(html).toContain('href="/fals-rossinyol"');
     expect(html).toContain('id="targeta-de-camp"');
-    expect(html).toContain(`src="${speciesFieldCardPath(species)}"`);
+    expect(html).toContain(`src="${speciesFieldCardPath(species)}?preview=384"`);
     expect(html).toContain(`href="${speciesFieldCardPath(species)}" target="_blank"`);
     expect(html).toContain("1080 × 1350 px · Format 4:5");
     expect(html).not.toContain("Instagram");

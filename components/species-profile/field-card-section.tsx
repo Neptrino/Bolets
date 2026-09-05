@@ -51,10 +51,13 @@ export function SpeciesFieldCardSection({
               {/* The image is produced by the species-specific server route. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={imagePath}
-                width="1080"
-                height="1350"
+                src={`${imagePath}?preview=384`}
+                srcSet={`${imagePath}?preview=384 384w, ${imagePath}?preview=768 768w`}
+                sizes="(max-width: 900px) 380px, 320px"
+                width="384"
+                height="480"
                 loading="lazy"
+                decoding="async"
                 alt={`Infografia vertical del ${species.identity.commonName} amb fotografia, comestibilitat, trets d’identificació, temporada, hàbitat i advertiment de confusió.`}
               />
             </a>

@@ -1,4 +1,8 @@
 import { describe, expect, it } from "vitest";
+import sharp from "sharp";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { SpeciesFieldCardSection } from "@/components/species-profile/field-card-section";
 import { generateStaticParams } from "@/app/bolets/[slug]/page";
 import { GET as fieldCardImage } from "@/app/bolets/[slug]/targeta/route";
 import { catalogueSpecies, getCatalogueSpeciesBySlug } from "@/data/catalogue";
@@ -51,5 +55,44 @@ describe("species routes", () => {
       { params: Promise.resolve({ slug: "no-existeix" }) },
     );
     expect(missing.status).toBe(404);
+  });
+
+  it("serves bounded, substantially smaller WebP previews while preserving the downloadable PNG", async () => {
+    const load = (query = "") => fieldCardImage(
+      new Request(`https://bolets.app/bolets/apagallums/targeta${query}`),
+      { params: Promise.resolve({ slug: "apagallums" }) },
+    );
+    const original = Buffer.from(await (await load()).arrayBuffer());
+    expect(await sharp(original).metadata()).toMatchObject({ format: "png", width: 1080, height: 1350 });
+    for (const width of [384, 768]) {
+      const response = await load(`?preview=${width}`);
+      expect(response.status).toBe(200);
+      expect(response.headers.get("content-type")).toBe("image/webp");
+      expect(response.headers.get("cache-control")).toContain("max-age=3600");
+      const bytes = Buffer.from(await response.arrayBuffer());
+      expect(await sharp(bytes).metadata()).toMatchObject({ format: "webp", width, height: width * 1.25 });
+      expect(bytes.byteLength).toBeLessThan(original.byteLength / 4);
+      // Reading a different variant must not replace either cached response.
+      expect(Buffer.from(await (await load(`?preview=${width}`)).arrayBuffer())).toEqual(bytes);
+    }
+    expect(Buffer.from(await (await load()).arrayBuffer())).toEqual(original);
+    for (const query of ["?preview=", "?preview=9999", "?preview=../../escape"]) {
+      expect((await load(query)).status).toBe(400);
+    }
+    const legacy = await fieldCardImage(
+      new Request("https://bolets.app/bolets/macrolepiota-procera/targeta?preview=384"),
+      { params: Promise.resolve({ slug: "macrolepiota-procera" }) },
+    );
+    expect(legacy.headers.get("location")).toBe("/bolets/apagallums/targeta?preview=384");
+  }, 30_000);
+
+  it("loads only responsive previews in the species page and links to the full card", () => {
+    const species = getCatalogueSpeciesBySlug("apagallums")!;
+    const html = renderToStaticMarkup(createElement(SpeciesFieldCardSection, { species }));
+    expect(html).toContain('src="/bolets/apagallums/targeta?preview=384"');
+    expect(html).toContain('srcSet="/bolets/apagallums/targeta?preview=384 384w, /bolets/apagallums/targeta?preview=768 768w"');
+    expect(html).toContain('loading="lazy"');
+    expect(html).toContain('href="/bolets/apagallums/targeta"');
+    expect(html).not.toContain('src="/bolets/apagallums/targeta"');
   });
 });
