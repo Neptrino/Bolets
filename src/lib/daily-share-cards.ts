@@ -1,3 +1,4 @@
+import { INSTAGRAM_TEMPLATE_VERSION } from "@/src/lib/instagram-template-version";
 import { regionSelectItems } from "@/data/regions";
 import {
   bestAreaOverviewItemsByHub,
@@ -381,5 +382,5 @@ export async function loadFavourableDailySharePreviewCard(slug: string) {
 }
 
 export function dailyShareImagePath(slug: DailyShareSlug, format: DailyShareFormat = "feed") {
-  return `/compartir/${slug}/imatge?format=${format}`;
+  return `/compartir/${slug}/imatge?format=${format}&style=${INSTAGRAM_TEMPLATE_VERSION}`;
 }

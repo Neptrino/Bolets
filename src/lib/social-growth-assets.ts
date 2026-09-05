@@ -1,3 +1,4 @@
+import { INSTAGRAM_TEMPLATE_VERSION } from "@/src/lib/instagram-template-version";
 import type { SocialGrowthSeries } from "@/components/social-growth-card";
 import type { DailyShareCard } from "@/src/lib/daily-share-cards";
 import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
@@ -5,7 +6,7 @@ import type { InstagramEducationTopicId } from "@/src/lib/instagram-education";
 import type { PinnedInstagramSeries } from "@/src/lib/instagram-pinned-posts";
 
 export function pinnedInstagramImagePath(series: PinnedInstagramSeries) {
-  return `/compartir/instagram/fixada/${series}?v=2`;
+  return `/compartir/instagram/fixada/${series}?v=3&style=${INSTAGRAM_TEMPLATE_VERSION}`;
 }
 
 export function signedSocialGrowthImagePath(
@@ -21,7 +22,7 @@ export function signedSocialGrowthImagePath(
   if (series === "education" && educationTopicId) {
     url.searchParams.set("topic", educationTopicId);
   }
-  url.searchParams.set("growthVersion", "3");
+  url.searchParams.set("growthVersion", series === "weekend" ? "5" : "4");
   return `${url.pathname}${url.search}`;
 }
 
@@ -32,7 +33,7 @@ export function signedWeekendReelPath(card: DailyShareCard) {
   url.searchParams.delete("format");
   url.searchParams.delete("series");
   url.searchParams.delete("slide");
-  url.searchParams.set("reelVersion", "5");
+  url.searchParams.set("reelVersion", "7");
   return `${url.pathname}${url.search}`;
 }
 
@@ -47,6 +48,6 @@ export function signedSpeciesInstagramImagePath(
   url.searchParams.set("date", publicationDate);
   url.searchParams.set("slide", String(slide));
   if (speciesId) url.searchParams.set("speciesId", speciesId);
-  url.searchParams.set("speciesVersion", "2");
+  url.searchParams.set("speciesVersion", "4");
   return `${url.pathname}${url.search}`;
 }

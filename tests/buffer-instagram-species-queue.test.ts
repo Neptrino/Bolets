@@ -85,6 +85,19 @@ describe("Buffer Instagram species queue", () => {
     expect(createBody.variables.input.text).toContain(instagramSpeciesQueueMarker("boletus-edulis"));
   });
 
+  it("writes a keyword-first caption without the series counter", () => {
+    const caption = instagramSpeciesQueueCaption("boletus-edulis");
+    expect(caption.startsWith("Cep (Boletus edulis): guia ràpida d’identificació.")).toBe(true);
+    expect(caption).not.toMatch(/\d+\/62/);
+    expect(caption).toContain("1. Reticle blanc al peu");
+    expect(caption).toContain("Confusió habitual: matagent (Rubroboletus satanas)");
+    expect(caption).toContain("bolets.app/bolets/");
+    expect(caption).toContain("Foto: ReddishClover · CC BY-SA 4.0");
+    expect(caption).toContain("#Cep");
+    expect(caption.endsWith("#BoletsApp")).toBe(true);
+    expect(caption.length).toBeLessThan(2_200);
+  });
+
   it("preserves a custom caption and appends the duplicate-protection marker", () => {
     expect(instagramSpeciesQueueCaption("boletus-edulis", "Text revisat.")).toBe(
       `Text revisat.\n\n${instagramSpeciesQueueMarker("boletus-edulis")}`,
