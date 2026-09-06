@@ -1,0 +1,24 @@
+import { afterEach, expect, it, vi } from "vitest";
+import { PredictionBucketMemory } from "@/src/lib/prediction-bucket-memory";
+import { predictionBucketUrl } from "@/src/lib/map-request-url";
+const bounds = { west: 1, south: 41, east: 1.5, north: 41.5 };
+afterEach(() => vi.useRealTimers());
+it("expires buffered days without evicting today's existing map cache", () => {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(0);
+  const memory = new PredictionBucketMemory<{ score: number }>();
+  const today = predictionBucketUrl(bounds, "all", 2500);
+  const tomorrow = predictionBucketUrl(bounds, "all", 5000, 1);
+  memory.set(today, [{ score: 1 }]);
+  memory.set(tomorrow, [{ score: 2 }]);
+  vi.setSystemTime(59_999);
+  expect(memory.has(tomorrow)).toBe(true);
+  vi.setSystemTime(60_000);
+  expect(memory.get(tomorrow)).toBeUndefined();
+  expect(memory.has(tomorrow)).toBe(false);
+  expect(memory.get(today)).toEqual([{ score: 1 }]);
+  memory.set(tomorrow, [{ score: 3 }]);
+  expect(memory.get(tomorrow)).toEqual([{ score: 3 }]);
+  memory.clear();
+  expect(memory.size).toBe(0);
+});

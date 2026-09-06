@@ -1,5 +1,6 @@
 import "server-only";
 
+import { MAX_TIMELINE_FORECAST_AGE_MS } from "@/src/lib/prediction-timeline-generation";
 import { getEnvironmentFrame } from "@/src/lib/prediction-environment-frame";
 import type { z } from "zod";
 import { getSpecies } from "@/data/species";
@@ -26,7 +27,6 @@ import type {
 type EnvironmentFrame = z.infer<typeof spatialEnvironmentFrameSchema>;
 type EnvironmentFrameCell = EnvironmentFrame["cells"][number];
 
-const MAX_FORECAST_AGE_MS = 36 * 60 * 60 * 1000;
 const MAX_FORECAST_ANCHOR_GAP_MS = 8 * 60 * 60 * 1000;
 
 function frameEnvironment(
@@ -48,7 +48,7 @@ function frameEnvironment(
   const generatedAt = Date.parse(forecast?.generatedAt ?? "");
   if (
     !forecast || !Number.isFinite(generatedAt) ||
-    Date.now() - generatedAt > MAX_FORECAST_AGE_MS ||
+    Date.now() - generatedAt > MAX_TIMELINE_FORECAST_AGE_MS ||
     Date.now() - generatedAt < -15 * 60 * 1000 ||
     forecast.baseline.unavailableFields.length ||
     forecast.snapshots.length !== offset
@@ -131,11 +131,12 @@ async function getSpeciesTimelineFrame(
   limit: number,
   gridSizeM: SpatialGridSizeM,
   offset: Exclude<PredictionTimelineOffset, 0>,
+  generation = "",
 ) {
   const species = getSpecies(speciesId);
   if (!species) throw new Error("Unknown species");
   const [frame, habitat] = await Promise.all([
-    getEnvironmentFrame(bounds, limit, gridSizeM, offset),
+    getEnvironmentFrame(bounds, limit, gridSizeM, offset, generation),
     getPotentialHabitatCoverage(speciesId, bounds, limit, gridSizeM),
   ]);
   const habitatByCell = new Map(habitat.cells.map((cell) => [cell.cellId, cell]));
@@ -166,10 +167,11 @@ async function getGlobalTimelineFrame(
   limit: number,
   gridSizeM: SpatialGridSizeM,
   offset: Exclude<PredictionTimelineOffset, 0>,
+  generation = "",
 ) {
   const [frame, habitat] = await Promise.all([
-    getEnvironmentFrame(bounds, limit, gridSizeM, offset),
-    fetchGlobalEnvironment(bounds, limit, gridSizeM as 1000 | 2500 | 5000 | 10000),
+    getEnvironmentFrame(bounds, limit, gridSizeM, offset, generation),
+    fetchGlobalEnvironment(bounds, limit, gridSizeM as 1000 | 2500 | 5000 | 10000, generation),
   ]);
   const candidates = resolveCandidateSlots(habitat.habitatProfiles);
   const habitatByCell = new Map(habitat.cells.map((cell) => [cell.cellId, cell]));
@@ -222,9 +224,10 @@ export async function getPredictionMapTimelineFrame(
   limit: number,
   gridSizeM: SpatialGridSizeM,
   offset: Exclude<PredictionTimelineOffset, 0>,
+  generation = "",
 ) {
   if (gridSizeM < 1000) throw new Error("Timeline frames require a coarse grid");
   return speciesId === GLOBAL_SPECIES_ID
-    ? getGlobalTimelineFrame(bounds, limit, gridSizeM, offset)
-    : getSpeciesTimelineFrame(speciesId, bounds, limit, gridSizeM, offset);
+    ? getGlobalTimelineFrame(bounds, limit, gridSizeM, offset, generation)
+    : getSpeciesTimelineFrame(speciesId, bounds, limit, gridSizeM, offset, generation);
 }

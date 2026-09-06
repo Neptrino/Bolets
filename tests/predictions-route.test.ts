@@ -114,6 +114,7 @@ describe("prediction API bounds", () => {
       1000,
       5000,
       3,
+      "unverified-publication",
     );
   });
 

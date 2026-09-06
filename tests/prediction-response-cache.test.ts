@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const cacheMocks = vi.hoisted(() => ({
   global: vi.fn(),
   timeline: vi.fn(),
+  timelineGeneration: vi.fn(async (): Promise<string | null> => "observed:1|forecast:1|valid"),
   species: vi.fn(),
   generation: vi.fn(() => Promise.resolve("generation:1")),
   registrations: [] as Array<{
@@ -30,6 +31,10 @@ vi.mock("next/cache", () => ({
 vi.mock("@/src/lib/global-predictions", () => ({
   getGlobalPredictionCells: cacheMocks.global,
   globalSpeciesSetKey: "test-species-set",
+}));
+
+vi.mock("@/src/lib/prediction-timeline-generation", () => ({
+  readTimelineGeneration: cacheMocks.timelineGeneration, TIMELINE_CACHE_SECONDS: 3600,
 }));
 
 vi.mock("@/src/lib/prediction-map-timeline", () => ({ getPredictionMapTimelineFrame: cacheMocks.timeline }));
@@ -94,19 +99,44 @@ describe("prediction response cache", () => {
   });
 });
 
-it("caches scored timeline frames separately by species and offset and expires after a minute", async () => {
+it("reuses scored frames beyond a minute and invalidates publications, forecast expiry and the hourly bound", async () => {
   vi.useFakeTimers({ toFake: ["Date"] });
   try {
     vi.setSystemTime(new Date("2026-09-05T02:00:00Z"));
-    cacheMocks.timeline.mockResolvedValue({ cells: [], truncated: false });
+    cacheMocks.timeline.mockReset().mockResolvedValue({ cells: [], truncated: false });
     const bounds = { west: 1, south: 41, east: 1.5, north: 41.5 };
-    await Promise.all(Array.from({ length: 4 }, () => getCachedPredictionMapTimelineFrame("all", bounds, 1000, 5000, 5)));
+    const read = () => getCachedPredictionMapTimelineFrame("all", bounds, 1000, 5000, 5);
+    await Promise.all(Array.from({ length: 4 }, read));
     expect(cacheMocks.timeline).toHaveBeenCalledTimes(1);
+    vi.setSystemTime(new Date("2026-09-05T02:02:00Z"));
+    await read();
+    expect(cacheMocks.timeline).toHaveBeenCalledTimes(1);
+    for (const generation of ["observed:2|forecast:1|valid", "observed:2|forecast:2|valid", "observed:2|forecast:2|expired"]) {
+      cacheMocks.timelineGeneration.mockResolvedValue(generation);
+      await read();
+      expect(cacheMocks.timeline).toHaveBeenLastCalledWith("all", bounds, 1000, 5000, 5, generation);
+    }
+    expect(cacheMocks.timeline).toHaveBeenCalledTimes(4);
     await getCachedPredictionMapTimelineFrame("all", bounds, 1000, 5000, 4);
     await getCachedPredictionMapTimelineFrame("boletus-edulis", bounds, 1000, 5000, 5);
-    expect(cacheMocks.timeline).toHaveBeenCalledTimes(3);
-    vi.setSystemTime(new Date("2026-09-05T02:01:00Z"));
-    await getCachedPredictionMapTimelineFrame("all", bounds, 1000, 5000, 5);
-    expect(cacheMocks.timeline).toHaveBeenCalledTimes(4);
+    expect(cacheMocks.timeline).toHaveBeenCalledTimes(6);
+    vi.setSystemTime(new Date("2026-09-05T03:02:00Z"));
+    await read();
+    expect(cacheMocks.timeline).toHaveBeenCalledTimes(7);
+  } finally { vi.useRealTimers(); }
+});
+
+it("bounds fallback frames to a minute when the publication check fails", async () => {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  try {
+    vi.setSystemTime(new Date("2026-09-05T05:00:00Z"));
+    cacheMocks.timelineGeneration.mockResolvedValue(null);
+    cacheMocks.timeline.mockReset().mockResolvedValue({ cells: [], truncated: false });
+    const read = () => getCachedPredictionMapTimelineFrame("all", { west: 1, south: 41, east: 1.5, north: 41.5 }, 1000, 5000, 1);
+    await read(); await read();
+    expect(cacheMocks.timeline).toHaveBeenCalledTimes(1);
+    vi.setSystemTime(new Date("2026-09-05T05:01:00Z"));
+    await read();
+    expect(cacheMocks.timeline).toHaveBeenCalledTimes(2);
   } finally { vi.useRealTimers(); }
 });

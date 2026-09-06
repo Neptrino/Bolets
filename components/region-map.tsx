@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   type GeolocateControl,
   type Map as MapLibreMap,
@@ -34,19 +34,17 @@ import { useRegionBasemap } from "@/components/region-map/use-basemap";
 import { useCollapsibleMapControls } from "@/components/region-map/use-collapsible-controls";
 import { useRegionMapStatus } from "@/components/region-map/use-viewport-status";
 import { RegionMapView } from "@/components/region-map/view";
+import { usePredictionTimeline } from "@/components/region-map/use-timeline";
 import { useMapResolutionAccess } from "@/components/region-map/use-resolution-access";
+import { PredictionBucketMemory } from "@/src/lib/prediction-bucket-memory";
 import { fetchJsonWithRetry } from "@/src/lib/fetch-json";
-import {
-  GLOBAL_SPECIES_ID,
-} from "@/src/lib/global-map";
+import { GLOBAL_SPECIES_ID } from "@/src/lib/global-map";
 import {
   habitatCellColour,
   habitatCellIntensity,
   isHabitatCellCorroborated,
 } from "@/src/lib/habitat-map";
-import {
-  boundsContain,
-} from "@/src/lib/map-grid";
+import { boundsContain } from "@/src/lib/map-grid";
 import { createBucketNetworkGate, loadBucketedCells,
   summarizeBucketCoverage } from "@/src/lib/bucket-loader";
 import {
@@ -64,7 +62,6 @@ import type {
   OccurrenceSupportCell,
   PotentialHabitatMapCell,
   PredictionMapCell,
-  PredictionTimelineOffset,
 } from "@/src/lib/types";
 
 export type { PredictionCellDetailState, PredictionViewportStatus } from "@/components/region-map/types";
@@ -131,7 +128,7 @@ export function RegionMap({
   // already covered repaints from memory instead of refetching. The viewport
   // maps below are rebuilt from these, and still describe only what is on
   // screen.
-  const bucketCells = useRef(new Map<string, PredictionMapCell[]>());
+  const bucketCells = useRef(new PredictionBucketMemory<PredictionMapCell>());
   const habitatBucketCells = useRef(new Map<string, PotentialHabitatMapCell[]>());
   // Requests in progress, shared across overlapping viewports so a pan never
   // asks for a bucket another pan is already fetching.
@@ -157,12 +154,10 @@ export function RegionMap({
     initializeBasemap,
     selectedBasemapId,
   } = useRegionBasemap(map, drawCellsRef, {
-    // A static map has no layer control, so a saved choice from another map
-    // must not silently replace its intended default relief presentation.
+    // A static map always retains its intended relief presentation.
     rememberSelection: interactive,
   });
   const [cellsVisible, setCellsVisible] = useState(true);
-  const [timelineOffset, setTimelineOffset] = useState<PredictionTimelineOffset>(0);
   const [cellOpacity, setCellOpacity] = useState(100);
   const [historicalEvidenceVisible, setHistoricalEvidenceVisible] =
     useState(true);
@@ -184,13 +179,6 @@ export function RegionMap({
       habitatCells: 0,
       records: 0,
     });
-  const changeTimelineOffset = useCallback((offset: PredictionTimelineOffset) => {
-    setTimelineOffset(offset);
-    selectedCellIdRef.current = null;
-    onCellSelect?.(undefined);
-    onCellDetailStateChange?.({ status: "idle" });
-    onTimelineOffsetChange?.(offset);
-  }, [onCellDetailStateChange, onCellSelect, onTimelineOffsetChange]);
 
   useEffect(() => {
     if (!node.current || map.current) return;
@@ -628,6 +616,14 @@ export function RegionMap({
     };
   }, [detailedMinimumGridSizeM, habitat, selectedRegion, showCompatibility, speciesId]);
 
+  const { timelineOffset, changeTimelineOffset } = usePredictionTimeline({
+    enabled: showTimeline && predictionAvailable && !showCompatibility,
+    map, speciesId, cellState, store: bucketCells, inFlight: inFlightBuckets,
+    networkGate: bucketNetworkGate, minimumGridSizeM: predictionMinimumGridSizeM,
+    maximumGridSizeM: maximumPredictionGridSizeM, selectedCellIdRef,
+    onCellSelect, onCellDetailStateChange, onTimelineOffsetChange,
+  });
+
   useEffect(() => {
     const localMap = map.current;
     if (!localMap || !speciesId || showCompatibility) return;
@@ -739,10 +735,11 @@ export function RegionMap({
           controller.signal,
           (payload, bucket) => {
             if (payload.truncated) truncatedBuckets.any = true;
-            rememberBucket(
+            if (!payload.truncated) rememberBucket(
               bucketCells.current,
               predictionBucketUrl(bucket, speciesId, gridSizeM, timelineOffset),
               payload.cells,
+              showTimeline ? 512 : 240,
             );
             if (isCurrent() && !timelineRun) {
               repaint();
@@ -940,6 +937,7 @@ export function RegionMap({
     predictionMinimumGridSizeM,
     maximumPredictionGridSizeM,
     predictionRendering,
+    showTimeline,
     timelineOffset,
     onCellClick,
     onGeolocationSuccess,

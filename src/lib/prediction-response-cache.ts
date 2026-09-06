@@ -1,5 +1,7 @@
 import "server-only";
 
+import { readTimelineGeneration, TIMELINE_CACHE_SECONDS } from "@/src/lib/prediction-timeline-generation";
+
 import { getPredictionMapTimelineFrame } from "@/src/lib/prediction-map-timeline";
 import { unstable_cache } from "next/cache";
 import { readCurrentOverviewGeneration } from "@/src/lib/current-overview-generation-server";
@@ -112,11 +114,12 @@ const timelinePending = new Map<string, Promise<{ computedAt: number; result: Ti
 function computeTimelineFrame(
   speciesId: string, bounds: SpatialBounds, limit: number, gridSizeM: SpatialGridSizeM,
   offset: Exclude<PredictionTimelineOffset, 0>,
+  generation = "",
 ) {
-  const key = JSON.stringify([speciesId, bounds, limit, gridSizeM, offset]);
+  const key = JSON.stringify([speciesId, bounds, limit, gridSizeM, offset, generation]);
   let task = timelinePending.get(key);
   if (!task) {
-    task = getPredictionMapTimelineFrame(speciesId, bounds, limit, gridSizeM, offset)
+    task = getPredictionMapTimelineFrame(speciesId, bounds, limit, gridSizeM, offset, generation)
       .then((result) => ({ computedAt: Date.now(), result }))
       .finally(() => { timelinePending.delete(key); });
     timelinePending.set(key, task);
@@ -124,21 +127,29 @@ function computeTimelineFrame(
   return task;
 }
 
-const loadTimelineFrame = unstable_cache((
+const cachedTimelineComputation = (
   speciesId: string, bounds: SpatialBounds, limit: number, gridSizeM: SpatialGridSizeM,
-  offset: Exclude<PredictionTimelineOffset, 0>, model: string, speciesSet: string,
+  offset: Exclude<PredictionTimelineOffset, 0>, model: string, speciesSet: string, generation: string,
 ) => {
   void model; void speciesSet;
-  return computeTimelineFrame(speciesId, bounds, limit, gridSizeM, offset);
-}, ["prediction-api-timeline-v1"], { revalidate: 60, tags: ["prediction-api-map"] });
+  return computeTimelineFrame(speciesId, bounds, limit, gridSizeM, offset, generation);
+};
+const loadTimelineFrame = unstable_cache(cachedTimelineComputation,
+  ["prediction-api-timeline-v2"], { revalidate: TIMELINE_CACHE_SECONDS, tags: ["prediction-api-map"] });
+const loadFallbackTimelineFrame = unstable_cache(cachedTimelineComputation,
+  ["prediction-api-timeline-fallback-v1"], { revalidate: 60, tags: ["prediction-api-map"] });
 
 export async function getCachedPredictionMapTimelineFrame(
   speciesId: string, bounds: SpatialBounds, limit: number, gridSizeM: SpatialGridSizeM,
   offset: Exclude<PredictionTimelineOffset, 0>,
 ) {
-  const cached = await loadTimelineFrame(speciesId, bounds, limit, gridSizeM, offset,
-    PREDICTION_CACHE_VERSION, globalSpeciesSetKey);
-  return (Date.now() - cached.computedAt >= 60_000
-    ? await computeTimelineFrame(speciesId, bounds, limit, gridSizeM, offset)
+  const generation = await readTimelineGeneration();
+  // Failed publication checks retain the original bounded fallback, never a long-lived frame.
+  const key = generation ?? "unverified-publication";
+  const load = generation ? loadTimelineFrame : loadFallbackTimelineFrame;
+  const cached = await load(speciesId, bounds, limit, gridSizeM, offset,
+    PREDICTION_CACHE_VERSION, globalSpeciesSetKey, key);
+  return (Date.now() - cached.computedAt >= (generation ? TIMELINE_CACHE_SECONDS * 1000 : 60_000)
+    ? await computeTimelineFrame(speciesId, bounds, limit, gridSizeM, offset, key)
     : cached).result;
 }

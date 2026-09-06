@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 vi.mock("next/cache", () => ({ unstable_cache: (fn: unknown) => fn }));
-import { createMapCacheWarmer, mapWarmTargets } from "@/src/lib/map-cache-warmer";
+import { createMapCacheWarmer, mapWarmTargets, timelineWarmTargets } from "@/src/lib/map-cache-warmer";
 import { predictionBucketUrl } from "@/src/lib/map-request-url";
 
 describe("map cache warmer", () => {
   it("uses bounded public buckets with the map's canonical URL builder", () => {
     const targets = mapWarmTargets();
     expect(targets.length).toBeGreaterThan(0);
-    expect(targets.length).toBeLessThanOrEqual(64);
+    expect(targets.length).toBeLessThanOrEqual(128);
     expect(new Set(targets.map((target) => target.url)).size).toBe(targets.length);
     for (const target of targets) {
       expect(target.resolution).toBeGreaterThanOrEqual(2500);
@@ -54,4 +54,38 @@ describe("map cache warmer", () => {
     expect((await warm()).status).toBe("unavailable");
     expect(load).not.toHaveBeenCalled();
   });
+});
+
+it("warms every animation day using the exact public bucket URLs", () => {
+  const targets = timelineWarmTargets();
+  expect(mapWarmTargets().some((target) => target.resolution === 2500)).toBe(true);
+  expect(new Set(targets.map((target) => target.offset))).toEqual(new Set([-3, -2, -1, 1, 2, 3, 4, 5]));
+  expect(targets.length + mapWarmTargets().length).toBeLessThanOrEqual(512);
+  for (const target of targets) {
+    expect(target.resolution).toBe(5000);
+    expect(target.url).toBe(predictionBucketUrl(target.bounds, "all", 5000, target.offset));
+  }
+});
+
+it("resumes successful buckets across its deadline without repeating work", async () => {
+  let clock = 0;
+  const targets = mapWarmTargets().slice(0, 6);
+  const calls: string[] = [];
+  const warm = createMapCacheWarmer({
+    generation: async () => "generation", now: () => clock, targets: () => targets,
+    load: async (target) => {
+      calls.push(target.url);
+      clock += 50_000;
+      return { truncated: false };
+    },
+  });
+  expect((await warm()).status).toBe("incomplete");
+  expect((await warm()).status).toBe("incomplete");
+  expect((await warm()).status).toBe("warmed");
+  expect(calls).toHaveLength(6);
+  expect(new Set(calls).size).toBe(6);
+  expect((await warm()).status).toBe("unchanged");
+  clock += 3_600_000;
+  expect((await warm()).status).toBe("incomplete");
+  expect(calls.length).toBeGreaterThan(6);
 });

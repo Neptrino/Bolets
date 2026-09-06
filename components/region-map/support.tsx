@@ -235,10 +235,10 @@ function visibleGridParams(localMap: MapLibreMap, speciesId: string, gridSizeM: 
  */
 const RETAINED_BUCKETS = 240;
 
-function rememberBucket<T>(store: Map<string, T[]>, url: string, cells: T[]) {
+function rememberBucket<T>(store: Map<string, T[]>, url: string, cells: T[], limit = RETAINED_BUCKETS) {
   store.delete(url);
   store.set(url, cells);
-  while (store.size > RETAINED_BUCKETS) {
+  while (store.size > limit) {
     const oldest = store.keys().next();
     if (oldest.done) break;
     store.delete(oldest.value);

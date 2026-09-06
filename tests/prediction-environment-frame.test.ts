@@ -69,3 +69,12 @@ describe("compressed timeline environment cache", () => {
     expect(fetch).toHaveBeenCalledTimes(3);
   });
 });
+
+it("refetches environment inputs for a replacement publication inside the five-minute window", async () => {
+  const fetch = vi.fn(async () => Response.json(frame()));
+  vi.stubGlobal("fetch", fetch);
+  await getEnvironmentFrame(bounds, 1000, 5000, 5, "generation-1");
+  await getEnvironmentFrame(bounds, 1000, 5000, 5, "generation-1");
+  await getEnvironmentFrame(bounds, 1000, 5000, 5, "generation-2");
+  expect(fetch).toHaveBeenCalledTimes(2);
+});

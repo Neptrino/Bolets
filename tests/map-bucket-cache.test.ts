@@ -76,3 +76,15 @@ describe("persistent map bucket cache", () => {
     expect(open).not.toHaveBeenCalled();
   });
 });
+
+it("expires timeline buckets after a minute and does not persist truncated frames", async () => {
+  const { cache } = installCacheStorage();
+  const url = "https://bolets.test/api/predictions?resolution=5000&time=1";
+  const payload = { cells: [{ cellId: "cell", score: 42 }], truncated: false };
+  const now = Date.now();
+  await writeMapBucketPayload(url, payload, now);
+  expect(await readMapBucketPayload(url, now + 59_999)).toEqual(payload);
+  expect(await readMapBucketPayload(url, now + 60_001)).toBeNull();
+  await writeMapBucketPayload(url, { ...payload, truncated: true }, now);
+  expect(cache.put).toHaveBeenCalledTimes(1);
+});

@@ -3,6 +3,8 @@ import type { BucketPayload } from "@/src/lib/bucket-loader";
 export const MAP_BUCKET_CACHE_NAME = "bolets-map-buckets-v2";
 export const MAP_BUCKET_CACHE_TTL_MS = 60 * 60 * 1_000;
 
+export const TIMELINE_BUCKET_CACHE_TTL_MS = 60_000;
+
 const CACHED_AT_HEADER = "x-bolets-cached-at";
 const MAP_BUCKET_CACHE_LIMIT = 600;
 const MAP_BUCKET_TRIM_INTERVAL = 50;
@@ -43,11 +45,14 @@ export async function readMapBucketPayload<T>(
     const response = await cache.match(request);
     if (!response?.ok) return null;
     const cachedAt = Date.parse(response.headers.get(CACHED_AT_HEADER) ?? "");
-    if (!Number.isFinite(cachedAt) || now - cachedAt > MAP_BUCKET_CACHE_TTL_MS) {
+    const timeline = new URL(url, "https://bolets.local").searchParams.has("time");
+    const ttl = timeline ? TIMELINE_BUCKET_CACHE_TTL_MS : MAP_BUCKET_CACHE_TTL_MS;
+    if (!Number.isFinite(cachedAt) || cachedAt - now > 5_000 || now - cachedAt > ttl) {
       await cache.delete(request);
       return null;
     }
-    return response.json() as Promise<BucketPayload<T>>;
+    const payload = await response.json() as BucketPayload<T>;
+    return payload.truncated ? null : payload;
   } catch {
     // Cache Storage can be unavailable in private browsing or under quota
     // pressure. The network loader remains the source of truth.
@@ -71,7 +76,7 @@ export async function writeMapBucketPayload<T>(
   now = Date.now(),
 ) {
   const storage = cacheStorage();
-  if (!storage || !isPublicMapBucketUrl(url)) return;
+  if (!storage || !isPublicMapBucketUrl(url) || payload.truncated) return;
 
   try {
     const cache = await storage.open(MAP_BUCKET_CACHE_NAME);

@@ -15,7 +15,9 @@ const pending = new Map<string, Promise<StoredFrame>>();
 async function fetchCompressedFrame(
   bounds: SpatialBounds, limit: number, gridSizeM: SpatialGridSizeM,
   offset: Exclude<PredictionTimelineOffset, 0>,
+  generation = "",
 ) {
+  void generation;
   const service = spatialServiceConfig(gridSizeM);
   const query = new URLSearchParams({
     mode: "frame", west: String(bounds.west), south: String(bounds.south),
@@ -35,11 +37,11 @@ async function fetchCompressedFrame(
   return { storedAt: Date.now(), compressed: (await compress(JSON.stringify(frame))).toString("base64") };
 }
 
-function freshFrame(bounds: SpatialBounds, limit: number, grid: SpatialGridSizeM, offset: Exclude<PredictionTimelineOffset, 0>) {
-  const key = JSON.stringify([bounds, limit, grid, offset]);
+function freshFrame(bounds: SpatialBounds, limit: number, grid: SpatialGridSizeM, offset: Exclude<PredictionTimelineOffset, 0>, generation = "") {
+  const key = JSON.stringify([bounds, limit, grid, offset, generation]);
   let task = pending.get(key);
   if (!task) {
-    task = fetchCompressedFrame(bounds, limit, grid, offset).finally(() => { pending.delete(key); });
+    task = fetchCompressedFrame(bounds, limit, grid, offset, generation).finally(() => { pending.delete(key); });
     pending.set(key, task);
   }
   return task;
@@ -51,12 +53,13 @@ const readCompressedFrame = unstable_cache(freshFrame,
 export async function getEnvironmentFrame(
   bounds: SpatialBounds, limit: number, gridSizeM: SpatialGridSizeM,
   offset: Exclude<PredictionTimelineOffset, 0>,
+  generation = "",
 ) {
-  const cached = await readCompressedFrame(bounds, limit, gridSizeM, offset);
+  const cached = await readCompressedFrame(bounds, limit, gridSizeM, offset, generation);
   // Next revalidates stable keys in the background. Do not deliver an old
   // forecast while that happens, and do not create new disk files every minute.
   const frame = Date.now() - cached.storedAt >= 300_000
-    ? await freshFrame(bounds, limit, gridSizeM, offset)
+    ? await freshFrame(bounds, limit, gridSizeM, offset, generation)
     : cached;
   const json = await decompress(Buffer.from(frame.compressed, "base64"));
   return spatialEnvironmentFrameSchema.parse(JSON.parse(json.toString()));

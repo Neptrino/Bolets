@@ -3,6 +3,7 @@
 import { LoaderCircle, Pause, Play } from "lucide-react";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
+import { nextTimelineOffset } from "@/src/lib/prediction-timeline-prefetch";
 import type { PredictionTimelineOffset } from "@/src/lib/types";
 
 const FIRST_OFFSET: PredictionTimelineOffset = -3;
@@ -57,7 +58,7 @@ export function PredictionTimelineControl({
   useEffect(() => {
     if (!activePlaying || loading) return;
     const timer = window.setTimeout(() => {
-      onChange((offset === LAST_OFFSET ? FIRST_OFFSET : offset + 1) as PredictionTimelineOffset);
+      onChange(nextTimelineOffset(offset));
     }, 1_150);
     return () => window.clearTimeout(timer);
   }, [activePlaying, loading, offset, onChange]);
