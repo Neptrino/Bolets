@@ -31,9 +31,6 @@ COPY --from=media /app/public/media/optimized ./public/media/optimized
 RUN ./node_modules/.bin/next build && node scripts/image-build-config.mjs write
 
 FROM node:24-bookworm-slim AS runner
-ARG BOLETS_REVISION
-LABEL org.opencontainers.image.source="https://github.com/Neptrino/Bolets" \
-    org.opencontainers.image.revision=$BOLETS_REVISION
 WORKDIR /app
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
@@ -53,6 +50,11 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/scripts/export-static-assets.mjs ./scripts/export-static-assets.mjs
 COPY --from=builder /app/scripts/image-build-config.mjs ./scripts/image-build-config.mjs
 COPY --from=builder /app/build-config.json ./build-config.json
+
+# Keep commit-specific metadata after reusable system and application layers.
+ARG BOLETS_REVISION
+LABEL org.opencontainers.image.source="https://github.com/Neptrino/Bolets" \
+    org.opencontainers.image.revision=$BOLETS_REVISION
 
 USER nextjs
 EXPOSE 3000
