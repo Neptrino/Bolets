@@ -4,6 +4,7 @@ import { ArrowUpRight, CalendarDays, CloudRain, Map } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { SpeciesCard } from "@/components/species-card";
+import { AnnualSeasonCalendar } from "@/components/annual-season-calendar";
 import { speciesInSeason } from "@/src/lib/species-collections";
 import {
   monthInTimeZone,
@@ -87,6 +88,7 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
           : `${activeSpecies.length} espècies del catàleg poden tenir activitat estacional ${monthWithPreposition(month)}. La pluja, la temperatura, l’altitud i la humitat decideixen si arriben a fructificar.`}
         layout="split"
         tone="forest"
+        actions={<a href="#calendari-anual" className="text-link">Veure el calendari anual ↓</a>}
       />
 
       <section className="season-now-panel">
@@ -130,6 +132,8 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
           );
         })}
       </nav>
+
+      <AnnualSeasonCalendar currentMonth={currentMonth} selectedMonth={month} />
 
       <aside className="intent-safety-note season-explainer">
         <CloudRain size={22} aria-hidden="true" />

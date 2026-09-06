@@ -1,0 +1,255 @@
+.calendar {
+  margin-bottom: 48px;
+  scroll-margin-top: 100px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin: 24px 0 16px;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-xs);
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.help,
+.note {
+  color: var(--muted);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+}
+
+.help {
+  margin-bottom: 12px;
+}
+
+.yearHelp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.monthHelp,
+.monthNavigation {
+  display: none;
+}
+
+.help svg {
+  flex-shrink: 0;
+}
+
+.note {
+  margin-top: 16px;
+  max-width: 85ch;
+}
+
+.scroll {
+  position: relative;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  isolation: isolate;
+}
+
+.mapLink {
+  white-space: nowrap;
+}
+
+.scroll:focus-visible,
+.table a:focus-visible,
+.monthNavigation a:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 3px;
+}
+
+.table {
+  width: 100%;
+  min-width: 940px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--text-xs);
+  background: var(--surface);
+}
+
+.table th,
+.table td {
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 68px;
+  background: var(--paper);
+}
+
+.table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  width: 230px;
+  min-width: 230px;
+  padding: 12px 18px;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
+  text-align: left;
+}
+
+.table thead th:first-child {
+  z-index: 3;
+  background: var(--paper);
+}
+
+.table a {
+  display: block;
+}
+
+.table a:hover {
+  color: var(--clay);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.table em {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+}
+
+.table [data-selected] {
+  background: var(--warning-surface);
+}
+
+.table thead [data-selected] {
+  color: var(--on-dark);
+  background: var(--forest-panel);
+}
+
+.table thead [data-selected] a:hover {
+  color: var(--on-dark);
+}
+
+.currentLabel {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 400;
+}
+
+.table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.table tbody tr:hover th,
+.table tbody tr:focus-within th {
+  background: var(--paper);
+}
+
+.level {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 28px;
+  border-radius: 4px;
+  font-size: var(--text-xs);
+  color: var(--bark);
+}
+
+.inactive {
+  color: var(--muted);
+}
+
+.possible {
+  background: #e7c8a5;
+}
+
+.moderate {
+  background: var(--apricot);
+}
+
+.good {
+  background: var(--pumpkin);
+}
+
+.peak {
+  color: var(--on-dark);
+  background: #963f20;
+}
+
+@media (max-width: 680px) {
+  .yearHelp,
+  .table thead th:not(:first-child):not([data-selected]),
+  .table td:not([data-selected]) {
+    display: none;
+  }
+
+  .monthHelp {
+    display: block;
+  }
+
+  .monthNavigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 20px 0 16px;
+  }
+
+  .monthNavigation a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+  }
+
+  .monthNavigation a:hover {
+    background: var(--warning-surface);
+  }
+
+  .monthNavigation strong {
+    text-align: center;
+    text-transform: capitalize;
+    font-size: var(--text-lg);
+  }
+
+  .monthNavigation small {
+    display: block;
+    color: var(--muted);
+    font-size: var(--text-xs);
+    font-weight: 400;
+    text-transform: none;
+  }
+
+  .table {
+    min-width: 0;
+    table-layout: fixed;
+  }
+
+  .table th:first-child {
+    width: 72%;
+    min-width: 0;
+    max-width: none;
+    padding: 10px;
+    overflow-wrap: anywhere;
+  }
+
+  .table td[data-selected] {
+    background: var(--surface);
+  }
+}
