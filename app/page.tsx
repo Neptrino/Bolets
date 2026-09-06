@@ -1,8 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowDown, ArrowUpRight, BookOpenText, CloudRain, Gauge, Leaf, Snowflake, Sparkles, Sun, Trees } from "lucide-react";
+import { ArrowDown, ArrowUpRight, BookOpenText, CalendarDays, CloudRain, Leaf, Map, Snowflake, Sparkles, Sun, Trees } from "lucide-react";
 import { SpeciesCard } from "@/components/species-card";
 import { HomeFindingsFeature } from "@/components/home-findings-feature";
+import { HomeMapFeature } from "@/components/home-map-feature";
+import { HomeEditorialNote, HomeReferenceFeature } from "@/components/home-reference-feature";
 import { HomeShowcaseVideo } from "@/components/home-showcase-video";
 import { StaticMediaImage } from "@/components/static-media-image";
 import { UmamiEventLink } from "@/components/umami-event-link";
@@ -22,7 +24,7 @@ const seasonGuideIcons = {
 export const revalidate = 86400;
 export const metadata: Metadata = {
   title: "Bolets de Catalunya: mapa, espècies i temporada",
-  description: `Consulta el mapa de bolets de Catalunya, les condicions d’avui, la temporada i ${catalogueSpecies.length} fitxes d’espècies amb fotos, hàbitat i confusions.`,
+  description: `Consulta la predicció de bolets a Catalunya i explora el mapa de condicions. Descobreix ${catalogueSpecies.length} fitxes d’espècies, guies de temporada i consells de recol·lecció.`,
   alternates: { canonical: "/" },
 };
 
@@ -43,25 +45,29 @@ export default function HomePage() {
             sizes="100vw"
           />
         </div>
-        <div className="hero-copy"><p className="eyebrow light"><Sparkles size={14} /> Bolets · boscos · temporada</p><h1>Bolets de Catalunya.<br /><i>Mapa, espècies i temporada.</i></h1><p className="hero-lede">Descobreix quines espècies encaixen amb cada bosc i on les condicions són més favorables avui.</p><div className="hero-actions"><UmamiEventLink href="/map" className="button light-button" analyticsEvent={UMAMI_EVENTS.homepageMapCtaClick}>Mapa de bolets <ArrowUpRight size={17} /></UmamiEventLink><Link href="/bolets" className="button hero-guide-button">Guia d’espècies <Trees size={17} /></Link></div></div>
-        <div className="hero-scroll"><ArrowDown size={16} /> baixa per llegir el territori</div>
+        <div className="hero-copy">
+          <p className="eyebrow light"><Sparkles size={14} aria-hidden="true" /> Predicció · espècies · territori</p>
+          <h1>Bolets de Catalunya.<br /><i>Mapa, espècies i temporada.</i></h1>
+          <p className="hero-lede">Consulta la predicció i descobreix on les condicions són més favorables. Coneix les espècies, els boscos i les temporades.</p>
+          <div className="hero-actions">
+            <UmamiEventLink href="/map" className="button light-button" analyticsEvent={UMAMI_EVENTS.homepageMapCtaClick}>Mapa de bolets <Map size={17} aria-hidden="true" /></UmamiEventLink>
+            <Link href="/bolets" className="button hero-guide-button">Explora les espècies <BookOpenText size={17} aria-hidden="true" /></Link>
+          </div>
+          <Link href={currentSeasonGuide.path} className="hero-season-link"><CalendarDays size={16} aria-hidden="true" /> {currentSeasonGuide.cardTitle} <ArrowUpRight size={15} aria-hidden="true" /></Link>
+        </div>
+        <div className="hero-scroll"><ArrowDown size={16} aria-hidden="true" /> continua descobrint</div>
       </section>
-      <Link href="/bolets-avui" className="home-today-feature page-width">
-        <p className="home-today-kicker"><Gauge size={17} /> Condicions actuals</p>
-        <div className="home-today-copy"><h2>Condicions actuals per territori</h2><p>Compara espècies i territoris de Catalunya amb les lectures més recents.</p></div>
-        <dl className="home-today-facts"><div><dt>Àmbit</dt><dd>Catalunya</dd></div><div><dt>Actualització</dt><dd>Diària</dd></div></dl>
-        <span className="home-today-action">On trobar bolets avui <ArrowUpRight size={17} /></span>
-      </Link>
-      <HomeShowcaseVideo />
-      <section className="home-intro page-width"><div><p className="eyebrow">Com funciona</p><h2>Coneix l’espècie.<br />Després, mira el territori.</h2></div><p>Les fitxes expliquen on i quan creix cada bolet. El mapa compara aquestes necessitats amb les condicions actuals.</p></section>
+      <HomeMapFeature />
+      <HomeReferenceFeature speciesCount={catalogueSpecies.length} />
       <nav className="home-search-guides page-width" aria-label="Guies destacades">
         <Link href="/guies"><BookOpenText size={19} /><span><strong>Guies locals</strong><small>Comarques, massissos i indrets documentats</small></span><ArrowUpRight size={16} /></Link>
         <Link href={currentSeasonGuide.path}><CurrentSeasonIcon size={19} /><span><strong>{currentSeasonGuide.cardTitle}</strong><small>Espècies actives {currentSeasonGuide.rangeSentence}</small></span><ArrowUpRight size={16} /></Link>
         <Link href="/quan-surten-els-bolets-despres-de-ploure"><CloudRain size={19} /><span><strong>Després de ploure</strong><small>Com interpretar la resposta de cada espècie</small></span><ArrowUpRight size={16} /></Link>
       </nav>
       <section className="home-cards page-width"><div className="section-topline"><div><p className="eyebrow">Comença aquí</p><h2>Espècies de temporada</h2></div><Link href="/bolets" className="text-link">Veure les {catalogueSpecies.length} fitxes <ArrowUpRight size={16} /></Link></div><div className="species-grid featured-grid">{featuredSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} />)}</div></section>
+      <HomeShowcaseVideo />
       <HomeFindingsFeature />
-      <section className="home-map-callout"><div className="page-width"><div className="home-map-callout-copy"><p className="eyebrow light">Condicions del territori</p><h2>Compara boscos,<br />no coordenades.</h2><p>El mapa indica on l’hàbitat i el temps recent encaixen millor amb cada espècie. No mostra troballes ni punts de recol·lecció.</p></div><div className="home-map-callout-action"><UmamiEventLink href="/map" className="button light-button" analyticsEvent={UMAMI_EVENTS.homepageMapCtaClick}>Mapa de bolets <ArrowUpRight size={17} /></UmamiEventLink></div><div className="home-map-callout-art" aria-hidden="true"><StaticMediaImage src="/media/generated/home-map-callout-forest-floor.webp" alt="" fill sizes="(max-width: 900px) 0px, 59vw" /></div></div></section>
+      <HomeEditorialNote />
     </>
   );
 }

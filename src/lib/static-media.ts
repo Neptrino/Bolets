@@ -1,6 +1,6 @@
 const STATIC_MEDIA_ROOT = "/media/";
 
-export const STATIC_MEDIA_VERSION = "v11";
+export const STATIC_MEDIA_VERSION = "v14";
 export const STATIC_MEDIA_WIDTHS = [64, 96, 192, 256, 384, 640, 960, 1280, 1920] as const;
 
 export function staticMediaVariantPath(source: string, width: number) {

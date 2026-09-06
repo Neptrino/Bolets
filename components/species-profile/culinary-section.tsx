@@ -38,7 +38,7 @@ export function SpeciesCulinarySection({
   </div>
   <div>
     <p className="eyebrow">Valor gastronòmic i seguretat</p>
-    <h2>De la cistella a la cuina</h2>
+    <h2>{species.culinaryProfile.kind === "culinary" ? "De la cistella a la cuina" : "Consum i precaucions"}</h2>
 
     <div className={`culinary-rating-panel ${species.culinaryProfile.kind}`}>
       <div className="culinary-rating-score">

@@ -1,4 +1,6 @@
+import Link from "next/link";
 import {
+  ArrowUpRight,
   Clock3,
   CloudRain,
   Compass,
@@ -10,6 +12,7 @@ import {
 } from "lucide-react";
 import { SeasonCalendar } from "@/components/season-calendar";
 import { rainfallLimitationCopy } from "@/src/lib/species-copy";
+import { SEASON_MONTHS, seasonMonthPath, monthWithPreposition } from "@/src/lib/seasonality";
 import type { CatalogueSpecies } from "@/src/lib/types";
 
 const catalanList = new Intl.ListFormat("ca-ES", {
@@ -22,6 +25,14 @@ export function SpeciesEcologySection({
 }: {
   species: CatalogueSpecies;
 }) {
+  const seasonLinks = (
+    <nav className="species-season-links" aria-label="Continua explorant la temporada">
+      {!("scope" in species) && SEASON_MONTHS.filter(({ key }) => species.ecologicalConfig.seasonality[key] === "peak").map(({ key }) => (
+        <Link key={key} href={seasonMonthPath(key)}>Bolets {monthWithPreposition(key)} <ArrowUpRight size={14} aria-hidden="true" /></Link>
+      ))}
+      <Link href="/temporada">Calendari de bolets <ArrowUpRight size={14} aria-hidden="true" /></Link>
+    </nav>
+  );
   if ("scope" in species) {
     return (
       <section id="ecologia" className="content-section ecology-section">
@@ -46,6 +57,7 @@ export function SpeciesEcologySection({
           <div className="tree-tags">
             {species.ecology.habitats.map((habitat) => <span key={habitat}>{habitat}</span>)}
           </div>
+          {seasonLinks}
           <div className="disclosure-grid ecology-detail-panels">
             <section className="species-disclosure ecology-detail-panel" aria-labelledby="descriptive-ecology-title">
               <div className="ecology-panel-heading">
@@ -116,6 +128,7 @@ export function SpeciesEcologySection({
       </div>
     </dl>
     <SeasonCalendar species={species} />
+    {seasonLinks}
     {species.predictionMode === "habitat_only" && (
       <div className="habitat-map-explainer">
         <p>

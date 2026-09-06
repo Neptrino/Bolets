@@ -2,6 +2,8 @@
 
 ## Engineering principles
 
+- Position Bolets as a mushroom reference for Catalonia: species, names, identification education, seasons, habitats and responsible field use. Lead homepage acquisition with predictions: explain the immediate benefit, make the map the primary action and show its preview directly after the hero. Keep learning and catalogue discovery prominent beneath that introduction; reference pages must remain useful without map access, accounts or scored ecology.
+- Preserve the agreed homepage SEO wording when adjusting its marketing layout: H1 “Bolets de Catalunya. Mapa, espècies i temporada.” and title “Bolets de Catalunya: mapa, espècies i temporada”. Express the immediate prediction benefit through the supporting copy and map action.
 - Prefer existing standard components, utilities, and project patterns before creating custom abstractions.
 - Follow best practices for accessibility, maintainability, performance, security, responsive behavior, and clear naming.
 - Keep changes focused and avoid unnecessary dependencies or unrelated refactors.

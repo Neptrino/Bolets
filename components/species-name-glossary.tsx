@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import { Search } from "lucide-react";
 import { commonNameDisplayLabel } from "@/src/lib/common-name";
+import { normalizeCatalogueSearch } from "@/src/lib/catalogue-search";
 
 export interface SpeciesNameGlossaryRow {
   speciesId: string;
@@ -17,19 +18,12 @@ export interface SpeciesNameGlossaryRow {
   path: string;
 }
 
-function normalize(value: string) {
-  return value
-    .normalize("NFD")
-    .replaceAll(/[\u0300-\u036f]/g, "")
-    .toLocaleLowerCase("ca-ES");
-}
-
 export function SpeciesNameGlossary({ rows }: { rows: readonly SpeciesNameGlossaryRow[] }) {
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
-  const normalizedQuery = normalize(deferredQuery.trim());
+  const normalizedQuery = normalizeCatalogueSearch(deferredQuery);
   const filteredRows = normalizedQuery
-    ? rows.filter((row) => normalize([
+    ? rows.filter((row) => normalizeCatalogueSearch([
         row.catalanName,
         ...row.catalanAlternatives,
         row.scientificName,

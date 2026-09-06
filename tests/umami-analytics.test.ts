@@ -250,9 +250,8 @@ describe("Umami analytics", () => {
       .toContain("analyticsEvent={UMAMI_EVENTS.mapChangeSpecies}");
     expect(readFileSync("components/home-showcase-video.tsx", "utf8"))
       .toContain("queueUmamiEvent(UMAMI_EVENTS.homepageVideoComplete)");
-    expect(readFileSync("app/page.tsx", "utf8")
-      .match(/analyticsEvent=\{UMAMI_EVENTS\.homepageMapCtaClick\}/g))
-      .toHaveLength(2);
+    expect(readFileSync("app/page.tsx", "utf8"))
+      .toContain("analyticsEvent={UMAMI_EVENTS.homepageMapCtaClick}");
     const mapExplorer = readFileSync("components/map-explorer.tsx", "utf8");
     expect(mapExplorer)
       .toContain("queueUmamiEvent(UMAMI_EVENTS.mapGeolocationSuccess)");

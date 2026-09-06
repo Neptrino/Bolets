@@ -92,7 +92,7 @@ export function SpeciesIdentificationSection({
       ))}
     </div>
 
-    <div className="species-language-names">
+    <div id="noms" className="species-language-names">
       <div><Languages size={19} aria-hidden="true" /><span>Noms en català i castellà</span></div>
       <dl>
         <div><dt>Català</dt><dd>{[species.identity.commonName, ...species.identity.alternateNames].join(" · ")}</dd></div>
@@ -102,7 +102,7 @@ export function SpeciesIdentificationSection({
       <Link href="/noms-de-bolets-catala-castella" className="text-link">Consultar el glossari complet <ArrowUpRight size={15} aria-hidden="true" /></Link>
     </div>
 
-    <div className="content-subsection lookalikes-subsection">
+    <div id="confusions" className="content-subsection lookalikes-subsection">
       <p className="eyebrow">Identificació responsable</p>
       <h3 className="subsection-title">Espècies semblants</h3>
       {hasToxicLookalike && (

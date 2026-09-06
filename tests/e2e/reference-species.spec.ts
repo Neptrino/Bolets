@@ -78,13 +78,7 @@ for (const width of [1280, 800, 390]) {
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).not.toBeVisible();
     for (const id of ["identificació", "cuina", "ecologia", "targeta-de-camp"]) {
-      if (width > 680) {
-        await page.locator(`.species-aside a[href="#${id}"]`).click();
-      } else {
-        // The shared species layout intentionally hides its sidebar on phones.
-        await expect(page.locator(".species-aside")).toBeHidden();
-        await page.locator(`#${id}`).scrollIntoViewIfNeeded();
-      }
+      await page.locator(`.species-aside a[href="#${id}"]`).click();
       await expect(page.locator(`#${id}`)).toBeInViewport();
     }
     await expect(page.locator(".editorial-panel--compact")).toContainText("Editorial, no micològica");

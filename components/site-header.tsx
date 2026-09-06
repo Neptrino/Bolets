@@ -7,11 +7,11 @@ import { Map, Menu, UserRound, X } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 
 const links = [
-  { href: "/bolets", label: "Bolets", mobileLabel: "Bolets", activePrefixes: ["/bolets"], featured: false },
+  { href: "/bolets", label: "Espècies", mobileLabel: "Espècies", activePrefixes: ["/bolets"], featured: false },
+  { href: "/temporada", label: "Temporada", mobileLabel: "Temporada", activePrefixes: ["/temporada", "/bolets-de-primavera", "/bolets-d-estiu", "/bolets-de-tardor", "/bolets-d-hivern"], featured: false },
   { href: "/troballes", label: "Troballes", mobileLabel: "Troballes", activePrefixes: ["/troballes"], featured: false },
-  { href: "/guies", label: "Guies", mobileLabel: "Guies locals", activePrefixes: ["/guies", "/zones"], featured: false },
+  { href: "/guies", label: "Guies locals", mobileLabel: "Guies locals", activePrefixes: ["/guies", "/zones"], featured: false },
   { href: "/compare", label: "Comparador", mobileLabel: "Comparador", activePrefixes: ["/compare"], featured: false },
-  { href: "/joc", label: "Joc", mobileLabel: "Joc del bosc", activePrefixes: ["/joc"], featured: false },
   { href: "/bolets-avui", label: "Avui", mobileLabel: "Bolets avui", activePrefixes: ["/bolets-avui"], featured: true }
 ] as const;
 
@@ -98,6 +98,7 @@ export function SiteHeader() {
         <nav id="mobile-navigation-panel" className="mobile-nav-panel" aria-label="Navegació mòbil">
           <Link href="/compte/bosc" className="mobile-nav-account" aria-current={accountIsCurrent ? "page" : undefined} onClick={closeMobileNav}><UserRound size={18} aria-hidden="true" /> El meu bosc</Link>
           {links.map((link) => <Link key={link.href} href={link.href} className={link.featured ? "primary-nav-today" : undefined} aria-current={isCurrentLink(link) ? "page" : undefined} onClick={closeMobileNav}>{link.mobileLabel}</Link>)}
+          <Link href="/joc" aria-current={pathname === "/joc" ? "page" : undefined} onClick={closeMobileNav}>Joc del bosc</Link>
         </nav>
       </details>
     </header>

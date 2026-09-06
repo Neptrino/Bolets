@@ -1,3 +1,4 @@
+import { getSpanishSpeciesNames } from "@/data/species-common-names";
 import type {
   EdibilityStatus,
   MediaAsset,
@@ -31,14 +32,17 @@ export interface SpeciesCardProfile {
     seasonality: Record<Month, SeasonalActivity> | null;
   };
   seasonLabel?: string;
+  searchAliases?: string[];
   media: MediaAsset[];
 }
 
 export function toSpeciesCardProfile(species: CatalogueSpecies): SpeciesCardProfile {
   const referenceImage = species.media.find((asset) => asset.identificationReference);
+  const spanishNames = getSpanishSpeciesNames(species.speciesId);
 
   return {
     speciesId: species.speciesId,
+    searchAliases: spanishNames ? [spanishNames.primary, ...(spanishNames.alternatives ?? [])] : [],
     identity: {
       commonName: species.identity.commonName,
       alternateNames: species.identity.alternateNames,

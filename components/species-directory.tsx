@@ -7,6 +7,7 @@ import { SpeciesCard } from "@/components/species-card";
 import type { SpeciesCardProfile } from "@/src/lib/species-card-profile";
 import type { SeasonGuideId } from "@/src/lib/season-guides";
 import type { Month } from "@/src/lib/types";
+import { filterCatalogue } from "@/src/lib/catalogue-search";
 
 const seasonShortcutIcons = {
   primavera: Sprout,
@@ -19,16 +20,15 @@ export function SpeciesDirectory({
   species,
   currentMonth,
   seasonShortcuts,
+  initialQuery = "",
 }: {
   species: SpeciesCardProfile[];
   currentMonth: Month;
   seasonShortcuts: Array<{ id: SeasonGuideId; href: string; label: string }>;
+  initialQuery?: string;
 }) {
-  const [query, setQuery] = useState("");
-  const matches = useMemo(() => species.filter((item) => {
-    const haystack = [item.identity.commonName, item.identity.scientificName, ...item.identity.alternateNames, item.identity.family].join(" ").toLowerCase();
-    return haystack.includes(query.toLowerCase());
-  }), [query, species]);
+  const [query, setQuery] = useState(initialQuery);
+  const matches = useMemo(() => filterCatalogue(species, query), [query, species]);
   return (
     <section className="directory-shell">
       <div className="directory-controls">
@@ -36,17 +36,21 @@ export function SpeciesDirectory({
           <strong>{matches.length}</strong>
           <span>{matches.length === 1 ? "espècie" : "espècies"}</span>
         </div>
-        <label className="search-field">
-          <Search size={18} aria-hidden="true" />
-          <span className="visually-hidden">Cerca espècies</span>
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cerca per nom català, gènere o família" />
-          {query && (
-            <button type="button" onClick={() => setQuery("")} aria-label="Neteja la cerca">
-              <X size={16} aria-hidden="true" />
-            </button>
-          )}
-        </label>
+        <form action="/bolets" method="get" className="directory-search" role="search" aria-label="Cerca al catàleg">
+          <div className="search-field">
+            <Search size={18} aria-hidden="true" />
+            <label className="visually-hidden" htmlFor="catalogue-query">Cerca espècies</label>
+            <input id="catalogue-query" name="q" maxLength={120} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Nom català, castellà o científic" />
+            {query && (
+              <Link href="/bolets" onClick={(event) => { event.preventDefault(); setQuery(""); }} aria-label="Neteja la cerca" className="directory-clear">
+                <X size={16} aria-hidden="true" />
+              </Link>
+            )}
+          </div>
+          <button type="submit" className="button directory-search-submit">Cerca</button>
+        </form>
       </div>
+      <p className="directory-help">Un mateix bolet pot tenir diversos noms. <Link href="/noms-de-bolets-catala-castella">Consulta el glossari</Link> o <Link href="/parts-dun-bolet">aprèn a observar-ne les parts</Link>.</p>
       <nav className="directory-shortcuts" aria-label="Explora el catàleg">
         <div className="directory-shortcut-group" role="group" aria-labelledby="directory-shortcuts-species">
           <span className="directory-shortcut-label" id="directory-shortcuts-species">Explora espècies</span>
@@ -67,10 +71,10 @@ export function SpeciesDirectory({
         </div>
       </nav>
       <p className="directory-count" aria-live="polite">
-        {query ? `Resultats per “${query}”` : "Ordenades alfabèticament pel nom català"}
+        {query ? `${matches.length} ${matches.length === 1 ? "resultat" : "resultats"} per “${query}”` : "Ordenades alfabèticament pel nom català"}
       </p>
       <div className="species-grid">{matches.map((item, index) => <SpeciesCard key={item.speciesId} species={item} index={index} currentMonth={currentMonth} />)}</div>
-      {!matches.length && <div className="empty-state">No hem trobat cap espècie amb aquests criteris.</div>}
+      {!matches.length && <div className="empty-state"><p>No hem trobat cap espècie amb aquests criteris. Prova un altre nom o consulta el glossari.</p><Link href="/bolets" className="text-link">Veure tot el catàleg</Link></div>}
     </section>
   );
 }

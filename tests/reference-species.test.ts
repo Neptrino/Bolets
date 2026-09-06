@@ -108,7 +108,7 @@ describe("descriptive catalogue species", () => {
     expect(speciesInSeason("oct").some(item => item.speciesId === speciesId)).toBe(false);
   });
 
-  it("uses compact cards with a sourced season instead of fabricated altitude or monthly intensity", () => {
+  it("uses compact cards with a sourced season instead of fabricated altitude or monthly intensity", async () => {
     const card = toSpeciesCardProfile(species);
     expect(card.ecologicalConfig.habitat.altitude).toBeNull();
     expect(card.ecologicalConfig.seasonality).toBeNull();
@@ -120,7 +120,7 @@ describe("descriptive catalogue species", () => {
     expect(html).not.toContain("Altitud");
     expect(html).not.toContain("card-season-month");
     expect(html).not.toContain("/_next/image");
-    const catalogue = renderToStaticMarkup(createElement(SpeciesIndexPage));
+    const catalogue = renderToStaticMarkup(await SpeciesIndexPage({ searchParams: Promise.resolve({}) }));
     expect(catalogue).toContain(`"numberOfItems":${catalogueSpecies.length}`);
     expect(catalogue).toContain(`href="${speciesPath(species)}"`);
     expect(catalogue).toContain('href="/bolets/infografia"');

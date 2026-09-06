@@ -9,6 +9,7 @@ import { monthInTimeZone } from "@/src/lib/seasonality";
 import { seasonGuides, type SeasonGuideId } from "@/src/lib/season-guides";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
+import { catalogueSearchQuery } from "@/src/lib/catalogue-search";
 
 export const metadata: Metadata = {
   title: "Tipus de bolets de Catalunya: guia d’espècies",
@@ -36,7 +37,10 @@ const seasonShortcutLabels = {
   hivern: "Hivern",
 } satisfies Record<SeasonGuideId, string>;
 
-export default function SpeciesIndexPage() {
+export default async function SpeciesIndexPage({ searchParams }: {
+  searchParams: Promise<{ q?: string | string[] }>;
+}) {
+  const initialQuery = catalogueSearchQuery((await searchParams).q);
   return (
     <PageShell as="section">
       <JsonLd data={{ "@context": "https://schema.org", "@type": "CollectionPage", name: "Tipus de bolets de Catalunya", url: `${SITE_URL}/bolets`, inLanguage: "ca", mainEntity: { "@type": "ItemList", numberOfItems: speciesAlphabetical.length, itemListElement: speciesAlphabetical.map((species, index) => ({ "@type": "ListItem", position: index + 1, name: `${species.identity.commonName} (${species.identity.scientificName})`, url: `${SITE_URL}${speciesPath(species)}` })) } }} />
@@ -51,6 +55,8 @@ export default function SpeciesIndexPage() {
         description={<>{speciesAlphabetical.length} fitxes de bolets comestibles, tòxics i no comestibles amb fotografies, noms, hàbitat, temporada i espècies semblants.</>}
       />
       <SpeciesDirectory
+        key={initialQuery}
+        initialQuery={initialQuery}
         species={speciesAlphabetical.map(toSpeciesCardProfile)}
         currentMonth={monthInTimeZone()}
         seasonShortcuts={seasonGuides.map((guide) => ({

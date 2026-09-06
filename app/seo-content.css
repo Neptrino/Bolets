@@ -132,37 +132,10 @@
 .mobile-nav-panel .primary-nav-today { color: #8f3d1d; font-weight: 850; }
 .mobile-nav-panel .primary-nav-today::before { width: .42rem; height: .42rem; margin-right: .5rem; border-radius: 50%; background: #c25a2b; content: ""; }
 
-.home-today-feature { position: relative; z-index: 4; display: grid; grid-template-columns: minmax(9.5rem, .45fr) minmax(18rem, 1.2fr) minmax(12rem, .62fr) auto; gap: 1.2rem 2rem; align-items: center; min-height: 9rem; margin-top: -2.7rem; padding: 1.55rem 1.7rem; border: 1px solid rgba(47, 65, 42, .2); border-top: 4px solid #c25a2b; border-radius: 16px; background: linear-gradient(105deg, #f8f2e4 0%, #edf0e5 100%); color: #263b2b; box-shadow: 0 18px 44px rgba(52, 57, 45, .15); text-decoration: none; }
-.home-today-kicker { display: flex; gap: .5rem; align-items: center; margin: 0; color: #a24822; font-size: var(--text-xs); font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
-.home-today-copy h2 { margin: 0 0 .35rem; font-size: var(--display-xs); line-height: 1.02; letter-spacing: -.025em; }
-.home-today-copy p { margin: 0; color: #566157; font-size: var(--text-base); line-height: 1.55; }
-.home-today-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; border-left: 1px solid rgba(47, 65, 42, .18); }
-.home-today-facts div { display: grid; gap: .16rem; padding-left: 1rem; }
-.home-today-facts dt { color: #6b736a; font-size: var(--text-xs); font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
-.home-today-facts dd { margin: 0; color: #304839; font-size: var(--text-base); font-weight: 850; }
-.home-today-action { display: inline-flex; gap: .45rem; align-items: center; justify-content: center; min-height: 2.8rem; padding: .65rem .9rem; border-radius: 999px; background: #304839; color: #fffaf0; font-size: var(--text-xs); font-weight: 850; white-space: nowrap; transition: background-color 160ms ease, transform 160ms ease; }
-.home-today-feature:hover .home-today-action { background: #a24822; transform: translateX(2px); }
-.home-today-feature + .home-intro { padding-top: 5.5rem; }
-
-@media (max-width: 1240px) {
-  .home-today-feature { grid-template-columns: minmax(0, 1fr) auto; }
-  .home-today-kicker { grid-column: 1 / -1; }
-  .home-today-facts { grid-column: 1; }
-  .home-today-action { grid-column: 2; grid-row: 2 / span 2; }
-}
-
 @media (max-width: 640px) {
   /* Keep the transition from the system overview to its guide links compact. */
   .home-intro { padding-bottom: 2rem; }
   .home-search-guides { margin-top: 0; }
-  .home-today-feature { grid-template-columns: 1fr; gap: 1.15rem; min-height: 0; margin-top: 1rem; padding: 1.35rem; }
-  .home-today-kicker,
-  .home-today-facts,
-  .home-today-action { grid-column: 1; grid-row: auto; }
-  .home-today-facts { border-left: 0; }
-  .home-today-facts div:first-child { padding-left: 0; }
-  .home-today-action { justify-self: start; }
-  .home-today-feature + .home-intro { padding-top: 4.5rem; }
 }
 
 .species-catalogue-support { margin-top: 5rem; }

@@ -1,7 +1,10 @@
+// @vitest-environment jsdom
+
 import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import HomePage, { metadata as homeMetadata } from "@/app/page";
 import ComparisonLandingPage from "@/app/compare/[slug]/page";
 import { generateMetadata as generateSpeciesMetadata } from "@/app/bolets/[slug]/page";
 import { metadata as mapMetadata } from "@/app/map/page";
@@ -17,13 +20,21 @@ import {
 } from "@/src/lib/map-seo";
 
 describe("SEO query ownership", () => {
-  it("lets the current overview own the full current-intent heading", () => {
-    const homepage = readFileSync("app/page.tsx", "utf8");
+  it("preserves the broad homepage identity and links to the dedicated current overview", () => {
+    const document = new DOMParser().parseFromString(renderToStaticMarkup(createElement(HomePage)), "text/html");
 
-    expect(homepage).toContain("Condicions actuals per territori");
-    expect(homepage).toContain("On trobar bolets avui <ArrowUpRight");
-    expect(homepage).toContain('href="/bolets-avui"');
-    expect(homepage).not.toContain("On trobar bolets avui i aquesta setmana?");
+    expect(homeMetadata.title).toBe("Bolets de Catalunya: mapa, espècies i temporada");
+    expect(homeMetadata.alternates?.canonical).toBe("/");
+    expect(document.querySelectorAll("h1")).toHaveLength(1);
+    expect(document.querySelector("h1")?.textContent).toBe("Bolets de Catalunya.Mapa, espècies i temporada.");
+    expect(Array.from(document.querySelectorAll("h1, h2"), heading => heading.textContent))
+      .not.toContain("On trobar bolets avui i aquesta setmana?");
+
+    const preview = document.querySelector(".home-map-feature");
+    expect(preview?.querySelector("a.button")?.getAttribute("href")).toBe("/bolets-avui");
+    expect(preview?.querySelector("a.button")?.textContent?.trim()).toBe("Bolets avui");
+    expect(preview?.querySelector("a.home-map-preview")?.getAttribute("href")).toBe("/bolets-avui");
+    expect(document.querySelector(".hero-actions a")?.getAttribute("href")).toBe("/map");
   });
 
   it("lets the map own prediction searches without changing its visible heading", () => {

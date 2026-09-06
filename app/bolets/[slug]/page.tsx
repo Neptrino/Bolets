@@ -32,7 +32,16 @@ import { speciesMapHref } from "@/src/lib/species-map-pages";
 import type { Month, RegionId, SeasonalActivity } from "@/src/lib/types";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
-const sections = ["Identificació", "Cuina", "Ecologia", "Distribució", "Targeta de camp"];
+const sections = [
+  { id: "identificació", label: "Trets d’identificació" },
+  { id: "noms", label: "Noms" },
+  { id: "confusions", label: "Espècies semblants" },
+  { id: "cuina", label: "Cuina i seguretat" },
+  { id: "ecologia", label: "Hàbitat i temporada" },
+  { id: "distribució", label: "Distribució" },
+  { id: "targeta-de-camp", label: "Targeta de camp" },
+  { id: "fonts", label: "Fonts i autoria" },
+];
 const catalanList = new Intl.ListFormat("ca-ES", {
   style: "long",
   type: "conjunction",
@@ -62,10 +71,6 @@ function seasonSummary(seasonality: Record<Month, SeasonalActivity>) {
   if (activeMonths.length === 0) return "Sense temporada definida";
   if (activeMonths.length === 1) return activeMonths[0];
   return `${activeMonths[0]}–${activeMonths.at(-1)}`;
-}
-
-function detailId(label: string) {
-  return label.toLocaleLowerCase("ca-ES").replaceAll(" ", "-");
 }
 
 export function generateStaticParams() {
@@ -159,7 +164,7 @@ export default async function SpeciesPage({
   const spanishNames = getSpanishSpeciesNames(species.speciesId);
   const visibleSections = scoredSpecies
     ? sections
-    : sections.filter((section) => section !== "Distribució");
+    : sections.filter((section) => section.id !== "distribució");
 
   return (
     <section
@@ -244,11 +249,11 @@ export default async function SpeciesPage({
       />
 
       <div className="page-width species-content">
-        <aside className="species-aside" aria-label="Contingut de la fitxa">
+        <nav className="species-aside" aria-label="Contingut de la fitxa">
           <p>CONTINGUT</p>
           {visibleSections.map((section) => (
-            <a href={`#${detailId(section)}`} key={section}>
-              {section}
+            <a href={`#${section.id}`} key={section.id}>
+              {section.id === "cuina" && species.culinaryProfile.kind !== "culinary" ? "Consum i precaucions" : section.label}
             </a>
           ))}
           {scoredSpecies && region && (
@@ -264,7 +269,7 @@ export default async function SpeciesPage({
               {scoredSpecies.predictionMode === "habitat_only" ? "Mapa d’hàbitat" : "Mapa actual"}
             </UmamiEventLink>
           )}
-        </aside>
+        </nav>
 
         <div className="species-main">
           {scoredSpecies && hasSearchSummary(species.speciesId) && <SpeciesSearchSummary species={scoredSpecies} />}
@@ -280,6 +285,7 @@ export default async function SpeciesPage({
           )}
           <SpeciesFieldCardSection species={species} sectionNumber={scoredSpecies ? "05" : "04"} />
           <EditorialAttribution
+            id="fonts"
             contentId={`species:${species.speciesId}`}
             sources={[...species.references, officialSafetySource]}
             variant="compact"

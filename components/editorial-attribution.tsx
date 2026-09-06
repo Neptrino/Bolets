@@ -52,11 +52,13 @@ function normalizeDataSourceCredits(sources: readonly DataSourceCreditInput[]) {
 }
 
 export function EditorialAttribution({
+  id,
   contentId,
   showUpdatedAt = true,
   sources,
   variant = "full",
 }: {
+  id?: string;
   contentId: string;
   showUpdatedAt?: boolean;
   sources: SourceReference[];
@@ -71,7 +73,7 @@ export function EditorialAttribution({
 
   if (variant === "compact") {
     return (
-      <aside className="editorial-panel editorial-panel--compact" aria-label="Autoria, revisió i fonts">
+      <aside id={id} className="editorial-panel editorial-panel--compact" aria-label="Autoria, revisió i fonts">
         <div className="editorial-compact-summary">
           <BookOpenCheck size={17} aria-hidden="true" />
           <p>
@@ -100,7 +102,7 @@ export function EditorialAttribution({
   }
 
   return (
-    <aside className="editorial-panel" aria-label="Autoria, revisió i fonts">
+    <aside id={id} className="editorial-panel" aria-label="Autoria, revisió i fonts">
       <div className="editorial-summary">
         <div className="editorial-panel-heading">
           <BookOpenCheck size={18} aria-hidden="true" />

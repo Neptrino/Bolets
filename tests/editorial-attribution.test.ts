@@ -75,8 +75,9 @@ describe("editorial attribution hierarchy", () => {
     expect(html).toContain('href="https://example.com/montseny"');
   });
 
-  it("omits the repeated panel from catalogue, guide index, infographic and policy pages", () => {
-    for (const page of [SpeciesIndexPage, GuidesPage, MushroomInfographicPage, EditorialTeamPage]) {
+  it("omits the repeated panel from catalogue, guide index, infographic and policy pages", async () => {
+    expect(renderToStaticMarkup(await SpeciesIndexPage({ searchParams: Promise.resolve({}) }))).not.toContain("editorial-panel");
+    for (const page of [GuidesPage, MushroomInfographicPage, EditorialTeamPage]) {
       expect(renderToStaticMarkup(createElement(page))).not.toContain("editorial-panel");
     }
   });
