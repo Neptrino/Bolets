@@ -28,6 +28,8 @@ set -a
 # shellcheck disable=SC1090
 . "$umami_env_file"
 set +a
+# shellcheck source=deploy/vps/load-release-image.sh
+. "$app_dir/deploy/vps/load-release-image.sh"
 
 compose() {
   docker compose -f docker-compose.yml -f "$override_file" "$@"

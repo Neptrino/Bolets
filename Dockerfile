@@ -21,9 +21,12 @@ ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ENV SUPPORT_URL=$SUPPORT_URL
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
+RUN npm run build && node scripts/image-build-config.mjs write
 
 FROM node:24-bookworm-slim AS runner
+ARG BOLETS_REVISION
+LABEL org.opencontainers.image.source="https://github.com/Neptrino/Bolets" \
+    org.opencontainers.image.revision=$BOLETS_REVISION
 WORKDIR /app
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
@@ -41,6 +44,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 COPY --from=builder /app/scripts/export-static-assets.mjs ./scripts/export-static-assets.mjs
+COPY --from=builder /app/scripts/image-build-config.mjs ./scripts/image-build-config.mjs
+COPY --from=builder /app/build-config.json ./build-config.json
 
 USER nextjs
 EXPOSE 3000

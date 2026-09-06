@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  packages: write
 
 concurrency:
   group: production-vps
@@ -54,11 +55,75 @@ jobs:
           npm run worker:check
           npm run lambda:check
 
-      - name: Build the production application
+      - name: Validate production build configuration
         env:
-          # This identifier is public and must match the VPS Umami bootstrap.
-          NEXT_PUBLIC_UMAMI_WEBSITE_ID: ce97249f-b2de-44bd-899c-56f8fc05cb54
-        run: npm run build
+          NEXT_PUBLIC_UMAMI_WEBSITE_ID: ${{ vars.NEXT_PUBLIC_UMAMI_WEBSITE_ID }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+        run: |
+          set -eu
+          test -n "$NEXT_PUBLIC_UMAMI_WEBSITE_ID"
+          test -n "$NEXT_PUBLIC_SUPABASE_URL"
+          test -n "$NEXT_PUBLIC_SUPABASE_ANON_KEY"
+          test -n "$NEXT_PUBLIC_TURNSTILE_SITE_KEY"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+
+      - name: Sign in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Reuse an image already published for this commit
+        id: existing_image
+        env:
+          IMAGE_TAG: ghcr.io/neptrino/bolets:${{ github.sha }}
+        run: |
+          set -eu
+          if digest=$(docker buildx imagetools inspect "$IMAGE_TAG" --format '{{.Manifest.Digest}}'); then
+            printf '%s\n' "$digest" | grep -Eq '^sha256:[0-9a-f]{64}$'
+            printf 'digest=%s\n' "$digest" >> "$GITHUB_OUTPUT"
+          else
+            # The package/tag may not exist on the first run. Authentication
+            # or registry failures still fail the required build/push below.
+            echo 'No reusable image found; building the commit'
+          fi
+
+      - name: Build and publish the production image
+        id: image
+        if: steps.existing_image.outputs.digest == ''
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          # Git context builds exactly the archived commit, ignoring local
+          # generated files from the preceding checks.
+          context: "{{defaultContext}}"
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/neptrino/bolets:${{ github.sha }}
+          build-args: |
+            BOLETS_REVISION=${{ github.sha }}
+            NEXT_PUBLIC_UMAMI_WEBSITE_ID=${{ vars.NEXT_PUBLIC_UMAMI_WEBSITE_ID }}
+            NEXT_PUBLIC_SUPABASE_URL=${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+            SUPPORT_URL=${{ vars.SUPPORT_URL }}
+          cache-from: type=registry,ref=ghcr.io/neptrino/bolets:buildcache
+          cache-to: type=registry,ref=ghcr.io/neptrino/bolets:buildcache,mode=max
+
+      - name: Smoke-test the published image
+        env:
+          BOLETS_APP_IMAGE: ghcr.io/neptrino/bolets@${{ steps.existing_image.outputs.digest || steps.image.outputs.digest }}
+        run: |
+          set -eu
+          docker pull "$BOLETS_APP_IMAGE"
+          trap 'docker rm -f bolets-smoke >/dev/null 2>&1 || true' EXIT
+          docker run -d --name bolets-smoke -p 127.0.0.1:3102:3000 "$BOLETS_APP_IMAGE"
+          curl --fail --silent --show-error --retry 12 --retry-delay 2 --retry-all-errors \
+            --max-time 5 http://127.0.0.1:3102/api/health | jq -e '.status == "ok"'
 
       - name: Deploy the Open-Meteo relay Worker
         env:
@@ -123,10 +188,16 @@ jobs:
           ssh-keygen -y -f "$HOME/.ssh/bolets-deploy" >/dev/null
 
       - name: Deploy the tested commit
+        env:
+          BOLETS_APP_IMAGE: ghcr.io/neptrino/bolets@${{ steps.existing_image.outputs.digest || steps.image.outputs.digest }}
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -eu
           {
-            printf '%s\n' "$GITHUB_SHA"
+            # The receiver keeps registry credentials in a temporary root-only
+            # Docker config, never in the immutable release or command line.
+            printf '%s\n' ghcr-v1 "$GITHUB_SHA" "$BOLETS_APP_IMAGE" "$GHCR_USERNAME" "$GHCR_TOKEN"
             cat "$RUNNER_TEMP/bolets-release.tar.gz"
           } | ssh \
             -i "$HOME/.ssh/bolets-deploy" \

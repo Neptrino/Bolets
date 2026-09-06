@@ -167,16 +167,30 @@ if [ -f "$observability_env_file" ]; then
 fi
 
 # The official stack reads its default from /opt/bolets/supabase/.env. Override
-# it per release so a candidate can be built and health-checked before the
+# it per release so a candidate can be pulled and health-checked before the
 # stable /opt/bolets/app symlink moves.
 export BOLETS_APP_DIR=$app_dir
+# shellcheck source=deploy/vps/load-release-image.sh
+. "$app_dir/deploy/vps/load-release-image.sh"
 
 cd "$supabase_dir"
 # compose_files is assembled only from the fixed, validated paths above.
 # shellcheck disable=SC2086
 docker compose $compose_files config --quiet
+# Keep local digest-addressed images available for rollback without registry
+# access; only a new/missing image needs the workflow's temporary credential.
+if ! docker image inspect "$BOLETS_APP_IMAGE" >/dev/null 2>&1; then
+  docker pull "$BOLETS_APP_IMAGE"
+fi
+image_revision=$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$BOLETS_APP_IMAGE")
+if [ "$image_revision" != "$BOLETS_RELEASE_REVISION" ]; then
+  echo "Image revision does not match the release source" >&2
+  exit 65
+fi
+# Reject stale public build variables before exporting assets or migrating.
 # shellcheck disable=SC2086
-docker compose $compose_files build app
+docker compose $compose_files run --rm --no-deps --pull never --entrypoint node app \
+  scripts/image-build-config.mjs verify
 # Export immutable public files from the candidate image before Caddy starts.
 # The runtime mount contains only these allowlisted build artifacts.
 install -d -m 755 "$app_dir/.static"
@@ -187,7 +201,7 @@ docker compose $compose_files run --rm --no-deps --user 0 \
 "$app_dir/deploy/vps/apply-database-migrations.sh" "$app_dir"
 "$app_dir/deploy/vps/sync-functions.sh" "$app_dir" "$supabase_dir"
 # shellcheck disable=SC2086
-docker compose $compose_files up -d --wait
+docker compose $compose_files up -d --wait --no-build
 "$app_dir/deploy/vps/bootstrap-umami.sh"
 # Function code is mounted and loaded per request, but restart once so no old
 # worker remains alive across a rollout.

@@ -28,6 +28,9 @@ video/render/
 .codex-tmp/node_modules
 
 .static/
+.release-image
+.release-revision
+build-config.json
 
 # Stock footage staged for Instagram renders (source: ~/Desktop/Bolets/Resources)
 video/assets/stock/

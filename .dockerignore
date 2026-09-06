@@ -2,6 +2,9 @@
 .github
 .next
 .static
+.release-image
+.release-revision
+build-config.json
 .supabase
 .vercel
 coverage
@@ -11,4 +14,3 @@ playwright-report
 test-results
 .env*
 *.tsbuildinfo
-

@@ -349,7 +349,11 @@ the latest 30-day metrics returned by Buffer. Open Buffer at
 ```bash
 git clone <BOLETS_REPOSITORY_URL> /opt/bolets/app
 cd /opt/bolets/app
-git switch main
+git switch --detach <TESTED_COMMIT_SHA>
+printf '%s\n' 'ghcr.io/neptrino/bolets@sha256:<TESTED_IMAGE_DIGEST>' > .release-image
+git rev-parse HEAD > .release-revision
+app_dir=/opt/bolets/app
+. "$app_dir/deploy/vps/load-release-image.sh"
 cd /opt/bolets/supabase
 set -a
 . /opt/bolets/secrets/umami.env
@@ -428,6 +432,10 @@ both sides. The `environment-shadow` bucket must remain private.
 
 ## 6. Install functions and configure scheduled ingestion
 
+For a first installation, use the commit and image published and smoke-tested
+by Actions, and pull that private image with temporary GHCR credentials before
+starting Compose. For an existing deployment, retain its release metadata.
+
 Start the stack once, copy the Bolets functions while preserving Supabase's
 release-owned `main` router, and apply the database-specific Vault values:
 
@@ -436,6 +444,8 @@ release-owned `main` router, and apply the database-specific Vault values:
   /opt/bolets/app /opt/bolets/supabase
 
 cd /opt/bolets/supabase
+app_dir=/opt/bolets/app
+. "$app_dir/deploy/vps/load-release-image.sh"
 docker compose \
   -f docker-compose.yml \
   -f /opt/bolets/app/deploy/vps/compose.yaml \
@@ -488,7 +498,10 @@ Verify `cron.job` contains exactly eleven active Bolets jobs and inspect
 ```
 
 The script loads the root-only Umami and private-status environments, validates the merged Compose
-model, builds the standalone Next.js image, applies every pending SQL migration
+model, loads `.release-image` and `.release-revision` from the selected release,
+pulls the digest-addressed image only if it is not already available locally,
+and verifies its revision label and compiled public configuration. It never
+builds the application. After those checks it applies every pending SQL migration
 in timestamp order through `supabase_migrations.schema_migrations`, and
 synchronizes Edge Functions only after that schema is ready. It then waits
 for healthy services, replaces Umami's default administrator password, creates
@@ -593,6 +606,8 @@ set -a
 . /opt/bolets/secrets/status.env
 . /opt/bolets/secrets/observability.env
 set +a
+app_dir=/opt/bolets/app
+. "$app_dir/deploy/vps/load-release-image.sh"
 docker compose -f docker-compose.yml \
   -f /opt/bolets/app/deploy/vps/compose.yaml \
   -f /opt/bolets/app/deploy/vps/compose.observability.yaml \
@@ -615,12 +630,61 @@ remain the source of truth for future upgrades:
 ## 8. Deploy `main` automatically
 
 `.github/workflows/deploy-vps.yaml` runs unit tests, linting, application and
-Worker type checks, a Worker dry-run bundle, and a production build for every
-push to `main`. It deploys the tested Worker bundle, then sends an archive of
-that exact commit to a forced-command SSH identity. The receiver builds and checks
-the candidate release before atomically updating `/opt/bolets/app`; a failed
-rollout restores the preceding application and function release. Concurrent
-production deployments are serialized on both GitHub and the VPS.
+relay type checks, a Worker dry-run bundle, and a Lambda bundle for every push
+to `main`. Actions then builds the Linux amd64 Docker image once, publishes it
+to `ghcr.io/neptrino/bolets`, and smoke-tests that exact digest before deploying
+the relays. BuildKit reuses the GHCR `buildcache` tag; deployed images are always
+addressed by digest, never by that cache tag or a mutable release tag.
+Retries resolve the existing commit tag to its digest and smoke-test it again,
+so a successful publication does not need rebuilding on a workflow rerun.
+
+The forced-command SSH stream consists of `ghcr-v1`, the commit SHA, image
+reference, registry username and short-lived job token (one line each), followed
+by the gzip source archive. The receiver validates the fixed repository and
+digest format, creates `.release-image` and `.release-revision`, and authenticates
+through a temporary mode-0700 Docker config under `/run`. Its exit trap deletes
+the config on both success and failure. Tokens never enter the source archive,
+release metadata or command-line arguments. The receiver still accepts the old
+SHA-plus-archive protocol so already queued workflows and older releases work
+during the transition.
+
+The VPS verifies the image revision and public build variables before exporting
+static assets, applying migrations, synchronizing functions or activating the
+application. It health-checks the candidate before atomically updating
+`/opt/bolets/app`; a failed rollout restores the preceding application and
+function release. Retain the local images and GHCR digests referenced by retained
+release directories so rollback can reuse them without a build or fresh registry
+credentials. A rollback to a pre-GHCR release still uses that release's legacy
+build script. Re-running an active commit with a different digest fails closed;
+use a new commit for a new image. Relay deployments are not reverted by
+application rollback. Production deployments remain serialized on GitHub and
+the VPS.
+
+Before the first image deployment:
+
+1. Update `/usr/local/sbin/bolets-receive-release` from `receive-release.sh` as
+   root, under `/run/lock/bolets-deploy.lock`, retaining mode 0755 and root
+   ownership. Updating only the checkout does not update the installed receiver.
+2. Configure production environment variables `NEXT_PUBLIC_UMAMI_WEBSITE_ID`,
+   `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, and optional
+   `SUPPORT_URL` to match the VPS. Configure `NEXT_PUBLIC_SUPABASE_ANON_KEY` as
+   an Actions environment secret. It is a public browser key; never substitute
+   `SERVICE_ROLE_KEY`, which remains exclusively on the VPS.
+3. Allow the workflow's `GITHUB_TOKEN` to write packages. A package first
+   published by this workflow is linked to the repository; keep its default
+   private visibility. No permanent registry token is needed on the VPS.
+
+For manual Compose commands, load the selected release metadata first:
+
+```bash
+app_dir=/opt/bolets/app
+. "$app_dir/deploy/vps/load-release-image.sh"
+```
+
+The backup script does this automatically. Public configuration changes need a
+new image build and matching VPS values, because Next.js compiles these values
+into browser code. Rolling back across such a change also requires restoring
+the corresponding VPS values; a mismatched image deliberately fails validation.
 
 Create a dedicated Ed25519 key locally. Do not reuse a personal SSH key:
 

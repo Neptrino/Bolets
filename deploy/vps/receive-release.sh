@@ -24,18 +24,43 @@ if ! flock -n 9; then
 fi
 
 IFS= read -r revision
+image_protocol=false
+if [ "$revision" = ghcr-v1 ]; then
+  image_protocol=true
+  IFS= read -r revision
+fi
 if ! printf '%s\n' "$revision" | grep -Eq '^[0-9a-f]{40}$'; then
   echo "The release revision must be a 40-character lowercase Git SHA" >&2
   exit 65
 fi
 
+image=
+registry_user=
+registry_token=
+if [ "$image_protocol" = true ]; then
+  IFS= read -r image
+  IFS= read -r registry_user
+  IFS= read -r registry_token
+  if ! printf '%s\n' "$image" | grep -Eq '^ghcr\.io/neptrino/bolets@sha256:[0-9a-f]{64}$' ||
+     ! printf '%s\n' "$registry_user" | grep -Eq '^[A-Za-z0-9_-]+(\[bot\])?$' ||
+     ! printf '%s\n' "$registry_token" | grep -Eq '^[A-Za-z0-9_]+$' ||
+     [ "${#registry_token}" -gt 512 ]; then
+    echo "Invalid image deployment header" >&2
+    exit 65
+  fi
+fi
+
 archive=$(mktemp "$release_root/.archive-$revision.XXXXXX")
 staging="$release_root/.incoming-$revision"
 release="$release_root/$revision"
+registry_config=
 
 cleanup() {
   rm -f -- "$archive"
   rm -rf -- "$staging"
+  if [ -n "$registry_config" ]; then
+    rm -rf -- "$registry_config"
+  fi
 }
 trap cleanup EXIT HUP INT TERM
 
@@ -78,6 +103,11 @@ elif [ -d "$app_path" ]; then
 fi
 
 if [ "$current_release" = "$release" ]; then
+  if [ "$image_protocol" = true ] &&
+     { [ ! -f "$release/.release-image" ] || [ "$(cat "$release/.release-image")" != "$image" ]; }; then
+    echo "An active release cannot be redeployed with a different image" >&2
+    exit 65
+  fi
   echo "Redeploying existing release $revision"
 else
   rm -rf -- "$staging"
@@ -91,8 +121,22 @@ else
     exit 66
   fi
 
+  # Transport metadata is authoritative, never an archived file or shell input.
+  rm -f -- "$staging/.release-image" "$staging/.release-revision"
+  if [ "$image_protocol" = true ]; then
+    printf '%s\n' "$image" > "$staging/.release-image"
+    printf '%s\n' "$revision" > "$staging/.release-revision"
+  fi
   rm -rf -- "$release"
   mv -- "$staging" "$release"
+fi
+
+if [ "$image_protocol" = true ]; then
+  registry_config=$(mktemp -d /run/bolets-registry.XXXXXX)
+  chmod 700 "$registry_config"
+  export DOCKER_CONFIG=$registry_config
+  printf '%s' "$registry_token" | docker login ghcr.io --username "$registry_user" --password-stdin >/dev/null
+  unset registry_token
 fi
 
 rollback() {

@@ -35,20 +35,15 @@ services:
         required: false
       - path: ${BOLETS_BACKLINK_ENV_FILE:-/opt/bolets/secrets/backlink.env}
         required: false
-    build:
-      context: ${BOLETS_APP_DIR:?Set BOLETS_APP_DIR to the checked-out Bolets repository}
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID:?Set the public Umami website ID}
-        NEXT_PUBLIC_SUPABASE_URL: ${SUPABASE_PUBLIC_URL:?Set the public Supabase URL}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${ANON_KEY:?Generate the Supabase keys before starting}
-        NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:?Set the Turnstile site key}
-        SUPPORT_URL: ${SUPPORT_URL:-}
+    image: ${BOLETS_APP_IMAGE:?Load the release image digest before running Compose}
+    pull_policy: never
     restart: unless-stopped
     init: true
     environment:
       BOLETS_RUNTIME_METRICS: "1"
       NODE_ENV: production
+      NEXT_PUBLIC_UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID:?Set the public Umami website ID}
+      SUPPORT_URL: ${SUPPORT_URL:-}
       SUPABASE_URL: http://api-gw:8000
       NEXT_PUBLIC_SUPABASE_URL: ${SUPABASE_PUBLIC_URL:?Set the public Supabase URL}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${ANON_KEY:?Generate the Supabase keys before starting}
