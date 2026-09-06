@@ -215,7 +215,8 @@ function rolloutFixture() {
     .map(key => `${key}=fixture`).join("\n") + "\n", { mode: 0o600 });
   const umami = join(root, "umami.env");
   writeFileSync(umami, "UMAMI_WEBSITE_ID=fixture\nUMAMI_ADMIN_PASSWORD=fixture\n", { mode: 0o600 });
-  for (const name of ["systemctl", "install", "rm"])
+  executable(join(bin, "systemctl"), '#!/bin/sh\nprintf "systemctl %s\\n" "$*" >> "$TEST_LOG"\n');
+  for (const name of ["install", "rm"])
     executable(join(bin, name), "#!/bin/sh\nexit 0\n");
   executable(join(bin, "docker"), `#!/bin/sh
 set -eu
@@ -248,6 +249,8 @@ describe("VPS image rollout", { timeout: 15_000 }, () => {
     expect(log).not.toContain("build app");
     expect(log).not.toContain(`pull ${image}`);
     expect(log).toContain("up -d --wait --no-build");
+    expect(log).toContain("systemctl start --no-block bolets-map-cache.service");
+    expect(log).not.toMatch(/^warm-map-cache$/m);
     expect(log.indexOf("scripts/image-build-config.mjs verify")).toBeLessThan(log.indexOf("scripts/export-static-assets.mjs"));
     expect(log.indexOf("scripts/export-static-assets.mjs")).toBeLessThan(log.indexOf("apply-database-migrations"));
     expect(log.indexOf("apply-database-migrations")).toBeLessThan(log.indexOf("up -d"));

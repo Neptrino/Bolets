@@ -4,7 +4,7 @@ FROM node:24-bookworm-slim AS dependencies
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 FROM dependencies AS media
 COPY scripts/build-static-media.mts ./scripts/build-static-media.mts
@@ -12,7 +12,7 @@ COPY src/lib/static-media.ts ./src/lib/static-media.ts
 COPY public/media ./public/media
 RUN npm run media:build
 
-FROM node:24-bookworm-slim AS builder
+FROM dependencies AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_UMAMI_WEBSITE_ID
@@ -25,7 +25,6 @@ ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ENV SUPPORT_URL=$SUPPORT_URL
-COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 COPY --from=media /app/public/media/optimized ./public/media/optimized
 # The media stage owns prebuild; ordinary code changes reuse its output.

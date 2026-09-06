@@ -16,11 +16,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  verify-and-deploy:
-    name: Verify and deploy
+  verify:
+    name: Verify
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-    environment: production
+    timeout-minutes: 15
+    permissions:
+      contents: read
 
     steps:
       - name: Check out the release
@@ -55,6 +56,18 @@ jobs:
           npm run worker:check
           npm run lambda:check
 
+  image:
+    name: Build and smoke-test image
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+    outputs:
+      digest: ${{ steps.existing_image.outputs.digest || steps.image.outputs.digest }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
       - name: Validate production build configuration
         env:
           NEXT_PUBLIC_UMAMI_WEBSITE_ID: ${{ vars.NEXT_PUBLIC_UMAMI_WEBSITE_ID }}
@@ -125,6 +138,27 @@ jobs:
           curl --fail --silent --show-error --retry 12 --retry-delay 2 --retry-all-errors \
             --max-time 5 http://127.0.0.1:3102/api/health | jq -e '.status == "ok"'
 
+  deploy:
+    name: Deploy verified release
+    needs: [verify, image]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
+
+    steps:
+      - name: Check out the release
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          cache: npm
+
       - name: Deploy the Open-Meteo relay Worker
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -147,6 +181,7 @@ jobs:
         run: |
           set -eu
           test -n "$AWS_LAMBDA_RELAY_BASE_URL"
+          npm run lambda:build
           relay_archive="$RUNNER_TEMP/bolets-open-meteo-relay.zip"
           (cd lambda/open-meteo-relay/dist && zip -q "$relay_archive" index.js)
           aws lambda update-function-code \
@@ -189,7 +224,7 @@ jobs:
 
       - name: Deploy the tested commit
         env:
-          BOLETS_APP_IMAGE: ghcr.io/neptrino/bolets@${{ steps.existing_image.outputs.digest || steps.image.outputs.digest }}
+          BOLETS_APP_IMAGE: ghcr.io/neptrino/bolets@${{ needs.image.outputs.digest }}
           GHCR_USERNAME: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

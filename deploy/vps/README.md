@@ -631,15 +631,19 @@ remain the source of truth for future upgrades:
 
 `.github/workflows/deploy-vps.yaml` runs unit tests, linting, application and
 relay type checks, a Worker dry-run bundle, and a Lambda bundle for every push
-to `main`. Actions then builds the Linux amd64 Docker image once, publishes it
+to `main`. In parallel, Actions builds the Linux amd64 Docker image once, publishes it
 to `ghcr.io/neptrino/bolets`, and smoke-tests that exact digest before deploying
-the relays. BuildKit reuses the GHCR `buildcache` tag; deployed images are always
+the relays. The deployment job requires both verification and the image smoke
+test to succeed. Its relay tools run through pinned `npx` versions without
+reinstalling the application dependencies. BuildKit reuses the GHCR `buildcache` tag; deployed images are always
 addressed by digest, never by that cache tag or a mutable release tag.
 Retries resolve the existing commit tag to its digest and smoke-test it again,
 so a successful publication does not need rebuilding on a workflow rerun.
 Responsive media has its own cached stage, invalidated by source imagery,
 the media generator, media version/encoding configuration or dependencies.
-Ordinary application edits reuse those generated variants.
+Ordinary application edits reuse those generated variants. The builder inherits
+the dependency stage directly, and npm downloads stay in a BuildKit cache mount
+rather than the exported dependency layer.
 
 The forced-command SSH stream consists of `ghcr-v1`, the commit SHA, image
 reference, registry username and short-lived job token (one line each), followed
@@ -844,7 +848,9 @@ generated `CACHE_WARM_SECRET` in the root-only status environment. A run warms
 only the canonical combined-map 5 km and 10 km buckets (at most 64), with two
 concurrent reads and a 90-second scheduling budget. Concurrent triggers coalesce;
 partial runs and publication changes retry. Unchanged generations do no scoring
-work. Rollout invokes the same warmer once; failure leaves the timer to retry.
+work. After the required daily-overview readiness check, rollout requests the
+same systemd service without waiting for optional map warming to finish; failure
+leaves the timer to retry.
 The service is skipped on rollback to a release without the warming script.
 
 Caddy public timing logs contain only fixed route groups, status, size, total

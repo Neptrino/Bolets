@@ -225,6 +225,8 @@ docker compose -f docker-compose.yml -f "$override_file" exec -T app node -e '
     });
 '
 
+echo "Daily overview cache is ready"
+
 # Species carousels are ordered manually in Buffer. Remove the former timer so
 # an older installation cannot create duplicate scheduled posts.
 systemctl disable --now bolets-instagram-species.timer 2>/dev/null || true
@@ -248,6 +250,8 @@ systemctl daemon-reload
 systemctl enable --now bolets-map-cache.timer
 # Generation reads may lag by 30 seconds. The timer retries without making a
 # provider interruption an application deployment failure.
-"$app_dir/deploy/vps/warm-map-cache.sh" || echo "Map warming will retry on the timer" >&2
+# The optional 432-bucket warm continues under systemd after readiness checks.
+# Do not hold the release lock while this resumable background work completes.
+systemctl start --no-block bolets-map-cache.service || echo "Map warming will retry on the timer" >&2
 
 echo "Bolets rollout completed"
