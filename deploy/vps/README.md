@@ -637,6 +637,9 @@ the relays. BuildKit reuses the GHCR `buildcache` tag; deployed images are alway
 addressed by digest, never by that cache tag or a mutable release tag.
 Retries resolve the existing commit tag to its digest and smoke-test it again,
 so a successful publication does not need rebuilding on a workflow rerun.
+Responsive media has its own cached stage, invalidated by source imagery,
+the media generator, media version/encoding configuration or dependencies.
+Ordinary application edits reuse those generated variants.
 
 The forced-command SSH stream consists of `ghcr-v1`, the commit SHA, image
 reference, registry username and short-lived job token (one line each), followed

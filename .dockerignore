@@ -5,6 +5,7 @@
 .release-image
 .release-revision
 build-config.json
+public/media/optimized
 .supabase
 .vercel
 coverage

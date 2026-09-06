@@ -91,8 +91,8 @@ exit "\${TEST_LOGIN_EXIT:-0}"
   const archive = join(root, "release.tar.gz");
   execFileSync("tar", ["-czf", archive, "-C", source, "."]);
   const env = { ...process.env, PATH: `${bin}:${process.env.PATH}`, TEST_LOG: join(root, "events"), TEST_FAIL_REVISION: "" };
-  function run(options: { image?: string; legacy?: boolean; env?: Partial<NodeJS.ProcessEnv>; archive?: Buffer } = {}) {
-    const header = options.legacy ? `${revision}\n` : `ghcr-v1\n${revision}\n${options.image ?? image}\nNeptrino\n${token}\n`;
+  function run(options: { image?: string; token?: string; legacy?: boolean; env?: Partial<NodeJS.ProcessEnv>; archive?: Buffer } = {}) {
+    const header = options.legacy ? `${revision}\n` : `ghcr-v1\n${revision}\n${options.image ?? image}\nNeptrino\n${options.token ?? token}\n`;
     return spawnSync("sh", [receiver], {
       input: Buffer.concat([Buffer.from(header), options.archive ?? readFileSync(archive)]),
       env: { ...env, ...options.env }, encoding: "utf8",
@@ -102,6 +102,21 @@ exit "\${TEST_LOGIN_EXIT:-0}"
 }
 
 describe("forced-command image release transport", { timeout: 15_000 }, () => {
+  it("accepts long opaque registry tokens without logging or retaining them", () => {
+    const f = receiverFixture();
+    const credential = `header.${"aB0_-+/=".repeat(256)}.signature`;
+    const result = f.run({ token: credential });
+    expect(result.status, result.stderr).toBe(0);
+    expect(result.stdout + result.stderr + f.log()).not.toContain(credential);
+    expect(readdirSync(f.root).filter(name => name.startsWith("registry."))).toEqual([]);
+  });
+
+  it.each(["", "a".repeat(16385)])("rejects empty or oversized credentials before login", (credential) => {
+    const f = receiverFixture();
+    expect(f.run({ token: credential }).status).toBe(65);
+    expect(existsSync(join(f.root, "events"))).toBe(false);
+  });
+
   it("activates the source with its immutable digest and deletes credentials", () => {
     const f = receiverFixture();
     const result = f.run();

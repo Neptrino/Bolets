@@ -6,6 +6,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY package.json package-lock.json ./
 RUN npm ci
 
+FROM dependencies AS media
+COPY scripts/build-static-media.mts ./scripts/build-static-media.mts
+COPY src/lib/static-media.ts ./src/lib/static-media.ts
+COPY public/media ./public/media
+RUN npm run media:build
+
 FROM node:24-bookworm-slim AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -21,7 +27,9 @@ ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ENV SUPPORT_URL=$SUPPORT_URL
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
-RUN npm run build && node scripts/image-build-config.mjs write
+COPY --from=media /app/public/media/optimized ./public/media/optimized
+# The media stage owns prebuild; ordinary code changes reuse its output.
+RUN ./node_modules/.bin/next build && node scripts/image-build-config.mjs write
 
 FROM node:24-bookworm-slim AS runner
 ARG BOLETS_REVISION

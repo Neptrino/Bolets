@@ -43,13 +43,14 @@ if [ "$image_protocol" = true ]; then
   IFS= read -r registry_token
   if ! printf '%s\n' "$image" | grep -Eq '^ghcr\.io/neptrino/bolets@sha256:[0-9a-f]{64}$' ||
      ! printf '%s\n' "$registry_user" | grep -Eq '^[A-Za-z0-9_-]+(\[bot\])?$' ||
-     ! printf '%s\n' "$registry_token" | grep -Eq '^[A-Za-z0-9_]+$' ||
-     [ "${#registry_token}" -gt 512 ]; then
+     [ -z "$registry_token" ] || [ "${#registry_token}" -gt 16384 ]; then
     echo "Invalid image deployment header" >&2
     exit 65
   fi
 fi
 
+# Registry tokens are opaque credentials, including longer JWT-style formats.
+# Pass them only through password-stdin; do not assume an alphabet or prefix.
 archive=$(mktemp "$release_root/.archive-$revision.XXXXXX")
 staging="$release_root/.incoming-$revision"
 release="$release_root/$revision"
