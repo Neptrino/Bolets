@@ -102,7 +102,6 @@ export default async function AdminUsersPage({
                 <th scope="col">Caducitat</th>
                 <th scope="col">Aportacions</th>
                 <th scope="col">Troballes</th>
-                <th scope="col">Darrer accés</th>
                 <th scope="col">Accions</th>
               </tr>
             </thead>
@@ -158,7 +157,6 @@ export default async function AdminUsersPage({
                         {user.draftFindings > 0 ? ` · ${numberFormatter.format(user.draftFindings)} esb.` : ""}
                       </small>
                     </td>
-                    <td><time dateTime={user.lastSignInAt ?? undefined}>{formatDetailDateTime(user.lastSignInAt)}</time></td>
                     <td>
                       <UserAccessDialog
                         accessActive={user.mapAccess.active}

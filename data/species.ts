@@ -418,6 +418,7 @@ speciesProfiles.push(
         localPath: "/media/boletus-edulis/boletus-edulis-close-up.webp",
         attribution: "Magnific",
         license: "Magnific Premium (llicència de pagament confirmada per l’usuari)",
+        hideCredit: true,
         identificationReference: false,
         alt: "Possible Boletus edulis madur amb barret castany i peu robust entre restes vegetals"
       }
@@ -555,7 +556,7 @@ speciesProfiles.push(
   profile({
     speciesId: "tricholoma-terreum",
     seo: {
-      title: "Fredolic: és tòxic? Identificació i confusions",
+      title: "Fredolic: identificació, temporada i confusions",
       description: "Guia del fredolic (Tricholoma terreum): identificació prudent, consum ocasional, temporada i diferències amb tricolomes tòxics.",
       keywords: ["fredolic tòxic", "fredolic bord", "fredolics tòxics"],
       faqs: [

@@ -81,6 +81,7 @@ export interface MediaAsset {
   localPath?: string;
   attribution: string;
   license: string;
+  hideCredit?: boolean;
   identificationReference: boolean;
   alt: string;
 }

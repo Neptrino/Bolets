@@ -10,16 +10,11 @@ import {
   Sprout,
   Trees,
 } from "lucide-react";
+import { CepsLocalGuides } from "@/components/ceps-local-guides";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { SpeciesCard } from "@/components/species-card";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
-import {
-  areaPath,
-  areaProfiles,
-  locationPagePath,
-  speciesLocationPages,
-} from "@/data/location-pages";
 import { regionLabels } from "@/data/regions";
 import { getSpecies } from "@/data/species";
 import {
@@ -65,14 +60,6 @@ function requiredSpecies(speciesId: CepSpeciesId) {
 }
 
 const ceps = cepSpeciesIds.map(requiredSpecies);
-const cepSpeciesIdSet = new Set<string>(cepSpeciesIds);
-const publishedGuides = speciesLocationPages.filter((page) =>
-  cepSpeciesIdSet.has(page.speciesId),
-);
-const publishedAreas = areaProfiles.filter((area) =>
-  publishedGuides.some((guide) => guide.areaSlug === area.slug),
-);
-
 const comparisonLinks = [
   { href: "/compare/cep-vs-cep-estiu", label: "Cep vs. cep d’estiu" },
   { href: "/compare/cep-vs-cep-negre", label: "Cep vs. cep negre" },
@@ -200,9 +187,9 @@ export default function CepsTerritoryPage() {
                 <i>de Catalunya.</i>
               </h1>
               <p>
-                Una sola paraula amaga quatre perfils ecològics: els arbres, la
-                cota i el calendari canvien, però sempre cal que hi hagi un
-                hàbitat compatible i humitat sostinguda.
+                Compara el cep, el cep rogenc, el cep negre i el cep d’estiu: en
+                quins boscos encaixen, quan és temporada i quines guies locals
+                permeten consultar les condicions actuals.
               </p>
             </div>
             <aside>
@@ -248,6 +235,8 @@ export default function CepsTerritoryPage() {
             </div>
           </div>
         </section>
+
+        <CepsLocalGuides />
 
         <section className="guide-types" aria-labelledby="ceps-types-title">
           <header>
@@ -313,7 +302,7 @@ export default function CepsTerritoryPage() {
           <div className="rovellons-now-heading">
             <div>
               <p className="eyebrow light">
-                <CalendarDays size={15} /> Ceps avui
+                <CalendarDays size={15} /> Calendari dels ceps
               </p>
               <h2 id="ceps-now-title">
                 Lectura estacional {monthWithPreposition(currentMonth)}
@@ -395,40 +384,6 @@ export default function CepsTerritoryPage() {
                   <strong>
                     Veure la lectura al mapa <ArrowUpRight size={15} />
                   </strong>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-
-        <section
-          className="rovellons-published ceps-published"
-          aria-labelledby="ceps-published-title"
-        >
-          <div>
-            <p className="eyebrow">Guies locals publicades</p>
-            <h2 id="ceps-published-title">
-              {publishedGuides.length} lectures locals, {publishedAreas.length} territoris.
-            </h2>
-            <p>
-              Els territoris documentats són {publishedAreas.map((area, index) => (
-                <span key={area.slug}>
-                  {index > 0 && (index === publishedAreas.length - 1 ? " i " : ", ")}
-                  <Link href={areaPath(area)}>{area.nameWithArticle}</Link>
-                </span>
-              ))}. Cada enllaç obre el hub territorial amb les condicions actuals; cap pàgina revela punts de recol·lecció.
-            </p>
-          </div>
-          <div data-cep-local-guides>
-            {publishedGuides.map((guide) => {
-              const area = areaProfiles.find(
-                (profile) => profile.slug === guide.areaSlug,
-              );
-              return (
-                <Link href={locationPagePath(guide)} key={locationPagePath(guide)}>
-                  <span>{area?.name ?? "Guia local"}</span>
-                  <strong>{guide.titlePhrase}</strong>
-                  <ArrowUpRight size={17} />
                 </Link>
               );
             })}

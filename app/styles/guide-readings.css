@@ -1,0 +1,123 @@
+/* Shared editorial summaries and actions for species and territorial guides. */
+.guide-reading-actions,
+.species-search-summary nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+.guide-reading-actions a,
+.species-search-summary nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 15px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--forest-panel);
+  font-size: var(--text-base);
+  font-weight: 750;
+  text-decoration: none;
+}
+.guide-reading-actions a:hover,
+.species-search-summary nav a:hover { background: var(--surface-warm); }
+.guide-reading-actions svg,
+.species-search-summary nav svg { flex-shrink: 0; }
+.guide-reading-actions a:focus-visible,
+.species-search-summary a:focus-visible,
+.guide-types-table-scroll:focus-visible,
+.ceps-other-guides summary:focus-visible {
+  outline: 3px solid var(--clay);
+  outline-offset: 3px;
+}
+.ceps-local-guides { margin-bottom: 48px; }
+.ceps-other-guides { margin: 20px 0; }
+.ceps-other-guides summary {
+  padding: 12px 0;
+  color: var(--forest-panel);
+  font-size: var(--text-base);
+  font-weight: 800;
+  cursor: pointer;
+}
+.ceps-other-guides ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 28px;
+  padding-left: 22px;
+}
+.ceps-other-guides a { color: var(--clay); }
+.place-species-comparison { margin: 32px 0 48px; }
+.place-species-comparison h2 { font-size: var(--text-2xl); color: var(--forest-panel); }
+.place-species-comparison p,
+.species-search-summary p { line-height: 1.65; }
+.species-search-summary > div > p:not(.eyebrow) { margin: 0 0 16px; }
+.species-search-summary nav { margin: 24px 0 0; }
+.specimen-panel:has(.species-gallery.has-reading) { align-self: start; }
+.species-gallery.has-reading {
+  position: relative;
+  inset: auto;
+  grid-template-rows: auto auto auto;
+}
+.species-gallery.has-reading .species-gallery-stage {
+  aspect-ratio: 4 / 3;
+  min-height: 250px;
+}
+.species-lightbox.has-reading .species-lightbox-content {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+.species-lightbox.has-reading .species-lightbox-image { position: relative; inset: auto; }
+.species-lightbox.has-reading .species-lightbox-caption {
+  position: static;
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  background: #171412;
+}
+.specimen-panel .species-photo-reading {
+  margin: 0;
+  padding: 14px 18px;
+  background: var(--forest-panel);
+  color: var(--on-dark);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  text-align: left;
+}
+.current-reading-notes { margin: 32px 0; }
+.current-reading-notes h2 { font-size: var(--text-xl); color: var(--forest-panel); }
+.current-reading-notes p { line-height: 1.65; }
+.current-reading-notes a { color: var(--clay); }
+.poisonous-comparisons { margin: 40px 0 56px; }
+.poisonous-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+.poisonous-comparison-grid article {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.poisonous-comparison-grid h3 { margin: 0 0 16px; font-size: var(--text-xl); }
+.poisonous-comparison-grid h3 a { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--forest-panel); text-decoration: none; }
+.poisonous-comparison-grid h3 svg { flex-shrink: 0; }
+.poisonous-comparison-grid p { line-height: 1.65; }
+.poisonous-photo-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.poisonous-photo-pair figure { margin: 0; min-width: 0; }
+.poisonous-photo-pair figure > div { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 8px; }
+.poisonous-photo-pair img { object-fit: cover; }
+.poisonous-photo-pair figcaption { display: grid; gap: 5px; margin-top: 8px; font-size: var(--text-xs); }
+.poisonous-photo-pair figcaption strong { font-size: var(--text-base); }
+.poisonous-photo-pair figcaption a { color: var(--muted); overflow-wrap: anywhere; }
+#local-current,
+#local-species-comparison { scroll-margin-top: 100px; }
+@media (max-width: 760px) {
+  .guide-reading-actions { flex-direction: column; }
+  .guide-reading-actions a { justify-content: space-between; }
+  .ceps-other-guides ul,
+  .poisonous-comparison-grid { grid-template-columns: 1fr; }
+}

@@ -8,6 +8,8 @@ import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { MediaImage } from "@/components/media-image";
 import { LazyHabitatMap } from "@/components/lazy-habitat-map";
+import { UmamiEventLink } from "@/components/umami-event-link";
+import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 import { SeasonCalendar } from "@/components/season-calendar";
 import { getSpecies } from "@/data/species";
 import { editorialArticleFields, environmentalSources } from "@/data/editorial";
@@ -236,7 +238,7 @@ async function LocalConditionsCard({
         <div><dt>Principal fre</dt><dd>{limitingFactor(summary)}</dd></div>
       </dl>
       <p className="local-current-updated"><Clock3 size={14} aria-hidden="true" /> Dades de {dateTime.format(new Date(summary.snapshot.observedAt))}</p>
-      <Link href={mapPath} className="button light-button"><Map size={16} aria-hidden="true" /> Veure la zona al mapa</Link>
+      <UmamiEventLink href={mapPath} analyticsEvent={UMAMI_EVENTS.speciesMapOpen} className="button light-button"><Map size={16} aria-hidden="true" /> Mapa de {species.identity.commonName.toLocaleLowerCase("ca")} {location.prepositionalName}</UmamiEventLink>
     </aside>
   );
 }
@@ -297,22 +299,28 @@ export default async function SpeciesLocationPage({ params }: Props) {
           <div>
             <nav className="local-species-breadcrumbs" aria-label="Fil d’Ariadna"><Link href="/guies">Guies</Link><span aria-hidden="true">/</span><Link href={`/zones/${area.slug}`}>{area.name}</Link><span aria-hidden="true">/</span><Link href={placePath(location)}>{location.name}</Link><span aria-hidden="true">/</span><span aria-current="page">{displaySearchName(page.searchName)}</span></nav>
             <p className="eyebrow light"><MapPinned size={15} /> {area.name} · guia ecològica local</p>
-            <h1>{page.titlePhrase}</h1><em>{species.identity.scientificName}</em><p>{page.habitatNote}</p>
+            <h1>{page.titlePhrase}</h1><em>{species.identity.scientificName}</em><p>{page.introduction}</p>
           </div>
           {referenceImage && <div className="local-species-image"><MediaImage asset={referenceImage} alt={referenceImage.alt} fill preload sizes="(max-width: 760px) calc(100vw - 48px), 42vw" /></div>}
         </div>
       </header>
       <div className="page-width local-species-content">
+        <nav className="guide-reading-actions" aria-label="Prepara la sortida">
+          <a href="#local-current">Consulta la lectura local <ArrowUpRight size={16} aria-hidden="true" /></a>
+          <UmamiEventLink href={territorialMapPath(species.speciesId, area.regionId, placeBounds(location))} analyticsEvent={UMAMI_EVENTS.speciesMapOpen}>
+            <Map size={16} aria-hidden="true" /> Mapa de {species.identity.commonName.toLocaleLowerCase("ca")} {location.prepositionalName}
+          </UmamiEventLink>
+          <Link href="/bolets-avui">Compara les condicions d’avui a Catalunya <ArrowUpRight size={16} aria-hidden="true" /></Link>
+        </nav>
         <section className="local-species-summary" aria-label="Resum ecològic">
           <div><Trees size={19} /><span>Bosc habitual</span><strong>{habitat.forestTypes.slice(0, 2).join(" i ")}</strong></div>
           <div><Mountain size={19} /><span>Altitud habitual</span><strong>{habitat.altitude[0]}–{habitat.altitude[1]} m</strong></div>
           <div><CalendarDays size={19} /><span>Millors mesos</span><strong>{peakMonths.join(" i ") || "Sense un pic clar"}</strong></div>
         </section>
-        <Suspense fallback={<LocalEvidenceLoading location={location} />}><LocalEvidencePanel species={species} location={location} /></Suspense>
         <div className="local-species-columns">
-          <div className="local-current-slot"><Suspense fallback={<LocalConditionsLoading />}><LocalConditionsCard species={species} area={area} location={location} /></Suspense></div>
+          <div className="local-current-slot" id="local-current"><Suspense fallback={<LocalConditionsLoading />}><LocalConditionsCard species={species} area={area} location={location} /></Suspense></div>
           <div className="local-species-main">
-            <section className="local-landscape-section"><p className="eyebrow">Lectura del paisatge</p><h2>Per què hi pot encaixar</h2><p>{location.landscape}</p></section>
+            <section className="local-landscape-section"><p className="eyebrow">Lectura del paisatge</p><h2>Quins sectors poden encaixar-hi</h2><p>{page.habitatNote}</p><p>{location.landscape}</p></section>
             <section className="local-factors-section"><p className="eyebrow">Bosc i terreny</p><h2>Què necessita aquesta espècie</h2><p>El tipus de bosc, el sòl i el relleu ajuden a saber on pot encaixar l’espècie.</p><div className="local-factor-grid">
               <article><Trees size={20} /><h3>Bosc i arbres</h3><p>{habitat.forestTypes.join(", ")}.{habitat.treeAssociations.length > 0 ? ` Arbres habituals: ${habitat.treeAssociations.join(", ")}.` : ""}</p></article>
               <article><Sprout size={20} /><h3>Sòl</h3><p>{habitat.soilPreference}. {soil.texture}, de reacció {soil.reaction.toLocaleLowerCase("ca")} i amb drenatge {soil.drainage.toLocaleLowerCase("ca")}.</p></article>
@@ -339,6 +347,7 @@ export default async function SpeciesLocationPage({ params }: Props) {
             <Link href={speciesPath(species)} className="local-profile-link"><span>Fitxa completa</span><strong>{species.identity.commonName}</strong><small>{speciesDescription(species)}</small><ArrowUpRight size={18} /></Link>
           </aside>
         </div>
+        <Suspense fallback={<LocalEvidenceLoading location={location} />}><LocalEvidencePanel species={species} location={location} /></Suspense>
         <EditorialAttribution contentId={editorialContentId} sources={[...species.references, territorialSource, ...environmentalSources]} variant="compact" />
         {(samePlaceGuides.length > 0 || sameSpeciesGuides.length > 0) ? <section className="local-related-guides" aria-labelledby="local-related-title"><header><p className="eyebrow"><BookOpenCheck size={15} aria-hidden="true" /> Continua explorant</p><h2 id="local-related-title">Guies relacionades</h2></header><div>{samePlaceGuides.length > 0 ? <section><h3>Altres espècies {location.prepositionalName}</h3><ul>{samePlaceGuides.map((candidate) => <li key={locationPagePath(candidate)}><Link href={locationPagePath(candidate)}><span>{candidate.titlePhrase}</span><ArrowUpRight size={15} aria-hidden="true" /></Link></li>)}</ul></section> : null}{sameSpeciesGuides.length > 0 ? <section><h3>{species.identity.commonName} en altres territoris</h3><ul>{sameSpeciesGuides.map((candidate) => { const candidatePlace = getPlace(candidate.areaSlug, candidate.placeSlug); return <li key={locationPagePath(candidate)}><Link href={locationPagePath(candidate)}><span>{candidate.titlePhrase}<small>{candidatePlace?.typeLabel} · {areasBySlug[candidate.areaSlug]?.name}</small></span><ArrowUpRight size={15} aria-hidden="true" /></Link></li>; })}</ul></section> : null}</div></section> : null}
       </div>

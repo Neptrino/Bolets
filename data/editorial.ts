@@ -13,7 +13,7 @@ export interface EditorialMetadata {
 }
 
 export const EDITORIAL_LAUNCH_DATE = "2026-08-13";
-export const LOCAL_GUIDES_UPDATED_AT = "2026-08-30";
+export const LOCAL_GUIDES_UPDATED_AT = "2026-09-06";
 
 export const editorialTeam = {
   id: "editorial-team" as const,
@@ -174,7 +174,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-08-31",
   },
   "zones-ceps": {
-    updatedAt: "2026-08-31",
+    updatedAt: "2026-09-06",
   },
   "preguntes-frequents-bolets": {
     publishedAt: "2026-08-27",
@@ -210,7 +210,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-08-31",
   },
   "bolets-verinosos": {
-    updatedAt: "2026-09-03",
+    updatedAt: "2026-09-06",
   },
   "bolets-de-primavera": {
     updatedAt: "2026-09-03",
@@ -228,14 +228,18 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-08-31",
   },
   "bolets-avui": {
-    updatedAt: "2026-09-03",
+    updatedAt: "2026-09-06",
   },
-  "species:craterellus-lutescens": { updatedAt: "2026-08-31" },
-  "species:boletus-edulis": { updatedAt: "2026-08-31" },
+  "species:craterellus-lutescens": { updatedAt: "2026-09-06" },
+  "species:boletus-edulis": { updatedAt: "2026-09-06" },
+  "species:boletus-pinophilus": { updatedAt: "2026-09-06" },
+  "species:boletus-aereus": { updatedAt: "2026-09-06" },
+  "species:boletus-reticulatus": { updatedAt: "2026-09-06" },
   "species:cantharellus-cibarius": { updatedAt: "2026-08-31" },
-  "species:lactarius-sanguifluus": { updatedAt: "2026-08-31" },
+  "species:lactarius-deliciosus": { updatedAt: "2026-09-06" },
+  "species:lactarius-sanguifluus": { updatedAt: "2026-09-06" },
   "species:macrolepiota-procera": { updatedAt: "2026-08-31" },
-  "species:tricholoma-terreum": { updatedAt: "2026-08-31" },
+  "species:tricholoma-terreum": { updatedAt: "2026-09-06" },
   "species:hygrophorus-latitabundus": { updatedAt: "2026-08-31" },
   "species:hygrophorus-russula": { updatedAt: "2026-08-31" },
   "conservar-bolets": {

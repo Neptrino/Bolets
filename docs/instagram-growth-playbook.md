@@ -18,6 +18,29 @@ Every automated job checks that the observation belongs to the current
 Catalonia civil day, verifies its scheduled weekday when applicable, and checks
 the Buffer channel for its own date marker before publishing.
 
+### Weekend Reel design
+
+The Friday Reel opens with “Aquest cap de setmana, on miraries?” and the
+combined Avui map as its main visual. Five frames cover the map, territorial
+comparisons, the leading species, the extent of its signal, and a save/share
+invitation. The map appears on frame one; `WEEKEND_MAP_SLIDE` is shared with the signed image route.
+
+Use solid cream and forest panels, orange accents, and the shared Nunito Sans
+image fonts. Keep the main content inside the central feed crop, away from
+Reel controls. Every frame carries the observation date and the presence
+limitation. Label scores as best-sector maxima and show both positive-cell and
+20+-cell prevalence; a zero reading must not become a positive recommendation.
+Photographs are labelled as references, never as today's sightings.
+
+`components/instagram-weekend-card.tsx` owns the composition;
+`src/lib/instagram-weekend-render.tsx` loads the existing catalogue photograph
+and shared fonts. The signed, current-day publication checks remain unchanged.
+Run `npx tsx scripts/preview-instagram-weekend.tsx [map-image-path]` to render
+five PNGs, a contact sheet and the encoded Reel under
+`artifacts/instagram/weekend-redesign`. This local preview uses fictional
+readings marked **MOSTRA**, and an optional map is only a visual reference.
+It does not publish anything.
+
 ## Profile setup
 
 Recommended name field:

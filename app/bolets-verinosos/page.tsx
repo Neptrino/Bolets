@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, ShieldAlert } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
+import { PoisonousComparisons } from "@/components/poisonous-comparisons";
 import { SpeciesCard } from "@/components/species-card";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
@@ -78,15 +79,10 @@ export default function PoisonousMushroomsPage() {
             <li>Obre la fitxa de les espècies semblants abans de prendre cap decisió.</li>
           </ol>
         </div>
-        <nav className="species-topic-links seasonal-guide-topic-links" aria-label="Comparacions de bolets tòxics i comestibles">
-          <Link href="/compare/ou-de-reig-vs-reig-bord"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Ou de reig o reig bord</strong><small>Làmines, peu, volva i risc de confusió</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
-          <Link href="/compare/rossinyol-vs-bolet-olivera"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Rossinyol o bolet d’olivera</strong><small>Plecs, làmines, substrat i toxicitat</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
-          <Link href="/compare/cep-vs-matagent"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Cep o matagent</strong><small>Porus, peu, canvi de color i seguretat</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
-          <Link href="/compare/fredolic-vs-fredolic-metzinos"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Fredolic o fredolic metzinós</strong><small>Mida, robustesa, escates i risc digestiu</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
-          <Link href="/compare/murgola-vs-bolet-greix"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Múrgola o bolet de greix</strong><small>Barret, interior i una confusió perillosa</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
-          <Link href="/compare/rovello-vs-rovello-de-cabra"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Rovelló o rovelló de cabra</strong><small>Làtex, marge del barret i arbre associat</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
-        </nav>
+
       </section>
+
+      <PoisonousComparisons />
 
       <SectionHeader
         meta={`${toxicSpecies.length} espècies`}

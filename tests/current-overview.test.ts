@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { buildSitemap } from "@/app/sitemap";
 import { getSpecies, speciesProfiles } from "@/data/species";
+import { currentSearchReadings, overviewExtent, overviewLimitingFactor } from "@/src/lib/current-overview-copy";
 import {
   CURRENT_OVERVIEW_CONCURRENCY,
   DAILY_OVERVIEW_REVALIDATE_SECONDS,
@@ -103,7 +104,7 @@ describe("current-condition overview", () => {
 
     expect(pageSource).toContain('const overviewTitle = "On trobar bolets avui i aquesta setmana"');
     expect(pageSource).toContain("On trobar bolets avui<br />");
-    expect(pageSource).toContain("On trobar bolets ara a Catalunya?");
+    expect(pageSource).toContain("On trobar bolets avui a Catalunya?");
     expect(pageSource).toContain('inLanguage: "ca"');
     expect(pageSource).toContain("dateModified: pageModifiedAt.toISOString()");
   });
@@ -115,10 +116,10 @@ describe("current-condition overview", () => {
     expect(entry?.lastModified).toEqual(publishedAt);
   });
 
-  it("uses plain-language labels in the leading Avui card", () => {
+  it("uses plain-language labels in a single Avui ranking", () => {
     const pageSource = readFileSync("app/bolets-avui/page.tsx", "utf8");
 
-    expect(pageSource).toContain("Millors condicions ara");
+    expect(pageSource).not.toContain('className="current-leader"');
     expect(pageSource).toContain("Abast dins la zona");
     expect(pageSource).toContain("Principal fre");
     expect(pageSource).toContain("Zona i bolet");
@@ -127,7 +128,7 @@ describe("current-condition overview", () => {
     expect(pageSource).not.toContain("Component més limitant");
     expect(pageSource).not.toContain("controls de publicació");
     expect(pageSource).not.toContain("Cel·les compatibles de");
-    expect(pageSource).toContain('className="current-leader-topline"');
+    expect(pageSource).not.toContain('className="current-search-readings"');
   });
 
   it("keys the long-lived overview cache by both published condition generations", () => {
@@ -364,5 +365,44 @@ describe("current-condition overview", () => {
 
     expect(items.every((item) => item.status === "unavailable" && item.summary === null)).toBe(true);
     expect(topCurrentOverviewItems(items)).toEqual([]);
+  });
+});
+
+describe("current search interpretation", () => {
+  const reading = (regionId: RegionId, speciesName = "Cep") => ({
+    speciesId: "boletus-edulis", regionId, regionName: regionId, speciesName,
+    seasonalActivity: "good" as const, status: "available" as const, summary: summary(regionId),
+  });
+
+  it("keeps the supplied ranking and selects distinct territories without summing their area", () => {
+    const items = [reading("pirineus"), reading("pirineus", "Camagroc"), reading("montseny"), reading("prepirineus"), reading("ports")];
+    expect(currentSearchReadings(items).map((item) => item.regionId)).toEqual(["pirineus", "montseny", "prepirineus"]);
+    expect(items).toHaveLength(5);
+  });
+
+  it("withholds stale, incomplete, unavailable and zero readings from positive recommendations", () => {
+    const stale = reading("pirineus"); stale.summary.snapshot.stale = true;
+    const incomplete = reading("montseny"); incomplete.summary.result.missingComponents = ["water"];
+    const zero = reading("ports"); zero.summary.bestCell.score = 0;
+    const invalid = reading("prepirineus"); invalid.summary.bestCell.score = Number.NaN;
+    expect(currentSearchReadings([stale, incomplete, zero, invalid, { ...reading("emporda"), status: "unavailable" }])).toEqual([]);
+    expect(currentSearchReadings([])).toEqual([]);
+  });
+
+  it("does not round a small positive extent down to zero", () => {
+    const tiny = summary("pirineus");
+    tiny.score20CellCount = 1; tiny.score20CellShare = 0.002;
+    expect(overviewExtent(tiny)).toContain("menys de l’1%");
+    tiny.score20CellCount = 0; tiny.positiveCellShare = 0.003;
+    expect(overviewExtent(tiny)).toContain("Alguna resposta favorable en menys de l’1%");
+    tiny.positiveCellCount = 0;
+    expect(overviewExtent(tiny)).toBe("Sense cap sector favorable ara mateix");
+  });
+
+  it("uses the scored limiting factor and does not mutate the components", () => {
+    const item = reading("pirineus");
+    const before = structuredClone(item.summary.result.components);
+    expect(overviewLimitingFactor(item)).toBe("Aigua disponible");
+    expect(item.summary.result.components).toEqual(before);
   });
 });

@@ -26,7 +26,7 @@ describe("competitor keyword gaps", () => {
       expect(species.seo?.description?.length).toBeLessThanOrEqual(155);
       expect(species.seo?.faqs).toHaveLength(2);
       expect(species.seo?.faqs?.every((faq) => faq.question.endsWith("?"))).toBe(true);
-      expect(getEditorialMetadata(`species:${speciesId}`).updatedAt).toBe("2026-08-31");
+      expect(getEditorialMetadata(`species:${speciesId}`).updatedAt).toBe(["boletus-edulis", "craterellus-lutescens", "tricholoma-terreum", "lactarius-sanguifluus"].includes(speciesId) ? "2026-09-06" : "2026-08-31");
     }
 
     expect(getSpecies("hygrophorus-russula")?.similarSpecies).toEqual(

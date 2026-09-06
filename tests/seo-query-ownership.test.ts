@@ -69,7 +69,7 @@ describe("SEO query ownership", () => {
       expect(species.seo?.description?.length).toBeLessThanOrEqual(155);
       expect(metadata.title).toBe(target.title);
       expect(metadata.alternates?.canonical).toBe(speciesPath(species));
-      expect(getEditorialMetadata(`species:${target.speciesId}`).updatedAt).toBe("2026-08-31");
+      expect(getEditorialMetadata(`species:${target.speciesId}`).updatedAt).toBe(target.speciesId !== "cantharellus-cibarius" ? "2026-09-06" : "2026-08-31");
     }
   });
 

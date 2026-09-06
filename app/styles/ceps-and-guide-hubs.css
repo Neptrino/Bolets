@@ -1,9 +1,7 @@
 /* The ceps dossier reuses the territorial guide system with four species and
    all nine broad prediction regions. */
 .ceps-hub .rovellons-hero {
-  background:
-    radial-gradient(circle at 83% 18%, rgba(203, 139, 69, 0.24), transparent 25%),
-    linear-gradient(125deg, #28382a 0%, #394a32 58%, #514731 100%);
+  background: var(--forest-panel);
 }
 .ceps-comparison-links {
   display: flex;

@@ -8,6 +8,7 @@ import { MediaImage } from "@/components/media-image";
 import { TerritoryPortrait } from "@/components/territory-portrait";
 import { getSpecies } from "@/data/species";
 import { areasBySlug, getPlace, locationPagePath, locationPagesForPlace, placePath, placeProfiles } from "@/data/location-pages";
+import { SEASON_MONTHS } from "@/src/lib/seasonality";
 import { regionLabels } from "@/data/regions";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
 
@@ -48,6 +49,25 @@ export default async function PlacePage({ params }: Props) {
       </div></header>
       <div className="page-width location-hub-body">
         <section className="location-hub-facts" aria-label="Resum de la col·lecció"><div><Layers3 size={19} /><span>Àmbit</span><strong>{area.name}</strong></div><div><BookOpen size={19} /><span>Contingut</span><strong>Hàbitat i temporada</strong></div><div><ShieldCheck size={19} /><span>Precisió pública</span><strong>Sense punts de recol·lecció</strong></div></section>
+        <nav className="guide-reading-actions" aria-label="Prepara la sortida">
+          <a href="#local-species-comparison">Compara boscos i temporada <ArrowUpRight size={16} aria-hidden="true" /></a>
+          <Link href="/bolets-avui">Consulta les condicions d’avui a Catalunya <ArrowUpRight size={16} aria-hidden="true" /></Link>
+        </nav>
+        <section className="place-species-comparison" id="local-species-comparison" aria-labelledby="local-species-comparison-title">
+          <h2 id="local-species-comparison-title">Quins bolets encaixen en cada bosc?</h2>
+          <p>Compara les espècies amb guia publicada {location.prepositionalName}. Obre cada lectura per veure l’hàbitat de l’entorn i les condicions disponibles; el calendari no confirma fructificació avui.</p>
+          <div className="guide-types-table-scroll" role="region" aria-label="Espècies, boscos i temporada" tabIndex={0}>
+            <table className="guide-types-table">
+              <caption className="sr-only">Hàbitat i temporada de les espècies amb guia local</caption>
+              <thead><tr><th scope="col">Espècie i lectura local</th><th scope="col">Hàbitat de referència</th><th scope="col">Pic habitual</th></tr></thead>
+              <tbody>{guides.map(({ page, species }) => <tr key={page.speciesSlug}>
+                <th scope="row"><Link href={locationPagePath(page)}>{species.identity.commonName} {location.prepositionalName}</Link></th>
+                <td>{species.ecologicalConfig.habitat.forestTypes.join(", ")}</td>
+                <td>{SEASON_MONTHS.filter(({ key }) => species.ecologicalConfig.seasonality[key] === "peak").map(({ label }) => label).join(" i ") || "Sense pic definit"}</td>
+              </tr>)}</tbody>
+            </table>
+          </div>
+        </section>
         <section className="location-guide-gallery" aria-labelledby="guides-title"><header><div><p className="eyebrow">Guies publicades</p><h2 id="guides-title">Espècies i territori</h2></div><p>Quin bosc necessita cada bolet, quan és temporada i què el pot frenar.</p></header><div className="location-guide-grid">
           {guides.map(({ page, species }, index) => { const image = species.media.find((asset) => asset.identificationReference) ?? species.media[0]; const habitat = species.ecologicalConfig.habitat; return <Link href={locationPagePath(page)} className="location-guide-card" key={page.speciesSlug}><div className={`location-guide-card-media${image ? " has-image" : ""}`}>{image && <MediaImage asset={image} alt={image.alt} fill preload={index === 0} sizes="(max-width: 760px) calc(100vw - 48px), 50vw" />}<span>{species.identity.scientificName}</span></div><div className="location-guide-card-copy"><div className="location-guide-card-title"><h3>{page.titlePhrase}</h3><ArrowUpRight size={20} /></div><p>{page.habitatNote}</p><div className="location-guide-card-facts"><span><Trees size={15} /> {habitat.forestTypes[0]}</span><span><Mountain size={15} /> {habitat.altitude[0]}–{habitat.altitude[1]} m</span></div></div></Link>; })}
         </div></section>

@@ -1,3 +1,4 @@
+import { cepSpeciesIds } from "@/src/lib/ceps-guide";
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays, CloudRain, Map } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
@@ -134,6 +135,12 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
         <CloudRain size={22} aria-hidden="true" />
         <div><strong>Calendari i condicions no són el mateix.</strong><p>La temporada indica quan una espècie pot fructificar habitualment. Per valorar el moment actual també cal llegir la pluja acumulada, la humitat, la temperatura i si el terreny és adequat. <Link href="/preguntes-frequents-bolets#quan-anar-hi" className="text-link">Resolem els dubtes sobre temporada i pluja.</Link></p></div>
       </aside>
+
+      <nav className="guide-reading-actions" aria-label="Guies per preparar la temporada">
+        {activeSpecies.filter((species) => cepSpeciesIds.some((id) => id === species.speciesId) || ["craterellus-lutescens", "tricholoma-terreum"].includes(species.speciesId)).map((species) => (
+          <Link key={species.speciesId} href={speciesPath(species)}>{species.identity.commonName}: hàbitat i confusions <ArrowUpRight size={15} aria-hidden="true" /></Link>
+        ))}
+      </nav>
 
       <SectionHeader
         meta={selectedMonth.label}

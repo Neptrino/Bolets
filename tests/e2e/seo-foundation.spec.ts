@@ -81,15 +81,17 @@ test("the Rovellons and Ceps type tables scroll without widening mobile pages", 
 
   for (const route of ["/zones/rovellons", "/zones/ceps"]) {
     await page.goto(route);
-    await expect(page.locator(".guide-types-scroll-hint")).toBeVisible();
-    const dimensions = await page.locator(".guide-types-table-scroll").evaluate((element) => ({
+    await expect(page.locator(".guide-types-scroll-hint").first()).toBeVisible();
+    const tables = await page.locator(".guide-types-table-scroll").evaluateAll((elements) => elements.map((element) => ({
       clientWidth: element.clientWidth,
       scrollWidth: element.scrollWidth,
       documentWidth: document.documentElement.scrollWidth,
       viewportWidth: window.innerWidth,
-    }));
-    expect(dimensions.scrollWidth).toBeGreaterThan(dimensions.clientWidth);
-    expect(dimensions.documentWidth).toBe(dimensions.viewportWidth);
+    })));
+    for (const dimensions of tables) {
+      expect(dimensions.scrollWidth).toBeGreaterThan(dimensions.clientWidth);
+      expect(dimensions.documentWidth).toBe(dimensions.viewportWidth);
+    }
   }
 });
 
@@ -203,8 +205,8 @@ test("the current overview stays usable without publishing invented scores", asy
   const cardCount = await cards.count();
   expect(cardCount).toBeGreaterThan(0);
   await expect(page.locator("body")).not.toContainText(/Model ecologia-v/i);
-  await expect(page.locator(".current-overview-method")).toContainText(
-    "El resultat compara territoris",
+  await expect(page.locator(".current-reading-notes")).toContainText(
+    "La puntuació correspon al millor sector",
   );
   const instagramLink = page.getByRole("link", { name: "Segueix @bolets.app" });
   await expect(instagramLink).toHaveAttribute("href", "/instagram");
@@ -236,11 +238,7 @@ test("the current overview stays usable without publishing invented scores", asy
       expect(mapUrl.searchParams.get("region")).toBeTruthy();
     }
 
-    const leader = page.locator(".current-leader:not(.current-leader-empty)");
-    if (await leader.count()) {
-      await expect(leader.locator(".current-leader-species-link")).toHaveAttribute("href", /^\/bolets\/[a-z0-9-]+$/);
-      await expect(leader.locator(".current-leader-link")).toContainText("Veure al mapa");
-    }
+
   }
 });
 
@@ -393,7 +391,7 @@ test("the ceps guide connects every cep, broad region and published local guide"
   const cepGuideCount = speciesLocationPages.filter((guide) =>
     cepSpeciesIds.some((speciesId) => speciesId === guide.speciesId),
   ).length;
-  await expect(page.locator("[data-cep-local-guides] > a")).toHaveCount(cepGuideCount);
+  await expect(page.locator("[data-cep-local-guides] tbody a, .ceps-other-guides a")).toHaveCount(cepGuideCount);
   await expect(page.locator(".rovellons-faq details")).toHaveCount(7);
   await expect(page.locator(".rovellons-safety")).toContainText("ACSA");
   await expect(page.locator(".editorial-panel--compact")).toContainText("Editorial, no micològica");

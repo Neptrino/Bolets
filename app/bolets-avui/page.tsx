@@ -1,3 +1,4 @@
+import { developmentOverviewSimulation } from "@/src/lib/current-overview-simulation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -5,10 +6,7 @@ import { Suspense } from "react";
 import {
   ArrowUpRight,
   Clock3,
-  Gauge,
   Map,
-  MapPinned,
-  ShieldCheck,
 } from "lucide-react";
 import { DataSourceCredits } from "@/components/editorial-attribution";
 import { InstagramMark } from "@/components/instagram-mark";
@@ -19,7 +17,6 @@ import { RegionMap } from "@/components/region-map";
 import { editorialArticleFields } from "@/data/editorial";
 import { regionSelectItems } from "@/data/regions";
 import {
-  dominantLimitingComponent,
   isAreaOverviewItem,
   loadCachedAreaOverview,
   loadCachedCurrentOverview,
@@ -28,10 +25,6 @@ import {
   type CurrentOverviewItem,
 } from "@/src/lib/current-overview";
 import { GLOBAL_SPECIES_ID } from "@/src/lib/global-map";
-import {
-  publicConditionFactorLabel,
-  publicConditionFactorLabelFromSource,
-} from "@/src/lib/condition-presentation";
 import { SEASONAL_ACTIVITY_LABELS } from "@/src/lib/seasonality";
 import { opportunityLabel } from "@/src/lib/scoring";
 import {
@@ -44,7 +37,7 @@ import {
 } from "@/src/lib/seo";
 import { speciesMapHref } from "@/src/lib/species-map-pages";
 import { territorialMapPath } from "@/src/lib/territorial-map";
-import type { RegionalPredictionSummary } from "@/src/lib/types";
+import { currentSearchReadings, overviewExtent as extentMetric, overviewLimitingFactor as limitingFactor } from "@/src/lib/current-overview-copy";
 
 const overviewTitle = "On trobar bolets avui i aquesta setmana";
 const overviewDescription = metaDescription(
@@ -53,6 +46,7 @@ const overviewDescription = metaDescription(
 
 export const metadata: Metadata = {
   title: pageTitle(overviewTitle),
+  robots: process.env.NODE_ENV === "development" ? { index: false, follow: false } : undefined,
   description: overviewDescription,
   alternates: { canonical: "/bolets-avui" },
   openGraph: {
@@ -83,23 +77,6 @@ const currentMapRegions = regionSelectItems
   .filter(({ value }) => value !== "altres")
   .map(({ value }) => value);
 const MAX_OVERVIEW_CARDS = 10;
-
-function limitingFactor(item: RankedOverviewItem) {
-  const factor = item.summary?.result.components
-    .filter((factor) => factor.score !== null)
-    .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0];
-  return factor ? publicConditionFactorLabel(factor.id) : "Sense cap factor destacat";
-}
-
-function extentMetric(summary: RegionalPredictionSummary) {
-  if (summary.score20CellCount > 0) {
-    return `Condicions favorables en el ${Math.round(summary.score20CellShare * 100)}% de la zona`;
-  }
-  if (summary.positiveCellCount > 0) {
-    return `Alguna resposta favorable en el ${Math.round(summary.positiveCellShare * 100)}% de la zona`;
-  }
-  return "Sense cap sector favorable ara mateix";
-}
 
 function observationWindow(items: RankedOverviewItem[]) {
   const observations = items
@@ -134,18 +111,6 @@ function overviewLocationName(item: RankedOverviewItem) {
   return isAreaOverviewItem(item) ? item.areaName : item.regionName;
 }
 
-function topOverviewLocations(items: RankedOverviewItem[]) {
-  const locations = new Set<string>();
-
-  for (const item of items) {
-    if (item.status !== "available" || !item.summary || (item.summary.bestCell.score ?? 0) <= 0) continue;
-    locations.add(overviewLocationName(item));
-    if (locations.size === 3) break;
-  }
-
-  return [...locations];
-}
-
 function catalanList(items: string[]) {
   if (items.length < 2) return items[0] ?? "";
   return `${items.slice(0, -1).join(", ")} i ${items.at(-1)}`;
@@ -169,22 +134,27 @@ function CurrentOverviewLoading() {
   );
 }
 
-async function CurrentOverview() {
+async function CurrentOverview({ simulate = false }: { simulate?: boolean }) {
   // VPS builds intentionally receive no database credentials. Wait for a real
   // request so the runtime-only internal Supabase URL is available; the two
   // overview loaders share one generation-bound data cache.
   await connection();
-  const [allItems, areaItems] = await Promise.all([
+  const [loadedCurrentItems, loadedAreaItems] = await Promise.all([
     loadCachedCurrentOverview(),
     loadCachedAreaOverview(),
   ]);
+  const { currentItems: allItems, areaItems, simulated } = simulate
+    ? developmentOverviewSimulation(loadedCurrentItems, loadedAreaItems)
+    : { currentItems: loadedCurrentItems, areaItems: loadedAreaItems, simulated: false };
   const items = rankOverviewItems([...allItems, ...areaItems]);
   const visibleItems = items.slice(0, MAX_OVERVIEW_CARDS);
-  const leader = items.find((item) => item.status === "available" && item.summary);
-  const leaderScore = leader?.summary?.bestCell.score;
   const observedWindow = observationWindow(items);
   const lastObservedAt = latestObservation(items);
-  const topLocations = topOverviewLocations(items);
+  const searchReadings = currentSearchReadings(items);
+  const topLocations = searchReadings.map((item) =>
+    `${overviewLocationName(item)} (${item.speciesName.toLocaleLowerCase("ca")})`,
+  );
+  const availableCount = items.filter((item) => item.status === "available" && item.summary).length;
   const editorialFields = editorialArticleFields("bolets-avui");
   const editorialModifiedAt = new Date(`${editorialFields.dateModified}T00:00:00+02:00`);
   const pageModifiedAt = lastObservedAt && lastObservedAt > editorialModifiedAt
@@ -193,15 +163,16 @@ async function CurrentOverview() {
   const overviewSources = [...new Set(
     items.flatMap((item) => item.summary?.snapshot.source ?? []),
   )];
-  const leaderName = leader ? overviewLocationName(leader) : null;
-  const leaderMapPath = leader ? overviewMapPath(leader) : "/map";
   const structuredItems = visibleItems.filter(
     (item) => item.status === "available" && item.summary,
   );
 
   return (
     <>
-      <JsonLd data={{
+      {simulated && <aside className="intent-safety-note" role="status">
+        <p><strong>Simulació local · dades fictícies.</strong> Només simula el resum i el comparador. El mapa conserva les seves pròpies dades. <Link href="/bolets-avui">Torna a les lectures reals</Link>.</p>
+      </aside>}
+      {!simulated && <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "WebPage",
         "@id": `${absoluteUrl("/bolets-avui")}#webpage`,
@@ -226,74 +197,22 @@ async function CurrentOverview() {
             url: absoluteUrl(overviewMapPath(item)),
           })),
         },
-      }} />
+      }} />}
 
       <section className="current-search-answer" aria-labelledby="current-search-answer-title">
         <p className="eyebrow">Resposta actualitzada</p>
-        <h2 id="current-search-answer-title">On trobar bolets ara a Catalunya?</h2>
-        {topLocations.length > 0 ? (
-          <p>
-            Amb les lectures més recents, <strong>{catalanList(topLocations)}</strong> encapçalen
-            la comparació de territoris per preparar una sortida avui o aquesta setmana.
-            Són condicions ambientals favorables: no confirmen que hi hagi bolets ni són una
-            previsió tancada per als pròxims set dies.
-          </p>
-        ) : (
-          <p>
-            Ara mateix cap territori comparat mostra una resposta favorable prou clara.
-            Aquesta situació pot canviar amb noves pluges i temperatures; no confirma
-            l’absència de bolets al bosc.
-          </p>
-        )}
-        {lastObservedAt ? (
-          <p className="current-search-answer-updated">
-            <Clock3 size={14} aria-hidden="true" /> Darrera lectura: {dateTime.format(lastObservedAt)}
-          </p>
-        ) : null}
+        <h2 id="current-search-answer-title">On trobar bolets avui a Catalunya?</h2>
+        <p>{topLocations.length > 0 ? <>
+          Amb les lectures més recents, <strong>{catalanList(topLocations)}</strong> encapçalen
+          la comparació de territoris per preparar una sortida avui o aquesta setmana.
+          Són condicions ambientals favorables; no confirmen que hi hagi bolets.
+        </> : availableCount > 0
+          ? "Cap de les lectures disponibles mostra sectors favorables ara mateix."
+          : "Falten lectures recents i completes per comparar els territoris. Torna-ho a provar més tard."}
+        </p>
+        {availableCount > 0 && availableCount < items.length && <p>La comparació és parcial: alguns territoris o espècies no tenen lectures completes.</p>}
+        {observedWindow && <p className="current-search-answer-updated"><Clock3 size={14} aria-hidden="true" /> {observedWindow}</p>}
       </section>
-
-      {leader?.summary && leaderScore === 0 ? (
-        <aside className="current-leader current-leader-empty">
-          <ShieldCheck size={24} />
-          <div>
-            <strong>Cap zona destaca avui.</strong>
-            <p>
-              Les condicions no són favorables en cap dels territoris comparats.
-              {dominantLimitingComponent(allItems)
-                ? <> El principal fre ara mateix és «{publicConditionFactorLabelFromSource(dominantLimitingComponent(allItems)!)}».</>
-                : null} Pots consultar totes les zones a continuació.
-            </p>
-          </div>
-        </aside>
-      ) : leader?.summary && leaderScore !== null && leaderScore !== undefined ? (
-        <section className="current-leader" aria-labelledby="current-leader-title">
-          <div className="current-leader-topline">
-            <p className="current-leader-eyebrow"><MapPinned size={15} /> Millors condicions ara</p>
-            <p className="current-leader-meta"><Clock3 size={14} /> Calculat amb dades de {dateTime.format(new Date(leader.summary.snapshot.observedAt))}</p>
-          </div>
-          <div className="current-leader-copy">
-            <h2 id="current-leader-title">{leaderName}</h2>
-            <p><Link href={speciesPath(leader)} className="current-leader-species-link"><strong>{leader.speciesName}</strong><ArrowUpRight size={14} /></Link> és l’espècie amb les condicions més favorables en aquest territori.</p>
-            <Link href={leaderMapPath} className="current-leader-link">
-              <Map size={16} /> Veure al mapa <ArrowUpRight size={16} />
-            </Link>
-          </div>
-          <div className="current-leader-score" aria-label={`Millor sector del territori: ${leaderScore} sobre 100`}>
-            <strong>{leaderScore}</strong>
-            <span>/ 100</span>
-            <small>{opportunityLabel(leaderScore)}</small>
-          </div>
-          <dl className="current-leader-signals">
-            <div><dt><MapPinned size={16} /> Abast dins la zona</dt><dd>{extentMetric(leader.summary)}</dd></div>
-            <div><dt><Gauge size={16} /> Principal fre</dt><dd>{limitingFactor(leader)}</dd></div>
-          </dl>
-        </section>
-      ) : (
-        <aside className="current-leader current-leader-empty">
-          <ShieldCheck size={24} />
-          <div><strong>Avui no podem comparar les zones.</strong><p>Falten lectures recents o completes. Torna-ho a provar més tard.</p></div>
-        </aside>
-      )}
 
       <section className="current-map-overview" aria-labelledby="current-map-title">
         <header className="current-map-heading">
@@ -327,44 +246,12 @@ async function CurrentOverview() {
         </footer>
       </section>
 
-      <aside className="current-instagram" aria-labelledby="current-instagram-title">
-        <div className="current-instagram-mark" aria-hidden="true">
-          <InstagramMark size={28} />
-        </div>
-        <div className="current-instagram-copy">
-          <p className="eyebrow">Cada matí · 07:00</p>
-          <h2 id="current-instagram-title">La lectura d’avui, també a Instagram</h2>
-          <p>
-            Segueix <strong>@bolets.app</strong> per veure el mapa vigent a Stories i la
-            lectura del cap de setmana en format Reel.
-          </p>
-        </div>
-        <Link
-          className="current-instagram-link"
-          href="/instagram"
-          rel="me noopener noreferrer"
-          target="_blank"
-        >
-          Segueix @bolets.app <ArrowUpRight size={16} aria-hidden="true" />
-        </Link>
-      </aside>
-
-      <aside className="current-overview-method">
-        <ShieldCheck size={21} aria-hidden="true" />
-        <p><strong>El resultat compara territoris; no assenyala troballes.</strong> Només hi entren espècies comestibles que són de temporada i zones amb lectures recents i completes.</p>
-      </aside>
-
       <section className="current-board" aria-labelledby="current-board-title">
         <header className="current-board-heading">
           <div>
             <p className="eyebrow">Comparador territorial</p>
             <h2 id="current-board-title">Zones i espècies, de més a menys favorables</h2>
           </div>
-          {observedWindow ? (
-            <div>
-              <p className="current-board-updated"><Clock3 size={14} /> {observedWindow}</p>
-            </div>
-          ) : null}
         </header>
 
         {items.length > 0 ? <>
@@ -409,6 +296,7 @@ async function CurrentOverview() {
                 {summary ? (
                   <dl className="current-row-signals">
                     <div><dt>Abast dins la zona</dt><dd>{extentMetric(summary)}</dd></div>
+                    <div><dt>Principal fre</dt><dd>{limitingFactor(item)}</dd></div>
                   </dl>
                 ) : (
                   <p className="current-row-signals-empty">—</p>
@@ -423,22 +311,50 @@ async function CurrentOverview() {
         </> : <div className="current-board-empty"><strong>Avui no hi ha dades suficients</strong><p>Torna-ho a provar més tard per comparar les zones.</p></div>}
       </section>
 
-      <p className="prediction-zone-note">La valoració resumeix el sector més favorable de cada territori. Consulta el mapa per veure com canvien les condicions dins de la zona.</p>
+      <section className="current-reading-notes" aria-labelledby="current-reading-notes-title">
+        <h2 id="current-reading-notes-title">Com interpretar les dades</h2>
+        <p>La puntuació correspon al millor sector de cada territori; l’abast indica fins on s’estenen les condicions favorables. La comparació inclou espècies comestibles de temporada amb lectures completes.</p>
+        <p>Les condicions ambientals no confirmen presència de bolets i no són una previsió dels pròxims set dies. Revisa la lectura abans de sortir. <Link href="/metode">Consulta el mètode i els seus límits</Link>.</p>
+        {overviewSources.length > 0 ? (
+          <DataSourceCredits
+            sources={overviewSources}
+            label="Fonts de les dades"
+            description="Cartografia i lectures ambientals"
+            variant="panel"
+          />
+        ) : null}
+      </section>
 
-      {overviewSources.length > 0 ? (
-        <DataSourceCredits
-          sources={overviewSources}
-          label="Fonts de les dades"
-          description="Cartografia i lectures ambientals"
-          variant="panel"
-        />
-      ) : null}
+      <aside className="current-instagram" aria-labelledby="current-instagram-title">
+        <div className="current-instagram-mark" aria-hidden="true">
+          <InstagramMark size={28} />
+        </div>
+        <div className="current-instagram-copy">
+          <p className="eyebrow">Cada matí · 07:00</p>
+          <h2 id="current-instagram-title">La lectura d’avui, també a Instagram</h2>
+          <p>
+            Segueix <strong>@bolets.app</strong> per veure el mapa vigent a Stories i la
+            lectura del cap de setmana en format Reel.
+          </p>
+        </div>
+        <Link
+          className="current-instagram-link"
+          href="/instagram"
+          rel="me noopener noreferrer"
+          target="_blank"
+        >
+          Segueix @bolets.app <ArrowUpRight size={16} aria-hidden="true" />
+        </Link>
+      </aside>
 
     </>
   );
 }
 
-export default function MushroomsTodayPage() {
+export default async function MushroomsTodayPage({ searchParams }: {
+  searchParams: Promise<{ simula?: string }>;
+}) {
+  const simulate = process.env.NODE_ENV === "development" && (await searchParams).simula === "lectures";
   return (
     <PageShell as="article">
       <PageHeader
@@ -448,22 +364,15 @@ export default function MushroomsTodayPage() {
         layout="split"
       />
       <Suspense fallback={<CurrentOverviewLoading />}>
-        <CurrentOverview />
+        <CurrentOverview simulate={simulate} />
       </Suspense>
-      <section className="current-search-intro" aria-labelledby="current-search-intro-title">
-        <div>
-          <p className="eyebrow">Com interpretar la lectura</p>
-          <h2 id="current-search-intro-title">Condicions de bolets avui, aquesta setmana i per territori</h2>
-          <p>Aquesta pàgina compara lectures recents de pluja, temperatura, hàbitat i temporada. No confirma que hi hagi bolets: serveix per ordenar territoris i decidir quines espècies i boscos convé estudiar abans de sortir.</p>
-        </div>
-        <nav aria-label="Guies relacionades amb les condicions actuals">
+      <nav className="guide-reading-actions" aria-label="Guies relacionades amb les condicions actuals">
           <Link href="/map">Mapa de bolets de Catalunya <ArrowUpRight size={15} aria-hidden="true" /></Link>
           <Link href="/quan-surten-els-bolets-despres-de-ploure">Quan surten després de ploure <ArrowUpRight size={15} aria-hidden="true" /></Link>
           <Link href="/zones/ceps">Ceps de Catalunya <ArrowUpRight size={15} aria-hidden="true" /></Link>
           <Link href="/zones/rovellons">Rovellons a Catalunya <ArrowUpRight size={15} aria-hidden="true" /></Link>
-        </nav>
-      </section>
-      <p className="prediction-zone-note">Prepares una sortida? Consulta les <Link href="/preguntes-frequents-bolets#on-buscar" className="text-link">preguntes freqüents sobre on buscar bolets i com interpretar el mapa.</Link></p>
+        <Link href="/preguntes-frequents-bolets#on-buscar">Preguntes freqüents <ArrowUpRight size={15} aria-hidden="true" /></Link>
+      </nav>
     </PageShell>
   );
 }

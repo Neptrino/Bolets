@@ -5,6 +5,11 @@ import { SpeciesGallery } from "@/components/species-gallery";
 import { identificationDifficultyLabel } from "@/src/lib/identification-difficulty";
 import type { SpeciesProfile } from "@/src/lib/types";
 
+const camagrocCaptions: Record<string, string> = {
+  "wikimedia-craterellus-lutescens": "Barrets bruns i peus grocs: aquesta vista mostra el contrast de colors. Cal examinar també la cara inferior i la resta de trets de la fitxa.",
+  "wikimedia-craterellus-lutescens-gallery-3": "Cara inferior del barret: observa les arrugues irregulars i com baixen cap al peu groc. Aquesta fotografia de detall no substitueix la comparació de l’exemplar complet.",
+};
+
 export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel }: {
   species: Pick<SpeciesProfile, "identity" | "culinaryProfile" | "media">;
   habitatLabel: string;
@@ -35,7 +40,7 @@ export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel 
             </div>
           </div>
           <div className={`specimen-panel${species.media.length > 0 ? " has-photos" : ""}`}>
-            {species.media.length > 0 ? <SpeciesGallery images={species.media} speciesName={species.identity.scientificName} /> : (
+            {species.media.length > 0 ? <SpeciesGallery images={species.media} speciesName={species.identity.scientificName} captions={species.identity.scientificName === "Craterellus lutescens" ? camagrocCaptions : undefined} /> : (
               <>
                 <div className="specimen-drawing" aria-hidden="true"><span className="drawing-cap" /><span className="drawing-stem" /><span className="drawing-lines" /></div>
                 <p>Sense fotografia verificada</p>

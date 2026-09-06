@@ -8,13 +8,16 @@ import type { MediaAsset } from "@/src/lib/types";
 interface SpeciesGalleryProps {
   images: MediaAsset[];
   speciesName: string;
+  captions?: Record<string, string>;
 }
 
-export function SpeciesGallery({ images, speciesName }: SpeciesGalleryProps) {
+export function SpeciesGallery({ images, speciesName, captions }: SpeciesGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const activeImage = images[activeIndex];
+  const visibleLicense = activeImage?.hideCredit ? undefined : activeImage?.license;
+  const photoReading = captions && activeImage ? captions[activeImage.id] ?? activeImage.alt : undefined;
 
   const showPrevious = useCallback(() => {
     setActiveIndex((index) => (index - 1 + images.length) % images.length);
@@ -50,7 +53,7 @@ export function SpeciesGallery({ images, speciesName }: SpeciesGalleryProps) {
   const countLabel = `${activeIndex + 1} / ${images.length}`;
 
   return (
-    <div className="species-gallery">
+    <div className={`species-gallery${captions ? " has-reading" : ""}`}>
       <div className="species-gallery-stage">
         <button
           className="species-gallery-expand-target"
@@ -104,19 +107,28 @@ export function SpeciesGallery({ images, speciesName }: SpeciesGalleryProps) {
 
         <div className="species-gallery-caption">
           <p>
-            <i>{speciesName}</i> · foto de{" "}
-            <a
-              href={activeImage.sourceUrl}
-              target="_blank"
-              rel="noreferrer"
-              title={activeImage.license}
-            >
-              {activeImage.attribution}
-            </a>
+            <i>{speciesName}</i>
+            {!activeImage.hideCredit && (
+              <>
+                {" · foto de "}
+                <a
+                  href={activeImage.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  title={visibleLicense}
+                >
+                  {activeImage.attribution}
+                </a>
+              </>
+            )}
           </p>
-          <span>{activeImage.license} · imatge orientativa; verifica tots els trets</span>
+          <span>{visibleLicense && `${visibleLicense} · `}imatge orientativa; verifica tots els trets</span>
         </div>
       </div>
+
+      {photoReading && (
+        <p className="species-photo-reading" aria-live="polite">{photoReading}</p>
+      )}
 
       {multipleImages && (
         <div className="species-gallery-thumbnails" aria-label="Tria una fotografia">
@@ -141,7 +153,7 @@ export function SpeciesGallery({ images, speciesName }: SpeciesGalleryProps) {
       )}
 
       <dialog
-        className="species-lightbox"
+        className={`species-lightbox${captions ? " has-reading" : ""}`}
         ref={dialogRef}
         onCancel={() => setLightboxOpen(false)}
         onClose={() => setLightboxOpen(false)}
@@ -164,14 +176,17 @@ export function SpeciesGallery({ images, speciesName }: SpeciesGalleryProps) {
               <p>
                 <i>{speciesName}</i> · {countLabel}
               </p>
-              <a
-                href={activeImage.sourceUrl}
-                target="_blank"
-                rel="noreferrer"
-                title={activeImage.license}
-              >
-                {activeImage.attribution} · {activeImage.license}
-              </a>
+              {photoReading && <p>{photoReading}</p>}
+              {!activeImage.hideCredit && (
+                <a
+                  href={activeImage.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  title={visibleLicense}
+                >
+                  {activeImage.attribution}{visibleLicense && ` · ${visibleLicense}`}
+                </a>
+              )}
             </div>
             <button
               className="species-lightbox-close"

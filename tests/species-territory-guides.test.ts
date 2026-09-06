@@ -39,7 +39,7 @@ describe("species territory guide registry", () => {
 
     for (const guide of speciesTerritoryGuides) {
       const editorial = getEditorialMetadata(guide.contentId);
-      expect(editorial.updatedAt, guide.contentId).toBe("2026-08-31");
+      expect(editorial.updatedAt, guide.contentId).toBe(guide.contentId === "zones-ceps" ? "2026-09-06" : "2026-08-31");
       expect(
         entries.find((entry) => entry.url.endsWith(guide.path))?.lastModified,
         guide.path,

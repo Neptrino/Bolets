@@ -1,3 +1,4 @@
+import { SpeciesSearchSummary, hasSearchSummary } from "@/components/species-profile/search-summary";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { Map } from "lucide-react";
@@ -266,6 +267,7 @@ export default async function SpeciesPage({
         </aside>
 
         <div className="species-main">
+          {scoredSpecies && hasSearchSummary(species.speciesId) && <SpeciesSearchSummary species={scoredSpecies} />}
           <SpeciesIdentificationSection species={species} />
           <SpeciesCulinarySection species={species} />
           <SpeciesEcologySection species={species} />

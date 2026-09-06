@@ -282,7 +282,7 @@ export const speciesProfileSchema = z.object({
   modelConfig: fruitingModelConfig,
   idealConditions: z.array(z.string()),
   references: z.array(sourceReference),
-  media: z.array(z.object({ id: z.string(), imageUrl: z.url().optional(), sourceUrl: z.url(), localPath: localMediaPath.optional(), attribution: z.string(), license: z.string(), identificationReference: z.boolean(), alt: z.string() })),
+  media: z.array(z.object({ id: z.string(), imageUrl: z.url().optional(), sourceUrl: z.url(), localPath: localMediaPath.optional(), attribution: z.string(), license: z.string(), hideCredit: z.boolean().optional(), identificationReference: z.boolean(), alt: z.string() })),
   confidence
 }).superRefine((profile, context) => {
   if (profile.predictionMode === "habitat_only" && !profile.predictionCaveat?.trim()) {

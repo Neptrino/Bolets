@@ -71,7 +71,48 @@ async function smoothScroll(page, target, duration = 1_800) {
   );
 }
 
-async function recordScene({ name, path, ready, action, settle = 1_000 }) {
+async function waitForTimelineFrame(page, offset) {
+  const mapSelector = ".current-map-overview .region-map";
+  const range = page.locator(
+    ".current-map-overview .prediction-timeline-range input[type='range']",
+  );
+
+  await range.evaluate((element, nextOffset) => {
+    const setter = Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      "value",
+    )?.set;
+    setter?.call(element, String(nextOffset));
+    element.dispatchEvent(new Event("input", { bubbles: true }));
+    element.dispatchEvent(new Event("change", { bubbles: true }));
+  }, offset);
+  await page.waitForFunction(
+    ({ selector, expected }) =>
+      document.querySelector(selector)?.value === String(expected),
+    { selector: ".current-map-overview .prediction-timeline-range input[type='range']", expected: offset },
+  );
+  // Let the React effect mark the new map run as loading before waiting for
+  // its final state. Returning immediately here can race the effect itself.
+  await page.waitForTimeout(120);
+  await page.waitForFunction(
+    (selector) => document.querySelector(selector)?.getAttribute("aria-busy") !== "true",
+    mapSelector,
+    { timeout: 30_000 },
+  );
+  await page.waitForTimeout(180);
+}
+
+async function preloadTimelineFrames(page) {
+  // The RegionMap bucket store is keyed by the full timeline request URL and
+  // survives offset changes. Visiting every offset once warms all nine frames
+  // for the same viewport before the screencast begins.
+  for (const offset of [-3, -2, -1, 0, 1, 2, 3, 4, 5]) {
+    await waitForTimelineFrame(page, offset);
+  }
+  await waitForTimelineFrame(page, -3);
+}
+
+async function recordScene({ name, path, ready, prepare, action, settle = 1_000 }) {
   const page = await context.newPage();
   try {
     await page.goto(new URL(path, baseUrl).toString(), {
@@ -79,6 +120,7 @@ async function recordScene({ name, path, ready, action, settle = 1_000 }) {
       timeout: 30_000,
     });
     await waitForPage(page, ready);
+    if (prepare) await prepare(page);
     await page.screenshot({
       path: resolve(captureDirectory, `${name}-start.png`),
       type: "png",
@@ -129,6 +171,33 @@ try {
       await page.waitForTimeout(900);
       await smoothScroll(page, ".current-map-overview", 2_400);
       await page.waitForTimeout(1_300);
+    },
+  });
+
+  await captureScene({
+    name: "08-avui-evolution",
+    path: "/bolets-avui",
+    ready: ".current-map-overview .prediction-timeline-play",
+    settle: 1_400,
+    prepare: async (page) => {
+      await smoothScroll(page, ".current-map-overview", 1_900);
+      await page.waitForTimeout(900);
+      await preloadTimelineFrames(page);
+      // Cached offsets resolve in a microtask, but suppress the transient
+      // loading affordances so a captured frame can never show a spinner.
+      await page.addStyleTag({
+        content: `
+          .current-map-overview .prediction-timeline-loader,
+          .current-map-overview .prediction-map-loading,
+          .current-map-overview .map-refining-state { display: none !important; }
+        `,
+      });
+      await page.waitForTimeout(350);
+    },
+    action: async (page) => {
+      const play = page.locator(".current-map-overview .prediction-timeline-play");
+      await play.click();
+      await page.waitForTimeout(11_000);
     },
   });
 

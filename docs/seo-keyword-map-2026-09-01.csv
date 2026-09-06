@@ -37,9 +37,9 @@ P1,Season,temporada de bolets,50,8,informational,/temporada,existing_optimize,Su
 P1,Local,bolets montseny,50,7,local informational,/zones/montseny,existing_optimize,Deepen evidence rather than add duplicate
 P2,Preservation,congelar bolets,20,5,informational,/conservar-bolets,existing_optimize,Expand species-specific freezing guidance
 P2,Preservation,com conservar els ceps,40,6,informational,/conservar-bolets,existing_optimize,Add a clearly linked subsection
-P2,Recipes,estofat de vedella amb bolets,320,5,informational,/receptes/estofat-de-vedella-amb-bolets,defer_build,Only if recipe strategy is approved
-P2,Recipes,rovellons a la brasa,70,5,informational,/receptes/rovellons-a-la-brasa,defer_build,Only if recipe strategy is approved
-P2,Recipes,pasta amb camagrocs,110,4,informational,/receptes/pasta-amb-camagrocs,defer_build,Only if recipe strategy is approved
+P1,Recipes,estofat de vedella amb bolets,320,5,informational,/receptes/estofat-de-vedella-amb-bolets,planned_build,Approved for recipe launch batch
+P1,Recipes,rovellons a la brasa,70,5,informational,/receptes/rovellons-a-la-brasa,planned_build,Approved for recipe launch batch
+P1,Recipes,pasta amb camagrocs,110,4,informational,/receptes/pasta-amb-camagrocs,planned_build,Approved for recipe launch batch
 P3,Spanish,setas catalunya,260,7,informational,/es/,defer,Requires complete Spanish information architecture
 P3,Spanish,setas comestibles en cataluña,140,7,informational,/es/setas-comestibles,defer,Requires translated and maintained safety content
 P3,Spanish,mapa de setas en cataluña,70,11,informational,/es/mapa,defer,Requires complete Spanish product experience

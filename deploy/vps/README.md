@@ -70,6 +70,10 @@ Create `analytics.bolets.app` only after the first rollout has changed Umami's
 default administrator password. Keep it DNS-only when Cloudflare proxy IPs are
 not suitable for the site's network path.
 
+The public website now uses Cloudflare proxying and scoped static caching.
+See [Cloudflare website proxy](cloudflare.md) for the exact rules, verification,
+metrics interpretation and rollback.
+
 ## 2. Install a pinned Supabase release
 
 The version below matches the official documentation reviewed when this

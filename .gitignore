@@ -4,6 +4,8 @@ public/media/optimized/
 next-env.d.ts
 coverage/
 artifacts/
+output/
+outputs/seo-review-2026-09-05/
 playwright-report/
 test-results/
 *.tsbuildinfo
@@ -26,3 +28,6 @@ video/render/
 .codex-tmp/node_modules
 
 .static/
+
+# Stock footage staged for Instagram renders (source: ~/Desktop/Bolets/Resources)
+video/assets/stock/
