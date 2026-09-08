@@ -344,14 +344,54 @@ async function fetchAtmosphericForecastHistory(
   return results;
 }
 
+// One provider batch costs roughly 250 estimated units on a single egress
+// lane, so a 25-second pace keeps a looping invocation near 500 units/minute,
+// inside Open-Meteo's 600/minute ceiling with room for the other pipelines.
+// The budget stops well short of the 150-second worker timeout.
+const CHAIN_PASS_DELAY_MS = 25_000;
+const INVOCATION_TIME_BUDGET_MS = 120_000;
+const MAX_PASSES_PER_INVOCATION = 5;
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+type BatchPassResult = {
+  payload: Record<string, unknown>;
+  status?: number;
+  complete: boolean;
+  halt: boolean;
+};
+
 Deno.serve(async (request) => {
+  if (request.method !== "POST") return json({ error: "Method not allowed" }, 405, { Allow: "POST" });
+  const supabase = createAdminClient();
+  if (!await verifyIngestionRequest(request, supabase)) return json({ error: "Unauthorized ingestion request" }, 401);
+  const body = await request.json().catch(() => ({})) as { trigger?: "cron" | "manual" };
+  // Chained passes drain the daily cursor within one invocation instead of
+  // waiting five minutes of cron per 50-point batch; errors and provider
+  // failures still halt immediately so circuit breakers keep control.
+  const invocationStartedMs = Date.now();
+  let lastResult: BatchPassResult | undefined;
+  for (let pass = 0; pass < MAX_PASSES_PER_INVOCATION; pass += 1) {
+    if (pass > 0) {
+      if (Date.now() - invocationStartedMs > INVOCATION_TIME_BUDGET_MS - CHAIN_PASS_DELAY_MS) break;
+      await sleep(CHAIN_PASS_DELAY_MS);
+    }
+    lastResult = await runSoilAndForecastBatch(supabase, body.trigger);
+    if (lastResult.status !== undefined) return json(lastResult.payload, lastResult.status);
+    if (lastResult.complete || lastResult.halt) return json(lastResult.payload);
+  }
+  return json(lastResult?.payload ?? { error: "No batch executed" });
+});
+
+async function runSoilAndForecastBatch(
+  supabase: ReturnType<typeof createAdminClient>,
+  trigger: "cron" | "manual" | undefined,
+): Promise<BatchPassResult> {
   let runId: string | undefined;
   try {
-    if (request.method !== "POST") return json({ error: "Method not allowed" }, 405, { Allow: "POST" });
-    const supabase = createAdminClient();
-    if (!await verifyIngestionRequest(request, supabase)) return json({ error: "Unauthorized ingestion request" }, 401);
     const today = new Date().toISOString().slice(0, 10);
-    const body = await request.json().catch(() => ({})) as { trigger?: "cron" | "manual" };
     const forecastReconciliation = await reconcileForecastIssue(supabase, today);
     if (forecastReconciliation.issueComplete && !forecastReconciliation.realigned) {
       await saveCursor(
@@ -377,13 +417,17 @@ Deno.serve(async (request) => {
     const forecastAlreadyComplete = forecastLastPointId === COMPLETE_CURSOR;
     if (soilAlreadyComplete && forecastAlreadyComplete) {
       const conditionsRefreshed = await refreshSpatialLevelConditionsAfterIngestion(supabase, today);
-      return json({ refreshed: 0, forecasted: 0, complete: true, conditionsRefreshed, snapshotDate: today });
+      return {
+        payload: { refreshed: 0, forecasted: 0, complete: true, conditionsRefreshed, snapshotDate: today },
+        complete: true,
+        halt: false,
+      };
     }
 
     runId = await startRun(
       supabase,
       "spatial-soil",
-      body.trigger === "manual" ? "manual" : "cron",
+      trigger === "manual" ? "manual" : "cron",
       today,
       {
         batchSize: BATCH_SIZE,
@@ -445,14 +489,18 @@ Deno.serve(async (request) => {
       const conditionsRefreshed = soilErrorMessage
         ? false
         : await refreshSpatialLevelConditionsAfterIngestion(supabase, today);
-      return json({
-        runId,
-        refreshed: 0,
-        forecasted: 0,
+      return {
+        payload: {
+          runId,
+          refreshed: 0,
+          forecasted: 0,
+          complete: !cursorError,
+          conditionsRefreshed,
+          snapshotDate: today,
+        },
         complete: !cursorError,
-        conditionsRefreshed,
-        snapshotDate: today,
-      });
+        halt: Boolean(cursorError),
+      };
     }
 
     const forecastGeneratedAt = forecastPoints.length
@@ -736,16 +784,20 @@ Deno.serve(async (request) => {
     const conditionsRefreshed = soilComplete
       ? await refreshSpatialLevelConditionsAfterIngestion(supabase, today)
       : false;
-    return json({
-      runId,
-      refreshed: storedSoilRows,
-      forecasted: storedForecastRows,
-      forecastAvailable: forecastPoints.length === 0 || forecastBatchSucceeded,
-      forecastRealigned: forecastReconciliation.realigned,
+    return {
+      payload: {
+        runId,
+        refreshed: storedSoilRows,
+        forecasted: storedForecastRows,
+        forecastAvailable: forecastPoints.length === 0 || forecastBatchSucceeded,
+        forecastRealigned: forecastReconciliation.realigned,
+        complete,
+        conditionsRefreshed,
+        snapshotDate: today,
+      },
       complete,
-      conditionsRefreshed,
-      snapshotDate: today,
-    });
+      halt: Boolean(soilErrorMessage) || Boolean(forecastErrorMessage) || forecastIncomplete,
+    };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Spatial soil refresh failed", { runId, message });
@@ -754,6 +806,6 @@ Deno.serve(async (request) => {
     } catch (finishError) {
       console.error("Unable to record failed soil refresh", finishError);
     }
-    return json({ error: "Spatial soil refresh failed", runId }, 500);
+    return { payload: { error: "Spatial soil refresh failed", runId }, status: 500, complete: false, halt: true };
   }
-});
+}
