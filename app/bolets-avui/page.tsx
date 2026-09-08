@@ -300,30 +300,36 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
           ) : null}
         </section>
 
-        <aside className="current-instagram" aria-labelledby="current-instagram-title">
-          <div className="current-instagram-mark" aria-hidden="true">
-            <InstagramMark size={28} />
-          </div>
-          <div className="current-instagram-copy">
-            <p className="eyebrow">Cada matí · 07:00</p>
-            <h2 id="current-instagram-title">La lectura d’avui, també a Instagram</h2>
-            <p>
-              Segueix <strong>@bolets.app</strong> per veure el mapa vigent a Stories i la
-              lectura del cap de setmana en format Reel.
-            </p>
-          </div>
-          <Link
-            className="current-instagram-link"
-            href="/instagram"
-            rel="me noopener noreferrer"
-            target="_blank"
-          >
-            Segueix @bolets.app <ArrowUpRight size={16} aria-hidden="true" />
-          </Link>
-        </aside>
-
       </>}
     </>
+  );
+}
+
+// Follow prompt placed right after the map, where most visitors stop scrolling:
+// on a phone the old position, after the twenty-row board, sat eight screens down.
+function CurrentInstagramCard() {
+  return (
+      <aside className="current-instagram" aria-labelledby="current-instagram-title">
+        <div className="current-instagram-mark" aria-hidden="true">
+          <InstagramMark size={28} />
+        </div>
+        <div className="current-instagram-copy">
+          <p className="eyebrow">Cada matí · 07:00</p>
+          <h2 id="current-instagram-title">La lectura d’avui, també a Instagram</h2>
+          <p>
+            Segueix <strong>@bolets.app</strong> per veure el mapa vigent a Stories i la
+            lectura del cap de setmana en format Reel.
+          </p>
+        </div>
+        <Link
+          className="current-instagram-link"
+          href="/instagram"
+          rel="me noopener noreferrer"
+          target="_blank"
+        >
+          Segueix @bolets.app <ArrowUpRight size={16} aria-hidden="true" />
+        </Link>
+      </aside>
   );
 }
 
@@ -380,6 +386,7 @@ export default async function MushroomsTodayPage({ searchParams }: {
         <CurrentOverview simulate={simulate} section="answer" />
       </Suspense>
       <CurrentMap />
+      <CurrentInstagramCard />
       <Suspense fallback={<CurrentOverviewLoading />}>
         <CurrentOverview simulate={simulate} section="ranking" />
       </Suspense>
