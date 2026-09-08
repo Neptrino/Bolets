@@ -33,4 +33,20 @@ elif ! grep -q 'const workerTimeoutMs = 150 \* 1000' "$main_router"; then
   exit 65
 fi
 
+# The runtime's default CPU limits (about 2 seconds hard) are sized for
+# multi-tenant hosting; station-corrected batch chaining accumulates more CPU
+# per worker than that on this single-tenant server. Raise them alongside the
+# wall-clock tune, and fail closed if the upstream worker options change shape.
+if ! grep -q 'cpuTimeSoftLimitMs' "$main_router"; then
+  sed -i.bak \
+    -e 's/  const workerTimeoutMs = 150 \* 1000/  const workerTimeoutMs = 150 * 1000\n  const cpuTimeSoftLimitMs = 5 * 1000\n  const cpuTimeHardLimitMs = 10 * 1000/' \
+    -e 's/      workerTimeoutMs,/      workerTimeoutMs,\n      cpuTimeSoftLimitMs,\n      cpuTimeHardLimitMs,/' \
+    "$main_router"
+  rm "$main_router.bak"
+fi
+if ! grep -q 'cpuTimeHardLimitMs,' "$main_router"; then
+  echo "Review the upstream Edge Runtime worker options before synchronizing functions" >&2
+  exit 65
+fi
+
 echo "Synchronized Bolets Edge Functions into $target_dir"
