@@ -13,6 +13,11 @@ import {
   estimateOpenMeteoRequestUnits,
   recordOpenMeteoUsage,
 } from "../_shared/provider-budget.ts";
+import {
+  buildStationCorrectedPrecipitation,
+  normalizeStationMatrixRow,
+  type StationHourSeries,
+} from "../_shared/xema-rain.ts";
 
 type SoilPoint = {
   point_id: string;
@@ -21,6 +26,58 @@ type SoilPoint = {
   requested_elevation_m: number | null;
   native_resolution_m: number;
 };
+
+async function fetchGaugeMatrix(supabase: ReturnType<typeof createAdminClient>) {
+  const { data, error } = await supabase.rpc("get_xema_rain_matrix", { p_hours: 744 });
+  if (error) {
+    console.error("Gauge matrix read failed; forecast past rain falls back to the model history", {
+      message: error.message,
+    });
+    return [];
+  }
+  return (Array.isArray(data) ? data : [])
+    .map(normalizeStationMatrixRow)
+    .filter((station): station is StationHourSeries => station !== undefined);
+}
+
+/**
+ * Replaces the historical atmosphere's model rain with the gauge blend the
+ * observed snapshots already use. Horizon rain windows are dominated by past
+ * hours, so leaving them on uncorrected model rain made the projection's
+ * day-over-day direction disagree with the observed readings whenever the
+ * model's storm record diverged from the gauges. Future hours carry no gauge
+ * reports and keep the forecast values.
+ */
+function gaugeCorrectedHistory(
+  history: OpenMeteoLocation,
+  stations: StationHourSeries[],
+  latitude: number,
+  longitude: number,
+) {
+  const hourly = history.hourly as Record<string, unknown> | undefined;
+  const times = Array.isArray(hourly?.time) ? hourly.time as unknown[] : [];
+  const precipitation = Array.isArray(hourly?.precipitation)
+    ? hourly.precipitation as unknown[]
+    : [];
+  if (!stations.length || !times.length || !precipitation.length) {
+    return { history, gaugeHours: 0, totalHours: times.length };
+  }
+  const corrected = buildStationCorrectedPrecipitation(
+    times,
+    precipitation,
+    stations,
+    latitude,
+    longitude,
+  );
+  return {
+    history: {
+      ...history,
+      hourly: { ...hourly, precipitation: corrected.series },
+    } as OpenMeteoLocation,
+    gaugeHours: corrected.gaugeHours,
+    totalHours: corrected.totalHours,
+  };
+}
 
 const BATCH_SIZE = 50;
 const PROVIDER_BATCH_SIZE = 50;
@@ -401,7 +458,7 @@ Deno.serve(async (request) => {
     const forecastGeneratedAt = forecastPoints.length
       ? await forecastIssueGeneratedAt(supabase, today)
       : new Date().toISOString();
-    const [currentSoil, forecastAtmosphere, forecastAtmosphereHistory, forecastSoil] = await Promise.all([
+    const [currentSoil, forecastAtmosphere, forecastAtmosphereHistory, forecastSoil, gaugeStations] = await Promise.all([
       soilPoints.length
         ? settle(fetchSoil(supabase, soilPoints))
         : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
@@ -414,6 +471,9 @@ Deno.serve(async (request) => {
       forecastPoints.length
         ? settle(fetchForecast(supabase, forecastPoints, "soil"))
         : Promise.resolve<Settled<OpenMeteoLocation[]>>({ data: [] }),
+      forecastPoints.length
+        ? fetchGaugeMatrix(supabase)
+        : Promise.resolve<StationHourSeries[]>([]),
     ]);
     soilErrorMessage ??= currentSoil.error;
     const atmosphericForecastError = forecastAtmosphere.error;
@@ -486,11 +546,20 @@ Deno.serve(async (request) => {
           const atmosphereLocation = atmosphericForecastLocations[index];
           const atmosphericHistoryLocation = atmosphericHistoryLocations[index];
           const soilLocation = soilForecastLocations[index];
+          const correctedHistory = gaugeCorrectedHistory(
+            atmosphericHistoryLocation,
+            gaugeStations,
+            point.requested_lat,
+            point.requested_lon,
+          );
+          const gaugeCoverage = correctedHistory.totalHours
+            ? Math.round((correctedHistory.gaugeHours / correctedHistory.totalHours) * 100) / 100
+            : 0;
           const normalized = normalizeOpenMeteoForecast(
             atmosphereLocation,
             soilLocation,
             forecastGeneratedAt,
-            atmosphericHistoryLocation,
+            correctedHistory.history,
           );
           const forecasts = normalized.baseline
             ? [normalized.baseline, ...normalized.points]
@@ -503,6 +572,7 @@ Deno.serve(async (request) => {
             horizon_hours: forecast.horizonHours,
             sources: [
               "Météo-France AROME history via Open-Meteo",
+              ...(gaugeCoverage > 0 ? ["Meteocat XEMA station gauges"] : []),
               "ECMWF IFS HRES forecast via Open-Meteo",
               "Open-Meteo soil-moisture forecast",
             ],
@@ -511,6 +581,7 @@ Deno.serve(async (request) => {
             unavailable_fields: forecast.unavailableFields,
             values: {
               ...forecast.values,
+              precipitationGaugeCoverage: gaugeCoverage,
               weatherModel: "Météo-France AROME history + ECMWF IFS HRES forecast",
               atmosphericResolutionM: 9000,
               soilMoistureResolutionM: 9000,
