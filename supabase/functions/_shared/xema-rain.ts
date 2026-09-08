@@ -286,9 +286,20 @@ const MADRID_HOUR_KEY_FORMAT = new Intl.DateTimeFormat("sv-SE", {
  * axes delivered as epoch seconds (historical requests use timeformat
  * unixtime, while the live refresh receives local-time strings directly).
  */
+// Intl formatting costs microseconds per call, and station correction asks
+// for the same few hundred hour keys once per grid point — tens of thousands
+// of calls per 50-point batch, enough to trip the edge isolate's CPU limit.
+// The keys repeat across points, so a small memo removes almost all of it.
+const madridHourKeyCache = new Map<number, string>();
+
 export function madridHourKey(epochSeconds: number) {
   if (!Number.isFinite(epochSeconds)) return undefined;
-  return MADRID_HOUR_KEY_FORMAT.format(new Date(epochSeconds * 1000)).replace(" ", "T");
+  const cached = madridHourKeyCache.get(epochSeconds);
+  if (cached !== undefined) return cached;
+  const key = MADRID_HOUR_KEY_FORMAT.format(new Date(epochSeconds * 1000)).replace(" ", "T");
+  if (madridHourKeyCache.size >= 20_000) madridHourKeyCache.clear();
+  madridHourKeyCache.set(epochSeconds, key);
+  return key;
 }
 
 /**
