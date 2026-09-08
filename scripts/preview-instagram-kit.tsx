@@ -20,7 +20,7 @@ const card: DailyShareCard = {
 
 async function exists(path: string) { try { await access(path); return true; } catch { return false; } }
 async function main() {
-  const output = resolve("artifacts/instagram/profile-kit");
+  const output = resolve("social/profile-kit");
   await mkdir(output, { recursive: true });
   async function save(name: string, response: Promise<Response>) {
     const bytes = Buffer.from(await (await response).arrayBuffer());
@@ -45,8 +45,8 @@ async function main() {
     const jpg = await sharp(await readFile(resolve(process.argv[2]))).jpeg().toBuffer();
     map = await save("weekend-cover", renderInstagramWeekendSlide({ card, slide: 1, mapImageUrl: `data:image/jpeg;base64,${jpg.toString("base64")}` }));
   }
-  const ad = resolve("artifacts/instagram/2026-09-map-campaign/singles/22-mapa-bolets-app.png");
-  const reel = resolve("artifacts/instagram/2026-09-map-campaign/02-el-mapa-tambe-canvia/cover.png");
+  const ad = resolve("social/2026-09-map-campaign/singles/22-mapa-bolets-app.png");
+  const reel = resolve("social/2026-09-map-campaign/02-el-mapa-tambe-canvia/cover.png");
   const entries = [
     await exists(ad) ? ad : resolve(output, "pinned-start.png"),
     map,

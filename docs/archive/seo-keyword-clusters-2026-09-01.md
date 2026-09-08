@@ -1,5 +1,7 @@
 # SEO keyword clusters and competitive gap analysis — 1 September 2026
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 ## Executive verdict
 
 Bolets Atles already has the right information architecture for the most valuable Catalan search journeys. The main problem is not a lack of pages: it is that a very new domain has not yet converted a strong catalogue into rankings.
@@ -286,7 +288,7 @@ Track each cluster at the canonical level rather than celebrating isolated keywo
 | Core sampled top-10 presence | 0 of 12 queries | Look for first top-20 and top-10 entries; do not expect all 12. |
 | SE Ranking organic rows for `bolets.app` | None detected | Recheck after recrawl; absence remains a data/maturity signal, not a penalty diagnosis. |
 | Current-page server usefulness | Complete normal and Googlebot responses contain the loading shell and the dated territorial answer | Preserve this behavior and alert on a response that contains only the loading shell. |
-| Query ownership | Defined in this report and `seo-launch-operations.md` | Investigate only when Search Console shows a different URL repeatedly receiving the same query. |
+| Query ownership | Defined in this report and [SEO operations](../seo-launch-operations.md) | Investigate only when Search Console shows a different URL repeatedly receiving the same query. |
 | Content expansion | Three species/reference gaps and one terminology gap | Publish only when evidence and distinct intent are both present. |
 | Authority | Very new domain | Count relevant earned citations/referring domains, not raw link volume. |
 
@@ -306,4 +308,4 @@ Track each cluster at the canonical level rather than celebrating isolated keywo
 
 ## Deliverable companion
 
-The implementation-level mapping is in `docs/seo-keyword-map-2026-09-01.csv`. It assigns one canonical owner to every priority keyword and marks whether the action is optimize, build, defer or monitor.
+The implementation-level mapping is in `docs/archive/seo-keyword-map-2026-09-01.csv`. It assigns one canonical owner to every priority keyword and marks whether the action is optimize, build, defer or monitor.

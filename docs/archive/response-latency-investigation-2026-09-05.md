@@ -1,5 +1,7 @@
 # Intermittent response latency — 5 September 2026
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 The reported image navigation showed a 4.47 s network fetch and 4.70 s total
 service-worker navigation, followed by 353 ms and 570 ms respectively. The
 screenshot does not separate connection setup, time to first byte and body

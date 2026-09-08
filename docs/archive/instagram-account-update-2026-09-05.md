@@ -1,5 +1,7 @@
 # Instagram account update · 5 September 2026
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 The user authorized applying the profile redesign to the live account.
 
 ## Completed and verified
@@ -28,7 +30,7 @@ Do not treat this as proof that a mobile-only control is absent. If the mobile a
 
 The user subsequently explicitly instructed: “go and publish all new posts except reels”. This authorizes publishing the redesigned photo posts and complete carousels. It does not authorize deleting or archiving originals. The unchanged active advertisement is excluded from the new-post batch.
 
-Prepared 11 posts / 27 clean 1080 × 1350 JPEG images in `artifacts/instagram/publication-2026-09-05`: original positions 7–17, publishing in descending order to retain their relative order. Positions 7–10 are complete five-slide carousels. No draft stamps, old 73/100 example or purported live reading is included. Field photos are captioned as archive photographs. Caption/source/file mapping is in `manifest.json`; progress is recorded separately in `publication-log.json`.
+Prepared 11 posts / 27 clean 1080 × 1350 JPEG images in `social/publication-2026-09-05`: original positions 7–17, publishing in descending order to retain their relative order. Positions 7–10 are complete five-slide carousels. No draft stamps, old 73/100 example or purported live reading is included. Field photos are captioned as archive photographs. Caption/source/file mapping is in `manifest.json`; progress is recorded separately in `publication-log.json`.
 
 Inspected the complete contact sheet and ran focused script lint. First upload through the signed-in Instagram web composer failed at Chrome `fileChooser.setFiles` with `Not allowed`. No Share action was executed and no new post was published. The browser's upload troubleshooting instructions require enabling “Allow access to file URLs” for the ChatGPT Chrome extension; these instructions were sent to the user. The user enabled the required capability and instructed “go”; uploads then succeeded.
 
@@ -36,7 +38,7 @@ Regenerate assets with `npx tsx scripts/render-instagram-publication-pack.tsx`. 
 
 ## Clean pinned-cover handoff
 
-`artifacts/instagram/pinned-cover-update.zip` contains three clean 1080 × 1920 covers and their post mapping. ESBORRANY/PROPOSTA labels were removed by rendering the source components; map-reference and ICGC attribution remain. These covers introduce existing evergreen tutorial Reels; they do not claim new live readings.
+`social/pinned-cover-update.zip` contains three clean 1080 × 1920 covers and their post mapping. ESBORRANY/PROPOSTA labels were removed by rendering the source components; map-reference and ICGC attribution remain. These covers introduce existing evergreen tutorial Reels; they do not claim new live readings.
 
 Regenerate with `npx tsx scripts/render-instagram-pinned-cover-pack.tsx`. The earlier current-profile study and its draft stamps remain unchanged.
 
@@ -46,7 +48,7 @@ Published all 11 authorized new non-Reel posts through the signed-in Instagram w
 
 The third post initially received the preceding archive caption. Corrected it through Edit info and verified the intended caption live before continuing.
 
-Publication receipts: `artifacts/instagram/publication-2026-09-05/publication-log.json`. Final profile screenshot: `profile-live.png` in the same folder.
+Publication receipts: `social/publication-2026-09-05/publication-log.json`. Final profile screenshot: `profile-live.png` in the same folder.
 
 - Source position 17: https://www.instagram.com/bolets.app/p/Dc5dRU1DHeF/
 - Source position 16: https://www.instagram.com/bolets.app/p/Dc5dX7tjAFE/
@@ -73,4 +75,18 @@ Mobile handoff targets:
 
 User subsequently explicitly requested removing old posts. Removed the 11 original photo/carousel posts mapped to the published replacements (source positions 7–17) through Instagram’s Delete → Delete post confirmation. Every deletion returned “Post deleted.” Refreshed the profile and verified all 17 remaining URLs: 11 new posts, five existing Reels and the active ad. No superseded original remains.
 
-Removal receipts: `artifacts/instagram/publication-2026-09-05/removal-log.json`. The original photos and caption mapping remain in the local source archive. Pin configuration changed externally during this work; no pin action was performed by the assistant.
+Removal receipts: `social/publication-2026-09-05/removal-log.json`. The original photos and caption mapping remain in the local source archive. Pin configuration changed externally during this work; no pin action was performed by the assistant.
+
+## Retained design-study references
+
+The superseded profile-direction and current-profile-redesign handoffs were consolidated here on 8 September 2026. Current creative rules live in the [style guide](../instagram-style-guide.md); the initial six-photo grid mix was exploratory, not a posting quota.
+
+The 17-cover before/after study remains reproducible with `npx tsx scripts/recreate-instagram-profile.tsx` after its local source export is present. Its review, original captions/permalinks, source mapping and covers live under `social/current-profile-redesign/` (`index.html`, `comparison.jpg`, `source-posts.json`, `redesign-manifest.json`, `originals/` and `covers/`). These are historical cover studies, not complete posts or new image-licence grants. The earlier concept grid is `social/profile-direction/grid-concept.jpg`; the weekend fixture preview is `social/weekend-redesign/weekend-preview.mp4`.
+
+## Historical renderer verification · 5 September 2026
+
+Moved from the visual guide during consolidation. These checks and queue observations apply to that release only.
+
+The isolated publishing release passes 1,177 tests under Node 24 (eight skipped), lint/source-size checks, typecheck, production build and `git diff --check`. Daily Story/feed previews were rendered and visually inspected. The local Node 25 runtime causes four unrelated browser tests to fail because its localStorage implementation differs; the production Node 24 runtime passes them.
+
+The Buffer queue audit found nine manually prepared campaign posts and no generated species or recurring posts containing old artwork. Existing uploaded campaign media does not change with this release.

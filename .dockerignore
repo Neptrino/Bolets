@@ -15,3 +15,13 @@ playwright-report
 test-results
 .env*
 *.tsbuildinfo
+
+# Local research, exports and creative sources; not application build inputs.
+social
+artifacts
+output
+outputs
+.codex-tmp
+.claude
+.DS_Store
+**/.DS_Store

@@ -10,7 +10,7 @@ async function main() {
   const brief = instagramCoverBriefSchema.parse(JSON.parse(await readFile(resolve(input), "utf8")));
   for (const warning of instagramCoverWarnings(brief)) console.warn(warning);
   const response = await renderInstagramCover({ brief, format: format as "feed" | "story", draft: true });
-  const output = resolve("artifacts/instagram/template-drafts");
+  const output = resolve("social/template-drafts");
   await mkdir(output, { recursive: true });
   const path = resolve(output, `${basename(input, ".json")}-${format}.png`);
   await writeFile(path, Buffer.from(await response.arrayBuffer()));

@@ -1,5 +1,7 @@
 # Recipe CMS and content plan — 3 September 2026
 
+Status: proposed architecture, not an implemented recipe CMS. The later [recipe research](archive/recipe-sources-and-candidate-list-2026-09-04.md) revised the candidate collection; reconcile that shortlist before starting content production.
+
 ## Decision
 
 Launch the recipe section as a version-controlled, validated JSON catalogue rather than a database CMS. One shared hub and one shared recipe template will render every page. This is the smallest architecture that supports the first 15 recipes, preserves editorial review and immutable deployments, and can later be backed by Supabase without rewriting the public pages.

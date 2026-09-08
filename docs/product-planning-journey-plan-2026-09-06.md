@@ -1,6 +1,6 @@
 # Plan: a mushroom reference for Catalonia
 
-Status: Release 1 implemented and verified locally on 6 September 2026; see [local release verification](reference-release-local-2026-09-06.md). Nothing committed or deployed. Releases 2 and 3 remain planned. This roadmap pairs prediction-led acquisition with broader reference improvements; the map-to-save specification is retained as a bounded part of the roadmap.
+Status checked against the repository on 8 September 2026: Release 1 is committed as `98f0d00`; see [local release verification](archive/reference-release-local-2026-09-06.md). Production deployment was not checked during this documentation review. Releases 2 and 3 remain planned; the contextual saved-interest implementation was reverted before that commit. This roadmap pairs prediction-led acquisition with broader reference improvements; the map-to-save specification is retained as a bounded part of the roadmap.
 
 ## Outcome
 
@@ -70,7 +70,7 @@ Develop practical/cultural material through the existing preservation and recipe
 
 ## Evidence and existing work
 
-The [analytics review](product-priorities-analytics-2026-09-06.md) identifies one valuable journey, with caveats about small samples, changing instrumentation and different reporting periods. It does not define the product's whole purpose or establish that reference content has less value:
+The [analytics review](archive/product-priorities-analytics-2026-09-06.md) identifies one valuable journey, with caveats about small samples, changing instrumentation and different reporting periods. It does not define the product's whole purpose or establish that reference content has less value:
 
 - Search Console: `/zones/ceps` received 59 clicks; Port del Comte, Rasos de Peguera, Setcases and Bellver guides already attract relevant searches.
 - Umami, 29 August–4 September: 77% of reported visitors used mobile; `/map` had 218 visitors and `/bolets-avui` 92. These overlapping audiences must not be added together.

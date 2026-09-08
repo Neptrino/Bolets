@@ -14,7 +14,7 @@ import { instagramEducationTopic } from "@/src/lib/instagram-education";
 import type { InstagramCoverBrief, InstagramMotif } from "@/src/lib/instagram-cover-brief";
 import { FieldStudyCover } from "./instagram-profile-study-cards";
 
-const folder = resolve("artifacts/instagram/publication-2026-09-05");
+const folder = resolve("social/publication-2026-09-05");
 const planning = [
   { eyebrow: "01 · Compara el territori", title: "Comença pel mapa Avui.", subtitle: "Consulta la lectura territorial i mira quina espècie destaca a cada zona.", motif: "extent", tone: "cream" },
   { eyebrow: "02 · Mira més enllà del màxim", title: "Un bon sector. I la resta?", subtitle: "Comprova si el senyal és ampli o aïllat. L’extensió dona context a la puntuació.", motif: "extent", tone: "forest" },
@@ -23,7 +23,7 @@ const planning = [
 ] as const;
 
 async function main() {
-  const posts: { position: number; url: string; caption: string; sourcePath: string }[] = JSON.parse(await readFile("artifacts/instagram/current-profile-redesign/source-posts.json", "utf8"));
+  const posts: { position: number; url: string; caption: string; sourcePath: string }[] = JSON.parse(await readFile("social/current-profile-redesign/source-posts.json", "utf8"));
   await mkdir(folder, { recursive: true });
   const fonts = await instagramCardFonts();
   const image = async (position: number) => `data:image/jpeg;base64,${(await sharp(posts[position - 1].sourcePath).rotate().jpeg({ quality: 95 }).toBuffer()).toString("base64")}`;

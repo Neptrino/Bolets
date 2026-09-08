@@ -1,5 +1,7 @@
 # Product priorities checked against analytics — 6 September 2026
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 ## Decision
 
 Prioritize the existing **ceps/local guide → current map → saved territory** journey. Preserve direct map access. Improve discovery of the existing Avui page for current-condition searches. Treat territory grouping and a different homepage primary action as usability hypotheses; defer a newsletter/alert system until there is evidence of demand and repeat use.

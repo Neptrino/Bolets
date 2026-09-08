@@ -4,8 +4,6 @@ public/media/optimized/
 next-env.d.ts
 coverage/
 artifacts/
-output/
-outputs/seo-review-2026-09-05/
 playwright-report/
 test-results/
 *.tsbuildinfo
@@ -25,7 +23,7 @@ lambda/**/dist/
 workers/**/worker-configuration.d.ts
 video/render/
 .claude/
-.codex-tmp/node_modules
+.codex-tmp/
 
 .static/
 .release-image
@@ -34,3 +32,7 @@ build-config.json
 
 # Stock footage staged for Instagram renders (source: ~/Desktop/Bolets/Resources)
 video/assets/stock/
+
+# All social-media content (Instagram renders, campaign packs, asset library) lives here; only the index is tracked
+social/*
+!social/README.md

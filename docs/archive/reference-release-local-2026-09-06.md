@@ -1,5 +1,7 @@
 # Mushroom reference: local release verification
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 6 September 2026. Implemented locally; no commit, push or deployment.
 
 ## What changed

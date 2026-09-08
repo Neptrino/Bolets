@@ -1,6 +1,6 @@
 # SEO launch operations
 
-Last updated: 2026-08-31
+Operational guidance reviewed against the repository: 2026-09-08. Account measurements below remain the 31 August snapshot; no connected-account settings were checked or changed.
 
 These account-level actions are deliberately separate from the application release. They require the domain owner's Google, Bing and SE Ranking accounts. Search Console is the source of truth for Google indexation; SE Ranking figures are directional monitoring data.
 
@@ -27,7 +27,7 @@ The connected Search Console feed in SE Ranking exposes query signals but does n
 | `mapa bolets Catalunya`, `mapa bolets avui`, `predicció de bolets`, `mapa de predicció de bolets` | `https://bolets.app/map` |
 | `temporada de bolets Catalunya` | `https://bolets.app/temporada` |
 | `bolets al setembre` and equivalent month queries | The matching `/temporada/{mes}` page |
-| Singular species names and scientific taxa | The matching `/bolets/{speciesId}` profile |
+| Singular species names and scientific taxa | The matching `/bolets/{catalan-slug}` profile |
 | `ceps`, `ceps de Catalunya` | `https://bolets.app/zones/ceps` |
 | `rovellons`, `rovellons a Catalunya` | `https://bolets.app/zones/rovellons` |
 | Explicit `X vs Y` searches | The matching `/compare/{slug}` page |
@@ -49,7 +49,7 @@ Target-URL mappings are monitoring expectations, not directives that force Googl
 - [ ] Resubmit `https://bolets.app/sitemap.xml` once.
 - [ ] Request indexing only for `/`, `/temporada`, `/temporada/setembre` and the three changed species profiles.
 - [ ] Run a fresh SE Ranking audit. Require at least 95/100 and zero new errors.
-- [ ] Confirm the sitemap URL count did not change during this URL-neutral release.
+- [ ] Reconcile sitemap additions and removals with the release scope; require an unchanged count only for a URL-neutral release.
 
 ## Google Search Console and Bing
 
@@ -83,7 +83,7 @@ Create a CTR/content backlog only for pages with at least 10 impressions in a co
 
 ## Field-evidence backlog
 
-Every species currently has an attributed identification-reference image. Original field photography is therefore a non-blocking quality improvement, prioritized as follows:
+Preserve catalogue photo attribution and verify the actual identification-reference status of each image. Original field photography is a quality improvement, prioritized as follows:
 
 1. Cep
 2. Rossinyol

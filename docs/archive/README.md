@@ -1,0 +1,50 @@
+# Historical documentation
+
+Archived on 8 September 2026 to separate evidence from current guidance. These reports preserve dated measurements, source links and release/account receipts. They are not an active backlog, current account inventory, publication authorization or proof of production deployment. Start with the [current documentation index](../README.md).
+
+The older SEO/species gap lists predate later catalogue additions; reconcile candidates against `data/catalogue.ts` and `data/species-slugs.ts` before implementing them. The 6 September competitor review also corrects earlier claims about competitor sources. Completed zones work belongs here even though its optional Pirineu follow-up was left open.
+
+## Reports and receipts
+
+- [Buffer migration — 8 September 2026](buffer-migration-2026-09-08.md)
+
+- [Homepage video engagement](homepage-video-engagement-2026-09-06.md)
+- [Instagram account update · 5 September 2026](instagram-account-update-2026-09-05.md)
+- [Instagram competitor comparison and growth plan — 4 September 2026](instagram-competitor-comparison-and-growth-plan-2026-09-04.md)
+- [Product competitor review — 6 September 2026](product-competitor-review-2026-09-06.md)
+- [Product priorities checked against analytics — 6 September 2026](product-priorities-analytics-2026-09-06.md)
+- [Recipe channel — freely usable sources and candidate recipes — 4 September 2026](recipe-sources-and-candidate-list-2026-09-04.md)
+- [Mushroom reference: local release verification](reference-release-local-2026-09-06.md)
+- [Intermittent response latency — 5 September 2026](response-latency-investigation-2026-09-05.md)
+- [SEO competitor comparison — 27 August 2026](seo-competitor-comparison-2026-08-27.md)
+- [Mushroom-hunting FAQ: question-level SEO research](seo-faq-research-2026-08-27.md)
+- [SEO keyword clusters and competitive gap analysis — 1 September 2026](seo-keyword-clusters-2026-09-01.md)
+- [SEO improvements: local testing, 6 September 2026](seo-local-testing-2026-09-06.md)
+- [SEO top-priority implementation plan — 1 September 2026](seo-top-priority-plan-2026-09-01.md)
+- [Species-guide competitor gaps — 2 September 2026](species-guide-gaps-2026-09-02.md)
+- [Zones hub restructure — proposal](zones-hub-proposal.md)
+
+## Evidence files
+
+- [instagram-competitor-benchmark-2026-09-04.csv](instagram-competitor-benchmark-2026-09-04.csv)
+- [seo-faq-evidence-2026-08-27.json](seo-faq-evidence-2026-08-27.json)
+- [seo-keyword-map-2026-09-01.csv](seo-keyword-map-2026-09-01.csv)
+- [species-competitor-matrix-2026-09-02.csv](species-competitor-matrix-2026-09-02.csv)
+
+## Consolidated handoffs
+
+The superseded 5 September Instagram profile-direction and cover-redesign documents were removed. Their useful renderer commands and artifact locations are retained in the [account update receipt](instagram-account-update-2026-09-05.md#retained-design-study-references); active creative rules remain in the [style guide](../instagram-style-guide.md).
+
+## Instagram consolidation · 8 September 2026
+
+The active material is consolidated into the [operating playbook](../instagram-growth-playbook.md), [visual guide](../instagram-style-guide.md) and [illustrated-carousel reference](../instagram-illustrated-carousel-style.md). The standalone publishing workflow and dated 10K plan were retired as active documents.
+
+- [Publishing setup · 7 September](instagram-publishing-setup-2026-09-07.md): preserved setup and migration observations; later local transfer records may supersede its queue state.
+- [Growth snapshot · 8 September](instagram-growth-snapshot-2026-09-08.md): preserved original capped decision and superseded uncapped scenarios. The €200 ceiling is carried into the playbook; projected follower counts remain assumptions.
+
+Repeated profile copy, timing rules and growth targets were removed from the visual guide. Its dated test results moved into the account/design receipt. Campaign captions, alt text, prompts, source/licence records and publication IDs remain alongside their artifacts.
+
+## Earlier SEO source material
+
+- [Launch field research · August 2026](seo-field-research-2026-08-13.md): moved from the repository root.
+- [SEO review source bundle · 2 September 2026](seo-review-2026-09-02/README.md): findings, audit evidence, workbook data and the historical builder, formerly under `.codex-tmp`.

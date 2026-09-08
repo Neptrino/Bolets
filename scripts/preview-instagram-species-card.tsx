@@ -3,7 +3,7 @@
 //
 //   npx tsx scripts/preview-instagram-species-card.tsx boletus-edulis amanita-phalloides
 //
-// Output: artifacts/instagram/species-cards/<speciesId>/slide-N.png plus a
+// Output: social/species-cards/<speciesId>/slide-N.png plus a
 // strip.jpg contact sheet of the five slides.
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -21,7 +21,7 @@ async function main() {
     process.exit(1);
   }
 
-  const outputRoot = resolve(process.cwd(), "artifacts", "instagram", "species-cards");
+  const outputRoot = resolve(process.cwd(), "social", "species-cards");
   const thumbnailWidth = 432;
   const thumbnailGap = 16;
 

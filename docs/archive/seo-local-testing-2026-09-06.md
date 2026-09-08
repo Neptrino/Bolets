@@ -1,5 +1,7 @@
 # SEO improvements: local testing, 6 September 2026
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 Implemented the three agreed content workstreams locally. No deployment, publishing, outreach or changes to connected analytics accounts.
 
 ## What to test

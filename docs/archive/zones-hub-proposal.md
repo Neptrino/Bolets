@@ -1,5 +1,7 @@
 # Zones hub restructure — proposal
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 **Date:** 2026-08-17 · **Status:** implemented 2026-08-17 (all phases, plus hub board on /bolets-avui; Pirineu editorial hub still open)
 
 ## Why

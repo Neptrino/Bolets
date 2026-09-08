@@ -21,7 +21,7 @@ const card: DailyShareCard = {
 };
 
 async function main() {
-  const directory = resolve("artifacts/instagram/weekend-redesign");
+  const directory = resolve("social/weekend-redesign");
   await mkdir(directory, { recursive: true });
   // A supplied map is a visual reference only: every frame is marked MOSTRA.
   const mapImageUrl = process.argv[2]

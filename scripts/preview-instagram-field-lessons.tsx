@@ -7,7 +7,7 @@ import { instagramFieldLessons } from "@/src/lib/instagram-field-lessons";
 import type { DailyShareCard } from "@/src/lib/daily-share-cards";
 
 async function main() {
-  const folder = resolve("artifacts/instagram/field-lessons-preview");
+  const folder = resolve("social/field-lessons-preview");
   await mkdir(folder, { recursive: true });
   const card: DailyShareCard = { slug: "catalunya", title: "Catalunya", eyebrow: "Mostra", available: false, isPreview: true, observedAt: null, scope: "overview", scopeLabel: "Catalunya", mapPath: "/map", shareText: "MOSTRA", readings: [] };
   for (const topic of instagramFieldLessons) {

@@ -1,6 +1,8 @@
 # Recipe channel — freely usable sources and candidate recipes — 4 September 2026
 
-Companion to `recipe-cms-and-content-plan-2026-09-03.md` (architecture, editorial and safety rules) and to the three approved recipe rows in `seo-keyword-map-2026-09-01.csv`. This document answers two questions: which recipe resources the site can use without buying or infringing anything, and which recipes are worth building as a search-discovery channel.
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
+Companion to [recipe content plan](../recipe-cms-and-content-plan-2026-09-03.md) (architecture, editorial and safety rules) and to the three approved recipe rows in `seo-keyword-map-2026-09-01.csv`. This document answers two questions: which recipe resources the site can use without buying or infringing anything, and which recipes are worth building as a search-discovery channel.
 
 ## Verdict
 

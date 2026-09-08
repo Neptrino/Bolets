@@ -13,7 +13,7 @@ import { educationCovers, pinnedCovers } from "@/src/lib/instagram-editorial-cov
 import { MapStudyCover, FieldStudyCover } from "./instagram-profile-study-cards";
 
 interface SourcePost { position: number; url: string; pinned: boolean; caption: string; sourcePath: string }
-const output = resolve("artifacts/instagram/current-profile-redesign");
+const output = resolve("social/current-profile-redesign");
 const number = (i: number) => String(i).padStart(2, "0");
 const escape = (s: string) => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
 const titles = ["Tot un món de bolets.", "El bosc canvia cada dia.", "Mira el bosc de prop.", "Dos boscos. Dues lectures.", "On val la pena buscar bolets avui?", "On miraries aquest cap de setmana?", "Tria el bosc amb criteri.", "Cep", "Apagallums", "Què vol dir aquest número?", "Coneix els bolets. Entén el bosc.", "Condicions. No localitzacions.", "El bosc es respecta.", "Petits tresors del bosc", "El bosc comença a produir", "Fotografia de camp · sense peu original", "Fotografia de camp · sense peu original"];
@@ -44,7 +44,7 @@ async function main() {
   const fonts = await instagramCardFonts();
   const image = async (path: string) => `data:image/jpeg;base64,${(await sharp(path).rotate().jpeg({ quality: 92 }).toBuffer()).toString("base64")}`;
   const original = (i: number) => posts[i - 1].sourcePath;
-  const map = await image("artifacts/instagram/weekend-redesign/avui-map.jpg");
+  const map = await image("social/weekend-redesign/avui-map.jpg");
   const detail = `data:image/jpeg;base64,${(await sharp("video/assets/captures/mobile/m08-setcases-cep-prediction-start.png").extract({ left: 108, top: 492, width: 864, height: 820 }).jpeg().toBuffer()).toString("base64")}`;
   const field14 = await image(original(14));
   const render = (element: ReactElement) => new ImageResponse(element, { width: 1080, height: 1350, fonts });
@@ -58,7 +58,7 @@ async function main() {
     else if (i === 2) response = render(<MapStudyCover title={titles[1]} eyebrow="Segueix l’evolució" subtitle="Observa el canvi. Prepara la sortida." map={map} timeline />);
     else if (i === 3) response = render(<MapStudyCover title={titles[2]} eyebrow="Mapa detallat · Cep" subtitle="Tria l’espècie. Amplia. Compara sectors." map={detail} tone="orange" round />);
     else if (i === 4) response = render(<MapStudyCover title={titles[3]} eyebrow="El terreny també compta" subtitle="Les condicions canvien d’un sector a l’altre." map={detail} tone="forest" round backgroundPhoto={field14} />);
-    else if (i === 5) { await copyFile("artifacts/instagram/2026-09-map-campaign/singles/22-mapa-bolets-app.png", path); after.push(path); continue; }
+    else if (i === 5) { await copyFile("social/2026-09-map-campaign/singles/22-mapa-bolets-app.png", path); after.push(path); continue; }
     else if (i === 6) response = render(<MapStudyCover title={titles[5]} eyebrow="Prepara el cap de setmana" subtitle="Comença pel mapa Avui de Catalunya." map={map} />);
     else if (i === 7) response = await photo(15, "Abans de sortir", titles[6], "Compara espècies, territoris i condicions.");
     else if (i === 8 || i === 9) response = await renderInstagramSpeciesSlide({ profile: instagramSpeciesPublicationForSpecies(i === 8 ? "boletus-edulis" : "macrolepiota-procera").profile, slide: 1 });

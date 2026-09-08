@@ -1,5 +1,7 @@
 # Mushroom-hunting FAQ: question-level SEO research
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 Research date: **27 August 2026**. Target: Catalan-speaking mushroom hunters in Catalonia. Page: `/preguntes-frequents-bolets`. Implementation status: local changes, not pushed or deployed by this research pass.
 
 ## Usability and safety follow-up — 28 August 2026

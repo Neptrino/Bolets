@@ -1,5 +1,7 @@
 # Species-guide competitor gaps — 2 September 2026
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 The best next expansion is **12 descriptive species profiles**, focused on missing lookalikes and familiar Catalan names. The current working catalogue contains **56 profiles: 52 in `data/species.ts` and four reference-only profiles**. A competitor advertising 69 species does not mean we need 13 additions: the overlap is much smaller, and several names require reconciliation.
 
 The accompanying [comparison matrix](species-competitor-matrix-2026-09-02.csv) contains 144 evidence rows: every record in Boletaires.cat's 69-entry public dataset, the 67 profiles linked from bolets.info's homepage, and eight selected additional subjects from bolets.com. Priorities are editorial judgments based on existing guide connections, coverage and naming value; they are **not measured keyword demand or traffic forecasts**.

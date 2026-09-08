@@ -1,5 +1,7 @@
 # SEO competitor comparison — 27 August 2026
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 ## Verdict
 
 Bolets Atles has a stronger technical foundation and a more detailed species-to-territory experience than several of the sampled specialist sites. That does **not** establish that it currently outranks them. Fresh comparative rankings, estimated organic traffic, referring domains and domain-strength metrics could not be retrieved because the SE Ranking connection requires reauthentication.
@@ -103,7 +105,7 @@ Implemented locally after the comparison; not committed, pushed or deployed:
 - Public-ready `/bolets-de-soca` and `/fals-rossinyol`. The owner has explicitly deferred expert review, superseding the earlier draft/noindex gate. Both carry truthful editorial-only safety notices, Article/Breadcrumb metadata, sitemap entries and links from `/bolets`. The wood-fungi guide lists four existing catalogue species with photos and original safety labels. No unsupported ecology or new prediction species was invented.
 - Subsequent addition: `/bolets/hygrophoropsis-aurantiaca` is a descriptive-only species profile with sourced traits, habitat/season prose, consumption warnings and two attributed photographs. It is discoverable in the catalogue, the confusion guide, related profiles and the sitemap. The local catalogue has **53 profiles**, while the **52 model-supported profiles**, map selectors/caches and quantified monthly calendars remain unchanged. This does not change the earlier production inventory above.
 - 66 supplementary-photo alt descriptions rewritten after inspecting all 66 images. This addresses the generic-description gap, not taxonomic validation, original field-photography acquisition or all historical crawl warnings.
-- [Optional independent review checklist](mycological-review-checklist.md), retained only for a future review decision. Independent review is absent, not scheduled or implied by documentary source checks. No outreach was sent.
+- [Optional independent review checklist](../mycological-review-checklist.md), retained only for a future review decision. Independent review is absent, not scheduled or implied by documentary source checks. No outreach was sent.
 
 Verification after the follow-up: 671 unit tests passed, 8 skipped; lint, type check and production build passed. Thirteen browser tests passed: nine guide/viewport combinations, catalogue navigation and three shared-layout regressions. They check non-overlap, indexable editorial metadata, source attribution, section links and navigation to an existing species profile. The sitemap now includes all three guides (190 page URLs). Shared light-page components and typography were retained; no map-library or prediction changes were made.
 

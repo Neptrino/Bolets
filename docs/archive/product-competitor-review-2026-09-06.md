@@ -1,5 +1,7 @@
 # Product competitor review — 6 September 2026
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 ## Assessment
 
 Boletada, Trobarbolets and Va de Bolets all compete for the decision of where and when to go mushroom hunting. A conditions map, species guide or calendar is not exclusive to Bolets. The current evidence does not establish that competitors have overtaken Bolets in feature breadth, prediction accuracy, adoption or release speed.

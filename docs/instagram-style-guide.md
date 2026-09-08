@@ -1,99 +1,63 @@
-# Instagram visual rules and templates
+# Instagram visual guide
 
-## Reference and intent
+Consolidated 8 September 2026. This document owns visual and rendering rules. Publishing, profile copy, budgets and measurement live in the [operating playbook](instagram-growth-playbook.md). The [illustrated-carousel reference](instagram-illustrated-carousel-style.md) adds detailed geometry and illustration instructions for that series only.
 
-The current mushroom photograph ad (`InstagramPromoSingle`) and the newer cinematic map Reels (`InstagramMapCampaign`) are the visual references. Keep their heavy cream headlines, forest photography and orange accents. The active ad is an existing campaign asset; template work must not silently replace or re-render it with different typography.
+## Creative direction
 
-The aim is a recognisable profile with visible mushrooms, maps and useful questions. This is a creative direction, not evidence of improved ad performance. Compare future creative variants against actual campaign results before replacing the active ad.
+Keep the current mushroom photograph ad (`InstagramPromoSingle`) and newer cinematic map Reels (`InstagramMapCampaign`) as visual references: heavy cream headlines, forest imagery and orange accents. Preserve the active ad when creating variants; a design preview does not establish improved campaign performance.
 
-## Cover rules
+Give each cover one recognisable subject and one message. Aim for two to six headline words, with details in later slides or the caption. Check legibility at phone/thumbnail size and in the intended profile crop. Keep key content away from Reel controls. Avoid repeating the same photograph and layout on consecutive covers, without forcing a checkerboard or fixed colour quota.
 
-- Give each cover one subject and one message. Aim for two to six headline words; move explanations into the carousel or caption.
-- Use the shared forest, cream and orange palette in `src/lib/instagram-design.ts`. Photo covers use a solid forest text panel; educational covers use one solid background and a simple relevant illustration.
-- Use the shared heavy typeface and scale. Existing Remotion assets keep their Avenir-first stack; generated share cards use the bundled Nunito Sans fonts.
-- Keep branding small and in a consistent corner. A photograph or map should be recognisable before the logo or supporting text.
-- Do not add a catalogue, guide and map thumbnail to every cover. The active ad can retain its existing composition; editorial posts should have a narrower purpose.
-- Check the exported cover at phone size and in the intended profile crop. Keep essential text away from Reel controls. The local grid preview contains full reference Reel frames and therefore is not an exact Instagram crop.
-- Avoid consecutive covers with the same photograph, dominant background and layout. Do not force a checkerboard or a quota if the content does not warrant it.
+Use the shared palette, type and margins from [`src/lib/instagram-design.ts`](../src/lib/instagram-design.ts). Use solid backgrounds. Existing Remotion compositions retain their Avenir-first stack; share-card renderers use bundled Nunito Sans. Do not create another palette or silently replace a reference composition's typography.
 
-## Template families
+## Format-specific rules
 
-| Family | Lead | Supporting content | Source |
-| --- | --- | --- | --- |
-| Daily Story | Short question and three clear territorial readings | Observation date, maxima and both extent measures; same signed card as the publisher | Daily renderer |
-| Weekend | Actual combined Avui map and “On miraries?” | Five frames: map, comparison, species, extent, current map invitation | Signed weekend renderer |
-| Species | Large credited catalogue photograph and common name | Existing five-slide species series with identification limits | Catalogue and species renderer |
-| Education | Short question, cream/orange/forest background and one illustration | Existing sourced five-slide curriculum | Education renderer |
-| Field detail | Credited reference photograph and one observational prompt | Caption or subsequent images explaining the detail | JSON photo brief |
-| Cinematic Reel | Existing full-screen footage, heavy headline and map lens | Existing map campaign composition | Remotion campaign |
-| Pinned introduction | “Abans de sortir.” | What the app offers and how to start | Pinned start cover/caption |
-| Pinned method | “Un número. Més context.” | How to interpret conditions and territorial extent | Pinned method cover/caption |
-| Pinned limits | “El bosc es respecta.” | Responsible use and identification limits | Pinned safety cover/caption |
+| Format | Composition | Boundary |
+| --- | --- | --- |
+| Daily conditions Story | Original photo header, compact ranking, rounded rows and labelled scale | Preserve the earlier regular typography and photo shading as a deliberate exception to the newer cover style |
+| Weekend conditions Reel | Combined Avui map first, then territorial comparison, species, extent and one closing action | Current observations, not a future forecast; use the signed production renderer |
+| Species carousel / field detail | Large credited reference photo, common name and useful identifying details | Catalogue sources and identification limits remain; no claim that the photo is today's finding |
+| Manual illustrated lesson | Large organic hand-drawn subject, short Catalan headline, concrete explanation and practical action | Follow the approved litter reference; the automatic education publisher stays retired |
+| Cinematic campaign Reel | Continuous forest footage, heavy headline, map/product lens and one action | Generated footage is illustrative; product captures retain their actual date/reference status |
+| Personal field photo | Clean photograph with optional discreet logo/wordmark | Put longer observations in the caption or a later slide |
+| Evergreen pin | A distinct introduction, method explanation or responsible-use subject | Proposed artwork does not change actual pins; reuse completed Reels where suitable |
 
-Pinned covers are proposed replacements. Rendering their files does not change existing Instagram pins. Reuse the newer completed Reels before producing redundant feature introductions.
+The older requirement for a photograph in every first frame is superseded for manual illustrated lessons. Legacy education rendering helpers remain for historical signed links and local drafts; their existence does not authorize scheduling them.
 
-## Truthful maps and imagery
+For the manual illustrated series, use the full [soil/ground logo](../public/brand/bolets-logo.svg) and Nunito Sans Black headings. Keep the approved proportions and measure number/checkmark alignment against visible text bounds. The [detailed reference](instagram-illustrated-carousel-style.md) owns its palette-role table, image sizes, geometry, story structure and Magnific prompt.
 
-The weekend opener shows current conditions, even when its headline invites weekend planning. It is not a future forecast. Keep the Catalonia observation date, score legend, attribution and “Condicions d’avui · No confirma presència”. A territorial maximum must retain the positive-sector and 20+-sector shares wherever that maximum is presented.
+## Truthful maps, imagery and copy
 
-Live publication continues through the existing signed current-day checks. Withheld, stale or unavailable readings do not become a post. Never build a live map from numbers typed into a generic design brief. The local preview uses an archived map reference and fictional territorial fixtures marked MOSTRA; it is not publishable weekend evidence.
+- Current-condition publications use signed, verified current-day data. Never type scores into a generic design brief to create a live map; stale, unavailable and preview data cannot become a current report.
+- A weekend-planning headline still describes today's conditions. Preserve the observation date, legend, attribution and “Condicions d’avui · No confirma presència”. Keep the territorial maximum together with positive-sector and 20+-sector shares.
+- Daily score panels use the shared colour for the actual condition band; verified zero stays neutral. Do not recolour measurements to make a post more varied or animate scores to imply changing observations.
+- Archived captures are reference material. Fictional local fixtures retain **MOSTRA**; generic drafts retain **ESBORRANY**. They are not publishable evidence of current conditions.
+- Catalogue images retain their attribution/licence and sourced identification limits. Generated scenes and illustrations do not document a sighting or establish species identity, edibility or a collection location.
+- Keep generation provenance in the source record and applicable caption. Do not burn an AI label into artwork; platform disclosure is handled through the playbook's publication review.
 
-Catalogue photos are reference images, not today's findings. Preserve their attribution/licence and source-backed identification limits. Use original field footage where possible. Illustrations must not imply documented sightings, harvests or exact collection locations.
+Write clear, natural Catalan with one useful action. Identification education must retain its safety limits and truthful absence of independent mycological review. Examples and diagrams must explain the feature they actually show.
 
-## Profile copy and editorial use
+## Rendering and source ownership
 
-Suggested bio draft:
+Reusable originals, provenance and manual templates live in [the asset library](../social/asset-library/README.md). Campaign exports live under `social/`, indexed in [social/README.md](../social/README.md). These local resources are ignored by Git except for that index; do not assume that their presence means they are committed or backed up. Keep runtime renderers and canonical brand resources in their existing source locations.
 
-> Bolets de Catalunya, amb criteri 🍄
-> Mapa de condicions · Espècies · Guies de camp
-> ↓ Consulta el mapa d’avui
+| Task | Entry point |
+| --- | --- |
+| Review production templates/captions | `/admin/publicacio` |
+| Prepare a personal photograph locally in the browser | `/admin/publicacio/fotos` |
+| Simulated daily preview | `npx tsx scripts/preview-instagram-daily.tsx` → `social/daily-style-preview/` |
+| Simulated weekend preview | `npx tsx scripts/preview-instagram-weekend.tsx [map-image-path]` → `social/weekend-redesign/` |
+| Generic JSON cover draft / profile kit | [Template commands](../templates/instagram/README.md) |
+| Manual illustrated carousel / Reel | [Asset-library render commands](../social/asset-library/README.md#render-from-the-library) |
 
-Suggested highlight names: **Mapa · Espècies · Al bosc · Guies**. Populate them with useful existing stories before adding more categories.
+The photo editor offers Fotografia, Titular and Peu de camp presets, branding choices and top/bottom text placement. Photos stay in browser memory; downloads and publishing are separate actions. Prefer clean photographs, reserving full text panels for short educational headlines.
 
-Use the weekend map as the recurring timely post. Place species guides, field detail and education between map updates so the profile also rewards browsing. Reuse already-produced cinematic Reels where they fit. These are editorial rules, not changes to the existing publishing schedule or queue.
+The weekend composition is in `components/instagram-weekend-card.tsx`; image/font loading is in `src/lib/instagram-weekend-render.tsx`. The Reel is 20 seconds at 30 fps, with a restrained 1.8% eased push/pull on map/species shots and still comparison/extent figures. Transitions are 600 ms; the closing frame returns to the opener. Keep date, legend and attribution within existing safe margins. The renderer supersamples motion from one decoded image per scene and retains bounded encoder threads and its rendering timeout.
 
-## Rendering and review
+Bump `src/lib/instagram-template-version.ts` when published artwork changes. For motion-only weekend changes, bump `reelVersion` in `src/lib/social-growth-assets.ts`. Preserve publication idempotency markers. Updating a renderer or media URL does not replace artwork already copied into Buffer or Meta; inspect queued media separately.
 
-Use `/admin/publicacio` to review the production templates and their captions. Regenerate the simulated daily Story/feed preview with `npx tsx scripts/preview-instagram-daily.tsx`. Keep the approved source assets and compare new renders before publishing through the existing workflow.
+## Final creative review
 
-Review the headline at thumbnail size, image crop, spelling, scientific attribution, date and limits together. For ads, judge click and landing-page outcomes as well as engagement; a visual preview alone cannot establish which creative converts best.
+Inspect each slide at native and phone size: text wraps, spelling, crop, source credits, date, legend, safe margins, correct logo and meaningful labels/arrows. Measure badge/checkmark alignment instead of judging only a contact sheet. Review the caption and media together. For ads, compare later click and landing-page outcomes; preview approval alone proves no conversion gain.
 
-## Implementation verification · 5 September 2026
-
-The isolated publishing release passes 1,177 tests under Node 24 (eight skipped), lint/source-size checks, typecheck, production build and `git diff --check`. Daily Story/feed previews were rendered and visually inspected. The local Node 25 runtime causes four unrelated browser tests to fail because its localStorage implementation differs; the production Node 24 runtime passes them.
-
-The Buffer queue audit found nine manually prepared campaign posts and no generated species or recurring posts containing old artwork. Existing uploaded campaign media does not change with this release.
-
-## Scheduled publishing integration
-
-The admin preview and server publishing triggers share the production image routes. Daily portrait cards, species carousels, rotating education carousels, evergreen covers and the five-frame weekend Reel use the same palette and bundled fonts. The weekend opener leads with the combined Avui map.
-
-`src/lib/instagram-template-version.ts` versions all generated media URLs, including the daily Story and Reel, without changing the date/species idempotency markers. Bump it whenever published artwork changes. Existing media already copied into Buffer does not refresh by changing a server renderer; inspect the queue separately before a rollout. Manually prepared campaign media is a separate editorial workflow.
-
-Regenerate a local, explicitly simulated daily preview with `npx tsx scripts/preview-instagram-daily.tsx`. No preview command publishes or queues a post.
-
-## Weekend motion
-
-The automatic Reel runs for 20 seconds at 30 fps. Map and species shots have a restrained 1.8% eased push/pull, while territorial comparison and extent figures stay still. Section changes use 600 ms directional transitions and dissolves; the final frame returns to the opening for looping. Keep the map, observation date, legend and attribution inside the existing safe margins. Do not animate condition scores or imply that the camera movement represents changing observations.
-
-The server generates motion from one decoded image per scene, supersamples moving shots, and limits filter/encoder threads. The existing rendering timeout remains in force. Bump `reelVersion` in `src/lib/social-growth-assets.ts` for motion-only changes, keeping existing publication markers intact.
-
-## Original field photographs and admin editor
-
-Open `/admin/publicacio/fotos` from Publicació to prepare personal photographs. Use clean photographs by default, with an optional discreet wordmark or small logo and text. Reserve full text panels for short educational headlines and field-note slides. Keep observations in the Instagram caption or a later carousel slide, and preserve required image attribution. The local and online editors share Fotografia, Titular and Peu de camp presets, four branding choices, top/bottom text placement and the shared palette and fonts. Photos are processed in the browser; JPG/transparent PNG downloads are manual, with no automatic publishing.
-
-## Daily colour and field lessons
-
-The daily summary retains the original photo header, compact territorial ranking,
-rounded rows and labelled condition scale. It is a deliberate exception to the
-newer typographic cover style: the user prefers the earlier composition. Preserve
-its regular type treatment and photo shading when updating other series.
-Daily score panels use the shared condition-band colour for the actual value;
-verified zero stays neutral. Keep the maximum and both territorial coverage
-figures together. Never recolour data to make a post more varied.
-
-Educational carousels were retired on 6 September 2026 at the user’s request.
-Do not schedule them, show them in the publishing planner or re-enable their
-server timer. Historic rendering helpers remain only for existing signed links;
-the publishing endpoint and publisher reject new education posts. The active
-plan contains the daily Story, manually queued species posts and weekend Reel.
+Historical tests and queue observations from the 5 September renderer release are retained in the [account/design receipt](archive/instagram-account-update-2026-09-05.md#historical-renderer-verification--5-september-2026). Do not reuse those results as validation of a later change.

@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { spawn } from "node:child_process";
 
 const root = resolve(import.meta.dirname, "..");
-const output = resolve(root, "artifacts/instagram/2026-09-promo");
+const output = resolve(root, "social/2026-09-promo");
 const remotion = resolve(root, "node_modules/.bin/remotion");
 const entry = resolve(root, "video/index.ts");
 const publicDir = resolve(root, "video/assets");

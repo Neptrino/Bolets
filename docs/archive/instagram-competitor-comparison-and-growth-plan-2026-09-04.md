@@ -1,5 +1,7 @@
 # Instagram competitor comparison and growth plan — 4 September 2026
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 ## Verdict
 
 `@bolets.app` has 12 followers after two weeks of automated publishing. The two Catalan accounts that lead this niche do not win with more data or better cards; they win with real forest footage, named humans, Reels, community co-authored posts and debate hooks. Our automated text cards reach 5–12 accounts each, have produced 0 comments, 0 saves and 0 follows in 30 days, and the daily feed card is being deleted after publication anyway. The one post that reached 106 accounts was a real mushroom photo with a human caption and three hashtags.
@@ -14,7 +16,7 @@ Recommended target: 150 followers by 2 October, 500 by 30 October, 1,000 by 30 N
 - Engagement was sampled on 1–4 recent posts per account (likes and comment counts visible on the public post page). Reel plays are not visible logged-out.
 - Our own numbers come from the Buffer API (`aggregatedPostMetrics`, last 30 days; the free plan refuses longer ranges) and the public profile. Instagram Insights (non-follower reach, profile visits, watch time) were not read.
 - Hashtag volumes come from best-hashtags.com and are approximate.
-- Follower counts are a single snapshot. The CSV `docs/instagram-competitor-benchmark-2026-09-04.csv` is the baseline for re-measuring in four weeks.
+- Follower counts are a single snapshot. The CSV `docs/archive/instagram-competitor-benchmark-2026-09-04.csv` is the baseline for re-measuring in four weeks.
 
 ## Where we stand
 
@@ -223,7 +225,7 @@ Not applied yet; apply once the daily-card question is settled.
 
 ## Sources
 
-- Public Instagram profiles and post pages listed in `docs/instagram-competitor-benchmark-2026-09-04.csv`, read 4 September 2026.
+- Public Instagram profiles and post pages listed in `docs/archive/instagram-competitor-benchmark-2026-09-04.csv`, read 4 September 2026.
 - Buffer API for `@bolets.app` (30-day aggregate and post list), 4 September 2026.
 - Hashtag statistics: best-hashtags.com pages for #bolets, #rovellons, #boletaires and #setas.
 - Instagram ranking guidance for 2026: Buffer, "How the Instagram Algorithm Works" (https://buffer.com/resources/instagram-algorithms/); Dataslayer, "Instagram Algorithm 2026: 5 Ranking Signals Mosseri Confirmed" (https://www.dataslayer.ai/blog/instagram-algorithm-2025-complete-guide-for-marketers); Hootsuite, "Instagram algorithm tips for 2026" (https://blog.hootsuite.com/instagram-algorithm/).

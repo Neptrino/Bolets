@@ -8,11 +8,11 @@ import { instagramCardFonts } from "@/src/lib/instagram-card-fonts";
 import { MapStudyCover } from "./instagram-profile-study-cards";
 
 async function main() {
-  const folder = resolve("artifacts/instagram/pinned-cover-update");
+  const folder = resolve("social/pinned-cover-update");
   await mkdir(folder, { recursive: true });
   const fonts = await instagramCardFonts();
-  const photo = `data:image/jpeg;base64,${(await sharp("artifacts/instagram/current-profile-redesign/originals/14.webp").jpeg().toBuffer()).toString("base64")}`;
-  const map = `data:image/jpeg;base64,${(await sharp("artifacts/instagram/weekend-redesign/avui-map.jpg").jpeg().toBuffer()).toString("base64")}`;
+  const photo = `data:image/jpeg;base64,${(await sharp("social/current-profile-redesign/originals/14.webp").jpeg().toBuffer()).toString("base64")}`;
+  const map = `data:image/jpeg;base64,${(await sharp("social/weekend-redesign/avui-map.jpg").jpeg().toBuffer()).toString("base64")}`;
   const detail = `data:image/jpeg;base64,${(await sharp("video/assets/captures/mobile/m08-setcases-cep-prediction-start.png").extract({ left: 108, top: 492, width: 864, height: 820 }).jpeg().toBuffer()).toString("base64")}`;
   const cards = [
     <InstagramCover key="atlas" brief={{ layout: "photo", speciesId: "editorial-reference", eyebrow: "Descobreix l’atles", title: "Tot un món de bolets.", subtitle: "Espècies, guies, mapes i quadern de camp." }} photo={{ dataUrl: photo, credit: "bolets.app · fotografia del perfil" }} />,

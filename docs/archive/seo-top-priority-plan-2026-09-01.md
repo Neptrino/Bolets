@@ -1,5 +1,7 @@
 # SEO top-priority implementation plan — 1 September 2026
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 ## Decision
 
 Do not spend the first sprint rewriting the homepage, map, catalogue, edible hub, poisonous hub or `/bolets-avui`. The source and live-response audit confirmed that these pages already own their intended queries, the important aliases and safety modifiers are present, and the complete Googlebot response for `/bolets-avui` includes the dated territorial answer.

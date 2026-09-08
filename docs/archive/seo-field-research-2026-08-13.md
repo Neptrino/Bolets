@@ -1,5 +1,7 @@
 # SEO field-research report: bolets.app
 
+> Historical launch research, archived 8 September 2026. Status updates below refer to their original dates. Use the [documentation index](../README.md) for active guidance.
+
 **Market:** Catalan-language searches in Catalonia, with Spain-wide Catalan spillover
 **Initial audit date:** 13 August 2026
 **Status refreshed:** 28 August 2026 (FAQ usability/safety follow-up; keyword/query research from 27 August; latest broader quantitative audit remains 25–26 August)
@@ -9,15 +11,15 @@
 
 ## FAQ question research — 27 August 2026
 
-Follow-up on 28 August: the local FAQ now has 15 questions, including a sourced response to suspected poisoning, individual answer permalinks and contextual links from the calendar, current conditions and permissions pages. See the [implementation follow-up](docs/seo-faq-research-2026-08-27.md#usability-and-safety-follow-up--28-august-2026). The demand figures below remain the 27 August research snapshot, not a new measurement.
+Follow-up on 28 August: the local FAQ now has 15 questions, including a sourced response to suspected poisoning, individual answer permalinks and contextual links from the calendar, current conditions and permissions pages. See the [implementation follow-up](seo-faq-research-2026-08-27.md#usability-and-safety-follow-up--28-august-2026). The demand figures below remain the 27 August research snapshot, not a new measurement.
 
-SE Ranking is reconnected. A new [question-level FAQ research report](docs/seo-faq-research-2026-08-27.md) and [evidence snapshot](docs/seo-faq-evidence-2026-08-27.json) record 654 similar-keyword rows from Spain, 161 connected Search Console query rows and six public Google question/intent samples. These are fresh research inputs, not a new full-site crawl or a ranking-trend assessment. The connected GSC response does not disclose its reporting window.
+SE Ranking is reconnected. A new [question-level FAQ research report](seo-faq-research-2026-08-27.md) and [evidence snapshot](seo-faq-evidence-2026-08-27.json) record 654 similar-keyword rows from Spain, 161 connected Search Console query rows and six public Google question/intent samples. These are fresh research inputs, not a new full-site crawl or a ranking-trend assessment. The connected GSC response does not disclose its reporting window.
 
 The strongest relevant estimates remain `bolets comestibles` (590/month), `mapa bolets catalunya` (170), `on trobar bolets aquesta setmana` (140) and `temporada de bolets` (50). They belong to the existing specialist pages; the FAQ links readers onward. The local FAQ now has 14 questions, including cutting versus pulling and family-trip preparation, clearer today/weekly wording and explicit limits on photo/app identification. These FAQ changes have not been pushed or deployed by this pass. Exact volumes for several long-tail questions remain unknown because the connector's bulk exact-keyword method failed; no missing value is treated as zero.
 
 ## Implementation update — 27 August 2026
 
-The competitor comparison is recorded in [the 27 August report](docs/seo-competitor-comparison-2026-08-27.md). The following changes are implemented and locally verified, **not yet committed, pushed or deployed**:
+The competitor comparison is recorded in [the 27 August report](seo-competitor-comparison-2026-08-27.md). The following changes are implemented and locally verified, **not yet committed, pushed or deployed**:
 
 - `/normativa-bolets`: expanded from the initial checklist into a public-ready local guide covering Aigüestortes, Virós, Esterri de Cardós, Poblet, Cadí-Moixeró and Els Ports. It includes direct official sources, group-activity procedures, explicitly dated 2023 fees/quotas and an unresolved-status warning for Poblet's individual carnet. It does not assert a universal licence/quota or live access status. Canonical, Article/Breadcrumb metadata, sitemap and existing footer/guide links are included.
 - `/bolets-de-soca`: a broad wood-fungi guide, not a single-species profile. It now lists the four existing catalogue species—*Pleurotus ostreatus*, *Cyclocybe cylindracea*, *Omphalotus olearius* and *Galerina marginata*—using shared cards, photos and safety labels. This corrects the earlier narrow brief below.
@@ -25,7 +27,7 @@ The competitor comparison is recorded in [the 27 August report](docs/seo-competi
 - `/bolets/hygrophoropsis-aurantiaca`: a new descriptive profile with two attributed, licensed photographs, morphology, sourced habitat/season text, consumption warnings, lookalikes and truthful editorial metadata. It appears in catalogue search, related-species links and the sitemap. The local public catalogue now has **53 profiles: 52 model-supported and one descriptive-only**. No numerical ecology was invented: map candidates, habitat caches, prediction configuration and quantified monthly calendars remain unchanged. The profile and confusion guide retain separate, self-canonical purposes.
 - **Owner decision:** no independent expert review is planned for now. The earlier review-dependent publication gate is superseded. Both guides are indexable, linked from `/bolets` and included in the sitemap/public editorial list, with explicit safety limits and no independent-review claim. The shared attribution and editorial-policy page now state the absence of review without promising one is pending.
 - All **66 generic supplementary-photo descriptions across 33 species** have been replaced after inspecting the local images. Image bytes, licensing, provenance and `identificationReference: false` remain unchanged. This is caption improvement, not independent taxonomic verification or a new production crawl.
-- The [optional independent-review checklist](docs/mycological-review-checklist.md) is retained for a future policy change, not as an active publication dependency. No reviewer has been appointed or outreach sent.
+- The [optional independent-review checklist](../mycological-review-checklist.md) is retained for a future policy change, not as an active publication dependency. No reviewer has been appointed or outreach sent.
 
 Verification after the follow-up: 671 unit tests passed (8 skipped); type checking, lint and production build passed. Thirteen browser tests passed: the three guides at desktop/tablet/mobile widths, catalogue navigation and three shared-layout regressions. They cover non-overlap, indexing/attribution, permissions section links and navigation to an existing species profile. The sitemap now includes all three guides (190 page URLs); production remains unchanged until deployment. Shared page layouts and typography were reused; no map loading/configuration was changed.
 

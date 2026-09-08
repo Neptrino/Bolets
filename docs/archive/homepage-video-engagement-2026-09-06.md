@@ -1,5 +1,7 @@
 # Homepage video engagement
 
+> Historical record, archived 8 September 2026. Measurements, implementation status and account actions below describe the original review; they are not current instructions. See the [documentation index](../README.md) for active guidance.
+
 Read from the authenticated Bolets Umami dashboard on 6 September 2026. All work remains local; no product or analytics settings changed.
 
 ## Last seven days

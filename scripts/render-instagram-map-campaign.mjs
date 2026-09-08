@@ -2,13 +2,13 @@ import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { spawn } from "node:child_process";
 
-// Renders the map-first Instagram campaign (artifacts/instagram/2026-09-map-campaign).
+// Renders the map-first Instagram campaign (social/2026-09-map-campaign).
 // Captures come from `node scripts/capture-map-campaign.mjs`; stock hooks live in
 // video/assets/stock (mirrored from ~/Desktop/Bolets/Resources, not committed).
 // Usage: node scripts/render-instagram-map-campaign.mjs [piece-prefix]
 
 const root = resolve(import.meta.dirname, "..");
-const output = resolve(root, "artifacts/instagram/2026-09-map-campaign");
+const output = resolve(root, "social/2026-09-map-campaign");
 const remotion = resolve(root, "node_modules/.bin/remotion");
 const entry = resolve(root, "video/index.ts");
 const publicDir = resolve(root, "video/assets");
