@@ -1,4 +1,5 @@
 import { buildThermalExposure } from "./thermal-exposure.ts";
+import { heatDegreeHoursFromTemperatures } from "./heat-intensity.ts";
 import {
   HEAT_HOUR_THRESHOLD_C,
   RAINFALL_DAY_THRESHOLD_MM,
@@ -164,6 +165,7 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
     ),
     temperatureAvg20dC: temperature20d.average,
     thermalExposure: buildThermalExposure(temperatures20d, location.elevation),
+    ...heatDegreeHoursFromTemperatures(temperatures20d),
     frostHours20d: thresholdHours(temperatures20d, 480, (value) => value <= 0),
     heatHours20d: thresholdHours(
       temperatures20d,
@@ -222,4 +224,3 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
     ].filter((field) => values[field] === undefined)
   };
 }
-

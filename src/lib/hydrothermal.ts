@@ -1,3 +1,4 @@
+import { heatDegreeHours } from "@/supabase/functions/_shared/heat-intensity";
 import type {
   ConditionSnapshot,
   TemperatureModelParameters,
@@ -225,9 +226,14 @@ export function extremeTemperatureMultiplier(
   if (parameters.frostHalfLifeHours <= 0 || parameters.heatHalfLifeHours <= 0) {
     throw new RangeError("Extreme-temperature half-lives must be positive");
   }
+  const intensity = parameters.heatIntensityWidthC === undefined ? undefined : heatDegreeHours(values);
+  if (parameters.heatIntensityWidthC !== undefined && !(parameters.heatIntensityWidthC > 0 && Number.isFinite(parameters.heatIntensityWidthC))) {
+    throw new RangeError("Heat intensity width must be finite and positive");
+  }
+  const heatExposure = intensity ? intensity[`heatDegreeHours${parameters.windowDays}d`] / parameters.heatIntensityWidthC! : heatHours;
   return clamp01(
     2 ** -(frostHours / parameters.frostHalfLifeHours) *
-      2 ** -(heatHours / parameters.heatHalfLifeHours),
+      2 ** -(heatExposure / parameters.heatHalfLifeHours),
   );
 }
 

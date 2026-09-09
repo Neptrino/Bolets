@@ -1,6 +1,9 @@
+import { heatDegreeHours } from "./heat-intensity.ts";
+
 export const scoringValueFields = new Set([
   "temperatureC", "temperatureAvg7dC", "temperatureAvg14dC", "frostHours14d",
   "heatHours14d", "temperatureAvg20dC", "frostHours20d", "heatHours20d",
+  "heatDegreeHours14d", "heatDegreeHours20d",
   "relativeHumidity", "relativeHumidityAvg24h",
   "temperatureMin24hC", "temperatureAvg24hC", "temperatureMax24hC",
   "relativeHumidityAvg7d", "weatherElevationM",
@@ -19,7 +22,7 @@ export const scoringValueFields = new Set([
 export function scoringValues(value: unknown) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
   return Object.fromEntries(
-    Object.entries(value as Record<string, unknown>)
+    Object.entries({ ...value as Record<string, unknown>, ...heatDegreeHours(value as Record<string, unknown>) })
       .filter(([field]) => scoringValueFields.has(field)),
   );
 }

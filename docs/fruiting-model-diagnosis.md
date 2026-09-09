@@ -432,3 +432,22 @@ cells differ by more than one heat half-life). Findings AUC fell
 0.593 → 0.578 and hit40 0.38 → 0.34; the likely confound is that relocating
 a cell moves its gauge-blended rain, not just its temperatures. An untested
 refinement would substitute the temperature series only.
+
+## Heat and drying sensitivity, 9 September 2026
+
+The [controlled heat/drying replay](archive/heat-drying-evaluation-2026-09-09.md)
+tests stronger ET₀ subtraction and heat degree-hours on the full-network
+station/model temperatures. Aggregate gains are small, paired uncertainty
+includes zero, and stronger drying worsens the 2026 subset without separating
+August's unsuccessful outings. These remain offline candidates; production
+priors are unchanged. The receipt includes reproducible commands and supersedes
+the earlier scratch heat probe that mixed intensity with elevation and recency.
+
+The subsequent [heat-only boundary check and release](archive/heat-intensity-release-2026-09-09.md)
+promotes intensity alone as priors 2026-09c. Heat is the sum of degrees above
+27 °C divided by 6 over the species' existing window. Frost, drying and the
+temperature-source definition stay fixed. Complete current and projected
+windows retain degree-hours separately from displayed threshold-hour counts;
+legacy inputs fall back to the former count penalty. This is a modest spatial
+refinement with limited findings evidence, not a validated explanation for
+August's unsuccessful searches.

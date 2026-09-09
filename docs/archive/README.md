@@ -6,6 +6,8 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [Heat intensity: boundary check and release — 9 September 2026](heat-intensity-release-2026-09-09.md)
+- [Heat intensity and drying: exploratory findings evaluation — 9 September 2026](heat-drying-evaluation-2026-09-09.md)
 - [XEMA temperature diagnostic — 9 September 2026](xema-temperature-diagnostic-2026-09-09.md)
 - [XEMA correction: neighbouring-cell impact — 9 September 2026](cell-temperature-impact-2026-09-09.md)
 - [Station/model temperature blend: findings evaluation — 9 September 2026](station-temperature-findings-evaluation-2026-09-09.md)
@@ -30,6 +32,8 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Evidence files
 
+- [heat-intensity-release-2026-09-09.json](heat-intensity-release-2026-09-09.json)
+- [heat-drying-evaluation-2026-09-09.json](heat-drying-evaluation-2026-09-09.json)
 - [xema-temperature-diagnostic-2026-09-09.json](xema-temperature-diagnostic-2026-09-09.json)
 - [cell-temperature-impact-2026-09-09.json](cell-temperature-impact-2026-09-09.json)
 - [station-temperature-findings-evaluation-2026-09-09.json](station-temperature-findings-evaluation-2026-09-09.json)

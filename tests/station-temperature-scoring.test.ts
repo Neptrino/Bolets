@@ -22,6 +22,7 @@ describe("published station/model temperature blend", () => {
     const result = score()(values, 42.3, 2.2);
     expect(result.temperatureAvg20dC).toBeCloseTo(23.35);
     expect(result.heatHours20d).toBe(0);
+    expect(result.heatDegreeHours20d).toBe(0);
     expect(result.temperatureQuality).toBe("includes-provisional");
     expect(result.weatherElevationM).toBe(1000);
     expect(result.thermalReferenceElevationM).toBe(1200);
@@ -45,6 +46,8 @@ describe("published station/model temperature blend", () => {
     // Raw 28°C remains a heat hour even though its altitude-aligned mean is below 27°C.
     expect(result.heatHours20d).toBe(lag);
     expect(result.heatHours14d).toBe(lag);
+    expect(result.heatDegreeHours14d).toBe(lag);
+    expect(result.heatDegreeHours20d).toBe(lag);
     expect(result.temperatureMinimumStations).toBe(2);
     expect(result.temperatureAvg7dC).toBe(values.temperatureAvg7dC);
     expect(result.rainfall7dMm).toBe(values.rainfall7dMm);

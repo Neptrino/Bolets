@@ -312,6 +312,8 @@ export function compareTerrainThermalSuitability(
       // elevation. The original provider provenance remains on the baseline.
       weatherElevationM: localElevationM,
       thermalExposure: undefined,
+      heatDegreeHours14d: undefined,
+      heatDegreeHours20d: undefined,
     },
   };
   const terrainAdjustedRaw = calculateSuitability(species, scoreOnlySnapshot);

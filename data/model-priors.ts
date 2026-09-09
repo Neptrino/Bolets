@@ -330,6 +330,7 @@ function hydrothermalV2Config({
     // multi-day mean the model actually scores.
     temperature: {
       ...prior.temperature,
+      heatIntensityWidthC: 6,
       optimumC: temperatureMidpoint - TEMPERATURE_OPTIMUM_SHIFT_C,
       ...(temperatureOverrides ?? {}),
     },

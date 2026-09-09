@@ -204,6 +204,7 @@ export interface TemperatureModelParameters {
   warmHalfWidthC: number;
   frostHalfLifeHours: number;
   heatHalfLifeHours: number;
+  heatIntensityWidthC?: number;
 }
 
 /**
@@ -420,6 +421,8 @@ export interface ConditionSnapshot {
     frostHours20d?: number;
     heatHours14d?: number;
     heatHours20d?: number;
+    heatDegreeHours14d?: number;
+    heatDegreeHours20d?: number;
     relativeHumidity?: number;
     relativeHumidityMin24h?: number;
     relativeHumidityAvg24h?: number;

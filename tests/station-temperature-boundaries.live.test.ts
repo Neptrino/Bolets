@@ -1,4 +1,4 @@
-import { createStationTemperatureScorer, type ThermalModelWindow } from "@/supabase/functions/_shared/station-temperature-scoring";
+import { createStationTemperatureScorer, thermalAggregates, type ThermalModelWindow } from "@/supabase/functions/_shared/station-temperature-scoring";
 import { STATION_TEMPERATURE_VERSION } from "@/supabase/functions/_shared/station-temperature-field";
 import { calculateSuitability } from "@/src/lib/scoring";
 import { createHash } from "node:crypto";
@@ -9,7 +9,9 @@ import { getSpecies } from "@/data/species";
 import { conditionSnapshotSchema } from "@/src/lib/schema";
 import { aggregateXemaTemperatureHours } from "@/supabase/functions/_shared/xema-temperature";
 import type { XemaStation } from "@/supabase/functions/_shared/xema-rain";
-import { compareCellObservedTemperature, intervalBiasAtInstant } from "@/scripts/lib/cell-temperature-impact";
+import { compareCellTemperature, compareCellObservedTemperature, intervalBiasAtInstant } from "@/scripts/lib/cell-temperature-impact";
+import { countBasedSpecies, heatDryingSnapshot } from "@/scripts/lib/heat-drying-candidates";
+import { heatDegreeHoursFromTemperatures } from "@/supabase/functions/_shared/heat-intensity";
 import { createStationObservedTemperature } from "@/scripts/lib/station-temperature-interpolation";
 import { blendStationModelTemperature, modelTemperatureAtElevation, stationModelBlendConfig } from "@/scripts/lib/station-temperature-blend";
 import { BOUNDARY_COMPARISON, summarizeTemperatureBoundaries, temperatureBoundaryPairs, type BoundaryCell } from "@/scripts/lib/temperature-boundary-metrics";
@@ -30,8 +32,9 @@ describe.skipIf(!enabled)("offline temperature boundary comparison", () => {
     const { newSevereJump, ...comparablePair } = BOUNDARY_COMPARISON;
     expect(input.design.comparablePair).toEqual(comparablePair);
     expect(input.design.newSevereJump).toEqual(newSevereJump);
-    const species = getSpecies(input.design.speciesId);
-    if (!species) throw new Error("Unknown species");
+    const profile = getSpecies(input.design.speciesId);
+    if (!profile) throw new Error("Unknown species");
+    const species = countBasedSpecies(profile);
     const stationText = await readFile(process.env.TEMPERATURE_BOUNDARY_STATIONS!, "utf8");
     const stations = (JSON.parse(stationText).stations as XemaStation[]).sort((a, b) => a.station_code.localeCompare(b.station_code));
     const codes = new Set(stations.map((s) => s.station_code));
@@ -66,8 +69,12 @@ describe.skipIf(!enabled)("offline temperature boundary comparison", () => {
     const lagSetting = process.env.TEMPERATURE_BOUNDARY_LAG;
     const lag = lagSetting === undefined || lagSetting === "" ? undefined : Number(lagSetting);
     if (lag !== undefined && (!Number.isInteger(lag) || lag < 0 || lag > 13 || !config.donorTaper)) throw new Error("Invalid production lag scenario");
+    const heatSetting = process.env.TEMPERATURE_BOUNDARY_HEAT_WIDTH;
+    const heatWidth = heatSetting ? Number(heatSetting) : undefined;
+    if (heatWidth !== undefined && (![3, 6].includes(heatWidth) || lag === undefined)) throw new Error("Heat comparison requires width 3 or 6 and an explicit production lag");
     const productionHours = lag === undefined ? comparisonHours : comparisonHours.filter((h) => h.hour <= last - lag * 3_600_000);
     const field = createStationObservedTemperature(comparisonHours, stations, config.lapseCPerKm, config.donorTaper);
+    const heatField = heatWidth === undefined ? undefined : createStationObservedTemperature(productionHours, stations, config.lapseCPerKm, config.donorTaper);
     const links = new Map(input.links.map((l) => [l.cell_id, l.weather_point_id]));
     const sources = new Map(input.states.map(({ point_id, payload: state }) => {
       expect(state.hourly.time).toHaveLength(720);
@@ -98,6 +105,7 @@ describe.skipIf(!enabled)("offline temperature boundary comparison", () => {
         modelTemperatureAtElevation(source.hours.get(at), source.elevationM, snapshot.values.altitudeM!),
         intervalBiasAtInstant((hour) => atCell(hour)?.temperatureC, at)));
       let productionCandidate: BoundaryCell["candidate"] | undefined;
+      let heatBaseline: BoundaryCell["baseline"] | undefined;
       let productionApplied = false;
       if (config.donorTaper) {
         const values = productionScore({ ...snapshot.values, thermalSources: [{ id: modelIds.get(weatherPointId)! }] },
@@ -116,23 +124,57 @@ describe.skipIf(!enabled)("offline temperature boundary comparison", () => {
           !key.startsWith("heatHours") && !key.startsWith("frostHours") && key !== "thermalExposure") {
           expect(values[key], key).toEqual(snapshot.values[key as keyof typeof snapshot.values]);
         }
+        if (heatWidth !== undefined) {
+          heatBaseline = productionCandidate;
+          const control = compareCellTemperature(species, snapshot, source, () => 0);
+          let series: number[] | undefined;
+          if (control.status === "available") {
+            series = models.get(modelIds.get(weatherPointId)!)!.temperaturesC;
+            if (productionApplied) {
+              const at = heatField!({ station_code: cell.cellId,
+                latitude: (cell.bounds[0][1] + cell.bounds[1][1]) / 2,
+                longitude: (cell.bounds[0][0] + cell.bounds[1][0]) / 2, altitude_m: snapshot.values.altitudeM! });
+              const intervals = Array.from({ length: 481 }, (_, i) => at(last - (480 - i) * 3_600_000, false));
+              series = series.map((temperature, i) => {
+                const before = intervals[i], after = intervals[i + 1];
+                return before && after ? blendStationModelTemperature(
+                  modelTemperatureAtElevation(temperature, source.elevationM, snapshot.values.altitudeM!),
+                  (before.temperatureC + after.temperatureC) / 2)! : temperature;
+              });
+            }
+            const thermal = thermalAggregates(series);
+            for (const field of ["heatHours14d", "heatHours20d", "frostHours14d", "frostHours20d"] as const) expect(thermal[field]).toBe(values[field]);
+          }
+          const scenario = heatDryingSnapshot({ ...snapshot, values }, { name: `heat-${heatWidth}c`, etCoefficient: 0.5, heatWidthC: heatWidth }, series);
+          const heatScore = calculateSuitability(species, scenario);
+          if (heatWidth === 6) {
+            const productionHeat = calculateSuitability(profile, { ...snapshot,
+              values: { ...values, ...heatDegreeHoursFromTemperatures(series) } });
+            expect(productionHeat.fruitingConditionsScore).toBe(heatScore.fruitingConditionsScore);
+            expect(productionHeat.opportunityIndex).toBe(heatScore.opportunityIndex);
+          }
+          productionCandidate = { score: heatScore.opportunityIndex, conditions: heatScore.fruitingConditionsScore,
+            components: Object.fromEntries(heatScore.components.map((c) => [c.id, c.score])) };
+          for (const name of ["habitatCoverage", "altitude", "water", "phenology", "temperature"]) expect(productionCandidate.components[name]).toBe(heatBaseline.components[name]);
+        }
       }
       const applied = lag === undefined ? replay.status === "available" : productionApplied;
       cells.push({ cellId: cell.cellId, windowId: cell.windowId, weatherPointId,
         altitudeM: snapshot.values.altitudeM!, applied,
         reason: applied ? "applied" : "baseline-fallback",
-        baseline: replay.baseline, candidate: lag === undefined ? (replay.status === "available" ? replay.scenario : replay.baseline) : productionCandidate! });
+        baseline: heatBaseline ?? replay.baseline, candidate: lag === undefined ? (replay.status === "available" ? replay.scenario : replay.baseline) : productionCandidate! });
     }
     const pairs = temperatureBoundaryPairs(cells);
     const counts = (selected: BoundaryCell[]) => Object.fromEntries([...new Set(selected.map((c) => c.reason))].sort()
       .map((reason) => [reason, selected.filter((c) => c.reason === reason).length]));
     const selectedPair = ["epsg25831:250:1739:18746", "epsg25831:250:1740:18746"].map((id) => cells.find((c) => c.cellId === id));
-    expect(selectedPair.map((c) => c?.baseline.score)).toEqual([23, 60]);
+    if (heatWidth === undefined) expect(selectedPair.map((c) => c?.baseline.score)).toEqual([23, 60]);
     if (!missingStation && !config.donorTaper) expect(selectedPair.map((c) => c?.candidate.score)).toEqual([57, 59]);
     const report = {
       version: "station-temperature-boundary-comparison-v1", createdAt: new Date().toISOString(),
       speciesId: species.speciesId, observedAt: new Date(last).toISOString(), design: input.design,
       candidate: lag === undefined ? config : { ...config, version: STATION_TEMPERATURE_VERSION, simulatedTrailingLagHours: lag },
+      heatIntensity: heatWidth === undefined ? null : { widthC: heatWidth, thresholdC: 27, baseline: STATION_TEMPERATURE_VERSION, dryingChanged: false },
       simulatedMissingHour: missingStation ? { stationCode: missingStation, hour: new Date(missingHour).toISOString(),
         description: "Operational sensitivity: one observed station hour removed, not an actual recorded outage." } : null,
       sourceSha256: createHash("sha256").update(inputText).digest("hex"),
@@ -149,6 +191,7 @@ describe.skipIf(!enabled)("offline temperature boundary comparison", () => {
     await mkdir(dirname(out), { recursive: true });
     await writeFile(out, JSON.stringify(report, null, 2) + "\n");
     console.log(JSON.stringify({ output: out, cells: cells.length, coverage: report.coverage,
+      selectedPair: selectedPair.map((c) => ({ baseline: c?.baseline.score, candidate: c?.candidate.score })),
       comparable: report.summary.comparable, crossWeather: report.summary.comparableCrossWeather,
       coverageEdges: report.summary.comparableCoverageEdges }, null, 2));
   }, 120_000);

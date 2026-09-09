@@ -9,7 +9,9 @@ export const HYDROTHERMAL_PRIOR_VERSION = "hydrothermal-v1-priors-2026-08b";
 // 09a: rain age-band kernel — hard window edges become per-guild weight
 // ramps over the 0-30 day bands, removing overnight cliffs from scores and
 // projections; cross-set validated 2026-09-09 with discrimination unchanged.
-export const HYDROTHERMAL_V2_PRIOR_VERSION = "hydrothermal-v2-priors-2026-09a";
+// 09c: controlled heat degree-hours above 27 C, normalized by 6 C.
+// Frost, water and temperature-source definitions remain unchanged.
+export const HYDROTHERMAL_V2_PRIOR_VERSION = "hydrothermal-v2-priors-2026-09c";
 
 /**
  * Species scored by hydrothermal-v2. Full cutover 2026-08-16 after validation
@@ -99,4 +101,4 @@ export function predictionModelVersion(ecologyVersion: string) {
 // selected by their child summary, including when the parent first scored zero.
 // v24: discard partial combined-map responses from misaligned decimal shards.
 export const PREDICTION_CACHE_VERSION =
-  `prediction-map-v27-xema-arome-blend-v3-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;
+  `prediction-map-v28-heat-intensity-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;

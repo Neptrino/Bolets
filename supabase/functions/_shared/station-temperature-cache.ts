@@ -1,12 +1,13 @@
 import { MAX_TEMPERATURE_STATIONS, STATION_TEMPERATURE_VERSION, STATION_TEMPERATURE_VERSIONS } from "./station-temperature-field.ts";
 import { THERMAL_FIELDS, validThermalSources } from "./station-temperature-scoring.ts";
 import { loadStationTemperatureScorer } from "./station-temperature-store.ts";
+import { HEAT_DEGREE_FIELDS, validHeatDegreeHours } from "./heat-intensity.ts";
 
 type Values = Record<string, unknown>;
 type Database = Parameters<typeof loadStationTemperatureScorer>[0];
 export type TemperatureTarget = { values: Values; latitude: number; longitude: number; stale?: boolean };
 const TABLE = "cell_temperature_cache";
-const PATCH_FIELDS = [...THERMAL_FIELDS, "thermalReferenceElevationM", "temperatureSource", "temperatureQuality",
+const PATCH_FIELDS = [...THERMAL_FIELDS, ...HEAT_DEGREE_FIELDS, "thermalReferenceElevationM", "temperatureSource", "temperatureQuality",
   "temperatureMinimumStations", "temperatureModelOnlyHours"] as const;
 const CONTROL_FIELDS = ["altitudeM", "weatherObservedAt", "weatherModel", "atmosphericResolutionM",
   "weatherGridLatitude", "weatherGridLongitude", "weatherElevationM", ...THERMAL_FIELDS] as const;
@@ -18,7 +19,7 @@ export async function temperatureCacheKey(target: TemperatureTarget): Promise<st
   if (target.stale || target.values.thermalReferenceElevationM !== undefined ||
     !validThermalSources(target.values.thermalSources) ||
     ![target.latitude, target.longitude, target.values.altitudeM].every((v) => typeof v === "number" && Number.isFinite(v))) return null;
-  const input = ["cell-temperature-cache-v1", STATION_TEMPERATURE_VERSION, target.latitude, target.longitude,
+  const input = ["cell-temperature-cache-v2-heat-intensity", STATION_TEMPERATURE_VERSION, target.latitude, target.longitude,
     target.values.thermalSources, ...CONTROL_FIELDS.map((field) => target.values[field])];
   const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify(input)));
   return Array.from(new Uint8Array(hash), (byte) => byte.toString(16).padStart(2, "0")).join("");
@@ -32,7 +33,7 @@ function validPatch(value: unknown, altitude: unknown): value is Values {
   if (baselinePatch(value)) return true;
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const patch = value as Values;
-  return Object.keys(patch).length === PATCH_FIELDS.length && PATCH_FIELDS.every((key) => key in patch) &&
+  return Object.keys(patch).length === PATCH_FIELDS.length && PATCH_FIELDS.every((key) => key in patch) && validHeatDegreeHours(patch) &&
     (STATION_TEMPERATURE_VERSIONS as readonly unknown[]).includes(patch.temperatureSource) && patch.thermalReferenceElevationM === altitude &&
     ["validated", "includes-provisional"].includes(String(patch.temperatureQuality)) &&
     THERMAL_FIELDS.every((key) => typeof patch[key] === "number" && Number.isFinite(patch[key]) &&

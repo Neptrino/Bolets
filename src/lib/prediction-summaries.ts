@@ -118,6 +118,8 @@ function aggregateRegionalSnapshot(
     "frostHours20d",
     "heatHours14d",
     "heatHours20d",
+    "heatDegreeHours14d",
+    "heatDegreeHours20d",
     "relativeHumidityMax24h",
     "temperatureMax24hC",
     "soilMoistureMax24h",
@@ -129,6 +131,10 @@ function aggregateRegionalSnapshot(
   for (const field of averageFields) values[field] = aggregateNumericField(cells, field);
   for (const field of minFields) values[field] = aggregateNumericField(cells, field, "min");
   for (const field of maxFields) values[field] = aggregateNumericField(cells, field, "max");
+  if (cells.some((cell) => cell.values.heatDegreeHours14d === undefined || cell.values.heatDegreeHours20d === undefined)) {
+    delete values.heatDegreeHours14d;
+    delete values.heatDegreeHours20d;
+  }
   const cleanValues = Object.fromEntries(
     Object.entries(values).filter(([, value]) => value !== undefined),
   ) as ConditionSnapshot["values"];

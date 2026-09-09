@@ -1,4 +1,5 @@
 import type { ConditionSnapshot } from "@/src/lib/types";
+import { heatDegreeHours } from "@/supabase/functions/_shared/heat-intensity";
 
 type ConditionValues = ConditionSnapshot["values"];
 type NumericValueField = {
@@ -41,6 +42,7 @@ const requiredCorrectedFields = [
 ] as const satisfies readonly NumericValueField[];
 
 const optionalCorrectedFields = [
+  "heatDegreeHours14d", "heatDegreeHours20d",
   "temperatureC",
   "temperatureMin24hC",
   "temperatureAvg24hC",
@@ -70,6 +72,7 @@ function clamp(value: number, minimum: number, maximum: number) {
 }
 
 function fieldBounds(field: NumericValueField): [number, number] {
+  if (field.startsWith("heatDegreeHours")) return [0, 33 * (field.endsWith("14d") ? 336 : 480)];
   if (field.startsWith("relativeHumidity")) return [0, 100];
   if (field.startsWith("soilMoisture")) {
     return field === "soilMoistureTrend7d" ? [-1, 1] : [0, 1];
@@ -163,6 +166,9 @@ export function correctForecastValues(
   previousState: ForecastCorrectionState,
   options: { aggregatePointCount?: number } = {},
 ) {
+  current = { ...current, ...heatDegreeHours(current) };
+  baseline = { ...baseline, ...heatDegreeHours(baseline) };
+  forecast = { ...forecast, ...heatDegreeHours(forecast) };
   const values: ConditionValues = { ...current };
   // Aggregate anomalies do not reconstruct a temperature distribution.
   delete values.thermalExposure;
@@ -222,6 +228,7 @@ export function correctForecastValues(
   ]);
   enforceIncreasingWindows(values, ["frostHours14d", "frostHours20d"]);
   enforceIncreasingWindows(values, ["heatHours14d", "heatHours20d"]);
+  enforceIncreasingWindows(values, ["heatDegreeHours14d", "heatDegreeHours20d"]);
   const rainfall3d = finiteValue(values, "rainfall3dMm");
   const rainfall7d = finiteValue(values, "rainfall7dMm");
   const rainfall30d = finiteValue(values, "rainfall30dMm");

@@ -75,7 +75,7 @@ describe("optional diagnostic thermal exposure", () => {
     expect(validThermalExposure(Array(129).fill(exposure[0]))).toBe(false);
   });
 
-  it("keeps production scores available and identical with absent or corrupt optional bins", () => {
+  it("keeps baseline scores available for absent or corrupt bins while valid bins refine heat", () => {
     const species = getSpecies("boletus-edulis")!;
     const score = (values: ConditionSnapshot["values"]) => calculateSuitability(species, {
       regionId: "pirineus", observedAt: "2026-09-09T12:00:00Z", source: [], confidence: "limited",
@@ -84,7 +84,9 @@ describe("optional diagnostic thermal exposure", () => {
     const baseline = withoutThermalExposure(snapshotValues);
     expect(missingModelFields(species, baseline)).toEqual([]);
     expect(score(baseline).fruitingConditionsScore).not.toBeNull();
-    expect(score(snapshotValues)).toEqual(score(baseline));
+    expect(score(snapshotValues).fruitingConditionsScore).not.toBeNull();
+    expect(score(snapshotValues).components.filter((c) => c.id !== "extremes"))
+      .toEqual(score(baseline).components.filter((c) => c.id !== "extremes"));
     for (const corrupt of [null, [], [{ version: 1, bins: [] }], "invalid"]) {
       const parsed = conditionSnapshotSchema.shape.values.parse({ ...snapshotValues, thermalExposure: corrupt });
       expect(parsed.thermalExposure).toBeUndefined();
@@ -130,7 +132,7 @@ describe("optional diagnostic thermal exposure", () => {
       .values.thermalExposure).toBeUndefined();
   });
 
-  it("keeps forecast correction identical and does not carry observed bins into future dates", () => {
+  it("preserves legacy forecast fields when projected means invalidate the retained bins", () => {
     const forecastExposure = buildThermalExposure(history.map((t) => t + 3.25), 500)!;
     const baseline = { ...snapshotValues, ...diagnosticThermalExposureAtElevation(forecastExposure, 500),
       thermalExposure: forecastExposure, weatherElevationM: 500 };
@@ -139,7 +141,10 @@ describe("optional diagnostic thermal exposure", () => {
     const result = correctForecastValues(snapshotValues, baseline, target, state);
     const legacy = correctForecastValues(withoutThermalExposure(snapshotValues),
       withoutThermalExposure(baseline), withoutThermalExposure(target), state);
-    expect(result).toEqual(legacy);
+    const { heatDegreeHours14d, heatDegreeHours20d, ...legacyValues } = result.values;
+    expect({ ...result, values: legacyValues }).toEqual(legacy);
+    expect(heatDegreeHours14d).toBeUndefined();
+    expect(heatDegreeHours20d).toBeUndefined();
     expect(result.values.thermalExposure).toBeUndefined();
     expect(result.values.heatHours20d).toBe(snapshotValues.heatHours20d);
     expect(result.values.temperatureAvg20dC).toBeCloseTo(snapshotValues.temperatureAvg20dC! + 1);

@@ -1,6 +1,6 @@
 # Thermal exposure: optional evidence and rejected correction
 
-Status: the hourly-lapse-only recount remains rejected. The separately evaluated tapered station/model blend is now implemented; see [production contract](station-temperature-validation.md).
+Status: the hourly-lapse-only recount remains rejected. The separately evaluated tapered station/model blend is now implemented; see [production contract](station-temperature-validation.md). Priors 2026-09c also use controlled heat intensity without an additional hourly lapse correction; see the [heat-intensity receipt](archive/heat-intensity-release-2026-09-09.md).
 
 ## What the map evidence establishes
 
@@ -12,7 +12,7 @@ Cold-air drainage and inversions can invalidate a uniform hourly lapse assumptio
 
 ## Retained input contract
 
-`thermalExposure` stores exact provider-temperature bins with separate 14/20-day counts and representative elevations. It is optional diagnostic evidence, not finer observed weather. Complete windows require 336 and 480 hours; bins preserve provider precision and aggregation weights. Incomplete or corrupt optional distributions are dropped without removing the existing production thermal fields or withholding scores. Public prediction details omit the distributions.
+`thermalExposure` stores exact provider-temperature bins with separate 14/20-day counts and representative elevations. It is optional provider evidence, not finer observed weather. Complete windows require 336 and 480 hours; bins preserve provider precision and aggregation weights. Incomplete or corrupt optional distributions are dropped without removing the existing production thermal fields or withholding scores. Public prediction details omit the distributions. Since priors 2026-09c, raw bins that reproduce the stored means and frost/heat counts may recover missing heat degree-hours at their original reference. This does not call the rejected elevation-shifting diagnostic.
 
 The ingestion adapters and aggregation readers retain complete distributions when available. Migration `20260909150501_preserve_terrain_thermal_exposure.sql` adds optional aggregation support. It requires no historical backfill or score-version change. Forecast anomaly correction discards observed distributions because they no longer describe the projected hours.
 

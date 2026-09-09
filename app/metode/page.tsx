@@ -360,10 +360,12 @@ export default function MethodPage() {
 
               <article className="method-subscore">
                 <div className="method-subscore-title"><Sprout size={24} /><div><span>E · EXTREMS TÈRMICS</span><h4>La interrupció forma part del producte.</h4></div></div>
-                <Formula label="El modificador d’extrems decau a la meitat per cada vida mitjana configurada d’hores de gelada o calor.">
-                  E = 2<sup>−hores gelada / vida mitjana gelada</sup> · 2<sup>−hores calor / vida mitjana calor</sup>
+                <Formula label="El modificador d’extrems combina les hores de gelada amb les hores equivalents de calor, ponderades per la intensitat.">
+                  E = 2<sup>−hores gelada / vida mitjana gelada</sup> · 2<sup>−hores equivalents de calor / vida mitjana calor</sup>
                 </Formula>
-                <p>Comptem gelada a ≤ 0 °C i calor a ≥ 27 °C durant la mateixa finestra de 14 o 20 dies que T. On s’aplica la combinació amb estacions, recomptem aquestes hores després de combinar les temperatures, abans de calcular la penalització. Les vides mitjanes representen la tolerància versionada, i el producte ja incorpora tota la reducció per extrems. La tolerància a la gelada es va recalibrar amb troballes datades de muntanya: les primeres gelades de tardor acompanyen la fructificació i ja no l’anul·len, mentre que la gelada profunda sostinguda continua tancant la temporada.</p>
+                <p>Comptem gelada a ≤ 0 °C durant la mateixa finestra de 14 o 20 dies que T. Per a la calor, sumem els graus que cada hora supera els 27 °C i dividim el total per 6: una hora a 33 °C aporta una hora equivalent, i una hora a 28 °C n’aporta una sisena part. Les hores de calor mostrades al detall continuen sent el recompte a ≥ 27 °C; la penalització té en compte també la intensitat.</p>
+                <p>On hi ha suport d’estacions, calculem la intensitat sobre la mateixa combinació de temperatures d’AROME i XEMA. A les hores finals sense suport conservem la temperatura original del model per als extrems. Si una instantània antiga no conserva prou informació horària, mantenim la penalització anterior per recompte, sense deixar la cel·la sense resultat. Les projeccions transporten el canvi modelat de la intensitat quan les tres finestres necessàries la conserven; en cas contrari també mantenen el recompte.</p>
+                <p>El divisor de 6 °C és un paràmetre provisional contrastat amb troballes i cel·les veïnes, no una mesura del dany biològic. Redueix alguns salts grans entre cel·les comparables, però no millora tots els límits ni explica per si sol una mala temporada. La resposta a les gelades i el càlcul d’assecatge no canvien en aquesta revisió.</p>
               </article>
             </div>
 

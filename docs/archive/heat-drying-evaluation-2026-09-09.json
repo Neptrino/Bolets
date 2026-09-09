@@ -1,0 +1,995 @@
+{
+  "methodology": {
+    "exploratory": true,
+    "collapsedBy": "maximum per report/date/kind",
+    "bootstrapCellCount": 21,
+    "bootstrapIterations": 10000,
+    "seed": 20260909,
+    "confidence": "paired cell-cluster percentile interval, 95%",
+    "limitations": [
+      "Previously inspected calibration data; not a held-out test",
+      "Seasonal backgrounds are not observed absences",
+      "Repeated species alternatives are not independent findings",
+      "Very few unsuccessful searches",
+      "No boundary validation in this experiment"
+    ]
+  },
+  "provenance": {
+    "candidates": [
+      {
+        "name": "baseline",
+        "etCoefficient": 0.5
+      },
+      {
+        "name": "et-075",
+        "etCoefficient": 0.75
+      },
+      {
+        "name": "heat-3c",
+        "etCoefficient": 0.5,
+        "heatWidthC": 3
+      },
+      {
+        "name": "heat-6c",
+        "etCoefficient": 0.5,
+        "heatWidthC": 6
+      },
+      {
+        "name": "et-075-heat-3c",
+        "etCoefficient": 0.75,
+        "heatWidthC": 3
+      },
+      {
+        "name": "et-075-heat-6c",
+        "etCoefficient": 0.75,
+        "heatWidthC": 6
+      }
+    ],
+    "records": 783,
+    "controlledSeries": 764,
+    "blendedSeries": 649,
+    "unchangedHeatFallbacks": 19,
+    "manifestSha256": "53c653ecddb998417444d0edc9298d3158fe1256fbf9ce2705de16700d62edb2",
+    "baselineSha256": "dedb2c878415d8f7579c2a86ebe6025a35be4d3a800b8ba06f80261dbec1950e",
+    "inputsSha256": "cc7af2709b59078982f90cbb88818cd0aa6dad6147a96a373aaffea8468abca4",
+    "networkFetches": 0,
+    "productionChanges": false,
+    "limitations": [
+      "Exploratory reuse of calibration findings; not independent validation",
+      "Degree-hours are a sensitivity prior, not measured biological damage",
+      "Heat-only change: original frost penalty, source assignment and recency retained",
+      "Baseline fallbacks use original unshifted model hours for heat severity",
+      "Synthetic ET and heat-count fields exist only in private scoring snapshots"
+    ]
+  },
+  "variants": [
+    {
+      "name": "baseline",
+      "etCoefficient": 0.5,
+      "expanded": {
+        "events": 77,
+        "backgrounds": 231,
+        "unsuccessfulSearches": 13,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.7462472592342723,
+          "aucAllControls": 0.7376516925697253,
+          "aucUnsuccessful": 0.5849150849150849,
+          "positiveMean": 59.064935064935064,
+          "negativeMean": 53.69230769230769,
+          "positiveAtLeast60": 44,
+          "sameLocationAuc": 0.7628787878787877
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.587676392871198,
+          "aucAllControls": 0.5871566957632531,
+          "aucUnsuccessful": 0.577922077922078,
+          "positiveMean": 32.02597402597402,
+          "negativeMean": 24.692307692307693,
+          "positiveAtLeast60": 18,
+          "sameLocationAuc": 0.6045454545454546
+        }
+      },
+      "collapsed": {
+        "events": 32,
+        "backgrounds": 96,
+        "unsuccessfulSearches": 4,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.7472330729166666,
+          "aucAllControls": 0.73875,
+          "aucUnsuccessful": 0.53515625,
+          "positiveMean": 63.71875,
+          "negativeMean": 61.75,
+          "positiveAtLeast60": 22,
+          "sameLocationAuc": 0.7447916666666665
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.7023111979166666,
+          "aucAllControls": 0.696875,
+          "aucUnsuccessful": 0.56640625,
+          "positiveMean": 49.125,
+          "negativeMean": 45.75,
+          "positiveAtLeast60": 13,
+          "sameLocationAuc": 0.7291666666666666
+        }
+      },
+      "august": {
+        "events": 14,
+        "backgrounds": 31,
+        "unsuccessfulSearches": 3,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.6440092165898618,
+          "aucAllControls": 0.6239495798319328,
+          "aucUnsuccessful": 0.4166666666666667,
+          "positiveMean": 49.785714285714285,
+          "negativeMean": 59.666666666666664,
+          "positiveAtLeast60": 6,
+          "sameLocationAuc": 0.8076923076923077
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.652073732718894,
+          "aucAllControls": 0.6281512605042017,
+          "aucUnsuccessful": 0.38095238095238093,
+          "positiveMean": 35.142857142857146,
+          "negativeMean": 46.333333333333336,
+          "positiveAtLeast60": 2,
+          "sameLocationAuc": 0.75
+        }
+      },
+      "byYear": {
+        "2024": {
+          "events": 3,
+          "backgrounds": 48,
+          "unsuccessfulSearches": 0,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.8680555555555555,
+            "aucAllControls": 0.8680555555555555,
+            "aucUnsuccessful": null,
+            "positiveMean": 71,
+            "negativeMean": null,
+            "positiveAtLeast60": 3,
+            "sameLocationAuc": 1
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.8715277777777778,
+            "aucAllControls": 0.8715277777777778,
+            "aucUnsuccessful": null,
+            "positiveMean": 63,
+            "negativeMean": null,
+            "positiveAtLeast60": 3,
+            "sameLocationAuc": 1
+          }
+        },
+        "2025": {
+          "events": 14,
+          "backgrounds": 30,
+          "unsuccessfulSearches": 1,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.7952380952380953,
+            "aucAllControls": 0.7857142857142857,
+            "aucUnsuccessful": 0.5,
+            "positiveMean": 67.64285714285714,
+            "negativeMean": 68,
+            "positiveAtLeast60": 9,
+            "sameLocationAuc": 0.8888888888888888
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.8154761904761905,
+            "aucAllControls": 0.8133640552995393,
+            "aucUnsuccessful": 0.75,
+            "positiveMean": 58.57142857142857,
+            "negativeMean": 44,
+            "positiveAtLeast60": 8,
+            "sameLocationAuc": 0.8888888888888888
+          }
+        },
+        "2026": {
+          "events": 15,
+          "backgrounds": 18,
+          "unsuccessfulSearches": 3,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.7407407407407408,
+            "aucAllControls": 0.7063492063492064,
+            "aucUnsuccessful": 0.5,
+            "positiveMean": 58.6,
+            "negativeMean": 59.666666666666664,
+            "positiveAtLeast60": 10,
+            "sameLocationAuc": 0.75
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.6722222222222222,
+            "aucAllControls": 0.6333333333333334,
+            "aucUnsuccessful": 0.39999999999999997,
+            "positiveMean": 37.53333333333333,
+            "negativeMean": 46.333333333333336,
+            "positiveAtLeast60": 2,
+            "sameLocationAuc": 0.75
+          }
+        }
+      },
+      "pairedAucDelta95": {
+        "fruitingConditionsScore": [
+          0,
+          0
+        ],
+        "opportunityIndex": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "et-075",
+      "etCoefficient": 0.75,
+      "expanded": {
+        "events": 77,
+        "backgrounds": 231,
+        "unsuccessfulSearches": 13,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.7591218305504019,
+          "aucAllControls": 0.749547583563977,
+          "aucUnsuccessful": 0.5794205794205795,
+          "positiveMean": 56.44155844155844,
+          "negativeMean": 51,
+          "positiveAtLeast60": 39,
+          "sameLocationAuc": 0.7762987012987013
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.5910496429976949,
+          "aucAllControls": 0.5903502235469448,
+          "aucUnsuccessful": 0.577922077922078,
+          "positiveMean": 30.74025974025974,
+          "negativeMean": 23.53846153846154,
+          "positiveAtLeast60": 15,
+          "sameLocationAuc": 0.6061688311688312
+        }
+      },
+      "collapsed": {
+        "events": 32,
+        "backgrounds": 96,
+        "unsuccessfulSearches": 4,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.75146484375,
+          "aucAllControls": 0.7434375,
+          "aucUnsuccessful": 0.55078125,
+          "positiveMean": 60.6875,
+          "negativeMean": 58.5,
+          "positiveAtLeast60": 19,
+          "sameLocationAuc": 0.765625
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.7060546875,
+          "aucAllControls": 0.700625,
+          "aucUnsuccessful": 0.5703125,
+          "positiveMean": 46.90625,
+          "negativeMean": 43.75,
+          "positiveAtLeast60": 10,
+          "sameLocationAuc": 0.7447916666666666
+        }
+      },
+      "august": {
+        "events": 14,
+        "backgrounds": 31,
+        "unsuccessfulSearches": 3,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.6417050691244239,
+          "aucAllControls": 0.625,
+          "aucUnsuccessful": 0.4523809523809524,
+          "positiveMean": 46.5,
+          "negativeMean": 56.666666666666664,
+          "positiveAtLeast60": 5,
+          "sameLocationAuc": 0.7884615384615384
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.6244239631336406,
+          "aucAllControls": 0.6029411764705882,
+          "aucUnsuccessful": 0.38095238095238093,
+          "positiveMean": 32.92857142857143,
+          "negativeMean": 44.666666666666664,
+          "positiveAtLeast60": 2,
+          "sameLocationAuc": 0.75
+        }
+      },
+      "byYear": {
+        "2024": {
+          "events": 3,
+          "backgrounds": 48,
+          "unsuccessfulSearches": 0,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.8888888888888888,
+            "aucAllControls": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "positiveMean": 66,
+            "negativeMean": null,
+            "positiveAtLeast60": 3,
+            "sameLocationAuc": 1
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.8888888888888888,
+            "aucAllControls": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "positiveMean": 58.333333333333336,
+            "negativeMean": null,
+            "positiveAtLeast60": 2,
+            "sameLocationAuc": 1
+          }
+        },
+        "2025": {
+          "events": 14,
+          "backgrounds": 30,
+          "unsuccessfulSearches": 1,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.8273809523809524,
+            "aucAllControls": 0.816820276497696,
+            "aucUnsuccessful": 0.5,
+            "positiveMean": 65.92857142857143,
+            "negativeMean": 64,
+            "positiveAtLeast60": 7,
+            "sameLocationAuc": 0.8888888888888888
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.8369047619047619,
+            "aucAllControls": 0.8352534562211982,
+            "aucUnsuccessful": 0.7857142857142857,
+            "positiveMean": 57.07142857142857,
+            "negativeMean": 41,
+            "positiveAtLeast60": 6,
+            "sameLocationAuc": 0.8888888888888888
+          }
+        },
+        "2026": {
+          "events": 15,
+          "backgrounds": 18,
+          "unsuccessfulSearches": 3,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.7240740740740741,
+            "aucAllControls": 0.6968253968253968,
+            "aucUnsuccessful": 0.5333333333333333,
+            "positiveMean": 54.733333333333334,
+            "negativeMean": 56.666666666666664,
+            "positiveAtLeast60": 9,
+            "sameLocationAuc": 0.75
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.6574074074074074,
+            "aucAllControls": 0.6206349206349207,
+            "aucUnsuccessful": 0.39999999999999997,
+            "positiveMean": 35.13333333333333,
+            "negativeMean": 44.666666666666664,
+            "positiveAtLeast60": 2,
+            "sameLocationAuc": 0.75
+          }
+        }
+      },
+      "pairedAucDelta95": {
+        "fruitingConditionsScore": [
+          -0.01296768707482987,
+          0.019804526748971263
+        ],
+        "opportunityIndex": [
+          -0.014149659863945563,
+          0.022279035792549307
+        ]
+      }
+    },
+    {
+      "name": "heat-3c",
+      "etCoefficient": 0.5,
+      "heatWidthC": 3,
+      "expanded": {
+        "events": 77,
+        "backgrounds": 231,
+        "unsuccessfulSearches": 13,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.7459099342216226,
+          "aucAllControls": 0.7370395997445178,
+          "aucUnsuccessful": 0.5794205794205795,
+          "positiveMean": 59.37662337662338,
+          "negativeMean": 54.30769230769231,
+          "positiveAtLeast60": 44,
+          "sameLocationAuc": 0.7645021645021645
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.5888851408331928,
+          "aucAllControls": 0.5882212050244837,
+          "aucUnsuccessful": 0.5764235764235764,
+          "positiveMean": 32.27272727272727,
+          "negativeMean": 25,
+          "positiveAtLeast60": 18,
+          "sameLocationAuc": 0.6061688311688314
+        }
+      },
+      "collapsed": {
+        "events": 32,
+        "backgrounds": 96,
+        "unsuccessfulSearches": 4,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.74755859375,
+          "aucAllControls": 0.7390625,
+          "aucUnsuccessful": 0.53515625,
+          "positiveMean": 64.28125,
+          "negativeMean": 62.25,
+          "positiveAtLeast60": 22,
+          "sameLocationAuc": 0.7499999999999998
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.70751953125,
+          "aucAllControls": 0.701875,
+          "aucUnsuccessful": 0.56640625,
+          "positiveMean": 49.53125,
+          "negativeMean": 46.25,
+          "positiveAtLeast60": 13,
+          "sameLocationAuc": 0.7343749999999999
+        }
+      },
+      "august": {
+        "events": 14,
+        "backgrounds": 31,
+        "unsuccessfulSearches": 3,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.6382488479262672,
+          "aucAllControls": 0.6186974789915967,
+          "aucUnsuccessful": 0.4166666666666667,
+          "positiveMean": 51.07142857142857,
+          "negativeMean": 60.333333333333336,
+          "positiveAtLeast60": 6,
+          "sameLocationAuc": 0.8076923076923077
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.6601382488479263,
+          "aucAllControls": 0.6355042016806722,
+          "aucUnsuccessful": 0.38095238095238093,
+          "positiveMean": 36.07142857142857,
+          "negativeMean": 47,
+          "positiveAtLeast60": 2,
+          "sameLocationAuc": 0.7692307692307693
+        }
+      },
+      "byYear": {
+        "2024": {
+          "events": 3,
+          "backgrounds": 48,
+          "unsuccessfulSearches": 0,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.8680555555555555,
+            "aucAllControls": 0.8680555555555555,
+            "aucUnsuccessful": null,
+            "positiveMean": 71,
+            "negativeMean": null,
+            "positiveAtLeast60": 3,
+            "sameLocationAuc": 1
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.8715277777777778,
+            "aucAllControls": 0.8715277777777778,
+            "aucUnsuccessful": null,
+            "positiveMean": 63,
+            "negativeMean": null,
+            "positiveAtLeast60": 3,
+            "sameLocationAuc": 1
+          }
+        },
+        "2025": {
+          "events": 14,
+          "backgrounds": 30,
+          "unsuccessfulSearches": 1,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.7880952380952381,
+            "aucAllControls": 0.7788018433179723,
+            "aucUnsuccessful": 0.5,
+            "positiveMean": 67.64285714285714,
+            "negativeMean": 68,
+            "positiveAtLeast60": 9,
+            "sameLocationAuc": 0.8888888888888888
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.8107142857142857,
+            "aucAllControls": 0.8087557603686636,
+            "aucUnsuccessful": 0.75,
+            "positiveMean": 58.57142857142857,
+            "negativeMean": 44,
+            "positiveAtLeast60": 8,
+            "sameLocationAuc": 0.8888888888888888
+          }
+        },
+        "2026": {
+          "events": 15,
+          "backgrounds": 18,
+          "unsuccessfulSearches": 3,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.7481481481481481,
+            "aucAllControls": 0.7126984126984127,
+            "aucUnsuccessful": 0.5,
+            "positiveMean": 59.8,
+            "negativeMean": 60.333333333333336,
+            "positiveAtLeast60": 10,
+            "sameLocationAuc": 0.7777777777777778
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.6814814814814816,
+            "aucAllControls": 0.6412698412698413,
+            "aucUnsuccessful": 0.39999999999999997,
+            "positiveMean": 38.4,
+            "negativeMean": 47,
+            "positiveAtLeast60": 2,
+            "sameLocationAuc": 0.75
+          }
+        }
+      },
+      "pairedAucDelta95": {
+        "fruitingConditionsScore": [
+          -0.005740740740740713,
+          0.008953168044077087
+        ],
+        "opportunityIndex": [
+          -0.0038927335640137617,
+          0.0206802721088436
+        ]
+      }
+    },
+    {
+      "name": "heat-6c",
+      "etCoefficient": 0.5,
+      "heatWidthC": 6,
+      "expanded": {
+        "events": 77,
+        "backgrounds": 231,
+        "unsuccessfulSearches": 13,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.746275369651993,
+          "aucAllControls": 0.7373855652544178,
+          "aucUnsuccessful": 0.5794205794205795,
+          "positiveMean": 59.54545454545455,
+          "negativeMean": 54.30769230769231,
+          "positiveAtLeast60": 44,
+          "sameLocationAuc": 0.7645021645021645
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.5916961826052736,
+          "aucAllControls": 0.5910421545667448,
+          "aucUnsuccessful": 0.5794205794205795,
+          "positiveMean": 32.38961038961039,
+          "negativeMean": 25,
+          "positiveAtLeast60": 18,
+          "sameLocationAuc": 0.607792207792208
+        }
+      },
+      "collapsed": {
+        "events": 32,
+        "backgrounds": 96,
+        "unsuccessfulSearches": 4,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.7470703125,
+          "aucAllControls": 0.73859375,
+          "aucUnsuccessful": 0.53515625,
+          "positiveMean": 64.65625,
+          "negativeMean": 62.25,
+          "positiveAtLeast60": 22,
+          "sameLocationAuc": 0.7499999999999998
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.7078450520833334,
+          "aucAllControls": 0.7021875,
+          "aucUnsuccessful": 0.56640625,
+          "positiveMean": 49.78125,
+          "negativeMean": 46.25,
+          "positiveAtLeast60": 13,
+          "sameLocationAuc": 0.7395833333333331
+        }
+      },
+      "august": {
+        "events": 14,
+        "backgrounds": 31,
+        "unsuccessfulSearches": 3,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.630184331797235,
+          "aucAllControls": 0.611344537815126,
+          "aucUnsuccessful": 0.4166666666666667,
+          "positiveMean": 51.92857142857143,
+          "negativeMean": 60.333333333333336,
+          "positiveAtLeast60": 6,
+          "sameLocationAuc": 0.8076923076923077
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.6589861751152073,
+          "aucAllControls": 0.6344537815126051,
+          "aucUnsuccessful": 0.38095238095238093,
+          "positiveMean": 36.642857142857146,
+          "negativeMean": 47,
+          "positiveAtLeast60": 2,
+          "sameLocationAuc": 0.7692307692307693
+        }
+      },
+      "byYear": {
+        "2024": {
+          "events": 3,
+          "backgrounds": 48,
+          "unsuccessfulSearches": 0,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.8680555555555555,
+            "aucAllControls": 0.8680555555555555,
+            "aucUnsuccessful": null,
+            "positiveMean": 71,
+            "negativeMean": null,
+            "positiveAtLeast60": 3,
+            "sameLocationAuc": 1
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.8715277777777778,
+            "aucAllControls": 0.8715277777777778,
+            "aucUnsuccessful": null,
+            "positiveMean": 63,
+            "negativeMean": null,
+            "positiveAtLeast60": 3,
+            "sameLocationAuc": 1
+          }
+        },
+        "2025": {
+          "events": 14,
+          "backgrounds": 30,
+          "unsuccessfulSearches": 1,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.7880952380952381,
+            "aucAllControls": 0.7788018433179723,
+            "aucUnsuccessful": 0.5,
+            "positiveMean": 67.64285714285714,
+            "negativeMean": 68,
+            "positiveAtLeast60": 9,
+            "sameLocationAuc": 0.8888888888888888
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.8107142857142857,
+            "aucAllControls": 0.8087557603686636,
+            "aucUnsuccessful": 0.75,
+            "positiveMean": 58.57142857142857,
+            "negativeMean": 44,
+            "positiveAtLeast60": 8,
+            "sameLocationAuc": 0.8888888888888888
+          }
+        },
+        "2026": {
+          "events": 15,
+          "backgrounds": 18,
+          "unsuccessfulSearches": 3,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.7481481481481481,
+            "aucAllControls": 0.7126984126984127,
+            "aucUnsuccessful": 0.5,
+            "positiveMean": 60.6,
+            "negativeMean": 60.333333333333336,
+            "positiveAtLeast60": 10,
+            "sameLocationAuc": 0.7777777777777778
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.6851851851851852,
+            "aucAllControls": 0.6444444444444445,
+            "aucUnsuccessful": 0.39999999999999997,
+            "positiveMean": 38.93333333333333,
+            "negativeMean": 47,
+            "positiveAtLeast60": 2,
+            "sameLocationAuc": 0.7777777777777778
+          }
+        }
+      },
+      "pairedAucDelta95": {
+        "fruitingConditionsScore": [
+          -0.007208765859284871,
+          0.010204081632653073
+        ],
+        "opportunityIndex": [
+          -0.00520833333333337,
+          0.02285879629629628
+        ]
+      }
+    },
+    {
+      "name": "et-075-heat-3c",
+      "etCoefficient": 0.75,
+      "heatWidthC": 3,
+      "expanded": {
+        "events": 77,
+        "backgrounds": 231,
+        "unsuccessfulSearches": 13,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.7591499409681228,
+          "aucAllControls": 0.749441132637854,
+          "aucUnsuccessful": 0.5769230769230769,
+          "positiveMean": 56.688311688311686,
+          "negativeMean": 51.46153846153846,
+          "positiveAtLeast60": 39,
+          "sameLocationAuc": 0.7768398268398268
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.5924270534660145,
+          "aucAllControls": 0.5916276346604216,
+          "aucUnsuccessful": 0.5774225774225774,
+          "positiveMean": 30.948051948051948,
+          "negativeMean": 23.692307692307693,
+          "positiveAtLeast60": 15,
+          "sameLocationAuc": 0.60995670995671
+        }
+      },
+      "collapsed": {
+        "events": 32,
+        "backgrounds": 96,
+        "unsuccessfulSearches": 4,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.7511393229166666,
+          "aucAllControls": 0.7428125,
+          "aucUnsuccessful": 0.54296875,
+          "positiveMean": 61.125,
+          "negativeMean": 59,
+          "positiveAtLeast60": 19,
+          "sameLocationAuc": 0.765625
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.7111002604166666,
+          "aucAllControls": 0.70546875,
+          "aucUnsuccessful": 0.5703125,
+          "positiveMean": 47.25,
+          "negativeMean": 44,
+          "positiveAtLeast60": 10,
+          "sameLocationAuc": 0.7499999999999999
+        }
+      },
+      "august": {
+        "events": 14,
+        "backgrounds": 31,
+        "unsuccessfulSearches": 3,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.6347926267281105,
+          "aucAllControls": 0.6186974789915967,
+          "aucUnsuccessful": 0.4523809523809524,
+          "positiveMean": 47.5,
+          "negativeMean": 57.333333333333336,
+          "positiveAtLeast60": 5,
+          "sameLocationAuc": 0.7884615384615384
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.6359447004608295,
+          "aucAllControls": 0.6134453781512605,
+          "aucUnsuccessful": 0.38095238095238093,
+          "positiveMean": 33.714285714285715,
+          "negativeMean": 45,
+          "positiveAtLeast60": 2,
+          "sameLocationAuc": 0.7692307692307693
+        }
+      },
+      "byYear": {
+        "2024": {
+          "events": 3,
+          "backgrounds": 48,
+          "unsuccessfulSearches": 0,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.8888888888888888,
+            "aucAllControls": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "positiveMean": 66,
+            "negativeMean": null,
+            "positiveAtLeast60": 3,
+            "sameLocationAuc": 1
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.8888888888888888,
+            "aucAllControls": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "positiveMean": 58.333333333333336,
+            "negativeMean": null,
+            "positiveAtLeast60": 2,
+            "sameLocationAuc": 1
+          }
+        },
+        "2025": {
+          "events": 14,
+          "backgrounds": 30,
+          "unsuccessfulSearches": 1,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.8214285714285714,
+            "aucAllControls": 0.8110599078341013,
+            "aucUnsuccessful": 0.5,
+            "positiveMean": 65.92857142857143,
+            "negativeMean": 64,
+            "positiveAtLeast60": 7,
+            "sameLocationAuc": 0.8888888888888888
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.8297619047619047,
+            "aucAllControls": 0.8283410138248848,
+            "aucUnsuccessful": 0.7857142857142857,
+            "positiveMean": 57.07142857142857,
+            "negativeMean": 41,
+            "positiveAtLeast60": 6,
+            "sameLocationAuc": 0.8888888888888888
+          }
+        },
+        "2026": {
+          "events": 15,
+          "backgrounds": 18,
+          "unsuccessfulSearches": 3,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.7296296296296296,
+            "aucAllControls": 0.7015873015873015,
+            "aucUnsuccessful": 0.5333333333333333,
+            "positiveMean": 55.666666666666664,
+            "negativeMean": 57.333333333333336,
+            "positiveAtLeast60": 9,
+            "sameLocationAuc": 0.75
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.6685185185185185,
+            "aucAllControls": 0.6301587301587301,
+            "aucUnsuccessful": 0.39999999999999997,
+            "positiveMean": 35.86666666666667,
+            "negativeMean": 45,
+            "positiveAtLeast60": 2,
+            "sameLocationAuc": 0.75
+          }
+        }
+      },
+      "pairedAucDelta95": {
+        "fruitingConditionsScore": [
+          -0.013874436351023256,
+          0.022045244690674037
+        ],
+        "opportunityIndex": [
+          -0.01155598958333337,
+          0.030697190426638987
+        ]
+      }
+    },
+    {
+      "name": "et-075-heat-6c",
+      "etCoefficient": 0.75,
+      "heatWidthC": 6,
+      "expanded": {
+        "events": 77,
+        "backgrounds": 231,
+        "unsuccessfulSearches": 13,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.7592904930567269,
+          "aucAllControls": 0.7495209708324463,
+          "aucUnsuccessful": 0.5759240759240759,
+          "positiveMean": 56.84415584415584,
+          "negativeMean": 51.53846153846154,
+          "positiveAtLeast60": 39,
+          "sameLocationAuc": 0.779004329004329
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.5951818744026536,
+          "aucAllControls": 0.5944219714711518,
+          "aucUnsuccessful": 0.5809190809190808,
+          "positiveMean": 31.051948051948052,
+          "negativeMean": 23.692307692307693,
+          "positiveAtLeast60": 15,
+          "sameLocationAuc": 0.6121212121212123
+        }
+      },
+      "collapsed": {
+        "events": 32,
+        "backgrounds": 96,
+        "unsuccessfulSearches": 4,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.75146484375,
+          "aucAllControls": 0.74265625,
+          "aucUnsuccessful": 0.53125,
+          "positiveMean": 61.46875,
+          "negativeMean": 59.25,
+          "positiveAtLeast60": 19,
+          "sameLocationAuc": 0.7708333333333333
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.7117513020833334,
+          "aucAllControls": 0.70625,
+          "aucUnsuccessful": 0.57421875,
+          "positiveMean": 47.46875,
+          "negativeMean": 44,
+          "positiveAtLeast60": 10,
+          "sameLocationAuc": 0.7552083333333331
+        }
+      },
+      "august": {
+        "events": 14,
+        "backgrounds": 31,
+        "unsuccessfulSearches": 3,
+        "fruitingConditionsScore": {
+          "aucBackground": 0.631336405529954,
+          "aucAllControls": 0.6134453781512605,
+          "aucUnsuccessful": 0.4285714285714286,
+          "positiveMean": 48.285714285714285,
+          "negativeMean": 57.666666666666664,
+          "positiveAtLeast60": 5,
+          "sameLocationAuc": 0.7884615384615384
+        },
+        "opportunityIndex": {
+          "aucBackground": 0.6382488479262672,
+          "aucAllControls": 0.6165966386554622,
+          "aucUnsuccessful": 0.39285714285714285,
+          "positiveMean": 34.214285714285715,
+          "negativeMean": 45,
+          "positiveAtLeast60": 2,
+          "sameLocationAuc": 0.7692307692307693
+        }
+      },
+      "byYear": {
+        "2024": {
+          "events": 3,
+          "backgrounds": 48,
+          "unsuccessfulSearches": 0,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.8888888888888888,
+            "aucAllControls": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "positiveMean": 66,
+            "negativeMean": null,
+            "positiveAtLeast60": 3,
+            "sameLocationAuc": 1
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.8888888888888888,
+            "aucAllControls": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "positiveMean": 58.333333333333336,
+            "negativeMean": null,
+            "positiveAtLeast60": 2,
+            "sameLocationAuc": 1
+          }
+        },
+        "2025": {
+          "events": 14,
+          "backgrounds": 30,
+          "unsuccessfulSearches": 1,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.8202380952380952,
+            "aucAllControls": 0.8099078341013825,
+            "aucUnsuccessful": 0.5,
+            "positiveMean": 65.92857142857143,
+            "negativeMean": 64,
+            "positiveAtLeast60": 7,
+            "sameLocationAuc": 0.8888888888888888
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.8297619047619047,
+            "aucAllControls": 0.8283410138248848,
+            "aucUnsuccessful": 0.7857142857142857,
+            "positiveMean": 57.07142857142857,
+            "negativeMean": 41,
+            "positiveAtLeast60": 6,
+            "sameLocationAuc": 0.8888888888888888
+          }
+        },
+        "2026": {
+          "events": 15,
+          "backgrounds": 18,
+          "unsuccessfulSearches": 3,
+          "fruitingConditionsScore": {
+            "aucBackground": 0.7314814814814814,
+            "aucAllControls": 0.7,
+            "aucUnsuccessful": 0.5111111111111112,
+            "positiveMean": 56.4,
+            "negativeMean": 57.666666666666664,
+            "positiveAtLeast60": 9,
+            "sameLocationAuc": 0.7777777777777778
+          },
+          "opportunityIndex": {
+            "aucBackground": 0.6722222222222222,
+            "aucAllControls": 0.634920634920635,
+            "aucUnsuccessful": 0.41111111111111115,
+            "positiveMean": 36.333333333333336,
+            "negativeMean": 45,
+            "positiveAtLeast60": 2,
+            "sameLocationAuc": 0.7777777777777778
+          }
+        }
+      },
+      "pairedAucDelta95": {
+        "fruitingConditionsScore": [
+          -0.015518707482993221,
+          0.025334362139917688
+        ],
+        "opportunityIndex": [
+          -0.011659807956104218,
+          0.03292181069958855
+        ]
+      }
+    }
+  ]
+}

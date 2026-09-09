@@ -1,5 +1,6 @@
 import { mergeThermalSources } from "./station-temperature-scoring.ts";
 import { mergeThermalExposure } from "./thermal-exposure.ts";
+import { validHeatDegreeHours } from "./heat-intensity.ts";
 
 export type EnvironmentConfidence = "high" | "moderate" | "limited" | "unknown";
 
@@ -76,6 +77,8 @@ const maximumFields = [
   "heatHours14d",
   "frostHours20d",
   "heatHours20d",
+  "heatDegreeHours14d",
+  "heatDegreeHours20d",
   "relativeHumidityMax24h",
   "soilMoistureMax24h",
   "soilMoistureMax7d",
@@ -134,6 +137,11 @@ export function aggregateEnvironmentRows(rows: EnvironmentSnapshotRow[]) {
     ["temperatureAvg20dC", "weatherModel"].some((f) => f in row.values) ||
     row.unavailable_fields.includes("temperatureAvg20dC")).map((row) => row.values.thermalSources));
   if (thermalSources) values.thermalSources = thermalSources;
+  const atmosphericRows = rows.filter((row) => "temperatureAvg20dC" in row.values || row.unavailable_fields.includes("temperatureAvg20dC"));
+  if (!atmosphericRows.length || atmosphericRows.some((row) => !validHeatDegreeHours(row.values))) {
+    delete values.heatDegreeHours14d;
+    delete values.heatDegreeHours20d;
+  }
 
   const thermalExposure = mergeThermalExposure(rows.filter((row) =>
     ["temperatureAvg7dC", "temperatureAvg20dC", "weatherElevationM", "weatherModel"].some((field) => field in row.values) ||

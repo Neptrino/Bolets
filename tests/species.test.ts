@@ -209,7 +209,7 @@ describe("species profiles", () => {
 
       if (model.status === "supported") {
         expect(profile.predictionMode, profile.speciesId).toBe("current");
-        expect(model.version).toBe("hydrothermal-v2-priors-2026-09a");
+        expect(model.version).toBe("hydrothermal-v2-priors-2026-09c");
         expect(model.guild).not.toBe("hypogeous");
         expect(model.water.waterExponent).toBeGreaterThan(0);
         expect(model.water.waterExponent).toBeLessThan(1);

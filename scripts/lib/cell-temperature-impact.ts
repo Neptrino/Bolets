@@ -103,6 +103,8 @@ function replayCellTemperature(
   if (mode === "cell-estimate") scenario.values.weatherElevationM = values.altitudeM;
   // Any retained distribution describes the original series only.
   delete scenario.values.thermalExposure;
+  delete scenario.values.heatDegreeHours14d;
+  delete scenario.values.heatDegreeHours20d;
   const outcome = summary(species, scenario);
   if (outcome.score === null) return unavailable("scenario-unavailable");
   for (const component of ["water", "habitatCoverage", "altitude", "phenology"]) {

@@ -168,6 +168,7 @@ const temperatureModelParameters = z.object({
   warmHalfWidthC: z.number().positive(),
   frostHalfLifeHours: z.number().positive(),
   heatHalfLifeHours: z.number().positive(),
+  heatIntensityWidthC: z.number().positive().optional(),
 });
 const monthlyPhenologyAnchors = z.tuple([
   z.number().min(0).max(1), z.number().min(0).max(1),
@@ -343,6 +344,8 @@ export const conditionSnapshotSchema = z.object({
     temperatureAvg14dC: z.number().optional(), temperatureAvg20dC: z.number().optional(),
     frostHours14d: z.number().int().min(0).optional(), frostHours20d: z.number().int().min(0).optional(),
     heatHours14d: z.number().int().min(0).optional(), heatHours20d: z.number().int().min(0).optional(),
+    heatDegreeHours14d: z.number().min(0).max(11088).optional().catch(undefined),
+    heatDegreeHours20d: z.number().min(0).max(15840).optional().catch(undefined),
     relativeHumidity: z.number().min(0).max(100).optional(), relativeHumidityMin24h: z.number().min(0).max(100).optional(),
     relativeHumidityAvg24h: z.number().min(0).max(100).optional(), relativeHumidityMax24h: z.number().min(0).max(100).optional(),
     relativeHumidityAvg7d: z.number().min(0).max(100).optional(),

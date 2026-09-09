@@ -1,0 +1,588 @@
+{
+  "version": "heat-intensity-release-2026-09c",
+  "status": "locally-verified-deployment-pending",
+  "findings": {
+    "baseline": {
+      "reportVersion": "finding-observation-evaluation-v2",
+      "meta": {
+        "artifactFiles": [
+          "evaluation-records.jsonl"
+        ],
+        "sourceRecords": 783,
+        "candidateRows": 321,
+        "observationGroups": 144,
+        "evaluationUnit": "One recorded taxon per visit/date; co-reported identified species remain separate",
+        "aggregation": "Maximum across the recorded alternatives, independently per score, for events and controls alike; incomplete groups withhold",
+        "limitation": "Genus-level group opportunity does not confirm any candidate species. Background dates are unlabelled, not verified absences. This is retrospective evaluation, not independent validation."
+      },
+      "discrimination": {
+        "events": 35,
+        "controls": 109,
+        "backgroundDates": 105,
+        "observedNegatives": 4,
+        "aucOpportunity": 0.6910878112712975,
+        "aucOpportunityBackground": 0.6955102040816327,
+        "aucOpportunityObservedNegatives": 0.575,
+        "aucFruitingConditions": 0.7294888597640892,
+        "eventOpportunity": {
+          "count": 35,
+          "min": 0,
+          "p25": 33,
+          "median": 54,
+          "p75": 64.5,
+          "max": 87,
+          "mean": 49.457142857142856
+        },
+        "controlOpportunity": {
+          "count": 109,
+          "min": 0,
+          "p25": 20,
+          "median": 35,
+          "p75": 47,
+          "max": 77,
+          "mean": 34.41284403669725
+        },
+        "eventFruitingConditions": {
+          "count": 35,
+          "min": 0,
+          "p25": 53,
+          "median": 71,
+          "p75": 85.5,
+          "max": 92,
+          "mean": 63.02857142857143
+        },
+        "controlFruitingConditions": {
+          "count": 109,
+          "min": 0,
+          "p25": 31,
+          "median": 48,
+          "p75": 60,
+          "max": 92,
+          "mean": 45.027522935779814
+        },
+        "eventHitRatesOpportunity": {
+          "atLeast20": 0.9142857142857143,
+          "atLeast40": 0.6285714285714286,
+          "atLeast60": 0.4,
+          "atLeast80": 0.14285714285714285
+        },
+        "backgroundHitRatesOpportunity": {
+          "atLeast20": 0.7714285714285715,
+          "atLeast40": 0.34285714285714286,
+          "atLeast60": 0.10476190476190476,
+          "atLeast80": 0
+        },
+        "observedNegativeHitRatesOpportunity": {
+          "atLeast20": 1,
+          "atLeast40": 0.75,
+          "atLeast60": 0.25,
+          "atLeast80": 0
+        },
+        "eventWithinLocationPercentile": {
+          "count": 35,
+          "min": 0.16666666666666666,
+          "p25": 0.5,
+          "median": 0.8333333333333334,
+          "p75": 1,
+          "max": 1,
+          "mean": 0.7333333333333333
+        },
+        "unavailableOpportunity": 0
+      }
+    },
+    "heat-6c": {
+      "reportVersion": "finding-observation-evaluation-v2",
+      "meta": {
+        "artifactFiles": [
+          "evaluation-records.jsonl"
+        ],
+        "sourceRecords": 783,
+        "candidateRows": 321,
+        "observationGroups": 144,
+        "evaluationUnit": "One recorded taxon per visit/date; co-reported identified species remain separate",
+        "aggregation": "Maximum across the recorded alternatives, independently per score, for events and controls alike; incomplete groups withhold",
+        "limitation": "Genus-level group opportunity does not confirm any candidate species. Background dates are unlabelled, not verified absences. This is retrospective evaluation, not independent validation."
+      },
+      "discrimination": {
+        "events": 35,
+        "controls": 109,
+        "backgroundDates": 105,
+        "observedNegatives": 4,
+        "aucOpportunity": 0.7,
+        "aucOpportunityBackground": 0.7047619047619048,
+        "aucOpportunityObservedNegatives": 0.575,
+        "aucFruitingConditions": 0.7310615989515072,
+        "eventOpportunity": {
+          "count": 35,
+          "min": 1,
+          "p25": 34.5,
+          "median": 54,
+          "p75": 64.5,
+          "max": 87,
+          "mean": 50.25714285714286
+        },
+        "controlOpportunity": {
+          "count": 109,
+          "min": 0,
+          "p25": 22,
+          "median": 35,
+          "p75": 47,
+          "max": 77,
+          "mean": 35.36697247706422
+        },
+        "eventFruitingConditions": {
+          "count": 35,
+          "min": 3,
+          "p25": 53,
+          "median": 71,
+          "p75": 85.5,
+          "max": 92,
+          "mean": 64.08571428571429
+        },
+        "controlFruitingConditions": {
+          "count": 109,
+          "min": 1,
+          "p25": 33,
+          "median": 48,
+          "p75": 60,
+          "max": 92,
+          "mean": 46.41284403669725
+        },
+        "eventHitRatesOpportunity": {
+          "atLeast20": 0.9142857142857143,
+          "atLeast40": 0.6285714285714286,
+          "atLeast60": 0.4,
+          "atLeast80": 0.14285714285714285
+        },
+        "backgroundHitRatesOpportunity": {
+          "atLeast20": 0.8,
+          "atLeast40": 0.3523809523809524,
+          "atLeast60": 0.10476190476190476,
+          "atLeast80": 0
+        },
+        "observedNegativeHitRatesOpportunity": {
+          "atLeast20": 1,
+          "atLeast40": 0.75,
+          "atLeast60": 0.25,
+          "atLeast80": 0
+        },
+        "eventWithinLocationPercentile": {
+          "count": 35,
+          "min": 0.3333333333333333,
+          "p25": 0.5,
+          "median": 0.8333333333333334,
+          "p75": 1,
+          "max": 1,
+          "mean": 0.7428571428571427
+        },
+        "unavailableOpportunity": 0
+      }
+    }
+  },
+  "boundaries": {
+    "0": {
+      "speciesId": "boletus-edulis",
+      "observedAt": "2026-09-09T00:00:00.000Z",
+      "heatIntensity": {
+        "widthC": 6,
+        "thresholdC": 27,
+        "baseline": "xema-arome-blend-v3",
+        "dryingChanged": false
+      },
+      "sourceSha256": "c5c93e20b5a5b1dbfc1795e3e1d4168d12deec7273d4d64ff8c16f967dfd0d18",
+      "stationMetadataSha256": "c6d4554237ae9b9546b111b59ae71e6c29639c2c9896294be198888640b1f63d",
+      "coverage": {
+        "applied": 4795,
+        "baseline-fallback": 21
+      },
+      "summary": {
+        "all": {
+          "pairs": 8892,
+          "baseline": {
+            "mean": 3.885739991003149,
+            "p95": 19,
+            "maximum": 63,
+            "atLeast10": 1147,
+            "atLeast20": 439,
+            "atLeast30": 201
+          },
+          "candidate": {
+            "mean": 4.673301844354476,
+            "p95": 20,
+            "maximum": 63,
+            "atLeast10": 1325,
+            "atLeast20": 476,
+            "atLeast30": 216
+          },
+          "baselineConditions": {
+            "mean": 2.379667116509222,
+            "p95": 11,
+            "maximum": 45,
+            "atLeast10": 559,
+            "atLeast20": 86,
+            "atLeast30": 12
+          },
+          "candidateConditions": {
+            "mean": 2.242914979757085,
+            "p95": 8,
+            "maximum": 24,
+            "atLeast10": 168,
+            "atLeast20": 7,
+            "atLeast30": 0
+          },
+          "reduced": 917,
+          "increased": 3635,
+          "unchanged": 4340,
+          "newSevereJumps": 12,
+          "gapIncreasesAtLeast10": 110
+        },
+        "comparable": {
+          "pairs": 1417,
+          "baseline": {
+            "mean": 1.1312632321806633,
+            "p95": 5,
+            "maximum": 13,
+            "atLeast10": 11,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "candidate": {
+            "mean": 1.1531404375441072,
+            "p95": 4,
+            "maximum": 10,
+            "atLeast10": 3,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "baselineConditions": {
+            "mean": 1.1390261115031757,
+            "p95": 6,
+            "maximum": 17,
+            "atLeast10": 11,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "candidateConditions": {
+            "mean": 1.0628087508821453,
+            "p95": 3,
+            "maximum": 9,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "reduced": 203,
+          "increased": 424,
+          "unchanged": 790,
+          "newSevereJumps": 0,
+          "gapIncreasesAtLeast10": 0
+        },
+        "comparableCrossWeather": {
+          "pairs": 137,
+          "baseline": {
+            "mean": 1.7372262773722629,
+            "p95": 7,
+            "maximum": 13,
+            "atLeast10": 2,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "candidate": {
+            "mean": 2.051094890510949,
+            "p95": 7,
+            "maximum": 9,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "baselineConditions": {
+            "mean": 1.9562043795620438,
+            "p95": 8,
+            "maximum": 17,
+            "atLeast10": 4,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "candidateConditions": {
+            "mean": 2.291970802919708,
+            "p95": 7,
+            "maximum": 9,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "reduced": 19,
+          "increased": 57,
+          "unchanged": 61,
+          "newSevereJumps": 0,
+          "gapIncreasesAtLeast10": 0
+        },
+        "comparableCoverageEdges": {
+          "pairs": 1,
+          "baseline": {
+            "mean": 6,
+            "p95": 6,
+            "maximum": 6,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "candidate": {
+            "mean": 1,
+            "p95": 1,
+            "maximum": 1,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "baselineConditions": {
+            "mean": 6,
+            "p95": 6,
+            "maximum": 6,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "candidateConditions": {
+            "mean": 0,
+            "p95": 0,
+            "maximum": 0,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "reduced": 1,
+          "increased": 0,
+          "unchanged": 0,
+          "newSevereJumps": 0,
+          "gapIncreasesAtLeast10": 0
+        }
+      }
+    },
+    "12": {
+      "speciesId": "boletus-edulis",
+      "observedAt": "2026-09-09T00:00:00.000Z",
+      "heatIntensity": {
+        "widthC": 6,
+        "thresholdC": 27,
+        "baseline": "xema-arome-blend-v3",
+        "dryingChanged": false
+      },
+      "sourceSha256": "c5c93e20b5a5b1dbfc1795e3e1d4168d12deec7273d4d64ff8c16f967dfd0d18",
+      "stationMetadataSha256": "c6d4554237ae9b9546b111b59ae71e6c29639c2c9896294be198888640b1f63d",
+      "coverage": {
+        "applied": 4795,
+        "baseline-fallback": 21
+      },
+      "summary": {
+        "all": {
+          "pairs": 8892,
+          "baseline": {
+            "mean": 3.8244489428699957,
+            "p95": 19,
+            "maximum": 63,
+            "atLeast10": 1119,
+            "atLeast20": 438,
+            "atLeast30": 200
+          },
+          "candidate": {
+            "mean": 4.6352901484480435,
+            "p95": 20,
+            "maximum": 63,
+            "atLeast10": 1308,
+            "atLeast20": 471,
+            "atLeast30": 216
+          },
+          "baselineConditions": {
+            "mean": 2.307467386414755,
+            "p95": 11,
+            "maximum": 45,
+            "atLeast10": 536,
+            "atLeast20": 88,
+            "atLeast30": 14
+          },
+          "candidateConditions": {
+            "mean": 2.190058479532164,
+            "p95": 7,
+            "maximum": 24,
+            "atLeast10": 156,
+            "atLeast20": 6,
+            "atLeast30": 0
+          },
+          "reduced": 895,
+          "increased": 3646,
+          "unchanged": 4351,
+          "newSevereJumps": 12,
+          "gapIncreasesAtLeast10": 112
+        },
+        "comparable": {
+          "pairs": 1417,
+          "baseline": {
+            "mean": 1.133380381086803,
+            "p95": 5,
+            "maximum": 13,
+            "atLeast10": 12,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "candidate": {
+            "mean": 1.1538461538461537,
+            "p95": 4,
+            "maximum": 10,
+            "atLeast10": 3,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "baselineConditions": {
+            "mean": 1.1354975299929428,
+            "p95": 6,
+            "maximum": 21,
+            "atLeast10": 11,
+            "atLeast20": 1,
+            "atLeast30": 0
+          },
+          "candidateConditions": {
+            "mean": 1.0571630204657727,
+            "p95": 3,
+            "maximum": 9,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "reduced": 205,
+          "increased": 422,
+          "unchanged": 790,
+          "newSevereJumps": 0,
+          "gapIncreasesAtLeast10": 0
+        },
+        "comparableCrossWeather": {
+          "pairs": 137,
+          "baseline": {
+            "mean": 2.051094890510949,
+            "p95": 8,
+            "maximum": 13,
+            "atLeast10": 4,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "candidate": {
+            "mean": 2.2262773722627736,
+            "p95": 7,
+            "maximum": 9,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "baselineConditions": {
+            "mean": 2.372262773722628,
+            "p95": 9,
+            "maximum": 21,
+            "atLeast10": 4,
+            "atLeast20": 1,
+            "atLeast30": 0
+          },
+          "candidateConditions": {
+            "mean": 2.423357664233577,
+            "p95": 7,
+            "maximum": 9,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "reduced": 19,
+          "increased": 58,
+          "unchanged": 60,
+          "newSevereJumps": 0,
+          "gapIncreasesAtLeast10": 0
+        },
+        "comparableCoverageEdges": {
+          "pairs": 1,
+          "baseline": {
+            "mean": 6,
+            "p95": 6,
+            "maximum": 6,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "candidate": {
+            "mean": 1,
+            "p95": 1,
+            "maximum": 1,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "baselineConditions": {
+            "mean": 6,
+            "p95": 6,
+            "maximum": 6,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "candidateConditions": {
+            "mean": 0,
+            "p95": 0,
+            "maximum": 0,
+            "atLeast10": 0,
+            "atLeast20": 0,
+            "atLeast30": 0
+          },
+          "reduced": 1,
+          "increased": 0,
+          "unchanged": 0,
+          "newSevereJumps": 0,
+          "gapIncreasesAtLeast10": 0
+        }
+      }
+    }
+  },
+  "replay": {
+    "candidates": [
+      {
+        "name": "baseline",
+        "etCoefficient": 0.5
+      },
+      {
+        "name": "et-075",
+        "etCoefficient": 0.75
+      },
+      {
+        "name": "heat-3c",
+        "etCoefficient": 0.5,
+        "heatWidthC": 3
+      },
+      {
+        "name": "heat-6c",
+        "etCoefficient": 0.5,
+        "heatWidthC": 6
+      },
+      {
+        "name": "et-075-heat-3c",
+        "etCoefficient": 0.75,
+        "heatWidthC": 3
+      },
+      {
+        "name": "et-075-heat-6c",
+        "etCoefficient": 0.75,
+        "heatWidthC": 6
+      }
+    ],
+    "records": 783,
+    "controlledSeries": 764,
+    "blendedSeries": 649,
+    "unchangedHeatFallbacks": 19,
+    "manifestSha256": "53c653ecddb998417444d0edc9298d3158fe1256fbf9ce2705de16700d62edb2",
+    "baselineSha256": "dedb2c878415d8f7579c2a86ebe6025a35be4d3a800b8ba06f80261dbec1950e",
+    "inputsSha256": "cc7af2709b59078982f90cbb88818cd0aa6dad6147a96a373aaffea8468abca4",
+    "networkFetches": 0,
+    "productionChanges": false,
+    "limitations": [
+      "Exploratory reuse of calibration findings; not independent validation",
+      "Degree-hours are a sensitivity prior, not measured biological damage",
+      "Heat-only change: original frost penalty, source assignment and recency retained",
+      "Baseline fallbacks use original unshifted model hours for heat severity",
+      "Synthetic ET and heat-count fields exist only in private scoring snapshots"
+    ]
+  }
+}

@@ -1,4 +1,5 @@
 import { buildThermalExposure } from "./thermal-exposure.ts";
+import { heatDegreeHoursFromTemperatures } from "./heat-intensity.ts";
 import {
   FORECAST_OUTPUT_HOURS,
   HEAT_HOUR_THRESHOLD_C,
@@ -68,6 +69,7 @@ function normalizedValuesAtTarget(
     heatHours14d: temperature14d.values?.filter((value) => value >= HEAT_HOUR_THRESHOLD_C).length,
     temperatureAvg20dC: temperature20d.average,
     thermalExposure: buildThermalExposure(temperature20d.values, atmosphere.elevation),
+    ...heatDegreeHoursFromTemperatures(temperature20d.values),
     frostHours20d: temperature20d.values?.filter((value) => value <= 0).length,
     heatHours20d: temperature20d.values?.filter((value) => value >= HEAT_HOUR_THRESHOLD_C).length,
     relativeHumidity: humidity.get(target),

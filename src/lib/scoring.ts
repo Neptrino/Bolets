@@ -270,7 +270,7 @@ export function calculateSuitability(
     ? { ...values, ...terrainThermalCorrection(values) }
     : values;
   const temperature = temperatureSuitability(thermalValues, model.temperature);
-  const extremes = extremeTemperatureMultiplier(thermalValues, model.temperature);
+  const extremes = extremeTemperatureMultiplier(values, model.temperature);
   const components = [
     component("habitatCoverage", rawHabitatCoverage),
     component("altitude", altitude),

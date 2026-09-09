@@ -151,7 +151,7 @@ export function rawDiagnostics(
     ? { ...values, ...terrainThermalCorrection(values) }
     : values;
   const temperature = temperatureSuitability(thermalValues, model.temperature);
-  const extremes = extremeTemperatureMultiplier(thermalValues, model.temperature);
+  const extremes = extremeTemperatureMultiplier(values, model.temperature);
   const rawFruitingConditions = [phenology, water, temperature, extremes].every(
     (value) => value !== null,
   )

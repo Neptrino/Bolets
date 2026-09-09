@@ -4,6 +4,7 @@ import {
 } from "./station-temperature-field.ts";
 import type { XemaStation } from "./xema-rain.ts";
 import type { StationTemperatureHour } from "./xema-temperature.ts";
+import { heatDegreeHoursFromTemperatures, type HeatDegreeHours } from "./heat-intensity.ts";
 
 const HOUR = 3_600_000;
 export const THERMAL_FIELDS = ["temperatureAvg14dC", "temperatureAvg20dC", "heatHours14d", "heatHours20d", "frostHours14d", "frostHours20d"] as const;
@@ -105,6 +106,7 @@ export function createStationTemperatureScorer(
     if (THERMAL_FIELDS.some((f) => typeof values[f] !== "number" ||
       Math.abs((values[f] as number) - control[f]) > (f.startsWith("temperature") ? 0.02 : 0))) return values;
     const corrected: ReturnType<typeof thermalAggregates>[] = [];
+    const intensities: HeatDegreeHours[] = [];
     let provisional = false;
     let minimumDonors = Infinity;
     let modelOnlyHours = 0;
@@ -141,8 +143,11 @@ export function createStationTemperatureScorer(
       aggregates.temperatureAvg14dC += meanAdjustment * lag / 336;
       aggregates.temperatureAvg20dC += meanAdjustment * lag / 480;
       corrected.push(aggregates);
+      intensities.push(heatDegreeHoursFromTemperatures(temperatures)!);
     }
     return { ...values, ...combine(corrected), thermalExposure: undefined,
+      heatDegreeHours14d: Math.max(...intensities.map((v) => v.heatDegreeHours14d)),
+      heatDegreeHours20d: Math.max(...intensities.map((v) => v.heatDegreeHours20d)),
       thermalReferenceElevationM: altitudeM, temperatureSource: points.some((p) => p.model.version === STATION_TEMPERATURE_VERSION) ? STATION_TEMPERATURE_VERSION : "xema-arome-blend-v2",
       temperatureQuality: provisional ? "includes-provisional" : "validated",
       temperatureMinimumStations: minimumDonors, temperatureModelOnlyHours: modelOnlyHours };

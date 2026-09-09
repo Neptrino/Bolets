@@ -5,6 +5,7 @@ import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { join } from "node:path";
 import { afterAll, beforeAll, expect, it, vi } from "vitest";
 import { getSpecies } from "@/data/species";
+import { countBasedSpecies } from "@/scripts/lib/heat-drying-candidates";
 import type { ConditionSnapshot } from "@/src/lib/types";
 import { calculateSuitability } from "@/src/lib/scoring";
 import { rawDiagnostics } from "@/tests/helpers/finding-replay-scoring";
@@ -86,7 +87,7 @@ it.skipIf(!enabled)("scores the fixed temperature blend against frozen findings 
     expect(source.elevationM).toBeCloseTo(input.representative.elevationM, 2);
     const snapshot: ConditionSnapshot = { ...originalSnapshot, values: { ...originalSnapshot.values,
       weatherGridLatitude: input.representative.latitude, weatherGridLongitude: input.representative.longitude } };
-    const species = getSpecies(input.record.speciesId)!;
+    const species = countBasedSpecies(getSpecies(input.record.speciesId)!);
     if (input.record.scoringModel !== "v2" || species.modelConfig.version !== input.record.modelVersion) throw new Error("Frozen scoring model changed");
     const control = compareCellTemperature(species, snapshot, source, () => 0);
     expect(control.baseline.score).toBe(input.record.opportunityIndex);
