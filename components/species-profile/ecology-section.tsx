@@ -11,6 +11,12 @@ import {
   Trees,
 } from "lucide-react";
 import { SeasonCalendar } from "@/components/season-calendar";
+import {
+  altitudeCalendarSentence,
+  altitudeCalendarShift,
+  rainWindowSentence,
+  scoredRainWindowForModel,
+} from "@/src/lib/rain-response-summary";
 import { rainfallLimitationCopy } from "@/src/lib/species-copy";
 import { SEASON_MONTHS, seasonMonthPath, monthWithPreposition } from "@/src/lib/seasonality";
 import type { CatalogueSpecies } from "@/src/lib/types";
@@ -82,6 +88,13 @@ export function SpeciesEcologySection({
   const rainfall = species.ecologicalConfig.rainfall;
   const habitat = species.ecologicalConfig.habitat;
   const soil = species.ecologicalConfig.soil;
+  // Derived from the shipped model parameters, so the printed window and
+  // millimetres follow every refit instead of drifting from the editorial text.
+  const rainWindow = scoredRainWindowForModel(species.modelConfig);
+  const calendarShift = species.modelConfig.status === "supported" && species.modelConfig.model === "hydrothermal-v2"
+    ? altitudeCalendarShift(species.modelConfig.phenology.altitudeShift, habitat.altitude)
+    : null;
+  const calendarShiftSentence = calendarShift ? altitudeCalendarSentence(calendarShift) : null;
 
   return (
 <section id="ecologia" className="content-section ecology-section">
@@ -128,6 +141,12 @@ export function SpeciesEcologySection({
       </div>
     </dl>
     <SeasonCalendar species={species} />
+    {calendarShiftSentence && (
+      <p className="season-altitude-note">
+        <Mountain size={15} aria-hidden="true" />
+        <span>{calendarShiftSentence}</span>
+      </p>
+    )}
     {seasonLinks}
     {species.predictionMode === "habitat_only" && (
       <div className="habitat-map-explainer">
@@ -213,20 +232,17 @@ export function SpeciesEcologySection({
               </div>
             </dl>
           </div>
-          <div className="rain-response">
-            <span className="rain-response-icon" aria-hidden="true">
-              <Clock3 size={17} />
-            </span>
-            <span>
-              <small>Després de ploure</small>
-              <strong>{rainfall.fruitingDelay}</strong>
-            </span>
-          </div>
           <dl className="rainfall-facts">
             <div>
-              <dt>Pluja habitual</dt>
-              <dd>{rainfall.preferredAccumulation}</dd>
+              <dt>Després de ploure</dt>
+              <dd>{rainWindow ? rainWindowSentence(rainWindow) : rainfall.fruitingDelay}</dd>
             </div>
+            {!rainWindow && (
+              <div>
+                <dt>Pluja habitual</dt>
+                <dd>{rainfall.preferredAccumulation}</dd>
+              </div>
+            )}
             <div>
               <dt>Humitat prèvia</dt>
               <dd>{rainfall.priorMoisture}</dd>

@@ -47,8 +47,13 @@ describe("rain response guide", () => {
   it("keeps the six examples focused on field-readable guidance", () => {
     for (const species of ["Rovelló", "Pinetell", "Cep", "Camagroc", "Múrgola", "Camasec"] as const) {
       const card = articleFor(html, species);
-      expect(card).toContain("<dt>Resposta habitual</dt>");
-      expect(card).toContain("<dt>Aigua que necessita</dt>");
+      // The lead sentence is derived from the shipped model parameters
+      // (rain-response-summary), so it must always print gauge millimetres
+      // and the scored window in days.
+      expect(card).toContain('class="rain-species-lead"');
+      expect(card).toMatch(/Amb uns \d+ mm/);
+      expect(card).toMatch(/dies/);
+      expect(card).toContain("<dt>Humitat prèvia</dt>");
       expect(card).not.toContain("Finestra hídrica");
       expect(card).not.toContain("Finestra tèrmica");
       expect(card).toContain(`aria-label="Veure la fitxa de ${species}"`);

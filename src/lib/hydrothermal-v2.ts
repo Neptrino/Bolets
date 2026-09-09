@@ -86,7 +86,7 @@ function maturedWindow(
     : Math.max(0, total - recent) + recentWeight * recent;
 }
 
-function rainfallWindow(
+export function rainfallWindow(
   values: EnvironmentValues,
   parameters: WaterModelParametersV2,
 ) {
@@ -140,6 +140,19 @@ function rawRainfallWindow(
     rainyDays: values.rainfallDays26d,
     evapotranspiration: values.evapotranspiration26dMm,
   };
+}
+
+/**
+ * Rain the response curve actually sees: the window total minus one
+ * millimetre of interception per wet day and half of reference ET0. Shared
+ * with the public readings so the displayed "net rain" is the scored one.
+ */
+export function effectiveRainfallMm(rain: {
+  rainfall: number;
+  rainyDays: number;
+  evapotranspiration: number;
+}) {
+  return Math.max(0, rain.rainfall - rain.rainyDays - rain.evapotranspiration * 0.5);
 }
 
 export type WaterSuitabilityV2 = {
@@ -206,10 +219,11 @@ export function waterSuitabilityV2(
   // Aggregated precipitation cannot identify each hourly interception loss.
   // One millimetre per wet day and half of reference ET0 are conservative,
   // explicit deductions before the saturating rain response.
-  const effectiveRainfall = Math.max(
-    0,
-    rain.rainfall - rain.rainyDays - rain.evapotranspiration * 0.5,
-  );
+  const effectiveRainfall = effectiveRainfallMm({
+    rainfall: rain.rainfall,
+    rainyDays: rain.rainyDays,
+    evapotranspiration: rain.evapotranspiration,
+  });
   const rainResponse =
     0.7 * hill(effectiveRainfall, parameters.rainfallHalfSaturationMm) +
     0.3 * hill(rain.rainyDays, parameters.wetDaysHalfSaturation);

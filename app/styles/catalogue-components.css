@@ -513,7 +513,6 @@
 .soil-primary span,
 .climate-vitals dt,
 .soil-vitals dt,
-.rain-response small,
 .rainfall-facts dt,
 .soil-facts dt {
   color: #7a8172;
@@ -570,36 +569,6 @@
   color: #454b42;
   font-size: var(--text-base);
   line-height: 1.45;
-}
-.rain-response {
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  align-items: center;
-  gap: 11px;
-  margin: 16px 0 5px;
-  padding: 13px 14px;
-  border: 0;
-  border-left: 4px solid #c45c2b;
-  border-radius: 10px;
-  background: #f5dcc0;
-}
-.rain-response-icon {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #fff4e3;
-  color: #b94f24;
-}
-.rain-response > span:last-child {
-  display: grid;
-  gap: 3px;
-}
-.rain-response strong {
-  color: #603622;
-  font-size: var(--text-base);
-  line-height: 1.4;
 }
 .rainfall-facts,
 .soil-facts {
@@ -685,4 +654,19 @@
   .compact-species-page .species-aside .aside-map-link {
     grid-column: 1 / -1;
   }
+}
+
+.season-altitude-note {
+  display: grid;
+  grid-template-columns: 15px minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  margin: 10px 0 0;
+  color: #5c665a;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+.season-altitude-note svg {
+  margin-top: 3px;
+  color: #7a8172;
 }

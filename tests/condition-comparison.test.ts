@@ -89,7 +89,10 @@ describe("condition calculation presentation", () => {
     expect(html).toContain('aria-label="Informació de Vent"');
     expect(html).toContain('id="condition-card-context-1" role="tooltip"');
     expect(html).toContain("Període: darrera lectura");
-    expect(html).toContain("Període: últims 26 dies");
+    expect(html).toContain("Període: pluja caiguda entre 15 i 26 dies abans");
+    expect(html).toContain("Pluja neta · finestra");
+    expect(html).toContain("Resposta a la pluja");
+    expect(html).toContain("el miceli triga");
     expect(html).toContain("Compara la temperatura recent amb el rang preferit");
     expect(html).toContain("Preferència: 400–1900 m");
     expect(html).toContain("Part del sector on el tipus de bosc i de sòl encaixen");

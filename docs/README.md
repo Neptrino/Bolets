@@ -30,6 +30,8 @@ Use this index for current guidance and open plans. Dated research and completed
 | Document | Use it for |
 | --- | --- |
 | [Operating playbook](instagram-growth-playbook.md) | Publishing, profile, €200 growth ceiling and measurement |
+| [Monthly content calendar](instagram-calendar-2026-09-09-to-10-08.md) | September 9–October 8: confirmed Buffer posts, completed editorial batch and automatic Story follow-ups |
+| [Next content plan](instagram-content-plan-september-october-2026.md) | Proposed 21 September–4 October calendar, live September 8 performance and production briefs |
 | [Visual style](instagram-style-guide.md) | Shared typography, palette, covers and reusable assets |
 | [Illustrated carousels](instagram-illustrated-carousel-style.md) | Approved manual field-guide illustration style |
 | [Asset library](../social/asset-library/README.md) | Reusable creative sources, provenance and templates |

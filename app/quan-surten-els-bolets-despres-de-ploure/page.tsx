@@ -25,7 +25,14 @@ import {
   environmentalSources,
   hydrothermalScientificSources,
 } from "@/data/editorial";
-import { getSpecies } from "@/data/species";
+import { getSpecies, speciesProfiles } from "@/data/species";
+import {
+  altitudeCalendarShift,
+  groupSpeciesByRainWindow,
+  rainWindowPhrase,
+  rainWindowSentence,
+  scoredRainWindowForModel,
+} from "@/src/lib/rain-response-summary";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 import { rainfallLimitationCopy } from "@/src/lib/species-copy";
 
@@ -49,15 +56,35 @@ const exampleSpecies = [
   "lactarius-sanguifluus",
   "lactarius-deliciosus",
   "boletus-edulis",
+  "cantharellus-cibarius",
   "craterellus-lutescens",
   "morchella-esculenta",
   "marasmius-oreades",
 ].map((id) => getSpecies(id)).filter(isDefined);
 
+// The rain guide prints the same windows the map scores, grouped by shared
+// parameters, so the table follows every model refit.
+const rainWindowGroups = groupSpeciesByRainWindow(
+  speciesProfiles.map((species) => ({ commonName: species.identity.commonName, modelConfig: species.modelConfig })),
+);
+const cepSpecies = getSpecies("boletus-edulis");
+const cepWindow = cepSpecies ? scoredRainWindowForModel(cepSpecies.modelConfig) : null;
+const cepCalendarShift = cepSpecies && cepSpecies.modelConfig.status === "supported" && cepSpecies.modelConfig.model === "hydrothermal-v2"
+  ? altitudeCalendarShift(cepSpecies.modelConfig.phenology.altitudeShift, cepSpecies.ecologicalConfig.habitat.altitude)
+  : null;
+const catalanList = new Intl.ListFormat("ca-ES", { style: "long", type: "conjunction" });
+const MAX_LISTED_SPECIES = 6;
+
+function speciesListLabel(names: string[]) {
+  if (names.length <= MAX_LISTED_SPECIES) return catalanList.format(names);
+  const shown = names.slice(0, MAX_LISTED_SPECIES);
+  return `${shown.join(", ")} i ${names.length - MAX_LISTED_SPECIES} espècies més`;
+}
+
 const rainFaqs = [
   {
     question: "Quants dies després de ploure surten els bolets?",
-    answer: "No hi ha un nombre de dies vàlid per a totes les espècies i boscos. La humitat prèvia del sòl, la temperatura, el vent, la temporada i el repartiment de la pluja poden avançar, retardar o impedir la fructificació.",
+    answer: `No hi ha un nombre de dies vàlid per a totes les espècies i boscos. Cada espècie respon a la pluja d’una finestra de dies concreta${cepWindow ? `; el cep, per exemple: ${rainWindowSentence(cepWindow).charAt(0).toLocaleLowerCase("ca-ES")}${rainWindowSentence(cepWindow).slice(1)}` : "."} La humitat prèvia del sòl, la temperatura, el vent i la temporada poden avançar, retardar o impedir la fructificació.`,
   },
   {
     question: "Un sol xàfec és suficient perquè surtin bolets?",
@@ -116,7 +143,7 @@ export default function MushroomsAfterRainPage() {
         <div>
           <p className="eyebrow">Resposta curta</p>
           <h2>No es pot convertir un xàfec en una data fiable.</h2>
-          <p>Moltes fitxes descriuen respostes de dies a setmanes, però això és context ecològic, no un termini calculat. La intensitat i el repartiment de la pluja, la humitat que ja tenia el sòl, l’evaporació, la temperatura, els extrems i el moment de la temporada poden avançar, retardar o impedir la fructificació visible.</p>
+          <p>Cap espècie té un termini fix, però cadascuna respon a la pluja caiguda en una finestra de dies concreta i a partir d’una quantitat orientativa: les tens a la taula de més avall. La humitat que ja tenia el sòl, l’evaporació, la temperatura, els extrems i el moment de la temporada poden avançar, retardar o impedir la fructificació visible.</p>
         </div>
       </aside>
 
@@ -155,24 +182,60 @@ export default function MushroomsAfterRainPage() {
         </div>
       </section>
 
+      <section className="rain-window-section" aria-labelledby="rain-window-title">
+        <SectionHeader
+          meta="Què compta el mapa"
+          title="Quina pluja mira cada espècie"
+          titleId="rain-window-title"
+          description="Cada espècie suma la pluja d’una finestra de dies fixa. Les espècies lentes no compten la darrera setmana o quinzena: els bolets d’avui van créixer abans, i el miceli triga."
+        />
+        <div className="rain-window-table-wrap">
+          <table className="rain-window-table">
+            <thead>
+              <tr>
+                <th scope="col">Pluja que compta</th>
+                <th scope="col">Comença a sortir</th>
+                <th scope="col">Surt amb força</th>
+                <th scope="col">Espècies</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rainWindowGroups.map((group) => (
+                <tr key={`${group.window.startDaysAgo}-${group.window.endDaysAgo}-${group.window.typicalHalfResponseMm}`}>
+                  <th scope="row">{group.window.excludesRecent ? `Caiguda ${rainWindowPhrase(group.window)}` : `Els últims ${group.window.endDaysAgo} dies`}</th>
+                  <td>≈ {group.window.typicalHalfResponseMm} mm</td>
+                  <td>≈ {group.window.typicalNearFullMm} mm</td>
+                  <td>{speciesListLabel(group.speciesNames)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="rain-window-note">
+          Pluja de pluviòmetre per a una tardor típica, un cop descomptada l’evaporació; a l’estiu en cal més. Són xifres orientatives ajustades amb troballes datades, no una promesa de bolets.
+          {cepCalendarShift && ` L’altitud també hi compta: la temporada es desplaça uns ${cepCalendarShift.daysPer100m} dies per cada 100 m, avançada a muntanya i endarrerida a baixa altitud.`}
+        </p>
+      </section>
+
       <section className="rain-species-examples" aria-labelledby="rain-species-title">
         <SectionHeader
-          meta="Sis exemples del catàleg"
+          meta="Set exemples del catàleg"
           title="Cada espècie respon al seu ritme"
           titleId="rain-species-title"
-          description="Aquestes orientacions descriuen patrons habituals, no una data garantida després de ploure."
+          description="Les mateixes xifres, espècie per espècie. Descriuen patrons habituals, no una data garantida després de ploure."
         />
         {exampleSpecies.map((species) => {
           const rainfall = species.ecologicalConfig.rainfall;
+          const window = scoredRainWindowForModel(species.modelConfig);
           return <article key={species.speciesId}>
             <div className="rain-species-identity"><span>{species.identity.commonName}</span><em>{species.identity.scientificName}</em></div>
+            <p className="rain-species-lead">{window ? rainWindowSentence(window) : rainfall.fruitingDelay}</p>
             <dl>
-              <div><dt>Resposta habitual</dt><dd>{rainfall.fruitingDelay}</dd></div>
-              <div><dt>Aigua que necessita</dt><dd>{rainfall.preferredAccumulation}</dd></div>
+              {!window && <div><dt>Aigua que necessita</dt><dd>{rainfall.preferredAccumulation}</dd></div>}
               <div><dt>Humitat prèvia</dt><dd>{rainfall.priorMoisture}</dd></div>
               <div><dt>Què la pot frenar</dt><dd>{rainfall.interruption}</dd></div>
             </dl>
-            <p>{rainfallLimitationCopy(species.speciesId, rainfall.uncertainty)}</p>
+            <p className="rain-species-note">{rainfallLimitationCopy(species.speciesId, rainfall.uncertainty)}</p>
             <Link href={speciesPath(species)} className="text-link" aria-label={`Veure la fitxa de ${species.identity.commonName}`}>Veure la fitxa <ArrowUpRight size={15} /></Link>
           </article>;
         })}

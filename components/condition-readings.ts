@@ -5,7 +5,16 @@ import {
   ThermometerSun,
   Wind,
 } from "lucide-react";
-import { terrainLapseDeltaC } from "@/src/lib/hydrothermal-v2";
+import {
+  effectiveRainfallMm,
+  rainfallWindow,
+  terrainLapseDeltaC,
+} from "@/src/lib/hydrothermal-v2";
+import {
+  rainResponseState,
+  rainWindowPhrase,
+  scoredRainWindow,
+} from "@/src/lib/rain-response-summary";
 import type { ConditionSnapshot, SpeciesProfile } from "@/src/lib/types";
 
 type ConditionStat = {
@@ -83,6 +92,34 @@ const rainfallWindowEt0 = rainfallWindowDays === 14
     : rainfallWindowDays === 26
       ? v.evapotranspiration26dMm
       : v.evapotranspiration7dMm;
+// hydrothermal-v2 scores matured rain: for slow guilds the fresh week or
+// fortnight is left out of the window. Show the reader the same window and
+// the same net total the model responds to, and where that total sits on the
+// species' response curve.
+const v2Water = supportedModel?.model === "hydrothermal-v2" ? supportedModel.water : null;
+const scoredWindow = v2Water ? scoredRainWindow(v2Water) : null;
+const scoredRain = v2Water ? rainfallWindow(v, v2Water) : null;
+const scoredRainComplete = scoredRain !== null &&
+  scoredRain.rainfall !== undefined &&
+  scoredRain.rainyDays !== undefined &&
+  scoredRain.evapotranspiration !== undefined;
+const netRainMm = scoredRainComplete
+  ? effectiveRainfallMm({
+      rainfall: scoredRain.rainfall!,
+      rainyDays: scoredRain.rainyDays!,
+      evapotranspiration: scoredRain.evapotranspiration!,
+    })
+  : undefined;
+const rainResponse = v2Water && netRainMm !== undefined
+  ? rainResponseState(netRainMm, v2Water)
+  : undefined;
+const rainWindowLabel = scoredWindow
+  ? scoredWindow.excludesRecent
+    ? `pluja caiguda ${rainWindowPhrase(scoredWindow)}`
+    : rainWindowPhrase(scoredWindow)
+  : rainfallWindowDays
+    ? `últims ${rainfallWindowDays} dies`
+    : "últims 7 dies";
 // All air temperatures in this card are read at the provider grid's
 // representative elevation; display them corrected to the cell's altitude,
 // matching what the model scores.
@@ -227,12 +264,34 @@ const data: Array<{
   },
   {
     label: "Pluja acumulada",
-    period: rainfallWindowDays ? `últims ${rainfallWindowDays} dies` : "últims 7 dies",
-    current: millimetres(rainfallWindowAmount),
-    context: rainfallWindowDays
-      ? { note: `Pluja recent, repartiment dels dies plujosos i temps que fa que el sòl s’asseca` }
-      : { note: "Pluja recent disponible per a aquesta espècie" },
+    period: rainWindowLabel,
+    current: millimetres(scoredRainComplete ? scoredRain.rainfall : rainfallWindowAmount),
+    context: scoredWindow
+      ? {
+          note: scoredWindow.excludesRecent
+            ? `El mapa compta la pluja caiguda ${rainWindowPhrase(scoredWindow)}. La dels últims ${scoredWindow.startDaysAgo - 1} dies encara no hi entra: el miceli triga.`
+            : `El mapa compta la pluja d${rainWindowPhrase(scoredWindow).slice(1)}, amb el repartiment dels dies plujosos i el temps que fa que el sòl s’asseca.`,
+        }
+      : rainfallWindowDays
+        ? { note: `Pluja recent, repartiment dels dies plujosos i temps que fa que el sòl s’asseca` }
+        : { note: "Pluja recent disponible per a aquesta espècie" },
     stats: [
+      ...(scoredWindow && v2Water
+        ? [
+            {
+              label: "Pluja neta · finestra",
+              value: millimetres(netRainMm),
+              explanation:
+                `Pluja de la finestra un cop descomptats 1 mm per dia plujós i la meitat de l’evaporació. Per a aquesta espècie, uns ${Math.round(scoredWindow.halfResponseNetMm)} mm nets donen mitja resposta i uns ${Math.round(scoredWindow.nearFullNetMm)} mm la resposta gairebé plena.`,
+            },
+            {
+              label: "Resposta a la pluja",
+              value: rainResponse ? `${rainResponse.label} · ${Math.round(rainResponse.response * 100)}%` : "—",
+              explanation:
+                "On cau la pluja neta de la finestra dins la corba de resposta de l’espècie. És el terme de pluja del model; els dies humits, la ratxa seca i l’aire sec l’ajusten després.",
+            },
+          ]
+        : []),
       {
         label: "Pluja · 24 h",
         value: millimetres(v.rainfall24hMm),
@@ -252,16 +311,16 @@ const data: Array<{
           "Pluja acumulada durant la darrera setmana.",
       },
       {
-        label: `Dies amb ≥ 1 mm · ${rainfallWindowDays ?? "—"} dies`,
-        value: dayCount(rainfallWindowWetDays),
+        label: scoredWindow ? "Dies amb ≥ 1 mm · finestra" : `Dies amb ≥ 1 mm · ${rainfallWindowDays ?? "—"} dies`,
+        value: dayCount(scoredRainComplete ? scoredRain.rainyDays : rainfallWindowWetDays),
         explanation:
-          "Dies amb pluja apreciable. Ajuda a distingir un xàfec d’un episodi més repartit.",
+          "Dies amb pluja apreciable dins la finestra que compta. Ajuda a distingir un xàfec d’un episodi més repartit.",
       },
       {
-        label: `Aigua perduda · ${rainfallWindowDays ?? 7} dies`,
-        value: millimetres(rainfallWindowEt0),
+        label: scoredWindow ? "Aigua perduda · finestra" : `Aigua perduda · ${rainfallWindowDays ?? 7} dies`,
+        value: millimetres(scoredRainComplete ? scoredRain.evapotranspiration : rainfallWindowEt0),
         explanation:
-          "Estimació de l’aigua que el sòl i la vegetació poden haver perdut per evaporació.",
+          "Estimació de l’aigua que el sòl i la vegetació poden haver perdut per evaporació durant la mateixa finestra.",
       },
       {
         label: "Ratxa seca",

@@ -307,9 +307,6 @@
     border-top: 1px solid rgba(74, 89, 65, 0.12);
     border-left: 0;
   }
-  .rain-response {
-    margin-top: 15px;
-  }
   .rainfall-facts,
   .soil-facts {
     grid-template-columns: 1fr;
