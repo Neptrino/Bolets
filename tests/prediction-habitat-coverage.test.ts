@@ -124,7 +124,11 @@ describe("prediction habitat coverage", () => {
       ),
       expect.objectContaining({ cache: "force-cache", next: { revalidate: 300 } }),
     );
-    expect(fetch).toHaveBeenCalledTimes(2);
+    // Environment + occurrence support, four 2.5 km child buckets for the 1°
+    // request, and one detail read (environment + occurrence) of the bucket
+    // holding the chosen child: the stub answers every child read with the
+    // parent cell itself.
+    expect(fetch).toHaveBeenCalledTimes(8);
   });
 
   it("versions compact prediction requests at the browser and Supabase cache boundary", async () => {
@@ -140,7 +144,7 @@ describe("prediction habitat coverage", () => {
     expect(url.searchParams.get("predictionVersion")).toBe(PREDICTION_CACHE_VERSION);
     expect(url.searchParams.get("viewVersion")).toBe(PREDICTION_CACHE_VERSION);
     expect(result.cells[0]).toMatchObject({ habitatCoverage: 0.375 });
-    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledTimes(5) // environment + four 2.5 km child buckets;
   });
 
   it("uses the score-only payload and rejects truncated regional reads", async () => {

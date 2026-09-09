@@ -1,5 +1,14 @@
+import { cataloniaSpatialBounds } from "@/data/regions";
 import { getSpecies } from "@/data/species";
 import { altitudeHabitatEnvelope } from "@/src/lib/altitude";
+import {
+  bestChildrenByParent,
+  bucketContaining,
+  COARSE_SUMMARY_CHILD_GRID_M,
+  coarseChildBuckets,
+  summarisesChildren,
+  type SummarisedGridSizeM,
+} from "@/src/lib/coarse-cell-summary";
 import { habitatForestTerms, habitatProfileKey } from "@/src/lib/habitat";
 import { getOccurrenceSupport } from "@/src/lib/occurrences";
 import { boundsCentre, boundsContain } from "@/src/lib/map-grid";
@@ -302,7 +311,7 @@ export async function getPredictionCells(
   compact = false,
   includeOccurrence = !compact,
   scoreOnly = compact,
-) {
+): Promise<{ cells: Array<PredictionMapCell | PredictionCell>; truncated: boolean }> {
   const species = getSpecies(speciesId);
   if (!species) throw new Error("Unknown species");
   const spatialService = spatialServiceConfig(gridSizeM);
@@ -346,7 +355,7 @@ export async function getPredictionCells(
   ]);
   if (!response.ok) throw new Error(`Spatial environment service returned ${response.status}`);
   const payload = spatialEnvironmentResponseSchema.parse(await response.json());
-  const cells = payload.cells.map((cell) => {
+  const cells: Array<PredictionMapCell | PredictionCell> = payload.cells.map((cell) => {
     const values = { ...cell.values };
     const missingFields = missingModelFields(species, values);
     const unavailableFields = [...new Set([...cell.unavailableFields, ...missingFields])];
@@ -374,7 +383,91 @@ export async function getPredictionCells(
       ...evidence
     } satisfies PredictionCell;
   });
+  if (summarisesChildren(gridSizeM)) {
+    const summarised = await summariseCoarsePredictionCells(
+      speciesId, bounds, gridSizeM, cells, compact, includeOccurrence,
+    );
+    return { cells: summarised.cells, truncated: payload.truncated || summarised.truncated };
+  }
   return { cells, truncated: payload.truncated };
+}
+
+/**
+ * Colours a 5 or 10 km cell by the best 2.5 km sector inside it. See
+ * `coarse-cell-summary.ts` for why the blended coarse environment is not
+ * scored. Compact cells only take the child's score; detail cells take the
+ * child's whole reading (components, values, provenance) while keeping the
+ * coarse cell's identity and geometry so callers can still find them by id.
+ */
+async function summariseCoarsePredictionCells(
+  speciesId: string,
+  bounds: SpatialBounds,
+  gridSizeM: SummarisedGridSizeM,
+  cells: Array<PredictionMapCell | PredictionCell>,
+  compact: boolean,
+  includeOccurrence: boolean,
+) {
+  const childBuckets = coarseChildBuckets(bounds, cataloniaSpatialBounds);
+  const childReads = await Promise.all(childBuckets.map((bucket) =>
+    getPredictionCells(speciesId, bucket, 1000, COARSE_SUMMARY_CHILD_GRID_M, true)));
+  const best = bestChildrenByParent(
+    childReads.flatMap((read) => read.cells as PredictionMapCell[]),
+    gridSizeM,
+  );
+  const truncated = childReads.some((read) => read.truncated);
+  if (compact) {
+    return {
+      truncated,
+      cells: cells.map((cell) => {
+        const child = best.get(cell.cellId);
+        return child ? { ...cell, score: child.score } : cell;
+      }),
+    };
+  }
+
+  // Detail readings come from full 2.5 km reads of only the buckets that
+  // hold a chosen child, so a coarse request costs at most one extra read
+  // per child bucket rather than one per cell.
+  const detailBuckets = new Map<SpatialBounds, Set<string>>();
+  for (const cell of cells) {
+    const child = best.get(cell.cellId);
+    const bucket = child && bucketContaining(childBuckets, child.cellBounds);
+    if (!bucket) continue;
+    const wanted = detailBuckets.get(bucket) ?? new Set<string>();
+    wanted.add(child.cellId);
+    detailBuckets.set(bucket, wanted);
+  }
+  const childDetails = new Map<string, PredictionCell>();
+  await Promise.all([...detailBuckets.entries()].map(async ([bucket, wanted]) => {
+    const read = await getPredictionCells(
+      speciesId, bucket, 1000, COARSE_SUMMARY_CHILD_GRID_M, false, includeOccurrence,
+    );
+    for (const cell of read.cells as PredictionCell[]) {
+      if (wanted.has(cell.cellId)) childDetails.set(cell.cellId, cell);
+    }
+  }));
+  return {
+    truncated,
+    cells: cells.map((cell) => {
+      const child = best.get(cell.cellId);
+      if (!child) return cell;
+      const detail = childDetails.get(child.cellId);
+      if (!detail) return { ...cell, score: child.score };
+      const parent = cell as PredictionCell;
+      return {
+        ...detail,
+        cellId: parent.cellId,
+        gridSizeM: parent.gridSizeM,
+        cellBounds: parent.cellBounds,
+        regionId: parent.regionId,
+        summarisedFrom: {
+          cellId: detail.cellId,
+          gridSizeM: detail.gridSizeM,
+          cellBounds: detail.cellBounds,
+        },
+      } satisfies PredictionCell;
+    }),
+  };
 }
 
 export {

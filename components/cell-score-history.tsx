@@ -129,10 +129,13 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
   const chartRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const informationId = useId();
+  // A coarse cell's reading is its best 2.5 km sector, so its history is
+  // that sector's history too.
+  const historyCell = cell.summarisedFrom ?? cell;
   const requestBody = JSON.stringify({
     speciesId,
-    cellId: cell.cellId,
-    gridSizeM: cell.gridSizeM,
+    cellId: historyCell.cellId,
+    gridSizeM: historyCell.gridSizeM,
     regionId: cell.regionId,
     values: cell.values,
   });

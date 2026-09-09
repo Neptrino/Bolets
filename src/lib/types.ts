@@ -564,6 +564,16 @@ export interface PredictionCell {
   components: ModelComponent[];
   occurrenceEvidence: HistoricalOccurrenceEvidence | null;
   occurrenceEvidenceStatus: OccurrenceEvidenceStatus;
+  /**
+   * Set on 5 and 10 km cells: the reading, components and values belong to
+   * the best 2.5 km sector inside the cell, identified here, rather than to
+   * a blended coarse environment.
+   */
+  summarisedFrom?: {
+    cellId: string;
+    gridSizeM: SpatialGridSizeM;
+    cellBounds: CoordinateBounds;
+  };
 }
 
 export interface PredictionHistoryPoint {

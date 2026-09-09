@@ -279,7 +279,9 @@ export function MapExplorer({
               <div className="map-floating-card-label">
                 <MapIcon size={17} aria-hidden="true" />
                 <span>{selectedGridSizeM
-                  ? `Sector ${formatGridDimensions(selectedGridSizeM)}`
+                  ? `Sector ${formatGridDimensions(selectedGridSizeM)}${selectedCell?.summarisedFrom
+                    ? ` · millor sector de ${formatGridDimensions(selectedCell.summarisedFrom.gridSizeM)}`
+                    : ""}`
                   : "Selecciona un sector"}</span>
               </div>
               {isLoadingCell || isLoadedCell || hasCellLoadError ? (
