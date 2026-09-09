@@ -136,9 +136,10 @@ export function configureOpenMeteoForecastRequest(url: URL, profile: "atmosphere
   // overlap keeps the horizon-zero 7-day soil and 30-day drought windows
   // complete without shortening either calculation.
   url.searchParams.set("past_hours", profile === "soil" ? "192" : "744");
-  // Open-Meteo includes the base hour in this count. 121 samples therefore
-  // reach the exact +120 h target used by the fifth daily projection.
-  url.searchParams.set("forecast_hours", "121");
+  // Open-Meteo includes the base hour in this count. 337 samples reach the
+  // exact +336 h target of the 14-day outlook horizon; ECMWF IFS serves
+  // roughly 353 forecast hours, so the request keeps a working margin.
+  url.searchParams.set("forecast_hours", "337");
   url.searchParams.set("hourly", hourlyVariables.join(","));
   if (profile === "atmosphere") {
     // The ECMWF endpoint otherwise defaults to its coarser 0.25-degree model.

@@ -61,7 +61,13 @@ export async function POST(request: Request) {
   };
 
   try {
-    const history = await getPredictionCellHistory(parsed.data.speciesId, parsed.data);
+    // The 14-day outlook is a detailed-access perk: it rides the same signed
+    // capability that unlocks 1 km map cells. Outside a request scope (unit
+    // tests) the cookie store is unavailable and the outlook simply stays off.
+    const includeOutlook = await hasMapResolutionCapability(1000).catch(() => false);
+    const history = await getPredictionCellHistory(parsed.data.speciesId, parsed.data, {
+      includeOutlook,
+    });
     const { simulated, timeline } = developmentForecastSimulation(
       history,
       `${parsed.data.speciesId}:${parsed.data.cellId}`,

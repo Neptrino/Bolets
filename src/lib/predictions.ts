@@ -32,6 +32,7 @@ const MAX_FORECAST_ANCHOR_GAP_MS = 8 * 60 * 60 * 1000;
 export async function getPredictionCellHistory(
   speciesId: string,
   cell: Pick<PredictionCell, "cellId" | "gridSizeM" | "regionId" | "values">,
+  options: { includeOutlook?: boolean } = {},
 ): Promise<PredictionCellTimeline> {
   const species = getSpecies(speciesId);
   if (!species) throw new Error("Unknown species");
@@ -219,7 +220,11 @@ export async function getPredictionCellHistory(
       opportunityIndex: result.opportunityIndex,
     } satisfies PredictionForecastPoint;
   });
-  const points = correctedPoints.filter((point) => Date.parse(point.validAt) > nowMilliseconds);
+  // Outlook horizons ride along in the correction pass (the dry-spell state
+  // is path-dependent) but only reach requesters with detailed-map access.
+  const points = correctedPoints.filter((point) =>
+    Date.parse(point.validAt) > nowMilliseconds &&
+    (options.includeOutlook === true || point.horizonDays <= 5));
 
   return {
     modelVersion,

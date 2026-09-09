@@ -23,7 +23,9 @@ const times = Array.from({ length: 24 }, (_, index) => `2026-08-10T${index.toStr
 
 function forecastFixture(generatedAt = "2026-08-10T12:34:00Z") {
   const base = Math.floor(Date.parse(generatedAt) / 3_600_000) * 3600;
-  const hourlyTimes = Array.from({ length: 840 }, (_, index) => base - 719 * 3600 + index * 3600);
+  // 719 past hours, the base hour, and 336 forecast hours: enough for every
+  // rolling window at the farthest 14-day outlook target.
+  const hourlyTimes = Array.from({ length: 1056 }, (_, index) => base - 719 * 3600 + index * 3600);
   const target = base + 24 * 3600;
   const temperature = hourlyTimes.map((time) => time === target ? 17 : 14);
   const atmosphere: OpenMeteoLocation = {
@@ -31,18 +33,18 @@ function forecastFixture(generatedAt = "2026-08-10T12:34:00Z") {
     hourly: {
       time: hourlyTimes,
       temperature_2m: temperature,
-      relative_humidity_2m: Array(840).fill(76),
-      wind_speed_10m: Array(840).fill(7),
-      wind_gusts_10m: Array(840).fill(16),
-      precipitation: Array(840).fill(0.1),
-      et0_fao_evapotranspiration: Array(840).fill(0.05),
+      relative_humidity_2m: Array(1056).fill(76),
+      wind_speed_10m: Array(1056).fill(7),
+      wind_gusts_10m: Array(1056).fill(16),
+      precipitation: Array(1056).fill(0.1),
+      et0_fao_evapotranspiration: Array(1056).fill(0.05),
     },
   };
   const soil: OpenMeteoLocation = {
     current: { soil_moisture_3_to_9cm: 0.99 },
     hourly: {
       time: hourlyTimes,
-      soil_moisture_3_to_9cm: Array(840).fill(0.25),
+      soil_moisture_3_to_9cm: Array(1056).fill(0.25),
     },
   };
   return { atmosphere, soil, base, target, hourlyTimes };
@@ -165,7 +167,7 @@ describe("Open-Meteo profiles", () => {
     const atmosphere = new URL("https://api.open-meteo.com/v1/ecmwf");
     configureOpenMeteoForecastRequest(atmosphere, "atmosphere");
     expect(atmosphere.searchParams.get("past_hours")).toBe("744");
-    expect(atmosphere.searchParams.get("forecast_hours")).toBe("121");
+    expect(atmosphere.searchParams.get("forecast_hours")).toBe("337");
     expect(atmosphere.searchParams.get("timeformat")).toBe("unixtime");
     expect(atmosphere.searchParams.get("models")).toBe("ecmwf_ifs");
     expect(atmosphere.searchParams.get("hourly")).toContain("et0_fao_evapotranspiration");
@@ -173,7 +175,7 @@ describe("Open-Meteo profiles", () => {
     const soil = new URL("https://api.open-meteo.com/v1/forecast");
     configureOpenMeteoForecastRequest(soil, "soil");
     expect(soil.searchParams.get("past_hours")).toBe("192");
-    expect(soil.searchParams.get("forecast_hours")).toBe("121");
+    expect(soil.searchParams.get("forecast_hours")).toBe("337");
     expect(soil.searchParams.get("hourly")).toBe("soil_moisture_3_to_9cm");
     expect(soil.searchParams.has("models")).toBe(false);
   });
@@ -250,9 +252,10 @@ describe("Open-Meteo profiles", () => {
     expect(forecast.baseline?.horizonHours).toBe(0);
     expect(Date.parse(forecast.baseline!.validAt) / 1000).toBe(base);
     expect(forecast.baseline?.unavailableFields).toEqual([]);
-    expect(forecast.points.map((point) => point.horizonHours)).toEqual([24, 48, 72, 96, 120]);
+    const horizons = [24, 48, 72, 96, 120, 168, 240, 288, 336];
+    expect(forecast.points.map((point) => point.horizonHours)).toEqual(horizons);
     expect(forecast.points.map((point) => Date.parse(point.validAt) / 1000)).toEqual(
-      [24, 48, 72, 96, 120].map((hours) => base + hours * 3600),
+      horizons.map((hours) => base + hours * 3600),
     );
     expect(forecast.points[0].values.temperatureC).toBe(17);
     expect(forecast.points[0].values.temperatureC).not.toBe(99);
@@ -297,7 +300,8 @@ describe("Open-Meteo profiles", () => {
     );
 
     expect(forecast.baseline?.values.heatHours20d).toBe(120);
-    expect(forecast.points.map((point) => point.values.heatHours20d)).toEqual([96, 72, 48, 24, 0]);
+    expect(forecast.points.map((point) => point.values.heatHours20d))
+      .toEqual([96, 72, 48, 24, 0, 0, 0, 0, 0]);
     expect(forecast.points[4].values.temperatureAvg20dC).toBeCloseTo(14.00625);
     expect(forecast.points.every((point) => point.unavailableFields.length === 0)).toBe(true);
   });

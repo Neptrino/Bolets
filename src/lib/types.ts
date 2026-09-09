@@ -575,6 +575,12 @@ export interface PredictionHistoryPoint {
 
 export type ForecastHorizonConfidence = "high" | "moderate" | "limited";
 export type ForecastHorizonDays = 1 | 2 | 3 | 4 | 5;
+/**
+ * Best-effort outlook horizons past the five-day core. Their water content is
+ * dominated by already-observed rain (fully so for the slow boletus window),
+ * while temperatures and extremes lean on the long-range weather model.
+ */
+export type ForecastOutlookDays = 7 | 10 | 12 | 14;
 export type PredictionTimelineOffset = -3 | -2 | -1 | 0 | ForecastHorizonDays;
 
 export interface PredictionForecastPoint {
@@ -582,7 +588,7 @@ export interface PredictionForecastPoint {
   score: number | null;
   fruitingConditionsScore: number | null;
   opportunityIndex: number | null;
-  horizonDays: ForecastHorizonDays;
+  horizonDays: ForecastHorizonDays | ForecastOutlookDays;
   horizonConfidence: ForecastHorizonConfidence;
 }
 

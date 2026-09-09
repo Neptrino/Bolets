@@ -114,6 +114,9 @@ describe("prediction history and forecast route", () => {
         gridSizeM: 2500,
         values: expect.objectContaining({ habitatCoveragePercent: 60 }),
       }),
+      // No request scope in tests, so the capability check resolves to no
+      // outlook access.
+      { includeOutlook: false },
     );
   });
 

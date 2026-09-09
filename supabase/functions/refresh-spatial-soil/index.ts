@@ -9,6 +9,7 @@ import {
   type OpenMeteoEgressLane,
   type OpenMeteoLocation,
 } from "../_shared/open-meteo.ts";
+import { FORECAST_CORE_OUTPUT_HOURS } from "../_shared/open-meteo-core.ts";
 import {
   estimateOpenMeteoRequestUnits,
   recordOpenMeteoUsage,
@@ -584,6 +585,8 @@ async function runSoilAndForecastBatch(
       }
     }
 
+    const isCoreForecastRow = (row: Record<string, unknown>) =>
+      (FORECAST_CORE_OUTPUT_HOURS as readonly number[]).includes(Number(row.horizon_hours));
     let forecastRows: Array<Record<string, unknown>> = [];
     const atmosphericForecastLocations = forecastAtmosphere.data;
     const atmosphericHistoryLocations = forecastAtmosphereHistory.data;
@@ -642,9 +645,23 @@ async function runSoilAndForecastBatch(
             run_id: runId,
           }));
         });
-        const expectedRows = forecastPoints.length * 6;
-        if (forecastRows.length !== expectedRows) {
-          forecastErrorMessage = `Forecast normalization returned ${forecastRows.length} of ${expectedRows} expected rows`;
+        // Outlook horizons (beyond 120 h) are best-effort: incomplete rows are
+        // dropped rather than blocking the core five-day contract.
+        const droppedOutlookRows = forecastRows.filter((row) =>
+          !isCoreForecastRow(row) &&
+          Array.isArray(row.unavailable_fields) && row.unavailable_fields.length > 0
+        ).length;
+        if (droppedOutlookRows > 0) {
+          console.warn("Dropping incomplete outlook forecast rows", { droppedOutlookRows });
+        }
+        forecastRows = forecastRows.filter((row) =>
+          isCoreForecastRow(row) ||
+          (Array.isArray(row.unavailable_fields) && row.unavailable_fields.length === 0)
+        );
+        const coreRowCount = forecastRows.filter(isCoreForecastRow).length;
+        const expectedRows = forecastPoints.length * FORECAST_CORE_OUTPUT_HOURS.length;
+        if (coreRowCount !== expectedRows) {
+          forecastErrorMessage = `Forecast normalization returned ${coreRowCount} of ${expectedRows} expected core rows`;
         }
       } catch (error) {
         forecastErrorMessage = error instanceof Error ? error.message : "Unable to normalize forecast data";
@@ -687,7 +704,8 @@ async function runSoilAndForecastBatch(
           if (error) throw error;
           storedForecastRows = forecastRows.length;
           const completeForecastRows = forecastRows.every((row) =>
-            Array.isArray(row.unavailable_fields) && row.unavailable_fields.length === 0
+            !isCoreForecastRow(row) ||
+            (Array.isArray(row.unavailable_fields) && row.unavailable_fields.length === 0)
           );
           if (!forecastErrorMessage && completeForecastRows) {
             await saveCursor(
@@ -722,11 +740,14 @@ async function runSoilAndForecastBatch(
     }
 
     const forecastHasUnavailableFields = forecastRows.some((row) =>
+      isCoreForecastRow(row) &&
       Array.isArray(row.unavailable_fields) && row.unavailable_fields.length > 0
     );
+    const storedCoreForecastRows = forecastRows.filter(isCoreForecastRow).length;
     const forecastBatchSucceeded = forecastPoints.length > 0 &&
       !forecastErrorMessage && !forecastHasUnavailableFields &&
-      storedForecastRows === forecastPoints.length * 6;
+      storedForecastRows > 0 &&
+      storedCoreForecastRows === forecastPoints.length * FORECAST_CORE_OUTPUT_HOURS.length;
     const forecastIncomplete = forecastPoints.length > 0 && !forecastBatchSucceeded;
     const soilComplete = soilAlreadyComplete ||
       (!soilErrorMessage && soilPoints.length < BATCH_SIZE);

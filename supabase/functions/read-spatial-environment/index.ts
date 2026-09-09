@@ -45,6 +45,7 @@ async function readCellForecast(
 ) {
   if (!pointIds.length) return null;
   const expectedHorizons = [0, 24, 48, 72, 96, 120];
+  const outlookHorizons = [168, 240, 288, 336];
   const { data: candidates, error } = await supabase
     .from("weather_grid_forecasts")
     .select("point_id,snapshot_date,generated_at,valid_at,horizon_hours,sources,source_resolution_m,confidence,unavailable_fields,values")
@@ -52,9 +53,10 @@ async function readCellForecast(
     .order("snapshot_date", { ascending: false })
     .order("generated_at", { ascending: false })
     .order("horizon_hours", { ascending: true })
-    // Retention keeps three issues and every issue now has six horizons.
-    // Keep enough rows to fall back when either newer issue is incomplete.
-    .limit(18 * pointIds.length);
+    // Retention keeps three issues; an issue holds six core horizons plus up
+    // to four best-effort outlook horizons. Keep enough rows to fall back
+    // when either newer issue is incomplete.
+    .limit(30 * pointIds.length);
   if (error) throw error;
   type ForecastRow = NonNullable<typeof candidates>[number];
   const groups = new Map<string, ForecastRow[]>();
@@ -62,13 +64,24 @@ async function readCellForecast(
     const key = `${candidate.snapshot_date}:${candidate.generated_at}`;
     groups.set(key, [...(groups.get(key) ?? []), candidate]);
   }
-  const rows = [...groups.values()].find((group) =>
-    group.length === expectedHorizons.length * pointIds.length &&
-    expectedHorizons.every((horizon) => pointIds.every((pointId) =>
-      group.some((row) => row.point_id === pointId && row.horizon_hours === horizon))) &&
-    group.every((row) => row.unavailable_fields.length === 0)
-  );
-  if (!rows) return null;
+  // Only the core horizons decide which issue is publishable; outlook rows
+  // are best-effort extras served when every contributing point carries them.
+  const coreOf = (group: ForecastRow[]) =>
+    group.filter((row) => row.horizon_hours <= 120);
+  const allRows = [...groups.values()].find((group) => {
+    const core = coreOf(group);
+    return core.length === expectedHorizons.length * pointIds.length &&
+      expectedHorizons.every((horizon) => pointIds.every((pointId) =>
+        core.some((row) => row.point_id === pointId && row.horizon_hours === horizon))) &&
+      core.every((row) => row.unavailable_fields.length === 0);
+  });
+  if (!allRows) return null;
+  const servedOutlook = outlookHorizons.filter((horizon) =>
+    pointIds.every((pointId) => allRows.some((row) =>
+      row.point_id === pointId && row.horizon_hours === horizon &&
+      row.unavailable_fields.length === 0)));
+  const rows = allRows.filter((row) =>
+    row.horizon_hours <= 120 || servedOutlook.includes(row.horizon_hours));
   const aggregateHorizon = (horizonHours: number) => {
     const horizonRows = rows.filter((row) => row.horizon_hours === horizonHours);
     const aggregate = aggregateEnvironmentRows(horizonRows.map((row) => ({
@@ -93,7 +106,7 @@ async function readCellForecast(
   return {
     generatedAt: rows[0].generated_at,
     baseline: aggregateHorizon(0),
-    snapshots: expectedHorizons.slice(1).map(aggregateHorizon),
+    snapshots: [...expectedHorizons.slice(1), ...servedOutlook].map(aggregateHorizon),
   };
 }
 

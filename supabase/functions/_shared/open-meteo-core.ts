@@ -34,9 +34,27 @@ export class OpenMeteoRequestError extends Error {
   }
 }
 
-export const FORECAST_HORIZON_HOURS = [24, 48, 72, 96, 120] as const;
+/**
+ * Core horizons carry the strict all-or-nothing completeness contract: the
+ * five daily projections plus the baseline must all be present and complete
+ * before an issue publishes. Outlook horizons extend to 14 days — within
+ * ECMWF IFS reach, and the span over which the slow-guild matured-rain
+ * window is fully determined by already-observed gauge rain — but they are
+ * stored best-effort: a missing hour at day 14 must never block tomorrow's
+ * forecast.
+ */
+export const FORECAST_CORE_HORIZON_HOURS = [24, 48, 72, 96, 120] as const;
+export const FORECAST_OUTLOOK_HORIZON_HOURS = [168, 240, 288, 336] as const;
+export const FORECAST_HORIZON_HOURS = [
+  ...FORECAST_CORE_HORIZON_HOURS,
+  ...FORECAST_OUTLOOK_HORIZON_HOURS,
+] as const;
 export const FORECAST_BASELINE_HOURS = 0 as const;
 export const FORECAST_OUTPUT_HOURS = [FORECAST_BASELINE_HOURS, ...FORECAST_HORIZON_HOURS] as const;
+export const FORECAST_CORE_OUTPUT_HOURS = [
+  FORECAST_BASELINE_HOURS,
+  ...FORECAST_CORE_HORIZON_HOURS,
+] as const;
 // Portable hydrothermal-v1 thresholds. Species vary the decay/half-life of
 // these exposures in the scorer, while ingestion keeps one stable contract.
 export const RAINFALL_DAY_THRESHOLD_MM = 1;

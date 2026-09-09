@@ -64,8 +64,11 @@ describe("Open-Meteo budget estimates", () => {
     const regional = batchedEstimate(10, (url) => configureOpenMeteoRequest(url));
     const normalDay = atmosphere + fallback + soilAndForecasts + regional;
 
-    expect(normalDay).toBe(9_579);
+    // The 14-day outlook horizons (forecast_hours 337) added ~630 units to
+    // the measured day; the three egress lanes share the load well inside
+    // their combined allowance.
+    expect(normalDay).toBe(10_209);
     expect(fallback).toBe(530);
-    expect(normalDay + fallback).toBe(10_109);
+    expect(normalDay + fallback).toBe(10_739);
   });
 });
