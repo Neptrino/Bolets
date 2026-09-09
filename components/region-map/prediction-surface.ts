@@ -40,6 +40,39 @@ function cellScreenBounds(localMap: MapLibreMap, cell: PredictionMapCell) {
   };
 }
 
+/**
+ * Habitat coverage weights the paint so cells that are mostly rock, fields or
+ * town fade toward the terrain while dense forest saturates. Three-quarters
+ * forest already fills a searcher's day, so it paints at full strength; under
+ * a tenth there is barely anywhere to look, so those cells nearly vanish while
+ * staying selectable. Zero and withheld cells keep their own faint styling.
+ */
+const COVERAGE_ALPHA_FLOOR = 0.06;
+
+/**
+ * Coarse cells dilute forest fraction over huge areas — a 10 km sector that
+ * is 30% forest still holds tens of square kilometres of woods — so the ramp
+ * anchors shrink with grid size to keep overview zooms readable while fine
+ * grids keep the full-contrast thresholds.
+ */
+function coverageRamp(gridSizeM: number): { fadeOut: number; fullPaint: number } {
+  if (gridSizeM >= 10_000) return { fadeOut: 0.02, fullPaint: 0.3 };
+  if (gridSizeM >= 5_000) return { fadeOut: 0.03, fullPaint: 0.4 };
+  if (gridSizeM >= 2_500) return { fadeOut: 0.05, fullPaint: 0.55 };
+  return { fadeOut: 0.1, fullPaint: 0.75 };
+}
+
+function coverageAlpha(cell: PredictionMapCell) {
+  if (cell.score === null || cell.score === 0) return 1;
+  const coverage = cell.habitatCoverage;
+  if (coverage === null || !Number.isFinite(coverage)) return 1;
+  const { fadeOut, fullPaint } = coverageRamp(cell.gridSizeM);
+  if (coverage >= fullPaint) return 1;
+  if (coverage <= fadeOut) return COVERAGE_ALPHA_FLOOR;
+  return COVERAGE_ALPHA_FLOOR + (1 - COVERAGE_ALPHA_FLOOR) *
+    (coverage - fadeOut) / (fullPaint - fadeOut);
+}
+
 function drawCellGrid(
   context: CanvasRenderingContext2D,
   localMap: MapLibreMap,
@@ -49,6 +82,8 @@ function drawCellGrid(
   for (const cell of cells) {
     const { height, left, top, width } = cellScreenBounds(localMap, cell);
     const selected = cell.cellId === selectedCellId;
+    context.save();
+    context.globalAlpha = selected ? 1 : coverageAlpha(cell);
     context.fillStyle = predictionMapCellColour(cell.score);
     context.fillRect(left, top, width, height);
     context.strokeStyle = selected
@@ -60,6 +95,7 @@ function drawCellGrid(
     context.setLineDash(cell.score === 0 && !selected ? [3, 3] : []);
     context.strokeRect(left, top, width, height);
     context.setLineDash([]);
+    context.restore();
   }
 }
 
@@ -82,6 +118,7 @@ function drawHeatmap(
     if (cell.score === null || cell.score <= 0) continue;
     const { height, left, top, width } = cellScreenBounds(localMap, cell);
     const padding = Math.max(Math.min(width, height) * 0.05, 0.75);
+    heatContext.globalAlpha = coverageAlpha(cell);
     heatContext.fillStyle = predictionHeatmapColour(cell.score);
     heatContext.fillRect(
       left - padding,
