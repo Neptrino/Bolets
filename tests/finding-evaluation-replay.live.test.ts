@@ -422,6 +422,22 @@ it.skipIf(!inputPath || !artifactsDir)(
     // roughly two weeks in both observed seasons, so the matured-rain window
     // shifts from [8..21] days ago to [15..windowDays] for boletus species
     // only (recent = 14 d fields instead of 7 d).
+    // Elevation-aware weather assignment probe: replace the production
+    // nearest-point series with the nearby AROME point whose grid elevation
+    // best matches the cell's altitude (catalog exported from production).
+    const elevationMatch = process.env.FINDING_EVAL_ELEVATION_MATCH === "1";
+    const aromeCatalog: Array<{ lat: number; lon: number; elev: number }> =
+      elevationMatch && process.env.FINDING_EVAL_AROME_CATALOG
+        ? JSON.parse(readFileSync(process.env.FINDING_EVAL_AROME_CATALOG, "utf8"))
+        : [];
+    // Rain-kernel probe: age-band weights (bands 0-7, 7-14, 14-21, 21-26,
+    // 26-30 days) per guild replace the hard matured-rain window edges.
+    // Keys: guild names plus "boletus" for the boletus-* species override.
+    const rainKernelConfig = process.env.FINDING_EVAL_RAIN_KERNEL
+      ? JSON.parse(process.env.FINDING_EVAL_RAIN_KERNEL) as Record<string, number[]> & {
+          halfSatRescale?: boolean;
+        }
+      : null;
     const boletusLagConfig = process.env.FINDING_EVAL_BOLETUS_LAG
       ? JSON.parse(process.env.FINDING_EVAL_BOLETUS_LAG) as {
           windowDays: 14 | 21 | 26;
@@ -513,9 +529,24 @@ it.skipIf(!inputPath || !artifactsDir)(
           cell: await predictionCellCached(finding, speciesId, appUrl, cacheDir),
         })));
         const reference = cells[0].cell.values;
-        const atmosphericLatitude = reference.weatherGridLatitude;
-        const atmosphericLongitude = reference.weatherGridLongitude;
-        const atmosphericElevation = reference.weatherElevationM;
+        let atmosphericLatitude = reference.weatherGridLatitude;
+        let atmosphericLongitude = reference.weatherGridLongitude;
+        let atmosphericElevation = reference.weatherElevationM;
+        if (elevationMatch && aromeCatalog.length) {
+          const cellAltitude = reference.altitudeM;
+          if (finiteNumber(cellAltitude)) {
+            const candidates = aromeCatalog.filter((point) =>
+              (point.lat - finding.latitude) * (point.lat - finding.latitude) +
+              (point.lon - finding.longitude) * (point.lon - finding.longitude) < 0.0016);
+            const best = candidates.sort((left, right) =>
+              Math.abs(left.elev - cellAltitude) - Math.abs(right.elev - cellAltitude))[0];
+            if (best) {
+              atmosphericLatitude = best.lat;
+              atmosphericLongitude = best.lon;
+              atmosphericElevation = best.elev;
+            }
+          }
+        }
         const soilLatitude = reference.soilGridLatitude;
         const soilLongitude = reference.soilGridLongitude;
         if (
@@ -598,6 +629,20 @@ it.skipIf(!inputPath || !artifactsDir)(
           }
         }
 
+        // Rain-kernel probe: age-band rain sums, shared across species per target.
+        const RAIN_KERNEL_BANDS = [[0, 7], [7, 14], [14, 21], [21, 26], [26, 30]] as const;
+        const bandCache = new Map<string, Array<ReturnType<typeof laggedRainWindow>>>();
+        const rainBands = (spanIndex: number, observedAt: string) => {
+          const key = `${spanIndex}:${observedAt}`;
+          let bands = bandCache.get(key);
+          if (!bands) {
+            const raw = atmosphereBySpan.get(spanIndex)!;
+            bands = RAIN_KERNEL_BANDS.map(([fromDays, toDays]) =>
+              laggedRainWindow(raw, observedAt, toDays * 24, fromDays * 24));
+            bandCache.set(key, bands);
+          }
+          return bands;
+        };
         for (const target of targets) {
           const spanIndex = spans.findIndex((span) => spanCovers(span, target.date));
           if (spanIndex < 0) continue;
@@ -661,6 +706,41 @@ it.skipIf(!inputPath || !artifactsDir)(
                 },
               };
             }
+            const kernelKey = profile.modelConfig.status === "supported" &&
+                profile.modelConfig.model === "hydrothermal-v2"
+              ? (speciesId.startsWith("boletus-") ? "boletus" : profile.modelConfig.guild)
+              : null;
+            const kernelWeights = rainKernelConfig && kernelKey
+              ? rainKernelConfig[kernelKey]
+              : undefined;
+            if (
+              kernelWeights &&
+              rainKernelConfig?.halfSatRescale &&
+              profile.modelConfig.status === "supported" &&
+              profile.modelConfig.model === "hydrothermal-v2"
+            ) {
+              const water = profile.modelConfig.water;
+              const currentEffectiveDays = water.recentRainWeight >= 1
+                ? water.rainfallWindowDays
+                : water.rainfallWindowDays - water.recentWindowDays;
+              const bandLengths = [7, 7, 7, 5, 4];
+              const kernelEffectiveDays = kernelWeights.reduce(
+                (total, weight, index) => total + weight * (bandLengths[index] ?? 0),
+                0,
+              );
+              const ratio = kernelEffectiveDays / currentEffectiveDays;
+              profile = {
+                ...profile,
+                modelConfig: {
+                  ...profile.modelConfig,
+                  water: {
+                    ...water,
+                    rainfallHalfSaturationMm: water.rainfallHalfSaturationMm * ratio,
+                    wetDaysHalfSaturation: water.wetDaysHalfSaturation * ratio,
+                  },
+                },
+              };
+            }
             const model = profile.modelConfig;
             if (model.status !== "supported") continue;
             const values: ConditionSnapshot["values"] = {
@@ -689,6 +769,37 @@ it.skipIf(!inputPath || !artifactsDir)(
               values.rainfall7dMm = values.rainfall14dMm;
               values.rainfallDays7d = values.rainfallDays14d;
               values.evapotranspiration7dMm = values.evapotranspiration14dMm;
+            }
+            if (kernelWeights && model.model === "hydrothermal-v2") {
+              // Weighted band sums replace the hard window: the raw window
+              // field is set so the model's matured subtraction yields the
+              // kernel value exactly (slow guilds subtract the recent field;
+              // fast guilds score the raw window directly).
+              const bands = rainBands(spanIndex, target.observedAt);
+              const kernel = { rainfallMm: 0, rainyDays: 0, evapotranspirationMm: 0 };
+              kernelWeights.forEach((weight, index) => {
+                const band = bands[index];
+                if (!band) return;
+                kernel.rainfallMm += weight * band.rainfallMm;
+                kernel.rainyDays += weight * band.rainyDays;
+                kernel.evapotranspirationMm += weight * band.evapotranspirationMm;
+              });
+              const water = model.water;
+              const windowField = water.rainfallWindowDays === 14
+                ? ["rainfall14dMm", "rainfallDays14d", "evapotranspiration14dMm"] as const
+                : water.rainfallWindowDays === 21
+                  ? ["rainfall21dMm", "rainfallDays21d", "evapotranspiration21dMm"] as const
+                  : ["rainfall26dMm", "rainfallDays26d", "evapotranspiration26dMm"] as const;
+              const recentField = water.recentWindowDays === 14
+                ? ["rainfall14dMm", "rainfallDays14d", "evapotranspiration14dMm"] as const
+                : ["rainfall7dMm", "rainfallDays7d", "evapotranspiration7dMm"] as const;
+              const slow = water.recentRainWeight < 1;
+              values[windowField[0]] = kernel.rainfallMm +
+                (slow ? values[recentField[0]] ?? 0 : 0);
+              values[windowField[1]] = kernel.rainyDays +
+                (slow ? values[recentField[1]] ?? 0 : 0);
+              values[windowField[2]] = kernel.evapotranspirationMm +
+                (slow ? values[recentField[2]] ?? 0 : 0);
             }
             if (terrainHours) {
               const raw = atmosphereBySpan.get(spanIndex)!;
