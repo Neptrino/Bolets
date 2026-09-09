@@ -254,4 +254,14 @@ systemctl enable --now bolets-map-cache.timer
 # Do not hold the release lock while this resumable background work completes.
 systemctl start --no-block bolets-map-cache.service || echo "Map warming will retry on the timer" >&2
 
+# Every deploy leaves an image, a build-cache layer set and a release archive
+# behind; unbounded, they filled the 96 GB disk on 2026-09-09 and blocked the
+# deploy receiver. Keep the last ten releases and drop dangling Docker data
+# after each successful rollout.
+ls -t /opt/bolets/releases 2>/dev/null | tail -n +11 | while read -r release; do
+  rm -rf "/opt/bolets/releases/$release"
+done
+docker image prune -f >/dev/null 2>&1 || true
+docker builder prune -f --keep-storage 5GB >/dev/null 2>&1 || true
+
 echo "Bolets rollout completed"
