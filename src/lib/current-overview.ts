@@ -376,37 +376,77 @@ export async function loadAreaOverview(
   });
 }
 
+/**
+ * A snapshot where nothing is publishable describes a degraded read (edge
+ * outage, cache rebuild, partial generation), never the season itself, so it
+ * must not enter the twelve-hour cache: cached failures stay frozen until the
+ * key rotates even though the underlying data recovers within minutes.
+ */
+export class DegradedOverviewSnapshotError extends Error {
+  constructor(readonly items: unknown) {
+    super("Overview snapshot has no publishable readings; refusing to cache it.");
+    this.name = "DegradedOverviewSnapshotError";
+  }
+}
+
+export function assertCacheableOverview<Item extends { status: CurrentOverviewStatus }>(
+  items: Item[],
+): Item[] {
+  if (!items.some((item) => item.status === "available")) {
+    throw new DegradedOverviewSnapshotError(items);
+  }
+  return items;
+}
+
 const loadCachedCurrentOverviewData = unstable_cache(
-  (generation: string) => {
+  async (generation: string) => {
     void generation;
-    return loadCurrentOverview();
+    return assertCacheableOverview(await loadCurrentOverview());
   },
   ["current-overview-v7"],
   { revalidate: DAILY_OVERVIEW_REVALIDATE_SECONDS, tags: ["current-overview"] },
 );
 
 const loadCachedAreaOverviewData = unstable_cache(
-  (generation: string) => {
+  async (generation: string) => {
     void generation;
-    return loadAreaOverview();
+    return assertCacheableOverview(await loadAreaOverview());
   },
   ["area-overview-v7"],
   { revalidate: DAILY_OVERVIEW_REVALIDATE_SECONDS, tags: ["area-overview"] },
 );
 
-/** Shared generation-bound snapshots with a twelve-hour maximum lifetime. */
-export async function loadCachedCurrentOverview() {
+/**
+ * Shared generation-bound snapshots with a twelve-hour maximum lifetime.
+ * Degraded snapshots are still served, but uncached, so the next request
+ * retries instead of freezing the failure.
+ */
+export async function loadCachedCurrentOverview(): Promise<CurrentOverviewItem[]> {
   const { readCurrentOverviewGeneration } = await import(
     "@/src/lib/current-overview-generation-server"
   );
-  return loadCachedCurrentOverviewData(await readCurrentOverviewGeneration());
+  try {
+    return await loadCachedCurrentOverviewData(await readCurrentOverviewGeneration());
+  } catch (error) {
+    if (error instanceof DegradedOverviewSnapshotError) {
+      return error.items as CurrentOverviewItem[];
+    }
+    throw error;
+  }
 }
 
-export async function loadCachedAreaOverview() {
+export async function loadCachedAreaOverview(): Promise<AreaOverviewItem[]> {
   const { readCurrentOverviewGeneration } = await import(
     "@/src/lib/current-overview-generation-server"
   );
-  return loadCachedAreaOverviewData(await readCurrentOverviewGeneration());
+  try {
+    return await loadCachedAreaOverviewData(await readCurrentOverviewGeneration());
+  } catch (error) {
+    if (error instanceof DegradedOverviewSnapshotError) {
+      return error.items as AreaOverviewItem[];
+    }
+    throw error;
+  }
 }
 
 const catalanAreaCollator = new Intl.Collator("ca", { sensitivity: "base" });

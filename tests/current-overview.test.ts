@@ -6,7 +6,9 @@ import { currentSearchReadings, overviewExtent, overviewLimitingFactor } from "@
 import {
   CURRENT_OVERVIEW_CONCURRENCY,
   DAILY_OVERVIEW_REVALIDATE_SECONDS,
+  DegradedOverviewSnapshotError,
   areaOverviewTargetsForMonth,
+  assertCacheableOverview,
   bestAreaOverviewItemsByHub,
   currentOverviewTargetsForMonth,
   dominantLimitingComponent,
@@ -141,10 +143,34 @@ describe("current-condition overview", () => {
     expect(overviewSource).toContain("readCurrentOverviewGeneration");
     expect(overviewSource).toContain("loadCachedCurrentOverviewData(await readCurrentOverviewGeneration())");
     expect(overviewSource).toContain("loadCachedAreaOverviewData(await readCurrentOverviewGeneration())");
+    expect(overviewSource).toContain("assertCacheableOverview(await loadCurrentOverview())");
+    expect(overviewSource).toContain("assertCacheableOverview(await loadAreaOverview())");
     expect(generationSource).toContain('import "server-only"');
     expect(generationSource).toContain('"spatial-condition-coarse"');
     expect(generationSource).toContain('"spatial-condition-territorial"');
     expect(generationSource).toContain('cache: "no-store"');
+  });
+
+  it("refuses to cache overview snapshots with zero publishable readings", () => {
+    const degraded = [
+      { speciesId: "a", regionId: "pirineus" as RegionId, seasonalActivity: "good" as const, speciesName: "a", regionName: "Pirineus", status: "insufficient" as const, summary: null },
+      { speciesId: "b", regionId: "emporda" as RegionId, seasonalActivity: "good" as const, speciesName: "b", regionName: "Empordà", status: "unavailable" as const, summary: null },
+    ];
+
+    expect(() => assertCacheableOverview(degraded)).toThrowError(DegradedOverviewSnapshotError);
+    expect(() => assertCacheableOverview([])).toThrowError(DegradedOverviewSnapshotError);
+    try {
+      assertCacheableOverview(degraded);
+      expect.unreachable("degraded snapshot must not be cacheable");
+    } catch (error) {
+      expect((error as DegradedOverviewSnapshotError).items).toBe(degraded);
+    }
+
+    const healthy = [
+      ...degraded,
+      { speciesId: "c", regionId: "pirineus" as RegionId, seasonalActivity: "good" as const, speciesName: "c", regionName: "Pirineus", status: "available" as const, summary: summary("pirineus") },
+    ];
+    expect(assertCacheableOverview(healthy)).toBe(healthy);
   });
 
   it("keys local-guide readings by the same published condition generations", () => {
