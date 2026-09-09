@@ -244,6 +244,35 @@ const RECENT_RAIN_WEIGHT_BY_GUILD: Record<SupportedGuild, number> = {
 };
 
 /**
+ * Rain age-band weights (0-7, 7-14, 14-21, 21-26, 26-30 days ago): the ramped
+ * version of each guild's matured-rain window, validated 2026-09-09 against
+ * the private findings and the GBIF sample (discrimination unchanged,
+ * day-to-day projection roughness down about a quarter). Slow guilds fade the
+ * fresh week in and the old tail out; fast guilds keep the fresh fortnight
+ * and taper the third week. Boletus species override these with a
+ * later-peaked ramp to match their two-week flush lag.
+ */
+const RAIN_AGE_BAND_WEIGHTS_BY_GUILD: Record<
+  SupportedGuild,
+  readonly [number, number, number, number, number]
+> = {
+  ectomycorrhizal: [0.15, 1, 1, 0.5, 0.2],
+  "wood-decayer": [0.15, 1, 1, 0.5, 0.2],
+  "litter-soil-saprotroph": [1, 1, 0.35, 0, 0],
+  grassland: [1, 1, 0.35, 0, 0],
+};
+
+const RAIN_AGE_BAND_LENGTH_DAYS = [7, 7, 7, 5, 4] as const;
+
+/** Days of rain the kernel effectively accumulates at its weights. */
+function kernelEffectiveDays(weights: readonly number[]) {
+  return weights.reduce(
+    (total, weight, index) => total + weight * (RAIN_AGE_BAND_LENGTH_DAYS[index] ?? 0),
+    0,
+  );
+}
+
+/**
  * The saturation constants were fitted to full trailing windows, so guilds
  * that exclude the fresh week shrink them to match the shorter accumulation
  * (0.7 restores band hit-rates while keeping the exclusion's discrimination
@@ -281,6 +310,15 @@ function hydrothermalV2Config({
   const scale = halfSaturationScale(water.recentRainWeight);
   water.rainfallHalfSaturationMm *= scale;
   water.wetDaysHalfSaturation *= scale;
+  // The kernel accumulates a different effective number of days than the
+  // hard window the constants were fitted to; rescaling by the ratio keeps
+  // the saturating response centred (validated with the ramps themselves).
+  const hardWindowDays = water.recentRainWeight >= 1
+    ? water.rainfallWindowDays
+    : water.rainfallWindowDays - water.recentWindowDays;
+  const kernelRatio = kernelEffectiveDays(water.rainAgeBandWeights) / hardWindowDays;
+  water.rainfallHalfSaturationMm *= kernelRatio;
+  water.wetDaysHalfSaturation *= kernelRatio;
   return {
     model: "hydrothermal-v2" as const,
     version: HYDROTHERMAL_V2_PRIOR_VERSION,
@@ -368,6 +406,7 @@ function waterParametersV2(
     rainFloor: RAIN_FLOOR,
     recentRainWeight: RECENT_RAIN_WEIGHT_BY_GUILD[guild],
     recentWindowDays: 7 as const,
+    rainAgeBandWeights: RAIN_AGE_BAND_WEIGHTS_BY_GUILD[guild],
   };
 }
 
@@ -422,7 +461,11 @@ const SPECIES_MODEL_CATALOGUE = {
     // both observed seasons (2025-09 peak, 2026-08 ramp), and the shifted
     // window validated cross-set on the private findings + GBIF replay
     // (2026-08-27, refit/q-blag-A).
-    water: { rainfallWindowDays: 26, recentWindowDays: 14 },
+    water: {
+      rainfallWindowDays: 26,
+      recentWindowDays: 14,
+      rainAgeBandWeights: [0, 0.35, 1, 1, 0.5],
+    },
     temperature: {
       windowDays: 20,
       optimumC: 13.5,
@@ -442,15 +485,27 @@ const SPECIES_MODEL_CATALOGUE = {
   // matured-rain window (rain 15-26 days ago).
   "boletus-pinophilus": {
     status: "supported", guild: "ectomycorrhizal",
-    water: { rainfallWindowDays: 26, recentWindowDays: 14 },
+    water: {
+      rainfallWindowDays: 26,
+      recentWindowDays: 14,
+      rainAgeBandWeights: [0, 0.35, 1, 1, 0.5],
+    },
   },
   "boletus-aereus": {
     status: "supported", guild: "ectomycorrhizal",
-    water: { rainfallWindowDays: 26, recentWindowDays: 14 },
+    water: {
+      rainfallWindowDays: 26,
+      recentWindowDays: 14,
+      rainAgeBandWeights: [0, 0.35, 1, 1, 0.5],
+    },
   },
   "boletus-reticulatus": {
     status: "supported", guild: "ectomycorrhizal",
-    water: { rainfallWindowDays: 26, recentWindowDays: 14 },
+    water: {
+      rainfallWindowDays: 26,
+      recentWindowDays: 14,
+      rainAgeBandWeights: [0, 0.35, 1, 1, 0.5],
+    },
   },
   "lactarius-deliciosus": {
     status: "supported", guild: "ectomycorrhizal",

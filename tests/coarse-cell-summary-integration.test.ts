@@ -46,6 +46,9 @@ const baseValues: ConditionSnapshot["values"] = {
   rainfall26dMm: 48,
   rainfallDays26d: 6,
   evapotranspiration26dMm: 10,
+  rainfall30dMm: 48,
+  rainfallDays30d: 6,
+  evapotranspiration30dMm: 10,
 };
 
 function habitatProfiles() {

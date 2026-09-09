@@ -192,6 +192,10 @@ const waterModelParametersV2 = waterModelParametersBase.omit({
   rainFloor: z.number().min(0).max(1),
   recentRainWeight: z.number().min(0).max(1),
   recentWindowDays: z.union([z.literal(7), z.literal(14)]),
+  rainAgeBandWeights: z.tuple([
+    z.number().min(0).max(1), z.number().min(0).max(1), z.number().min(0).max(1),
+    z.number().min(0).max(1), z.number().min(0).max(1),
+  ]),
 }).superRefine(orderedRewBand);
 const combinationModelParameters = z.object({
   habitatExponent: z.number().gt(0).max(1),

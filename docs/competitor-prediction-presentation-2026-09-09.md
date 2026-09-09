@@ -77,7 +77,7 @@ Prompted by three BoletRadar species cards (Cep, Ou de reig, Rossinyol) that sta
 
 Do not copy BoletRadar's constants; derive the same sentence from our own parameters so it is true by construction and stays in sync with refits:
 
-1. **Species card sentence, generated from `FruitingModelConfig`.** "Compta la pluja caiguda entre 15 i 26 dies abans: amb uns 40 mm ja respon, i cap als 75 mm va a ple." Window from `rainfallWindowDays − recentWindowDays × (1 − recentRainWeight)`; mm from inverting the Hill response at 0.5 and 0.9 with a seasonal ET0 assumption, rounded to 5 mm. Keep one clause of caveat: "després de descomptar l'evaporació".
+1. **Species card sentence, generated from `FruitingModelConfig`.** "Compta la pluja caiguda entre 15 i 26 dies abans: amb uns 40 mm ja respon, i cap als 75 mm va a ple." Window from the rain age-band kernel core (bands weighted ≥ 0.5 in `rainAgeBandWeights`); mm from inverting the Hill response at 0.5 and 0.9 with a seasonal ET0 assumption, rounded to 5 mm. Keep one clause of caveat: "després de descomptar l'evaporació".
 2. **"Avui, la millor cel·la marca N/100" on the species page**, from the existing per-species precompute that feeds /bolets-avui.
 3. **Map cell detail: rename the rain reading to the scored window** ("Pluja 15–26 dies abans · 47 mm · per sobre del mínim") so the factor list reads like BoletRadar's tick list but with our real inputs.
 4. **Keep the FAQ honest but add the table**: per-guild window and mm bands, with the sentence that these are model parameters fitted on dated finds, not a promise.

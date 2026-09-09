@@ -33,7 +33,17 @@ const baselineValues: ConditionSnapshot["values"] = {
   rainfall21dMm: 42,
   rainfallDays21d: 6,
   evapotranspiration21dMm: 38,
-  // Matured rain: the trailing week is subtracted from the window.
+  // The age-band kernel reads the full ladder; the 22-30 day bands carry no
+  // extra rain here so the scored total matches the old matured window.
+  rainfall14dMm: 20,
+  rainfallDays14d: 3,
+  evapotranspiration14dMm: 19,
+  rainfall26dMm: 42,
+  rainfallDays26d: 6,
+  evapotranspiration26dMm: 38,
+  rainfall30dMm: 42,
+  rainfallDays30d: 6,
+  evapotranspiration30dMm: 38,
   rainfall7dMm: 0,
   rainfallDays7d: 0,
   evapotranspiration7dMm: 0,

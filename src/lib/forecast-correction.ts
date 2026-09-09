@@ -20,16 +20,24 @@ const requiredCorrectedFields = [
   "relativeHumidityAvg7d",
   "soilMoistureMin7d",
   "soilMoistureAvg7d",
+  // The rain age-band kernel reads the whole trailing-window ladder, so
+  // every rung must survive the anomaly correction.
+  "rainfall7dMm",
+  "rainfallDays7d",
   "rainfall14dMm",
   "rainfallDays14d",
   "rainfall21dMm",
   "rainfallDays21d",
   "rainfall26dMm",
   "rainfallDays26d",
+  "rainfall30dMm",
+  "rainfallDays30d",
   "drySpellDays",
+  "evapotranspiration7dMm",
   "evapotranspiration14dMm",
   "evapotranspiration21dMm",
   "evapotranspiration26dMm",
+  "evapotranspiration30dMm",
 ] as const satisfies readonly NumericValueField[];
 
 const optionalCorrectedFields = [
@@ -49,13 +57,7 @@ const optionalCorrectedFields = [
   "soilMoistureTrend7d",
   "rainfall24hMm",
   "rainfall3dMm",
-  "rainfall7dMm",
-  "rainfallDays7d",
-  "rainfall30dMm",
-  "rainfallDays30d",
   "evapotranspiration3dMm",
-  "evapotranspiration7dMm",
-  "evapotranspiration30dMm",
 ] as const satisfies readonly NumericValueField[];
 
 function finiteValue(values: ConditionValues, field: NumericValueField) {

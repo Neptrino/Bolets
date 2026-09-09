@@ -234,6 +234,18 @@ export interface WaterModelParametersV2 extends Omit<
    * species override extends the exclusion to 14 days.
    */
   recentWindowDays: 7 | 14;
+  /**
+   * Weight of each rain age band (0-7, 7-14, 14-21, 21-26 and 26-30 days
+   * ago) in the scored window. Replaces the hard window edges: a storm fades
+   * in and out of influence across bands instead of appearing or vanishing
+   * overnight, which removed the day-edge cliffs from projections at no cost
+   * in discrimination (2026-09-09 cross-set validation). Computed from the
+   * stored window ladder, so band sums are exact differences of stored
+   * fields. `rainfallWindowDays`, `recentRainWeight` and `recentWindowDays`
+   * remain the interpretable description of the same response and drive the
+   * derived public copy.
+   */
+  rainAgeBandWeights: readonly [number, number, number, number, number];
   /** Exponent on water in the fruiting product; temperature takes the rest. */
   waterExponent: number;
 }

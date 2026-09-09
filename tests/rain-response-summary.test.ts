@@ -24,11 +24,13 @@ describe("scored rain window", () => {
     expect(window).toMatchObject({
       startDaysAgo: 15,
       endDaysAgo: 26,
-      lengthDays: 12,
+      // The kernel's shoulders (7-14 at 0.35 and 26-30 at 0.5) make the
+      // effective accumulation longer than the printed core.
+      lengthDays: 16,
       excludesRecent: true,
     });
-    expect(window.halfResponseNetMm).toBeCloseTo(17.5, 5);
-    expect(window.nearFullNetMm).toBeCloseTo(52.5, 5);
+    expect(window.halfResponseNetMm).toBeCloseTo(17.5 * (16.45 / 12), 2);
+    expect(window.nearFullNetMm).toBeCloseTo(3 * 17.5 * (16.45 / 12), 2);
   });
 
   it("reads the default ectomycorrhizal window as rain fallen 8 to 21 days ago", () => {
@@ -39,7 +41,8 @@ describe("scored rain window", () => {
   it("keeps the plain trailing window for fast saprotroph guilds", () => {
     const window = scoredRainWindow(v2Water("marasmius-oreades").water);
     expect(window).toMatchObject({ startDaysAgo: 1, endDaysAgo: 14, excludesRecent: false });
-    expect(window.halfResponseNetMm).toBe(20);
+    // 20 mm scaled by the kernel's effective length (16.45 of 14 days).
+    expect(window.halfResponseNetMm).toBeCloseTo(23.5, 1);
   });
 
   it("prints gauge millimetres in 5 mm steps with the near-full figure above the half figure", () => {

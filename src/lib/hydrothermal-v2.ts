@@ -64,82 +64,54 @@ function saturationVapourPressureKpa(temperatureC: number) {
 }
 
 /**
- * Matured rain: for slow guilds the trailing seven days are excluded from
- * the rain window. Fruiting bodies found today developed over the preceding
- * weeks, so rain from the last few days cannot have produced them —
- * crediting it instantly inflated background days right after storms (a
- * measured-rain zero-find day scored 48; excluding the fresh week drops it
- * to 31 while dated finds keep their bands). Fast saprotroph guilds fruit
- * within days of rain and keep the plain trailing window
- * (recentRainWeight 1). Computed as window-minus-7d from the stored
- * trailing fields, whose 24 h bins subtract exactly. Drying terms (dry
- * spell, VPD) stay anchored to the present: they act on already-emerged
- * bodies.
+ * Matured rain, scored through age-band weights: rain from 0-7, 7-14, 14-21,
+ * 21-26 and 26-30 days ago contributes with its guild's band weight instead
+ * of a hard window. Fruiting bodies found today developed over the preceding
+ * weeks, so fresh rain weighs little for slow guilds (crediting it instantly
+ * inflated background days right after storms), while old rain fades out
+ * gradually rather than vanishing the night a storm crosses a window edge —
+ * the 2026-09-09 cross-set validation showed the ramped bands keep
+ * discrimination unchanged while removing the day-edge cliffs from
+ * projections. Band sums are exact differences of the stored trailing
+ * windows, whose 24 h bins subtract cleanly. Drying terms (dry spell, VPD)
+ * stay anchored to the present: they act on already-emerged bodies.
  */
-function maturedWindow(
-  total: number | undefined,
-  recent: number | undefined,
-  recentWeight: number,
-) {
-  return total === undefined || recent === undefined
-    ? undefined
-    : Math.max(0, total - recent) + recentWeight * recent;
-}
+const RAIN_AGE_BAND_FIELDS = [
+  ["rainfall7dMm", "rainfallDays7d", "evapotranspiration7dMm"],
+  ["rainfall14dMm", "rainfallDays14d", "evapotranspiration14dMm"],
+  ["rainfall21dMm", "rainfallDays21d", "evapotranspiration21dMm"],
+  ["rainfall26dMm", "rainfallDays26d", "evapotranspiration26dMm"],
+  ["rainfall30dMm", "rainfallDays30d", "evapotranspiration30dMm"],
+] as const;
 
 export function rainfallWindow(
   values: EnvironmentValues,
   parameters: WaterModelParametersV2,
 ) {
-  const raw = rawRainfallWindow(values, parameters.rainfallWindowDays);
-  const weight = parameters.recentRainWeight;
-  if (!(weight >= 0 && weight <= 1)) {
-    throw new RangeError("Recent-rain weight must be within [0, 1]");
+  const weights = parameters.rainAgeBandWeights;
+  if (weights.length !== RAIN_AGE_BAND_FIELDS.length ||
+      weights.some((weight) => !(weight >= 0 && weight <= 1))) {
+    throw new RangeError("Rain age-band weights must be five values within [0, 1]");
   }
-  const recent = parameters.recentWindowDays === 14
-    ? {
-        rainfall: values.rainfall14dMm,
-        rainyDays: values.rainfallDays14d,
-        evapotranspiration: values.evapotranspiration14dMm,
-      }
-    : {
-        rainfall: values.rainfall7dMm,
-        rainyDays: values.rainfallDays7d,
-        evapotranspiration: values.evapotranspiration7dMm,
-      };
-  return {
-    rainfall: maturedWindow(raw.rainfall, recent.rainfall, weight),
-    rainyDays: maturedWindow(raw.rainyDays, recent.rainyDays, weight),
-    evapotranspiration: maturedWindow(
-      raw.evapotranspiration,
-      recent.evapotranspiration,
-      weight,
-    ),
-  };
-}
-
-function rawRainfallWindow(
-  values: EnvironmentValues,
-  days: WaterModelParametersV2["rainfallWindowDays"],
-) {
-  if (days === 14) {
-    return {
-      rainfall: values.rainfall14dMm,
-      rainyDays: values.rainfallDays14d,
-      evapotranspiration: values.evapotranspiration14dMm,
-    };
+  const totals = { rainfall: 0, rainyDays: 0, evapotranspiration: 0 };
+  let previous = { rainfall: 0, rainyDays: 0, evapotranspiration: 0 };
+  for (const [index, [rainField, daysField, etField]] of RAIN_AGE_BAND_FIELDS.entries()) {
+    const rainfall = values[rainField];
+    const rainyDays = values[daysField];
+    const evapotranspiration = values[etField];
+    if (rainfall === undefined || rainyDays === undefined || evapotranspiration === undefined) {
+      return { rainfall: undefined, rainyDays: undefined, evapotranspiration: undefined };
+    }
+    const weight = weights[index]!;
+    // Trailing windows nest, so each band is the difference from the window
+    // one step shorter; negative differences are measurement noise.
+    totals.rainfall += weight * Math.max(0, rainfall - previous.rainfall);
+    totals.rainyDays += weight * Math.max(0, rainyDays - previous.rainyDays);
+    totals.evapotranspiration +=
+      weight * Math.max(0, evapotranspiration - previous.evapotranspiration);
+    previous = { rainfall, rainyDays, evapotranspiration };
   }
-  if (days === 21) {
-    return {
-      rainfall: values.rainfall21dMm,
-      rainyDays: values.rainfallDays21d,
-      evapotranspiration: values.evapotranspiration21dMm,
-    };
-  }
-  return {
-    rainfall: values.rainfall26dMm,
-    rainyDays: values.rainfallDays26d,
-    evapotranspiration: values.evapotranspiration26dMm,
-  };
+  return totals;
 }
 
 /**
@@ -382,17 +354,21 @@ export function missingHydrothermalFieldsV2(
   const soilFields = water.soilWeight > 0
     ? ["soilTexture", "soilMoistureAvg7d", "soilMoistureMin7d"] as const
     : [] as const;
-  // The matured-rain exclusion subtracts the trailing window; its length is
-  // per-species (7 d default, 14 d for the slow boletus flush).
-  const recentFields = water.recentWindowDays === 14
-    ? ["rainfall14dMm", "rainfallDays14d", "evapotranspiration14dMm"] as const
-    : ["rainfall7dMm", "rainfallDays7d", "evapotranspiration7dMm"] as const;
+  // The age-band kernel reads the whole trailing-window ladder, so every
+  // rung is load-bearing.
+  const ladderFields = [
+    "rainfall7dMm", "rainfallDays7d", "evapotranspiration7dMm",
+    "rainfall14dMm", "rainfallDays14d", "evapotranspiration14dMm",
+    "rainfall21dMm", "rainfallDays21d", "evapotranspiration21dMm",
+    "rainfall26dMm", "rainfallDays26d", "evapotranspiration26dMm",
+    "rainfall30dMm", "rainfallDays30d", "evapotranspiration30dMm",
+  ] as const;
   const required = [
     ...soilFields,
     "temperatureAvg7dC",
     "relativeHumidityAvg7d",
     "drySpellDays",
-    ...recentFields,
+    ...ladderFields,
     ...rainFields,
     ...temperatureFields,
   ] as const satisfies readonly (keyof EnvironmentValues)[];

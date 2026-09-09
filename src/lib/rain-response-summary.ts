@@ -50,14 +50,32 @@ function roundToFive(value: number) {
   return Math.max(5, Math.round(value / 5) * 5);
 }
 
+/** Age-band boundaries in days, matching the scored kernel. */
+const RAIN_BAND_BOUNDARIES_DAYS = [0, 7, 14, 21, 26, 30] as const;
+const RAIN_BAND_LENGTH_DAYS = [7, 7, 7, 5, 4] as const;
+/** Bands at or above this weight form the printed "main window". */
+const CORE_BAND_WEIGHT = 0.75;
+
 export function scoredRainWindow(water: WaterModelParametersV2): ScoredRainWindow {
-  const excludesRecent = water.recentRainWeight < 1;
-  const startDaysAgo = excludesRecent ? water.recentWindowDays + 1 : 1;
-  const endDaysAgo = water.rainfallWindowDays;
-  if (startDaysAgo > endDaysAgo) {
-    throw new RangeError("The recent-rain exclusion cannot cover the whole rain window");
+  // The printed window is the kernel's core: the span of bands the species
+  // weighs at three-quarter strength or more. Lighter-weighted shoulders
+  // still contribute to the score, which the effective length below covers.
+  const weights = water.rainAgeBandWeights;
+  const firstCore = weights.findIndex((weight) => weight >= CORE_BAND_WEIGHT);
+  const lastCore = weights.length - 1 -
+    [...weights].reverse().findIndex((weight) => weight >= CORE_BAND_WEIGHT);
+  if (firstCore < 0) {
+    throw new RangeError("A rain kernel must weight at least one band at core strength");
   }
-  const lengthDays = endDaysAgo - startDaysAgo + 1;
+  const excludesRecent = firstCore > 0;
+  const startDaysAgo = RAIN_BAND_BOUNDARIES_DAYS[firstCore]! + 1;
+  const endDaysAgo = RAIN_BAND_BOUNDARIES_DAYS[lastCore + 1]!;
+  // Effective accumulation length at the kernel's weights, for the reader's
+  // evaporation deduction; the tails make it a little longer than the core.
+  const lengthDays = weights.reduce(
+    (total, weight, index) => total + weight * (RAIN_BAND_LENGTH_DAYS[index] ?? 0),
+    0,
+  );
   const halfResponseNetMm = water.rainfallHalfSaturationMm;
   const nearFullNetMm = hillInverse(NEAR_FULL_RESPONSE, water.rainfallHalfSaturationMm);
   // A typical episode in the window: as many wet days as the wet-day term
@@ -68,7 +86,7 @@ export function scoredRainWindow(water: WaterModelParametersV2): ScoredRainWindo
   return {
     startDaysAgo,
     endDaysAgo,
-    lengthDays,
+    lengthDays: Math.round(lengthDays),
     excludesRecent,
     halfResponseNetMm,
     nearFullNetMm,

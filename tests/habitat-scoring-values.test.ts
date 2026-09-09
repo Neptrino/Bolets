@@ -93,6 +93,9 @@ describe("coarse habitat scoring values", () => {
       rainfall26dMm: 50,
       rainfallDays26d: 5,
       evapotranspiration26dMm: 5,
+      rainfall30dMm: 50,
+      rainfallDays30d: 5,
+      evapotranspiration30dMm: 5,
       // Matured rain: boletus excludes the trailing fortnight, so the 14 d
       // fields are the load-bearing recent window alongside the 7 d ones.
       rainfall7dMm: 0,
@@ -101,6 +104,9 @@ describe("coarse habitat scoring values", () => {
       rainfall14dMm: 0,
       rainfallDays14d: 0,
       evapotranspiration14dMm: 0,
+      rainfall21dMm: 25,
+      rainfallDays21d: 2,
+      evapotranspiration21dMm: 2.5,
       drySpellDays: 0,
       altitudeM: 2040,
       soilTexture: "franca",

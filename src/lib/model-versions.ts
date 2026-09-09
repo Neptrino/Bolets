@@ -4,7 +4,10 @@ export const HYDROTHERMAL_PRIOR_VERSION = "hydrothermal-v1-priors-2026-08b";
 // 08f: boletus flush lag — the four boletus species score rain fallen 15-26
 // days ago (recentWindowDays 14 + rainfallWindowDays 26) after two seasons
 // of field data showed cep flushes trail storms by ~2 weeks.
-export const HYDROTHERMAL_V2_PRIOR_VERSION = "hydrothermal-v2-priors-2026-08f";
+// 09a: rain age-band kernel — hard window edges become per-guild weight
+// ramps over the 0-30 day bands, removing overnight cliffs from scores and
+// projections; cross-set validated 2026-09-09 with discrimination unchanged.
+export const HYDROTHERMAL_V2_PRIOR_VERSION = "hydrothermal-v2-priors-2026-09a";
 
 /**
  * Species scored by hydrothermal-v2. Full cutover 2026-08-16 after validation

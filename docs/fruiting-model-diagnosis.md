@@ -396,3 +396,37 @@ the sweeps above were produced without editing shipped priors.
 Replay responses are cached on disk, so the metrics phase is offline and a
 re-run makes no network requests. Input files, artifacts and reports must all
 stay outside the repository; reports identify locations by ordinal only.
+
+## Addendum — 2026-09-09: rain age-band kernel (priors 2026-09a)
+
+The matured-rain windows shipped in August scored rain through hard edges: a
+storm-day counted at full weight inside the window and at zero the day it
+aged out, producing overnight score cliffs in projections (a cep cell fell
+67 → 42 in one day when the mid-August storms crossed the 26-day edge) and
+spatial steps wherever neighbouring cells' windows disagreed.
+
+Priors 2026-09a replace the hard edges with per-guild **age-band weights**
+over the stored trailing-window ladder (bands 0–7, 7–14, 14–21, 21–26 and
+26–30 days ago; band sums are exact differences of stored fields, so no new
+pipeline inputs were needed):
+
+- ectomycorrhizal and wood-decayer: `[0.15, 1, 1, 0.5, 0.2]`
+- boletus-* species override: `[0, 0.35, 1, 1, 0.5]`
+- litter/soil saprotrophs and grassland: `[1, 1, 0.35, 0, 0]`
+
+Half-saturations are rescaled by the ratio of the kernel's effective length
+to the previous hard window (validated together with the ramps). Cross-set
+validation on the enlarged private findings (32 events, 4 observed
+negatives) plus the 100-location GBIF sample: discrimination unchanged
+(findings AUC 0.593 → 0.591, GBIF 0.568 → 0.571; hit rates identical), and
+mean day-to-day trajectory roughness across event windows down 25–30%. A
+wider/softer ramp (K2) traded GBIF hit40 0.33 → 0.29 and was rejected.
+
+Also tested and **rejected** in the same session: elevation-matched weather
+point assignment (reading each cell from the nearby AROME point whose grid
+elevation best matches the cell's altitude, motivated by heat-hour
+elevation aliasing — adjacent points carry 0 vs 42 heat hours and 30% of
+cells differ by more than one heat half-life). Findings AUC fell
+0.593 → 0.578 and hit40 0.38 → 0.34; the likely confound is that relocating
+a cell moves its gauge-blended rain, not just its temperatures. An untested
+refinement would substitute the temperature series only.

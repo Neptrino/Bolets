@@ -40,8 +40,10 @@ function v2Profile(): SpeciesProfile {
     soilWetFloor: 0.4,
     rainFloor: 0.1,
     // Full trailing window: these fixtures predate the matured-rain split.
+    // The band weights reproduce a plain 21-day window exactly.
     recentRainWeight: 1,
     recentWindowDays: 7,
+    rainAgeBandWeights: [1, 1, 1, 0, 0],
   };
   const modelConfig: FruitingModelConfig = {
     model: "hydrothermal-v2",
@@ -79,6 +81,9 @@ const RAIN_WET_SOIL_DRY: ConditionSnapshot["values"] = {
   evapotranspiration14dMm: 20,
   evapotranspiration21dMm: 28,
   evapotranspiration26dMm: 32,
+  rainfall30dMm: 95,
+  rainfallDays30d: 10,
+  evapotranspiration30dMm: 32,
   // Matured rain: the trailing week is subtracted from the window.
   rainfall7dMm: 0,
   rainfallDays7d: 0,
