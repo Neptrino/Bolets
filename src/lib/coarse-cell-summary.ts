@@ -2,14 +2,22 @@ import { bucketsForBounds } from "@/src/lib/map-query";
 import type { CoordinateBounds, SpatialBounds, SpatialGridSizeM } from "@/src/lib/types";
 
 /**
- * Coarse display grids whose reading is the best 2.5 km sector inside each
- * cell rather than a score of a blended coarse environment. Blending lets one
- * cold corner's frost or one dry valley's rain speak for a whole square, so
- * the overview disagreed with the zoomed-in map by tens of points and the
+ * Coarse display grids whose reading summarises the 2.5 km sectors inside
+ * each cell rather than scoring a blended coarse environment. Blending lets
+ * one cold corner's frost or one dry valley's rain speak for a whole square,
+ * so the overview disagreed with the zoomed-in map by tens of points and the
  * surface re-scored at every grid step. The 2.5 km reads are the same cached
  * buckets the zoomed-in map uses, so the overview becomes a summary of that
- * map instead of a second opinion. Geometry, habitat coverage and identity
- * stay those of the coarse cell; the chosen sector travels alongside.
+ * map instead of a second opinion.
+ *
+ * The colour is the habitat-coverage-weighted mean of the children's scores:
+ * a mean commutes with the smoothed surface's kernel, so the overview reads
+ * as a blurrier version of the zoomed-in map rather than a brighter one
+ * (taking the best child max-pooled sixteen 10 km children and then spread
+ * that maximum over the square). Bare children carry little weight, so rock
+ * and town do not drag forested ground down. The detail reading is the best
+ * child's, named as such, so a click still shows where inside the square the
+ * conditions come from. Geometry, habitat extent and identity stay coarse.
  */
 export type SummarisedGridSizeM = 5000 | 10000;
 export const COARSE_SUMMARY_CHILD_GRID_M = 2500 satisfies SpatialGridSizeM;
@@ -62,6 +70,62 @@ export function bestChildrenByParent<T extends ScoredChildCell>(
     ) best.set(parentId, child);
   }
   return best;
+}
+
+export type CoverageScoredChildCell = ScoredChildCell & { habitatCoverage: number | null };
+
+/**
+ * Coverage-weighted mean of the children's scores, rounded to the map's
+ * integer scale. Children without a coverage reading share the mean weight
+ * of those that have one; with no coverage at all the plain mean applies.
+ */
+export function coverageWeightedScore(children: Iterable<CoverageScoredChildCell>) {
+  const scored = [...children].filter((child) => child.score !== null);
+  if (!scored.length) return null;
+  const coverages = scored
+    .map((child) => child.habitatCoverage)
+    .filter((coverage): coverage is number => coverage !== null && Number.isFinite(coverage));
+  const fallbackWeight = coverages.length
+    ? coverages.reduce((total, coverage) => total + coverage, 0) / coverages.length
+    : 1;
+  let weightedTotal = 0;
+  let totalWeight = 0;
+  for (const child of scored) {
+    const weight = child.habitatCoverage !== null && Number.isFinite(child.habitatCoverage)
+      ? child.habitatCoverage
+      : fallbackWeight;
+    weightedTotal += weight * (child.score as number);
+    totalWeight += weight;
+  }
+  if (totalWeight <= 0) {
+    return Math.round(scored.reduce((total, child) => total + (child.score as number), 0) / scored.length);
+  }
+  return Math.round(weightedTotal / totalWeight);
+}
+
+export type CoarseChildSummary<T> = { best: T; score: number };
+
+/** Per parent: the best child (for detail) and the coverage-weighted mean (for colour). */
+export function summariseChildrenByParent<T extends CoverageScoredChildCell>(
+  children: Iterable<T>,
+  parentGridSizeM: SummarisedGridSizeM,
+) {
+  const grouped = new Map<string, T[]>();
+  for (const child of children) {
+    if (child.score === null) continue;
+    const parentId = coarseParentCellId(child.cellId, parentGridSizeM);
+    if (!parentId) continue;
+    const siblings = grouped.get(parentId) ?? [];
+    siblings.push(child);
+    grouped.set(parentId, siblings);
+  }
+  const summaries = new Map<string, CoarseChildSummary<T>>();
+  for (const [parentId, siblings] of grouped) {
+    const best = bestChildrenByParent(siblings, parentGridSizeM).get(parentId);
+    const score = coverageWeightedScore(siblings);
+    if (best && score !== null) summaries.set(parentId, { best, score });
+  }
+  return summaries;
 }
 
 export type CoarseSummarySource = {

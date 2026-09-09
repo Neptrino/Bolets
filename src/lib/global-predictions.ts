@@ -1,9 +1,9 @@
 import { cataloniaSpatialBounds } from "@/data/regions";
 import {
-  bestChildrenByParent,
   bucketContaining,
   COARSE_SUMMARY_CHILD_GRID_M,
   coarseChildBuckets,
+  summariseChildrenByParent,
   summarisesChildren,
   type SummarisedGridSizeM,
 } from "@/src/lib/coarse-cell-summary";
@@ -367,25 +367,28 @@ export async function getGlobalPredictionCells(
   const truncated = payload.truncated || (sharded && sourceCells.length > normalizedLimit);
   if (!summarisesChildren(gridSizeM)) return { cells, truncated };
 
-  // Coarse cells take the best 2.5 km sector inside them, see
-  // coarse-cell-summary.ts; their geometry and habitat extent stay coarse.
-  const children = await bestGlobalChildren(bounds, gridSizeM);
+  // Coarse cells are coloured by the coverage-weighted mean of their 2.5 km
+  // sectors and attributed to the best one, see coarse-cell-summary.ts;
+  // their geometry and habitat extent stay coarse.
+  const children = await summarisedGlobalChildren(bounds, gridSizeM);
   return {
     cells: cells.map((cell) => {
-      const child = children.best.get(cell.cellId);
-      return child ? { ...cell, score: child.score, topSpeciesId: child.topSpeciesId } : cell;
+      const summary = children.summaries.get(cell.cellId);
+      return summary
+        ? { ...cell, score: summary.score, topSpeciesId: summary.best.topSpeciesId }
+        : cell;
     }),
     truncated: truncated || children.truncated,
   };
 }
 
-async function bestGlobalChildren(bounds: SpatialBounds, gridSizeM: SummarisedGridSizeM) {
+async function summarisedGlobalChildren(bounds: SpatialBounds, gridSizeM: SummarisedGridSizeM) {
   const buckets = coarseChildBuckets(bounds, cataloniaSpatialBounds);
   const reads = await Promise.all(buckets.map((bucket) =>
     getGlobalPredictionCells(bucket, 1000, COARSE_SUMMARY_CHILD_GRID_M)));
   return {
     buckets,
-    best: bestChildrenByParent(reads.flatMap((read) => read.cells), gridSizeM),
+    summaries: summariseChildrenByParent(reads.flatMap((read) => read.cells), gridSizeM),
     truncated: reads.some((read) => read.truncated),
   };
 }
@@ -439,9 +442,9 @@ export async function getGlobalCellRanking(
   if (!summarisesChildren(gridSizeM)) return combined;
 
   // The ranking shown for a coarse cell is that of its best 2.5 km sector,
-  // matching the score the map painted for it.
-  const children = await bestGlobalChildren(bounds, gridSizeM);
-  const child = children.best.get(cellId);
+  // the one the map attributes the cell to.
+  const children = await summarisedGlobalChildren(bounds, gridSizeM);
+  const child = children.summaries.get(cellId)?.best;
   const childBucket = child && bucketContaining(children.buckets, child.cellBounds);
   if (!child || !childBucket) return combined;
   const childPayload = await fetchGlobalEnvironment(childBucket, 1000, COARSE_SUMMARY_CHILD_GRID_M);

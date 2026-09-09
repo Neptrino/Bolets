@@ -5,6 +5,7 @@ import {
   globalCandidateSpecies,
 } from "@/src/lib/global-predictions";
 import { habitatProfileKey } from "@/src/lib/habitat";
+import { coverageWeightedScore } from "@/src/lib/coarse-cell-summary";
 import { getPredictionCells } from "@/src/lib/predictions";
 import type { ConditionSnapshot, PredictionCell, PredictionMapCell } from "@/src/lib/types";
 
@@ -133,9 +134,10 @@ afterEach(() => {
 });
 
 describe("coarse prediction cells summarise their best 2.5 km sector", () => {
-  it("colours a compact 5 km cell with its best child's score", async () => {
+  it("colours a compact 5 km cell with the coverage-weighted mean of its children", async () => {
     const fetchMock = stubSpatialFeeds();
     const children = await getPredictionCells("lactarius-deliciosus", bucket, 1000, 2500, true);
+    const expected = coverageWeightedScore(children.cells as PredictionMapCell[]);
     const bestChild = Math.max(...children.cells.map((cell) => cell.score ?? -1));
     fetchMock.mockClear();
 
@@ -144,7 +146,8 @@ describe("coarse prediction cells summarise their best 2.5 km sector", () => {
     const orphan = result.cells.find((cell) => cell.cellId === otherParentId) as PredictionMapCell;
 
     expect(bestChild).toBeGreaterThan(0);
-    expect(parent.score).toBe(bestChild);
+    expect(parent.score).toBe(expected);
+    expect(parent.score).toBeLessThan(bestChild);
     expect(parent.gridSizeM).toBe(5000);
     expect(parent.cellBounds).toEqual(parentBounds);
     // A coarse cell with no scored children keeps its own blended reading.
@@ -182,10 +185,11 @@ describe("coarse prediction cells summarise their best 2.5 km sector", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("colours a combined 5 km cell with its best child's score and top species", async () => {
+  it("colours a combined 5 km cell with its children's weighted mean and the best child's species", async () => {
     const fetchMock = stubSpatialFeeds();
     const children = await getGlobalPredictionCells(bucket, 1000, 2500);
     const best = [...children.cells].sort((left, right) => (right.score ?? -1) - (left.score ?? -1))[0];
+    const expected = coverageWeightedScore(children.cells);
     fetchMock.mockClear();
 
     const result = await getGlobalPredictionCells(bucket, 1000, 5000);
@@ -193,7 +197,7 @@ describe("coarse prediction cells summarise their best 2.5 km sector", () => {
 
     expect(best.cellId.startsWith("epsg25831:2500:158:")).toBe(true);
     expect(best.score).toBeGreaterThan(0);
-    expect(parent.score).toBe(best.score);
+    expect(parent.score).toBe(expected);
     expect(parent.topSpeciesId).toBe(best.topSpeciesId);
     expect(parent.gridSizeM).toBe(5000);
     expect(fetchMock).toHaveBeenCalledTimes(2);

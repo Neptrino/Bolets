@@ -2,10 +2,10 @@ import { cataloniaSpatialBounds } from "@/data/regions";
 import { getSpecies } from "@/data/species";
 import { altitudeHabitatEnvelope } from "@/src/lib/altitude";
 import {
-  bestChildrenByParent,
   bucketContaining,
   COARSE_SUMMARY_CHILD_GRID_M,
   coarseChildBuckets,
+  summariseChildrenByParent,
   summarisesChildren,
   type SummarisedGridSizeM,
 } from "@/src/lib/coarse-cell-summary";
@@ -393,11 +393,12 @@ export async function getPredictionCells(
 }
 
 /**
- * Colours a 5 or 10 km cell by the best 2.5 km sector inside it. See
- * `coarse-cell-summary.ts` for why the blended coarse environment is not
- * scored. Compact cells only take the child's score; detail cells take the
- * child's whole reading (components, values, provenance) while keeping the
- * coarse cell's identity and geometry so callers can still find them by id.
+ * Colours a 5 or 10 km cell by the coverage-weighted mean of its 2.5 km
+ * sectors and details it with the best one. See `coarse-cell-summary.ts` for
+ * why the blended coarse environment is not scored. Compact cells only take
+ * the mean; detail cells take the best child's whole reading (components,
+ * values, provenance) while keeping the coarse cell's identity and geometry
+ * so callers can still find them by id.
  */
 async function summariseCoarsePredictionCells(
   speciesId: string,
@@ -410,7 +411,7 @@ async function summariseCoarsePredictionCells(
   const childBuckets = coarseChildBuckets(bounds, cataloniaSpatialBounds);
   const childReads = await Promise.all(childBuckets.map((bucket) =>
     getPredictionCells(speciesId, bucket, 1000, COARSE_SUMMARY_CHILD_GRID_M, true)));
-  const best = bestChildrenByParent(
+  const summaries = summariseChildrenByParent(
     childReads.flatMap((read) => read.cells as PredictionMapCell[]),
     gridSizeM,
   );
@@ -419,8 +420,8 @@ async function summariseCoarsePredictionCells(
     return {
       truncated,
       cells: cells.map((cell) => {
-        const child = best.get(cell.cellId);
-        return child ? { ...cell, score: child.score } : cell;
+        const summary = summaries.get(cell.cellId);
+        return summary ? { ...cell, score: summary.score } : cell;
       }),
     };
   }
@@ -430,7 +431,7 @@ async function summariseCoarsePredictionCells(
   // per child bucket rather than one per cell.
   const detailBuckets = new Map<SpatialBounds, Set<string>>();
   for (const cell of cells) {
-    const child = best.get(cell.cellId);
+    const child = summaries.get(cell.cellId)?.best;
     const bucket = child && bucketContaining(childBuckets, child.cellBounds);
     if (!bucket) continue;
     const wanted = detailBuckets.get(bucket) ?? new Set<string>();
@@ -449,10 +450,10 @@ async function summariseCoarsePredictionCells(
   return {
     truncated,
     cells: cells.map((cell) => {
-      const child = best.get(cell.cellId);
-      if (!child) return cell;
-      const detail = childDetails.get(child.cellId);
-      if (!detail) return { ...cell, score: child.score };
+      const summary = summaries.get(cell.cellId);
+      if (!summary) return cell;
+      const detail = childDetails.get(summary.best.cellId);
+      if (!detail) return { ...cell, score: summary.score };
       const parent = cell as PredictionCell;
       return {
         ...detail,
