@@ -34,6 +34,7 @@ const reviewedRuntimeFiles = new Map([
   ["components/region-map.tsx", "orchestrates map lifecycle, bucket loading and canvas drawing"],
   ["scripts/lib/arome-point-artifacts.mjs", "one offline AROME artefact comparison pipeline"],
   ["scripts/lib/clms-cdse.mjs", "one CDSE request and archive adapter"],
+  ["src/lib/current-overview.ts", "regional and local overviews share candidate selection, publication gates, generation caches and ranking"],
   ["src/lib/prediction-summaries.ts", "regional and area summaries share the same aggregation invariants"],
   ["supabase/functions/_shared/arome-direct.ts", "one provider protocol and GRIB decoding adapter"],
   ["supabase/functions/read-spatial-environment/index.ts", "one response contract across spatial read modes"],
