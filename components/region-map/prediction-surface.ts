@@ -83,9 +83,12 @@ function drawCellGrid(
     const { height, left, top, width } = cellScreenBounds(localMap, cell);
     const selected = cell.cellId === selectedCellId;
     context.save();
-    context.globalAlpha = selected ? 1 : coverageAlpha(cell);
+    // Selection is carried by the outline alone; the fill keeps its coverage
+    // fade so a picked cell doesn't pop out of the terrain as a solid block.
+    context.globalAlpha = coverageAlpha(cell);
     context.fillStyle = predictionMapCellColour(cell.score);
     context.fillRect(left, top, width, height);
+    context.globalAlpha = selected ? 1 : coverageAlpha(cell);
     context.strokeStyle = selected
       ? "#3b3b3b"
       : cell.score === 0
