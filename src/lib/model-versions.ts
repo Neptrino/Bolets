@@ -1,4 +1,6 @@
-export const HABITAT_MODEL_VERSION = "habitat-static-v9-edge-floor";
+// v10: grassland species count matollar samples at 0.4 weight in cells with
+// real grass (the grazed shrub-pasture mosaic fairy rings actually live in).
+export const HABITAT_MODEL_VERSION = "habitat-static-v10-grass-mosaic";
 const PREDICTION_SCORING_VERSION = "hydrothermal-v2";
 export const HYDROTHERMAL_PRIOR_VERSION = "hydrothermal-v1-priors-2026-08b";
 // 08f: boletus flush lag — the four boletus species score rain fallen 15-26
