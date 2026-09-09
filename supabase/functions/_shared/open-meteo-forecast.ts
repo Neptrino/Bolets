@@ -193,11 +193,18 @@ export function normalizeOpenMeteoForecast(
       historicalAtmosphere,
       baseHour,
     );
+    // The soil-moisture forecast model reaches only about seven days, so
+    // outlook horizons past the core would always miss the soil windows.
+    // Scoring runs at soil weight zero and tolerates their absence; when a
+    // soil source ever earns a positive weight again, the scorer reports the
+    // gap per point rather than the whole outlook being withheld here.
+    const required = horizonHours > 120
+      ? requiredAtmosphericFields
+      : [...requiredAtmosphericFields, ...requiredSoilFields];
     return {
       validAt: values.weatherObservedAt,
       horizonHours,
-      unavailableFields: [...requiredAtmosphericFields, ...requiredSoilFields]
-        .filter((field) => values[field] === undefined),
+      unavailableFields: required.filter((field) => values[field] === undefined),
       values,
     } satisfies OpenMeteoForecastPoint;
   });

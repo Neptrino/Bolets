@@ -280,6 +280,28 @@ describe("Open-Meteo profiles", () => {
     expect(forecast.points.every((point) => point.unavailableFields.length === 0)).toBe(true);
   });
 
+  it("keeps outlook rows complete when the soil forecast ends at seven days", () => {
+    const { atmosphere, soil, base } = forecastFixture();
+    const soilSeries = soil.hourly!.soil_moisture_3_to_9cm as number[];
+    const truncatedSoil = {
+      ...soil,
+      hourly: {
+        ...soil.hourly,
+        soil_moisture_3_to_9cm: soilSeries.map((value, index) => {
+          const time = (soil.hourly!.time as number[])[index];
+          return time > base + 173 * 3600 ? undefined : value;
+        }),
+      },
+    } as typeof soil;
+    const forecast = normalizeOpenMeteoForecast(atmosphere, truncatedSoil, "2026-08-10T12:34:00Z");
+    const outlook = forecast.points.filter((point) => point.horizonHours > 120);
+    expect(outlook.map((point) => point.horizonHours)).toEqual([168, 240, 288, 336]);
+    expect(outlook.every((point) => point.unavailableFields.length === 0)).toBe(true);
+    expect(outlook.at(-1)?.values.soilMoistureAvg7d).toBeUndefined();
+    // Core horizons still demand their soil windows.
+    expect(forecast.points[0].unavailableFields).toEqual([]);
+  });
+
   it("ages observed AROME heat out of future ECMWF rolling windows", () => {
     const { atmosphere, soil, base, hourlyTimes } = forecastFixture();
     const historicalTemperature = hourlyTimes.map((time) =>
