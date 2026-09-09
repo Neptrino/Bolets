@@ -222,16 +222,6 @@ export default async function OperationalStatusPage() {
         </div>
       </section>
 
-      <section className={styles.section} aria-labelledby="manual-commands">
-        <SectionHeader
-          meta="Comandes manuals"
-          title="Resincronització selectiva"
-          titleId="manual-commands"
-          description="Posa una ingestió a la cua o reinicia només una generació ja completada. Les credencials operatives es queden al servidor."
-        />
-        <ResyncControls />
-      </section>
-
       <section className={styles.section} aria-labelledby="published-data">
         <SectionHeader
           meta="Què veu la web"
@@ -347,155 +337,175 @@ export default async function OperationalStatusPage() {
         </details>
       </section>
 
-      <section className={styles.section} aria-labelledby="ingestion-progress">
+      <section className={styles.section} aria-labelledby="manual-commands">
         <SectionHeader
-          meta="Generació d'avui"
-          title="Ingestió paral·lela"
-          titleId="ingestion-progress"
-          description="Els fragments comparteixen un únic pressupost, encara que surtin pel VPS, Cloudflare o AWS."
+          meta="Comandes manuals"
+          title="Resincronització selectiva"
+          titleId="manual-commands"
+          description="Posa una ingestió a la cua o reinicia només una generació ja completada. Les credencials operatives es queden al servidor."
         />
-        <div className={styles.progressGrid}>
-          <article className={styles.progressCard}>
-            <CloudCog aria-hidden="true" />
-            <div>
-              <span>Pluja de reserva</span>
-              <strong>{precipitationProgress.completed} / {precipitationProgress.total} fragments</strong>
-            </div>
-            <progress max="100" value={precipitationProgress.percent}>{precipitationProgress.percent}%</progress>
-            <small>{precipitationProgress.percent}% completat</small>
-          </article>
-          <article className={styles.progressCard}>
-            <ServerCog aria-hidden="true" />
-            <div>
-              <span>Atmosfera AROME</span>
-              <strong>{atmosphereProgress.completed} / {atmosphereProgress.total} fragments</strong>
-            </div>
-            <progress max="100" value={atmosphereProgress.percent}>{atmosphereProgress.percent}%</progress>
-            <small>{atmosphereProgress.percent}% completat</small>
-          </article>
-        </div>
-        <div className={styles.laneStrip}>
-          {(["direct", "cloudflare", "aws"] as const).map((lane) => {
-            const laneJobs = todayJobs.filter((job) => job.egressLane === lane);
-            const shards = laneJobs.reduce((sum, job) => sum + job.shards, 0);
-            const laneState = status.egressLanes.find((candidate) => candidate.lane === lane);
-            const blocked = laneState?.blockedUntil
-              ? Date.parse(laneState.blockedUntil) > Date.parse(status.generatedAt)
-              : false;
-            return (
-              <div key={lane}>
-                <Route aria-hidden="true" />
-                <span>{egressLaneLabel(lane)} · {numberFormatter.format(shards)} fragments</span>
-                <strong>{blocked ? `Pausada fins ${formatDateTime(laneState?.blockedUntil ?? null)}` : "Disponible"}</strong>
-              </div>
-            );
-          })}
-        </div>
+        <ResyncControls />
       </section>
 
-      <section className={styles.section} aria-labelledby="provider-usage">
-        <SectionHeader
-          meta="Comptabilitat"
-          title="Ús Open-Meteo"
-          titleId="provider-usage"
-          description="Estimació conservadora per entendre el consum. No s'aplica cap límit local: cada sortida continua fins que el proveïdor respon amb 429."
-        />
-        <div className={styles.budgetPanel}>
-          <CircleGauge aria-hidden="true" />
-          <div className={styles.budgetReading}>
-            <span>Ús estimat avui</span>
-            <strong>{numberFormatter.format(dayUsage?.estimatedUnits ?? 0)} <small>unitats comptabilitzades</small></strong>
-          </div>
-        </div>
-        <div className={styles.budgetConsumers}>
-          {status.budgets
-            .filter((budget) => budget.windowKind === "day" && budget.consumer !== "*")
-            .map((budget) => (
-              <div key={`${budget.consumer}-${budget.windowStart}`}>
-                <span>{budget.consumer}</span>
-                <strong>{numberFormatter.format(budget.estimatedUnits)}</strong>
-              </div>
-            ))}
-        </div>
-      </section>
+      <details
+        className={styles.technicalDetails}
+        open={summary.state === "attention" || summary.state === "critical" || undefined}
+      >
+        <summary>
+          <span>Diagnòstic tècnic</span>
+          <small>Ingestió, proveïdor, salut de les fonts, cursors i registre d’execucions — per quan alguna cosa no quadra.</small>
+        </summary>
 
-      <section className={styles.section} aria-labelledby="source-health">
-        <SectionHeader
-          meta="Proveïdors i evidència"
-          title="Salut de les fonts"
-          titleId="source-health"
-          description={`${enabledSources.length} fonts habilitades; les fonts desactivades continuen visibles per conservar el context operatiu.`}
-        />
-        <div className={styles.sourceList}>
-          {status.sources.map((source) => (
-            <article key={source.sourceId} data-status={source.status} data-enabled={source.enabled} data-publishing={sourceAffectsPublishedData(source)}>
-              <div className={styles.sourceIdentity}>
-                <ShieldCheck aria-hidden="true" />
-                <div>
-                  <strong>{source.title}</strong>
-                  <span>{source.sourceKind} · {source.refreshCadence}</span>
-                </div>
+        <section className={styles.section} aria-labelledby="ingestion-progress">
+          <SectionHeader
+            meta="Generació d'avui"
+            title="Ingestió paral·lela"
+            titleId="ingestion-progress"
+            description="Els fragments comparteixen un únic pressupost, encara que surtin pel VPS, Cloudflare o AWS."
+          />
+          <div className={styles.progressGrid}>
+            <article className={styles.progressCard}>
+              <CloudCog aria-hidden="true" />
+              <div>
+                <span>Pluja de reserva</span>
+                <strong>{precipitationProgress.completed} / {precipitationProgress.total} fragments</strong>
               </div>
-              <span className={styles.statusBadge}>{sourceAffectsPublishedData(source) ? statusLabel(source.status) : `Ombra · ${statusLabel(source.status)}`}</span>
-              <p>{source.statusDetail ?? "Sense detall operatiu."}</p>
-              <time dateTime={source.checkedAt}>{formatDateTime(source.checkedAt)}</time>
+              <progress max="100" value={precipitationProgress.percent}>{precipitationProgress.percent}%</progress>
+              <small>{precipitationProgress.percent}% completat</small>
             </article>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.section} aria-labelledby="pipeline-cursors">
-        <SectionHeader
-          meta="Marcadors de generació"
-          title="Cursors de pipeline"
-          titleId="pipeline-cursors"
-          description="Un cursor complet marca la generació que poden consumir les memòries cau espacials."
-        />
-        <div className={styles.tableFrame}>
-          <table>
-            <thead><tr><th>Pipeline</th><th>Snapshot</th><th>Posició</th><th>Actualitzat</th></tr></thead>
-            <tbody>
-              {status.cursors.map((cursor) => (
-                <tr key={cursor.pipeline}>
-                  <th scope="row">{cursor.pipeline}</th>
-                  <td>{cursor.snapshotDate}</td>
-                  <td>{cursor.lastCellId === "__complete__" ? "Complet" : cursor.lastCellId ?? "En espera"}</td>
-                  <td><time dateTime={cursor.updatedAt}>{formatDateTime(cursor.updatedAt)}</time></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className={styles.section} aria-labelledby="recent-runs">
-        <SectionHeader
-          meta="Registre d'activitat"
-          title="Execucions recents"
-          titleId="recent-runs"
-          description="Errors sanejats i resultats de les últimes ingestes auditades; els secrets i la metadata interna no arriben a aquesta pàgina."
-        />
-        <ol className={styles.runList}>
-          {recentRuns.map((run) => (
-            <li key={run.id} data-status={run.status}>
-              <span className={styles.runMarker} aria-hidden="true" />
-              <div className={styles.runMain}>
-                <div>
-                  <strong>{run.pipeline}</strong>
-                  <span className={styles.statusBadge}>{statusLabel(run.status)}</span>
-                  {run.egressLane ? <span className={styles.statusBadge}>{egressLaneLabel(run.egressLane)}</span> : null}
-                  {shardLabel(run) ? <span className={styles.statusBadge}>{shardLabel(run)}</span> : null}
+            <article className={styles.progressCard}>
+              <ServerCog aria-hidden="true" />
+              <div>
+                <span>Atmosfera AROME</span>
+                <strong>{atmosphereProgress.completed} / {atmosphereProgress.total} fragments</strong>
+              </div>
+              <progress max="100" value={atmosphereProgress.percent}>{atmosphereProgress.percent}%</progress>
+              <small>{atmosphereProgress.percent}% completat</small>
+            </article>
+          </div>
+          <div className={styles.laneStrip}>
+            {(["direct", "cloudflare", "aws"] as const).map((lane) => {
+              const laneJobs = todayJobs.filter((job) => job.egressLane === lane);
+              const shards = laneJobs.reduce((sum, job) => sum + job.shards, 0);
+              const laneState = status.egressLanes.find((candidate) => candidate.lane === lane);
+              const blocked = laneState?.blockedUntil
+                ? Date.parse(laneState.blockedUntil) > Date.parse(status.generatedAt)
+                : false;
+              return (
+                <div key={lane}>
+                  <Route aria-hidden="true" />
+                  <span>{egressLaneLabel(lane)} · {numberFormatter.format(shards)} fragments</span>
+                  <strong>{blocked ? `Pausada fins ${formatDateTime(laneState?.blockedUntil ?? null)}` : "Disponible"}</strong>
                 </div>
-                <p>{runDescription(run)}</p>
-              </div>
-              <div className={styles.runMeta}>
-                <time dateTime={run.startedAt}>{formatDateTime(run.startedAt)}</time>
-                <span>{formatDuration(run.startedAt, run.completedAt, status.generatedAt)}</span>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className={styles.section} aria-labelledby="provider-usage">
+          <SectionHeader
+            meta="Comptabilitat"
+            title="Ús Open-Meteo"
+            titleId="provider-usage"
+            description="Estimació conservadora per entendre el consum. No s'aplica cap límit local: cada sortida continua fins que el proveïdor respon amb 429."
+          />
+          <div className={styles.budgetPanel}>
+            <CircleGauge aria-hidden="true" />
+            <div className={styles.budgetReading}>
+              <span>Ús estimat avui</span>
+              <strong>{numberFormatter.format(dayUsage?.estimatedUnits ?? 0)} <small>unitats comptabilitzades</small></strong>
+            </div>
+          </div>
+          <div className={styles.budgetConsumers}>
+            {status.budgets
+              .filter((budget) => budget.windowKind === "day" && budget.consumer !== "*")
+              .map((budget) => (
+                <div key={`${budget.consumer}-${budget.windowStart}`}>
+                  <span>{budget.consumer}</span>
+                  <strong>{numberFormatter.format(budget.estimatedUnits)}</strong>
+                </div>
+              ))}
+          </div>
+        </section>
+
+        <section className={styles.section} aria-labelledby="source-health">
+          <SectionHeader
+            meta="Proveïdors i evidència"
+            title="Salut de les fonts"
+            titleId="source-health"
+            description={`${enabledSources.length} fonts habilitades; les fonts desactivades continuen visibles per conservar el context operatiu.`}
+          />
+          <div className={styles.sourceList}>
+            {status.sources.map((source) => (
+              <article key={source.sourceId} data-status={source.status} data-enabled={source.enabled} data-publishing={sourceAffectsPublishedData(source)}>
+                <div className={styles.sourceIdentity}>
+                  <ShieldCheck aria-hidden="true" />
+                  <div>
+                    <strong>{source.title}</strong>
+                    <span>{source.sourceKind} · {source.refreshCadence}</span>
+                  </div>
+                </div>
+                <span className={styles.statusBadge}>{sourceAffectsPublishedData(source) ? statusLabel(source.status) : `Ombra · ${statusLabel(source.status)}`}</span>
+                <p>{source.statusDetail ?? "Sense detall operatiu."}</p>
+                <time dateTime={source.checkedAt}>{formatDateTime(source.checkedAt)}</time>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.section} aria-labelledby="pipeline-cursors">
+          <SectionHeader
+            meta="Marcadors de generació"
+            title="Cursors de pipeline"
+            titleId="pipeline-cursors"
+            description="Un cursor complet marca la generació que poden consumir les memòries cau espacials."
+          />
+          <div className={styles.tableFrame}>
+            <table>
+              <thead><tr><th>Pipeline</th><th>Snapshot</th><th>Posició</th><th>Actualitzat</th></tr></thead>
+              <tbody>
+                {status.cursors.map((cursor) => (
+                  <tr key={cursor.pipeline}>
+                    <th scope="row">{cursor.pipeline}</th>
+                    <td>{cursor.snapshotDate}</td>
+                    <td>{cursor.lastCellId === "__complete__" ? "Complet" : cursor.lastCellId ?? "En espera"}</td>
+                    <td><time dateTime={cursor.updatedAt}>{formatDateTime(cursor.updatedAt)}</time></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section className={styles.section} aria-labelledby="recent-runs">
+          <SectionHeader
+            meta="Registre d'activitat"
+            title="Execucions recents"
+            titleId="recent-runs"
+            description="Errors sanejats i resultats de les últimes ingestes auditades; els secrets i la metadata interna no arriben a aquesta pàgina."
+          />
+          <ol className={styles.runList}>
+            {recentRuns.map((run) => (
+              <li key={run.id} data-status={run.status}>
+                <span className={styles.runMarker} aria-hidden="true" />
+                <div className={styles.runMain}>
+                  <div>
+                    <strong>{run.pipeline}</strong>
+                    <span className={styles.statusBadge}>{statusLabel(run.status)}</span>
+                    {run.egressLane ? <span className={styles.statusBadge}>{egressLaneLabel(run.egressLane)}</span> : null}
+                    {shardLabel(run) ? <span className={styles.statusBadge}>{shardLabel(run)}</span> : null}
+                  </div>
+                  <p>{runDescription(run)}</p>
+                </div>
+                <div className={styles.runMeta}>
+                  <time dateTime={run.startedAt}>{formatDateTime(run.startedAt)}</time>
+                  <span>{formatDuration(run.startedAt, run.completedAt, status.generatedAt)}</span>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </details>
     </PageShell>
   );
 }

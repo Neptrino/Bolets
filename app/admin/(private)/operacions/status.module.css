@@ -834,3 +834,43 @@
 .commandProgress[data-active] > small {
   color: #a85e31;
 }
+
+.technicalDetails {
+  margin-top: 1.6rem;
+  border: 1px solid rgba(117, 91, 67, 0.22);
+  border-radius: 14px;
+  background: rgba(255, 250, 240, 0.45);
+}
+
+.technicalDetails > summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 1rem 1.3rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.technicalDetails > summary::before {
+  content: "▸";
+  float: left;
+  margin-right: 0.6rem;
+  color: #a85e31;
+}
+
+.technicalDetails[open] > summary::before {
+  content: "▾";
+}
+
+.technicalDetails > summary > span {
+  font-weight: 800;
+  color: #43503f;
+}
+
+.technicalDetails > summary > small {
+  color: #756f64;
+}
+
+.technicalDetails > section {
+  margin: 0 1.3rem 1.3rem;
+}
