@@ -1,3 +1,4 @@
+import { loadStationTemperatureScorer, publicTemperatureValues } from "../_shared/station-temperature-store.ts";
 import { createAdminClient, finiteNumber, json, requireServiceRole } from "../_shared/pipeline.ts";
 import {
   aggregateEnvironmentRows,
@@ -100,7 +101,7 @@ async function readCellForecast(
       sourceResolutionM: aggregate.sourceResolutionM,
       confidence: aggregate.confidence,
       unavailableFields: aggregate.unavailableFields,
-      values: aggregate.values,
+      values: publicTemperatureValues(aggregate.values),
     };
   };
   return {
@@ -118,7 +119,7 @@ async function readHistoryCellSupport(
   if (resolution === 250) {
     const { data: cell, error: cellError } = await supabase
       .from("spatial_cells")
-      .select("cell_id,region_id,weather_point_id,confidence")
+      .select("cell_id,region_id,weather_point_id,confidence,static_values,west,south,east,north")
       .eq("cell_id", cellId)
       .eq("static_verified", true)
       .maybeSingle();
@@ -137,12 +138,13 @@ async function readHistoryCellSupport(
       weatherPointIds: [cell.weather_point_id],
       soilPointIds: atmospherePoint?.soil_point_id ? [atmospherePoint.soil_point_id] : [],
       staticConfidence: cell.confidence,
+      staticValues: cell.static_values, latitude: (cell.south + cell.north) / 2, longitude: (cell.west + cell.east) / 2,
     };
   }
 
   const { data: cell, error } = await supabase
     .from("spatial_cell_levels")
-    .select("cell_id,region_id,weather_point_ids,soil_point_ids,confidence,condition_observed_at,condition_snapshot_date")
+    .select("cell_id,region_id,weather_point_ids,soil_point_ids,confidence,condition_observed_at,condition_snapshot_date,static_values,west,south,east,north")
     .eq("cell_id", cellId)
     .eq("grid_size_m", resolution)
     .maybeSingle();
@@ -154,6 +156,7 @@ async function readHistoryCellSupport(
     weatherPointIds: cell.weather_point_ids,
     soilPointIds: cell.soil_point_ids ?? [],
     staticConfidence: cell.confidence,
+    staticValues: cell.static_values, latitude: (cell.south + cell.north) / 2, longitude: (cell.west + cell.east) / 2,
     publishedObservedAt: cell.condition_observed_at,
     publishedSnapshotDate: cell.condition_snapshot_date,
   };
@@ -210,6 +213,7 @@ async function readCellHistory(
       })
       : Promise.resolve(null),
   ]);
+  const thermalScore = await loadStationTemperatureScorer(supabase, atmosphereSnapshots.map((s) => s.values));
   const atmosphereByDate = groupHistoryRows(atmosphereSnapshots);
   const soilByDate = groupHistoryRows(soilSnapshots);
   const completeAtmosphereDates = [...atmosphereByDate]
@@ -231,13 +235,14 @@ async function readCellHistory(
       const aggregate = aggregateEnvironmentRows(
         [...atmosphereRows, ...completeSoilRows] as EnvironmentSnapshotRow[],
       );
+      const values = publicTemperatureValues(thermalScore({ ...aggregate.values, altitudeM: cell.staticValues.altitudeM }, cell.latitude, cell.longitude));
       return {
         observedAt: aggregate.observedAt,
-        source: aggregate.source,
+        source: values.temperatureSource ? [...aggregate.source, "Meteocat XEMA temperature / AROME blend (estimate)"] : aggregate.source,
         sourceResolutionM: aggregate.sourceResolutionM,
-        confidence: minimumConfidence(aggregate.confidence, cell.staticConfidence),
+        confidence: minimumConfidence(aggregate.confidence, cell.staticConfidence, values.temperatureSource ? "limited" : undefined),
         unavailableFields: aggregate.unavailableFields,
-        values: aggregate.values,
+        values,
       };
     }),
   };
@@ -359,6 +364,7 @@ async function readSpatialTimelineFrame(
       ? readTimelineForecastRows(supabase, soilPointIds)
       : Promise.resolve({ generatedAt: null, rows: [] }),
   ]);
+  const thermalScore = await loadStationTemperatureScorer(supabase, atmosphereRows.map((s) => s.values));
   const atmosphereByDate = groupHistoryRows(atmosphereRows);
   const soilByDate = groupHistoryRows(soilRows);
 
@@ -388,13 +394,15 @@ async function readSpatialTimelineFrame(
       ? targetSoilRows
       : [];
     const snapshot = aggregateEnvironmentRows([...targetAtmosphereRows, ...completeSoilRows]);
+    const thermalValues = publicTemperatureValues(thermalScore({ ...snapshot.values, altitudeM: cell.static_values.altitudeM },
+      (cell.south + cell.north) / 2, (cell.west + cell.east) / 2));
     const publicSnapshot = {
       observedAt: snapshot.observedAt,
-      source: snapshot.source,
+      source: thermalValues.temperatureSource ? [...snapshot.source, "Meteocat XEMA temperature / AROME blend (estimate)"] : snapshot.source,
       sourceResolutionM: snapshot.sourceResolutionM,
-      confidence: minimumConfidence(snapshot.confidence, cell.confidence),
+      confidence: minimumConfidence(snapshot.confidence, cell.confidence, thermalValues.temperatureSource ? "limited" : undefined),
       unavailableFields: snapshot.unavailableFields,
-      values: snapshot.values,
+      values: thermalValues,
     };
 
     let cellForecast = null;
@@ -423,7 +431,7 @@ async function readSpatialTimelineFrame(
           sourceResolutionM: aggregate.sourceResolutionM,
           confidence: minimumConfidence(aggregate.confidence, cell.confidence),
           unavailableFields: aggregate.unavailableFields,
-          values: aggregate.values,
+          values: publicTemperatureValues(aggregate.values),
         } : null;
       });
       if (aggregates.every(Boolean)) {
@@ -782,8 +790,12 @@ Deno.serve(async (request) => {
       ((geologyResult?.data ?? []) as Record<string, unknown>[])
         .map((row) => [String(row.cell_id), row]),
     );
+    const thermalScore = await loadStationTemperatureScorer(supabase, environmentRows.map((row) => row.values as Record<string, unknown>));
     const cells = environmentRows.map((row) => {
-      const baseValues = scoreOnly ? scoringValues(row.values) : row.values;
+      const inputValues = row.values as Record<string, unknown>;
+      const thermalValues = publicTemperatureValues(row.stale ? inputValues : thermalScore(inputValues,
+        (Number(row.south) + Number(row.north)) / 2, (Number(row.west) + Number(row.east)) / 2));
+      const baseValues = scoreOnly ? scoringValues(thermalValues) : thermalValues;
       let values = baseValues && typeof baseValues === "object" && !Array.isArray(baseValues)
         ? { ...(baseValues as Record<string, unknown>) }
         : {};
@@ -810,9 +822,9 @@ Deno.serve(async (request) => {
         gridSizeM: row.grid_size_m,
         bounds: [[row.west, row.south], [row.east, row.north]],
         observedAt: row.observed_at,
-        source: row.sources,
+        source: thermalValues.temperatureSource ? [...new Set([...(row.sources as string[]), "Meteocat XEMA temperature / AROME blend (estimate)"])] : row.sources,
         sourceResolutionM: row.source_resolution_m,
-        confidence: row.confidence,
+        confidence: thermalValues.temperatureSource && row.confidence !== "unknown" ? "limited" : row.confidence,
         stale: row.stale,
         unavailableFields: row.unavailable_fields,
         values,

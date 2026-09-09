@@ -149,6 +149,19 @@ describe("terrain thermal sensitivity comparison", () => {
     expect(baselineSnapshot.values).toEqual(baselineValues);
   });
 
+  it("does not apply the production mean lapse a second time to local replay values", () => {
+    const species = getSpecies("suillus-luteus")!;
+    const comparison = compareTerrainThermalSuitability(species, snapshot(), replayPair());
+    expect(comparison.status).toBe("available");
+    if (comparison.status !== "available") return;
+    const expected = calculateSuitability(species, snapshot({
+      ...baselineValues, ...localThermalValues, weatherElevationM: baselineValues.altitudeM,
+    }));
+    expect(comparison.terrainAdjusted.fruitingConditionsScore).toBe(expected.fruitingConditionsScore);
+    expect(comparison.terrainAdjusted.components).toEqual(expected.components);
+    expect(comparison.baseline).toEqual(calculateSuitability(species, snapshot()));
+  });
+
   it("requires a paired control that reproduces the stored thermal baseline", () => {
     const species = getSpecies("suillus-luteus")!;
     const revisedControl = {

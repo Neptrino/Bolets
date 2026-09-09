@@ -347,6 +347,8 @@ phenology unblocked they are heat-bound, which matches their abundance-1 grades.
 
 ## Terrain lapse correction (2026-08-16)
 
+The 2026-09-09 [hourly thermal-exposure candidate](terrain-thermal-exposure.md) failed the findings comparison and was withdrawn before production. The validated means-only correction and provider-grid heat/frost counts remain in use; temperature bins are retained only as optional diagnostic evidence.
+
 Two adjacent 250 m cells at the same real altitude (1771 m and 1785 m) showed a
 3.6 °C seam in their 20-day means because they snap to AROME points whose
 representative elevations differ by 576 m (2286 m vs 1710 m). Fetching the same

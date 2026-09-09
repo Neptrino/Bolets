@@ -341,7 +341,11 @@ export default function MethodPage() {
                 <Formula label="La temperatura segueix una corba exponencial centrada a l’òptim, amb una amplada diferent al costat fred i al càlid.">
                   T = 2<sup>−((T̄ − T<sub>òpt</sub>) / h<sub>costat</sub>)²</sup>
                 </Formula>
-                <p><b>T̄</b> és la mitjana configurada de 14 o 20 dies, nits incloses, corregida de l’elevació representativa del punt meteorològic a l’altitud real de la cel·la amb el gradient tèrmic estàndard (6,5 °C/km, validat contra el propi reescalat per elevació del proveïdor). Sense aquesta correcció, cel·les veïnes a la mateixa altitud podien llegir temperatures separades per més de 3 °C només perquè queien en punts de malla amb elevacions diferents. Per a cada espècie, <b>T<sub>òpt</sub></b> parteix del punt mig de l’interval tèrmic versionat desplaçat 3 °C avall — l’interval editorial descriu condicions diürnes, mentre que la mitjana de finestra inclou les nits — i les amplades asimètriques (costat fred i càlid) provenen del gremi. Una excepció explícita basada en literatura pot substituir aquests valors, com en el cas del cep. Així espècies fredòfiles i termòfiles no comparteixen la mateixa corba.</p>
+                <p><b>T̄</b> és la mitjana configurada de 14 o 20 dies, nits incloses. On hi ha cobertura completa de les estacions avaluades, combinem <b>50% de temperatura modelada d’AROME i 50% de temperatura observada de la XEMA</b>, després d’ajustar-les a l’altitud de la cel·la. A la resta del territori conservem la mitjana d’AROME amb correcció d’altitud. Per a cada espècie, <b>T<sub>òpt</sub></b> parteix del punt mig de l’interval tèrmic versionat desplaçat 3 °C avall — l’interval editorial descriu condicions diürnes, mentre que la mitjana de finestra inclou les nits — i les amplades asimètriques (costat fred i càlid) provenen del gremi. Una excepció explícita basada en literatura pot substituir aquests valors, com en el cas del cep. Així espècies fredòfiles i termòfiles no comparteixen la mateixa corba.</p>
+                <p>La interpolació té en compte la distància i el desnivell: calen almenys dues estacions a menys de 50 km i amb menys de 600 m de diferència d’altitud. El seu pes disminueix suaument abans d’arribar a aquests límits. El gradient utilitzat és de 6,5 °C/km; l’ajust del model es limita a ±6 °C. És una aproximació: les inversions i l’aire fred acumulat a les valls poden desviar-se d’aquest gradient.</p>
+                <p>Exigim les 480 hores de model i cobertura d’estacions per a tota la finestra de 20 dies, també quan una espècie puntua només 14 dies. Acceptem lectures publicades pendents de validació, però excloem dades invàlides, duplicats contradictoris i intervals incomplets. Si falta suport o el model no reprodueix la instantània original, conservem el càlcul anterior: mitjanes ajustades per altitud i hores d’extrems del punt d’AROME. La mitjana de 7 dies que intervé en l’aigua es manté sense aquest canvi.</p>
+                <p>La comprovació del 9 de setembre de 2026 va reduir els grans salts entre cel·les comparables en una mostra de 4.816 cel·les. L’error tèrmic mitjà va baixar en tres períodes d’avaluació amb estacions excloses de la interpolació. En canvi, la discriminació estacional de les troballes va disminuir lleugerament: és una millora de continuïtat amb un compromís de predicció, no una demostració que totes les puntuacions siguin més precises.</p>
+                <p>Aquesta versió utilitza vuit estacions avaluades del Pirineu oriental i el seu entorn. No cobreix tota Catalunya ni converteix les cel·les de 250 m en mesures meteorològiques locals. Les lectures de 24 hores continuen mostrant el model; la combinació s’aplica a la mitjana llarga i als extrems que puntuen.</p>
               </article>
 
               <article className="method-subscore">
@@ -359,7 +363,7 @@ export default function MethodPage() {
                 <Formula label="El modificador d’extrems decau a la meitat per cada vida mitjana configurada d’hores de gelada o calor.">
                   E = 2<sup>−hores gelada / vida mitjana gelada</sup> · 2<sup>−hores calor / vida mitjana calor</sup>
                 </Formula>
-                <p>Comptem gelada a ≤ 0 °C i calor a ≥ 27 °C durant la mateixa finestra de 14 o 20 dies que T. Les vides mitjanes representen la tolerància versionada, i el producte ja incorpora tota la reducció per extrems. La tolerància a la gelada es va recalibrar amb troballes datades de muntanya: les primeres gelades de tardor acompanyen la fructificació i ja no l’anul·len, mentre que la gelada profunda sostinguda continua tancant la temporada.</p>
+                <p>Comptem gelada a ≤ 0 °C i calor a ≥ 27 °C durant la mateixa finestra de 14 o 20 dies que T. On s’aplica la combinació amb estacions, recomptem aquestes hores després de combinar les temperatures, abans de calcular la penalització. Les vides mitjanes representen la tolerància versionada, i el producte ja incorpora tota la reducció per extrems. La tolerància a la gelada es va recalibrar amb troballes datades de muntanya: les primeres gelades de tardor acompanyen la fructificació i ja no l’anul·len, mentre que la gelada profunda sostinguda continua tancant la temporada.</p>
               </article>
             </div>
 
@@ -458,7 +462,7 @@ export default function MethodPage() {
               <div>
                 <h3>Com es calcula la projecció a cinc dies</h3>
                 <p>Cada punt de +1 a +5 dies torna a executar el mateix model amb la seva data futura. Per tant, la fenologia <b>P</b> avança dia a dia; les finestres d’aigua, temperatura i extrems també canvien a mesura que entren hores noves i s’esvaeixen les antigues. L’hàbitat efectiu <b>H</b> es manté perquè descriu el territori, no el temps.</p>
-                <p>Les finestres atmosfèriques conserven l’historial verificat d’AROME fins a l’inici de la projecció i hi enllacen només les hores futures d’ECMWF. La humitat superficial del sòl projectada prové d’Open-Meteo. El servidor ancora aquests canvis a l’última observació publicable i retira tota la projecció si falta una finestra necessària o si l’inici no queda prou alineat.</p>
+                <p>Les finestres atmosfèriques conserven l’historial verificat d’AROME fins a l’inici de la projecció i hi enllacen només les hores futures d’ECMWF. La humitat superficial del sòl projectada prové d’Open-Meteo. El servidor ancora aquests canvis a l’última instantània publicable, amb la combinació d’estacions quan té cobertura; les hores futures continuen sent modelades. El servidor retira tota la projecció si falta una finestra necessària o si l’inici no queda prou alineat.</p>
                 <p>És una projecció dels mateixos índexs ambientals ordinals, no una predicció de l’aparició de bolets. La incertesa meteorològica augmenta amb l’horitzó.</p>
               </div>
             </aside>
@@ -591,7 +595,7 @@ export default function MethodPage() {
                 <article className="method-source-card method-source-card-weather">
                   <div className="method-source-card-top"><CloudSun size={24} /><span>MÉTÉO-FRANCE · OPEN-METEO</span></div>
                   <h4>AROME France</h4>
-                  <p>Temperatura, humitat relativa, vent i ET₀. Les sèries horàries alimenten la temperatura mitjana de 14 o 20 dies, les hores d’extrems i el VPD setmanal. La pluja passada no surt d’aquí: l’avaluació amb pluviòmetres va mostrar que el model perd tempestes reals i n’inventa d’altres.</p>
+                  <p>Temperatura, humitat relativa, vent i ET₀. Les sèries horàries alimenten el VPD setmanal i, combinades amb la XEMA on hi ha cobertura completa, les mitjanes de 14 o 20 dies i les hores d’extrems. La pluja passada no surt d’aquí: l’avaluació amb pluviòmetres va mostrar que el model perd tempestes reals i n’inventa d’altres.</p>
                   <dl>
                     <div><dt><Ruler size={14} /> Origen</dt><dd>2,5 km · horari</dd></div>
                     <div><dt><RefreshCw size={14} /> Proveïdor</dt><dd>cada 3 h</dd></div>
@@ -612,6 +616,19 @@ export default function MethodPage() {
                     <div><dt>Llicència</dt><dd>CC BY 4.0 · Meteocat</dd></div>
                   </dl>
                   <a href="https://analisi.transparenciacatalunya.cat/Medi-Ambient/Dades-meteorol-giques-de-la-XEMA/nzvn-apee" target="_blank" rel="noreferrer">Dades obertes de la XEMA <ExternalLink size={14} /></a>
+                </article>
+
+                <article className="method-source-card method-source-card-weather">
+                  <div className="method-source-card-top"><ThermometerSun size={24} /><span>METEOCAT · XEMA</span></div>
+                  <h4>Temperatura observada a les estacions</h4>
+                  <p>Molló–Fabert, Núria, Das, Clot del Moro, Vall d’en Bas, Puigcerdà, Ulldeter i Tosa d’Alp aporten mesures puntuals. Interpolem les observacions i les combinem a parts iguals amb AROME a l’altitud de cada cel·la. Les dades d’estació, incloses les provisionals, queden fixades amb cada publicació meteorològica.</p>
+                  <dl>
+                    <div><dt><Ruler size={14} /> Origen</dt><dd>8 estacions · intervals complets</dd></div>
+                    <div><dt><RefreshCw size={14} /> Atles</dt><dd>ingestió cada 3 h · publicació diària</dd></div>
+                    <div><dt>Ús</dt><dd>mitjana tèrmica · gelades · calor</dd></div>
+                    <div><dt>Llicència</dt><dd>CC BY 4.0 · Meteocat</dd></div>
+                  </dl>
+                  <a href="https://analisi.transparenciacatalunya.cat/Medi-Ambient/Dades-meteorol-giques-de-la-XEMA/nzvn-apee" target="_blank" rel="noreferrer">Observacions de la XEMA <ExternalLink size={14} /></a>
                 </article>
 
                 <article className="method-source-card method-source-card-moisture">

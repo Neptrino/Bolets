@@ -99,4 +99,4 @@ export function predictionModelVersion(ecologyVersion: string) {
 // selected by their child summary, including when the parent first scored zero.
 // v24: discard partial combined-map responses from misaligned decimal shards.
 export const PREDICTION_CACHE_VERSION =
-  `prediction-map-v24-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;
+  `prediction-map-v25-xema-arome-blend-v1-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;

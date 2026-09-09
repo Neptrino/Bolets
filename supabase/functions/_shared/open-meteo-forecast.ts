@@ -1,3 +1,4 @@
+import { buildThermalExposure } from "./thermal-exposure.ts";
 import {
   FORECAST_OUTPUT_HOURS,
   HEAT_HOUR_THRESHOLD_C,
@@ -66,6 +67,7 @@ function normalizedValuesAtTarget(
     frostHours14d: temperature14d.values?.filter((value) => value <= 0).length,
     heatHours14d: temperature14d.values?.filter((value) => value >= HEAT_HOUR_THRESHOLD_C).length,
     temperatureAvg20dC: temperature20d.average,
+    thermalExposure: buildThermalExposure(temperature20d.values, atmosphere.elevation),
     frostHours20d: temperature20d.values?.filter((value) => value <= 0).length,
     heatHours20d: temperature20d.values?.filter((value) => value >= HEAT_HOUR_THRESHOLD_C).length,
     relativeHumidity: humidity.get(target),
@@ -134,7 +136,7 @@ export type OpenMeteoForecastPoint = {
   validAt: string;
   horizonHours: typeof FORECAST_OUTPUT_HOURS[number];
   unavailableFields: string[];
-  values: Record<string, number | string | undefined>;
+  values: Record<string, unknown>;
 };
 
 /**

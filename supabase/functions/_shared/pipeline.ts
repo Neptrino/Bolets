@@ -1,6 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.112.3";
 
-export type PipelineName = "regional-environment" | "spatial-environment" | "spatial-atmosphere" | "spatial-atmosphere-shadow" | "spatial-soil" | "spatial-soil-satellite" | "spatial-static-import" | "species-occurrences" | "station-rain";
+export type PipelineName = "regional-environment" | "spatial-environment" | "spatial-atmosphere" | "spatial-atmosphere-shadow" | "spatial-soil" | "spatial-soil-satellite" | "spatial-static-import" | "species-occurrences" | "station-rain" | "station-temperature";
 export type TriggerType = "cron" | "manual" | "import";
 
 export function createAdminClient() {

@@ -1,0 +1,909 @@
+{
+  "status": "Completed offline; no clear overall findings improvement; not promoted",
+  "publishedObservations": {
+    "version": "finding-station-model-blend-comparison-v1",
+    "candidate": "xema-arome-equal-blend-shadow-v1",
+    "baselineModel": "hydrothermal-v2-priors-2026-09a",
+    "frozenBaselineByteIdenticalToPrevious": true,
+    "primary": {
+      "baseline": {
+        "counts": {
+          "positive": 32,
+          "seasonalBackground": 96,
+          "unsuccessfulSearches": 4
+        },
+        "fruitingConditionsScore": {
+          "aucSeasonal": 0.7666015625,
+          "aucUnsuccessful": 0.54296875,
+          "eventMean": 63.53125,
+          "backgroundMean": 41.84375,
+          "unsuccessfulMean": 61.5,
+          "eventMedian": 71.0,
+          "eventAtLeast40": 26,
+          "eventAtLeast60": 20,
+          "backgroundAtLeast40": 55,
+          "meanMatchedRank": 0.7395833333333334
+        },
+        "opportunityIndex": {
+          "aucSeasonal": 0.7277018229166666,
+          "aucUnsuccessful": 0.5703125,
+          "eventMean": 49.15625,
+          "backgroundMean": 31.864583333333332,
+          "unsuccessfulMean": 45.75,
+          "eventMedian": 54.5,
+          "eventAtLeast40": 20,
+          "eventAtLeast60": 10,
+          "backgroundAtLeast40": 29,
+          "meanMatchedRank": 0.734375
+        }
+      },
+      "candidate": {
+        "counts": {
+          "positive": 32,
+          "seasonalBackground": 96,
+          "unsuccessfulSearches": 4
+        },
+        "fruitingConditionsScore": {
+          "aucSeasonal": 0.7482096354166666,
+          "aucUnsuccessful": 0.5390625,
+          "eventMean": 63.84375,
+          "backgroundMean": 44.104166666666664,
+          "unsuccessfulMean": 62.25,
+          "eventMedian": 72.0,
+          "eventAtLeast40": 26,
+          "eventAtLeast60": 22,
+          "backgroundAtLeast40": 58,
+          "meanMatchedRank": 0.75
+        },
+        "opportunityIndex": {
+          "aucSeasonal": 0.7052408854166666,
+          "aucUnsuccessful": 0.5625,
+          "eventMean": 49.25,
+          "backgroundMean": 33.197916666666664,
+          "unsuccessfulMean": 46.5,
+          "eventMedian": 55.0,
+          "eventAtLeast40": 20,
+          "eventAtLeast60": 13,
+          "backgroundAtLeast40": 31,
+          "meanMatchedRank": 0.7447916666666666
+        }
+      }
+    },
+    "speciesExpanded": {
+      "baseline": {
+        "counts": {
+          "positive": 77,
+          "seasonalBackground": 231,
+          "unsuccessfulSearches": 13
+        },
+        "fruitingConditionsScore": {
+          "aucSeasonal": 0.7502951593860685,
+          "aucUnsuccessful": 0.5834165834165834,
+          "eventMean": 57.506493506493506,
+          "backgroundMean": 37.73593073593074,
+          "unsuccessfulMean": 52.30769230769231,
+          "eventMedian": 61,
+          "eventAtLeast40": 57,
+          "eventAtLeast60": 42,
+          "backgroundAtLeast40": 108,
+          "meanMatchedRank": 0.7683982683982684
+        },
+        "opportunityIndex": {
+          "aucSeasonal": 0.5925676055546185,
+          "aucUnsuccessful": 0.5694305694305695,
+          "eventMean": 31.61038961038961,
+          "backgroundMean": 20.71861471861472,
+          "unsuccessfulMean": 24.153846153846153,
+          "eventMedian": 32,
+          "eventAtLeast40": 29,
+          "eventAtLeast60": 16,
+          "backgroundAtLeast40": 49,
+          "meanMatchedRank": 0.6623376623376623
+        }
+      },
+      "candidate": {
+        "counts": {
+          "positive": 77,
+          "seasonalBackground": 231,
+          "unsuccessfulSearches": 13
+        },
+        "fruitingConditionsScore": {
+          "aucSeasonal": 0.7475122280317086,
+          "aucUnsuccessful": 0.5829170829170829,
+          "eventMean": 59.1948051948052,
+          "backgroundMean": 39.77922077922078,
+          "unsuccessfulMean": 54.23076923076923,
+          "eventMedian": 65,
+          "eventAtLeast40": 61,
+          "eventAtLeast60": 45,
+          "backgroundAtLeast40": 118,
+          "meanMatchedRank": 0.7813852813852814
+        },
+        "opportunityIndex": {
+          "aucSeasonal": 0.5886040366559847,
+          "aucUnsuccessful": 0.5759240759240759,
+          "eventMean": 32.12987012987013,
+          "backgroundMean": 21.653679653679653,
+          "unsuccessfulMean": 24.923076923076923,
+          "eventMedian": 33,
+          "eventAtLeast40": 31,
+          "eventAtLeast60": 19,
+          "backgroundAtLeast40": 51,
+          "meanMatchedRank": 0.670995670995671
+        }
+      }
+    },
+    "pairedUncertainty": {
+      "fruitingConditionsScore": {
+        "siteClusters": 23,
+        "replicates": 10000,
+        "seed": 20260909,
+        "aucDelta95Percentile": [
+          -0.0429934763441643,
+          0.007284079084287201
+        ]
+      },
+      "opportunityIndex": {
+        "siteClusters": 23,
+        "replicates": 10000,
+        "seed": 20260909,
+        "aucDelta95Percentile": [
+          -0.04759718396082033,
+          0.0047562425683709865
+        ]
+      }
+    },
+    "coverage": {
+      "version": "xema-arome-equal-blend-shadow-v1",
+      "records": 783,
+      "appliedRecords": 596,
+      "coverage": {
+        "applied": 596,
+        "incomplete-cell-temperature-estimate": 168,
+        "control:baseline-unavailable": 13,
+        "control:incomplete-control-window": 6
+      },
+      "stationCount": 8,
+      "observedStationHours": 105612,
+      "provisionalStationHours": 55093,
+      "modelSourceControls": 78,
+      "networkFetches": 0,
+      "failures": [],
+      "limitations": [
+        "Same eight-station experiment",
+        "Incomplete station windows retain the complete production baseline",
+        "Presence-only background dates are not verified absences",
+        "Retrospective observation blend; not a forecast"
+      ],
+      "centralReportsAppliedByKind": {
+        "event": 23,
+        "control": 81,
+        "observed-negative": 3
+      },
+      "centralReportScoresChanged": 77,
+      "quality": "published"
+    },
+    "completeSupportSubset": {
+      "baseline": {
+        "counts": {
+          "positive": 23,
+          "seasonalBackground": 81,
+          "unsuccessfulSearches": 3
+        },
+        "fruitingConditionsScore": {
+          "aucSeasonal": 0.7469135802469136,
+          "aucUnsuccessful": 0.5,
+          "eventMean": 62,
+          "backgroundMean": 40.96296296296296,
+          "unsuccessfulMean": 62.333333333333336,
+          "eventMedian": 68,
+          "eventAtLeast40": 18,
+          "eventAtLeast60": 14,
+          "backgroundAtLeast40": 46,
+          "meanMatchedRank": 0.7424242424242424
+        },
+        "opportunityIndex": {
+          "aucSeasonal": 0.7383252818035426,
+          "aucUnsuccessful": 0.5507246376811594,
+          "eventMean": 49.34782608695652,
+          "backgroundMean": 30.308641975308642,
+          "unsuccessfulMean": 47,
+          "eventMedian": 55,
+          "eventAtLeast40": 14,
+          "eventAtLeast60": 7,
+          "backgroundAtLeast40": 22,
+          "meanMatchedRank": 0.75
+        }
+      },
+      "candidate": {
+        "counts": {
+          "positive": 23,
+          "seasonalBackground": 81,
+          "unsuccessfulSearches": 3
+        },
+        "fruitingConditionsScore": {
+          "aucSeasonal": 0.7308105206655932,
+          "aucUnsuccessful": 0.463768115942029,
+          "eventMean": 62.43478260869565,
+          "backgroundMean": 43.641975308641975,
+          "unsuccessfulMean": 63.333333333333336,
+          "eventMedian": 68,
+          "eventAtLeast40": 18,
+          "eventAtLeast60": 16,
+          "backgroundAtLeast40": 49,
+          "meanMatchedRank": 0.7613636363636364
+        },
+        "opportunityIndex": {
+          "aucSeasonal": 0.7192699946323134,
+          "aucUnsuccessful": 0.5434782608695652,
+          "eventMean": 49.47826086956522,
+          "backgroundMean": 31.88888888888889,
+          "unsuccessfulMean": 48,
+          "eventMedian": 56,
+          "eventAtLeast40": 14,
+          "eventAtLeast60": 10,
+          "backgroundAtLeast40": 24,
+          "meanMatchedRank": 0.7689393939393939
+        }
+      }
+    },
+    "byYear": {
+      "2024": {
+        "baseline": {
+          "counts": {
+            "positive": 3,
+            "seasonalBackground": 9,
+            "unsuccessfulSearches": 0
+          },
+          "fruitingConditionsScore": {
+            "aucSeasonal": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "eventMean": 70.66666666666667,
+            "backgroundMean": 31.666666666666668,
+            "unsuccessfulMean": null,
+            "eventMedian": 72,
+            "eventAtLeast40": 3,
+            "eventAtLeast60": 3,
+            "backgroundAtLeast40": 3,
+            "meanMatchedRank": 0.8888888888888888
+          },
+          "opportunityIndex": {
+            "aucSeasonal": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "eventMean": 62.666666666666664,
+            "backgroundMean": 28,
+            "unsuccessfulMean": null,
+            "eventMedian": 64,
+            "eventAtLeast40": 3,
+            "eventAtLeast60": 2,
+            "backgroundAtLeast40": 2,
+            "meanMatchedRank": 0.8888888888888888
+          }
+        },
+        "candidate": {
+          "counts": {
+            "positive": 3,
+            "seasonalBackground": 9,
+            "unsuccessfulSearches": 0
+          },
+          "fruitingConditionsScore": {
+            "aucSeasonal": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "eventMean": 71.33333333333333,
+            "backgroundMean": 32.111111111111114,
+            "unsuccessfulMean": null,
+            "eventMedian": 72,
+            "eventAtLeast40": 3,
+            "eventAtLeast60": 3,
+            "backgroundAtLeast40": 3,
+            "meanMatchedRank": 0.8888888888888888
+          },
+          "opportunityIndex": {
+            "aucSeasonal": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "eventMean": 63.333333333333336,
+            "backgroundMean": 28.444444444444443,
+            "unsuccessfulMean": null,
+            "eventMedian": 64,
+            "eventAtLeast40": 3,
+            "eventAtLeast60": 3,
+            "backgroundAtLeast40": 2,
+            "meanMatchedRank": 0.8888888888888888
+          }
+        }
+      },
+      "2025": {
+        "baseline": {
+          "counts": {
+            "positive": 14,
+            "seasonalBackground": 42,
+            "unsuccessfulSearches": 0
+          },
+          "fruitingConditionsScore": {
+            "aucSeasonal": 0.7568027210884354,
+            "aucUnsuccessful": null,
+            "eventMean": 67.42857142857143,
+            "backgroundMean": 47.833333333333336,
+            "unsuccessfulMean": null,
+            "eventMedian": 67.0,
+            "eventAtLeast40": 12,
+            "eventAtLeast60": 7,
+            "backgroundAtLeast40": 28,
+            "meanMatchedRank": 0.7023809523809523
+          },
+          "opportunityIndex": {
+            "aucSeasonal": 0.7321428571428571,
+            "aucUnsuccessful": null,
+            "eventMean": 58.357142857142854,
+            "backgroundMean": 39.80952380952381,
+            "unsuccessfulMean": null,
+            "eventMedian": 55.0,
+            "eventAtLeast40": 11,
+            "eventAtLeast60": 6,
+            "backgroundAtLeast40": 17,
+            "meanMatchedRank": 0.6785714285714286
+          }
+        },
+        "candidate": {
+          "counts": {
+            "positive": 14,
+            "seasonalBackground": 42,
+            "unsuccessfulSearches": 0
+          },
+          "fruitingConditionsScore": {
+            "aucSeasonal": 0.7244897959183674,
+            "aucUnsuccessful": null,
+            "eventMean": 67.64285714285714,
+            "backgroundMean": 50.57142857142857,
+            "unsuccessfulMean": null,
+            "eventMedian": 69.5,
+            "eventAtLeast40": 12,
+            "eventAtLeast60": 9,
+            "backgroundAtLeast40": 30,
+            "meanMatchedRank": 0.738095238095238
+          },
+          "opportunityIndex": {
+            "aucSeasonal": 0.7066326530612245,
+            "aucUnsuccessful": null,
+            "eventMean": 58.42857142857143,
+            "backgroundMean": 41.5,
+            "unsuccessfulMean": null,
+            "eventMedian": 60.0,
+            "eventAtLeast40": 11,
+            "eventAtLeast60": 8,
+            "backgroundAtLeast40": 19,
+            "meanMatchedRank": 0.7142857142857143
+          }
+        }
+      },
+      "2026": {
+        "baseline": {
+          "counts": {
+            "positive": 15,
+            "seasonalBackground": 45,
+            "unsuccessfulSearches": 0
+          },
+          "fruitingConditionsScore": {
+            "aucSeasonal": 0.7355555555555555,
+            "aucUnsuccessful": null,
+            "eventMean": 58.46666666666667,
+            "backgroundMean": 38.28888888888889,
+            "unsuccessfulMean": null,
+            "eventMedian": 70,
+            "eventAtLeast40": 11,
+            "eventAtLeast60": 10,
+            "backgroundAtLeast40": 24,
+            "meanMatchedRank": 0.7444444444444445
+          },
+          "opportunityIndex": {
+            "aucSeasonal": 0.6925925925925925,
+            "aucUnsuccessful": null,
+            "eventMean": 37.86666666666667,
+            "backgroundMean": 25.22222222222222,
+            "unsuccessfulMean": null,
+            "eventMedian": 35,
+            "eventAtLeast40": 6,
+            "eventAtLeast60": 2,
+            "backgroundAtLeast40": 10,
+            "meanMatchedRank": 0.7555555555555555
+          }
+        },
+        "candidate": {
+          "counts": {
+            "positive": 15,
+            "seasonalBackground": 45,
+            "unsuccessfulSearches": 0
+          },
+          "fruitingConditionsScore": {
+            "aucSeasonal": 0.7229629629629629,
+            "aucUnsuccessful": null,
+            "eventMean": 58.8,
+            "backgroundMean": 40.46666666666667,
+            "unsuccessfulMean": null,
+            "eventMedian": 72,
+            "eventAtLeast40": 11,
+            "eventAtLeast60": 10,
+            "backgroundAtLeast40": 25,
+            "meanMatchedRank": 0.7333333333333333
+          },
+          "opportunityIndex": {
+            "aucSeasonal": 0.6762962962962963,
+            "aucUnsuccessful": null,
+            "eventMean": 37.86666666666667,
+            "backgroundMean": 26.4,
+            "unsuccessfulMean": null,
+            "eventMedian": 35,
+            "eventAtLeast40": 6,
+            "eventAtLeast60": 2,
+            "backgroundAtLeast40": 10,
+            "meanMatchedRank": 0.7444444444444445
+          }
+        }
+      }
+    },
+    "inputSha256": {
+      "baseline/evaluation-records.jsonl": "26b7c28f02189b7e72772d24bc82a8dad55931735177c67240a934b57c8cdb91",
+      "candidate/evaluation-records.jsonl": "0fdc5a33ae9f5a693e08c6f21ead260b1b7048eafa602fe53f5ff7e187e5a42a",
+      "station-inputs.json": "caadf7933cf53208be704242698daa2b274df11482a91ee7b22aa8befcdc6b02"
+    },
+    "limitations": [
+      "32 positive reports and four unsuccessful searches; seasonal backgrounds are not confirmed absences.",
+      "Ambiguous species expanded under the same baseline policy; primary analysis collapses each report/date by its maximum score.",
+      "These findings and station periods have been used in previous exploratory comparisons, not independent final validation.",
+      "Eight fixed regional station donors, provisional published readings labelled; incomplete 480-hour station windows retain the original baseline."
+    ]
+  },
+  "validatedOnlySensitivity": {
+    "version": "finding-station-model-blend-comparison-v1",
+    "candidate": "xema-arome-equal-blend-shadow-v1",
+    "baselineModel": "hydrothermal-v2-priors-2026-09a",
+    "frozenBaselineByteIdenticalToPrevious": true,
+    "primary": {
+      "baseline": {
+        "counts": {
+          "positive": 32,
+          "seasonalBackground": 96,
+          "unsuccessfulSearches": 4
+        },
+        "fruitingConditionsScore": {
+          "aucSeasonal": 0.7666015625,
+          "aucUnsuccessful": 0.54296875,
+          "eventMean": 63.53125,
+          "backgroundMean": 41.84375,
+          "unsuccessfulMean": 61.5,
+          "eventMedian": 71.0,
+          "eventAtLeast40": 26,
+          "eventAtLeast60": 20,
+          "backgroundAtLeast40": 55,
+          "meanMatchedRank": 0.7395833333333334
+        },
+        "opportunityIndex": {
+          "aucSeasonal": 0.7277018229166666,
+          "aucUnsuccessful": 0.5703125,
+          "eventMean": 49.15625,
+          "backgroundMean": 31.864583333333332,
+          "unsuccessfulMean": 45.75,
+          "eventMedian": 54.5,
+          "eventAtLeast40": 20,
+          "eventAtLeast60": 10,
+          "backgroundAtLeast40": 29,
+          "meanMatchedRank": 0.734375
+        }
+      },
+      "candidate": {
+        "counts": {
+          "positive": 32,
+          "seasonalBackground": 96,
+          "unsuccessfulSearches": 4
+        },
+        "fruitingConditionsScore": {
+          "aucSeasonal": 0.7618815104166666,
+          "aucUnsuccessful": 0.5390625,
+          "eventMean": 63.71875,
+          "backgroundMean": 42.427083333333336,
+          "unsuccessfulMean": 62.25,
+          "eventMedian": 72.0,
+          "eventAtLeast40": 26,
+          "eventAtLeast60": 22,
+          "backgroundAtLeast40": 56,
+          "meanMatchedRank": 0.75
+        },
+        "opportunityIndex": {
+          "aucSeasonal": 0.72265625,
+          "aucUnsuccessful": 0.56640625,
+          "eventMean": 49.25,
+          "backgroundMean": 32.21875,
+          "unsuccessfulMean": 46.5,
+          "eventMedian": 55.5,
+          "eventAtLeast40": 20,
+          "eventAtLeast60": 12,
+          "backgroundAtLeast40": 29,
+          "meanMatchedRank": 0.7447916666666666
+        }
+      }
+    },
+    "speciesExpanded": {
+      "baseline": {
+        "counts": {
+          "positive": 77,
+          "seasonalBackground": 231,
+          "unsuccessfulSearches": 13
+        },
+        "fruitingConditionsScore": {
+          "aucSeasonal": 0.7502951593860685,
+          "aucUnsuccessful": 0.5834165834165834,
+          "eventMean": 57.506493506493506,
+          "backgroundMean": 37.73593073593074,
+          "unsuccessfulMean": 52.30769230769231,
+          "eventMedian": 61,
+          "eventAtLeast40": 57,
+          "eventAtLeast60": 42,
+          "backgroundAtLeast40": 108,
+          "meanMatchedRank": 0.7683982683982684
+        },
+        "opportunityIndex": {
+          "aucSeasonal": 0.5925676055546185,
+          "aucUnsuccessful": 0.5694305694305695,
+          "eventMean": 31.61038961038961,
+          "backgroundMean": 20.71861471861472,
+          "unsuccessfulMean": 24.153846153846153,
+          "eventMedian": 32,
+          "eventAtLeast40": 29,
+          "eventAtLeast60": 16,
+          "backgroundAtLeast40": 49,
+          "meanMatchedRank": 0.6623376623376623
+        }
+      },
+      "candidate": {
+        "counts": {
+          "positive": 77,
+          "seasonalBackground": 231,
+          "unsuccessfulSearches": 13
+        },
+        "fruitingConditionsScore": {
+          "aucSeasonal": 0.7639849328161017,
+          "aucUnsuccessful": 0.5824175824175825,
+          "eventMean": 59.20779220779221,
+          "backgroundMean": 38.103896103896105,
+          "unsuccessfulMean": 54.30769230769231,
+          "eventMedian": 66,
+          "eventAtLeast40": 61,
+          "eventAtLeast60": 45,
+          "backgroundAtLeast40": 110,
+          "meanMatchedRank": 0.7857142857142857
+        },
+        "opportunityIndex": {
+          "aucSeasonal": 0.5944510035419126,
+          "aucUnsuccessful": 0.5719280719280719,
+          "eventMean": 32.18181818181818,
+          "backgroundMean": 20.926406926406926,
+          "unsuccessfulMean": 25,
+          "eventMedian": 34,
+          "eventAtLeast40": 31,
+          "eventAtLeast60": 18,
+          "backgroundAtLeast40": 49,
+          "meanMatchedRank": 0.670995670995671
+        }
+      }
+    },
+    "pairedUncertainty": {
+      "fruitingConditionsScore": {
+        "siteClusters": 23,
+        "replicates": 10000,
+        "seed": 20260909,
+        "aucDelta95Percentile": [
+          -0.02163301512011054,
+          0.008844953173777315
+        ]
+      },
+      "opportunityIndex": {
+        "siteClusters": 23,
+        "replicates": 10000,
+        "seed": 20260909,
+        "aucDelta95Percentile": [
+          -0.017959469915513872,
+          0.0064169268123482484
+        ]
+      }
+    },
+    "coverage": {
+      "version": "xema-arome-equal-blend-shadow-v1",
+      "quality": "validated",
+      "records": 783,
+      "appliedRecords": 321,
+      "coverage": {
+        "incomplete-cell-temperature-estimate": 443,
+        "applied": 321,
+        "control:baseline-unavailable": 13,
+        "control:incomplete-control-window": 6
+      },
+      "stationCount": 8,
+      "observedStationHours": 50519,
+      "provisionalStationHours": 0,
+      "modelSourceControls": 78,
+      "networkFetches": 0,
+      "failures": [],
+      "limitations": [
+        "Same eight-station experiment",
+        "Incomplete station windows retain the complete production baseline",
+        "Presence-only background dates are not verified absences",
+        "Retrospective observation blend; not a forecast"
+      ],
+      "centralReportsAppliedByKind": {
+        "event": 12,
+        "control": 26,
+        "observed-negative": 1
+      },
+      "centralReportScoresChanged": 35
+    },
+    "completeSupportSubset": {
+      "baseline": {
+        "counts": {
+          "positive": 12,
+          "seasonalBackground": 26,
+          "unsuccessfulSearches": 1
+        },
+        "fruitingConditionsScore": {
+          "aucSeasonal": 0.9150641025641025,
+          "aucUnsuccessful": 0.75,
+          "eventMean": 75.5,
+          "backgroundMean": 35.69230769230769,
+          "unsuccessfulMean": 65,
+          "eventMedian": 80.5,
+          "eventAtLeast40": 12,
+          "eventAtLeast60": 9,
+          "backgroundAtLeast40": 11,
+          "meanMatchedRank": 1.0
+        },
+        "opportunityIndex": {
+          "aucSeasonal": 0.8701923076923077,
+          "aucUnsuccessful": 0.75,
+          "eventMean": 61,
+          "backgroundMean": 26.692307692307693,
+          "unsuccessfulMean": 41,
+          "eventMedian": 56.5,
+          "eventAtLeast40": 9,
+          "eventAtLeast60": 5,
+          "backgroundAtLeast40": 5,
+          "meanMatchedRank": 1.0
+        }
+      },
+      "candidate": {
+        "counts": {
+          "positive": 12,
+          "seasonalBackground": 26,
+          "unsuccessfulSearches": 1
+        },
+        "fruitingConditionsScore": {
+          "aucSeasonal": 0.8926282051282052,
+          "aucUnsuccessful": 0.6666666666666666,
+          "eventMean": 76,
+          "backgroundMean": 37.84615384615385,
+          "unsuccessfulMean": 68,
+          "eventMedian": 81.0,
+          "eventAtLeast40": 12,
+          "eventAtLeast60": 11,
+          "backgroundAtLeast40": 12,
+          "meanMatchedRank": 0.875
+        },
+        "opportunityIndex": {
+          "aucSeasonal": 0.8589743589743589,
+          "aucUnsuccessful": 0.75,
+          "eventMean": 61.25,
+          "backgroundMean": 28,
+          "unsuccessfulMean": 44,
+          "eventMedian": 60.0,
+          "eventAtLeast40": 9,
+          "eventAtLeast60": 7,
+          "backgroundAtLeast40": 5,
+          "meanMatchedRank": 0.875
+        }
+      }
+    },
+    "byYear": {
+      "2024": {
+        "baseline": {
+          "counts": {
+            "positive": 3,
+            "seasonalBackground": 9,
+            "unsuccessfulSearches": 0
+          },
+          "fruitingConditionsScore": {
+            "aucSeasonal": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "eventMean": 70.66666666666667,
+            "backgroundMean": 31.666666666666668,
+            "unsuccessfulMean": null,
+            "eventMedian": 72,
+            "eventAtLeast40": 3,
+            "eventAtLeast60": 3,
+            "backgroundAtLeast40": 3,
+            "meanMatchedRank": 0.8888888888888888
+          },
+          "opportunityIndex": {
+            "aucSeasonal": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "eventMean": 62.666666666666664,
+            "backgroundMean": 28,
+            "unsuccessfulMean": null,
+            "eventMedian": 64,
+            "eventAtLeast40": 3,
+            "eventAtLeast60": 2,
+            "backgroundAtLeast40": 2,
+            "meanMatchedRank": 0.8888888888888888
+          }
+        },
+        "candidate": {
+          "counts": {
+            "positive": 3,
+            "seasonalBackground": 9,
+            "unsuccessfulSearches": 0
+          },
+          "fruitingConditionsScore": {
+            "aucSeasonal": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "eventMean": 70.66666666666667,
+            "backgroundMean": 32,
+            "unsuccessfulMean": null,
+            "eventMedian": 72,
+            "eventAtLeast40": 3,
+            "eventAtLeast60": 3,
+            "backgroundAtLeast40": 3,
+            "meanMatchedRank": 0.8888888888888888
+          },
+          "opportunityIndex": {
+            "aucSeasonal": 0.8888888888888888,
+            "aucUnsuccessful": null,
+            "eventMean": 62.666666666666664,
+            "backgroundMean": 28.444444444444443,
+            "unsuccessfulMean": null,
+            "eventMedian": 64,
+            "eventAtLeast40": 3,
+            "eventAtLeast60": 2,
+            "backgroundAtLeast40": 2,
+            "meanMatchedRank": 0.8888888888888888
+          }
+        }
+      },
+      "2025": {
+        "baseline": {
+          "counts": {
+            "positive": 14,
+            "seasonalBackground": 42,
+            "unsuccessfulSearches": 0
+          },
+          "fruitingConditionsScore": {
+            "aucSeasonal": 0.7568027210884354,
+            "aucUnsuccessful": null,
+            "eventMean": 67.42857142857143,
+            "backgroundMean": 47.833333333333336,
+            "unsuccessfulMean": null,
+            "eventMedian": 67.0,
+            "eventAtLeast40": 12,
+            "eventAtLeast60": 7,
+            "backgroundAtLeast40": 28,
+            "meanMatchedRank": 0.7023809523809523
+          },
+          "opportunityIndex": {
+            "aucSeasonal": 0.7321428571428571,
+            "aucUnsuccessful": null,
+            "eventMean": 58.357142857142854,
+            "backgroundMean": 39.80952380952381,
+            "unsuccessfulMean": null,
+            "eventMedian": 55.0,
+            "eventAtLeast40": 11,
+            "eventAtLeast60": 6,
+            "backgroundAtLeast40": 17,
+            "meanMatchedRank": 0.6785714285714286
+          }
+        },
+        "candidate": {
+          "counts": {
+            "positive": 14,
+            "seasonalBackground": 42,
+            "unsuccessfulSearches": 0
+          },
+          "fruitingConditionsScore": {
+            "aucSeasonal": 0.7602040816326531,
+            "aucUnsuccessful": null,
+            "eventMean": 67.71428571428571,
+            "backgroundMean": 48.07142857142857,
+            "unsuccessfulMean": null,
+            "eventMedian": 69.5,
+            "eventAtLeast40": 12,
+            "eventAtLeast60": 9,
+            "backgroundAtLeast40": 28,
+            "meanMatchedRank": 0.738095238095238
+          },
+          "opportunityIndex": {
+            "aucSeasonal": 0.7346938775510204,
+            "aucUnsuccessful": null,
+            "eventMean": 58.5,
+            "backgroundMean": 40,
+            "unsuccessfulMean": null,
+            "eventMedian": 60.0,
+            "eventAtLeast40": 11,
+            "eventAtLeast60": 8,
+            "backgroundAtLeast40": 17,
+            "meanMatchedRank": 0.7142857142857143
+          }
+        }
+      },
+      "2026": {
+        "baseline": {
+          "counts": {
+            "positive": 15,
+            "seasonalBackground": 45,
+            "unsuccessfulSearches": 0
+          },
+          "fruitingConditionsScore": {
+            "aucSeasonal": 0.7355555555555555,
+            "aucUnsuccessful": null,
+            "eventMean": 58.46666666666667,
+            "backgroundMean": 38.28888888888889,
+            "unsuccessfulMean": null,
+            "eventMedian": 70,
+            "eventAtLeast40": 11,
+            "eventAtLeast60": 10,
+            "backgroundAtLeast40": 24,
+            "meanMatchedRank": 0.7444444444444445
+          },
+          "opportunityIndex": {
+            "aucSeasonal": 0.6925925925925925,
+            "aucUnsuccessful": null,
+            "eventMean": 37.86666666666667,
+            "backgroundMean": 25.22222222222222,
+            "unsuccessfulMean": null,
+            "eventMedian": 35,
+            "eventAtLeast40": 6,
+            "eventAtLeast60": 2,
+            "backgroundAtLeast40": 10,
+            "meanMatchedRank": 0.7555555555555555
+          }
+        },
+        "candidate": {
+          "counts": {
+            "positive": 15,
+            "seasonalBackground": 45,
+            "unsuccessfulSearches": 0
+          },
+          "fruitingConditionsScore": {
+            "aucSeasonal": 0.7214814814814815,
+            "aucUnsuccessful": null,
+            "eventMean": 58.6,
+            "backgroundMean": 39.24444444444445,
+            "unsuccessfulMean": null,
+            "eventMedian": 72,
+            "eventAtLeast40": 11,
+            "eventAtLeast60": 10,
+            "backgroundAtLeast40": 25,
+            "meanMatchedRank": 0.7333333333333333
+          },
+          "opportunityIndex": {
+            "aucSeasonal": 0.6814814814814815,
+            "aucUnsuccessful": null,
+            "eventMean": 37.93333333333333,
+            "backgroundMean": 25.711111111111112,
+            "unsuccessfulMean": null,
+            "eventMedian": 36,
+            "eventAtLeast40": 6,
+            "eventAtLeast60": 2,
+            "backgroundAtLeast40": 10,
+            "meanMatchedRank": 0.7444444444444445
+          }
+        }
+      }
+    },
+    "inputSha256": {
+      "baseline/evaluation-records.jsonl": "26b7c28f02189b7e72772d24bc82a8dad55931735177c67240a934b57c8cdb91",
+      "candidate-validated/evaluation-records.jsonl": "73f8f69b330ac4c6df2c902621a6c8f60424afc4547ff968834d2edb59cc7617",
+      "station-inputs.json": "caadf7933cf53208be704242698daa2b274df11482a91ee7b22aa8befcdc6b02"
+    },
+    "limitations": [
+      "32 positive reports and four unsuccessful searches; seasonal backgrounds are not confirmed absences.",
+      "Ambiguous species expanded under the same baseline policy; primary analysis collapses each report/date by its maximum score.",
+      "These findings and station periods have been used in previous exploratory comparisons, not independent final validation.",
+      "Eight fixed regional station donors, provisional published readings labelled; incomplete 480-hour station windows retain the original baseline."
+    ]
+  }
+}

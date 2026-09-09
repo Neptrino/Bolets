@@ -1,3 +1,4 @@
+import { withoutThermalExposure } from "@/supabase/functions/_shared/thermal-exposure";
 import { cataloniaSpatialBounds } from "@/data/regions";
 import { getSpecies } from "@/data/species";
 import { altitudeHabitatEnvelope } from "@/src/lib/altitude";
@@ -374,7 +375,7 @@ export async function getPredictionCells(
       stale: cell.stale,
       source: cell.source,
       unavailableFields,
-      values,
+      values: withoutThermalExposure(values),
       modelVersion: result.modelVersion,
       fruitingConditionsScore: result.fruitingConditionsScore,
       opportunityIndex: result.opportunityIndex,

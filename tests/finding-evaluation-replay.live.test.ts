@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { expect, it } from "vitest";
+import { afterAll, beforeAll, expect, it, vi } from "vitest";
 import { hydrothermalV2ConfigFrom } from "@/data/model-priors";
 import { getSpecies, getSpeciesV1ModelConfig } from "@/data/species";
 import { calculateSuitability } from "@/src/lib/scoring";
@@ -34,9 +34,14 @@ import {
   fetchHistoricalStationSeries,
 } from "@/tests/helpers/xema-historical-rain";
 import { comparisonAppUrl } from "@/tests/helpers/provider-shadow-report";
+import { createFindingThermalExport } from "@/tests/helpers/finding-thermal-export";
 
 const inputPath = process.env.FINDING_EVAL_INPUT;
 const artifactsDir = process.env.FINDING_EVAL_ARTIFACTS_DIR;
+beforeAll(() => {
+  if (process.env.FINDING_EVAL_OFFLINE === "1") vi.stubGlobal("fetch", async () => { throw new Error("Offline finding replay: uncached request blocked"); });
+});
+afterAll(() => { if (process.env.FINDING_EVAL_OFFLINE === "1") vi.unstubAllGlobals(); });
 
 const MILLISECONDS_PER_DAY = 86_400_000;
 /** Longest production window plus a day of slack, matching the manual tool. */
@@ -487,6 +492,7 @@ it.skipIf(!inputPath || !artifactsDir)(
 
     const artifactPath = join(artifactsDir!, "evaluation-records.jsonl");
     writeFileSync(artifactPath, "", { mode: 0o600 });
+    const exportThermal = process.env.FINDING_EVAL_EXPORT_THERMAL === "1" ? createFindingThermalExport(artifactsDir!) : undefined;
     let positiveIndex = 0;
     const failures: { location: number; reason: string }[] = [];
 
@@ -822,7 +828,7 @@ it.skipIf(!inputPath || !artifactsDir)(
                 ...missingFieldsForModel(profile, values),
               ]),
             ];
-            const result = calculateSuitability(profile, {
+            const snapshot: ConditionSnapshot = {
               regionId: cell.regionId,
               observedAt: target.observedAt,
               source: [
@@ -833,7 +839,8 @@ it.skipIf(!inputPath || !artifactsDir)(
               stale: false,
               unavailableFields,
               values,
-            });
+            };
+            const result = calculateSuitability(profile, snapshot);
             const raw = rawDiagnostics(profile, target.observedAt, values);
 
             let iconEuWater: number | null = null;
@@ -901,6 +908,7 @@ it.skipIf(!inputPath || !artifactsDir)(
                 : null,
             };
 
+            exportThermal?.(record, snapshot, cell, atmosphereBySpan.get(spanIndex)!);
             const line = JSON.stringify(record);
             // Artifacts must never carry anything that could re-identify a spot.
             expect(line).not.toMatch(/latitude|longitude|cellId|weatherGrid|soilGrid/i);

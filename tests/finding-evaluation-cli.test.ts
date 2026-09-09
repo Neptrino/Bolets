@@ -20,6 +20,8 @@ describe("evaluation CLI", () => {
     expect(result.stdout).toContain("--metrics");
     expect(result.stdout).toContain("outside the repository");
     expect(result.stdout).toContain("--allow-remote");
+    expect(result.stdout).toContain("--offline");
+    expect(result.stdout).toContain("--export-thermal-inputs");
   });
 
   it("requires an artifacts directory", () => {

@@ -29,7 +29,21 @@ export function estimateOpenMeteoRequestUnits(url: URL, locations: number) {
   ]);
   const pastHours = Number(url.searchParams.get("past_hours") ?? 0);
   const forecastHours = Number(url.searchParams.get("forecast_hours") ?? 0);
-  const totalHours = Math.max(1, pastHours + forecastHours);
+  const startDate = url.searchParams.get("start_date");
+  const endDate = url.searchParams.get("end_date");
+  let dateRangeHours = 0;
+  if (startDate !== null || endDate !== null) {
+    const parseDay = (value: string | null) => {
+      const at = value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? Date.parse(`${value}T00:00:00Z`) : NaN;
+      if (!Number.isFinite(at) || new Date(at).toISOString().slice(0, 10) !== value) {
+        throw new RangeError("Open-Meteo archive dates must be valid ISO calendar days");
+      }
+      return at;
+    };
+    dateRangeHours = (parseDay(endDate) - parseDay(startDate)) / 3_600_000 + 24;
+    if (dateRangeHours <= 0) throw new RangeError("Open-Meteo archive date range is inverted");
+  }
+  const totalHours = Math.max(1, pastHours + forecastHours, dateRangeHours);
   const timeWeight = Math.max(1, totalHours / (14 * 24));
   const variableWeight = Math.max(1, variables.size / 10);
   const modelWeight = Math.max(1, commaValues(url.searchParams.get("models")).length);

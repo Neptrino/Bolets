@@ -164,6 +164,8 @@ export function correctForecastValues(
   options: { aggregatePointCount?: number } = {},
 ) {
   const values: ConditionValues = { ...current };
+  // Aggregate anomalies do not reconstruct a temperature distribution.
+  delete values.thermalExposure;
   const missingFields: string[] = [];
 
   for (const field of requiredCorrectedFields) {

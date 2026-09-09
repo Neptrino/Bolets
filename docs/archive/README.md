@@ -6,6 +6,10 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [XEMA temperature diagnostic — 9 September 2026](xema-temperature-diagnostic-2026-09-09.md)
+- [XEMA correction: neighbouring-cell impact — 9 September 2026](cell-temperature-impact-2026-09-09.md)
+- [Station/model temperature blend: findings evaluation — 9 September 2026](station-temperature-findings-evaluation-2026-09-09.md)
+- [Temperature blend: broader boundary check and station-cutoff repair — 9 September 2026](station-temperature-boundaries-2026-09-09.md)
 - [Buffer migration — 8 September 2026](buffer-migration-2026-09-08.md)
 
 - [Homepage video engagement](homepage-video-engagement-2026-09-06.md)
@@ -26,6 +30,10 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Evidence files
 
+- [xema-temperature-diagnostic-2026-09-09.json](xema-temperature-diagnostic-2026-09-09.json)
+- [cell-temperature-impact-2026-09-09.json](cell-temperature-impact-2026-09-09.json)
+- [station-temperature-findings-evaluation-2026-09-09.json](station-temperature-findings-evaluation-2026-09-09.json)
+- [station-temperature-boundaries-2026-09-09.json](station-temperature-boundaries-2026-09-09.json)
 - [instagram-competitor-benchmark-2026-09-04.csv](instagram-competitor-benchmark-2026-09-04.csv)
 - [seo-faq-evidence-2026-08-27.json](seo-faq-evidence-2026-08-27.json)
 - [seo-keyword-map-2026-09-01.csv](seo-keyword-map-2026-09-01.csv)

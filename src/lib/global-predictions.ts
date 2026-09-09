@@ -1,3 +1,4 @@
+import { withoutThermalExposure } from "@/supabase/functions/_shared/thermal-exposure";
 import { cataloniaSpatialBounds } from "@/data/regions";
 import {
   bucketContaining,
@@ -238,7 +239,7 @@ function toCandidatePredictionCell(
     stale: cell.stale,
     source: cell.source,
     unavailableFields,
-    values,
+    values: withoutThermalExposure(values),
     modelVersion: result.modelVersion,
     components: result.components,
     occurrenceEvidence: null,

@@ -1,3 +1,4 @@
+import { validThermalExposure, type ThermalExposure } from "@/supabase/functions/_shared/thermal-exposure";
 import { z } from "zod";
 
 const confidence = z.enum(["high", "moderate", "limited", "unknown"]);
@@ -328,6 +329,12 @@ export const conditionSnapshotSchema = z.object({
     weatherObservedAt: z.string().datetime({ offset: true }).optional(),
     weatherModel: z.string().optional(), atmosphericResolutionM: z.number().int().positive().optional(), soilMoistureResolutionM: z.number().int().positive().optional(),
     weatherGridLatitude: z.number().min(-90).max(90).optional(), weatherGridLongitude: z.number().min(-180).max(180).optional(), weatherElevationM: z.number().min(-100).max(5000).optional(),
+    // Optional shadow evidence must not invalidate an otherwise usable snapshot.
+    thermalReferenceElevationM: z.number().min(-100).max(5000).optional(),
+    temperatureSource: z.literal("xema-arome-blend-v1").optional(),
+    temperatureQuality: z.enum(["includes-provisional", "validated"]).optional(),
+    temperatureMinimumStations: z.number().int().min(2).max(8).optional(),
+    thermalExposure: z.custom<ThermalExposure[]>(validThermalExposure).optional().catch(undefined),
     soilGridLatitude: z.number().min(-90).max(90).optional(), soilGridLongitude: z.number().min(-180).max(180).optional(),
     temperatureC: z.number().optional(), temperatureMin24hC: z.number().optional(),
     temperatureAvg24hC: z.number().optional(), temperatureMax24hC: z.number().optional(),

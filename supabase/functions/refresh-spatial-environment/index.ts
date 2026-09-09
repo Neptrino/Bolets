@@ -1,3 +1,4 @@
+import { freezeStationTemperatureSources } from "../_shared/station-temperature-store.ts";
 import {
   createAdminClient,
   finiteNumber,
@@ -96,7 +97,8 @@ async function readRollingStates(
 function rollingStateRow(stream: RollingStream, pointId: string, payload: OpenMeteoLocation) {
   const times = Array.isArray(payload.hourly?.time) ? payload.hourly.time as unknown[] : [];
   const first = typeof times[0] === "number" ? times[0] : undefined;
-  const last = typeof times.at(-1) === "number" ? times.at(-1) : undefined;
+  const lastValue = times.at(-1);
+  const last = typeof lastValue === "number" ? lastValue : undefined;
   if (first === undefined || last === undefined) {
     throw new Error(`Rolling state ${pointId} does not use a UTC epoch axis`);
   }
@@ -530,6 +532,7 @@ Deno.serve(async (request) => {
       fallback,
       egressLane,
     );
+    const thermalSources = await freezeStationTemperatureSources(supabase, weatherRefresh.locations);
     const observedAt = new Date().toISOString();
     const rows = points.map((point) => {
       const location = weatherRefresh.locations.get(point.point_id)!;
@@ -582,6 +585,7 @@ Deno.serve(async (request) => {
         unavailable_fields: normalized.unavailableFields,
         values: {
           ...normalized.values,
+          thermalSources: thermalSources.get(point.point_id),
           weatherModel: "Météo-France AROME France",
           precipitationSource: STATION_RAIN_SOURCE_VERSION,
           precipitationFallbackModel: "meteofrance_seamless",

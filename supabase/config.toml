@@ -423,6 +423,9 @@ verify_jwt = true
 [functions.refresh-spatial-environment]
 verify_jwt = true
 
+[functions.import-xema-temperature]
+verify_jwt = true
+
 [functions.read-spatial-environment]
 verify_jwt = true
 
@@ -456,3 +459,6 @@ enabled = true
 # declarative_schema_path = "./database"
 # JSON string passed through to pg-delta SQL formatting.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
+
+[functions.refresh-station-temperature]
+verify_jwt = true

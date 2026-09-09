@@ -1,3 +1,5 @@
+import type { ThermalExposure } from "@/supabase/functions/_shared/thermal-exposure";
+
 export type EvidenceConfidence = "high" | "moderate" | "limited" | "unknown";
 
 export type EdibilityStatus =
@@ -398,6 +400,12 @@ export interface ConditionSnapshot {
     weatherGridLatitude?: number;
     weatherGridLongitude?: number;
     weatherElevationM?: number;
+    thermalReferenceElevationM?: number;
+    temperatureSource?: "xema-arome-blend-v1";
+    temperatureQuality?: "includes-provisional" | "validated";
+    temperatureMinimumStations?: number;
+    /** Optional diagnostic evidence; never a production scoring requirement. */
+    thermalExposure?: ThermalExposure[];
     soilGridLatitude?: number;
     soilGridLongitude?: number;
     temperatureC?: number;

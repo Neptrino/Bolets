@@ -36,6 +36,21 @@ describe("Open-Meteo budget estimates", () => {
     expect(() => estimateOpenMeteoRequestUnits(request(72), 0)).toThrow(RangeError);
   });
 
+  it("accounts for inclusive archive dates including the interval endpoint day", () => {
+    const url = new URL("https://historical-forecast-api.open-meteo.com/v1/forecast");
+    url.searchParams.set("start_date", "2026-08-20");
+    url.searchParams.set("end_date", "2026-09-09");
+    url.searchParams.set("hourly", "temperature_2m");
+    url.searchParams.set("models", "arome_france");
+    expect(estimateOpenMeteoRequestUnits(url, 8)).toBe(13);
+    url.searchParams.set("end_date", "2026-08-19");
+    expect(() => estimateOpenMeteoRequestUnits(url, 8)).toThrow(RangeError);
+    url.searchParams.set("end_date", "2026-02-30");
+    expect(() => estimateOpenMeteoRequestUnits(url, 8)).toThrow(RangeError);
+    url.searchParams.delete("end_date");
+    expect(() => estimateOpenMeteoRequestUnits(url, 8)).toThrow(RangeError);
+  });
+
   it("keeps the measured normal production workload observable", () => {
     const batchedEstimate = (locations: number, configure: (url: URL) => void) => {
       let total = 0;

@@ -1,3 +1,6 @@
+import { mergeThermalSources } from "./station-temperature-scoring.ts";
+import { mergeThermalExposure } from "./thermal-exposure.ts";
+
 export type EnvironmentConfidence = "high" | "moderate" | "limited" | "unknown";
 
 export type EnvironmentSnapshotRow = {
@@ -126,6 +129,17 @@ export function aggregateEnvironmentRows(rows: EnvironmentSnapshotRow[]) {
     const available = numericValues(rows, field);
     if (available.length) values[field] = Math.max(...available);
   }
+
+  const thermalSources = mergeThermalSources(rows.filter((row) =>
+    ["temperatureAvg20dC", "weatherModel"].some((f) => f in row.values) ||
+    row.unavailable_fields.includes("temperatureAvg20dC")).map((row) => row.values.thermalSources));
+  if (thermalSources) values.thermalSources = thermalSources;
+
+  const thermalExposure = mergeThermalExposure(rows.filter((row) =>
+    ["temperatureAvg7dC", "temperatureAvg20dC", "weatherElevationM", "weatherModel"].some((field) => field in row.values) ||
+    row.unavailable_fields.includes("temperatureAvg20dC"))
+    .map((row) => row.values.thermalExposure));
+  if (thermalExposure) values.thermalExposure = thermalExposure;
 
   const weatherObservedAt = rows
     .flatMap((row) => typeof row.values.weatherObservedAt === "string" ? [row.values.weatherObservedAt] : [])

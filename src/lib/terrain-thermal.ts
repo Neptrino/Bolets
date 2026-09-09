@@ -308,6 +308,10 @@ export function compareTerrainThermalSuitability(
     values: {
       ...snapshot.values,
       ...terrainThermal,
+      // This private scoring snapshot already uses the requested local
+      // elevation. The original provider provenance remains on the baseline.
+      weatherElevationM: localElevationM,
+      thermalExposure: undefined,
     },
   };
   const terrainAdjustedRaw = calculateSuitability(species, scoreOnlySnapshot);

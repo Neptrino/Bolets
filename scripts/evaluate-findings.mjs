@@ -27,6 +27,9 @@ function usage() {
     "  --soil-shadow           # also score an ICON-EU soil replay per target",
     "  --station-rain          # replay production rain: gauge IDW over seamless",
     "  --model=v1|v2           # scoring model to replay (default v1)",
+    "  --offline              # reject uncached network requests",
+    "  --cache-dir=/absolute/path/cache",
+    "  --export-thermal-inputs # save private snapshots/hours for paired thermal replay",
     "  --out=/absolute/path/report.json",
     "  --app-url=http://localhost:3101",
     "  --allow-remote          # explicit opt-in before private bounds leave the device",
@@ -96,6 +99,9 @@ if (runReplay) {
     FINDING_EVAL_MODEL: model,
     FINDING_EVAL_APP_URL: appUrl,
     FINDING_EVAL_ALLOW_REMOTE: allowRemote ? "1" : "0",
+    FINDING_EVAL_OFFLINE: argumentsByName.has("offline") ? "1" : "0",
+    FINDING_EVAL_EXPORT_THERMAL: argumentsByName.has("export-thermal-inputs") ? "1" : "0",
+    ...(argumentsByName.get("cache-dir") ? { FINDING_EVAL_CACHE_DIR: externalAbsolutePath(argumentsByName.get("cache-dir"), "--cache-dir") } : {}),
   });
 }
 

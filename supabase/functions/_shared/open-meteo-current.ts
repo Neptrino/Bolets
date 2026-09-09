@@ -1,3 +1,4 @@
+import { buildThermalExposure } from "./thermal-exposure.ts";
 import {
   HEAT_HOUR_THRESHOLD_C,
   RAINFALL_DAY_THRESHOLD_MM,
@@ -162,6 +163,7 @@ export function normalizeOpenMeteo(location: OpenMeteoLocation, soilLocation: Op
       (value) => value >= HEAT_HOUR_THRESHOLD_C,
     ),
     temperatureAvg20dC: temperature20d.average,
+    thermalExposure: buildThermalExposure(temperatures20d, location.elevation),
     frostHours20d: thresholdHours(temperatures20d, 480, (value) => value <= 0),
     heatHours20d: thresholdHours(
       temperatures20d,

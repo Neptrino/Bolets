@@ -4,6 +4,10 @@ import { describe, expect, it } from "vitest";
 import MethodPage from "@/app/metode/page";
 
 describe("method page model contract", () => {
+  it("explains observation blending, provisional quality, fallback and spatial limits", () => {
+    const html = renderToStaticMarkup(createElement(MethodPage));
+    for (const text of ["50% de temperatura modelada d’AROME", "50% de temperatura observada de la XEMA", "pendents de validació", "480 hores", "conservem el càlcul anterior", "No cobreix tota Catalunya", "va disminuir lleugerament"]) expect(html).toContain(text);
+  });
   it("explains day-level phenology and how it affects every forecast horizon", () => {
     const html = renderToStaticMarkup(createElement(MethodPage));
 

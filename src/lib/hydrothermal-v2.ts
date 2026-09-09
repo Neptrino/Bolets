@@ -281,7 +281,8 @@ const TERRAIN_LAPSE_MAX_DELTA_C = 6;
  */
 /** The capped lapse delta between grid elevation and cell altitude, in C. */
 export function terrainLapseDeltaC(values: EnvironmentValues): number | null {
-  const gridElevation = values.weatherElevationM;
+  // Blended means already refer to this elevation; preserve provider provenance.
+  const gridElevation = values.thermalReferenceElevationM ?? values.weatherElevationM;
   const cellAltitude = values.altitudeM;
   if (
     gridElevation === undefined || cellAltitude === undefined ||
