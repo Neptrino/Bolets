@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   constrainGridSize,
+  finerGridSize,
   formatGridDimensions,
+  gridSizeForSmoothedViewport,
   gridSizeForViewport,
   gridSizeForZoom,
   isSpatialGridSize,
@@ -55,6 +57,28 @@ describe("zoom-adaptive spatial grid", () => {
       east: 2.27,
       north: 42.3,
     })).toBe(250);
+  });
+
+  it("steps the smoothed surface one grid finer while its budget allows", () => {
+    expect(finerGridSize(250)).toBe(250);
+    expect(finerGridSize(2500)).toBe(1000);
+    // A local view the cell grid shows at 1 km fits the 250 m grid.
+    expect(gridSizeForSmoothedViewport(13, {
+      west: 2.15, south: 42.2, east: 2.25, north: 42.28,
+    })).toBe(250);
+    // A regional view the cell grid coarsens to 5 km keeps 2.5 km.
+    expect(gridSizeForSmoothedViewport(9.6, {
+      west: 1.5, south: 42, east: 3, north: 42.75,
+    })).toBe(2500);
+  });
+
+  it("never lets the smoothed surface exceed its budget or fall below the cell grid", () => {
+    // 250 m over this view would be well over 3,000 cells, so it stays at 1 km.
+    const wide = { west: 2, south: 42, east: 2.4, north: 42.3 };
+    expect(gridSizeForViewport(11.8, wide)).toBe(1000);
+    expect(gridSizeForSmoothedViewport(11.8, wide)).toBe(1000);
+    const catalonia = { west: 0.05, south: 40.48, east: 3.32, north: 42.92 };
+    expect(gridSizeForSmoothedViewport(8.5, catalonia)).toBe(5000);
   });
 
   it("formats metric cell dimensions in Catalan", () => {

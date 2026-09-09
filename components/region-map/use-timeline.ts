@@ -4,12 +4,13 @@ import type { BucketNetworkGate } from "@/src/lib/bucket-loader";
 import { bucketsForBounds, prioritizeBucketsAround } from "@/src/lib/map-query";
 import { prefetchTimelineFrames } from "@/src/lib/prediction-timeline-prefetch";
 import type { PredictionMapCell, PredictionTimelineOffset, SpatialGridSizeM } from "@/src/lib/types";
+import type { PredictionRendering } from "./prediction-surface";
 import type { RegionMapProps } from "./types";
 import { cataloniaSpatialBounds, rememberBucket, visibleGridSize, visibleSpatialBounds, type CellState } from "./support";
 
 export function usePredictionTimeline({
   enabled, map, speciesId, cellState, store, inFlight, networkGate,
-  minimumGridSizeM, maximumGridSizeM, onCellSelect, onCellDetailStateChange,
+  minimumGridSizeM, maximumGridSizeM, rendering, onCellSelect, onCellDetailStateChange,
   onTimelineOffsetChange, selectedCellIdRef,
 }: {
   enabled: boolean;
@@ -21,6 +22,7 @@ export function usePredictionTimeline({
   networkGate: RefObject<BucketNetworkGate>;
   minimumGridSizeM: SpatialGridSizeM;
   maximumGridSizeM?: SpatialGridSizeM;
+  rendering: PredictionRendering;
   selectedCellIdRef: RefObject<string | null>;
 } & Pick<RegionMapProps, "onCellSelect" | "onCellDetailStateChange" | "onTimelineOffsetChange">) {
   const [offset, setOffset] = useState<PredictionTimelineOffset>(0);
@@ -49,7 +51,7 @@ export function usePredictionTimeline({
         inFlight: inFlight.current, networkGate: networkGate.current,
         remember: (url, cells) => rememberBucket(store.current, url, cells, 512),
         buckets: (target) => {
-          const resolution = visibleGridSize(localMap, target === 0 ? minimumGridSizeM : 5000, maximumGridSizeM);
+          const resolution = visibleGridSize(localMap, target === 0 ? minimumGridSizeM : 5000, maximumGridSizeM, rendering);
           return { resolution, bounds: prioritizeBucketsAround(
             bucketsForBounds(viewport, resolution, cataloniaSpatialBounds),
             [(viewport.west + viewport.east) / 2, (viewport.south + viewport.north) / 2],
@@ -63,6 +65,6 @@ export function usePredictionTimeline({
       localMap.off("movestart", cancel);
       document.removeEventListener("visibilitychange", cancel);
     };
-  }, [enabled, ready, offset, speciesId, cellState.gridSizeM, map, store, inFlight, networkGate, minimumGridSizeM, maximumGridSizeM]);
+  }, [enabled, ready, offset, speciesId, cellState.gridSizeM, map, store, inFlight, networkGate, minimumGridSizeM, maximumGridSizeM, rendering]);
   return { timelineOffset: offset, changeTimelineOffset: changeOffset };
 }

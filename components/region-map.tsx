@@ -19,6 +19,8 @@ import {
   fitCatalonia,
   fitRegion,
   fitSpatialBounds,
+  initialCellState,
+  initialHabitatEvidenceState,
   initialRegionMapView,
   prepareCanvas,
   rememberBucket,
@@ -63,6 +65,8 @@ import type {
   PotentialHabitatMapCell,
   PredictionMapCell,
 } from "@/src/lib/types";
+
+import { usePredictionRendering } from "@/components/region-map/use-prediction-rendering";
 
 export type { PredictionCellDetailState, PredictionViewportStatus } from "@/components/region-map/types";
 
@@ -157,28 +161,19 @@ export function RegionMap({
     // A static map always retains its intended relief presentation.
     rememberSelection: interactive,
   });
+  // A static map keeps the rendering its page asked for; interactive maps
+  // remember the viewer's choice like the basemap.
+  const { rendering, changeRendering } =
+    usePredictionRendering(predictionRendering, interactive);
   const [cellsVisible, setCellsVisible] = useState(true);
   const [cellOpacity, setCellOpacity] = useState(100);
   const [historicalEvidenceVisible, setHistoricalEvidenceVisible] =
     useState(true);
   const [historicalEvidenceOpacity, setHistoricalEvidenceOpacity] =
     useState(100);
-  const [cellState, setCellState] = useState<CellState>({
-    status: "loading",
-    published: 0,
-    excluded: 0,
-    withheld: 0,
-    truncated: false,
-    incomplete: false,
-    gridSizeM: 2500,
-  });
+  const [cellState, setCellState] = useState<CellState>(initialCellState);
   const [habitatEvidenceState, setHabitatEvidenceState] =
-    useState<HabitatEvidenceState>({
-      available: null,
-      cells: 0,
-      habitatCells: 0,
-      records: 0,
-    });
+    useState<HabitatEvidenceState>(initialHabitatEvidenceState);
 
   useEffect(() => {
     if (!node.current || map.current) return;
@@ -620,7 +615,7 @@ export function RegionMap({
     enabled: showTimeline && predictionAvailable && !showCompatibility,
     map, speciesId, cellState, store: bucketCells, inFlight: inFlightBuckets,
     networkGate: bucketNetworkGate, minimumGridSizeM: predictionMinimumGridSizeM,
-    maximumGridSizeM: maximumPredictionGridSizeM, selectedCellIdRef,
+    maximumGridSizeM: maximumPredictionGridSizeM, rendering, selectedCellIdRef,
     onCellSelect, onCellDetailStateChange, onTimelineOffsetChange,
   });
 
@@ -645,7 +640,7 @@ export function RegionMap({
           context,
           localMap,
           output: canvas,
-          rendering: predictionRendering,
+          rendering,
           selectedCellId: selectedCellIdRef.current,
         });
       });
@@ -674,6 +669,7 @@ export function RegionMap({
         localMap,
         minimumGridSizeM,
         maximumPredictionGridSizeM,
+        rendering,
       ),
     });
     // One controller for the whole species/layer run. Superseded viewports are
@@ -687,6 +683,7 @@ export function RegionMap({
         localMap,
         minimumGridSizeM,
         maximumPredictionGridSizeM,
+        rendering,
       );
       const viewportBounds = visibleSpatialBounds(localMap);
       const buckets = bucketsForBounds(
@@ -936,7 +933,7 @@ export function RegionMap({
     speciesId,
     predictionMinimumGridSizeM,
     maximumPredictionGridSizeM,
-    predictionRendering,
+    rendering,
     showTimeline,
     timelineOffset,
     onCellClick,
@@ -982,7 +979,9 @@ export function RegionMap({
         setHistoricalEvidenceVisible((visible) => !visible)
       }
       onLayerControlsToggle={toggleLayerControls}
+      onPredictionRenderingChange={changeRendering}
       predictionAvailable={predictionAvailable}
+      predictionRendering={rendering}
       selectedBasemapId={selectedBasemapId}
       selectedRegion={selectedRegion}
       showCompatibility={showCompatibility}

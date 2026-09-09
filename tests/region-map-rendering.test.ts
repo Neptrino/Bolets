@@ -34,8 +34,21 @@ describe("prediction map rendering", () => {
   it("offers an opt-in smooth heat surface while retaining exact cells by default", () => {
     expect(source).toContain('predictionRendering = "cells"');
     expect(source).toContain('rendering === "heatmap"');
-    expect(source).toContain("predictionHeatmapColour(cell.score)");
+    expect(source).toContain("rasterizeSmoothedField(");
+    expect(source).toContain("smoothingSigmaMetres(first.cell.gridSizeM)");
     expect(source).toContain("withCataloniaLandClip(context, localMap");
+  });
+
+  it("lets viewers pick the rendering in the layer panel and remembers it", () => {
+    expect(source).toContain("usePredictionRendering(predictionRendering, interactive)");
+    expect(source).toContain('"bolets-map-rendering"');
+    expect(source).toContain("<RegionMapRenderingControl");
+    expect(source).toContain("!showCompatibility && predictionAvailable ? (");
+  });
+
+  it("keeps the smoothed surface inside the viewer's resolution floor", () => {
+    expect(source).toContain("gridSizeForSmoothedViewport(zoom, bounds)");
+    expect(source).toContain("constrainGridSize(gridSizeM, minimumGridSizeM, maximumGridSizeM)");
   });
 
   it("keeps an explicit loading overlay visible while replacement cells load", () => {

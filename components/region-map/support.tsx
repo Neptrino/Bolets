@@ -17,6 +17,7 @@ import {
 import {
   boundsContain,
   constrainGridSize,
+  gridSizeForSmoothedViewport,
   gridSizeForViewport,
 } from "@/src/lib/map-grid";
 import {
@@ -31,6 +32,7 @@ import type {
   SpatialBounds,
   SpatialGridSizeM,
 } from "@/src/lib/types";
+import type { PredictionRendering } from "./prediction-surface";
 
 const cataloniaSpatialBounds = {
   west: cataloniaBounds[0][0],
@@ -123,6 +125,23 @@ type HabitatEvidenceState = {
   habitatCells: number;
   records: number;
 };
+
+const initialCellState: CellState = {
+  status: "loading",
+  published: 0,
+  excluded: 0,
+  withheld: 0,
+  truncated: false,
+  incomplete: false,
+  gridSizeM: 2500,
+};
+
+const initialHabitatEvidenceState: HabitatEvidenceState = {
+  available: null,
+  cells: 0,
+  habitatCells: 0,
+  records: 0,
+};
 type MapLayerControlProps = {
   id: string;
   label: string;
@@ -198,11 +217,16 @@ function visibleGridSize(
   localMap: MapLibreMap,
   minimumGridSizeM: SpatialGridSizeM = 250,
   maximumGridSizeM?: SpatialGridSizeM,
+  rendering: PredictionRendering = "cells",
 ) {
-  const gridSizeM = gridSizeForViewport(
-    localMap.getZoom(),
-    visibleSpatialBounds(localMap),
-  );
+  const zoom = localMap.getZoom();
+  const bounds = visibleSpatialBounds(localMap);
+  // The smoothed surface may take one grid step finer than the cell view
+  // within its own budget; the floor below still bounds what any viewer can
+  // request, so a public viewer's surface stays at the public resolution.
+  const gridSizeM = rendering === "heatmap"
+    ? gridSizeForSmoothedViewport(zoom, bounds)
+    : gridSizeForViewport(zoom, bounds);
   // The combined map has no 250 m habitat cache, so it never requests finer
   // than its detail floor even when the zoom would allow it. Editorial map
   // surfaces may also opt into a smaller maximum cell size than the ordinary
@@ -374,6 +398,8 @@ export {
   fitRegion,
   fitSpatialBounds,
   formatCellCount,
+  initialCellState,
+  initialHabitatEvidenceState,
   initialRegionMapView,
   prepareCanvas,
   rememberBucket,
