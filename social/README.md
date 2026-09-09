@@ -15,6 +15,7 @@ Campaign captions, upload packs and proposed calendars below stay with their med
 | Folder | What it holds |
 | --- | --- |
 | `2026-09-map-campaign/` | September map-first campaign: eight Reels, five carousels, singles 15–22, Stories, `captions.md`, `buffer-manual-schedule.md`, Meta ad creatives in `ads/`, and `buffer-transfer/` with the media and `UPLOAD.md` prepared for moving the Planner posts into Buffer. Rendered by `scripts/render-instagram-map-campaign.mjs`. |
+| `../output/autumn-content-2026-09-08/` | Four completed Reels and two illustrated carousels, preview gallery, captions and verified Buffer schedule receipts; reusable source in `asset-library/templates/autumn-lessons/`. |
 | `2026-09-promo/` | Promo single renders (`scripts/render-instagram-promo.mjs`). |
 | `2026-09-respectem-el-bosc/` | "Respectem el bosc" pack: two carousels, the Reel "Aquest bolet també compta", captions, alt text and provenance. |
 | `2026-09-species-guide-ad/` | Species-guide ad creatives from 7 September. |

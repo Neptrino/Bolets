@@ -76,6 +76,10 @@ const ads = [
   { file: "22-mapa-bolets-app-4x5.png", composition: "InstagramSinglePromo" },
   { file: "22-mapa-bolets-app-1x1.png", composition: "InstagramSinglePromoSquare" },
   { file: "22-mapa-bolets-app-9x16.png", composition: "InstagramSinglePromoStory" },
+  // Same layout with the brand line and equal weight for map, catalogue and guide.
+  { file: "23-amb-criteri-4x5.png", composition: "InstagramSinglePromoGuide" },
+  { file: "23-amb-criteri-1x1.png", composition: "InstagramSinglePromoGuideSquare" },
+  { file: "23-amb-criteri-9x16.png", composition: "InstagramSinglePromoGuideStory" },
 ];
 
 const stories = [

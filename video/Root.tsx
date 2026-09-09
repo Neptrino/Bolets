@@ -1,3 +1,4 @@
+import { SpeciesGuideAd, SPECIES_GUIDE_AD_DURATION } from "./SpeciesGuideAd";
 import { Composition } from "remotion";
 import { HomeShowcase, SHOWCASE_DURATION } from "./HomeShowcase";
 import { InstagramSinglePromo } from "./InstagramPromoSingle";
@@ -49,6 +50,7 @@ import {
 export function VideoRoot() {
   return (
     <>
+      <Composition id="SpeciesGuideAd" component={SpeciesGuideAd} durationInFrames={SPECIES_GUIDE_AD_DURATION} fps={30} width={1080} height={1920} />
       <Composition
         id="HomeShowcase"
         component={HomeShowcase}
@@ -169,6 +171,9 @@ export function VideoRoot() {
       <Composition id="InstagramSinglePromo" component={InstagramSinglePromo} durationInFrames={1} fps={30} width={1080} height={1350} />
       <Composition id="InstagramSinglePromoSquare" component={InstagramSinglePromo} durationInFrames={1} fps={30} width={1080} height={1080} defaultProps={{ format: "square" }} />
       <Composition id="InstagramSinglePromoStory" component={InstagramSinglePromo} durationInFrames={1} fps={30} width={1080} height={1920} defaultProps={{ format: "story" }} />
+      <Composition id="InstagramSinglePromoGuide" component={InstagramSinglePromo} durationInFrames={1} fps={30} width={1080} height={1350} defaultProps={{ copy: "guide" }} />
+      <Composition id="InstagramSinglePromoGuideSquare" component={InstagramSinglePromo} durationInFrames={1} fps={30} width={1080} height={1080} defaultProps={{ copy: "guide", format: "square" }} />
+      <Composition id="InstagramSinglePromoGuideStory" component={InstagramSinglePromo} durationInFrames={1} fps={30} width={1080} height={1920} defaultProps={{ copy: "guide", format: "story" }} />
       <Composition id="InstagramMapStoryWhere" component={InstagramMapStoryWhere} durationInFrames={1} fps={30} width={1080} height={1920} />
       <Composition id="InstagramMapStoryEvolution" component={InstagramMapStoryEvolution} durationInFrames={1} fps={30} width={1080} height={1920} />
       <Composition id="InstagramMapStoryChecklist" component={InstagramMapStoryChecklist} durationInFrames={1} fps={30} width={1080} height={1920} />

@@ -35,7 +35,8 @@ async function cardFor(slug) {
 
 await mkdir(outDir, { recursive: true });
 await open("/bolets");
-for (const slug of ["cep", "rovello"]) {
+const slugs = process.argv.slice(2).length > 0 ? process.argv.slice(2) : ["cep", "rovello"];
+for (const slug of slugs) {
   const card = await cardFor(slug);
   // Card photographs are lazy-loaded: wait until every image in the card has decoded.
   await card.locator("img").first().waitFor({ state: "visible" });
@@ -48,7 +49,7 @@ for (const slug of ["cep", "rovello"]) {
   await card.screenshot({ path: resolve(outDir, `m11-catalogue-card-${slug}.png`), animations: "disabled" });
   console.log(`card ${slug}:`, JSON.stringify(await card.boundingBox()));
 }
-for (const [path, file] of [["/parts-dun-bolet", "m11-parts-dun-bolet.png"], ["/bolets/infografia", "m11-infografia.png"], ["/bolets/cep", "m11-guide-cep.png"]]) {
+for (const [path, file] of process.env.CARDS_ONLY ? [] : [["/parts-dun-bolet", "m11-parts-dun-bolet.png"], ["/bolets/infografia", "m11-infografia.png"], ["/bolets/cep", "m11-guide-cep.png"]]) {
   await open(path);
   await page.screenshot({ path: resolve(outDir, file), fullPage: true, animations: "disabled" });
   console.log(`page ${path} → ${file}`);

@@ -32,10 +32,21 @@ interface WindowSource {
   crop: { left: number; top: number; width: number; height: number };
 }
 
-// Cep card of the catalogue list, photo included (scripts/capture-promo-single.mjs).
-const catalogueSource: WindowSource = {
-  src: "captures/mobile/m11-catalogue-card-cep.png",
-  crop: { left: 0, top: 0, width: 984, height: 1208 },
+export type InstagramSinglePromoSpecies = "cep" | "rovello" | "pinetell";
+
+// Catalogue list cards, photo included (scripts/capture-promo-single.mjs <slug>).
+const catalogueSources: Record<InstagramSinglePromoSpecies, WindowSource> = {
+  cep: { src: "captures/mobile/m11-catalogue-card-cep.png", crop: { left: 0, top: 0, width: 984, height: 1208 } },
+  rovello: { src: "captures/mobile/m11-catalogue-card-rovello.png", crop: { left: 0, top: 0, width: 984, height: 1208 } },
+  pinetell: { src: "captures/mobile/m11-catalogue-card-pinetell.png", crop: { left: 0, top: 0, width: 984, height: 1208 } },
+};
+
+// Map tile per species: the Val d'Aran window of 4 September. The rovelló map
+// is uniformly orange in early September, so it borrows the cep window.
+const mapSources: Record<InstagramSinglePromoSpecies, LensSource> = {
+  cep: mapSource,
+  rovello: mapSource,
+  pinetell: { src: "captures/mobile/m08-aran-pinetell-prediction-start.png", natural: { width: 1080, height: 1920 }, focus: { x: 620, y: 1000 }, scale: 0.8 },
 };
 // "Parts d'un bolet" anatomy poster from the guide.
 const guideSource: WindowSource = {
@@ -121,11 +132,49 @@ function Window({
 }
 
 export type InstagramSinglePromoFormat = "portrait" | "square" | "story";
+export type InstagramSinglePromoCopy = "map" | "guide";
+
+interface Copy {
+  badge: string;
+  eyebrow: string;
+  // Headline: first line, then the second line as prefix + accent word + suffix.
+  headline: [string, string, string, string];
+  subline: string;
+  mapChip: string;
+  // Equal weight for the three tiles instead of a dominant map lens.
+  balancedTiles: boolean;
+}
+
+const copies: Record<InstagramSinglePromoCopy, Copy> = {
+  // Prediction first: the ad that ran from 5 September.
+  map: {
+    badge: "MAPA EN DIRECTE",
+    eyebrow: "MAPA DIARI · CATÀLEG DE 62 ESPÈCIES · GUIES DE CAMP",
+    headline: ["On val la pena", "buscar bolets ", "avui", "?"],
+    subline: "Pluja, temperatura i terreny, sector per sector i per espècie. S’actualitza cada dia.",
+    mapChip: "MAPA DIARI",
+    balancedTiles: false,
+  },
+  // Brand line from the profile bio; the map is one of three things, not a forecast.
+  guide: {
+    badge: "EN CATALÀ",
+    eyebrow: "MAPA DE CONDICIONS · ESPÈCIES · GUIES DE CAMP",
+    headline: ["Bolets de Catalunya,", "amb ", "criteri", "."],
+    subline: "62 espècies amb fitxa, guies per reconèixer-les i un mapa de condicions per triar el dia.",
+    mapChip: "CONDICIONS",
+    balancedTiles: true,
+  },
+};
 
 export interface InstagramSinglePromoProps {
-  // Hero photograph (in video/assets); the crop is set per format below.
+  // Hero photograph (in video/assets); the crop is set per format below and
+  // can be overridden per format for another photograph.
   photo?: string;
   format?: InstagramSinglePromoFormat;
+  copy?: InstagramSinglePromoCopy;
+  // Species shown in the catalogue card; the map tile stays the cep Val d'Aran mosaic.
+  species?: InstagramSinglePromoSpecies;
+  positions?: Partial<Record<InstagramSinglePromoFormat, string>>;
 }
 
 interface Layout {
@@ -140,6 +189,10 @@ interface Layout {
   ctaText: boolean;
   lens: { x: number; y: number; size: number };
   cards: { y: number; width: number; height: number; xA: number; xB: number };
+  balanced: {
+    lens: { x: number; y: number; size: number };
+    cards: { y: number; width: number; height: number; xA: number; xB: number };
+  };
 }
 
 // Feed 4:5, ad-safe 1:1 and Stories/Reels 9:16 share the same content; each
@@ -158,6 +211,10 @@ const layouts: Record<InstagramSinglePromoFormat, Layout> = {
     ctaText: true,
     lens: { x: 722, y: 958, size: 300 },
     cards: { y: 1016, width: 184, height: 226, xA: 58, xB: 262 },
+    balanced: {
+      lens: { x: 772, y: 996, size: 250 },
+      cards: { y: 1000, width: 200, height: 246, xA: 58, xB: 278 },
+    },
   },
   square: {
     width: 1080,
@@ -171,6 +228,10 @@ const layouts: Record<InstagramSinglePromoFormat, Layout> = {
     ctaText: false,
     lens: { x: 772, y: 776, size: 250 },
     cards: { y: 826, width: 150, height: 184, xA: 58, xB: 226 },
+    balanced: {
+      lens: { x: 800, y: 812, size: 222 },
+      cards: { y: 826, width: 160, height: 197, xA: 58, xB: 236 },
+    },
   },
   story: {
     width: 1080,
@@ -184,31 +245,41 @@ const layouts: Record<InstagramSinglePromoFormat, Layout> = {
     ctaText: true,
     lens: { x: 722, y: 1320, size: 300 },
     cards: { y: 1380, width: 184, height: 226, xA: 58, xB: 262 },
+    balanced: {
+      lens: { x: 772, y: 1370, size: 250 },
+      cards: { y: 1380, width: 200, height: 246, xA: 58, xB: 278 },
+    },
   },
 };
 
-export function InstagramSinglePromo({ photo = "stock/photo-cep-canopy.jpg", format = "portrait" }: InstagramSinglePromoProps) {
+export function InstagramSinglePromo({ photo = "stock/photo-cep-canopy.jpg", format = "portrait", copy = "map", species = "cep", positions }: InstagramSinglePromoProps) {
   const layout = layouts[format];
+  const catalogueSource = catalogueSources[species];
+  const speciesMapSource = mapSources[species];
+  const text = copies[copy];
+  const tiles = text.balancedTiles ? layout.balanced : { lens: layout.lens, cards: layout.cards };
+  const headlineSize = text.balancedTiles ? layout.headlineSize - 8 : layout.headlineSize;
+  const position = positions?.[format] ?? layout.position;
   return (
     <AbsoluteFill style={{ background: palette.forestDeep, color: palette.cream, fontFamily }}>
-      <Img src={staticFile(photo)} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: layout.position }} />
+      <Img src={staticFile(photo)} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: position }} />
       <AbsoluteFill style={{ background: layout.gradient }} />
       <AbsoluteFill style={{ background: "radial-gradient(ellipse at 50% 45%, rgba(9,23,15,0) 45%, rgba(9,23,15,0.55) 100%)" }} />
       <AbsoluteFill style={{ backgroundImage: `url("data:image/svg+xml;utf8,${grainSvg}")`, opacity: 0.08, mixBlendMode: "soft-light" }} />
 
       <div style={{ position: "absolute", top: layout.brandTop, left: 58, right: 58, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <InstagramPromoBrand />
-        <span style={{ padding: "9px 16px", borderRadius: 999, border: "1px solid rgba(244,236,215,0.4)", color: palette.cream, fontSize: 19, fontWeight: 900, letterSpacing: "0.14em" }}>MAPA EN DIRECTE</span>
+        <span style={{ padding: "9px 16px", borderRadius: 999, border: "1px solid rgba(244,236,215,0.4)", color: palette.cream, fontSize: 19, fontWeight: 900, letterSpacing: "0.14em" }}>{text.badge}</span>
       </div>
 
       <div style={{ position: "absolute", top: layout.textTop, left: 58, right: 58, display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-        <div style={{ color: palette.orangeLight, fontSize: 24, fontWeight: 900, letterSpacing: "0.15em" }}>MAPA DIARI · CATÀLEG DE 62 ESPÈCIES · GUIES DE CAMP</div>
-        <div style={{ marginTop: 20, fontSize: layout.headlineSize, fontWeight: 900, letterSpacing: "-0.055em", lineHeight: 0.94, textShadow: "0 8px 34px rgba(0,0,0,0.5)" }}>
-          On val la pena<br />buscar bolets <span style={{ color: palette.orange }}>avui</span>?
+        <div style={{ color: palette.orangeLight, fontSize: 24, fontWeight: 900, letterSpacing: "0.15em" }}>{text.eyebrow}</div>
+        <div style={{ marginTop: 20, fontSize: headlineSize, fontWeight: 900, letterSpacing: "-0.055em", lineHeight: 0.94, textShadow: "0 8px 34px rgba(0,0,0,0.5)" }}>
+          {text.headline[0]}<br />{text.headline[1]}<span style={{ color: palette.orange }}>{text.headline[2]}</span>{text.headline[3]}
         </div>
         {layout.subline ? (
           <div style={{ marginTop: 24, maxWidth: 820, color: "rgba(244,236,215,0.9)", fontSize: 31, fontWeight: 650, lineHeight: 1.3, textShadow: "0 4px 18px rgba(0,0,0,0.45)" }}>
-            Pluja, temperatura i terreny, sector per sector i per espècie. S’actualitza cada dia.
+            {text.subline}
           </div>
         ) : null}
         <div style={{ marginTop: layout.subline ? 26 : 24, display: "flex", alignItems: "center", gap: 20 }}>
@@ -217,9 +288,9 @@ export function InstagramSinglePromo({ photo = "stock/photo-cep-canopy.jpg", for
         </div>
       </div>
 
-      <Lens source={mapSource} x={layout.lens.x} y={layout.lens.y} size={layout.lens.size} glow chip="MAPA DIARI" />
-      <Window source={catalogueSource} x={layout.cards.xA} y={layout.cards.y} width={layout.cards.width} height={layout.cards.height} chip="CATÀLEG" />
-      <Window source={guideSource} x={layout.cards.xB} y={layout.cards.y} width={layout.cards.width} height={layout.cards.height} chip="GUIES" />
+      <Lens source={speciesMapSource} x={tiles.lens.x} y={tiles.lens.y} size={tiles.lens.size} glow={!text.balancedTiles} chip={text.mapChip} />
+      <Window source={catalogueSource} x={tiles.cards.xA} y={tiles.cards.y} width={tiles.cards.width} height={tiles.cards.height} chip="CATÀLEG" />
+      <Window source={guideSource} x={tiles.cards.xB} y={tiles.cards.y} width={tiles.cards.width} height={tiles.cards.height} chip="GUIES" />
     </AbsoluteFill>
   );
 }
