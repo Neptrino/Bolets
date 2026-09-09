@@ -295,6 +295,12 @@
   background: #f2d6b5;
 }
 
+.map-detail-panel-content {
+  /* Match the footer header's 1380px measure so the expanded details do not
+     stretch edge to edge on wide screens. */
+  width: min(100%, 1380px);
+  margin: 0 auto;
+}
 .map-detail-panel-content[hidden] {
   display: none;
 }
