@@ -381,7 +381,7 @@ const loadCachedCurrentOverviewData = unstable_cache(
     void generation;
     return loadCurrentOverview();
   },
-  ["current-overview-v6"],
+  ["current-overview-v7"],
   { revalidate: DAILY_OVERVIEW_REVALIDATE_SECONDS, tags: ["current-overview"] },
 );
 
@@ -390,7 +390,7 @@ const loadCachedAreaOverviewData = unstable_cache(
     void generation;
     return loadAreaOverview();
   },
-  ["area-overview-v6"],
+  ["area-overview-v7"],
   { revalidate: DAILY_OVERVIEW_REVALIDATE_SECONDS, tags: ["area-overview"] },
 );
 
