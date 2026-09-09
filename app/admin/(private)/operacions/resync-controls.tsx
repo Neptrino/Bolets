@@ -9,7 +9,7 @@ import {
   Satellite,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import type { OperationalResyncTarget } from "@/src/lib/operational-resync";
@@ -69,6 +69,38 @@ const commands = [
   primary?: boolean;
 }>;
 
+type ResyncProgress = {
+  generatedAt: string;
+  atmosphere: { pointCount: number; expectedPointCount: number; complete: boolean } | null;
+  soil: { pointCount: number; expectedPointCount: number; complete: boolean } | null;
+  forecast: {
+    pointCount: number;
+    expectedPointCount: number;
+    futureHorizonCount: number;
+    complete: boolean;
+  } | null;
+  runningPipelines: string[];
+  lastRuns: Array<{
+    pipeline: string;
+    status: string;
+    startedAt: string;
+    rowsWritten: number;
+    errorMessage: string | null;
+  }>;
+};
+
+function lastRunSummary(progress: ResyncProgress) {
+  const last = progress.lastRuns[0];
+  if (!last) return "Sense execucions recents.";
+  const minutesAgo = Math.max(0, Math.round((Date.now() - Date.parse(last.startedAt)) / 60_000));
+  const outcome = last.status === "succeeded"
+    ? "correcta"
+    : last.status === "partial"
+      ? "parcial"
+      : last.status;
+  return `Darrera execució ${last.pipeline}: ${outcome}, ${last.rowsWritten} files, fa ${minutesAgo} min.`;
+}
+
 const refusalMessages: Record<string, string> = {
   "another-resync-is-being-prepared": "Ja s’està preparant una altra ordre.",
   "spatial-atmosphere-is-running": "L’atmosfera encara té un fragment actiu.",
@@ -82,6 +114,37 @@ export function ResyncControls() {
   const [message, setMessage] = useState<string | null>(null);
   const [messageKind, setMessageKind] = useState<"success" | "error">("success");
   const [fullCycleConfirmationOpen, setFullCycleConfirmationOpen] = useState(false);
+  const [progress, setProgress] = useState<ResyncProgress | null>(null);
+  const [watching, setWatching] = useState(false);
+  const watchDeadline = useRef(0);
+
+  const pollProgress = useCallback(async () => {
+    try {
+      const response = await fetch("/admin/operacions/resync/progress", {
+        cache: "no-store",
+      });
+      if (!response.ok) return;
+      const payload = await response.json() as ResyncProgress;
+      setProgress(payload);
+      router.refresh();
+      const allPublished = payload.atmosphere?.complete !== false &&
+        payload.soil?.complete !== false &&
+        payload.forecast?.complete !== false;
+      if ((payload.runningPipelines.length === 0 && allPublished) ||
+          Date.now() > watchDeadline.current) {
+        setWatching(false);
+      }
+    } catch {
+      // A transient poll failure keeps the last reading on screen.
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (!watching) return;
+    void pollProgress();
+    const interval = setInterval(() => { void pollProgress(); }, 12_000);
+    return () => clearInterval(interval);
+  }, [watching, pollProgress]);
 
   async function run(target: OperationalResyncTarget) {
     setPendingTarget(target);
@@ -110,6 +173,11 @@ export function ResyncControls() {
       setMessage(requestCount > 0
         ? `Ordre acceptada: ${requestCount} ${requestCount === 1 ? "tasca" : "tasques"} en cua.`
         : "Ordre acceptada: les memòries es republicaran amb el cron local.");
+      // Watch the pipelines for up to twenty minutes so the operator sees
+      // batches land without reloading; polling stops when everything is
+      // published again.
+      watchDeadline.current = Date.now() + 20 * 60 * 1000;
+      setWatching(true);
       router.refresh();
     } catch (error) {
       setMessageKind("error");
@@ -150,6 +218,32 @@ export function ResyncControls() {
           );
         })}
       </div>
+      {progress && (
+        <div aria-live="polite" className={styles.commandProgress} data-active={watching || undefined}>
+          <span data-complete={progress.atmosphere?.complete ?? undefined}>
+            Atmosfera {progress.atmosphere
+              ? `${progress.atmosphere.pointCount}/${progress.atmosphere.expectedPointCount}`
+              : "—"}
+          </span>
+          <span data-complete={progress.soil?.complete ?? undefined}>
+            Sòl {progress.soil
+              ? `${progress.soil.pointCount}/${progress.soil.expectedPointCount}`
+              : "—"}
+          </span>
+          <span data-complete={progress.forecast?.complete ?? undefined}>
+            Previsió {progress.forecast
+              ? `${progress.forecast.pointCount}/${progress.forecast.expectedPointCount} punts · ${progress.forecast.futureHorizonCount} dies`
+              : "—"}
+          </span>
+          <small>
+            {progress.runningPipelines.length > 0
+              ? `Executant: ${progress.runningPipelines.join(", ")}`
+              : watching
+                ? "En espera del proper lot…"
+                : lastRunSummary(progress)}
+          </small>
+        </div>
+      )}
       <div className={styles.commandFooter}>
         <p>La darrera lectura observada continua publicada mentre es refà la generació. La previsió pot quedar temporalment oculta durant la seva reconstrucció.</p>
         <p

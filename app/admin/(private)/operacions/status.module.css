@@ -799,3 +799,38 @@
 @media (max-width: 520px) {
   .budgetPanel { grid-template-columns: auto minmax(0, 1fr); padding: 22px; }
 }
+
+.commandProgress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem 1.1rem;
+  margin: 0.9rem 1.4rem 0;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid rgba(117, 91, 67, 0.25);
+  border-radius: 10px;
+  background: rgba(255, 250, 240, 0.6);
+  font-size: 0.86rem;
+}
+
+.commandProgress[data-active] {
+  border-color: rgba(168, 94, 49, 0.45);
+}
+
+.commandProgress > span {
+  font-weight: 700;
+  color: #5d5347;
+}
+
+.commandProgress > span[data-complete="true"] {
+  color: #28734e;
+}
+
+.commandProgress > small {
+  flex-basis: 100%;
+  color: #756f64;
+}
+
+.commandProgress[data-active] > small {
+  color: #a85e31;
+}
