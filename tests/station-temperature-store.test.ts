@@ -78,3 +78,16 @@ describe("frozen station temperature integration", () => {
       .toEqual({ temperatureSource: STATION_TEMPERATURE_VERSION });
   });
 });
+
+
+it.each(["model", "station", "none"])("marks immutable inputs complete only with no missing %s rows", async (missing) => {
+  const modelId = "a".repeat(64), stationId = "b".repeat(64);
+  const db = { from: (table: string) => ({ select: () => ({ in: () => ({ limit: async () => ({
+    error: null,
+    data: table === "thermal_model_windows"
+      ? missing === "model" ? [] : [{ id: modelId, payload: { stationWindowId: stationId } }]
+      : missing === "station" ? [] : [{ id: stationId, payload: {} }],
+  }) }) }) }) } as unknown as Parameters<typeof loadStationTemperatureScorer>[0];
+  const score = await loadStationTemperatureScorer(db, [{ thermalSources: [{ id: modelId }] }]);
+  expect(score.inputsComplete).toBe(missing === "none");
+});

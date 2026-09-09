@@ -1,3 +1,4 @@
+import { cachedStationTemperatureValues } from "../_shared/station-temperature-cache.ts";
 import { loadStationTemperatureScorer, publicTemperatureValues } from "../_shared/station-temperature-store.ts";
 import { createAdminClient, finiteNumber, json, requireServiceRole } from "../_shared/pipeline.ts";
 import {
@@ -790,11 +791,13 @@ Deno.serve(async (request) => {
       ((geologyResult?.data ?? []) as Record<string, unknown>[])
         .map((row) => [String(row.cell_id), row]),
     );
-    const thermalScore = await loadStationTemperatureScorer(supabase, environmentRows.map((row) => row.values as Record<string, unknown>));
-    const cells = environmentRows.map((row) => {
-      const inputValues = row.values as Record<string, unknown>;
-      const thermalValues = publicTemperatureValues(row.stale ? inputValues : thermalScore(inputValues,
-        (Number(row.south) + Number(row.north)) / 2, (Number(row.west) + Number(row.east)) / 2));
+    const temperatures = await cachedStationTemperatureValues(supabase, environmentRows.map((row) => ({
+      values: row.values as Record<string, unknown>, stale: Boolean(row.stale),
+      latitude: (Number(row.south) + Number(row.north)) / 2,
+      longitude: (Number(row.west) + Number(row.east)) / 2,
+    })));
+    const cells = environmentRows.map((row, index) => {
+      const thermalValues = publicTemperatureValues(temperatures[index]);
       const baseValues = scoreOnly ? scoringValues(thermalValues) : thermalValues;
       let values = baseValues && typeof baseValues === "object" && !Array.isArray(baseValues)
         ? { ...(baseValues as Record<string, unknown>) }

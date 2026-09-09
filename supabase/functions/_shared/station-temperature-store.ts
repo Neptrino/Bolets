@@ -98,7 +98,7 @@ export async function freezeStationTemperatureSources(db: Database, locations: M
 /** Load only immutable inputs named by these snapshots; never the latest station feed. */
 export async function loadStationTemperatureScorer(db: Database, values: Record<string, unknown>[]) {
   const ids = [...new Set(values.flatMap((v) => validThermalSources(v.thermalSources) ? v.thermalSources.map((s) => s.id) : []))];
-  const baseline: ReturnType<typeof createStationTemperatureScorer> = (v) => v;
+  const baseline = Object.assign((v: Record<string, unknown>) => v, { inputsComplete: false });
   if (!ids.length) return baseline;
   try {
     const models = new Map<string, ThermalModelWindow>();
@@ -114,7 +114,9 @@ export async function loadStationTemperatureScorer(db: Database, values: Record<
       if (error) throw error;
       for (const row of data ?? []) windows.set(row.id, row.payload as StationTemperatureWindow);
     }
-    return createStationTemperatureScorer(models, windows);
+    return Object.assign(createStationTemperatureScorer(models, windows), {
+      inputsComplete: ids.every((id) => models.has(id)) && stationIds.every((id) => windows.has(id)),
+    });
   } catch (error) {
     console.error("Optional frozen temperature read failed; retaining AROME", { message: error instanceof Error ? error.message : "Database failure" });
     return baseline;
