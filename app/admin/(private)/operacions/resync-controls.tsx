@@ -116,7 +116,9 @@ export function ResyncControls() {
   const [fullCycleConfirmationOpen, setFullCycleConfirmationOpen] = useState(false);
   const [progress, setProgress] = useState<ResyncProgress | null>(null);
   const [watching, setWatching] = useState(false);
-  const watchDeadline = useRef(0);
+  // Polls remaining before the watch gives up on its own: one hundred
+  // twelve-second ticks, about twenty minutes.
+  const pollsRemaining = useRef(0);
 
   const pollProgress = useCallback(async () => {
     try {
@@ -127,11 +129,12 @@ export function ResyncControls() {
       const payload = await response.json() as ResyncProgress;
       setProgress(payload);
       router.refresh();
+      pollsRemaining.current -= 1;
       const allPublished = payload.atmosphere?.complete !== false &&
         payload.soil?.complete !== false &&
         payload.forecast?.complete !== false;
       if ((payload.runningPipelines.length === 0 && allPublished) ||
-          Date.now() > watchDeadline.current) {
+          pollsRemaining.current <= 0) {
         setWatching(false);
       }
     } catch {
@@ -141,9 +144,13 @@ export function ResyncControls() {
 
   useEffect(() => {
     if (!watching) return;
-    void pollProgress();
-    const interval = setInterval(() => { void pollProgress(); }, 12_000);
-    return () => clearInterval(interval);
+    const poll = () => { void pollProgress(); };
+    const firstPoll = setTimeout(poll, 0);
+    const interval = setInterval(poll, 12_000);
+    return () => {
+      clearTimeout(firstPoll);
+      clearInterval(interval);
+    };
   }, [watching, pollProgress]);
 
   async function run(target: OperationalResyncTarget) {
@@ -173,10 +180,9 @@ export function ResyncControls() {
       setMessage(requestCount > 0
         ? `Ordre acceptada: ${requestCount} ${requestCount === 1 ? "tasca" : "tasques"} en cua.`
         : "Ordre acceptada: les memòries es republicaran amb el cron local.");
-      // Watch the pipelines for up to twenty minutes so the operator sees
-      // batches land without reloading; polling stops when everything is
-      // published again.
-      watchDeadline.current = Date.now() + 20 * 60 * 1000;
+      // Watch the pipelines so the operator sees batches land without
+      // reloading; polling stops when everything is published again.
+      pollsRemaining.current = 100;
       setWatching(true);
       router.refresh();
     } catch (error) {
