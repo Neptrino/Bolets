@@ -34,6 +34,8 @@ The application, service and script directories have distinct responsibilities; 
 
 Use the Node 24 runtime used by the production image. Install dependencies with `npm ci`, configure local environment values from `.env.example`, and run `npm run dev` (port 3101). The development/build commands generate responsive media automatically. Use the database runbook for local data setup; do not copy production credentials into tracked files.
 
+To test local map calculations with live public data, set `BOLETS_DEV_SPATIAL_DATA_URL` and `BOLETS_DEV_SPATIAL_ANON_KEY` in `.env.local` to the public environmental service origin and its anonymous key, and leave `BOLETS_DEV_PUBLIC_DATA_ORIGIN` empty. This runs local scoring against public spatial reads at 2.5 km or coarser. For real 1 km/250 m data, optionally add that origin’s server-only `BOLETS_DEV_SPATIAL_SERVICE_ROLE_KEY`; only the environmental GET adapter uses it, after the local map route checks the signed resolution capability. Authentication and administration retain their local configuration. Without the optional key, detailed reads use the local database. Sign into a local administrator or eligible contributor account before testing the automatic switch: a production login does not sign into localhost. The alternative `BOLETS_DEV_PUBLIC_DATA_ORIGIN` proxies already-scored responses, so it can test rendering but cannot verify local scoring or coverage fixes. Both options are ignored outside development.
+
 Relevant checks are `npm test`, `npm run typecheck`, `npm run lint` and `npm run build`; browser tests use `npm run test:e2e`. Select checks appropriate to the change and investigate failures before treating the work as complete.
 
 ## Keeping the layout clean

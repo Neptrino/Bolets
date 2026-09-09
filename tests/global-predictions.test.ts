@@ -309,6 +309,52 @@ describe("getGlobalPredictionCells", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(42);
   });
+
+  it.each([[2.2, 42.4], [2.4, 42.3], [2.4, 42.4]])(
+    "keeps 1 km cells across the decimal boundary at %s, %s", async (west, south) => {
+      const requested = { west, south, east: west + 0.1, north: south + 0.1 };
+      const cell = environmentCell({ gridSizeM: 1000,
+        bounds: [[west + 0.04, south + 0.04], [west + 0.052, south + 0.049]],
+      });
+      const profiles = habitatProfiles();
+      const fetchMock = stubGlobalFeed({});
+      fetchMock.mockImplementation(async (input) => {
+        const query = new URL(String(input)).searchParams;
+        const inside = Number(query.get("west")) <= west + 0.04 && Number(query.get("east")) >= west + 0.052
+          && Number(query.get("south")) <= south + 0.04 && Number(query.get("north")) >= south + 0.049;
+        return Response.json({ cells: inside ? [cell] : [], truncated: false, bounds: requested, habitatProfiles: profiles });
+      });
+
+      const result = await getGlobalPredictionCells(requested, 1000, 1000);
+      expect(result.cells.map((cell) => cell.cellId)).toEqual([cellId]);
+      expect(result.truncated).toBe(false);
+    },
+  );
+
+  it("covers every canonical 1 km bucket when grouping environment reads", async () => {
+    const fetchMock = stubGlobalFeed({ cells: [], truncated: false, bounds: cataloniaSpatialBounds,
+      habitatProfiles: habitatProfiles(),
+    });
+    for (const bucket of bucketsForBounds(cataloniaSpatialBounds, 1000, cataloniaSpatialBounds)) {
+      await getGlobalPredictionCells(bucket, 1000, 1000);
+      const query = new URL(String(fetchMock.mock.lastCall![0])).searchParams;
+      expect(Number(query.get("west")), JSON.stringify(bucket)).toBeLessThanOrEqual(bucket.west);
+      expect(Number(query.get("south")), JSON.stringify(bucket)).toBeLessThanOrEqual(bucket.south);
+      expect(Number(query.get("east")), JSON.stringify(bucket)).toBeGreaterThanOrEqual(bucket.east);
+      expect(Number(query.get("north")), JSON.stringify(bucket)).toBeGreaterThanOrEqual(bucket.north);
+    }
+  });
+
+  it("does not clip a small requested area that straddles a grouped-read boundary", async () => {
+    const requested = { west: 2.35, south: 42.35, east: 2.45, north: 42.45 };
+    const fetchMock = stubGlobalFeed({ cells: [], truncated: false, bounds: requested,
+      habitatProfiles: habitatProfiles(),
+    });
+    await getGlobalPredictionCells(requested, 1000, 1000);
+    const query = new URL(String(fetchMock.mock.lastCall![0])).searchParams;
+    expect(Number(query.get("east"))).toBeGreaterThanOrEqual(requested.east);
+    expect(Number(query.get("north"))).toBeGreaterThanOrEqual(requested.north);
+  });
 });
 
 describe("getCandidatePredictionCells", () => {

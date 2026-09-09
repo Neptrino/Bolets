@@ -6,9 +6,9 @@
  * the cells that reach it. Between neighbouring cells the surface therefore
  * glides from one value to the next instead of showing block edges softened
  * by a blur, and because the bell is a ground distance rather than a cell
- * fraction, zooming across a grid step sharpens positions without changing
- * the character of the surface. Beyond the sampled ground the accumulated
- * weight thins and the surface fades out, so the map never paints confidence
+ * fraction, zooming a fixed source grid changes only its size on screen.
+ * Beyond the sampled ground the accumulated weight thins and the surface
+ * fades out, so the map never paints confidence
  * where there are no cells.
  *
  * The module is pure so the kernel can be tested without a canvas.
@@ -43,7 +43,7 @@ export type SmoothedField = {
 export const SMOOTHING_SIGMA_M = 1750;
 const MINIMUM_SIGMA_CELL_RATIO = 0.5;
 /** Contributions beyond this many standard deviations are dropped. */
-const KERNEL_CUTOFF_SIGMAS = 2.5;
+export const KERNEL_CUTOFF_SIGMAS = 2.5;
 
 /** Raster pixels the kernel's standard deviation should span. */
 const TARGET_SIGMA_RASTER_PX = 6;

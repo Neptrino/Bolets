@@ -88,7 +88,11 @@ function environmentCell(cellId: string, gridSizeM: number, bounds: number[][], 
  * The coarse cell carries a blended environment whose safety extremes come
  * from its coldest corner; its children are read on their own.
  */
-function stubSpatialFeeds() {
+function stubSpatialFeeds(options: {
+  parentCoverages?: number[];
+  parentValues?: Partial<ConditionSnapshot["values"]>;
+  omitChildren?: boolean;
+} = {}) {
   vi.stubEnv("SUPABASE_URL", "https://example.supabase.co");
   vi.stubEnv("SUPABASE_ANON_KEY", "test-anon-key");
   const fetchMock = vi.fn(async (input: string | URL | Request) => {
@@ -98,8 +102,13 @@ function stubSpatialFeeds() {
     }
     const resolution = url.searchParams.get("resolution");
     const combined = url.searchParams.get("includeHabitat") === "all";
-    const withHabitat = (cell: ReturnType<typeof environmentCell>) =>
-      combined ? { ...cell, ...combinedCoverages() } : cell;
+    const withHabitat = (cell: ReturnType<typeof environmentCell>) => {
+      const habitat = cell.gridSizeM === 5000 && options.parentCoverages
+        ? { habitatCoverages: options.parentCoverages, habitatWeightedCoverages: options.parentCoverages }
+        : combinedCoverages();
+      const values = cell.gridSizeM === 5000 ? { ...cell.values, ...options.parentValues } : cell.values;
+      return combined ? { ...cell, values, ...habitat } : { ...cell, values };
+    };
     const profiles = combined ? { habitatProfiles: habitatProfiles() } : {};
     if (resolution === "5000") {
       return Response.json({
@@ -113,6 +122,7 @@ function stubSpatialFeeds() {
       });
     }
     if (resolution === "2500") {
+      if (options.omitChildren) return Response.json({ cells: [], truncated: false, bounds: bucket, ...profiles });
       return Response.json({
         cells: [
           withHabitat(environmentCell("epsg25831:2500:158:1872", 2500, [[1.6, 42.2], [1.625, 42.225]], { rainfall14dMm: 12 })),
@@ -206,6 +216,51 @@ describe("coarse prediction cells summarise their best 2.5 km sector", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
+  it("restores the attributed species' parent coverage when the parent first scored zero", async () => {
+    const parentCoverages = globalCandidateSpecies.map((_, index) => 0.05 + index * 0.005);
+    const options = { parentCoverages, parentValues: {
+      temperatureAvg7dC: -30, temperatureAvg14dC: -30, temperatureAvg20dC: -30,
+      frostHours14d: 336, frostHours20d: 480,
+    } };
+    stubSpatialFeeds({ ...options, omitChildren: true });
+    const original = (await getGlobalPredictionCells(bucket, 1000, 5000)).cells[0];
+    expect(original.score).toBe(0);
+    expect(original.habitatCoverage).toBeNull();
+
+    stubSpatialFeeds(options);
+    const parent = (await getGlobalPredictionCells(bucket, 1000, 5000)).cells.find((cell) => cell.cellId === parentId)!;
+    const attributedIndex = globalCandidateSpecies.findIndex((species) => species.speciesId === parent.topSpeciesId);
+    expect(parent.score).toBeGreaterThan(0);
+    expect(attributedIndex).toBeGreaterThanOrEqual(0);
+    expect(parent.habitatCoverage).toBeCloseTo(parentCoverages[attributedIndex], 8);
+    // The child coverage is 0.6; copying it would exaggerate the whole parent.
+    expect(parent.habitatCoverage).not.toBe(0.6);
+    expect(parent.cellBounds).toEqual(parentBounds);
+  });
+
+  it("updates coverage when the summary attributes a different species", async () => {
+    stubSpatialFeeds();
+    const children = (await getGlobalPredictionCells(bucket, 1000, 2500)).cells;
+    const best = [...children].sort((a, b) => (b.score ?? -1) - (a.score ?? -1))[0];
+    const ranking = (await getGlobalCellRanking(best.cellId, bucket, 2500))!.ranking;
+    const selected = ranking[0].speciesId;
+    const competitor = ranking[1].speciesId;
+    const parentCoverages = globalCandidateSpecies.map((species) =>
+      species.speciesId === competitor ? 0.95 : species.speciesId === selected ? 0.01 : 0);
+    const options = { parentCoverages, parentValues: {
+      frostHours14d: 0, frostHours20d: 0, rainfall14dMm: 30,
+    } };
+    stubSpatialFeeds({ ...options, omitChildren: true });
+    const original = (await getGlobalPredictionCells(bucket, 1000, 5000)).cells[0];
+    expect(original.topSpeciesId).toBe(competitor);
+    expect(original.habitatCoverage).toBeCloseTo(0.95);
+
+    stubSpatialFeeds(options);
+    const parent = (await getGlobalPredictionCells(bucket, 1000, 5000)).cells.find((cell) => cell.cellId === parentId)!;
+    expect(parent.topSpeciesId).toBe(selected);
+    expect(parent.habitatCoverage).toBeCloseTo(0.01);
+  });
+
   it("ranks a combined 5 km cell's species from its best child", async () => {
     stubSpatialFeeds();
     const children = await getGlobalPredictionCells(bucket, 1000, 2500);
@@ -215,6 +270,7 @@ describe("coarse prediction cells summarise their best 2.5 km sector", () => {
 
     expect(ranking?.mapCell.cellId).toBe(parentId);
     expect(ranking?.mapCell.score).toBe(childRanking?.mapCell.score);
+    expect(ranking?.mapCell.habitatCoverage).toBe(childRanking?.mapCell.habitatCoverage);
     expect(ranking?.ranking).toEqual(childRanking?.ranking);
   });
 });

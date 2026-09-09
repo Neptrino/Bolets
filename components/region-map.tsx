@@ -8,7 +8,9 @@ import {
 } from "maplibre-gl";
 import { createRegionMap } from "@/components/region-map/map-instance";
 import { fetchPredictionCellDetail } from "@/components/region-map/prediction-detail";
+import { predictionQueryBounds } from "@/components/region-map/smoothed-viewport";
 import { drawPredictionSurface } from "@/components/region-map/prediction-surface";
+import { predictionRenderingForGrid } from "@/components/region-map/prediction-view";
 import {
   basemapStyle,
   cataloniaBounds,
@@ -38,6 +40,7 @@ import { useRegionMapStatus } from "@/components/region-map/use-viewport-status"
 import { RegionMapView } from "@/components/region-map/view";
 import { usePredictionTimeline } from "@/components/region-map/use-timeline";
 import { useMapResolutionAccess } from "@/components/region-map/use-resolution-access";
+import { useMapViewport } from "@/components/region-map/viewport-memory";
 import { PredictionBucketMemory } from "@/src/lib/prediction-bucket-memory";
 import { fetchJsonWithRetry } from "@/src/lib/fetch-json";
 import { GLOBAL_SPECIES_ID } from "@/src/lib/global-map";
@@ -66,8 +69,6 @@ import type {
   PredictionMapCell,
 } from "@/src/lib/types";
 
-import { usePredictionRendering } from "@/components/region-map/use-prediction-rendering";
-
 export type { PredictionCellDetailState, PredictionViewportStatus } from "@/components/region-map/types";
 
 export function RegionMap({
@@ -84,7 +85,7 @@ export function RegionMap({
   mode = "prediction",
   maximumPredictionGridSizeM,
   predictionAvailable = true,
-  predictionRendering = "cells",
+  predictionRendering = "heatmap",
   showReadyStatus = true,
   showTimeline = false,
   selectedCellId,
@@ -104,6 +105,7 @@ export function RegionMap({
   const cellCanvas = useRef<HTMLCanvasElement>(null);
   const historicalEvidenceCanvas = useRef<HTMLCanvasElement>(null);
   const map = useRef<MapLibreMap | null>(null);
+  const viewport = useMapViewport({ autoGeolocate, focusBounds, selectedRegion });
   const geolocateControl = useRef<GeolocateControl | null>(null);
   const initialSpeciesId = useRef(speciesId);
   const initialHabitat = useRef(habitat);
@@ -161,10 +163,9 @@ export function RegionMap({
     // A static map always retains its intended relief presentation.
     rememberSelection: interactive,
   });
-  // A static map keeps the rendering its page asked for; interactive maps
-  // remember the viewer's choice like the basemap.
-  const { rendering, changeRendering } =
-    usePredictionRendering(predictionRendering, interactive);
+  // Interactive predictions use a smooth overview, switching automatically
+  // to permitted detailed cells. Static maps keep their page's rendering.
+  const rendering = interactive ? "heatmap" : predictionRendering;
   const [cellsVisible, setCellsVisible] = useState(true);
   const [cellOpacity, setCellOpacity] = useState(100);
   const [historicalEvidenceVisible, setHistoricalEvidenceVisible] =
@@ -186,7 +187,8 @@ export function RegionMap({
       initialSpeciesId.current && !initialHabitat.current,
     );
     const initialBasemapId = initializeBasemap();
-    const { center, zoom } = initialRegionMapView({
+    const rememberedView = viewport?.restore();
+    const { center, zoom } = rememberedView ?? initialRegionMapView({
       activeRegions: initialActiveRegions.current,
       focusBounds: initialFocusBounds.current,
       mapCentre: initialMapCentre.current,
@@ -210,12 +212,14 @@ export function RegionMap({
     geolocateControl.current = geolocate ?? null;
 
     localMap.resize();
-    if (initialFocusBounds.current)
+    if (rememberedView) initialGeolocationTriggered.current = true;
+    else if (initialFocusBounds.current)
       fitSpatialBounds(localMap, initialFocusBounds.current, false);
     else if (isPredictionMap && initialRegion.current)
       fitRegion(localMap, initialRegion.current, false);
     else if (!initialMapCentre.current)
       fitCatalonia(localMap, false);
+    const stopRemembering = viewport?.track(localMap);
 
     localMap.once("load", () => {
       mapLoaded.current = true;
@@ -232,13 +236,14 @@ export function RegionMap({
     resizeObserver.observe(node.current);
 
     return () => {
+      stopRemembering?.();
       resizeObserver.disconnect();
       localMap.remove();
       map.current = null;
       geolocateControl.current = null;
       mapLoaded.current = false;
     };
-  }, [initializeBasemap]);
+  }, [initializeBasemap, viewport]);
 
   useEffect(() => {
     const localMap = map.current;
@@ -615,7 +620,7 @@ export function RegionMap({
     enabled: showTimeline && predictionAvailable && !showCompatibility,
     map, speciesId, cellState, store: bucketCells, inFlight: inFlightBuckets,
     networkGate: bucketNetworkGate, minimumGridSizeM: predictionMinimumGridSizeM,
-    maximumGridSizeM: maximumPredictionGridSizeM, rendering, selectedCellIdRef,
+    maximumGridSizeM: maximumPredictionGridSizeM, rendering, automaticDetail: interactive, selectedCellIdRef,
     onCellSelect, onCellDetailStateChange, onTimelineOffsetChange,
   });
 
@@ -624,6 +629,9 @@ export function RegionMap({
     if (!localMap || !speciesId || showCompatibility) return;
 
     const minimumGridSizeM = timelineOffset === 0 ? predictionMinimumGridSizeM : 5000;
+    const viewportGridSize = () => visibleGridSize(
+      localMap, minimumGridSizeM, maximumPredictionGridSizeM, rendering, interactive,
+    );
     const timelineRun = timelineOffset !== 0;
     const locator = geolocateControl.current;
     let geolocationReloadFrame: number | undefined;
@@ -640,7 +648,7 @@ export function RegionMap({
           context,
           localMap,
           output: canvas,
-          rendering,
+          rendering: predictionRenderingForGrid(rendering, cellsById.current.values().next().value?.gridSizeM, interactive),
           selectedCellId: selectedCellIdRef.current,
         });
       });
@@ -665,12 +673,7 @@ export function RegionMap({
       withheld: 0,
       truncated: false,
       incomplete: false,
-      gridSizeM: visibleGridSize(
-        localMap,
-        minimumGridSizeM,
-        maximumPredictionGridSizeM,
-        rendering,
-      ),
+      gridSizeM: viewportGridSize(),
     });
     // One controller for the whole species/layer run. Superseded viewports are
     // not cancelled: their buckets are already paid for and stay useful the
@@ -679,15 +682,10 @@ export function RegionMap({
     request.current = controller;
 
     const loadCells = async () => {
-      const gridSizeM = visibleGridSize(
-        localMap,
-        minimumGridSizeM,
-        maximumPredictionGridSizeM,
-        rendering,
-      );
+      const gridSizeM = viewportGridSize();
       const viewportBounds = visibleSpatialBounds(localMap);
       const buckets = bucketsForBounds(
-        viewportBounds,
+        predictionQueryBounds(viewportBounds, gridSizeM, predictionRenderingForGrid(rendering, gridSizeM, interactive)),
         gridSizeM,
         cataloniaSpatialBounds,
       );
@@ -934,6 +932,7 @@ export function RegionMap({
     predictionMinimumGridSizeM,
     maximumPredictionGridSizeM,
     rendering,
+    interactive,
     showTimeline,
     timelineOffset,
     onCellClick,
@@ -979,9 +978,7 @@ export function RegionMap({
         setHistoricalEvidenceVisible((visible) => !visible)
       }
       onLayerControlsToggle={toggleLayerControls}
-      onPredictionRenderingChange={changeRendering}
       predictionAvailable={predictionAvailable}
-      predictionRendering={rendering}
       selectedBasemapId={selectedBasemapId}
       selectedRegion={selectedRegion}
       showCompatibility={showCompatibility}

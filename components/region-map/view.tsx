@@ -6,7 +6,6 @@ import type { MapViewMode, PredictionTimelineOffset, RegionId } from "@/src/lib/
 import { RegionMapFrame } from "./frame";
 import { RegionMapDataStatus } from "./data-status";
 import { RegionMapLayerControls } from "./layer-controls";
-import type { PredictionRendering } from "./prediction-surface";
 import type { MapStatusCopy } from "./status";
 import { type BasemapId, type CellState } from "./support";
 
@@ -39,9 +38,7 @@ export function RegionMapView({
   onHistoricalEvidenceOpacityChange,
   onHistoricalEvidenceVisibilityChange,
   onLayerControlsToggle,
-  onPredictionRenderingChange,
   predictionAvailable,
-  predictionRendering,
   selectedBasemapId,
   selectedRegion,
   showCompatibility,
@@ -82,9 +79,7 @@ export function RegionMapView({
   onHistoricalEvidenceOpacityChange: (opacity: number) => void;
   onHistoricalEvidenceVisibilityChange: () => void;
   onLayerControlsToggle: () => void;
-  onPredictionRenderingChange: (rendering: PredictionRendering) => void;
   predictionAvailable: boolean;
-  predictionRendering: PredictionRendering;
   selectedBasemapId: BasemapId;
   selectedRegion?: RegionId;
   showCompatibility: boolean;
@@ -169,9 +164,7 @@ export function RegionMapView({
           onExpandedChange={onLayerControlsToggle}
           onHistoricalEvidenceOpacityChange={onHistoricalEvidenceOpacityChange}
           onHistoricalEvidenceVisibilityChange={onHistoricalEvidenceVisibilityChange}
-          onPredictionRenderingChange={onPredictionRenderingChange}
           predictionAvailable={predictionAvailable}
-          predictionRendering={predictionRendering}
           selectedBasemapId={selectedBasemapId}
           showCompatibility={showCompatibility}
           speciesId={speciesId}

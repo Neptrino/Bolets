@@ -93,5 +93,8 @@ export function predictionModelVersion(ecologyVersion: string) {
 // invalidate server reads that retained the pre-rebuild empty/error payload.
 // v22: invalidate 1 km responses materialized before a same-day observed
 // replay completed; generation cursors now prevent that stale cache state.
+// v23: coarse combined cells carry parent habitat coverage for the species
+// selected by their child summary, including when the parent first scored zero.
+// v24: discard partial combined-map responses from misaligned decimal shards.
 export const PREDICTION_CACHE_VERSION =
-  `prediction-map-v22-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;
+  `prediction-map-v24-${HABITAT_MODEL_VERSION}-${PREDICTION_SCORING_VERSION}-${HYDROTHERMAL_V2_PRIOR_VERSION}`;

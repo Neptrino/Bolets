@@ -31,23 +31,23 @@ describe("prediction map rendering", () => {
     expect(source).not.toContain("if (cell.score !== 0)");
   });
 
-  it("offers an opt-in smooth heat surface while retaining exact cells by default", () => {
-    expect(source).toContain('predictionRendering = "cells"');
+  it("uses a smooth overview with automatic interactive detail", () => {
+    expect(source).toContain('predictionRendering = "heatmap"');
+    expect(source).toContain('const rendering = interactive ? "heatmap" : predictionRendering');
     expect(source).toContain('rendering === "heatmap"');
     expect(source).toContain("rasterizeSmoothedField(");
-    expect(source).toContain("smoothingSigmaMetres(first.cell.gridSizeM)");
+    expect(source).toContain("smoothingSigmaMetres(gridSizeM)");
     expect(source).toContain("withCataloniaLandClip(context, localMap");
   });
 
-  it("lets viewers pick the rendering in the layer panel and remembers it", () => {
-    expect(source).toContain("usePredictionRendering(predictionRendering, interactive)");
-    expect(source).toContain('"bolets-map-rendering"');
-    expect(source).toContain("<RegionMapRenderingControl");
-    expect(source).toContain("!showCompatibility && predictionAvailable ? (");
+  it("has no representation selector or persisted rendering preference", () => {
+    expect(source).not.toContain("usePredictionRendering");
+    expect(source).not.toContain('"bolets-map-rendering"');
+    expect(source).not.toContain("RegionMapRenderingControl");
   });
 
   it("keeps the smoothed surface inside the viewer's resolution floor", () => {
-    expect(source).toContain("gridSizeForSmoothedViewport(zoom, bounds)");
+    expect(source).toContain("SMOOTHED_PREDICTION_GRID_SIZE_M");
     expect(source).toContain("constrainGridSize(gridSizeM, minimumGridSizeM, maximumGridSizeM)");
   });
 
@@ -88,7 +88,7 @@ describe("prediction map rendering", () => {
   it("never requests finer than the coarse floor for the combined map", () => {
     expect(source).toContain("contributorAccess.minimumResolutionM");
     expect(source).toContain("Math.max(GLOBAL_MINIMUM_GRID_SIZE_M, detailedMinimumGridSizeM)");
-    expect(source).toContain("minimumGridSizeM,\n        maximumPredictionGridSizeM");
+    expect(source).toContain("localMap, minimumGridSizeM, maximumPredictionGridSizeM, rendering, interactive");
   });
 
   it("starts the Avui heatmap at 2.5 km resolution", () => {

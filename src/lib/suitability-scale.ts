@@ -23,6 +23,8 @@ const predictionMapColourStops = [
   { score: 100, color: "#2f704d" },
 ];
 
+const PREDICTION_PAINT_ALPHA = 0.84;
+
 function rgbFromHex(color: string) {
   return {
     red: Number.parseInt(color.slice(1, 3), 16),
@@ -67,7 +69,7 @@ export function predictionMapCellColour(score: number | null) {
   const red = interpolateChannel(lowerRgb.red, upperRgb.red, progress);
   const green = interpolateChannel(lowerRgb.green, upperRgb.green, progress);
   const blue = interpolateChannel(lowerRgb.blue, upperRgb.blue, progress);
-  return `rgba(${red}, ${green}, ${blue}, 0.68)`;
+  return `rgba(${red}, ${green}, ${blue}, ${PREDICTION_PAINT_ALPHA})`;
 }
 
 function colourChannels(color: string) {
@@ -102,5 +104,5 @@ export function predictionHeatmapColour(score: number | null) {
   const channels = leftChannels.map((channel, index) =>
     Math.round(channel + (rightChannels[index] - channel) * ratio)
   );
-  return `rgba(${channels[0]}, ${channels[1]}, ${channels[2]}, 0.84)`;
+  return `rgba(${channels[0]}, ${channels[1]}, ${channels[2]}, ${PREDICTION_PAINT_ALPHA})`;
 }

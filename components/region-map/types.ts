@@ -34,6 +34,7 @@ export type RegionMapProps = {
   mode?: MapViewMode;
   maximumPredictionGridSizeM?: SpatialGridSizeM;
   predictionAvailable?: boolean;
+  /** Static preview rendering; interactive predictions switch automatically. */
   predictionRendering?: PredictionRendering;
   showReadyStatus?: boolean;
   showTimeline?: boolean;

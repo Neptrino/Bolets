@@ -2,8 +2,6 @@ import { MapModeControl } from "@/components/map-mode-control";
 import type { MapViewMode } from "@/src/lib/types";
 import { RegionMapBasemapControl } from "./basemap-control";
 import { RegionMapControlPanel } from "./control-panel";
-import type { PredictionRendering } from "./prediction-surface";
-import { RegionMapRenderingControl } from "./rendering-control";
 import {
   MapLayerControl,
   type BasemapId,
@@ -29,9 +27,7 @@ export function RegionMapLayerControls({
   onExpandedChange,
   onHistoricalEvidenceOpacityChange,
   onHistoricalEvidenceVisibilityChange,
-  onPredictionRenderingChange,
   predictionAvailable,
-  predictionRendering,
   selectedBasemapId,
   showCompatibility,
   speciesId,
@@ -55,9 +51,7 @@ export function RegionMapLayerControls({
   onExpandedChange: () => void;
   onHistoricalEvidenceOpacityChange: (opacity: number) => void;
   onHistoricalEvidenceVisibilityChange: () => void;
-  onPredictionRenderingChange: (rendering: PredictionRendering) => void;
   predictionAvailable: boolean;
-  predictionRendering: PredictionRendering;
   selectedBasemapId: BasemapId;
   showCompatibility: boolean;
   speciesId?: string;
@@ -72,12 +66,6 @@ export function RegionMapLayerControls({
     >
         {!habitat && !globalPrediction ? (
           <MapModeControl mode={mode} predictionAvailable={predictionAvailable} />
-        ) : null}
-        {!showCompatibility && predictionAvailable ? (
-          <RegionMapRenderingControl
-            onChange={onPredictionRenderingChange}
-            rendering={predictionRendering}
-          />
         ) : null}
         <RegionMapBasemapControl
           choiceName={basemapChoiceName}

@@ -30,6 +30,12 @@ env`. The server-only local service-role value belongs only in
 usual local API URL is `http://127.0.0.1:54321`, and one-time-code emails are
 visible in Mailpit at `http://127.0.0.1:54324`.
 
+For local map testing without importing live environmental evidence, see the
+[development spatial-feed configuration](../README.md#local-development). Public
+and optional authorized detailed reads can use the live environmental feed while
+authentication and administration remain local. The ordinary seed has no detailed
+map data, and a production browser session does not grant local map access.
+
 Passkeys are enabled locally and are deliberately bound to
 `http://localhost:3101`; use that hostname rather than `127.0.0.1` when
 enrolling or signing in with one. A user first enters with an email code, then

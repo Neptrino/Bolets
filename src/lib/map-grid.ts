@@ -8,11 +8,11 @@ const spatialGridSizes = [250, 1000, 2500, 5000, 10000] as const satisfies reado
 // At 1,200 cells the 250 m grid remains comfortably interactive while a user
 // can assess a useful local area before needing to zoom further in.
 const maximumVisibleGridCells = 1200;
-// The smoothed surface reads best with more samples under its kernel, so it
-// may take one grid step finer than the cell view while the viewport stays
-// within this larger budget. It never goes coarser than the cell view, and
-// the viewer's resolution floor still applies afterwards.
-const maximumSmoothedGridCells = 3000;
+// A fixed source prevents habitat averages and zero masks from changing with
+// camera zoom. Current smoothed predictions use the public 2.5 km lattice;
+// access and timeline floors still apply in visibleGridSize. Interactive
+// maps hand off to exact cells when an allowed finer grid fits the viewport.
+export const SMOOTHED_PREDICTION_GRID_SIZE_M = 2500 satisfies SpatialGridSizeM;
 
 export function isSpatialGridSize(value: number): value is SpatialGridSizeM {
   return spatialGridSizes.some((size) => size === value);
@@ -68,22 +68,6 @@ export function gridSizeForViewport(
   }
 
   return spatialGridSizes.at(-1)!;
-}
-
-export function finerGridSize(sizeM: SpatialGridSizeM): SpatialGridSizeM {
-  const index = spatialGridSizes.indexOf(sizeM);
-  return index > 0 ? spatialGridSizes[index - 1] : sizeM;
-}
-
-/**
- * Grid for the smoothed surface: one step finer than the cell view when the
- * finer grid fits the smoothed budget, otherwise exactly the cell view's grid.
- */
-export function gridSizeForSmoothedViewport(zoom: number, bounds: SpatialBounds): SpatialGridSizeM {
-  const cellGrid = gridSizeForViewport(zoom, bounds);
-  const finer = finerGridSize(cellGrid);
-  if (finer === cellGrid) return cellGrid;
-  return estimateVisibleCells(bounds, finer) <= maximumSmoothedGridCells ? finer : cellGrid;
 }
 
 function formatDistance(sizeM: SpatialGridSizeM) {

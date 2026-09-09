@@ -17,7 +17,7 @@ import {
 import {
   boundsContain,
   constrainGridSize,
-  gridSizeForSmoothedViewport,
+  SMOOTHED_PREDICTION_GRID_SIZE_M,
   gridSizeForViewport,
 } from "@/src/lib/map-grid";
 import {
@@ -33,6 +33,7 @@ import type {
   SpatialGridSizeM,
 } from "@/src/lib/types";
 import type { PredictionRendering } from "./prediction-surface";
+import { predictionRenderingForGrid } from "./prediction-view";
 
 const cataloniaSpatialBounds = {
   west: cataloniaBounds[0][0],
@@ -218,15 +219,18 @@ function visibleGridSize(
   minimumGridSizeM: SpatialGridSizeM = 250,
   maximumGridSizeM?: SpatialGridSizeM,
   rendering: PredictionRendering = "cells",
+  automaticDetail = false,
 ) {
   const zoom = localMap.getZoom();
   const bounds = visibleSpatialBounds(localMap);
-  // The smoothed surface may take one grid step finer than the cell view
-  // within its own budget; the floor below still bounds what any viewer can
-  // request, so a public viewer's surface stays at the public resolution.
-  const gridSizeM = rendering === "heatmap"
-    ? gridSizeForSmoothedViewport(zoom, bounds)
-    : gridSizeForViewport(zoom, bounds);
+  // Interactive smoothing hands off to exact cells only when the access
+  // floor AND viewport budget permit finer detail. Overview sampling stays fixed.
+  const adaptiveGrid = constrainGridSize(
+    gridSizeForViewport(zoom, bounds), minimumGridSizeM, maximumGridSizeM,
+  );
+  const gridSizeM = predictionRenderingForGrid(rendering, adaptiveGrid, automaticDetail) === "heatmap"
+    ? SMOOTHED_PREDICTION_GRID_SIZE_M
+    : adaptiveGrid;
   // The combined map has no 250 m habitat cache, so it never requests finer
   // than its detail floor even when the zoom would allow it. Editorial map
   // surfaces may also opt into a smaller maximum cell size than the ordinary

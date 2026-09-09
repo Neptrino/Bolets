@@ -7,10 +7,10 @@ import type { PredictionMapCell } from "@/src/lib/types";
 import {
   fullSupportWeight,
   rasterizeSmoothedField,
-  smoothedRasterScale,
   smoothingSigmaMetres,
   type FieldSample,
 } from "./smoothed-field";
+import { projectSmoothedCell, smoothedViewportRaster } from "./smoothed-viewport";
 
 export type PredictionRendering = "cells" | "heatmap";
 
@@ -72,41 +72,24 @@ function cellScreenBounds(localMap: MapLibreMap, cell: PredictionMapCell) {
 
 /**
  * Habitat coverage weights the paint so cells that are mostly rock, fields or
- * town fade toward the terrain while dense forest saturates. Three-quarters
- * forest already fills a searcher's day, so it paints at full strength; under
- * a tenth there is barely anywhere to look, so those cells nearly vanish while
- * staying selectable. Zero and withheld cells keep their own faint styling.
+ * town fade toward the terrain while dense habitat paints more strongly.
+ * Missing coverage must not imply full coverage. Zero and withheld cells
+ * keep their own faint styling and outlines.
  */
 const COVERAGE_ALPHA_FLOOR = 0.06;
 
 /**
- * Coarse cells dilute forest fraction over huge areas — a 10 km sector that
- * is 30% forest still holds tens of square kilometres of woods — so the ramp
- * anchors shrink with grid size to keep overview zooms readable while fine
- * grids keep the full-contrast thresholds.
+ * Both modes use the established smoothed coverage fade. The same coverage
+ * carries the same paint weight at every resolution and in either mode.
+ * The fixed smoothed source keeps those inputs stable while zooming.
  */
-function coverageRamp(gridSizeM: number): { fadeOut: number; fullPaint: number } {
-  if (gridSizeM >= 10_000) return { fadeOut: 0.02, fullPaint: 0.3 };
-  if (gridSizeM >= 5_000) return { fadeOut: 0.03, fullPaint: 0.4 };
-  if (gridSizeM >= 2_500) return { fadeOut: 0.05, fullPaint: 0.55 };
-  return { fadeOut: 0.1, fullPaint: 0.75 };
-}
+const COVERAGE_RAMP = { fadeOut: 0.04, fullPaint: 0.45 };
 
-/**
- * The smoothed surface blends coverage across neighbouring cells anyway, so
- * one ramp serves every grid: zooming across a grid step must not punch new
- * holes into ground that read as solid a moment earlier.
- */
-const SMOOTHED_COVERAGE_RAMP = { fadeOut: 0.04, fullPaint: 0.45 };
-
-function coverageAlpha(
-  cell: PredictionMapCell,
-  ramp: { fadeOut: number; fullPaint: number } = coverageRamp(cell.gridSizeM),
-) {
+function coverageAlpha(cell: PredictionMapCell) {
   if (cell.score === null || cell.score === 0) return 1;
   const coverage = cell.habitatCoverage;
-  if (coverage === null || !Number.isFinite(coverage)) return 1;
-  const { fadeOut, fullPaint } = ramp;
+  if (coverage === null || !Number.isFinite(coverage)) return COVERAGE_ALPHA_FLOOR;
+  const { fadeOut, fullPaint } = COVERAGE_RAMP;
   if (coverage >= fullPaint) return 1;
   if (coverage <= fadeOut) return COVERAGE_ALPHA_FLOOR;
   return COVERAGE_ALPHA_FLOOR + (1 - COVERAGE_ALPHA_FLOOR) *
@@ -153,38 +136,33 @@ function drawHeatmap(
   const height = Math.round(output.clientHeight);
   if (width < 1 || height < 1) return;
 
-  // Every cell of a viewport shares one grid, so the first projected cell
-  // fixes the metres-per-pixel scale for all of them.
-  const projected: Array<{ cell: PredictionMapCell; left: number; top: number; width: number; height: number }> = [];
+  const projected: Array<ReturnType<typeof projectSmoothedCell> & { cell: PredictionMapCell }> = [];
   let selectedCell: PredictionMapCell | undefined;
   for (const cell of cells) {
     if (cell.cellId === selectedCellId) selectedCell = cell;
     // Withheld readings carry no value; verified zeros do, and pull the
     // surface down to nothing at the edge of suitable ground.
     if (cell.score === null) continue;
-    projected.push({ cell, ...cellScreenBounds(localMap, cell) });
+    projected.push({ cell, ...projectSmoothedCell(localMap, cell) });
   }
   if (projected.length) {
-    const first = projected[0];
-    const cellPx = Math.max(first.width, first.height);
-    const pixelsPerMetre = cellPx / first.cell.gridSizeM;
-    const sigmaPx = smoothingSigmaMetres(first.cell.gridSizeM) * pixelsPerMetre;
-    const scale = smoothedRasterScale(width, height, sigmaPx);
-    const rasterWidth = Math.max(1, Math.ceil(width / scale));
-    const rasterHeight = Math.max(1, Math.ceil(height / scale));
-    const sigma = sigmaPx / scale;
-    const samples: FieldSample[] = projected.map(({ cell, left, top, width: cellWidth, height: cellHeight }) => ({
-      x: (left + cellWidth / 2) / scale,
-      y: (top + cellHeight / 2) / scale,
-      sigma,
+    const gridSizeM = projected[0].cell.gridSizeM;
+    const raster = smoothedViewportRaster(localMap, width, height, gridSizeM);
+    const { scale, width: rasterWidth, height: rasterHeight } = raster;
+    const samples: FieldSample[] = projected.map(({ cell, x, y, sigma }) => ({
+      x: (x - raster.left) / scale,
+      y: (y - raster.top) / scale,
+      sigma: sigma / scale,
       score: cell.score ?? 0,
-      alpha: coverageAlpha(cell, SMOOTHED_COVERAGE_RAMP),
+      alpha: coverageAlpha(cell),
     }));
     const field = rasterizeSmoothedField(
       samples,
       rasterWidth,
       rasterHeight,
-      fullSupportWeight(sigma, cellPx / scale),
+      // The sigma/spacing ratio is geographic, independent of the first
+      // bucket's position or a clipped border cell's bounding box.
+      fullSupportWeight(smoothingSigmaMetres(gridSizeM), gridSizeM),
     );
 
     const heatCanvas = heatCanvasFor(output, rasterWidth, rasterHeight);
@@ -209,7 +187,7 @@ function drawHeatmap(
     context.save();
     context.imageSmoothingEnabled = true;
     context.imageSmoothingQuality = "high";
-    context.drawImage(heatCanvas, 0, 0, width, height);
+    context.drawImage(heatCanvas, raster.left, raster.top, rasterWidth * scale, rasterHeight * scale);
     context.restore();
   }
 

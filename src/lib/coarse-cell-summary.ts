@@ -11,13 +11,14 @@ import type { CoordinateBounds, SpatialBounds, SpatialGridSizeM } from "@/src/li
  * map instead of a second opinion.
  *
  * The colour is the habitat-coverage-weighted mean of the children's scores:
- * a mean commutes with the smoothed surface's kernel, so the overview reads
- * as a blurrier version of the zoomed-in map rather than a brighter one
+ * this avoids spreading a best child's score across the whole coarse cell
  * (taking the best child max-pooled sixteen 10 km children and then spread
  * that maximum over the square). Bare children carry little weight, so rock
  * and town do not drag forested ground down. The detail reading is the best
  * child's, named as such, so a click still shows where inside the square the
  * conditions come from. Geometry, habitat extent and identity stay coarse.
+ * This does not preserve the spatial opacity field; smoothing uses a fixed
+ * source grid instead of interpolating these summaries across zoom levels.
  */
 export type SummarisedGridSizeM = 5000 | 10000;
 export const COARSE_SUMMARY_CHILD_GRID_M = 2500 satisfies SpatialGridSizeM;

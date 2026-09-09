@@ -11,7 +11,7 @@ import { habitatScoringValues } from "@/supabase/functions/_shared/habitat-scori
 import type { GlobalGridSizeM } from "@/src/lib/global-map";
 import { habitatProfileKey } from "@/src/lib/habitat";
 import { PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
-import { requestBucketDegreesForGrid } from "@/src/lib/map-query";
+import { globalMapReadBounds } from "@/src/lib/global-map-query";
 import { spatialGlobalEnvironmentResponseSchema } from "@/src/lib/schema";
 import { calculateSuitability, missingModelFields } from "@/src/lib/scoring";
 import { edibleSpecies } from "@/src/lib/species-collections";
@@ -48,15 +48,6 @@ export const globalCandidateSpecies = edibleSpecies.filter(
 // open forever. Callers treat an aborted read as unavailable rather than
 // manufacturing a prediction.
 const GLOBAL_ENVIRONMENT_TIMEOUT_MS = 5_000;
-// Coalesce only while the upstream payload remains modest. The 2.5 km public
-// bucket already uses the 0.5° read shape, so expanding it again would add
-// cells without removing another browser request.
-const GLOBAL_MAP_SHARD_FACTOR: Record<GlobalGridSizeM, number> = {
-  1000: 2,
-  2500: 1,
-  5000: 2,
-  10000: 2,
-};
 const GLOBAL_MAP_SHARD_LIMIT = 1000;
 const GLOBAL_MAP_READ_SHAPE_VERSION = "global-map-shard-2x2-coalesced-v1";
 const globalEnvironmentInFlight = new Map<string, Promise<GlobalEnvironmentPayload>>();
@@ -128,45 +119,6 @@ export async function fetchGlobalEnvironment(
       globalEnvironmentInFlight.delete(url);
     }
   }
-}
-
-const stableCoordinate = (value: number) =>
-  Math.round(value * 1_000_000) / 1_000_000;
-
-function globalMapReadBounds(
-  bounds: SpatialBounds,
-  gridSizeM: GlobalGridSizeM,
-) {
-  const bucketDegrees = requestBucketDegreesForGrid(gridSizeM);
-  const tolerance = 1e-6;
-  if (
-    bounds.east - bounds.west > bucketDegrees + tolerance ||
-    bounds.north - bounds.south > bucketDegrees + tolerance
-  ) {
-    return bounds;
-  }
-
-  const shardDegrees = bucketDegrees * GLOBAL_MAP_SHARD_FACTOR[gridSizeM];
-  const west = Math.max(
-    cataloniaSpatialBounds.west,
-    stableCoordinate(Math.floor(bounds.west / shardDegrees) * shardDegrees),
-  );
-  const south = Math.max(
-    cataloniaSpatialBounds.south,
-    stableCoordinate(Math.floor(bounds.south / shardDegrees) * shardDegrees),
-  );
-  return {
-    west,
-    south,
-    east: Math.min(
-      cataloniaSpatialBounds.east,
-      stableCoordinate(west + shardDegrees),
-    ),
-    north: Math.min(
-      cataloniaSpatialBounds.north,
-      stableCoordinate(south + shardDegrees),
-    ),
-  };
 }
 
 function cellsForBounds(cells: GlobalEnvironmentCell[], bounds: SpatialBounds) {
@@ -372,11 +324,16 @@ export async function getGlobalPredictionCells(
   // their geometry and habitat extent stay coarse.
   const children = await summarisedGlobalChildren(bounds, gridSizeM);
   return {
-    cells: cells.map((cell) => {
+    cells: cells.map((cell, index) => {
       const summary = children.summaries.get(cell.cellId);
-      return summary
-        ? { ...cell, score: summary.score, topSpeciesId: summary.best.topSpeciesId }
-        : cell;
+      if (!summary) return cell;
+      const candidate = candidates.find(({ species }) => species.speciesId === summary.best.topSpeciesId);
+      return {
+        ...cell, score: summary.score, topSpeciesId: summary.best.topSpeciesId,
+        // Keep the parent's habitat extent, for the newly attributed species.
+        // combineCell validated all cache slots even when its score was zero.
+        habitatCoverage: candidate ? sourceCells[index].habitatCoverages?.[candidate.slot - 1] ?? 0 : null,
+      };
     }),
     truncated: truncated || children.truncated,
   };
@@ -455,6 +412,7 @@ export async function getGlobalCellRanking(
     mapCell: {
       ...combined.mapCell,
       score: childCombined.mapCell.score,
+      habitatCoverage: childCombined.mapCell.habitatCoverage,
       topSpeciesId: childCombined.mapCell.topSpeciesId,
     },
     ranking: childCombined.ranking,

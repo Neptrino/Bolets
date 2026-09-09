@@ -24,11 +24,11 @@ describe("ordinal opportunity scale", () => {
 
   it("interpolates prediction-map colours across the full positive range", () => {
     expect(predictionMapCellColour(0)).toBe("rgba(112, 103, 88, 0.1)");
-    expect(predictionMapCellColour(1)).toBe("rgba(201, 94, 53, 0.68)");
-    expect(predictionMapCellColour(4)).toBe("rgba(204, 100, 54, 0.68)");
-    expect(predictionMapCellColour(34)).toBe("rgba(204, 155, 70, 0.68)");
-    expect(predictionMapCellColour(80)).toBe("rgba(79, 138, 91, 0.68)");
-    expect(predictionMapCellColour(100)).toBe("rgba(47, 112, 77, 0.68)");
+    expect(predictionMapCellColour(1)).toBe("rgba(201, 94, 53, 0.84)");
+    expect(predictionMapCellColour(4)).toBe("rgba(204, 100, 54, 0.84)");
+    expect(predictionMapCellColour(34)).toBe("rgba(204, 155, 70, 0.84)");
+    expect(predictionMapCellColour(80)).toBe("rgba(79, 138, 91, 0.84)");
+    expect(predictionMapCellColour(100)).toBe("rgba(47, 112, 77, 0.84)");
     expect(predictionMapCellColour(null)).toBe("rgba(150, 149, 142, 0.24)");
   });
 
