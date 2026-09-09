@@ -80,7 +80,7 @@ describe("spatial forecast storage", () => {
     expect(currentReader).toContain("atmospherePoint.soil_point_id");
     expect(currentReader).toContain("condition_observed_at,condition_snapshot_date");
     expect(currentReader).toContain("snapshotDate <= cell.publishedSnapshotDate");
-    expect(currentReader).toContain("minimumConfidence(aggregate.confidence, cell.staticConfidence)");
+    expect(currentReader).toContain('minimumConfidence(aggregate.confidence, cell.staticConfidence, values.temperatureSource ? "limited" : undefined)');
     expect(currentReader).toContain("returning observed history only");
   });
 
