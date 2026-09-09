@@ -31,9 +31,34 @@ describe("published station/model temperature blend", () => {
     expect(terrainThermalCorrection(result)).toEqual({});
     expect(score()(result, 42.3, 2.2)).toBe(result);
   });
-  it("preserves exact baseline for one missing bracketing hour, even in a 14-day species window", () => {
+  it("preserves exact baseline for a missing older bracketing hour", () => {
     const missing = { ...window, hours: window.hours.slice(1) };
     expect(score(missing)(values, 42.3, 2.2)).toBe(values);
+  });
+  it.each([1, 2, 6, 12])("uses raw model extremes and aligned model means for a %i-hour trailing delay", (lag) => {
+    const missing = { ...window, hours: window.hours.filter((h) => h.hour <= endAt - lag * HOUR) };
+    const result = score(missing)(values, 42.3, 2.2);
+    expect(result.temperatureSource).toBe(STATION_TEMPERATURE_VERSION);
+    expect(result.temperatureModelOnlyHours).toBe(lag);
+    expect(result.temperatureAvg20dC).toBeCloseTo((23.35 * (480 - lag) + 26.7 * lag) / 480);
+    expect(result.temperatureAvg14dC).toBeCloseTo((23.35 * (336 - lag) + 26.7 * lag) / 336);
+    // Raw 28°C remains a heat hour even though its altitude-aligned mean is below 27°C.
+    expect(result.heatHours20d).toBe(lag);
+    expect(result.heatHours14d).toBe(lag);
+    expect(result.temperatureMinimumStations).toBe(2);
+    expect(result.temperatureAvg7dC).toBe(values.temperatureAvg7dC);
+    expect(result.rainfall7dMm).toBe(values.rainfall7dMm);
+    expect(result.soilMoisture).toBe(values.soilMoisture);
+    expect(terrainThermalCorrection(result)).toEqual({});
+  });
+  it("rejects 13 trailing hours and holes followed by resumed station support", () => {
+    const delayed = { ...window, hours: window.hours.filter((h) => h.hour <= endAt - 13 * HOUR) };
+    const hole = { ...window, hours: window.hours.filter((h) => h.hour !== endAt - HOUR) };
+    expect(score(delayed)(values, 42.3, 2.2)).toBe(values);
+    expect(score(hole)(values, 42.3, 2.2)).toBe(values);
+  });
+  it("keeps complete legacy frozen inputs readable after the source version changes", () => {
+    expect(score({ ...window, version: "xema-arome-blend-v1" }, { ...model, version: "xema-arome-blend-v1" })(values, 42.3, 2.2).heatHours20d).toBe(0);
   });
   it("preserves exact baseline on absent, stale-reference or conflicting optional evidence", () => {
     expect(createStationTemperatureScorer(new Map(), new Map())(values, 42.3, 2.2)).toBe(values);

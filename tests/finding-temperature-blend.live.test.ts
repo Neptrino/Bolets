@@ -43,6 +43,9 @@ it.skipIf(!enabled)("scores the fixed temperature blend against frozen findings 
   if (!["published", "validated"].includes(quality)) throw new Error("Invalid station quality policy");
   const normalized = aggregateXemaTemperatureHours(stationRows, quality);
   const config = stationModelBlendConfig(process.env.FINDING_BLEND_MODE ?? "original");
+  const lagSetting = process.env.FINDING_BLEND_LAG;
+  const lag = lagSetting === undefined || lagSetting === "" ? undefined : Number(lagSetting);
+  if (lag !== undefined && (!Number.isInteger(lag) || lag < 0 || lag > 13 || !config.donorTaper)) throw new Error("Invalid production lag scenario");
   const field = createStationObservedTemperature(normalized.hours, manifest.stations, config.lapseCPerKm, config.donorTaper);
   const sources = new Map<string, ThermalControl>();
   const inputs = readFileSync(join(directory, "inputs.jsonl"), "utf8").trim().split("\n").map((line) => JSON.parse(line));
@@ -81,7 +84,7 @@ it.skipIf(!enabled)("scores the fixed temperature blend against frozen findings 
       const reason = `control:${control.reason}`;
       coverage[reason] = (coverage[reason] ?? 0) + 1;
       appendFileSync(recordsFile, JSON.stringify({ ...input.record, temperatureBlend: {
-        version: config.version, applied: false, reason, supportedHours: 0, totalHours: 480,
+        version: lag === undefined ? config.version : STATION_TEMPERATURE_VERSION, applied: false, reason, supportedHours: 0, totalHours: 480,
       } }) + "\n");
       continue;
     }
@@ -96,26 +99,32 @@ it.skipIf(!enabled)("scores the fixed temperature blend against frozen findings 
         intervalBiasAtInstant((hour) => at(hour)?.temperatureC, instant)));
     }
     const comparison = compareCellObservedTemperature(species, snapshot, source, (instant) => series.get(instant));
+    let productionValues: ConditionSnapshot["values"] | undefined;
     if (config.donorTaper) {
       const production = createStationTemperatureScorer(new Map([[input.sourceId, {
         version: STATION_TEMPERATURE_VERSION, endAt: end, latitude: source.latitude, longitude: source.longitude,
         elevationM: source.elevationM, stationWindowId: "stations",
         temperaturesC: Array.from({ length: 480 }, (_, i) => source.hours.get(end - (479 - i) * 3_600_000)!),
       }]]), new Map([["stations", { version: STATION_TEMPERATURE_VERSION, endAt: end, stations: manifest.stations,
-        hours: normalized.hours.filter((h) => h.hour >= end - 480 * 3_600_000 && h.hour <= end),
+        hours: normalized.hours.filter((h) => h.hour >= end - 480 * 3_600_000 && h.hour <= end - (lag ?? 0) * 3_600_000),
       }]]));
       const values = production({ ...snapshot.values, thermalSources: [{ id: input.sourceId }] }, input.centre.latitude, input.centre.longitude);
       const actual = calculateSuitability(species, { ...snapshot, values });
       const expected = comparison.status === "available" ? comparison.scenario : comparison.baseline;
-      expect(actual.opportunityIndex).toBe(expected.score);
-      expect(actual.fruitingConditionsScore).toBe(expected.conditions);
+      if (lag === undefined) {
+        expect(actual.opportunityIndex).toBe(expected.score);
+        expect(actual.fruitingConditionsScore).toBe(expected.conditions);
+      }
+      productionValues = values;
     }
-    const reason = comparison.status === "available" ? "applied" : comparison.reason;
+    const available = lag === undefined ? comparison.status === "available" : productionValues?.temperatureSource === STATION_TEMPERATURE_VERSION;
+    const reason = available ? "applied" : comparison.status === "available" ? "baseline-fallback" : comparison.reason;
     coverage[reason] = (coverage[reason] ?? 0) + 1;
     let record = { ...input.record };
-    if (comparison.status === "available") {
+    if (available) {
       applied++;
-      const scenario: ConditionSnapshot = { ...snapshot, values: { ...snapshot.values, ...comparison.corrected, weatherElevationM: snapshot.values.altitudeM } };
+      const scenario: ConditionSnapshot = { ...snapshot, values: lag !== undefined ? productionValues! :
+        { ...snapshot.values, ...(comparison.status === "available" ? comparison.corrected : {}), weatherElevationM: snapshot.values.altitudeM } };
       delete scenario.values.thermalExposure;
       const score = calculateSuitability(species, scenario);
       const raw = rawDiagnostics(species, scenario.observedAt, scenario.values);
@@ -126,17 +135,19 @@ it.skipIf(!enabled)("scores the fixed temperature blend against frozen findings 
         windowMeanTemperatureC: species.modelConfig.status === "supported" && species.modelConfig.temperature.windowDays === 14
           ? scenario.values.temperatureAvg14dC : scenario.values.temperatureAvg20dC };
     }
-    record.temperatureBlend = { version: config.version, applied: comparison.status === "available", reason,
-      supportedHours: [...series.values()].filter((temperature) => temperature !== undefined).length, totalHours: 480 };
+    record.temperatureBlend = { version: lag === undefined ? config.version : STATION_TEMPERATURE_VERSION, applied: available, reason,
+      modelOnlyHours: productionValues?.temperatureModelOnlyHours,
+      supportedHours: lag === undefined ? [...series.values()].filter((temperature) => temperature !== undefined).length :
+        available ? 480 - (productionValues?.temperatureModelOnlyHours ?? 0) : 0, totalHours: 480 };
     const encoded = JSON.stringify(record);
     expect(encoded).not.toMatch(/latitude|longitude|cellId|weatherGrid|soilGrid/i);
     appendFileSync(recordsFile, encoded + "\n");
   }
-  const summary = { version: config.version, config, quality, records: inputs.length, appliedRecords: applied, coverage,
+  const summary = { version: lag === undefined ? config.version : STATION_TEMPERATURE_VERSION, simulatedTrailingLagHours: lag, config, quality, records: inputs.length, appliedRecords: applied, coverage,
     stationCount: codes.length, observedStationHours: normalized.hours.length,
     provisionalStationHours: normalized.hours.filter((hour) => hour.validation === "provisional").length,
     modelSourceControls: sources.size, networkFetches: 0, failures: [],
-    limitations: ["Same eight-station experiment", "Incomplete station windows retain the complete production baseline", "Presence-only background dates are not verified absences", "Retrospective observation blend; not a forecast"] };
+    limitations: ["Same eight-station experiment", "Production lag scenarios allow at most 12 contiguous trailing model-only hours; older gaps retain baseline", "Presence-only background dates are not verified absences", "Retrospective observation blend; not a forecast"] };
   writeFileSync(join(out, "replay-summary.json"), JSON.stringify(summary, null, 2) + "\n", { mode: 0o600 });
   console.log(JSON.stringify(summary, null, 2));
 }, 120_000);

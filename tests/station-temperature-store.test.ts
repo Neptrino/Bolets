@@ -47,7 +47,7 @@ describe("frozen station temperature integration", () => {
       expect(scorer(original, 42.3, 2.2)).toBe(original);
     } finally { log.mockRestore(); }
   });
-  it("waits for the final observation interval instead of freezing a daily outage", async () => {
+  it("does not freeze an extended station outage", async () => {
     const upsert = vi.fn();
     const stations = ["CG", "DG"].map((station_code) => ({ station_code, latitude: 42.3, longitude: 2.2, altitude_m: 1200 }));
     const days = Array.from({ length: 21 }, () => ({ stations, hours: [] }));
@@ -56,6 +56,22 @@ describe("frozen station temperature integration", () => {
     const db = { from: () => query } as unknown as Parameters<typeof freezeStationTemperatureSources>[0];
     expect((await freezeStationTemperatureSources(db, new Map([["point", location]]))).size).toBe(0);
     expect(upsert).not.toHaveBeenCalled();
+  });
+  it.each([0, 1, 6, 12, 13])("freezes a %i-hour tail only within the publication limit", async (lag) => {
+    const stations = ["CG", "DG"].map((station_code) => ({ station_code, latitude: 42.3, longitude: 2.2, altitude_m: 1200 }));
+    const hours = stations.flatMap((s) => Array.from({ length: 481 - lag }, (_, i) => ({
+      stationCode: s.station_code, hour: (end - (480 - i) * 3600) * 1000, temperatureC: 20, validation: "provisional",
+    })));
+    const days = Array.from({ length: 21 }, (_, i) => ({ stations, hours: i === 0 ? hours : [] }));
+    let frozen: unknown;
+    const query = { select: () => query, eq: () => query, gte: () => query, lte: () => query, order: () => query,
+      maybeSingle: async () => ({ data: null, error: null }), limit: async () => ({ data: days, error: null }),
+      single: async () => ({ data: frozen, error: null }),
+      upsert: vi.fn(async (row: unknown) => { if (!Array.isArray(row)) frozen = row; return { error: null }; }) };
+    const db = { from: () => query } as unknown as Parameters<typeof freezeStationTemperatureSources>[0];
+    const result = await freezeStationTemperatureSources(db, new Map([["point", location]]));
+    expect(result.size).toBe(lag <= 12 ? 1 : 0);
+    expect(query.upsert.mock.calls.length).toBe(lag <= 12 ? 2 : 0);
   });
   it("removes private references and distributions while retaining source provenance", () => {
     expect(publicTemperatureValues({ thermalSources: [{ id: "secret" }], thermalExposure: [1], temperatureSource: STATION_TEMPERATURE_VERSION }))

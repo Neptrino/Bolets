@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { OpenMeteoLocation } from "./open-meteo-core.ts";
 import { haversineKm, type XemaStation } from "./xema-rain.ts";
 import type { StationTemperatureHour } from "./xema-temperature.ts";
-import { STATION_TEMPERATURE_VERSION } from "./station-temperature-field.ts";
+import { STATION_TEMPERATURE_VERSION, stationTemperatureTailLag } from "./station-temperature-field.ts";
 import { createStationTemperatureScorer, validThermalSources, type ThermalModelWindow, type ThermalSources, type StationTemperatureWindow } from "./station-temperature-scoring.ts";
 
 type Database = SupabaseClient;
@@ -53,9 +53,11 @@ export async function freezeStationTemperatureSources(db: Database, locations: M
           const codes = reporting.get(h.hour) ?? new Set<string>();
           codes.add(h.stationCode); reporting.set(h.hour, codes);
         }
-        // Do not freeze a not-yet-arrived final observation interval for the
-        // whole day. The bounded attachment job can publish it after arrival.
-        if (Array.from({ length: 481 }, (_, i) => endAt - i * HOUR).some((h) => (reporting.get(h)?.size ?? 0) < 2)) {
+        // Freeze bounded feed latency with the publication, never fill an
+        // older gap or turn a partial measurement interval into an observation.
+        const support = Array.from({ length: 481 }, (_, i) =>
+          (reporting.get(endAt - (480 - i) * HOUR)?.size ?? 0) >= 2);
+        if (stationTemperatureTailLag(support) === undefined) {
           windowCache.set(endAt, null); continue;
         }
         const id = await digest(payload);

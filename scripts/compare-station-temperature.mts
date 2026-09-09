@@ -22,6 +22,7 @@ Options:
   --quality=validated   Require V flags (default); published includes labelled provisional readings.
   --cache-dir=...       Default artifacts/station-temperature/cache; public station data only.
   --out=...             Default artifacts/station-temperature/report.json.
+  --station-lag-hours=0..12  Also simulate unavailable trailing peer observations.
   --offline            Require cached inputs; never call providers or the usage ledger.
 
 End is inclusive and must be a completed UTC day; range 10–60 days, 3–40 stations.
@@ -45,6 +46,8 @@ const date = (name: string) => {
 const start = date("start");
 const end = date("end");
 const split = date("split");
+const lagHours = args.has("station-lag-hours") ? Number(args.get("station-lag-hours")) : undefined;
+if (lagHours !== undefined && (!Number.isInteger(lagHours) || lagHours < 0 || lagHours > 12)) throw new Error("Invalid station delay");
 const days = (end.ms - start.ms) / 86_400_000 + 1;
 if (days < 10 || days > 60 || end.value >= new Date().toISOString().slice(0, 10)) {
   throw new Error("Choose 10–60 completed UTC days");
@@ -187,6 +190,11 @@ const report = {
     new Map(stationResults.map((station) => [station.station_code, station.providerElevationM])), split.ms),
   taperedStationModelBlend: evaluateStationModelBlend(pairs, normalized.hours, stations,
     new Map(stationResults.map((station) => [station.station_code, station.providerElevationM])), split.ms, "tapered"),
+  lagSensitivity: lagHours === undefined ? undefined : {
+    trailingHours: lagHours,
+    ...evaluateStationModelBlend(pairs, normalized.hours.filter((h) => h.hour < end.ms + 86_400_000 - lagHours * 3_600_000), stations,
+      new Map(stationResults.map((station) => [station.station_code, station.providerElevationM])), split.ms, "tapered"),
+  },
   usage,
   inputs: inputs.sort((a, b) => a.urlSha256.localeCompare(b.urlSha256)),
   limitations: [

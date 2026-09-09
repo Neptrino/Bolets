@@ -1,7 +1,18 @@
 import { haversineKm, type XemaStation } from "./xema-rain.ts";
 import type { StationTemperatureHour } from "./xema-temperature.ts";
 
-export const STATION_TEMPERATURE_VERSION = "xema-arome-blend-v1";
+export const STATION_TEMPERATURE_VERSION = "xema-arome-blend-v2";
+export const STATION_TEMPERATURE_MAX_LAG_HOURS = 12;
+
+/** Only a contiguous unpublished tail is tolerated, never an older coverage gap. */
+export function stationTemperatureTailLag(supported: boolean[]): number | undefined {
+  const firstMissing = supported.indexOf(false);
+  if (firstMissing < 0) return 0;
+  const lag = supported.length - firstMissing;
+  return lag <= STATION_TEMPERATURE_MAX_LAG_HOURS && supported.slice(firstMissing).every((v) => !v)
+    ? lag : undefined;
+}
+
 export const STATION_TEMPERATURE_CODES = ["CG", "DG", "DP", "MS", "W9", "YA", "ZC", "ZD"] as const;
 
 export const STATION_BIAS_EXPERIMENT = {

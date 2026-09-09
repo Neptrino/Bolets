@@ -34,12 +34,13 @@ export async function attachStationTemperatureBatch(db: SupabaseClient, last: st
     locations.set(`${snapshot.point_id}|${snapshot.snapshot_date}`, { ...state, current: { ...state.current, time: end / 1000 } });
   }
   const refs = await freezeStationTemperatureSources(db, locations);
-  const validAt = snapshots?.[0]?.values.weatherObservedAt;
+  const pending = locations.values().next().value;
+  const validAt = pending ? new Date(Number(pending.current?.time) * 1000).toISOString() : undefined;
   const { data: frozen, error: frozenError } = validAt
     ? await db.from("station_temperature_windows").select("id").eq("version", STATION_TEMPERATURE_VERSION).eq("valid_at", validAt).maybeSingle()
     : { data: null, error: null };
   if (frozenError) throw frozenError;
-  if (!frozen) return { complete: false, ready: false, next: last, attached, unchanged, mismatched };
+  if (validAt && !frozen) return { complete: false, ready: false, next: last, attached, unchanged, mismatched };
   for (const snapshot of snapshots ?? []) {
     const thermalSources = refs.get(`${snapshot.point_id}|${snapshot.snapshot_date}`);
     if (!thermalSources) continue;

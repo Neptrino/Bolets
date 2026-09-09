@@ -1,6 +1,6 @@
 import {
   blendStationModelTemperature, createStationObservedTemperature, modelTemperatureAtElevation,
-  STATION_DONOR_TAPER, STATION_TEMPERATURE_CODES, STATION_TEMPERATURE_VERSION,
+  STATION_DONOR_TAPER, STATION_TEMPERATURE_CODES, STATION_TEMPERATURE_VERSION, stationTemperatureTailLag,
 } from "./station-temperature-field.ts";
 import type { XemaStation } from "./xema-rain.ts";
 import type { StationTemperatureHour } from "./xema-temperature.ts";
@@ -9,13 +9,13 @@ const HOUR = 3_600_000;
 export const THERMAL_FIELDS = ["temperatureAvg14dC", "temperatureAvg20dC", "heatHours14d", "heatHours20d", "frostHours14d", "frostHours20d"] as const;
 export type ThermalSources = Array<{ id: string; weight?: number }>;
 export type StationTemperatureWindow = {
-  version: typeof STATION_TEMPERATURE_VERSION;
+  version: typeof STATION_TEMPERATURE_VERSION | "xema-arome-blend-v1";
   endAt: number;
   stations: XemaStation[];
   hours: StationTemperatureHour[];
 };
 export type ThermalModelWindow = {
-  version: typeof STATION_TEMPERATURE_VERSION;
+  version: typeof STATION_TEMPERATURE_VERSION | "xema-arome-blend-v1";
   endAt: number;
   latitude: number;
   longitude: number;
@@ -54,14 +54,14 @@ export function mergeThermalSources(values: unknown[]): ThermalSources | undefin
 }
 
 function validModel(value: ThermalModelWindow | undefined): value is ThermalModelWindow {
-  return !!value && value.version === STATION_TEMPERATURE_VERSION &&
+  return !!value && [STATION_TEMPERATURE_VERSION, "xema-arome-blend-v1"].includes(value.version) &&
     [value.endAt, value.latitude, value.longitude, value.elevationM].every(Number.isFinite) && value.endAt % HOUR === 0 &&
     Array.isArray(value.temperaturesC) && value.temperaturesC.length === 480 &&
     value.temperaturesC.every((v) => Number.isFinite(v) && v >= -50 && v <= 60);
 }
 
 function validStations(value: StationTemperatureWindow | undefined): value is StationTemperatureWindow {
-  return !!value && value.version === STATION_TEMPERATURE_VERSION && Number.isFinite(value.endAt) &&
+  return !!value && [STATION_TEMPERATURE_VERSION, "xema-arome-blend-v1"].includes(value.version) && Number.isFinite(value.endAt) &&
     Array.isArray(value.stations) && new Set(value.stations.map((s) => s.station_code)).size === value.stations.length &&
     value.stations.every((s) => (STATION_TEMPERATURE_CODES as readonly string[]).includes(s.station_code) &&
       [s.latitude, s.longitude, s.altitude_m].every(Number.isFinite)) &&
@@ -105,17 +105,26 @@ export function createStationTemperatureScorer(
     const corrected: ReturnType<typeof thermalAggregates>[] = [];
     let provisional = false;
     let minimumDonors = Infinity;
+    let modelOnlyHours = 0;
     for (const { model } of points) {
       const window = windows.get(model.stationWindowId);
       const field = fields.get(model.stationWindowId);
       if (!window || !field || window.endAt !== time) return values;
       const at = field({ station_code: "cell", latitude, longitude, altitude_m: altitudeM });
+      const intervals = Array.from({ length: 481 }, (_, i) => at(time - (480 - i) * HOUR));
+      const lag = stationTemperatureTailLag(intervals.map(Boolean));
+      if (lag === undefined) return values;
+      modelOnlyHours = Math.max(modelOnlyHours, lag);
       const temperatures: number[] = [];
       // Preserve the diagnostic's interval-centre approximation exactly.
       for (let i = 0; i < 480; i++) {
-        const hour = time - (479 - i) * HOUR;
-        const before = at(hour - HOUR), after = at(hour);
-        if (!before || !after) return values;
+        const before = intervals[i], after = intervals[i + 1];
+        if (!before || !after) {
+          // Preserve provider extremes for the unpublished tail: no unsupported
+          // hourly lapse recount. Mean elevation alignment is applied below.
+          temperatures.push(model.temperaturesC[i]);
+          continue;
+        }
         minimumDonors = Math.min(minimumDonors, before.donors.length, after.donors.length);
         const estimate = blendStationModelTemperature(
           modelTemperatureAtElevation(model.temperaturesC[i], model.elevationM, altitudeM),
@@ -125,11 +134,15 @@ export function createStationTemperatureScorer(
         temperatures.push(estimate);
       }
       provisional ||= window.hours.some((h) => h.validation === "provisional");
-      corrected.push(thermalAggregates(temperatures));
+      const aggregates = thermalAggregates(temperatures);
+      const meanAdjustment = modelTemperatureAtElevation(0, model.elevationM, altitudeM)!;
+      aggregates.temperatureAvg14dC += meanAdjustment * lag / 336;
+      aggregates.temperatureAvg20dC += meanAdjustment * lag / 480;
+      corrected.push(aggregates);
     }
     return { ...values, ...combine(corrected), thermalExposure: undefined,
       thermalReferenceElevationM: altitudeM, temperatureSource: STATION_TEMPERATURE_VERSION,
       temperatureQuality: provisional ? "includes-provisional" : "validated",
-      temperatureMinimumStations: minimumDonors };
+      temperatureMinimumStations: minimumDonors, temperatureModelOnlyHours: modelOnlyHours };
   };
 }
