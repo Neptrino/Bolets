@@ -14,7 +14,7 @@ Use this index for current guidance and open plans. Dated research and completed
 | [Data licences](data-licenses.md) | Source provenance and reuse requirements |
 | [Fruiting-model diagnosis](fruiting-model-diagnosis.md) | Historical calibration evidence and replay procedure; current constants remain in code |
 | [Terrain thermal exposure](terrain-thermal-exposure.md) | Optional thermal evidence, rejected hourly correction and findings comparison |
-| [Observed temperature validation](station-temperature-validation.md) | XEMA/AROME diagnostics, observation quality, adjacent-cell checks and paired findings evaluation |
+| [Observed temperature validation](station-temperature-validation.md) | Full-network XEMA/AROME diagnostics, observation quality, adjacent-cell checks and paired findings evaluation |
 | [Offline AROME comparison](arome-point-artifact-comparison.md) | Reproducible private artifact comparison |
 
 ## Product and editorial work

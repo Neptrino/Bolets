@@ -1,7 +1,7 @@
 // @deno-types="https://esm.sh/@supabase/supabase-js@2.112.3"
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { freezeStationTemperatureSources } from "./station-temperature-store.ts";
-import { THERMAL_FIELDS, thermalAggregates } from "./station-temperature-scoring.ts";
+import { THERMAL_FIELDS, thermalAggregates, validThermalSources } from "./station-temperature-scoring.ts";
 import { STATION_TEMPERATURE_VERSION } from "./station-temperature-field.ts";
 import type { OpenMeteoLocation } from "./open-meteo-core.ts";
 
@@ -15,15 +15,27 @@ export async function attachStationTemperatureBatch(db: SupabaseClient, last: st
   const { data: snapshots, error: snapshotsError } = await db.from("weather_grid_snapshots")
     .select("point_id,snapshot_date,observed_at,values").in("point_id", states.map((s) => s.point_id)).gte("snapshot_date", start).limit(400);
   if (snapshotsError) throw snapshotsError;
+  const existingIds = [...new Set((snapshots ?? []).flatMap((snapshot) =>
+    validThermalSources(snapshot.values.thermalSources) ? snapshot.values.thermalSources.map((source: { id: string }) => source.id) : []))];
+  const currentIds = new Set<string>();
+  for (let offset = 0; offset < existingIds.length; offset += 100) {
+    const { data, error } = await db.from("thermal_model_windows").select("id,version:payload->>version")
+      .in("id", existingIds.slice(offset, offset + 100)).limit(100);
+    if (error) throw error;
+    for (const row of data ?? []) if (row.version === STATION_TEMPERATURE_VERSION) currentIds.add(row.id);
+  }
   const stateById = new Map(states.map((s) => [s.point_id, s.payload as OpenMeteoLocation]));
   const locations = new Map<string, OpenMeteoLocation>();
   for (const snapshot of snapshots ?? []) {
-    if (snapshot.values.thermalSources?.length) { unchanged++; continue; }
+    if (validThermalSources(snapshot.values.thermalSources) && snapshot.values.thermalSources.every((source: { id: string }) => currentIds.has(source.id))) {
+      unchanged++; continue;
+    }
     const state = stateById.get(snapshot.point_id)!;
     const values = snapshot.values;
     const end = Date.parse(values.weatherObservedAt);
     const times = state.hourly?.time as number[];
     const temperatures = state.hourly?.temperature_2m as number[];
+    if (!Array.isArray(times) || !Array.isArray(temperatures) || times.length !== temperatures.length || !Number.isFinite(end)) { mismatched++; continue; }
     const index = times.findIndex((t) => t * 1000 === end);
     const series = temperatures.slice(index - 479, index + 1);
     const control = thermalAggregates(series);

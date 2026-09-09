@@ -403,7 +403,7 @@ const loadCachedCurrentOverviewData = unstable_cache(
     void generation;
     return assertCacheableOverview(await loadCurrentOverview());
   },
-  ["current-overview-v9-xema-temperature-lag"],
+  ["current-overview-v10-xema-temperature-network"],
   { revalidate: DAILY_OVERVIEW_REVALIDATE_SECONDS, tags: ["current-overview"] },
 );
 
@@ -412,7 +412,7 @@ const loadCachedAreaOverviewData = unstable_cache(
     void generation;
     return assertCacheableOverview(await loadAreaOverview());
   },
-  ["area-overview-v9-xema-temperature-lag"],
+  ["area-overview-v10-xema-temperature-network"],
   { revalidate: DAILY_OVERVIEW_REVALIDATE_SECONDS, tags: ["area-overview"] },
 );
 

@@ -1,7 +1,7 @@
 import { createAdminClient, finishRun, json, requireServiceRole, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
 import { attachStationTemperatureBatch } from "../_shared/station-temperature-backfill.ts";
 
-const PIPELINE = "station-temperature-publication";
+const PIPELINE = "station-temperature-publication-v3";
 Deno.serve(async (request) => {
   if (request.method !== "POST") return json({ error: "Method not allowed" }, 405, { Allow: "POST" });
   const db = createAdminClient();
@@ -9,15 +9,16 @@ Deno.serve(async (request) => {
   let runId: string | undefined;
   try {
     const today = new Date().toISOString().slice(0, 10);
-    const { data: atmosphere, error: atmosphereError } = await db.from("pipeline_cursors").select("snapshot_date,last_cell_id")
+    const { data: atmosphere, error: atmosphereError } = await db.from("pipeline_cursors").select("snapshot_date,last_cell_id,updated_at")
       .eq("pipeline", "spatial-atmosphere").maybeSingle();
     if (atmosphereError) throw atmosphereError;
     if (atmosphere?.snapshot_date !== today || atmosphere.last_cell_id !== "__complete__") return json({ waiting: "atmosphere" });
-    const { data: cursor, error: cursorError } = await db.from("pipeline_cursors").select("snapshot_date,last_cell_id")
+    const { data: cursor, error: cursorError } = await db.from("pipeline_cursors").select("snapshot_date,last_cell_id,updated_at")
       .eq("pipeline", PIPELINE).maybeSingle();
     if (cursorError) throw cursorError;
-    if (cursor?.snapshot_date === today && cursor.last_cell_id === "__complete__") return json({ complete: true });
-    const last = cursor?.snapshot_date === today ? cursor.last_cell_id : "";
+    const sameGeneration = cursor?.snapshot_date === today && Date.parse(cursor.updated_at) >= Date.parse(atmosphere.updated_at);
+    if (sameGeneration && cursor.last_cell_id === "__complete__") return json({ complete: true });
+    const last = sameGeneration ? cursor.last_cell_id : "";
     runId = await startRun(db, "station-temperature", "cron", today, { phase: "attach-frozen-temperature", last });
     const batch = await attachStationTemperatureBatch(db, last, today);
     if (!batch.ready) {

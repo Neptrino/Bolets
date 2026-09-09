@@ -3,8 +3,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { OpenMeteoLocation } from "./open-meteo-core.ts";
 import { haversineKm, type XemaStation } from "./xema-rain.ts";
 import type { StationTemperatureHour } from "./xema-temperature.ts";
-import { STATION_TEMPERATURE_VERSION, stationTemperatureTailLag } from "./station-temperature-field.ts";
+import { STATION_TEMPERATURE_VERSION, STATION_TEMPERATURE_POOL_VERSION, stationTemperatureTailLag } from "./station-temperature-field.ts";
 import { createStationTemperatureScorer, validThermalSources, type ThermalModelWindow, type ThermalSources, type StationTemperatureWindow } from "./station-temperature-scoring.ts";
+
+import { packStationTemperatureWindow, unpackStationTemperatureWindow } from "./station-temperature-window.ts";
 
 type Database = SupabaseClient;
 const HOUR = 3_600_000;
@@ -36,10 +38,15 @@ export async function freezeStationTemperatureSources(db: Database, locations: M
         const { data: frozen, error: frozenError } = await db.from("station_temperature_windows").select("id,payload")
           .eq("version", STATION_TEMPERATURE_VERSION).eq("valid_at", validAt).maybeSingle();
         if (frozenError) throw frozenError;
-        if (frozen) windowCache.set(endAt, { id: frozen.id, payload: frozen.payload as StationTemperatureWindow });
+        if (frozen) {
+          const payload = unpackStationTemperatureWindow(frozen.payload);
+          if (!payload) throw new Error("Invalid frozen station window");
+          windowCache.set(endAt, { id: frozen.id, payload });
+        }
       }
       if (!windowCache.has(endAt)) {
         const { data, error } = await db.from("xema_temperature_days").select("day,stations,hours")
+          .eq("station_pool_version", STATION_TEMPERATURE_POOL_VERSION)
           .gte("day", new Date(endAt - 480 * HOUR).toISOString().slice(0, 10))
           .lte("day", new Date(endAt).toISOString().slice(0, 10)).order("day").limit(22);
         if (error) throw error;
@@ -60,14 +67,17 @@ export async function freezeStationTemperatureSources(db: Database, locations: M
         if (stationTemperatureTailLag(support) === undefined) {
           windowCache.set(endAt, null); continue;
         }
-        const id = await digest(payload);
-        const { error: insertError } = await db.from("station_temperature_windows").upsert({ id, payload, version: STATION_TEMPERATURE_VERSION, valid_at: new Date(endAt).toISOString() }, { onConflict: "version,valid_at", ignoreDuplicates: true });
+        const packed = packStationTemperatureWindow(payload);
+        const id = await digest(packed);
+        const { error: insertError } = await db.from("station_temperature_windows").upsert({ id, payload: packed, version: STATION_TEMPERATURE_VERSION, valid_at: new Date(endAt).toISOString() }, { onConflict: "version,valid_at", ignoreDuplicates: true });
         if (insertError) throw insertError;
         // A competing shard may have frozen the same valid hour first.
         const { data: published, error: publicationError } = await db.from("station_temperature_windows").select("id,payload")
           .eq("version", STATION_TEMPERATURE_VERSION).eq("valid_at", new Date(endAt).toISOString()).single();
         if (publicationError) throw publicationError;
-        windowCache.set(endAt, { id: published.id, payload: published.payload as StationTemperatureWindow });
+        const publishedPayload = unpackStationTemperatureWindow(published.payload);
+        if (!publishedPayload) throw new Error("Invalid published station window");
+        windowCache.set(endAt, { id: published.id, payload: publishedPayload });
       }
       const window = windowCache.get(endAt);
       if (!window || window.payload.stations.filter((s) => haversineKm(s.latitude, s.longitude, location.latitude!, location.longitude!) < 65).length < 2) continue;
@@ -112,7 +122,10 @@ export async function loadStationTemperatureScorer(db: Database, values: Record<
     if (stationIds.length) {
       const { data, error } = await db.from("station_temperature_windows").select("id,payload").in("id", stationIds).limit(stationIds.length);
       if (error) throw error;
-      for (const row of data ?? []) windows.set(row.id, row.payload as StationTemperatureWindow);
+      for (const row of data ?? []) {
+        const window = unpackStationTemperatureWindow(row.payload);
+        if (window) windows.set(row.id, window);
+      }
     }
     return Object.assign(createStationTemperatureScorer(models, windows), {
       inputsComplete: ids.every((id) => models.has(id)) && stationIds.every((id) => windows.has(id)),

@@ -14,7 +14,7 @@ const target: TemperatureTarget = {
 };
 const patch = { temperatureAvg14dC: 16, temperatureAvg20dC: 15, heatHours14d: 0, heatHours20d: 0,
   frostHours14d: 0, frostHours20d: 0, thermalReferenceElevationM: 1800, temperatureSource: STATION_TEMPERATURE_VERSION,
-  temperatureQuality: "includes-provisional", temperatureMinimumStations: 2, temperatureModelOnlyHours: 1 };
+  temperatureQuality: "includes-provisional", temperatureMinimumStations: 19, temperatureModelOnlyHours: 1 };
 function database() {
   const rows = new Map<string, Record<string, unknown>>();
   let error = false;

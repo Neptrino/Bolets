@@ -1,4 +1,4 @@
-import { STATION_TEMPERATURE_VERSION } from "./station-temperature-field.ts";
+import { MAX_TEMPERATURE_STATIONS, STATION_TEMPERATURE_VERSION, STATION_TEMPERATURE_VERSIONS } from "./station-temperature-field.ts";
 import { THERMAL_FIELDS, validThermalSources } from "./station-temperature-scoring.ts";
 import { loadStationTemperatureScorer } from "./station-temperature-store.ts";
 
@@ -33,12 +33,12 @@ function validPatch(value: unknown, altitude: unknown): value is Values {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const patch = value as Values;
   return Object.keys(patch).length === PATCH_FIELDS.length && PATCH_FIELDS.every((key) => key in patch) &&
-    patch.temperatureSource === STATION_TEMPERATURE_VERSION && patch.thermalReferenceElevationM === altitude &&
+    (STATION_TEMPERATURE_VERSIONS as readonly unknown[]).includes(patch.temperatureSource) && patch.thermalReferenceElevationM === altitude &&
     ["validated", "includes-provisional"].includes(String(patch.temperatureQuality)) &&
     THERMAL_FIELDS.every((key) => typeof patch[key] === "number" && Number.isFinite(patch[key]) &&
       (key.startsWith("temperature") ? Number(patch[key]) >= -50 && Number(patch[key]) <= 60 :
         Number.isInteger(patch[key]) && Number(patch[key]) >= 0 && Number(patch[key]) <= (key.endsWith("14d") ? 336 : 480))) &&
-    Number.isInteger(patch.temperatureMinimumStations) && Number(patch.temperatureMinimumStations) >= 2 && Number(patch.temperatureMinimumStations) <= 8 &&
+    Number.isInteger(patch.temperatureMinimumStations) && Number(patch.temperatureMinimumStations) >= 2 && Number(patch.temperatureMinimumStations) <= MAX_TEMPERATURE_STATIONS &&
     Number.isInteger(patch.temperatureModelOnlyHours) && Number(patch.temperatureModelOnlyHours) >= 0 && Number(patch.temperatureModelOnlyHours) <= 12;
 }
 

@@ -47,6 +47,7 @@
     "weather:compare-historical-findings": "node scripts/compare-historical-findings.mjs",
     "weather:compare-provider-shadows": "node scripts/compare-provider-shadows.mjs",
     "weather:compare-station-rain": "node --experimental-strip-types scripts/compare-station-rain.mts",
+    "weather:compare-temperature-network": "node --experimental-strip-types scripts/compare-temperature-network.mts",
     "weather:compare-station-temperature": "node --experimental-strip-types scripts/compare-station-temperature.mts",
     "weather:compare-cell-temperature": "node scripts/compare-cell-temperature.mjs",
     "weather:compare-temperature-boundaries": "node scripts/compare-temperature-boundaries.mjs",

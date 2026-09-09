@@ -331,9 +331,9 @@ export const conditionSnapshotSchema = z.object({
     weatherGridLatitude: z.number().min(-90).max(90).optional(), weatherGridLongitude: z.number().min(-180).max(180).optional(), weatherElevationM: z.number().min(-100).max(5000).optional(),
     // Optional shadow evidence must not invalidate an otherwise usable snapshot.
     thermalReferenceElevationM: z.number().min(-100).max(5000).optional(),
-    temperatureSource: z.enum(["xema-arome-blend-v1", "xema-arome-blend-v2"]).optional(),
+    temperatureSource: z.enum(["xema-arome-blend-v1", "xema-arome-blend-v2", "xema-arome-blend-v3"]).optional(),
     temperatureQuality: z.enum(["includes-provisional", "validated"]).optional(),
-    temperatureMinimumStations: z.number().int().min(2).max(8).optional(),
+    temperatureMinimumStations: z.number().int().min(2).max(2000).optional(),
     temperatureModelOnlyHours: z.number().int().min(0).max(12).optional(),
     thermalExposure: z.custom<ThermalExposure[]>(validThermalExposure).optional().catch(undefined),
     soilGridLatitude: z.number().min(-90).max(90).optional(), soilGridLongitude: z.number().min(-180).max(180).optional(),

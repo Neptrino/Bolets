@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { freezeStationTemperatureSources, loadStationTemperatureScorer, publicTemperatureValues } from "@/supabase/functions/_shared/station-temperature-store";
-import { STATION_TEMPERATURE_VERSION } from "@/supabase/functions/_shared/station-temperature-field";
+import { STATION_TEMPERATURE_VERSION, STATION_TEMPERATURE_POOL_VERSION } from "@/supabase/functions/_shared/station-temperature-field";
 import type { ThermalModelWindow } from "@/supabase/functions/_shared/station-temperature-scoring";
 
 const end = Date.parse("2026-09-09T00:00:00Z") / 1000;
@@ -51,11 +51,12 @@ describe("frozen station temperature integration", () => {
     const upsert = vi.fn();
     const stations = ["CG", "DG"].map((station_code) => ({ station_code, latitude: 42.3, longitude: 2.2, altitude_m: 1200 }));
     const days = Array.from({ length: 21 }, () => ({ stations, hours: [] }));
-    const query = { select: () => query, eq: () => query, gte: () => query, lte: () => query, order: () => query,
+    const query = { select: () => query, eq: vi.fn(() => query), gte: () => query, lte: () => query, order: () => query,
       maybeSingle: async () => ({ data: null, error: null }), limit: async () => ({ data: days, error: null }), upsert };
     const db = { from: () => query } as unknown as Parameters<typeof freezeStationTemperatureSources>[0];
     expect((await freezeStationTemperatureSources(db, new Map([["point", location]]))).size).toBe(0);
     expect(upsert).not.toHaveBeenCalled();
+    expect(query.eq).toHaveBeenCalledWith("station_pool_version", STATION_TEMPERATURE_POOL_VERSION);
   });
   it.each([0, 1, 6, 12, 13])("freezes a %i-hour tail only within the publication limit", async (lag) => {
     const stations = ["CG", "DG"].map((station_code) => ({ station_code, latitude: 42.3, longitude: 2.2, altitude_m: 1200 }));
@@ -74,8 +75,8 @@ describe("frozen station temperature integration", () => {
     expect(query.upsert.mock.calls.length).toBe(lag <= 12 ? 2 : 0);
   });
   it("removes private references and distributions while retaining source provenance", () => {
-    expect(publicTemperatureValues({ thermalSources: [{ id: "secret" }], thermalExposure: [1], temperatureSource: STATION_TEMPERATURE_VERSION }))
-      .toEqual({ temperatureSource: STATION_TEMPERATURE_VERSION });
+    expect(publicTemperatureValues({ thermalSources: [{ id: "secret" }], thermalExposure: [1], temperatureSource: STATION_TEMPERATURE_VERSION, STATION_TEMPERATURE_POOL_VERSION }))
+      .toEqual({ temperatureSource: STATION_TEMPERATURE_VERSION, STATION_TEMPERATURE_POOL_VERSION });
   });
 });
 
@@ -86,7 +87,7 @@ it.each(["model", "station", "none"])("marks immutable inputs complete only with
     error: null,
     data: table === "thermal_model_windows"
       ? missing === "model" ? [] : [{ id: modelId, payload: { stationWindowId: stationId } }]
-      : missing === "station" ? [] : [{ id: stationId, payload: {} }],
+      : missing === "station" ? [] : [{ id: stationId, payload: { version: STATION_TEMPERATURE_VERSION, stations: [], hours: [], endAt: end * 1000 } }],
   }) }) }) }) } as unknown as Parameters<typeof loadStationTemperatureScorer>[0];
   const score = await loadStationTemperatureScorer(db, [{ thermalSources: [{ id: modelId }] }]);
   expect(score.inputsComplete).toBe(missing === "none");

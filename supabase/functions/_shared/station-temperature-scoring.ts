@@ -1,6 +1,6 @@
 import {
   blendStationModelTemperature, createStationObservedTemperature, modelTemperatureAtElevation,
-  STATION_DONOR_TAPER, STATION_TEMPERATURE_CODES, STATION_TEMPERATURE_VERSION, stationTemperatureTailLag,
+  STATION_DONOR_TAPER, STATION_TEMPERATURE_CODES, STATION_TEMPERATURE_VERSION, STATION_TEMPERATURE_VERSIONS, MAX_TEMPERATURE_STATIONS, stationTemperatureTailLag, type StationTemperatureVersion,
 } from "./station-temperature-field.ts";
 import type { XemaStation } from "./xema-rain.ts";
 import type { StationTemperatureHour } from "./xema-temperature.ts";
@@ -9,13 +9,13 @@ const HOUR = 3_600_000;
 export const THERMAL_FIELDS = ["temperatureAvg14dC", "temperatureAvg20dC", "heatHours14d", "heatHours20d", "frostHours14d", "frostHours20d"] as const;
 export type ThermalSources = Array<{ id: string; weight?: number }>;
 export type StationTemperatureWindow = {
-  version: typeof STATION_TEMPERATURE_VERSION | "xema-arome-blend-v1";
+  version: StationTemperatureVersion;
   endAt: number;
   stations: XemaStation[];
   hours: StationTemperatureHour[];
 };
 export type ThermalModelWindow = {
-  version: typeof STATION_TEMPERATURE_VERSION | "xema-arome-blend-v1";
+  version: StationTemperatureVersion;
   endAt: number;
   latitude: number;
   longitude: number;
@@ -54,16 +54,18 @@ export function mergeThermalSources(values: unknown[]): ThermalSources | undefin
 }
 
 function validModel(value: ThermalModelWindow | undefined): value is ThermalModelWindow {
-  return !!value && [STATION_TEMPERATURE_VERSION, "xema-arome-blend-v1"].includes(value.version) &&
+  return !!value && STATION_TEMPERATURE_VERSIONS.includes(value.version) &&
     [value.endAt, value.latitude, value.longitude, value.elevationM].every(Number.isFinite) && value.endAt % HOUR === 0 &&
     Array.isArray(value.temperaturesC) && value.temperaturesC.length === 480 &&
     value.temperaturesC.every((v) => Number.isFinite(v) && v >= -50 && v <= 60);
 }
 
 function validStations(value: StationTemperatureWindow | undefined): value is StationTemperatureWindow {
-  return !!value && [STATION_TEMPERATURE_VERSION, "xema-arome-blend-v1"].includes(value.version) && Number.isFinite(value.endAt) &&
-    Array.isArray(value.stations) && new Set(value.stations.map((s) => s.station_code)).size === value.stations.length &&
-    value.stations.every((s) => (STATION_TEMPERATURE_CODES as readonly string[]).includes(s.station_code) &&
+  return !!value && STATION_TEMPERATURE_VERSIONS.includes(value.version) && Number.isFinite(value.endAt) &&
+    Array.isArray(value.stations) && value.stations.length <= MAX_TEMPERATURE_STATIONS && new Set(value.stations.map((s) => s.station_code)).size === value.stations.length &&
+    value.stations.every((s) => (value.version === "xema-arome-blend-v3"
+      ? /^[A-Z0-9]{1,4}$/.test(s.station_code)
+      : (STATION_TEMPERATURE_CODES as readonly string[]).includes(s.station_code)) &&
       [s.latitude, s.longitude, s.altitude_m].every(Number.isFinite)) &&
     Array.isArray(value.hours) && value.hours.every((h) =>
       Number.isFinite(h.hour) && h.hour % HOUR === 0 && Number.isFinite(h.temperatureC) && h.temperatureC >= -50 && h.temperatureC <= 60 &&
@@ -109,7 +111,7 @@ export function createStationTemperatureScorer(
     for (const { model } of points) {
       const window = windows.get(model.stationWindowId);
       const field = fields.get(model.stationWindowId);
-      if (!window || !field || window.endAt !== time) return values;
+      if (!window || !field || window.endAt !== time || window.version !== model.version) return values;
       const at = field({ station_code: "cell", latitude, longitude, altitude_m: altitudeM });
       const intervals = Array.from({ length: 481 }, (_, i) => at(time - (480 - i) * HOUR, false));
       const lag = stationTemperatureTailLag(intervals.map(Boolean));
@@ -141,7 +143,7 @@ export function createStationTemperatureScorer(
       corrected.push(aggregates);
     }
     return { ...values, ...combine(corrected), thermalExposure: undefined,
-      thermalReferenceElevationM: altitudeM, temperatureSource: STATION_TEMPERATURE_VERSION,
+      thermalReferenceElevationM: altitudeM, temperatureSource: points.some((p) => p.model.version === STATION_TEMPERATURE_VERSION) ? STATION_TEMPERATURE_VERSION : "xema-arome-blend-v2",
       temperatureQuality: provisional ? "includes-provisional" : "validated",
       temperatureMinimumStations: minimumDonors, temperatureModelOnlyHours: modelOnlyHours };
   };

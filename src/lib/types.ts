@@ -401,7 +401,7 @@ export interface ConditionSnapshot {
     weatherGridLongitude?: number;
     weatherElevationM?: number;
     thermalReferenceElevationM?: number;
-    temperatureSource?: "xema-arome-blend-v1" | "xema-arome-blend-v2";
+    temperatureSource?: "xema-arome-blend-v1" | "xema-arome-blend-v2" | "xema-arome-blend-v3";
     temperatureQuality?: "includes-provisional" | "validated";
     temperatureMinimumStations?: number;
     temperatureModelOnlyHours?: number;

@@ -1,7 +1,11 @@
 import { haversineKm, type XemaStation } from "./xema-rain.ts";
 import type { StationTemperatureHour } from "./xema-temperature.ts";
 
-export const STATION_TEMPERATURE_VERSION = "xema-arome-blend-v2";
+export const STATION_TEMPERATURE_VERSION = "xema-arome-blend-v3";
+export const STATION_TEMPERATURE_POOL_VERSION = "xema-all-temperature-v1";
+export const STATION_TEMPERATURE_VERSIONS = ["xema-arome-blend-v1", "xema-arome-blend-v2", STATION_TEMPERATURE_VERSION] as const;
+export const MAX_TEMPERATURE_STATIONS = 2000;
+export type StationTemperatureVersion = typeof STATION_TEMPERATURE_VERSIONS[number];
 export const STATION_TEMPERATURE_MAX_LAG_HOURS = 12;
 
 /** Only a contiguous unpublished tail is tolerated, never an older coverage gap. */
@@ -13,6 +17,7 @@ export function stationTemperatureTailLag(supported: boolean[]): number | undefi
     ? lag : undefined;
 }
 
+/** Historical pilot pool, retained only to validate legacy frozen windows. */
 export const STATION_TEMPERATURE_CODES = ["CG", "DG", "DP", "MS", "W9", "YA", "ZC", "ZD"] as const;
 
 export const STATION_BIAS_EXPERIMENT = {

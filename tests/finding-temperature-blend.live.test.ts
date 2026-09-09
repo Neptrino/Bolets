@@ -25,23 +25,34 @@ it.skipIf(!enabled)("scores the fixed temperature blend against frozen findings 
   const manifest = JSON.parse(readFileSync(process.env.FINDING_BLEND_MANIFEST!, "utf8")) as {
     plannedOnly: boolean; stations: XemaStation[]; days: string[];
     inputs: { urlSha256: string; payloadSha256: string }[];
+    normalizedDays?: { day: string; sha256: string }[];
   };
   if (manifest.plannedOnly) throw new Error("Station manifest contains only a plan");
   const hash = (value: string) => createHash("sha256").update(value).digest("hex");
   const codes = manifest.stations.map((station) => station.station_code).sort();
-  const stationRows: unknown[] = [];
-  for (const day of manifest.days) {
-    const url = xemaTemperatureDayUrl(day, codes);
-    const entry = JSON.parse(readFileSync(join(cache, hash(url.href) + ".json"), "utf8"));
-    const provenance = manifest.inputs.find((input) => input.urlSha256 === hash(url.href));
-    if (entry.url !== url.href || !provenance || provenance.payloadSha256 !== hash(JSON.stringify(entry.payload))) {
-      throw new Error("Frozen station input changed");
-    }
-    stationRows.push(...entry.payload);
-  }
   const quality = (process.env.FINDING_BLEND_QUALITY ?? "published") as TemperatureQuality;
   if (!["published", "validated"].includes(quality)) throw new Error("Invalid station quality policy");
-  const normalized = aggregateXemaTemperatureHours(stationRows, quality);
+  const normalized = { hours: [] as ReturnType<typeof aggregateXemaTemperatureHours>["hours"] };
+  if (manifest.normalizedDays) {
+    expect(manifest.normalizedDays.map((entry) => entry.day).sort()).toEqual([...manifest.days].sort());
+    for (const entry of manifest.normalizedDays) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(entry.day)) throw new Error("Invalid normalized station day");
+      const encoded = readFileSync(join(cache, entry.day + ".json"), "utf8");
+      if (hash(encoded) !== entry.sha256) throw new Error("Frozen normalized station input changed");
+      const day = JSON.parse(encoded);
+      normalized.hours.push(...day.hours.filter((hour: { validation: string }) => quality === "published" || hour.validation === "validated"));
+    }
+  } else {
+    const stationRows: unknown[] = [];
+    for (const day of manifest.days) {
+      const url = xemaTemperatureDayUrl(day, codes);
+      const entry = JSON.parse(readFileSync(join(cache, hash(url.href) + ".json"), "utf8"));
+      const provenance = manifest.inputs.find((input) => input.urlSha256 === hash(url.href));
+      if (entry.url !== url.href || !provenance || provenance.payloadSha256 !== hash(JSON.stringify(entry.payload))) throw new Error("Frozen station input changed");
+      stationRows.push(...entry.payload);
+    }
+    normalized.hours = aggregateXemaTemperatureHours(stationRows, quality).hours;
+  }
   const config = stationModelBlendConfig(process.env.FINDING_BLEND_MODE ?? "original");
   const lagSetting = process.env.FINDING_BLEND_LAG;
   const lag = lagSetting === undefined || lagSetting === "" ? undefined : Number(lagSetting);
@@ -147,7 +158,7 @@ it.skipIf(!enabled)("scores the fixed temperature blend against frozen findings 
     stationCount: codes.length, observedStationHours: normalized.hours.length,
     provisionalStationHours: normalized.hours.filter((hour) => hour.validation === "provisional").length,
     modelSourceControls: sources.size, networkFetches: 0, failures: [],
-    limitations: ["Same eight-station experiment", "Production lag scenarios allow at most 12 contiguous trailing model-only hours; older gaps retain baseline", "Presence-only background dates are not verified absences", "Retrospective observation blend; not a forecast"] };
+    limitations: [`${codes.length}-station metadata pool; only eligible reporting donors enter each estimate`, "Production lag scenarios allow at most 12 contiguous trailing model-only hours; older gaps retain baseline", "Presence-only background dates are not verified absences", "Retrospective observation blend; not a forecast"] };
   writeFileSync(join(out, "replay-summary.json"), JSON.stringify(summary, null, 2) + "\n", { mode: 0o600 });
   console.log(JSON.stringify(summary, null, 2));
-}, 120_000);
+}, 300_000);

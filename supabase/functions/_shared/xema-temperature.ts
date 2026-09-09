@@ -1,4 +1,4 @@
-import { XEMA_MEASUREMENTS_DATASET, XEMA_SOCRATA_ORIGIN } from "./xema-rain.ts";
+import { fetchXemaRows, XEMA_MEASUREMENTS_DATASET, XEMA_SOCRATA_ORIGIN } from "./xema-rain.ts";
 
 export const XEMA_TEMPERATURE_VARIABLE_CODE = "32";
 export type TemperatureQuality = "validated" | "published";
@@ -99,4 +99,31 @@ export function modelIntervalMean(model: Map<number, number>, hour: number) {
   const end = model.get(hour + 3_600_000);
   return start !== undefined && end !== undefined && Number.isFinite(start) && Number.isFinite(end)
     ? (start + end) / 2 : undefined;
+}
+
+/** Full network, paginated; station eligibility is determined from metadata and
+ * complete SH/HO observations, not an experimental station-code allowlist. */
+export function xemaNetworkTemperatureDayUrl(day: string, offset = 0) {
+  const at = Date.parse(`${day}T00:00:00Z`);
+  if (!Number.isFinite(at) || new Date(at).toISOString().slice(0, 10) !== day) throw new Error("Invalid temperature day");
+  if (!Number.isInteger(offset) || offset < 0) throw new Error("Invalid temperature page offset");
+  const end = new Date(at + 86_400_000).toISOString().slice(0, 19);
+  const url = new URL(`${XEMA_SOCRATA_ORIGIN}/resource/${XEMA_MEASUREMENTS_DATASET}.json`);
+  url.searchParams.set("$select", "codi_estacio,codi_variable,data_lectura,valor_lectura,codi_estat,codi_base");
+  url.searchParams.set("$where", `codi_variable='32' AND data_lectura >= '${day}T00:00:00' AND data_lectura < '${end}' AND codi_base in('SH','HO')`);
+  url.searchParams.set("$order", "data_lectura,codi_estacio,codi_base");
+  url.searchParams.set("$limit", "50000");
+  url.searchParams.set("$offset", String(offset));
+  return url;
+}
+
+
+export async function fetchXemaNetworkTemperatureDay(day: string, load = fetchXemaRows) {
+  const raw: unknown[] = [];
+  for (let page = 0; page < 4; page++) {
+    const rows = await load(xemaNetworkTemperatureDayUrl(day, page * 50_000), "network temperature readings");
+    raw.push(...rows);
+    if (rows.length < 50_000) return raw;
+  }
+  throw new Error("Truncated network station day");
 }
