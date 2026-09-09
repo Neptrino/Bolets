@@ -818,6 +818,15 @@ or Storage.
 
 ## Response latency and cache maintenance
 
+Current-map cold computations coalesce by species, resolution, bucket and their
+existing cache identity; concurrent callers share one request and failures clear
+that pending entry. This does not extend freshness or share work across access
+resolutions. Thermal interpolation uses the same station weights and thresholds
+with a compact estimate/count path; full per-hour donor objects are reserved for
+diagnostics. See the [9 September cell-loading measurement](../../docs/archive/map-cell-loading-2026-09-09.md)
+for the measured cost and numerical-parity checks.
+
+
 Each rollout exports only optimized media, Next.js static files and icons from
 its built image into `<release>/.static`, then mounts that directory read-only
 in Caddy. These requests bypass Node.js. Versioned media and build chunks keep

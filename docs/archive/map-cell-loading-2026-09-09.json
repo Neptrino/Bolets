@@ -1,0 +1,123 @@
+{
+  "date": "2026-09-09",
+  "observedPublicTimings": {
+    "sampleWindowMinutes": 30,
+    "requests": 614,
+    "p50Ms": 19,
+    "p95Ms": 1360,
+    "maximumMs": 8083,
+    "overOneSecond": 43,
+    "statusCounts": {
+      "200": 611,
+      "308": 2,
+      "503": 1
+    }
+  },
+  "browserWarmReload": {
+    "lcpMs": 283,
+    "ttfbMs": 144,
+    "cls": 0,
+    "coldMapRequests": false
+  },
+  "upstreamBefore": [
+    {
+      "resolution": 250,
+      "repeat": 0,
+      "status": 200,
+      "ttfbMs": 943,
+      "totalMs": 948,
+      "bytes": 230431,
+      "cells": 108,
+      "blended": 108
+    },
+    {
+      "resolution": 250,
+      "repeat": 1,
+      "status": 200,
+      "ttfbMs": 552,
+      "totalMs": 553,
+      "bytes": 230431,
+      "cells": 108,
+      "blended": 108
+    },
+    {
+      "resolution": 1000,
+      "repeat": 0,
+      "status": 200,
+      "ttfbMs": 1002,
+      "totalMs": 1003,
+      "bytes": 212186,
+      "cells": 108,
+      "blended": 108
+    },
+    {
+      "resolution": 1000,
+      "repeat": 1,
+      "status": 200,
+      "ttfbMs": 844,
+      "totalMs": 848,
+      "bytes": 212186,
+      "cells": 108,
+      "blended": 108
+    },
+    {
+      "resolution": 2500,
+      "repeat": 0,
+      "status": 200,
+      "ttfbMs": 1466,
+      "totalMs": 1541,
+      "bytes": 656668,
+      "cells": 327,
+      "blended": 323
+    },
+    {
+      "resolution": 2500,
+      "repeat": 1,
+      "status": 200,
+      "ttfbMs": 1503,
+      "totalMs": 1581,
+      "bytes": 656668,
+      "cells": 327,
+      "blended": 323
+    }
+  ],
+  "localThermalBefore": {
+    "cells": 327,
+    "rpcMs": 262,
+    "inputsMs": 375,
+    "scoringMs": [
+      159,
+      125,
+      120,
+      128,
+      120
+    ],
+    "blended": 323
+  },
+  "localThermalAfter": {
+    "cells": 327,
+    "rpcMs": 262,
+    "inputsMs": 394,
+    "scoringMs": [
+      52,
+      44,
+      28,
+      27,
+      27
+    ],
+    "blended": 323
+  },
+  "parity": {
+    "liveCells": 327,
+    "identicalSerializedThermalValues": true,
+    "valuesSha256": "0897fe127fa74add8e4a718a592a10841b8865cc2da70a5712ef34a35ba77242",
+    "frozenBoundaryCells": 4816,
+    "identicalEveryCellAndSummary": true,
+    "sourceSha256": "c5c93e20b5a5b1dbfc1795e3e1d4168d12deec7273d4d64ff8c16f967dfd0d18"
+  },
+  "limitations": [
+    "Browser reload used existing map data; LCP does not measure cold cell loading.",
+    "Local calculation speedup excludes provider-input reads, SQL, network and rendering.",
+    "Public timing sample includes warming and different map views; it does not identify a particular user or viewport."
+  ]
+}

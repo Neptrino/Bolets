@@ -12,6 +12,16 @@ const observations = () => stations.map((station) => ({ stationCode: station.sta
   validation: "validated" as const }));
 
 describe("offline observed station interpolation", () => {
+  it("uses identical temperatures and support in the allocation-light map path", () => {
+    const at = createStationObservedTemperature(observations(), stations)(stations[0]);
+    const detailed = at(hour)!;
+    const compact = at(hour, false)!;
+    expect(compact.temperatureC).toBe(detailed.temperatureC);
+    expect(compact.donorCount).toBe(detailed.donors.length);
+    expect(compact.donors).toEqual([]);
+    expect(at(hour + 3_600_000, false)).toBeUndefined();
+  });
+
   it("shifts peer observations to target elevation and excludes the target's own observation", () => {
     const field = createStationObservedTemperature(observations(), stations);
     const estimate = field(stations[0])(hour)!;

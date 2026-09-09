@@ -31,6 +31,19 @@ export async function readCachedPredictionGeneration() {
     : cached.generation;
 }
 
+// Cache misses from different requests can arrive before Next.js stores the
+// first result. Share that computation, and release failures so retries work.
+function coalesceBucket<T>(pending: Map<string, Promise<T>>, key: string, load: () => Promise<T>) {
+  let task = pending.get(key);
+  if (!task) {
+    task = load().finally(() => { pending.delete(key); });
+    pending.set(key, task);
+  }
+  return task;
+}
+const globalPending = new Map<string, ReturnType<typeof getGlobalPredictionCells>>();
+const speciesPending = new Map<string, ReturnType<typeof getPredictionCells>>();
+
 const loadCachedGlobalMapPredictionCells = unstable_cache(
   (
     bounds: SpatialBounds,
@@ -40,10 +53,9 @@ const loadCachedGlobalMapPredictionCells = unstable_cache(
     speciesSetKey: string,
     generation: string,
   ) => {
-    void predictionVersion;
-    void speciesSetKey;
-    void generation;
-    return getGlobalPredictionCells(bounds, limit, gridSizeM);
+    return coalesceBucket(globalPending,
+      JSON.stringify([bounds, limit, gridSizeM, predictionVersion, speciesSetKey, generation]),
+      () => getGlobalPredictionCells(bounds, limit, gridSizeM));
   },
   ["prediction-api-global-map-v1"],
   {
@@ -60,8 +72,9 @@ const loadCachedSpeciesMapPredictionCells = unstable_cache(
     gridSizeM: SpatialGridSizeM,
     predictionVersion: string,
   ) => {
-    void predictionVersion;
-    return getPredictionCells(speciesId, bounds, limit, gridSizeM, true);
+    return coalesceBucket(speciesPending,
+      JSON.stringify([speciesId, bounds, limit, gridSizeM, predictionVersion]),
+      () => getPredictionCells(speciesId, bounds, limit, gridSizeM, true));
   },
   ["prediction-api-species-map-v1"],
   {

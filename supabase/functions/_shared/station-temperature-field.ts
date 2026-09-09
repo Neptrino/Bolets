@@ -59,28 +59,39 @@ export function createStationObservedTemperature(
   observations: StationTemperatureHour[], stations: XemaStation[], lapseCPerKm: 0 | 6.5 = 6.5,
   taper?: StationDonorTaper,
 ) {
-  const lookup = new Map<string, number>();
+  const lookup = new Map<string, Map<number, number>>();
   for (const hour of observations) {
-    const key = `${hour.stationCode}|${hour.hour}`;
-    if (!Number.isFinite(hour.temperatureC) || (lookup.has(key) && lookup.get(key) !== hour.temperatureC)) {
+    const readings = lookup.get(hour.stationCode) ?? new Map<number, number>();
+    if (!Number.isFinite(hour.temperatureC) || (readings.has(hour.hour) && readings.get(hour.hour) !== hour.temperatureC)) {
       throw new Error("Invalid or conflicting station temperature hour");
     }
-    lookup.set(key, hour.temperatureC);
+    readings.set(hour.hour, hour.temperatureC);
+    lookup.set(hour.stationCode, readings);
   }
   return (target: Pick<XemaStation, "station_code" | "latitude" | "longitude" | "altitude_m">) => {
     if (![target.latitude, target.longitude, target.altitude_m].every(Number.isFinite)) throw new Error("Invalid interpolation target");
-    const donors = stationTemperatureDonors(stations, target, taper);
-    return (hour: number) => {
-      const eligible = donors.flatMap((donor) => {
-        const observed = lookup.get(`${donor.code}|${hour}`);
-        if (observed === undefined) return [];
-        const adjustmentC = -(target.altitude_m - donor.elevationM) * lapseCPerKm / 1000;
-        return [{ ...donor, temperatureC: observed + adjustmentC, adjustmentC }];
-      });
-      if (eligible.length < STATION_BIAS_EXPERIMENT.minimumDonors) return undefined;
-      const weight = eligible.reduce((sum, donor) => sum + donor.weight, 0);
+    const donors = stationTemperatureDonors(stations, target, taper).map((donor) => ({
+      donor, readings: lookup.get(donor.code),
+      adjustmentC: -(target.altitude_m - donor.elevationM) * lapseCPerKm / 1000,
+    }));
+    // Production needs only the estimate/count. Diagnostics retain full donor
+    // evidence, without allocating those objects for every cell-hour on a map.
+    return (hour: number, includeDonors = true) => {
+      const eligible: Array<(typeof donors)[number]["donor"] & { temperatureC: number; adjustmentC: number }> = [];
+      let count = 0, weight = 0, weightedTemperature = 0;
+      for (const { donor, readings, adjustmentC } of donors) {
+        const observed = readings?.get(hour);
+        if (observed === undefined) continue;
+        const temperatureC = observed + adjustmentC;
+        count++;
+        weight += donor.weight;
+        weightedTemperature += donor.weight * temperatureC;
+        if (includeDonors) eligible.push({ ...donor, temperatureC, adjustmentC });
+      }
+      if (count < STATION_BIAS_EXPERIMENT.minimumDonors) return undefined;
       return {
-        temperatureC: eligible.reduce((sum, donor) => sum + donor.weight * donor.temperatureC, 0) / weight,
+        temperatureC: weightedTemperature / weight,
+        donorCount: count,
         donors: eligible.map((donor) => ({ ...donor, normalizedWeight: donor.weight / weight })),
       };
     };

@@ -20,10 +20,13 @@ vi.mock("next/cache", () => ({
   ) => {
     cacheMocks.registrations.push({ keyParts, options });
     const entries = new Map<string, unknown>();
-    return (...args: unknown[]) => {
+    return async (...args: unknown[]) => {
       const key = JSON.stringify(args);
-      if (!entries.has(key)) entries.set(key, callback(...args));
-      return entries.get(key);
+      if (entries.has(key)) return entries.get(key);
+      // Model separate requests reaching a cache miss before its result is stored.
+      const result = await callback(...args);
+      entries.set(key, result);
+      return result;
     };
   },
 }));
@@ -139,4 +142,28 @@ it("bounds fallback frames to a minute when the publication check fails", async 
     await read();
     expect(cacheMocks.timeline).toHaveBeenCalledTimes(2);
   } finally { vi.useRealTimers(); }
+});
+
+it("shares concurrent cold species buckets and retries after a failed computation", async () => {
+  const bounds = { west: 2.1, south: 42.1, east: 2.2, north: 42.2 };
+  const read = () => getCachedSpeciesMapPredictionCells("boletus-edulis", bounds, 1000, 250);
+  cacheMocks.species.mockReset();
+  let reject!: (error: Error) => void;
+  cacheMocks.species.mockImplementationOnce(() => new Promise((_, fail) => { reject = fail; }));
+  const first = Promise.allSettled([read(), read(), read(), read()]);
+  expect(cacheMocks.species).toHaveBeenCalledTimes(1);
+  reject(new Error("Temporary upstream error"));
+  expect((await first).every((result) => result.status === "rejected")).toBe(true);
+  cacheMocks.species.mockResolvedValue({ cells: [], truncated: false });
+  await Promise.all([read(), read(), read()]);
+  expect(cacheMocks.species).toHaveBeenCalledTimes(2);
+});
+
+it("shares concurrent cold combined buckets without merging distinct resolutions", async () => {
+  cacheMocks.global.mockReset().mockResolvedValue({ cells: [], truncated: false });
+  const bounds = { west: 2.4, south: 42.1, east: 2.5, north: 42.2 };
+  await Promise.all(Array.from({ length: 4 }, () => getCachedGlobalMapPredictionCells(bounds, 1000, 2500)));
+  expect(cacheMocks.global).toHaveBeenCalledTimes(1);
+  await getCachedGlobalMapPredictionCells(bounds, 1000, 5000);
+  expect(cacheMocks.global).toHaveBeenCalledTimes(2);
 });

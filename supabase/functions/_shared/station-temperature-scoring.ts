@@ -111,7 +111,7 @@ export function createStationTemperatureScorer(
       const field = fields.get(model.stationWindowId);
       if (!window || !field || window.endAt !== time) return values;
       const at = field({ station_code: "cell", latitude, longitude, altitude_m: altitudeM });
-      const intervals = Array.from({ length: 481 }, (_, i) => at(time - (480 - i) * HOUR));
+      const intervals = Array.from({ length: 481 }, (_, i) => at(time - (480 - i) * HOUR, false));
       const lag = stationTemperatureTailLag(intervals.map(Boolean));
       if (lag === undefined) return values;
       modelOnlyHours = Math.max(modelOnlyHours, lag);
@@ -125,7 +125,7 @@ export function createStationTemperatureScorer(
           temperatures.push(model.temperaturesC[i]);
           continue;
         }
-        minimumDonors = Math.min(minimumDonors, before.donors.length, after.donors.length);
+        minimumDonors = Math.min(minimumDonors, before.donorCount, after.donorCount);
         const estimate = blendStationModelTemperature(
           modelTemperatureAtElevation(model.temperaturesC[i], model.elevationM, altitudeM),
           (before.temperatureC + after.temperatureC) / 2,
