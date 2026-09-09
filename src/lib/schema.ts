@@ -419,9 +419,11 @@ export const spatialEnvironmentHistorySchema = z.object({
       validAt: z.string().datetime({ offset: true }),
       horizonHours: z.union([
         z.literal(24), z.literal(48), z.literal(72), z.literal(96), z.literal(120),
+        // Best-effort outlook horizons; the five core horizons stay mandatory.
+        z.literal(168), z.literal(240), z.literal(288), z.literal(336),
       ]),
       ...spatialForecastSnapshotFields,
-    })).length(5),
+    })).min(5).max(9),
   }).nullable().optional(),
   snapshots: z.array(z.object({
     observedAt: z.string().datetime({ offset: true }),

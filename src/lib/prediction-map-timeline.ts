@@ -46,12 +46,16 @@ function frameEnvironment(
 
   const forecast = cell.forecast;
   const generatedAt = Date.parse(forecast?.generatedAt ?? "");
+  // Outlook horizons past the five-day core may ride along in the payload;
+  // the slider only walks the daily core snapshots.
+  const coreSnapshots = (forecast?.snapshots ?? []).filter((snapshot) =>
+    snapshot.horizonHours <= 120);
   if (
     !forecast || !Number.isFinite(generatedAt) ||
     Date.now() - generatedAt > MAX_TIMELINE_FORECAST_AGE_MS ||
     Date.now() - generatedAt < -15 * 60 * 1000 ||
     forecast.baseline.unavailableFields.length ||
-    forecast.snapshots.length !== offset
+    coreSnapshots.length !== offset
   ) return null;
 
   const currentWeatherAt = Date.parse(
@@ -71,7 +75,7 @@ function frameEnvironment(
   };
   let finalValues = observedValues;
   let finalUnavailableFields: string[] = [];
-  for (const snapshot of forecast.snapshots) {
+  for (const snapshot of coreSnapshots) {
     const correction = correctForecastValues(
       observedValues,
       forecast.baseline.values,
@@ -89,7 +93,7 @@ function frameEnvironment(
       ]),
     ];
   }
-  const target = forecast.snapshots.at(-1)!;
+  const target = coreSnapshots.at(-1)!;
   return {
     observedAt: target.validAt,
     source: [...new Set([
