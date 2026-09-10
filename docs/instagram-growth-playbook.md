@@ -31,6 +31,12 @@ The daily publisher does not publish a feed card. A feed-format renderer or prev
 
 Automated current-condition posts require signed, verified observations for the current Catalonia civil day, no preview data, and the channel's duplicate-publication checks. Withheld, stale or unavailable readings cannot produce a post. The weekend map represents current conditions even when the headline invites weekend planning. Operational setup lives in the [VPS runbook](../deploy/vps/README.md); this playbook does not replace its deployment instructions.
 
+## Production handoff
+
+Start creative work in the [visual guide](instagram-style-guide.md#start-here-one-publishing-system), which links the approved examples and reusable templates. Reuse the library's canonical assets and keep source/generation records with derivatives. Review the finished artwork and its copy together before uploading. A request to prepare artwork is not a request to publish it; once the user authorizes scheduling the specific finished piece, proceed and verify the saved result.
+
+Keep render metadata separate from publication receipts. A renderer must not erase a scheduled post ID or reset its status. A later local render does not change the uploaded asset; retain the uploaded file's checksum with its platform ID, date, time zone, publishing method and disclosure setting. Use a fresh output folder for new variants.
+
 ## Manual publishing
 
 Buffer is the single scheduling queue for manual content, as requested on 8 September 2026. All thirteen upcoming Meta posts were recreated in [Buffer](https://publish.buffer.com/channels/6a960174065799be4662a8f5/schedule), alongside nine existing posts. Their Meta schedules were cancelled with Move to Drafts after the replacements were verified. Meta inconsistently displays cancelled copies as Failed to publish; do not retry or reschedule them. See the [completed transfer receipt](archive/buffer-migration-2026-09-08.md). Buffer remains the signed automation integration.

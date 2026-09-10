@@ -1,6 +1,6 @@
 # Social content
 
-Everything produced for Instagram and Meta ads lives in this folder. It is git-ignored except for this index, so nothing here is versioned: keep the sources you care about in `asset-library/` and the render scripts in `scripts/`.
+Everything produced for Instagram and Meta ads lives in this folder. It is git-ignored except for this index, so local resources are not automatically versioned or backed up. Keep reusable sources and manual renderers in `asset-library/`; runtime publication code retains its existing owners.
 
 ## Current guidance
 
@@ -10,10 +10,17 @@ Everything produced for Instagram and Meta ads lives in this folder. It is git-i
 
 Campaign captions, upload packs and proposed calendars below stay with their media. They are not a second operating plan or proof of a current scheduled post; check the platform and dated receipts before reuse.
 
+## Illustration catalogue
+
+[Browse all reusable illustrations](illustration-catalogue/index.html): species-grouped stock and AI variants, whole trees, supporting resources and gaps. Rebuild with `node --experimental-strip-types social/asset-library/templates/illustration-catalogue/build.mjs`.
+
 ## Campaigns and packs
 
 | Folder | What it holds |
 | --- | --- |
+| `2026-09-11-diada/` | Approved photographic Story and dated Buffer scheduling receipt; frozen reference and reusable renderer in `asset-library/`. |
+| `2026-09-forest-discoveries/` | Ten finished local drafts: «Quin arbre?» alzina (6 slides), pi roig, castanyer, faig and avet plus a pi roig/pi negre comparison (5 each); rovelló, cep and rossinyol close-ups (4 each); and a 15-second empty-basket Reel; whole-tree covers and illustrative woodland mushroom rows; preview, captions, provenance, alt text and correctly framed Stories. Not scheduled. Reusable renderers in `asset-library/templates/forest-discoveries/`. |
+| `story-framing-2026-09-09/` | Audit of 29 queued Stories, 25 corrected 9:16 image frames, source-to-upload mappings and verified Buffer replacement receipts. Original schedules and feed posts retained. Reusable wrapper in `asset-library/templates/story-frame/`. |
 | `2026-09-map-campaign/` | September map-first campaign: eight Reels, five carousels, singles 15–22, Stories, `captions.md`, `buffer-manual-schedule.md`, Meta ad creatives in `ads/`, and `buffer-transfer/` with the media and `UPLOAD.md` prepared for moving the Planner posts into Buffer. Rendered by `scripts/render-instagram-map-campaign.mjs`. |
 | `../output/autumn-content-2026-09-08/` | Four completed Reels and two illustrated carousels, preview gallery, captions and verified Buffer schedule receipts; reusable source in `asset-library/templates/autumn-lessons/`. |
 | `2026-09-promo/` | Promo single renders (`scripts/render-instagram-promo.mjs`). |

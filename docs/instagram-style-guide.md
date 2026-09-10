@@ -2,6 +2,22 @@
 
 Consolidated 8 September 2026. This document owns visual and rendering rules. Publishing, profile copy, budgets and measurement live in the [operating playbook](instagram-growth-playbook.md). The [illustrated-carousel reference](instagram-illustrated-carousel-style.md) adds detailed geometry and illustration instructions for that series only.
 
+## Start here: one publishing system
+
+This is the entry point for visual production. Use the [operating playbook](instagram-growth-playbook.md) for destination, scheduling, disclosure and measurement; the [illustration supplement](instagram-illustrated-carousel-style.md) adds only the manual field-guide rules. Do not copy these into campaign-specific guides. Dated manifests are receipts or drafts, not live queues.
+
+| Content to create | Approved reference / reusable resources |
+| --- | --- |
+| Photographic celebration or editorial Story | [Approved Diada](../social/asset-library/style-references/photographic-story/approved-diada/README.md) and [renderer](../social/asset-library/templates/diada/README.md) |
+| Illustrated field lesson | [Approved litter carousel](../social/asset-library/style-references/illustrated-field-guide/approved-litter/contact-sheet.jpg), [Magnific prompt](../social/asset-library/style-references/illustrated-field-guide/prompt-template.md), [responsible-forest template](../social/asset-library/templates/responsible-forest/) |
+| «Quin arbre?» and mushroom close-ups | [Forest discoveries templates](../social/asset-library/templates/forest-discoveries/README.md); whole-tree covers and checked mushrooms for tree lessons, real photographs for close-ups |
+| Mushroom or botanical artwork | [Visual catalogue](../social/illustration-catalogue/index.html), [extracted stock](../social/asset-library/illustrations/by-species/README.md), [photo-derived additions](../social/asset-library/illustrations/species-additions/2026-09-10/) |
+| Story following a carousel | [Story-frame wrapper](../social/asset-library/templates/story-frame/README.md); fit the complete slide instead of cropping it |
+| Cinematic Reel | [Autumn Reel sources](../social/asset-library/templates/autumn-reels-v2/README.md) and existing campaign compositions |
+| Verified conditions | Signed daily/weekend workflow in the operating playbook; never recreate live readings manually |
+
+The [asset library](../social/asset-library/README.md) owns resource locations, provenance and checksums. Its files are local and Git-ignored; these links require the local library and do not imply a backup.
+
 ## Creative direction
 
 Keep the current mushroom photograph ad (`InstagramPromoSingle`) and newer cinematic map Reels (`InstagramMapCampaign`) as visual references: heavy cream headlines, forest imagery and orange accents. Preserve the active ad when creating variants; a design preview does not establish improved campaign performance.
@@ -11,6 +27,8 @@ Give each cover one recognisable subject and one message. Aim for two to six hea
 Use the shared palette, type and margins from [`src/lib/instagram-design.ts`](../src/lib/instagram-design.ts). Use solid backgrounds. Existing Remotion compositions retain their Avenir-first stack; share-card renderers use bundled Nunito Sans. Do not create another palette or silently replace a reference composition's typography.
 
 ## Format-specific rules
+
+Automatic image follow-up Stories must have their own 1080 × 1920 export. Never attach a 4:5 carousel cover directly or crop it to fill the screen. Fit the complete artwork, including its credits and logo, inside the shared Story safe area on a solid forest background. The reusable local wrapper is `social/asset-library/templates/story-frame/render.mjs`; it reads dimensions, margins and colour from the shared design module. Verify the actual uploaded dimensions and saved Story media, not just the source file. Existing 9:16 videos require a separate visual check.
 
 | Format | Composition | Boundary |
 | --- | --- | --- |
@@ -25,6 +43,16 @@ Use the shared palette, type and margins from [`src/lib/instagram-design.ts`](..
 The older requirement for a photograph in every first frame is superseded for manual illustrated lessons. Legacy education rendering helpers remain for historical signed links and local drafts; their existence does not authorize scheduling them.
 
 For the manual illustrated series, use the full [soil/ground logo](../public/brand/bolets-logo.svg) and Nunito Sans Black headings. Keep the approved proportions and measure number/checkmark alignment against visible text bounds. The [detailed reference](instagram-illustrated-carousel-style.md) owns its palette-role table, image sizes, geometry, story structure and Magnific prompt.
+
+## Photographic editorial Stories
+
+The [approved Diada Story](../social/asset-library/style-references/photographic-story/approved-diada/README.md) is the reference for this treatment. Keep the picture full-frame and recognisable. Place text in its quieter areas, aligned to one left edge, with a small full-soil logo and wordmark, a short date/topic label, a heavy cream headline and at most one supporting sentence. Orange is an accent, not a second headline colour by default.
+
+For contrast, start with a subtle uniform translucent forest overlay and a soft dark shadow behind the editable text. The approved reference uses a 28% overlay, 5 px shadow blur and 3 px vertical shadow offset. These are a starting point, not a guarantee of contrast on another image. Inspect at phone size against the actual light and dark details behind each line; reposition or shorten text if it remains difficult to read. Do not solve contrast by covering a large part of the photograph with an opaque panel. Avoid pale glows around letters. Keep the basket, mushroom subject and meaningful flag details visible.
+
+Use the shared 1080 × 1920 Story format and safe margins (72 px left, 110 px right, 250 px top and 350 px bottom). The reference's local text stays editable in its renderer; generation provides only the background. Do not crop a 4:5 asset into this composition. Check full-size and actual platform previews, including native UI and disclosure labels.
+
+Write one connected, natural Catalan thought. «Bona Diada!» with «Estimem la terra, cuidem els boscos.» is the approved celebration example. Avoid adding several slogans, generic promotional claims or a forced call to action to a greeting. This photographic treatment does not replace the illustrated field-guide style or the daily conditions composition.
 
 ## Truthful maps, imagery and copy
 
