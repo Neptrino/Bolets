@@ -61,6 +61,7 @@ export function SiteFooter() {
           <Link href="/zones/rovellons">Rovellons a Catalunya</Link>
           <Link href="/guies">Guies locals</Link>
           <Link href="/compare">Comparador d’espècies</Link>
+          <Link href="/joc">Joc del bosc</Link>
           <Link href="/temporada">Temporada de bolets</Link>
           <CurrentSeasonGuideLink guides={seasonalFooterGuides} initialMonth={initialMonth} />
           <Link href="/quan-surten-els-bolets-despres-de-ploure">Després de ploure</Link>
