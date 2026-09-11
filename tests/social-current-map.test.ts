@@ -65,7 +65,9 @@ describe("social current map", () => {
       context: { save() {}, restore() {}, drawImage } as unknown as CanvasRenderingContext2D,
       output: { clientWidth: SOCIAL_CURRENT_MAP_WIDTH, clientHeight: SOCIAL_CURRENT_MAP_HEIGHT } as HTMLCanvasElement,
     });
-    expect(Buffer.from(browserPixels!)).toEqual(Buffer.from(social.pixels));
+    // Compare every byte natively; deep equality walks millions of properties
+    // and can exceed CI's test deadline even when both rasters are identical.
+    expect(Buffer.from(browserPixels!).equals(Buffer.from(social.pixels))).toBe(true);
     expect(drawImage.mock.calls[0].slice(1)).toEqual([social.left, social.top, social.width * social.scale, social.height * social.scale]);
   });
 
