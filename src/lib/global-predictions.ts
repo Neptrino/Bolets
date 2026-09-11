@@ -27,6 +27,7 @@ import type {
 } from "@/src/lib/types";
 import { z } from "zod";
 import { spatialServiceConfig } from "@/src/lib/spatial-service-auth.server";
+import { runSpatialRead } from "@/src/lib/spatial-read-queue.server";
 
 export {
   GLOBAL_MINIMUM_GRID_SIZE_M,
@@ -80,6 +81,7 @@ export async function fetchGlobalEnvironment(
   limit: number,
   gridSizeM: GlobalGridSizeM,
   readShapeVersion?: string,
+  background = false,
 ): Promise<GlobalEnvironmentPayload> {
   const spatialService = spatialServiceConfig(gridSizeM);
   const query = new URLSearchParams({
@@ -99,7 +101,7 @@ export async function fetchGlobalEnvironment(
   const pending = globalEnvironmentInFlight.get(url);
   if (pending) return pending;
 
-  const task = (async () => {
+  const task = runSpatialRead(async () => {
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${spatialService.key}`,
@@ -111,7 +113,7 @@ export async function fetchGlobalEnvironment(
     });
     if (!response.ok) throw new Error(`Spatial environment service returned ${response.status}`);
     return spatialGlobalEnvironmentResponseSchema.parse(await response.json());
-  })();
+  }, { background });
   globalEnvironmentInFlight.set(url, task);
   try {
     return await task;

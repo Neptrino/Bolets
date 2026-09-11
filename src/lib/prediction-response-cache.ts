@@ -1,6 +1,6 @@
 import "server-only";
 
-import { readTimelineGeneration, TIMELINE_CACHE_SECONDS } from "@/src/lib/prediction-timeline-generation";
+import { readTimelineGeneration, TIMELINE_CACHE_SECONDS, PUBLICATION_CHECK_SECONDS } from "@/src/lib/prediction-timeline-generation";
 
 import { getPredictionMapTimelineFrame } from "@/src/lib/prediction-map-timeline";
 import { unstable_cache } from "next/cache";
@@ -14,19 +14,18 @@ import { PREDICTION_CACHE_VERSION } from "@/src/lib/model-versions";
 import { getPredictionCells } from "@/src/lib/predictions";
 import type { PredictionTimelineOffset, SpatialBounds, SpatialGridSizeM } from "@/src/lib/types";
 
-const GENERATION_REVALIDATE_SECONDS = 30;
 const GENERATION_BOUND_RESPONSE_REVALIDATE_SECONDS = 24 * 60 * 60;
 const RAW_RESPONSE_REVALIDATE_SECONDS = 300;
 
 const readGeneration = unstable_cache(
   async () => ({ generation: await readCurrentOverviewGeneration(), storedAt: Date.now() }),
   ["prediction-api-generation-v2"],
-  { revalidate: GENERATION_REVALIDATE_SECONDS },
+  { revalidate: PUBLICATION_CHECK_SECONDS },
 );
 
 export async function readCachedPredictionGeneration() {
   const cached = await readGeneration();
-  return Date.now() - cached.storedAt >= GENERATION_REVALIDATE_SECONDS * 1000
+  return Date.now() - cached.storedAt >= PUBLICATION_CHECK_SECONDS * 1000
     ? readCurrentOverviewGeneration()
     : cached.generation;
 }

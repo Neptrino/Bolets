@@ -6,6 +6,8 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [Spatial memory and publication caching: local verification — 11 September 2026](spatial-memory-fix-2026-09-11.md)
+- [Umami performance and Edge worker memory failure — 10 September 2026](umami-performance-investigation-2026-09-10.md)
 - [Heat intensity: boundary check and release — 9 September 2026](heat-intensity-release-2026-09-09.md)
 - [Heat intensity and drying: exploratory findings evaluation — 9 September 2026](heat-drying-evaluation-2026-09-09.md)
 - [XEMA temperature diagnostic — 9 September 2026](xema-temperature-diagnostic-2026-09-09.md)
@@ -32,6 +34,8 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Evidence files
 
+- [spatial-memory-fix-2026-09-11.json](spatial-memory-fix-2026-09-11.json)
+- [umami-performance-investigation-2026-09-10.json](umami-performance-investigation-2026-09-10.json)
 - [heat-intensity-release-2026-09-09.json](heat-intensity-release-2026-09-09.json)
 - [heat-drying-evaluation-2026-09-09.json](heat-drying-evaluation-2026-09-09.json)
 - [xema-temperature-diagnostic-2026-09-09.json](xema-temperature-diagnostic-2026-09-09.json)

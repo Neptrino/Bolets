@@ -1,0 +1,41 @@
+{
+  "observedDate": "2026-09-10",
+  "productionRevision": "52841b0fcc9f77c29248eb070d622c3abbbddb5d",
+  "status": "read-only investigation; proposed fixes not implemented",
+  "periodStart": "2026-09-03T00:00:00+02:00",
+  "periodEnd": "inspection time, approximately 2026-09-10T21:03:00Z",
+  "umami": {"performanceEvents": 6323, "lcpSamples": 1896, "inpSamples": 1973, "lcpP75Ms": 1140, "lcpP95Ms": 3567, "ttfbP75Ms": 418, "inpP75Ms": 200},
+  "mapDailyInp": [
+    {"day": "2026-09-07", "samples": 150, "p75Ms": 656, "p95Ms": 1904},
+    {"day": "2026-09-08", "samples": 166, "p75Ms": 792, "p95Ms": 1486},
+    {"day": "2026-09-09", "samples": 378, "p75Ms": 168, "p95Ms": 840},
+    {"day": "2026-09-10", "samples": 254, "p75Ms": 144, "p95Ms": 294, "partialDay": true}
+  ],
+  "incident": {
+    "memoryLimitAtUtc": "2026-09-10T18:51:35.782761674Z",
+    "workerMemoryLimitMb": 150,
+    "surroundingWindowUtc": ["2026-09-10T18:51:28Z", "2026-09-10T18:51:38Z"],
+    "environmentDispatchesInWindow": 110,
+    "workerRequestCancellationsInWindow": 74,
+    "mapData503Responses": 51,
+    "containerOomKilled": false,
+    "containerRestartCount": 0,
+    "otherObservedMemoryLimitAtUtc": "2026-09-10T16:48:25.923941223Z",
+    "recoveryCheck": {"fromUtc": "2026-09-10T19:00:00Z", "until": "initial inspection snapshot", "mapDataRequests": 2894, "http5xx": 0}
+  },
+  "stationWindows": [
+    {"validAtUtc": "2026-09-10T00:00:00Z", "packedJsonBytes": 883000, "populatedHours": 88114},
+    {"validAtUtc": "2026-09-09T16:00:00Z", "packedJsonBytes": 883442, "populatedHours": 88306},
+    {"validAtUtc": "2026-09-08T00:00:00Z", "packedJsonBytes": 883076, "populatedHours": 88341},
+    {"validAtUtc": "2026-09-07T00:00:00Z", "populatedHours": 88383}
+  ],
+  "lab": {
+    "viewport": "390x844", "devicePixelRatio": 3, "network": "Fast 4G", "cpuSlowdown": 4, "doNotTrack": true,
+    "observations": [
+      {"path": "/bolets/pinetell", "cache": "fresh context first navigation", "lcpMs": 1259, "ttfbMs": 352, "cls": 0},
+      {"path": "/", "cache": "fresh context first navigation", "lcpMs": 1284, "ttfbMs": 245, "cls": 0},
+      {"path": "/zones/solsones/sant-llorenc-de-morunys/ceps", "cache": "potentially warm reload", "lcpMs": 373, "ttfbMs": 115, "cls": 0}
+    ],
+    "mapTrace": "inconclusive: profiler/navigation stalled; test tab closed"
+  }
+}

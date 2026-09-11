@@ -33,6 +33,27 @@ function frame() {
 afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); cache.values.clear(); });
 
 describe("compressed timeline environment cache", () => {
+  it("queues different cold buckets instead of expanding their bodies concurrently", async () => {
+    let release!: () => void;
+    const blocked = new Promise<void>((resolve) => { release = resolve; });
+    let active = 0, peak = 0;
+    const fetch = vi.fn(async () => {
+      active++; peak = Math.max(peak, active);
+      await blocked;
+      active--;
+      return Response.json(frame());
+    });
+    vi.stubGlobal("fetch", fetch);
+    const jobs = Array.from({ length: 10 }, (_, i) => getEnvironmentFrame(
+      { ...bounds, west: 1 + i / 100 }, 1000, 5000, 5));
+    await Promise.resolve();
+    expect(fetch).toHaveBeenCalledOnce();
+    release();
+    await Promise.all(jobs);
+    expect(fetch).toHaveBeenCalledTimes(10);
+    expect(peak).toBe(1);
+  });
+
   it("round trips a frame over 2 MiB without losing fields and coalesces concurrent reads", async () => {
     const payload = frame();
     expect(JSON.stringify(payload).length).toBeGreaterThan(2 * 1024 * 1024);
@@ -47,13 +68,13 @@ describe("compressed timeline environment cache", () => {
     expect(fetch).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ cache: "no-store", signal: expect.any(AbortSignal) }));
   });
 
-  it("refreshes when the five-minute freshness deadline expires", async () => {
+  it("refreshes when the one-minute fallback deadline expires", async () => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2026-09-05T01:00:00Z"));
     const fetch = vi.fn(async () => Response.json(frame()));
     vi.stubGlobal("fetch", fetch);
     await getEnvironmentFrame(bounds, 1000, 5000, 5);
-    vi.setSystemTime(new Date("2026-09-05T01:05:00Z"));
+    vi.setSystemTime(new Date("2026-09-05T01:01:00Z"));
     await getEnvironmentFrame(bounds, 1000, 5000, 5);
     expect(fetch).toHaveBeenCalledTimes(2);
   });
@@ -76,5 +97,21 @@ it("refetches environment inputs for a replacement publication inside the five-m
   await getEnvironmentFrame(bounds, 1000, 5000, 5, "generation-1");
   await getEnvironmentFrame(bounds, 1000, 5000, 5, "generation-1");
   await getEnvironmentFrame(bounds, 1000, 5000, 5, "generation-2");
+  expect(fetch).toHaveBeenCalledTimes(2);
+});
+
+
+it("reuses a verified publication for a day with a hard freshness bound", async () => {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date("2026-09-05T01:00:00Z"));
+  const fetch = vi.fn(async () => Response.json(frame()));
+  vi.stubGlobal("fetch", fetch);
+  const read = () => getEnvironmentFrame(bounds, 1000, 5000, 5, "generation-daily");
+  await read();
+  vi.setSystemTime(new Date("2026-09-06T00:59:59Z"));
+  await read();
+  expect(fetch).toHaveBeenCalledOnce();
+  vi.setSystemTime(new Date("2026-09-06T01:00:00Z"));
+  await read();
   expect(fetch).toHaveBeenCalledTimes(2);
 });

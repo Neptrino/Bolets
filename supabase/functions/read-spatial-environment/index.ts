@@ -1,4 +1,5 @@
 import { cachedStationTemperatureValues } from "../_shared/station-temperature-cache.ts";
+import { createBoundedWorkQueue, WorkQueueBusyError } from "../_shared/bounded-work-queue.ts";
 import { loadStationTemperatureScorer, publicTemperatureValues } from "../_shared/station-temperature-store.ts";
 import { createAdminClient, finiteNumber, json, requireServiceRole } from "../_shared/pipeline.ts";
 import {
@@ -365,11 +366,13 @@ async function readSpatialTimelineFrame(
       ? readTimelineForecastRows(supabase, soilPointIds)
       : Promise.resolve({ generatedAt: null, rows: [] }),
   ]);
-  const thermalScore = await loadStationTemperatureScorer(supabase, atmosphereRows.map((s) => s.values));
   const atmosphereByDate = groupHistoryRows(atmosphereRows);
   const soilByDate = groupHistoryRows(soilRows);
 
-  const frameCells = cells.flatMap((cell) => {
+  // Select the displayed dates before loading any frozen station windows.
+  // Forecast offsets share today's anchor; historical offsets need only their
+  // selected date. The current-cell cache reuses those exact immutable inputs.
+  const selected = cells.flatMap((cell) => {
     const completeDates = [...atmosphereByDate]
       .filter(([snapshotDate, rows]) =>
         (!cell.condition_snapshot_date || snapshotDate <= cell.condition_snapshot_date) &&
@@ -395,8 +398,14 @@ async function readSpatialTimelineFrame(
       ? targetSoilRows
       : [];
     const snapshot = aggregateEnvironmentRows([...targetAtmosphereRows, ...completeSoilRows]);
-    const thermalValues = publicTemperatureValues(thermalScore({ ...snapshot.values, altitudeM: cell.static_values.altitudeM },
-      (cell.south + cell.north) / 2, (cell.west + cell.east) / 2));
+    return [{ cell, snapshot }];
+  });
+  const temperatures = await cachedStationTemperatureValues(supabase, selected.map(({ cell, snapshot }) => ({
+    values: { ...snapshot.values, altitudeM: cell.static_values.altitudeM },
+    latitude: (cell.south + cell.north) / 2, longitude: (cell.west + cell.east) / 2,
+  })));
+  const frameCells = selected.map(({ cell, snapshot }, index) => {
+    const thermalValues = publicTemperatureValues(temperatures[index]);
     const publicSnapshot = {
       observedAt: snapshot.observedAt,
       source: thermalValues.temperatureSource ? [...snapshot.source, "Meteocat XEMA temperature / AROME blend (estimate)"] : snapshot.source,
@@ -444,7 +453,7 @@ async function readSpatialTimelineFrame(
       }
     }
 
-    return [{
+    return {
       cellId: cell.cell_id,
       regionId: cell.region_id,
       gridSizeM: cell.grid_size_m,
@@ -452,7 +461,7 @@ async function readSpatialTimelineFrame(
       staticValues: scoringValues(cell.static_values),
       snapshot: publicSnapshot,
       forecast: cellForecast,
-    }];
+    };
   });
 
   return {
@@ -613,7 +622,7 @@ async function readHabitatRowsForBounds(
   };
 }
 
-Deno.serve(async (request) => {
+async function handleRequest(request: Request): Promise<Response> {
   if (request.method !== "GET") return json({ error: "Method not allowed" }, 405, { Allow: "GET" });
   const url = new URL(request.url);
   if (url.searchParams.get("mode") === "frame") {
@@ -853,5 +862,26 @@ Deno.serve(async (request) => {
   } catch (error) {
     console.error("Unable to read spatial environment", error);
     return json({ error: "Unable to load spatial environment" }, 500);
+  }
+}
+
+// Protect the worker itself, including callers outside the Next.js process.
+// Queue before allocating database payloads; never release active work early.
+const runRead = createBoundedWorkQueue({
+  concurrency: 2, backgroundConcurrency: 1, maxQueued: 64, maxWaitMs: 4_000,
+});
+Deno.serve(async (request) => {
+  try {
+    return await runRead(() => handleRequest(request), {
+      background: new URL(request.url).searchParams.get("mode") === "frame",
+      signal: request.signal,
+    });
+  } catch (error) {
+    if (error instanceof WorkQueueBusyError || request.signal.aborted) {
+      return json({ error: "Spatial reads are busy; retry shortly" }, 503, {
+        "Retry-After": "1", "Cache-Control": "private, no-store",
+      });
+    }
+    throw error;
   }
 });

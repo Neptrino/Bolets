@@ -37,7 +37,7 @@ vi.mock("@/src/lib/global-predictions", () => ({
 }));
 
 vi.mock("@/src/lib/prediction-timeline-generation", () => ({
-  readTimelineGeneration: cacheMocks.timelineGeneration, TIMELINE_CACHE_SECONDS: 3600,
+  readTimelineGeneration: cacheMocks.timelineGeneration, TIMELINE_CACHE_SECONDS: 86_400, PUBLICATION_CHECK_SECONDS: 300,
 }));
 
 vi.mock("@/src/lib/prediction-map-timeline", () => ({ getPredictionMapTimelineFrame: cacheMocks.timeline }));
@@ -96,13 +96,13 @@ describe("prediction response cache", () => {
         options: { revalidate: 86_400, tags: ["prediction-api-map"] },
       }),
       expect.objectContaining({
-        options: { revalidate: 30 },
+        options: { revalidate: 300 },
       }),
     ]));
   });
 });
 
-it("reuses scored frames beyond a minute and invalidates publications, forecast expiry and the hourly bound", async () => {
+it("reuses scored frames beyond a minute and invalidates publications, forecast expiry and the daily bound", async () => {
   vi.useFakeTimers({ toFake: ["Date"] });
   try {
     vi.setSystemTime(new Date("2026-09-05T02:00:00Z"));
@@ -111,7 +111,7 @@ it("reuses scored frames beyond a minute and invalidates publications, forecast 
     const read = () => getCachedPredictionMapTimelineFrame("all", bounds, 1000, 5000, 5);
     await Promise.all(Array.from({ length: 4 }, read));
     expect(cacheMocks.timeline).toHaveBeenCalledTimes(1);
-    vi.setSystemTime(new Date("2026-09-05T02:02:00Z"));
+    vi.setSystemTime(new Date("2026-09-05T12:02:00Z"));
     await read();
     expect(cacheMocks.timeline).toHaveBeenCalledTimes(1);
     for (const generation of ["observed:2|forecast:1|valid", "observed:2|forecast:2|valid", "observed:2|forecast:2|expired"]) {
@@ -123,7 +123,7 @@ it("reuses scored frames beyond a minute and invalidates publications, forecast 
     await getCachedPredictionMapTimelineFrame("all", bounds, 1000, 5000, 4);
     await getCachedPredictionMapTimelineFrame("boletus-edulis", bounds, 1000, 5000, 5);
     expect(cacheMocks.timeline).toHaveBeenCalledTimes(6);
-    vi.setSystemTime(new Date("2026-09-05T03:02:00Z"));
+    vi.setSystemTime(new Date("2026-09-06T12:02:00Z"));
     await read();
     expect(cacheMocks.timeline).toHaveBeenCalledTimes(7);
   } finally { vi.useRealTimers(); }

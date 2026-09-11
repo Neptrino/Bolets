@@ -851,11 +851,26 @@ not prevent delivery of a successfully generated image.
 
 Timeline environment responses are schema-validated and gzip-compressed before
 entering Next.js's 2 MiB Data Cache. The raw upstream fetch has a ten-second
-abort deadline and no competing raw fetch-cache entry. The environment has a
-five-minute freshness limit and scored responses have a one-minute limit,
-in addition to the existing public HTTP cache headers. Cache keys remain stable rather than creating a new disk file per minute.
-Expired entries refresh before delivery. Scoring retains every
-forecast correction input and rechecks forecast age when recomputed.
+abort deadline and no competing raw fetch-cache entry. Both compressed inputs
+and scored timeline responses have a 24-hour upper bound keyed by completed
+observed and forecast publications. Metadata is checked every five minutes;
+same-day replacements select new entries, and forecast age changes the key on
+every generation lookup. Failed publication checks use only a one-minute
+fallback. Expired entries refresh before delivery. Browser bucket freshness and
+public HTTP headers remain unchanged. Scoring retains every correction input.
+
+Cold spatial reads are bounded in both Node.js and the Edge worker: at most two
+active reads, with only one timeline/background read so current-map requests
+retain a slot. Waiting queues are capped at 64, with eight-second Node and
+four-second Edge wait deadlines. Edge overload returns an uncached 503 with
+`Retry-After: 1`; cancelled waiting requests release their queue entry, while
+active requests retain their slot until the work settles. Timeline reads select
+their displayed date before loading frozen station windows and reuse the
+existing immutable cell-temperature patches across species and forecast days.
+`sync-functions.sh` raises only `read-spatial-environment` from the upstream
+150 MiB worker limit to 512 MiB; all other workers retain 150 MiB. The router
+patch is idempotent and fails closed if the upstream tuning point changes.
+This is applied by the normal release workflow, not by changing the live router.
 
 `bolets-map-cache.timer` checks approximately every minute for completed coarse
 and territorial publication markers. Its private POST route uses the separately

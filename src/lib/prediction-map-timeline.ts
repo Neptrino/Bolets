@@ -175,7 +175,7 @@ async function getGlobalTimelineFrame(
 ) {
   const [frame, habitat] = await Promise.all([
     getEnvironmentFrame(bounds, limit, gridSizeM, offset, generation),
-    fetchGlobalEnvironment(bounds, limit, gridSizeM as 1000 | 2500 | 5000 | 10000, generation),
+    fetchGlobalEnvironment(bounds, limit, gridSizeM as 1000 | 2500 | 5000 | 10000, generation, true),
   ]);
   const candidates = resolveCandidateSlots(habitat.habitatProfiles);
   const habitatByCell = new Map(habitat.cells.map((cell) => [cell.cellId, cell]));

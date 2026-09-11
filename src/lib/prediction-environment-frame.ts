@@ -5,6 +5,8 @@ import { gzip, gunzip } from "node:zlib";
 import { unstable_cache } from "next/cache";
 import { spatialEnvironmentFrameSchema } from "@/src/lib/prediction-map-timeline-schema";
 import { spatialServiceConfig } from "@/src/lib/spatial-service-auth.server";
+import { runSpatialRead } from "@/src/lib/spatial-read-queue.server";
+import { TIMELINE_CACHE_SECONDS } from "@/src/lib/prediction-timeline-generation";
 import type { PredictionTimelineOffset, SpatialBounds, SpatialGridSizeM } from "@/src/lib/types";
 
 const compress = promisify(gzip);
@@ -41,24 +43,29 @@ function freshFrame(bounds: SpatialBounds, limit: number, grid: SpatialGridSizeM
   const key = JSON.stringify([bounds, limit, grid, offset, generation]);
   let task = pending.get(key);
   if (!task) {
-    task = fetchCompressedFrame(bounds, limit, grid, offset, generation).finally(() => { pending.delete(key); });
+    task = runSpatialRead(() => fetchCompressedFrame(bounds, limit, grid, offset, generation), { background: true })
+      .finally(() => { pending.delete(key); });
     pending.set(key, task);
   }
   return task;
 }
 
 const readCompressedFrame = unstable_cache(freshFrame,
-  ["timeline-environment-gzip-v1"], { revalidate: 300 });
+  ["timeline-environment-gzip-v2"], { revalidate: TIMELINE_CACHE_SECONDS });
+const readFallbackFrame = unstable_cache(freshFrame,
+  ["timeline-environment-gzip-fallback-v1"], { revalidate: 60 });
 
 export async function getEnvironmentFrame(
   bounds: SpatialBounds, limit: number, gridSizeM: SpatialGridSizeM,
   offset: Exclude<PredictionTimelineOffset, 0>,
   generation = "",
 ) {
-  const cached = await readCompressedFrame(bounds, limit, gridSizeM, offset, generation);
+  const verified = generation !== "" && generation !== "unverified-publication";
+  const load = verified ? readCompressedFrame : readFallbackFrame;
+  const cached = await load(bounds, limit, gridSizeM, offset, generation);
   // Next revalidates stable keys in the background. Do not deliver an old
   // forecast while that happens, and do not create new disk files every minute.
-  const frame = Date.now() - cached.storedAt >= 300_000
+  const frame = Date.now() - cached.storedAt >= (verified ? TIMELINE_CACHE_SECONDS * 1000 : 60_000)
     ? await freshFrame(bounds, limit, gridSizeM, offset, generation)
     : cached;
   const json = await decompress(Buffer.from(frame.compressed, "base64"));

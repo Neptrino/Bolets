@@ -4,7 +4,8 @@ import { unstable_cache } from "next/cache";
 import { z } from "zod";
 import { readCurrentOverviewGeneration } from "@/src/lib/current-overview-generation-server";
 
-export const TIMELINE_CACHE_SECONDS = 3600;
+export const PUBLICATION_CHECK_SECONDS = 5 * 60;
+export const TIMELINE_CACHE_SECONDS = 24 * 60 * 60;
 export const MAX_TIMELINE_FORECAST_AGE_MS = 36 * 60 * 60 * 1000;
 const generationSchema = z.array(z.object({
   snapshot_date: z.string(),
@@ -39,12 +40,12 @@ function freshGeneration() {
   return pending;
 }
 const cachedGeneration = unstable_cache(async () => ({ value: await freshGeneration(), checkedAt: Date.now() }),
-  ["prediction-timeline-generation-v1"], { revalidate: 30 });
+  ["prediction-timeline-generation-v1"], { revalidate: PUBLICATION_CHECK_SECONDS });
 
 /** Check publication cheaply; clock-dependent forecast eligibility is checked on every read. */
 export async function readTimelineGeneration() {
   const cached = await cachedGeneration();
-  const value = Date.now() - cached.checkedAt >= 30_000
+  const value = Date.now() - cached.checkedAt >= (cached.value ? PUBLICATION_CHECK_SECONDS * 1000 : 60_000)
     ? await freshGeneration() : cached.value;
   if (!value) return null;
   const forecast = value.forecast;

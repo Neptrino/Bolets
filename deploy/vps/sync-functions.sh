@@ -25,6 +25,19 @@ cp -R "$source_dir"/. "$target_dir"/
 # to 60 seconds, so keep a small completion margin. Fail closed after an
 # upstream update if the documented tuning point changes shape.
 main_router="$target_dir/main/index.ts"
+# Give the spatial reader room for full-network frozen station windows. Bound
+# request concurrency in the function too; raising this alone cannot stop bursts.
+# Leave ingestion and every other worker at the upstream 150 MiB limit.
+memory_tuning='  const memoryLimitMb = service_name === "read-spatial-environment" ? 512 : 150'
+if grep -q '^  const memoryLimitMb = 150$' "$main_router" &&
+   grep -Fq 'const service_name = path_parts[1]' "$main_router"; then
+  sed -i.bak "s/^  const memoryLimitMb = 150\$/$memory_tuning/" "$main_router"
+  rm "$main_router.bak"
+elif ! grep -Fxq "$memory_tuning" "$main_router"; then
+  echo "Review the upstream Edge Runtime memory limit before synchronizing functions" >&2
+  exit 65
+fi
+
 if grep -q 'const workerTimeoutMs = 1 \* 60 \* 1000' "$main_router"; then
   sed -i.bak 's/const workerTimeoutMs = 1 \* 60 \* 1000/const workerTimeoutMs = 150 * 1000/' "$main_router"
   rm "$main_router.bak"

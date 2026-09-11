@@ -28,15 +28,31 @@ describe("timeline publication identity", () => {
     expect(url.searchParams.get("completed_at")).toBe("not.is.null");
     expect(url.searchParams.get("limit")).toBe("1");
   });
-  it("coalesces metadata reads and detects a replacement forecast after 30 seconds", async () => {
+  it("coalesces metadata reads and reuses metadata for five minutes before detecting a replacement forecast", async () => {
+    vi.setSystemTime(new Date("2026-09-05T02:00:00Z"));
     const fetch = vi.fn().mockResolvedValueOnce(Response.json([forecast]))
       .mockResolvedValueOnce(Response.json([{ ...forecast, completed_at: "2026-09-05T02:00:00Z" }]));
     vi.stubGlobal("fetch", fetch);
     const values = await Promise.all([readTimelineGeneration(), readTimelineGeneration()]);
     expect(values[0]).toBe(values[1]);
     expect(fetch).toHaveBeenCalledTimes(1);
-    vi.setSystemTime(new Date("2026-09-06T12:00:30Z"));
+    vi.setSystemTime(new Date("2026-09-05T02:04:59Z"));
+    expect(await readTimelineGeneration()).toBe(values[0]);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    vi.setSystemTime(new Date("2026-09-05T02:05:00Z"));
     expect(await readTimelineGeneration()).not.toBe(values[0]);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+  it("retries unavailable metadata after one minute instead of caching failure for five", async () => {
+    const fetch = vi.fn().mockResolvedValueOnce(new Response(null, { status: 503 }))
+      .mockResolvedValueOnce(Response.json([forecast]));
+    vi.stubGlobal("fetch", fetch);
+    expect(await readTimelineGeneration()).toBeNull();
+    vi.setSystemTime(new Date("2026-09-06T12:00:58Z"));
+    expect(await readTimelineGeneration()).toBeNull();
+    expect(fetch).toHaveBeenCalledOnce();
+    vi.setSystemTime(new Date("2026-09-06T12:00:59Z"));
+    expect(await readTimelineGeneration()).toMatch(/\|expired$/);
     expect(fetch).toHaveBeenCalledTimes(2);
   });
   it.each(["http", "schema", "observed"])("falls back when the %s boundary is unavailable", async (failure) => {

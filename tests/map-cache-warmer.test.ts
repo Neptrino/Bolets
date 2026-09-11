@@ -86,6 +86,9 @@ it("resumes successful buckets across its deadline without repeating work", asyn
   expect(new Set(calls).size).toBe(6);
   expect((await warm()).status).toBe("unchanged");
   clock += 3_600_000;
+  expect((await warm()).status).toBe("unchanged");
+  expect(calls).toHaveLength(6);
+  clock += 23 * 3_600_000;
   expect((await warm()).status).toBe("incomplete");
   expect(calls.length).toBeGreaterThan(6);
 });

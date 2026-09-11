@@ -1,0 +1,56 @@
+{
+  "date": "2026-09-11",
+  "status": "Implemented and verified locally; not deployed",
+  "productionInspection": {
+    "hostMemoryMiB": 11671,
+    "availableMemoryMiB": 7633,
+    "spatialWorkerLimitBeforeMiB": 150,
+    "configuredSpatialWorkerLimitMiB": 512,
+    "otherWorkerLimitMiB": 150
+  },
+  "cache": {
+    "verifiedTimelineSeconds": 86400,
+    "publicationCheckSeconds": 300,
+    "fallbackSeconds": 60,
+    "forecastAgeCheckedOnEveryLookup": true
+  },
+  "verification": {
+    "unitTestsPassed": 1510,
+    "unitTestsSkipped": 12,
+    "testFilesPassed": 248,
+    "testFilesSkipped": 11,
+    "queueTestsAfterLintFixPassed": 16,
+    "typecheck": "passed",
+    "lintAndSourceSize": "passed",
+    "denoCheck": "passed",
+    "nextBuild": "passed"
+  },
+  "syntheticBenchmark": {
+    "before": {
+      "kind": "synthetic Node 24 station-window allocation, not production peak",
+      "windows": 4,
+      "stationsPerWindow": 184,
+      "hourObjects": 354016,
+      "elapsedMs": 78.01116699999999,
+      "heapBefore": 15401056,
+      "heapAfterBuild": 83387208,
+      "heapRetained": 72354128,
+      "heapIncrease": 56953072,
+      "rss": 233652224
+    },
+    "after": {
+      "kind": "synthetic Node 24 station-window allocation, not production peak",
+      "windows": 1,
+      "stationsPerWindow": 184,
+      "hourObjects": 88504,
+      "elapsedMs": 20.848709,
+      "heapBefore": 10146472,
+      "heapAfterBuild": 31787352,
+      "heapRetained": 24466368,
+      "heapIncrease": 14319896,
+      "rss": 141312000
+    },
+    "source": "import { createStationTemperatureScorer } from '../../supabase/functions/_shared/station-temperature-scoring.ts';\nimport { unpackStationTemperatureWindow } from '../../supabase/functions/_shared/station-temperature-window.ts';\nconst count = Number(process.argv[2]);\nconst endAt = Date.parse('2026-09-10T00:00:00Z');\nconst stations = Array.from({length:184}, (_,i)=>({station_code:`S${i}`,latitude:41.5+i/184,longitude:2,altitude_m:500+i}));\nconst packed = Array.from({length:count},(_,day)=>JSON.stringify({\n version:'xema-arome-blend-v3',endAt:endAt-day*86400000,stations,encoding:'station-hour-series-v1',\n series:stations.map(s=>({stationCode:s.station_code,temperaturesC:Array.from({length:481},(_,h)=>15+Math.sin(h/12)*7),validation:'V'.repeat(481)}))\n}));\nglobal.gc!();\nconst before=process.memoryUsage();\nconst started=performance.now();\nconst windows = new Map(packed.map((json,i)=>[String(i),unpackStationTemperatureWindow(JSON.parse(json))!]));\nconst scorer=createStationTemperatureScorer(new Map(),windows);\nconst built=process.memoryUsage();\nglobal.gc!();\nconst retained=process.memoryUsage();\n// Keep the scorer and unpacked windows live across the memory readings.\nif(scorer({sentinel:1},42,2).sentinel !== 1 || windows.size !== count) throw new Error('invalid benchmark');\nconsole.log(JSON.stringify({kind:'synthetic Node 24 station-window allocation, not production peak',windows:count,stationsPerWindow:184,hourObjects:count*184*481,elapsedMs:performance.now()-started,heapBefore:before.heapUsed,heapAfterBuild:built.heapUsed,heapRetained:retained.heapUsed,heapIncrease:retained.heapUsed-before.heapUsed,rss:retained.rss}));\n",
+    "reproduction": "Save source in artifacts/memory-2026-09-11/station-windows.mts; run Node 24 with --expose-gc, argument 4 then 1 in separate processes. It compares station-window allocation only, not request peaks or Edge Runtime heap accounting."
+  }
+}
