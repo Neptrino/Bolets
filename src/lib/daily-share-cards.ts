@@ -276,17 +276,34 @@ export async function loadDailyShareCard(slug: string) {
  * short timeout may show regions while that cache warms, but signing that
  * fallback would permanently omit the local readings from the published post.
  */
-export async function loadDailySharePublicationCard() {
-  const overview = await loadWithin(
-    () => Promise.all([loadCachedCurrentOverview(), loadCachedAreaOverview()]),
-    null,
-    60_000,
-  );
-  if (!overview) return null;
-  const [items, territoryItems] = overview;
+async function prepareDailySharePublicationCard() {
+  // Settle both reads before retrying a failure, so a slow sibling cannot
+  // leave duplicate aggregation work running in the background.
+  const [current, local] = await Promise.allSettled([
+    loadCachedCurrentOverview(), loadCachedAreaOverview(),
+  ]);
+  if (current.status === "rejected" || local.status === "rejected") return null;
+  const items = current.value;
+  const territoryItems = local.value;
   if (!territoryItems.some((item) => item.status === "available") ||
     territoryItems.some((item) => item.status === "unavailable")) return null;
   return createDailyShareCards(items, territoryItems)[0] ?? null;
+}
+
+export async function loadDailySharePublicationCard() {
+  let pending: Promise<DailyShareCard | null> | null = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, 5_000));
+    const card = await loadWithin(
+      () => pending ??= prepareDailySharePublicationCard().finally(() => { pending = null; }),
+      null,
+      60_000,
+    );
+    if (card) return card;
+    // A timeout leaves the read alive. Reuse it on the second wait instead
+    // of starting the same expensive cold aggregation twice.
+  }
+  return null;
 }
 
 const favourablePreviewSpecies = [

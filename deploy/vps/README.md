@@ -314,6 +314,12 @@ host downtime. Inspect failures with
 `journalctl -u bolets-instagram.service`; do not add blind POST retries because
 an interrupted response can occur after Buffer has accepted the publication.
 
+Data preparation alone has one retry after a five-second pause, with up to
+60 seconds per wait (125 seconds total). An unfinished read is reused, so a
+timeout cannot launch duplicate cold aggregation work. Both publication scripts
+allow five minutes for the complete request and their systemd services allow
+six minutes. Buffer requests are not retried automatically.
+
 The automated growth schedule publishes a short weekend Reel on Friday at
 18:00. Educational carousels are retired; the rollout removes their old timer
 and the API rejects education requests before loading data or contacting Buffer. Species field guides are

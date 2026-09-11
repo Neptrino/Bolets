@@ -237,6 +237,7 @@ systemctl disable --now bolets-instagram-education.timer 2>/dev/null || true
 rm -f /etc/systemd/system/bolets-instagram-education.timer
 
 if [ -f "$instagram_env_file" ]; then
+  install -m 644 "$app_dir/deploy/vps/bolets-instagram.service" /etc/systemd/system/
   install -m 644 "$app_dir/deploy/vps/bolets-instagram-growth@.service" /etc/systemd/system/
   install -m 644 "$app_dir/deploy/vps/bolets-instagram-weekend.timer" /etc/systemd/system/
   systemctl daemon-reload

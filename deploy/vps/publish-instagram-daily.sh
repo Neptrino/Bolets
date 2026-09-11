@@ -36,7 +36,8 @@ if (!secret) {
 const response = await fetch("http://127.0.0.1:3000/api/internal/instagram/daily", {
   method: "POST",
   headers: { Authorization: `Bearer ${secret}` },
-  signal: AbortSignal.timeout(90_000),
+  // Allow two 60-second data waits, their backoff and the Buffer requests.
+  signal: AbortSignal.timeout(300_000),
 });
 const body = await response.text();
 console.log(body);

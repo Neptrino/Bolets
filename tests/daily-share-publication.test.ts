@@ -59,28 +59,81 @@ describe("scheduled daily share data", () => {
     expect(card?.shareText).toContain("Cerdanya: Cep · 69/100");
   });
 
-  it("returns no publication after the bounded wait instead of a regional fallback", async () => {
-    vi.mocked(loadCachedAreaOverview).mockImplementation(() => new Promise(() => {}));
+  it("reuses a slow load through the retry instead of duplicating cold aggregation", async () => {
+    vi.mocked(loadCachedAreaOverview).mockImplementation(() => new Promise((resolve) => {
+      setTimeout(() => resolve([local]), 70_000);
+    }));
     const pending = loadDailySharePublicationCard();
-    await vi.advanceTimersByTimeAsync(60_000);
-    expect(await pending).toBeNull();
+    await vi.advanceTimersByTimeAsync(70_000);
+    expect((await pending)?.readings[0].regionName).toBe("Cerdanya");
+    expect(loadCachedAreaOverview).toHaveBeenCalledTimes(1);
+    expect(loadCachedCurrentOverview).toHaveBeenCalledTimes(1);
   });
 
-  it("returns no publication when loading local data fails", async () => {
+  it("returns no publication after both bounded waits instead of a regional fallback", async () => {
+    vi.mocked(loadCachedAreaOverview).mockImplementation(() => new Promise(() => {}));
+    const pending = loadDailySharePublicationCard();
+    await vi.advanceTimersByTimeAsync(125_000);
+    expect(await pending).toBeNull();
+    expect(loadCachedAreaOverview).toHaveBeenCalledTimes(1);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("retries a failed read once after five seconds and recovers", async () => {
+    vi.mocked(loadCachedAreaOverview).mockRejectedValueOnce(new Error("temporary failure"));
+    const pending = loadDailySharePublicationCard();
+    await vi.advanceTimersByTimeAsync(4_999);
+    expect(loadCachedAreaOverview).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
+    expect((await pending)?.readings[0].regionName).toBe("Cerdanya");
+    expect(loadCachedAreaOverview).toHaveBeenCalledTimes(2);
+  });
+
+  it("settles a slow sibling before retrying a rejected read", async () => {
+    vi.mocked(loadCachedCurrentOverview).mockRejectedValueOnce(new Error("temporary failure"));
+    vi.mocked(loadCachedAreaOverview).mockImplementationOnce(() => new Promise((resolve) => {
+      setTimeout(() => resolve([local]), 20_000);
+    }));
+    const pending = loadDailySharePublicationCard();
+    await vi.advanceTimersByTimeAsync(24_999);
+    expect(loadCachedAreaOverview).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(await pending).not.toBeNull();
+    expect(loadCachedAreaOverview).toHaveBeenCalledTimes(2);
+  });
+
+  it("stops after the second failure", async () => {
     vi.mocked(loadCachedAreaOverview).mockRejectedValue(new Error("unavailable"));
-    expect(await loadDailySharePublicationCard()).toBeNull();
+    const pending = loadDailySharePublicationCard();
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(await pending).toBeNull();
+    expect(loadCachedAreaOverview).toHaveBeenCalledTimes(2);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("recovers when previously unavailable local readings become publishable", async () => {
+    vi.mocked(loadCachedAreaOverview).mockResolvedValueOnce([
+      { ...local, status: "unavailable", summary: null },
+    ]);
+    const pending = loadDailySharePublicationCard();
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect((await pending)?.readings[0].regionName).toBe("Cerdanya");
+    expect(loadCachedAreaOverview).toHaveBeenCalledTimes(2);
   });
 
   it.each([[], [{ ...local, status: "insufficient", summary: null }], [
     local, { ...local, areaSlug: "ripolles", status: "unavailable", summary: null },
   ]] as AreaOverviewItem[][])("rejects missing or failed local readings: %j", async (...items) => {
     vi.mocked(loadCachedAreaOverview).mockResolvedValue(items);
-    expect(await loadDailySharePublicationCard()).toBeNull();
+    const pending = loadDailySharePublicationCard();
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(await pending).toBeNull();
   });
 
   it("keeps verified zero local scores publishable", async () => {
     const zero = { ...local, summary: { ...local.summary!, bestCell: { ...local.summary!.bestCell, score: 0 } } };
     vi.mocked(loadCachedAreaOverview).mockResolvedValue([zero]);
     expect(await loadDailySharePublicationCard()).not.toBeNull();
+    expect(loadCachedAreaOverview).toHaveBeenCalledTimes(1);
   });
 });
