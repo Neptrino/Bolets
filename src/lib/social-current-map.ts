@@ -1,6 +1,6 @@
 import { cataloniaLandRings } from "@/data/catalonia-land";
 import { cataloniaSpatialBounds } from "@/data/regions";
-import { predictionHeatmapColour } from "@/src/lib/suitability-scale";
+import { predictionHeatRaster } from "@/components/region-map/prediction-raster";
 import type { PredictionMapCell, SpatialBounds } from "@/src/lib/types";
 
 export const SOCIAL_CURRENT_MAP_WIDTH = 940;
@@ -89,35 +89,26 @@ function landPath(bounds: ProjectedBounds, width: number, height: number) {
   }).join(" ") + " Z").join(" ");
 }
 
-function cellRectangle(
-  cell: PredictionMapCell,
-  bounds: ProjectedBounds,
-  width: number,
-  height: number,
-) {
-  if (cell.score === null || cell.score <= 0) return "";
-  const [[west, south], [east, north]] = cell.cellBounds;
-  const topLeft = screenPoint([west, north], bounds, width, height);
-  const bottomRight = screenPoint([east, south], bounds, width, height);
-  const padding = 1.25;
-  return `<rect x="${(topLeft.x - padding).toFixed(2)}" y="${(topLeft.y - padding).toFixed(2)}" width="${(bottomRight.x - topLeft.x + padding * 2).toFixed(2)}" height="${(bottomRight.y - topLeft.y + padding * 2).toFixed(2)}" fill="${predictionHeatmapColour(cell.score)}"/>`;
-}
-
-export function socialCurrentMapOverlaySvg(
+/** Use the same geographic raster, coverage ramp and zero fade as Avui. */
+export function socialCurrentMapRaster(
   cells: PredictionMapCell[],
   width = SOCIAL_CURRENT_MAP_WIDTH,
   height = SOCIAL_CURRENT_MAP_HEIGHT,
 ) {
   const bounds = socialCurrentMapBounds(width, height);
-  const clipPath = landPath(bounds, width, height);
-  const rectangles = cells.map((cell) => cellRectangle(cell, bounds, width, height)).join("");
+  return predictionHeatRaster({ project: coordinate => screenPoint(coordinate, bounds, width, height) }, cells, width, height);
+}
+
+export function socialCurrentMapOverlaySvg(
+  raster: NonNullable<ReturnType<typeof socialCurrentMapRaster>>,
+  imageDataUrl: string,
+  width = SOCIAL_CURRENT_MAP_WIDTH,
+  height = SOCIAL_CURRENT_MAP_HEIGHT,
+) {
+  const clipPath = landPath(socialCurrentMapBounds(width, height), width, height);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-    <defs>
-      <clipPath id="catalunya"><path d="${clipPath}"/></clipPath>
-      <filter id="condition-heat" x="-8%" y="-8%" width="116%" height="116%"><feGaussianBlur stdDeviation="5"/></filter>
-    </defs>
-    <g clip-path="url(#catalunya)"><g filter="url(#condition-heat)" opacity="0.94">${rectangles}</g></g>
-    <path d="${clipPath}" fill="none" stroke="rgba(255,255,255,0.72)" stroke-width="1.4"/>
+    <defs><clipPath id="catalunya"><path d="${clipPath}"/></clipPath></defs>
+    <g clip-path="url(#catalunya)"><image href="${imageDataUrl}" x="${raster.left}" y="${raster.top}" width="${raster.width * raster.scale}" height="${raster.height * raster.scale}"/></g>
   </svg>`;
 }
 

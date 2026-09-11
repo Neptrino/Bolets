@@ -37,6 +37,7 @@ Campaign captions, upload packs and proposed calendars below stay with their med
 | `profile-kit/`, `profile-direction/`, `current-profile-redesign/`, `pinned-cover-update/` | Profile redesign work from 5 September (`scripts/preview-instagram-kit.tsx`, `scripts/recreate-instagram-profile.tsx`, `scripts/render-instagram-pinned-cover-pack.tsx`). |
 | `species-cards/` | Previews of the species carousel renderer; recurring species publishing is retired (`scripts/preview-instagram-species-card.tsx`). |
 | `daily-style-preview/`, `weekend-redesign/`, `weekend-motion/` | Daily Story and weekend Reel design previews. |
+| `weekend-forest-fix-2026-09-11/` | Current-day Reel preview sharing Avui’s matching-habitat transparency and smoothing, with explicit sector thresholds. Supersedes the uniform-opacity preview in `weekend-fix-2026-09-11/`. Local render metadata only; not published. |
 | `bolets-atles-avui-reel*.mp4`, `reel-bg-*.png`, `reel-contact-sheet.jpg`, `reel-frame.html` | Early Avui Reel renders. |
 
 ## Sources

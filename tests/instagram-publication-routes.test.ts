@@ -37,7 +37,7 @@ afterEach(() => {
 describe.each([
   { name: "daily Story", post: dailyPost },
   { name: "weekend Reel", post: weekendPost },
-])("$name publication route", ({ post }) => {
+])("$name publication route", ({ name, post }) => {
   const request = () => new Request("https://bolets.app/api/internal/instagram/test", {
     method: "POST",
     headers: { Authorization: "Bearer test-publish-secret", "Content-Type": "application/json" },
@@ -57,15 +57,17 @@ describe.each([
       .mockResolvedValueOnce(Response.json({ data: { channels: [{
         id: "channel", organizationId: "org", name: "bolets.app", service: "instagram",
       }] } }))
-      .mockResolvedValueOnce(Response.json({ data: { posts: { edges: [] } } }))
-      .mockRejectedValueOnce(new Error("Connection lost after submitting the post"));
+      .mockResolvedValueOnce(Response.json({ data: { posts: { edges: [] } } }));
+    if (name === "weekend Reel") fetchMock.mockResolvedValueOnce(new Response(new Uint8Array([0, 0, 0, 12, 102, 116, 121, 112, 105, 115, 111, 109]), { headers: { "Content-Type": "video/mp4" } }));
+    fetchMock.mockRejectedValueOnce(new Error("Connection lost after submitting the post"));
     const response = await post(request());
     expect(response.status).toBe(500);
-    expect(fetchMock).toHaveBeenCalledTimes(4);
+    const calls = name === "weekend Reel" ? 5 : 4;
+    expect(fetchMock).toHaveBeenCalledTimes(calls);
     expect(loadDailySharePublicationCard).toHaveBeenCalledTimes(1);
-    const mutation = JSON.parse(String(fetchMock.mock.calls[3]?.[1]?.body));
+    const mutation = JSON.parse(String(fetchMock.mock.calls[calls - 1]?.[1]?.body));
     expect(mutation.query).toContain("createPost");
     await vi.advanceTimersByTimeAsync(300_000);
-    expect(fetchMock).toHaveBeenCalledTimes(4);
+    expect(fetchMock).toHaveBeenCalledTimes(calls);
   });
 });

@@ -316,9 +316,12 @@ an interrupted response can occur after Buffer has accepted the publication.
 
 Data preparation alone has one retry after a five-second pause, with up to
 60 seconds per wait (125 seconds total). An unfinished read is reused, so a
-timeout cannot launch duplicate cold aggregation work. Both publication scripts
-allow five minutes for the complete request and their systemd services allow
-six minutes. Buffer requests are not retried automatically.
+timeout cannot launch duplicate cold aggregation work. The daily publication script
+allows five minutes for the complete request and its systemd service allows
+six minutes. The weekend publisher verifies the complete public MP4 download
+with a 90-second limit after the duplicate check and before submission to Buffer;
+its script allows six minutes and its service seven minutes. Buffer requests
+are not retried automatically.
 
 The automated growth schedule publishes a short weekend Reel on Friday at
 18:00. Educational carousels are retired; the rollout removes their old timer

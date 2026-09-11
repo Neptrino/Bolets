@@ -10,6 +10,7 @@ import {
   SOCIAL_CURRENT_MAP_HEIGHT,
   SOCIAL_CURRENT_MAP_WIDTH,
   socialCurrentMapOverlaySvg,
+  socialCurrentMapRaster,
   socialCurrentMapWmsUrl,
 } from "@/src/lib/social-current-map";
 import type { PredictionMapCell } from "@/src/lib/types";
@@ -76,7 +77,12 @@ export async function renderSocialCurrentMapDataUrl(origin: string) {
     fetchIcgcBaseMap(),
     fetchPredictionCells(origin),
   ]);
-  const overlay = Buffer.from(socialCurrentMapOverlaySvg(cells));
+  const raster = socialCurrentMapRaster(cells);
+  if (!raster) throw new Error("Current map contained no scored prediction cells");
+  const png = await sharp(Buffer.from(raster.pixels), {
+    raw: { width: raster.width, height: raster.height, channels: 4 },
+  }).png().toBuffer();
+  const overlay = Buffer.from(socialCurrentMapOverlaySvg(raster, `data:image/png;base64,${png.toString("base64")}`));
   const image = await sharp(baseMap)
     .resize(SOCIAL_CURRENT_MAP_WIDTH, SOCIAL_CURRENT_MAP_HEIGHT, { fit: "fill" })
     .composite([{ input: overlay, blend: "over" }])

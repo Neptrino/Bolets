@@ -22,7 +22,7 @@ export function signedSocialGrowthImagePath(
   if (series === "education" && educationTopicId) {
     url.searchParams.set("topic", educationTopicId);
   }
-  url.searchParams.set("growthVersion", series === "weekend" ? "7" : "4");
+  url.searchParams.set("growthVersion", series === "weekend" ? "9" : "4");
   return `${url.pathname}${url.search}`;
 }
 
@@ -33,7 +33,7 @@ export function signedWeekendReelPath(card: DailyShareCard) {
   url.searchParams.delete("format");
   url.searchParams.delete("series");
   url.searchParams.delete("slide");
-  url.searchParams.set("reelVersion", "10");
+  url.searchParams.set("reelVersion", "12");
   return `${url.pathname}${url.search}`;
 }
 

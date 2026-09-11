@@ -21,18 +21,19 @@ describe("weekend editorial cards", () => {
   });
 
   it("keeps maxima and territorial extent together in the ranking and detail", () => {
-    expect(text(2)).toContain("42% amb senyal · 18% a 20+");
+    expect(text(2)).toContain("42% dels sectors superen 0/100");
+    expect(text(2)).toContain("18% arriben a 20/100 o més");
     expect(text(2)).toContain("/100 · màxim");
     expect(text(3)).toContain("millor sector /100");
-    expect(text(3)).toContain("sectors amb senyal positiu");
+    expect(text(3)).toContain("dels sectors superen 0/100");
     expect(text(4)).toContain("42%");
     expect(text(4)).toContain("18% dels sectors arriben a 20/100 o més.");
   });
 
   it("does not promote a zero reading as a positive opportunity", () => {
     const zero = { ...card, readings: [{ ...card.readings[0], score: 0, positiveCellShare: 0, score20CellShare: 0 }] };
-    expect(text(1, zero)).toContain("El senyal d’avui és a zero.");
-    expect(text(3, zero)).toContain("Sense senyal positiu");
+    expect(text(1, zero)).toContain("La puntuació d’avui és zero.");
+    expect(text(3, zero)).toContain("Puntuació zero");
     expect(text(3, zero)).not.toContain("La lectura que destaca");
   });
 

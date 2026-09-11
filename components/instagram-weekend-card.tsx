@@ -40,7 +40,7 @@ function Extent({ reading, light = false }: { reading: Reading; light?: boolean 
   return <div style={{ ...column, gap: 15, width: "100%" }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
       <span style={{ fontSize: 54, fontWeight: 900 }}>{percent(reading.positiveCellShare)}</span>
-      <span style={{ fontSize: 28 }}>sectors amb senyal positiu</span>
+      <span style={{ fontSize: 28 }}>dels sectors superen 0/100</span>
     </div>
     <div style={{ display: "flex", width: "100%", height: 18, background: light ? "#40503b" : "#ddd8c3" }}>
       <div style={{ display: "flex", width: percent(reading.positiveCellShare), height: "100%", background: light ? color.orange : color.forest }} />
@@ -52,7 +52,7 @@ function Extent({ reading, light = false }: { reading: Reading; light?: boolean 
 function MapSlide({ card, mapImageUrl }: { card: DailyShareCard; mapImageUrl?: string }) {
   return <div style={{ ...column, width: "100%" }}>
     <Heading eyebrow="Aquest cap de setmana">On miraries?</Heading>
-    <span style={{ marginTop: -18, marginBottom: 22, fontSize: 30, fontWeight: 800 }}>{card.readings[0]?.score === 0 ? "El senyal d’avui és a zero." : "El mapa Avui de Catalunya"}</span>
+    <span style={{ marginTop: -18, marginBottom: 22, fontSize: 30, fontWeight: 800 }}>{card.readings[0]?.score === 0 ? "La puntuació d’avui és zero." : "El mapa Avui de Catalunya"}</span>
     <div style={{ ...column, background: "#eee9dc", height: 810, overflow: "hidden" }}>
       {mapImageUrl ? <div style={{ ...column, width: "100%" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -66,14 +66,14 @@ function MapSlide({ card, mapImageUrl }: { card: DailyShareCard; mapImageUrl?: s
         <span style={{ fontSize: 22 }}>{band.label}</span>
       </div>)}
     </div>
-    <span style={{ marginTop: 18, fontSize: 24, color: color.inkMuted }}>Color = senyal positiu · Zero = contorn discontinu</span>
+    <span style={{ marginTop: 18, fontSize: 24, color: color.inkMuted }}>Color = puntuació · Transparència = hàbitat compatible</span>
   </div>;
 }
 
 function Ranking({ card }: { card: DailyShareCard }) {
   return <div style={{ ...column, width: "100%" }}>
     <Heading eyebrow="01 / Compara territoris" light>On destaca avui?</Heading>
-    <span style={{ color: color.muted, fontSize: 29, marginBottom: 24 }}>Millor sector de cada territori · escala de 0 a 100</span>
+    <span style={{ color: color.muted, fontSize: 29, marginBottom: 24 }}>Sectors puntuats d’1 km · escala de 0 a 100</span>
     {card.readings.slice(0, 3).map((reading, index) => <div key={`${reading.regionName}-${reading.speciesId}`} style={{ ...column, padding: "26px 0", borderTop: "2px solid #40503b" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20 }}>
         <div style={{ ...column, flex: 1 }}>
@@ -86,7 +86,10 @@ function Ranking({ card }: { card: DailyShareCard }) {
           <span style={{ color: color.muted, fontSize: 24 }}>/100 · màxim</span>
         </div>
       </div>
-      <span style={{ marginTop: 18, fontSize: 25, color: color.muted }}>{percent(reading.positiveCellShare)} amb senyal · {percent(reading.score20CellShare)} a 20+</span>
+      <div style={{ ...column, gap: 6, marginTop: 18, fontSize: 28, color: color.muted }}>
+        <span>{percent(reading.positiveCellShare)} dels sectors superen 0/100</span>
+        <span>{percent(reading.score20CellShare)} arriben a 20/100 o més</span>
+      </div>
     </div>)}
     {card.readings.length === 0 ? <span style={{ fontSize: 40 }}>Sense lectures publicables.</span> : null}
   </div>;
@@ -95,12 +98,12 @@ function Ranking({ card }: { card: DailyShareCard }) {
 function Leader({ reading, photo }: { reading?: Reading; photo?: WeekendPhoto }) {
   if (!reading) return <Heading eyebrow="02 / L’espècie">Sense lectura publicable.</Heading>;
   return <div style={{ ...column, width: "100%" }}>
-    <Heading eyebrow={reading.score === 0 ? "02 / Sense senyal positiu" : "02 / La lectura que destaca"}>{reading.speciesName}</Heading>
+    <Heading eyebrow={reading.score === 0 ? "02 / Puntuació zero" : "02 / La lectura que destaca"}>{reading.speciesName}</Heading>
     <Photo photo={photo} height={620} />
     <div style={{ display: "flex", alignItems: "center", gap: 28, marginTop: 22, marginBottom: 22 }}>
       <div style={{ ...column, width: 590, flexShrink: 0, gap: 10 }}>
         <span style={{ width: 590, whiteSpace: "normal", wordBreak: "break-word", fontSize: 40, lineHeight: 1.1, fontWeight: 900 }}>{reading.regionName}</span>
-        <span style={{ fontSize: 26, color: color.inkMuted }}>{reading.score === 0 ? "Sense senyal positiu" : `Oportunitat ${getSuitabilityBand(reading.score).label.toLowerCase()}`}</span>
+        <span style={{ fontSize: 26, color: color.inkMuted }}>{reading.score === 0 ? "Puntuació zero" : `Oportunitat ${getSuitabilityBand(reading.score).label.toLowerCase()}`}</span>
       </div>
       <div style={{ ...column, alignItems: "flex-end", gap: 8 }}>
         <span style={{ fontSize: 112, lineHeight: 1, fontWeight: 900, letterSpacing: "-0.06em" }}>{reading.score}</span>
@@ -116,13 +119,13 @@ function Context({ reading }: { reading?: Reading }) {
     <Heading eyebrow="03 / El detall que importa" light>Un bon sector no és tot el bosc.</Heading>
     {reading ? <div style={{ ...column, width: "100%" }}>
       <span style={{ color: color.orange, fontSize: 180, lineHeight: 1.1, letterSpacing: "-0.06em", fontWeight: 900, marginTop: 38 }}>{percent(reading.positiveCellShare)}</span>
-      <span style={{ fontSize: 42, lineHeight: 1.15, maxWidth: 820 }}>dels sectors tenen senyal positiu a {reading.regionName}.</span>
+      <span style={{ fontSize: 42, lineHeight: 1.15, maxWidth: 820 }}>dels sectors puntuats superen 0/100 a {reading.regionName}.</span>
       <div style={{ marginTop: 48, ...column, paddingTop: 35, borderTop: "2px solid #40503b", gap: 18 }}>
         <span style={{ fontSize: 32, fontWeight: 800 }}>{reading.speciesName} · màxim {reading.score}/100</span>
         <span style={{ fontSize: 30, color: color.muted }}>{percent(reading.score20CellShare)} dels sectors arriben a 20/100 o més.</span>
       </div>
-    </div> : <span style={{ fontSize: 40 }}>Comprova l’extensió del senyal al mapa.</span>}
-    <span style={{ marginTop: 42, color: color.muted, fontSize: 31 }}>Compara el màxim amb l’extensió abans de triar territori.</span>
+    </div> : <span style={{ fontSize: 40 }}>Comprova les puntuacions al mapa.</span>}
+    <span style={{ marginTop: 42, color: color.muted, fontSize: 31 }}>Superar zero pot indicar condicions molt baixes. No és la probabilitat de trobar bolets.</span>
   </div>;
 }
 

@@ -1,4 +1,3 @@
-import type { Map as MapLibreMap } from "maplibre-gl";
 import type { PredictionMapCell, SpatialBounds } from "@/src/lib/types";
 import type { PredictionRendering } from "./prediction-surface";
 import {
@@ -8,7 +7,7 @@ import {
 } from "./smoothed-field";
 
 const METRES_PER_DEGREE = 111_320;
-type Projection = Pick<MapLibreMap, "project">;
+export type MapProjection = { project(coordinate: [number, number]): { x: number; y: number } };
 
 /** Include every neighbour whose kernel can reach the visible ground. */
 export function smoothedQueryBounds(bounds: SpatialBounds, gridSizeM: number): SpatialBounds {
@@ -26,7 +25,7 @@ export function smoothedQueryBounds(bounds: SpatialBounds, gridSizeM: number): S
   };
 }
 
-function pixelsPerMetre(map: Projection, longitude: number, latitude: number) {
+function pixelsPerMetre(map: MapProjection, longitude: number, latitude: number) {
   const centre = map.project([longitude, latitude]);
   const east = map.project([
     longitude + 1 / (METRES_PER_DEGREE * Math.cos(latitude * Math.PI / 180)),
@@ -36,7 +35,7 @@ function pixelsPerMetre(map: Projection, longitude: number, latitude: number) {
 }
 
 /** Project each sample independently of bucket arrival order and bounding-box size. */
-export function projectSmoothedCell(map: Projection, cell: PredictionMapCell) {
+export function projectSmoothedCell(map: MapProjection, cell: PredictionMapCell) {
   const [[west, south], [east, north]] = cell.cellBounds;
   const longitude = (west + east) / 2;
   const latitude = (south + north) / 2;
@@ -53,7 +52,7 @@ export function projectSmoothedCell(map: Projection, cell: PredictionMapCell) {
  * raster keeps the same ground spacing; zooming magnifies the same samples.
  * Paint its actual rounded extent instead of stretching it to fit the canvas.
  */
-export function smoothedViewportRaster(map: Projection, width: number, height: number, gridSizeM: number) {
+export function smoothedViewportRaster(map: MapProjection, width: number, height: number, gridSizeM: number) {
   // A fixed Catalonia latitude sets only raster density, never the sample kernel.
   const sigmaPx = smoothingSigmaMetres(gridSizeM) * pixelsPerMetre(map, 2, 42);
   const scale = smoothedRasterScale(width, height, sigmaPx);

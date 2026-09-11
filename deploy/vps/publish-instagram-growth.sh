@@ -47,8 +47,8 @@ const response = await fetch("http://127.0.0.1:3000/api/internal/instagram/growt
     "Content-Type": "application/json",
   },
   body: JSON.stringify({ kind }),
-  // Allow two 60-second data waits, their backoff and the Buffer requests.
-  signal: AbortSignal.timeout(300_000),
+  // Allow data preparation, the 90-second Reel download and Buffer requests.
+  signal: AbortSignal.timeout(360_000),
 });
 const body = await response.text();
 console.log(body);

@@ -64,6 +64,14 @@ describe("Buffer Instagram growth publisher", () => {
     }
   });
 
+  it("explains both territorial thresholds without implying finding probability", () => {
+    const caption = instagramGrowthCaption("weekend", card, "2026-09-11");
+    expect(caption).toContain("40% dels sectors puntuats superen 0/100");
+    expect(caption).toContain("25% arriben a 20/100");
+    expect(caption).toContain("no són la probabilitat de trobar bolets");
+    expect(caption).not.toContain("senyal");
+  });
+
   it("changes the educational caption with the weekly curriculum", () => {
     const waterCaption = instagramGrowthCaption("education", card, "2026-09-02");
     const habitatCaption = instagramGrowthCaption("education", card, "2026-09-09");
@@ -87,6 +95,7 @@ describe("Buffer Instagram growth publisher", () => {
     const fridayCard = { ...card, observedAt: "2026-09-04T06:00:00.000Z" };
     const fetchImpl = connectedBufferResponses(vi.fn<typeof fetch>())
       .mockResolvedValueOnce(response({ posts: { edges: [] } }))
+      .mockResolvedValueOnce(new Response(new Uint8Array([0, 0, 0, 12, 102, 116, 121, 112, 105, 115, 111, 109]), { headers: { "Content-Type": "video/mp4" } }))
       .mockResolvedValueOnce(response({
         createPost: { __typename: "PostActionSuccess", post: { id: "reel-1" } },
       }));
@@ -100,7 +109,8 @@ describe("Buffer Instagram growth publisher", () => {
       reelUrl: "https://bolets.app/compartir/catalunya/reel?signed=yes",
     });
 
-    const createBody = JSON.parse(String(fetchImpl.mock.calls[3]?.[1]?.body)) as {
+    expect(fetchImpl.mock.calls[3]?.[0]).toBe("https://bolets.app/compartir/catalunya/reel?signed=yes");
+    const createBody = JSON.parse(String(fetchImpl.mock.calls[4]?.[1]?.body)) as {
       variables: { input: Record<string, unknown> };
     };
     expect(createBody.variables.input).toMatchObject({
@@ -125,6 +135,19 @@ describe("Buffer Instagram growth publisher", () => {
       now: new Date("2026-09-04T17:00:00.000Z"),
     })).resolves.toMatchObject({ status: "already_published", postId: "existing-1" });
     expect(fetchImpl).toHaveBeenCalledTimes(3);
+  });
+
+  it("never submits a post when the video cannot be downloaded", async () => {
+    const fetchImpl = connectedBufferResponses(vi.fn<typeof fetch>())
+      .mockResolvedValueOnce(response({ posts: { edges: [] } }))
+      .mockResolvedValueOnce(new Response("Reel render failed", { status: 503 }));
+    await expect(publishInstagramGrowthPost({
+      card: { ...card, observedAt: "2026-09-04T06:00:00Z" }, config, fetchImpl,
+      kind: "weekend", now: new Date("2026-09-04T16:00:00Z"),
+      reelUrl: "https://bolets.app/reel.mp4",
+    })).rejects.toMatchObject({ code: "instagram_reel_unavailable" });
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
+    expect(fetchImpl.mock.calls.some(([, options]) => String(options?.body).includes("createPost"))).toBe(false);
   });
 
   it("fails before contacting Buffer when invoked on the wrong weekday", async () => {

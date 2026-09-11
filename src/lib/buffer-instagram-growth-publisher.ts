@@ -1,3 +1,4 @@
+import { prepareWeekendReel } from "@/src/lib/weekend-reel-publication";
 import type { DailyShareCard } from "@/src/lib/daily-share-cards";
 import {
   BufferPublicationError,
@@ -41,9 +42,9 @@ function educationCaption(card: DailyShareCard, publicationDate: string) {
 
 function weekendCaption(card: DailyShareCard, publicationDate: string) {
   const highlights = card.readings.slice(0, 3).map(
-    (reading) => `${reading.regionName}: ${reading.speciesName} · ${reading.score}/100 al millor sector · ${Math.round(reading.positiveCellShare * 100)}% amb senyal`,
+    (reading) => `${reading.regionName}: ${reading.speciesName} · ${reading.score}/100 al millor sector · ${Math.round(reading.positiveCellShare * 100)}% dels sectors puntuats superen 0/100 · ${Math.round(reading.score20CellShare * 100)}% arriben a 20/100`,
   ).join("\n");
-  return `Aquest cap de setmana, bolets? Mira el senyal abans de sortir.\n\n${highlights || "Sense condicions favorables publicables avui."}\n\nAquesta és la lectura verificada d’avui, no una confirmació de presència. Revisa el mapa abans de sortir perquè les dades evolucionen.\n\nDesa-ho per dissabte i envia-ho a qui vindrà amb tu.\nMapa complet a l’enllaç del perfil → @bolets.app\n\n${instagramGrowthMarker("weekend", publicationDate)}\n#BoletsAtles #BoletsCatalunya #CapDeSetmana #Micologia`;
+  return `Aquest cap de setmana, bolets? Compara les condicions abans de sortir.\n\n${highlights || "Sense condicions favorables publicables avui."}\n\nComparem sectors d’1 km. Superar zero inclou puntuacions molt baixes: aquests percentatges no són la probabilitat de trobar bolets.\n\nAquesta és la lectura verificada d’avui, no una confirmació de presència. Revisa el mapa abans de sortir perquè les dades evolucionen.\n\nDesa-ho per dissabte i envia-ho a qui vindrà amb tu.\nMapa complet a l’enllaç del perfil → @bolets.app\n\n${instagramGrowthMarker("weekend", publicationDate)}\n#BoletsAtles #BoletsCatalunya #CapDeSetmana #Micologia`;
 }
 
 export function instagramGrowthCaption(
@@ -128,6 +129,8 @@ export async function publishInstagramGrowthPost({
   if (typeof existing?.id === "string") {
     return { status: "already_published" as const, postId: existing.id, publicationDate, kind };
   }
+
+  await prepareWeekendReel(reelUrl!, fetchImpl);
 
   const assets = [{ video: { url: reelUrl! } }];
   const postId = await createBufferInstagramPost({
