@@ -1,0 +1,50 @@
+[
+  {
+    "deletePost": {
+      "__typename": "DeletePostSuccess",
+      "id": "6aa084aa33b409a786d1da4d"
+    }
+  },
+  {
+    "deletePost": {
+      "__typename": "DeletePostSuccess",
+      "id": "6aa085c6fb4b289f26660e84"
+    }
+  },
+  {
+    "deletePost": {
+      "__typename": "DeletePostSuccess",
+      "id": "6aa084e2043b34d86c328ee2"
+    }
+  },
+  {
+    "deletePost": {
+      "__typename": "DeletePostSuccess",
+      "id": "6aa085c96c58ba7c25f1f05f"
+    }
+  },
+  {
+    "deletePost": {
+      "__typename": "DeletePostSuccess",
+      "id": "6aa08512607605df69c157e0"
+    }
+  },
+  {
+    "deletePost": {
+      "__typename": "DeletePostSuccess",
+      "id": "6aa085cc06c021630289a0b5"
+    }
+  },
+  {
+    "deletePost": {
+      "__typename": "DeletePostSuccess",
+      "id": "6aa0853563e50cd0db6fec78"
+    }
+  },
+  {
+    "deletePost": {
+      "__typename": "DeletePostSuccess",
+      "id": "6aa085ce7082feb000de3c5a"
+    }
+  }
+]

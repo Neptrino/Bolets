@@ -1,0 +1,36 @@
+{
+  "verifiedAt": "2026-09-08T21:58:54.445Z",
+  "items": [
+    {
+      "id": "01-pluja",
+      "format": "1080x1920 H264/AAC",
+      "seconds": 20
+    },
+    {
+      "id": "03-abans-sortir",
+      "format": "1080x1920 H264/AAC",
+      "seconds": 20
+    },
+    {
+      "id": "05-poc-senyal",
+      "format": "1080x1920 H264/AAC",
+      "seconds": 20
+    },
+    {
+      "id": "06-el-meu-bosc",
+      "format": "1080x1920 H264/AAC",
+      "seconds": 20
+    },
+    {
+      "id": "02-foto-barret",
+      "slides": 4,
+      "format": "1080x1350 JPG"
+    },
+    {
+      "id": "04-sota-barret",
+      "slides": 5,
+      "format": "1080x1350 JPG"
+    }
+  ],
+  "visualReview": "All nine slides and five scenes per Reel reviewed. Corrected sheet background and neighbouring illustration bleed before upload."
+}

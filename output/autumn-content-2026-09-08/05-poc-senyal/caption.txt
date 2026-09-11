@@ -1,0 +1,8 @@
+Una lectura baixa al mapa no demostra que no hi hagi bolets. Compara condicions relatives, no presència observada.
+
+Comprova l’espècie, el territori i la data abans de decidir. I distingeix una lectura baixa d’una lectura no disponible: si falten dades, no podem interpretar-ho com un zero.
+
+Consulta el context a bolets.app/map. Enllaç al perfil.
+Imatges de bosc generades amb IA, de caràcter il·lustratiu; no mostren l’estat actual d’un territori.
+
+#Bolets #BoletsDeCatalunya #MapaDeBolets

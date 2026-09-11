@@ -1,0 +1,12 @@
+{
+  "status": "media_complete_buffer_replacement_pending",
+  "reason": "Mac locked; expiring Magnific URLs unsuitable for scheduled posts",
+  "unchangedQueueCount": 72,
+  "files": [
+    "01-pluja-final.mp4",
+    "03-abans-sortir-final.mp4",
+    "05-poc-senyal-final.mp4",
+    "06-el-meu-bosc-final.mp4"
+  ],
+  "targetsReceipt": "../autumn-content-2026-09-08/receipts.json"
+}

@@ -1,0 +1,407 @@
+[
+  {
+    "sourcePostId": "6aa080ee06c0216302891dc3",
+    "sourceDueAt": "2026-10-07T10:00:00.000Z",
+    "dueAt": "2026-10-07T12:00:00.000Z",
+    "title": "Bolet d’olivera (Omphalotus olearius): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDggZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMTg6NDEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wOFQxNjo0MTo1Ni44MzgrMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQ2VyZGFueWEiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2OSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuODk4MzY2NjA2MTcwNTk4OSwic2NvcmUyMENlbGxTaGFyZSI6MC4yMjUwNDUzNzIwNTA4MTY3fSx7InJlZ2lvbklkIjoicHJlcGlyaW5ldXMiLCJzcGVjaWVzSWQiOiJib2xldHVzLWVkdWxpcyIsInJlZ2lvbk5hbWUiOiJCZXJndWVkw6AiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNjc5NDgwMjM4MjI0MTQ3Mywic2NvcmUyMENlbGxTaGFyZSI6MC4xMTE1MzIyMTQ0MDE3MzI1NH0seyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiUG9ydCBkZWwgQ29tdGUiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNzk0NDYwNjQxMzk5NDE2OSwic2NvcmUyMENlbGxTaGFyZSI6MC4xMTUxNjAzNDk4NTQyMjc0fV0sIm1hcFBhdGgiOiIiLCJzaGFyZVRleHQiOiIiLCJzY29wZSI6Im92ZXJ2aWV3Iiwic2NvcGVMYWJlbCI6IlZpc2nDsyBnZW5lcmFsIn0&signature=KL4BAhF-0C6FYHs65tIrApxAjIKkEU-gCiL1Wqc3O2o&series=species&date=2026-09-08&slide=1&speciesId=omphalotus-olearius&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa080df7082feb000ddb5e9",
+    "sourceDueAt": "2026-10-05T10:00:00.000Z",
+    "dueAt": "2026-10-05T12:00:00.000Z",
+    "title": "Pimpinella morada (Lepista nuda): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDggZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMTg6NDEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wOFQxNjo0MTo1Ni44MzgrMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQ2VyZGFueWEiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2OSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuODk4MzY2NjA2MTcwNTk4OSwic2NvcmUyMENlbGxTaGFyZSI6MC4yMjUwNDUzNzIwNTA4MTY3fSx7InJlZ2lvbklkIjoicHJlcGlyaW5ldXMiLCJzcGVjaWVzSWQiOiJib2xldHVzLWVkdWxpcyIsInJlZ2lvbk5hbWUiOiJCZXJndWVkw6AiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNjc5NDgwMjM4MjI0MTQ3Mywic2NvcmUyMENlbGxTaGFyZSI6MC4xMTE1MzIyMTQ0MDE3MzI1NH0seyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiUG9ydCBkZWwgQ29tdGUiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNzk0NDYwNjQxMzk5NDE2OSwic2NvcmUyMENlbGxTaGFyZSI6MC4xMTUxNjAzNDk4NTQyMjc0fV0sIm1hcFBhdGgiOiIiLCJzaGFyZVRleHQiOiIiLCJzY29wZSI6Im92ZXJ2aWV3Iiwic2NvcGVMYWJlbCI6IlZpc2nDsyBnZW5lcmFsIn0&signature=KL4BAhF-0C6FYHs65tIrApxAjIKkEU-gCiL1Wqc3O2o&series=species&date=2026-09-08&slide=1&speciesId=lepista-nuda&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa080c206c02163028918c2",
+    "sourceDueAt": "2026-10-03T10:00:00.000Z",
+    "dueAt": "2026-10-03T12:00:00.000Z",
+    "title": "Fredolic (Tricholoma terreum): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDggZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMTg6NDEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wOFQxNjo0MTo1Ni44MzgrMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQ2VyZGFueWEiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2OSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuODk4MzY2NjA2MTcwNTk4OSwic2NvcmUyMENlbGxTaGFyZSI6MC4yMjUwNDUzNzIwNTA4MTY3fSx7InJlZ2lvbklkIjoicHJlcGlyaW5ldXMiLCJzcGVjaWVzSWQiOiJib2xldHVzLWVkdWxpcyIsInJlZ2lvbk5hbWUiOiJCZXJndWVkw6AiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNjc5NDgwMjM4MjI0MTQ3Mywic2NvcmUyMENlbGxTaGFyZSI6MC4xMTE1MzIyMTQ0MDE3MzI1NH0seyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiUG9ydCBkZWwgQ29tdGUiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNzk0NDYwNjQxMzk5NDE2OSwic2NvcmUyMENlbGxTaGFyZSI6MC4xMTUxNjAzNDk4NTQyMjc0fV0sIm1hcFBhdGgiOiIiLCJzaGFyZVRleHQiOiIiLCJzY29wZSI6Im92ZXJ2aWV3Iiwic2NvcGVMYWJlbCI6IlZpc2nDsyBnZW5lcmFsIn0&signature=KL4BAhF-0C6FYHs65tIrApxAjIKkEU-gCiL1Wqc3O2o&series=species&date=2026-09-08&slide=1&speciesId=tricholoma-terreum&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa080a3c4e8349f2937d950",
+    "sourceDueAt": "2026-09-30T10:00:00.000Z",
+    "dueAt": "2026-09-30T12:00:00.000Z",
+    "title": "Carlet (Hygrophorus russula): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDggZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMTg6NDEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wOFQxNjo0MTo1Ni44MzgrMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQ2VyZGFueWEiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2OSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuODk4MzY2NjA2MTcwNTk4OSwic2NvcmUyMENlbGxTaGFyZSI6MC4yMjUwNDUzNzIwNTA4MTY3fSx7InJlZ2lvbklkIjoicHJlcGlyaW5ldXMiLCJzcGVjaWVzSWQiOiJib2xldHVzLWVkdWxpcyIsInJlZ2lvbk5hbWUiOiJCZXJndWVkw6AiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNjc5NDgwMjM4MjI0MTQ3Mywic2NvcmUyMENlbGxTaGFyZSI6MC4xMTE1MzIyMTQ0MDE3MzI1NH0seyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiUG9ydCBkZWwgQ29tdGUiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNzk0NDYwNjQxMzk5NDE2OSwic2NvcmUyMENlbGxTaGFyZSI6MC4xMTUxNjAzNDk4NTQyMjc0fV0sIm1hcFBhdGgiOiIiLCJzaGFyZVRleHQiOiIiLCJzY29wZSI6Im92ZXJ2aWV3Iiwic2NvcGVMYWJlbCI6IlZpc2nDsyBnZW5lcmFsIn0&signature=KL4BAhF-0C6FYHs65tIrApxAjIKkEU-gCiL1Wqc3O2o&series=species&date=2026-09-08&slide=1&speciesId=hygrophorus-russula&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa0808406c0216302891575",
+    "sourceDueAt": "2026-09-28T10:00:00.000Z",
+    "dueAt": "2026-09-28T12:00:00.000Z",
+    "title": "Reig bord (Amanita muscaria): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDggZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMTg6NDEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wOFQxNjo0MTo1Ni44MzgrMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQ2VyZGFueWEiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2OSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuODk4MzY2NjA2MTcwNTk4OSwic2NvcmUyMENlbGxTaGFyZSI6MC4yMjUwNDUzNzIwNTA4MTY3fSx7InJlZ2lvbklkIjoicHJlcGlyaW5ldXMiLCJzcGVjaWVzSWQiOiJib2xldHVzLWVkdWxpcyIsInJlZ2lvbk5hbWUiOiJCZXJndWVkw6AiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNjc5NDgwMjM4MjI0MTQ3Mywic2NvcmUyMENlbGxTaGFyZSI6MC4xMTE1MzIyMTQ0MDE3MzI1NH0seyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiUG9ydCBkZWwgQ29tdGUiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNzk0NDYwNjQxMzk5NDE2OSwic2NvcmUyMENlbGxTaGFyZSI6MC4xMTUxNjAzNDk4NTQyMjc0fV0sIm1hcFBhdGgiOiIiLCJzaGFyZVRleHQiOiIiLCJzY29wZSI6Im92ZXJ2aWV3Iiwic2NvcGVMYWJlbCI6IlZpc2nDsyBnZW5lcmFsIn0&signature=KL4BAhF-0C6FYHs65tIrApxAjIKkEU-gCiL1Wqc3O2o&series=species&date=2026-09-08&slide=1&speciesId=amanita-muscaria&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa080710577be3d3e8a8843",
+    "sourceDueAt": "2026-09-26T10:00:00.000Z",
+    "dueAt": "2026-09-26T12:00:00.000Z",
+    "title": "Llengua de bou (Hydnum repandum): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDggZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMTg6NDEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wOFQxNjo0MTo1Ni44MzgrMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQ2VyZGFueWEiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2OSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuODk4MzY2NjA2MTcwNTk4OSwic2NvcmUyMENlbGxTaGFyZSI6MC4yMjUwNDUzNzIwNTA4MTY3fSx7InJlZ2lvbklkIjoicHJlcGlyaW5ldXMiLCJzcGVjaWVzSWQiOiJib2xldHVzLWVkdWxpcyIsInJlZ2lvbk5hbWUiOiJCZXJndWVkw6AiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNjc5NDgwMjM4MjI0MTQ3Mywic2NvcmUyMENlbGxTaGFyZSI6MC4xMTE1MzIyMTQ0MDE3MzI1NH0seyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiUG9ydCBkZWwgQ29tdGUiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNzk0NDYwNjQxMzk5NDE2OSwic2NvcmUyMENlbGxTaGFyZSI6MC4xMTUxNjAzNDk4NTQyMjc0fV0sIm1hcFBhdGgiOiIiLCJzaGFyZVRleHQiOiIiLCJzY29wZSI6Im92ZXJ2aWV3Iiwic2NvcGVMYWJlbCI6IlZpc2nDsyBnZW5lcmFsIn0&signature=KL4BAhF-0C6FYHs65tIrApxAjIKkEU-gCiL1Wqc3O2o&series=species&date=2026-09-08&slide=1&speciesId=hydnum-repandum&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa080516c58ba7c25f17b8a",
+    "sourceDueAt": "2026-09-23T10:00:00.000Z",
+    "dueAt": "2026-09-23T12:00:00.000Z",
+    "title": "Farinera borda (Amanita phalloides): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDggZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMTg6NDEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wOFQxNjo0MTo1Ni44MzgrMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQ2VyZGFueWEiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2OSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuODk4MzY2NjA2MTcwNTk4OSwic2NvcmUyMENlbGxTaGFyZSI6MC4yMjUwNDUzNzIwNTA4MTY3fSx7InJlZ2lvbklkIjoicHJlcGlyaW5ldXMiLCJzcGVjaWVzSWQiOiJib2xldHVzLWVkdWxpcyIsInJlZ2lvbk5hbWUiOiJCZXJndWVkw6AiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNjc5NDgwMjM4MjI0MTQ3Mywic2NvcmUyMENlbGxTaGFyZSI6MC4xMTE1MzIyMTQ0MDE3MzI1NH0seyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiUG9ydCBkZWwgQ29tdGUiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNzk0NDYwNjQxMzk5NDE2OSwic2NvcmUyMENlbGxTaGFyZSI6MC4xMTUxNjAzNDk4NTQyMjc0fV0sIm1hcFBhdGgiOiIiLCJzaGFyZVRleHQiOiIiLCJzY29wZSI6Im92ZXJ2aWV3Iiwic2NvcGVMYWJlbCI6IlZpc2nDsyBnZW5lcmFsIn0&signature=KL4BAhF-0C6FYHs65tIrApxAjIKkEU-gCiL1Wqc3O2o&series=species&date=2026-09-08&slide=1&speciesId=amanita-phalloides&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa080366c58ba7c25f17a97",
+    "sourceDueAt": "2026-09-21T10:00:00.000Z",
+    "dueAt": "2026-09-21T12:00:00.000Z",
+    "title": "Cep negre (Boletus aereus): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDggZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMTg6NDEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wOFQxNjo0MTo1Ni44MzgrMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQ2VyZGFueWEiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2OSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuODk4MzY2NjA2MTcwNTk4OSwic2NvcmUyMENlbGxTaGFyZSI6MC4yMjUwNDUzNzIwNTA4MTY3fSx7InJlZ2lvbklkIjoicHJlcGlyaW5ldXMiLCJzcGVjaWVzSWQiOiJib2xldHVzLWVkdWxpcyIsInJlZ2lvbk5hbWUiOiJCZXJndWVkw6AiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNjc5NDgwMjM4MjI0MTQ3Mywic2NvcmUyMENlbGxTaGFyZSI6MC4xMTE1MzIyMTQ0MDE3MzI1NH0seyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiUG9ydCBkZWwgQ29tdGUiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNzk0NDYwNjQxMzk5NDE2OSwic2NvcmUyMENlbGxTaGFyZSI6MC4xMTUxNjAzNDk4NTQyMjc0fV0sIm1hcFBhdGgiOiIiLCJzaGFyZVRleHQiOiIiLCJzY29wZSI6Im92ZXJ2aWV3Iiwic2NvcGVMYWJlbCI6IlZpc2nDsyBnZW5lcmFsIn0&signature=KL4BAhF-0C6FYHs65tIrApxAjIKkEU-gCiL1Wqc3O2o&series=species&date=2026-09-08&slide=1&speciesId=boletus-aereus&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa07c15d50df2c6dc5e7893",
+    "sourceDueAt": "2026-09-19T10:00:00.000Z",
+    "dueAt": "2026-09-19T12:00:00.000Z",
+    "title": "Tres valls del Pirineu, tres lectures del cep el 4 de setembre: Val d'Aran 27/100 al sector tocat (amb força sectors verds al voltant), vall de Camprodon 46/100, Cerdanya 9/100.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07c09ba7a5db1e300e885/c92b9bf0cc8e37ea96f7fb19baa8cae4.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa07c02554a8974b1644c88",
+    "sourceDueAt": "2026-09-17T15:42:00.000Z",
+    "dueAt": "2026-09-17T17:42:00.000Z",
+    "title": "El mateix bosc no serveix igual per a tots els bolets.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bf8e7b6d71df70281b1/29b6336d6ee550ac750d7deb19fac4a5.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa07bef741a08a4a5ba4a87",
+    "sourceDueAt": "2026-09-16T17:00:00.000Z",
+    "dueAt": "2026-09-16T19:00:00.000Z",
+    "title": "Cada bolet, una fitxa.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07be69a8c16e70f04ebe0/ed101071e5d69d30c3329b5965602cd2.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa07bdffd7d3172a90b6ba7",
+    "sourceDueAt": "2026-09-15T17:12:00.000Z",
+    "dueAt": "2026-09-15T19:12:00.000Z",
+    "title": "Abans de collir, identifica. Respecta els límits de cada lloc, deixa el bosc com l'has trobat i guarda't els teus racons.",
+    "asset": {
+      "__typename": "VideoAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bd57d6020bf500f2338/ddef4f27c265423ceaaf750f49483036.original_transcoded.mp4"
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa07bcbedb8de67a74608d1",
+    "sourceDueAt": "2026-09-10T08:13:00.000Z",
+    "dueAt": "2026-09-10T10:13:00.000Z",
+    "title": "Records de la primavera, perquè no només a la tardor hi ha bolets.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc01bcbe0b63a0a6fe2/c5ac03e48e57e7755cae2b009fa1ee99.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa07bb7c4e8349f29377aa0",
+    "sourceDueAt": "2026-09-14T16:23:00.000Z",
+    "dueAt": "2026-09-14T18:23:00.000Z",
+    "title": "El mateix bosc no serveix igual per a tots els bolets.",
+    "asset": {
+      "__typename": "VideoAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6a9acb233b39ed73fc0b9cc9/587e902c3b22f4abbe3e5491b66bfbc2.original_transcoded.mp4"
+    },
+    "isAiGenerated": true
+  },
+  {
+    "sourcePostId": "6aa07bb67082feb000dd5c8f",
+    "sourceDueAt": "2026-09-14T08:48:00.000Z",
+    "dueAt": "2026-09-14T10:48:00.000Z",
+    "title": "El mapa no és un GPS de troballes.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6a9acbabebe50290c3071b27/3efbc8364096ee2fb70c2ef20297c2c3.original.png",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa07bb47082feb000dd5c2f",
+    "sourceDueAt": "2026-09-13T10:00:00.000Z",
+    "dueAt": "2026-09-13T12:00:00.000Z",
+    "title": "Rovelló, níscalo, Lactarius sanguifluus: tres noms, un bolet.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6a9acd2de63e62554d0b4019/e2e39a5cbeac445b3f7518c80d3beb86.original.png",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa07bb3c4e8349f29377a7a",
+    "sourceDueAt": "2026-09-12T10:00:00.000Z",
+    "dueAt": "2026-09-12T12:00:00.000Z",
+    "title": "Tallar o arrencar?",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6a9accfe32616b2b5300bd2a/5d4952eed79e83c7cdee671db611ffde.original.png",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa07bb26c58ba7c25f12c8b",
+    "sourceDueAt": "2026-09-11T11:16:00.000Z",
+    "dueAt": "2026-09-11T13:16:00.000Z",
+    "title": "Dissabte. Abans de sortir, mira les condicions, tria l'espècie i compara el territori.",
+    "asset": {
+      "__typename": "VideoAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6a9accc6cf14dc281c0fbf47/61ea120795a06ffcc96e4b62f6d8d329.original_transcoded.mp4"
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa07bb17082feb000dd5c00",
+    "sourceDueAt": "2026-09-10T14:12:00.000Z",
+    "dueAt": "2026-09-10T16:12:00.000Z",
+    "title": "Sota les fulles hi ha 62 espècies, i cadascuna té fitxa pròpia.",
+    "asset": {
+      "__typename": "VideoAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6a9acbd28d9287f58606bb66/b8833620b567be713375430c259c60fe.original_transcoded.mp4"
+    },
+    "isAiGenerated": true
+  },
+  {
+    "sourcePostId": "6aa07bb006c021630288ba68",
+    "sourceDueAt": "2026-09-09T18:30:00.000Z",
+    "dueAt": "2026-09-09T20:30:00.000Z",
+    "title": "La brossa torna amb tu. 🎒",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6a9eab6b6ee84feb240c4e9f/44a969e48a90b1da40aaae205ea2d5d5.original.jpg",
+      "image": {
+        "altText": "«La brossa torna amb tu». Sobre fons taronja, una bossa verda de deixalles conté una ampolla aixafada, un paper i una pela de plàtan. Bolets i fulles emmarquen la bossa. Consell: «A la motxilla, una bossa»."
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa07ba3c1d4ab903c885683",
+    "sourceDueAt": "2026-09-09T14:11:00.000Z",
+    "dueAt": "2026-09-09T16:11:00.000Z",
+    "title": "Ripollès i Cerdanya són valls veïnes. Però avui, per al cep, no tenen el mateix senyal: la vall de Camprodon marca 46/100 i la Cerdanya, 9/100.",
+    "asset": {
+      "__typename": "VideoAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07b62b47139fbad0ffaf9/1d3f5452d78f9f21a4153812ed1f7a25.original_transcoded.mp4"
+    },
+    "isAiGenerated": true
+  },
+  {
+    "sourcePostId": "6aa06d2c1b4f0210e3423443",
+    "sourceDueAt": "2026-09-17T10:00:00.000Z",
+    "dueAt": "2026-09-17T12:00:00.000Z",
+    "title": "Trompeta de la mort (Craterellus cornucopioides): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDggZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMTg6NDEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wOFQxNjo0MTo1Ni44MzgrMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQ2VyZGFueWEiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2OSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuODk4MzY2NjA2MTcwNTk4OSwic2NvcmUyMENlbGxTaGFyZSI6MC4yMjUwNDUzNzIwNTA4MTY3fSx7InJlZ2lvbklkIjoicHJlcGlyaW5ldXMiLCJzcGVjaWVzSWQiOiJib2xldHVzLWVkdWxpcyIsInJlZ2lvbk5hbWUiOiJCZXJndWVkw6AiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNjc5NDgwMjM4MjI0MTQ3Mywic2NvcmUyMENlbGxTaGFyZSI6MC4xMTE1MzIyMTQ0MDE3MzI1NH0seyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiUG9ydCBkZWwgQ29tdGUiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNzk0NDYwNjQxMzk5NDE2OSwic2NvcmUyMENlbGxTaGFyZSI6MC4xMTUxNjAzNDk4NTQyMjc0fV0sIm1hcFBhdGgiOiIiLCJzaGFyZVRleHQiOiIiLCJzY29wZSI6Im92ZXJ2aWV3Iiwic2NvcGVMYWJlbCI6IlZpc2nDsyBnZW5lcmFsIn0&signature=KL4BAhF-0C6FYHs65tIrApxAjIKkEU-gCiL1Wqc3O2o&series=species&date=2026-09-08&slide=1&speciesId=craterellus-cornucopioides&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa06d171b4f0210e34232bd",
+    "sourceDueAt": "2026-09-20T10:00:00.000Z",
+    "dueAt": "2026-09-20T12:00:00.000Z",
+    "title": "Llenega (Hygrophorus latitabundus): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDggZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMTg6NDEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wOFQxNjo0MTo1Ni44MzgrMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQ2VyZGFueWEiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2OSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuODk4MzY2NjA2MTcwNTk4OSwic2NvcmUyMENlbGxTaGFyZSI6MC4yMjUwNDUzNzIwNTA4MTY3fSx7InJlZ2lvbklkIjoicHJlcGlyaW5ldXMiLCJzcGVjaWVzSWQiOiJib2xldHVzLWVkdWxpcyIsInJlZ2lvbk5hbWUiOiJCZXJndWVkw6AiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNjc5NDgwMjM4MjI0MTQ3Mywic2NvcmUyMENlbGxTaGFyZSI6MC4xMTE1MzIyMTQ0MDE3MzI1NH0seyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiUG9ydCBkZWwgQ29tdGUiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNzk0NDYwNjQxMzk5NDE2OSwic2NvcmUyMENlbGxTaGFyZSI6MC4xMTUxNjAzNDk4NTQyMjc0fV0sIm1hcFBhdGgiOiIiLCJzaGFyZVRleHQiOiIiLCJzY29wZSI6Im92ZXJ2aWV3Iiwic2NvcGVMYWJlbCI6IlZpc2nDsyBnZW5lcmFsIn0&signature=KL4BAhF-0C6FYHs65tIrApxAjIKkEU-gCiL1Wqc3O2o&series=species&date=2026-09-08&slide=1&speciesId=hygrophorus-latitabundus&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa06ce627069569231fbec2",
+    "sourceDueAt": "2026-09-19T16:00:00.000Z",
+    "dueAt": "2026-09-19T18:00:00.000Z",
+    "title": "Rovelló (Lactarius sanguifluus): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDggZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMTg6NDEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wOFQxNjo0MTo1Ni44MzgrMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQ2VyZGFueWEiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2OSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuODk4MzY2NjA2MTcwNTk4OSwic2NvcmUyMENlbGxTaGFyZSI6MC4yMjUwNDUzNzIwNTA4MTY3fSx7InJlZ2lvbklkIjoicHJlcGlyaW5ldXMiLCJzcGVjaWVzSWQiOiJib2xldHVzLWVkdWxpcyIsInJlZ2lvbk5hbWUiOiJCZXJndWVkw6AiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNjc5NDgwMjM4MjI0MTQ3Mywic2NvcmUyMENlbGxTaGFyZSI6MC4xMTE1MzIyMTQ0MDE3MzI1NH0seyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiUG9ydCBkZWwgQ29tdGUiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNzk0NDYwNjQxMzk5NDE2OSwic2NvcmUyMENlbGxTaGFyZSI6MC4xMTUxNjAzNDk4NTQyMjc0fV0sIm1hcFBhdGgiOiIiLCJzaGFyZVRleHQiOiIiLCJzY29wZSI6Im92ZXJ2aWV3Iiwic2NvcGVMYWJlbCI6IlZpc2nDsyBnZW5lcmFsIn0&signature=KL4BAhF-0C6FYHs65tIrApxAjIKkEU-gCiL1Wqc3O2o&series=species&date=2026-09-08&slide=1&speciesId=lactarius-sanguifluus&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6aa06cb727069569231fb42a",
+    "sourceDueAt": "2026-09-12T16:00:00.000Z",
+    "dueAt": "2026-09-12T18:00:00.000Z",
+    "title": "Llora verda (Russula virescens): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDggZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMTg6NDEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wOFQxNjo0MTo1Ni44MzgrMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQ2VyZGFueWEiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2OSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuODk4MzY2NjA2MTcwNTk4OSwic2NvcmUyMENlbGxTaGFyZSI6MC4yMjUwNDUzNzIwNTA4MTY3fSx7InJlZ2lvbklkIjoicHJlcGlyaW5ldXMiLCJzcGVjaWVzSWQiOiJib2xldHVzLWVkdWxpcyIsInJlZ2lvbk5hbWUiOiJCZXJndWVkw6AiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNjc5NDgwMjM4MjI0MTQ3Mywic2NvcmUyMENlbGxTaGFyZSI6MC4xMTE1MzIyMTQ0MDE3MzI1NH0seyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiUG9ydCBkZWwgQ29tdGUiLCJzcGVjaWVzTmFtZSI6IkNlcCIsInNjb3JlIjo2NSwibGFiZWwiOiJhbHRhIiwicG9zaXRpdmVDZWxsU2hhcmUiOjAuNzk0NDYwNjQxMzk5NDE2OSwic2NvcmUyMENlbGxTaGFyZSI6MC4xMTUxNjAzNDk4NTQyMjc0fV0sIm1hcFBhdGgiOiIiLCJzaGFyZVRleHQiOiIiLCJzY29wZSI6Im92ZXJ2aWV3Iiwic2NvcGVMYWJlbCI6IlZpc2nDsyBnZW5lcmFsIn0&signature=KL4BAhF-0C6FYHs65tIrApxAjIKkEU-gCiL1Wqc3O2o&series=species&date=2026-09-08&slide=1&speciesId=russula-virescens&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6a9f215da884af3b8637f089",
+    "sourceDueAt": "2026-09-16T10:00:00.000Z",
+    "dueAt": "2026-09-16T12:00:00.000Z",
+    "title": "Rossinyol (Cantharellus cibarius): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDcgZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMDI6NTEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wN1QwMDo1MTowMS43MzErMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQmVyZ3VlZMOgIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjY3NTE0ODg5MDA5MjA0MTIsInNjb3JlMjBDZWxsU2hhcmUiOjAuMDgwMTI5OTQwNDQzOTYzMTh9LHsicmVnaW9uSWQiOiJwaXJpbmV1cyIsInNwZWNpZXNJZCI6ImJvbGV0dXMtZWR1bGlzIiwicmVnaW9uTmFtZSI6IkNlcmRhbnlhIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjg3MTE0MzM3NTY4MDU4MDgsInNjb3JlMjBDZWxsU2hhcmUiOjAuMTkyMzc3NDk1NDYyNzk0OTJ9LHsicmVnaW9uSWQiOiJwcmVwaXJpbmV1cyIsInNwZWNpZXNJZCI6ImJvbGV0dXMtZWR1bGlzIiwicmVnaW9uTmFtZSI6IlBvcnQgZGVsIENvbXRlIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjc4NzE3MjAxMTY2MTgwNzYsInNjb3JlMjBDZWxsU2hhcmUiOjAuMTA5MzI5NDQ2MDY0MTM5OTR9XSwibWFwUGF0aCI6IiIsInNoYXJlVGV4dCI6IiIsInNjb3BlIjoib3ZlcnZpZXciLCJzY29wZUxhYmVsIjoiVmlzacOzIGdlbmVyYWwifQ&signature=IWhPPFO8gpy0tBxxhfuxGHd-6WIy9f_AxGw4mJWFGIg&series=species&date=2026-09-07&slide=1&speciesId=cantharellus-cibarius&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6a9f214f604293d4b3698dd7",
+    "sourceDueAt": "2026-09-15T10:00:00.000Z",
+    "dueAt": "2026-09-15T12:00:00.000Z",
+    "title": "Pinetell (Lactarius deliciosus): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDcgZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMDI6NTEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wN1QwMDo1MTowMS43MzErMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQmVyZ3VlZMOgIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjY3NTE0ODg5MDA5MjA0MTIsInNjb3JlMjBDZWxsU2hhcmUiOjAuMDgwMTI5OTQwNDQzOTYzMTh9LHsicmVnaW9uSWQiOiJwaXJpbmV1cyIsInNwZWNpZXNJZCI6ImJvbGV0dXMtZWR1bGlzIiwicmVnaW9uTmFtZSI6IkNlcmRhbnlhIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjg3MTE0MzM3NTY4MDU4MDgsInNjb3JlMjBDZWxsU2hhcmUiOjAuMTkyMzc3NDk1NDYyNzk0OTJ9LHsicmVnaW9uSWQiOiJwcmVwaXJpbmV1cyIsInNwZWNpZXNJZCI6ImJvbGV0dXMtZWR1bGlzIiwicmVnaW9uTmFtZSI6IlBvcnQgZGVsIENvbXRlIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjc4NzE3MjAxMTY2MTgwNzYsInNjb3JlMjBDZWxsU2hhcmUiOjAuMTA5MzI5NDQ2MDY0MTM5OTR9XSwibWFwUGF0aCI6IiIsInNoYXJlVGV4dCI6IiIsInNjb3BlIjoib3ZlcnZpZXciLCJzY29wZUxhYmVsIjoiVmlzacOzIGdlbmVyYWwifQ&signature=IWhPPFO8gpy0tBxxhfuxGHd-6WIy9f_AxGw4mJWFGIg&series=species&date=2026-09-07&slide=1&speciesId=lactarius-deliciosus&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6a9f213a7e178ae863213803",
+    "sourceDueAt": "2026-09-13T16:00:00.000Z",
+    "dueAt": "2026-09-13T18:00:00.000Z",
+    "title": "Camagroc (Craterellus lutescens): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDcgZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMDI6NTEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wN1QwMDo1MTowMS43MzErMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQmVyZ3VlZMOgIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjY3NTE0ODg5MDA5MjA0MTIsInNjb3JlMjBDZWxsU2hhcmUiOjAuMDgwMTI5OTQwNDQzOTYzMTh9LHsicmVnaW9uSWQiOiJwaXJpbmV1cyIsInNwZWNpZXNJZCI6ImJvbGV0dXMtZWR1bGlzIiwicmVnaW9uTmFtZSI6IkNlcmRhbnlhIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjg3MTE0MzM3NTY4MDU4MDgsInNjb3JlMjBDZWxsU2hhcmUiOjAuMTkyMzc3NDk1NDYyNzk0OTJ9LHsicmVnaW9uSWQiOiJwcmVwaXJpbmV1cyIsInNwZWNpZXNJZCI6ImJvbGV0dXMtZWR1bGlzIiwicmVnaW9uTmFtZSI6IlBvcnQgZGVsIENvbXRlIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjc4NzE3MjAxMTY2MTgwNzYsInNjb3JlMjBDZWxsU2hhcmUiOjAuMTA5MzI5NDQ2MDY0MTM5OTR9XSwibWFwUGF0aCI6IiIsInNoYXJlVGV4dCI6IiIsInNjb3BlIjoib3ZlcnZpZXciLCJzY29wZUxhYmVsIjoiVmlzacOzIGdlbmVyYWwifQ&signature=IWhPPFO8gpy0tBxxhfuxGHd-6WIy9f_AxGw4mJWFGIg&series=species&date=2026-09-07&slide=1&speciesId=craterellus-lutescens&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6a9f212f604293d4b3698ca1",
+    "sourceDueAt": "2026-09-09T10:00:00.000Z",
+    "dueAt": "2026-09-09T12:00:00.000Z",
+    "title": "Ou de reig (Amanita caesarea): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDcgZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMDI6NTEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wN1QwMDo1MTowMS43MzErMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQmVyZ3VlZMOgIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjY3NTE0ODg5MDA5MjA0MTIsInNjb3JlMjBDZWxsU2hhcmUiOjAuMDgwMTI5OTQwNDQzOTYzMTh9LHsicmVnaW9uSWQiOiJwaXJpbmV1cyIsInNwZWNpZXNJZCI6ImJvbGV0dXMtZWR1bGlzIiwicmVnaW9uTmFtZSI6IkNlcmRhbnlhIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjg3MTE0MzM3NTY4MDU4MDgsInNjb3JlMjBDZWxsU2hhcmUiOjAuMTkyMzc3NDk1NDYyNzk0OTJ9LHsicmVnaW9uSWQiOiJwcmVwaXJpbmV1cyIsInNwZWNpZXNJZCI6ImJvbGV0dXMtZWR1bGlzIiwicmVnaW9uTmFtZSI6IlBvcnQgZGVsIENvbXRlIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjc4NzE3MjAxMTY2MTgwNzYsInNjb3JlMjBDZWxsU2hhcmUiOjAuMTA5MzI5NDQ2MDY0MTM5OTR9XSwibWFwUGF0aCI6IiIsInNoYXJlVGV4dCI6IiIsInNjb3BlIjoib3ZlcnZpZXciLCJzY29wZUxhYmVsIjoiVmlzacOzIGdlbmVyYWwifQ&signature=IWhPPFO8gpy0tBxxhfuxGHd-6WIy9f_AxGw4mJWFGIg&series=species&date=2026-09-07&slide=1&speciesId=amanita-caesarea&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  },
+  {
+    "sourcePostId": "6a9f2124604293d4b3698b6b",
+    "sourceDueAt": "2026-09-18T10:00:00.000Z",
+    "dueAt": "2026-09-18T12:00:00.000Z",
+    "title": "Cep rogenc (Boletus pinophilus): guia ràpida d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://bolets.app/compartir/catalunya/imatge?format=feed&style=2026-09-05.3&card=eyJzbHVnIjoiY2F0YWx1bnlhIiwidGl0bGUiOiJDYXRhbHVueWEiLCJleWVicm93IjoiRGFkZXMgZGVsIDcgZGUgc2V0ZW1icmUgZGVsIDIwMjYgwrcgMDI6NTEiLCJvYnNlcnZlZEF0IjoiMjAyNi0wOS0wN1QwMDo1MTowMS43MzErMDA6MDAiLCJhdmFpbGFibGUiOnRydWUsInJlYWRpbmdzIjpbeyJyZWdpb25JZCI6InByZXBpcmluZXVzIiwic3BlY2llc0lkIjoiYm9sZXR1cy1lZHVsaXMiLCJyZWdpb25OYW1lIjoiQmVyZ3VlZMOgIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjY3NTE0ODg5MDA5MjA0MTIsInNjb3JlMjBDZWxsU2hhcmUiOjAuMDgwMTI5OTQwNDQzOTYzMTh9LHsicmVnaW9uSWQiOiJwaXJpbmV1cyIsInNwZWNpZXNJZCI6ImJvbGV0dXMtZWR1bGlzIiwicmVnaW9uTmFtZSI6IkNlcmRhbnlhIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjg3MTE0MzM3NTY4MDU4MDgsInNjb3JlMjBDZWxsU2hhcmUiOjAuMTkyMzc3NDk1NDYyNzk0OTJ9LHsicmVnaW9uSWQiOiJwcmVwaXJpbmV1cyIsInNwZWNpZXNJZCI6ImJvbGV0dXMtZWR1bGlzIiwicmVnaW9uTmFtZSI6IlBvcnQgZGVsIENvbXRlIiwic3BlY2llc05hbWUiOiJDZXAiLCJzY29yZSI6NTgsImxhYmVsIjoibWl0amFuYSIsInBvc2l0aXZlQ2VsbFNoYXJlIjowLjc4NzE3MjAxMTY2MTgwNzYsInNjb3JlMjBDZWxsU2hhcmUiOjAuMTA5MzI5NDQ2MDY0MTM5OTR9XSwibWFwUGF0aCI6IiIsInNoYXJlVGV4dCI6IiIsInNjb3BlIjoib3ZlcnZpZXciLCJzY29wZUxhYmVsIjoiVmlzacOzIGdlbmVyYWwifQ&signature=IWhPPFO8gpy0tBxxhfuxGHd-6WIy9f_AxGw4mJWFGIg&series=species&date=2026-09-07&slide=1&speciesId=boletus-pinophilus&speciesVersion=4",
+      "image": {
+        "altText": ""
+      }
+    },
+    "isAiGenerated": false
+  }
+]

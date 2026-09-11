@@ -1,0 +1,34 @@
+[
+  {
+    "id": "01-pluja",
+    "width": 1080,
+    "height": 1920,
+    "seconds": 24,
+    "frames": "720",
+    "audio": true
+  },
+  {
+    "id": "03-abans-sortir",
+    "width": 1080,
+    "height": 1920,
+    "seconds": 24,
+    "frames": "720",
+    "audio": true
+  },
+  {
+    "id": "05-poc-senyal",
+    "width": 1080,
+    "height": 1920,
+    "seconds": 24,
+    "frames": "720",
+    "audio": true
+  },
+  {
+    "id": "06-el-meu-bosc",
+    "width": 1080,
+    "height": 1920,
+    "seconds": 24,
+    "frames": "720",
+    "audio": true
+  }
+]

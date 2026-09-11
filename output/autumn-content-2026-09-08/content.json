@@ -1,0 +1,136 @@
+{
+  "created": "2026-09-08",
+  "timezone": "Europe/Madrid",
+  "reels": [
+    {
+      "id": "01-pluja",
+      "date": "2026-09-22",
+      "title": "Ha plogut. I ara?",
+      "footage": "rain-leaves.mp4",
+      "scenes": [
+        [
+          "Ha plogut.\nI ara?",
+          "Un xàfec no posa data als bolets."
+        ],
+        [
+          "Mira més\nque la pluja.",
+          "El sòl i la temperatura també compten."
+        ],
+        [
+          "Cada espècie,\nel seu moment.",
+          "Revisa la temporada i l’hàbitat."
+        ],
+        [
+          "Compara\nles condicions.",
+          "El mapa orienta; no confirma presència."
+        ],
+        [
+          "Abans de sortir,\nobre Bolets.",
+          "Mapa de condicions · enllaç al perfil"
+        ]
+      ],
+      "caption": "Ha plogut… però això no posa data a la sortida dels bolets. La resposta depèn també de la humitat prèvia del sòl, de la temperatura, de l’espècie i de la temporada.\n\nAbans de sortir, compara les condicions a Bolets. El mapa ajuda a orientar la consulta; no confirma presència ni quantitat. Enllaç al perfil.\n\nMés context: bolets.app/quan-surten-els-bolets-despres-de-ploure\nImatges de bosc generades amb IA, de caràcter il·lustratiu; no mostren una troballa actual.\n\n#Bolets #BoletsDeCatalunya #TemporadaDeBolets"
+    },
+    {
+      "id": "03-abans-sortir",
+      "date": "2026-09-29",
+      "title": "Abans d’agafar el cotxe",
+      "footage": "path-sunbeams-a.mp4",
+      "scenes": [
+        [
+          "Abans d’agafar\nel cotxe…",
+          "Dedica un moment a preparar la sortida."
+        ],
+        [
+          "Tria l’espècie\ni el territori.",
+          "Comença per allò que vols consultar."
+        ],
+        [
+          "Comprova\nla data.",
+          "Una captura antiga no és la lectura d’avui."
+        ],
+        [
+          "Mira també\nl’extensió.",
+          "Un bon sector no representa tot el territori."
+        ],
+        [
+          "Obre el mapa.\nDecideix amb criteri.",
+          "bolets.app · enllaç al perfil"
+        ]
+      ],
+      "caption": "Abans d’agafar el cotxe: tria l’espècie i el territori, comprova la data de les dades i mira com s’estenen les condicions.\n\nUn sector amb millor lectura no representa necessàriament tot el bosc. El mapa compara condicions; no és una promesa de trobar bolets. Revisa també la previsió meteorològica i les normes d’accés del lloc.\n\nPrepara la consulta a bolets.app/map. Enllaç al perfil.\nImatges de bosc generades amb IA; no són una sortida documentada ni indiquen un lloc de recol·lecció.\n\n#Bolets #BoletsDeCatalunya #SortidesAlBosc"
+    },
+    {
+      "id": "05-poc-senyal",
+      "date": "2026-10-06",
+      "title": "Poc senyal al mapa?",
+      "footage": "floor-mist-leaves.mp4",
+      "scenes": [
+        [
+          "Poc senyal\nal mapa?",
+          "Una lectura baixa també dona context."
+        ],
+        [
+          "Revisa espècie,\nterritori i data.",
+          "Comprova què estàs comparant."
+        ],
+        [
+          "Baix no vol dir\nque no n’hi hagi.",
+          "Les condicions no són un cens de bolets."
+        ],
+        [
+          "Sense dades?\nÉs diferent.",
+          "Una lectura no disponible no equival a zero."
+        ],
+        [
+          "Consulta el context\nabans de decidir.",
+          "bolets.app · mapa de condicions"
+        ]
+      ],
+      "caption": "Una lectura baixa al mapa no demostra que no hi hagi bolets. Compara condicions relatives, no presència observada.\n\nComprova l’espècie, el territori i la data abans de decidir. I distingeix una lectura baixa d’una lectura no disponible: si falten dades, no podem interpretar-ho com un zero.\n\nConsulta el context a bolets.app/map. Enllaç al perfil.\nImatges de bosc generades amb IA, de caràcter il·lustratiu; no mostren l’estat actual d’un territori.\n\n#Bolets #BoletsDeCatalunya #MapaDeBolets"
+    },
+    {
+      "id": "06-el-meu-bosc",
+      "date": "2026-10-08",
+      "title": "El teu bosc, a mà",
+      "footage": "path-sunbeams-c.mp4",
+      "scenes": [
+        [
+          "El teu bosc,\na mà.",
+          "Les consultes que t’interessen, juntes."
+        ],
+        [
+          "Desa les teves\nespècies.",
+          "Tria-les entre les del catàleg."
+        ],
+        [
+          "Afegeix els teus\nterritoris.",
+          "Comarques, massissos i paratges disponibles."
+        ],
+        [
+          "Consulta les\nlectures disponibles.",
+          "Les mateixes dades públiques, filtrades per tu."
+        ],
+        [
+          "Entra a\nEl meu bosc.",
+          "bolets.app · cal iniciar sessió"
+        ]
+      ],
+      "caption": "Tornes sovint a consultar les mateixes espècies i territoris? A El meu bosc pots desar la teva selecció i consultar les lectures disponibles en un sol lloc.\n\nSón les mateixes lectures territorials públiques, filtrades per les teves preferències. Les preferències no canvien el mapa ni garanteixen troballes.\n\nEntra a bolets.app/compte/bosc i fes la teva selecció. Cal iniciar sessió. Enllaç al perfil.\nImatges de bosc generades amb IA; peça explicativa del producte, sense representar dades personals ni lectures actuals.\n\n#Bolets #BoletsDeCatalunya #ElMeuBosc"
+    }
+  ],
+  "carousels": [
+    {
+      "id": "02-foto-barret",
+      "date": "2026-09-24",
+      "title": "Amb el barret no n’hi ha prou",
+      "caption": "Una foto del barret deixa fora detalls importants. Per documentar un exemplar, cal observar-lo per dalt, per sota i de costat, amb el peu i la base visibles, i anotar l’entorn on creix.\n\nFes servir llum natural i evita filtres que canviïn el color. Les imatges poden ajudar a explicar què has vist, però no garanteixen una identificació segura. No consumeixis bolets que no coneguis amb certesa; davant del dubte, consulta una persona experta.\n\nDesa aquesta llista per a la propera observació. Guia: bolets.app/parts-dun-bolet\nFonts: Agència Catalana de Seguretat Alimentària, «Bolets» (acsa.gencat.cat/ca/detall/article/Bolets); guia de Bolets «Parts d’un bolet». Sense revisió micològica independent. Il·lustració genèrica creada amb IA (Magnific / Recraft), no una espècie identificada.\n\n#Bolets #BoletsDeCatalunya #EducacioAmbiental"
+    },
+    {
+      "id": "04-sota-barret",
+      "date": "2026-10-01",
+      "title": "Mira sota el barret",
+      "caption": "Làmines, plecs i porus: tres estructures que pots observar sota el barret. Les làmines són estructures fines; els plecs són relleus més gruixuts i arrodonits; els porus són les obertures dels tubs. Hi ha altres formes, com les agulletes.\n\nObservar aquesta superfície és un pas més: també cal contrastar el barret, el peu, la base, l’hàbitat i altres trets. Cap d’aquestes estructures, per si sola, prova que un bolet sigui comestible.\n\nDesa la comparació. Guia completa: bolets.app/parts-dun-bolet\nFonts: Generalitat de Catalunya, «Bolets» (canalaliments.gencat.cat/ca/coneix-aliments/bolets-tofona/bolets/) i la guia «Parts d’un bolet» de Bolets. Sense revisió micològica independent. Esquemes il·lustratius generats amb IA (Magnific / Recraft), simplificats i sense escala; no són una clau d’identificació.\n\n#Bolets #BoletsDeCatalunya #Micologia"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "01-pluja",
+    "kind": "videos",
+    "path": "temp-files/02253ca1-8291-46a2-b2bf-b455fb826e85.mp4"
+  },
+  {
+    "id": "01-pluja",
+    "kind": "covers",
+    "path": "temp-files/5a139471-5a75-4ef8-bafc-5a1f7c3af65a.jpg"
+  },
+  {
+    "id": "03-abans-sortir",
+    "kind": "videos",
+    "path": "temp-files/81bcf23f-3a74-4075-a65e-aae00baad3ee.mp4"
+  },
+  {
+    "id": "03-abans-sortir",
+    "kind": "covers",
+    "path": "temp-files/81d1032b-6aa9-4f66-b696-994d8736ef68.jpg"
+  },
+  {
+    "id": "05-poc-senyal",
+    "kind": "videos",
+    "path": "temp-files/5b709092-542e-4d88-9a44-5eb536b5266c.mp4"
+  },
+  {
+    "id": "05-poc-senyal",
+    "kind": "covers",
+    "path": "temp-files/6415a1b9-f595-4a78-a811-ca020a53c85b.jpg"
+  },
+  {
+    "id": "06-el-meu-bosc",
+    "kind": "videos",
+    "path": "temp-files/e7e99abc-8763-4099-99de-c9a0ca6f9798.mp4"
+  },
+  {
+    "id": "06-el-meu-bosc",
+    "kind": "covers",
+    "path": "temp-files/b72bebfa-44d1-471e-856f-f31bd995caca.jpg"
+  }
+]

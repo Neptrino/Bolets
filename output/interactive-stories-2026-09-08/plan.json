@@ -1,0 +1,336 @@
+[
+  {
+    "key": "interactive-2026-09-10-1",
+    "dueAt": "2026-09-10T14:00:00.000Z",
+    "kind": "poll",
+    "prompt": "On gaudeixes més buscant bolets?",
+    "options": [
+      "Pirineu",
+      "Boscos mediterranis"
+    ],
+    "note": "Pregunta per paisatges amplis. Sense revelar els teus racons!",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Enquesta. Pregunta: On gaudeixes més buscant bolets? Opcions: Pirineu / Boscos mediterranis. Pregunta per paisatges amplis. Sense revelar els teus racons! Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-09-12-2",
+    "dueAt": "2026-09-12T14:00:00.000Z",
+    "kind": "poll",
+    "prompt": "Quin bosc et tira més?",
+    "options": [
+      "Pineda",
+      "Roureda o alzinar"
+    ],
+    "note": "Preferències personals; no demanis ubicacions exactes.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Enquesta. Pregunta: Quin bosc et tira més? Opcions: Pineda / Roureda o alzinar. Preferències personals; no demanis ubicacions exactes. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-09-14-3",
+    "dueAt": "2026-09-14T14:00:00.000Z",
+    "kind": "poll",
+    "prompt": "Si només en poguessis triar un…",
+    "options": [
+      "Rovelló",
+      "Cep"
+    ],
+    "note": "Pregunta de preferències, no d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Enquesta. Pregunta: Si només en poguessis triar un… Opcions: Rovelló / Cep. Pregunta de preferències, no d’identificació. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-09-16-4",
+    "dueAt": "2026-09-16T14:00:00.000Z",
+    "kind": "poll",
+    "prompt": "Quin t’agrada més trobar?",
+    "options": [
+      "Rossinyol",
+      "Camagroc"
+    ],
+    "note": "Pregunta de preferències, no d’identificació.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Enquesta. Pregunta: Quin t’agrada més trobar? Opcions: Rossinyol / Camagroc. Pregunta de preferències, no d’identificació. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-09-18-5",
+    "dueAt": "2026-09-18T14:00:00.000Z",
+    "kind": "poll",
+    "prompt": "Com t’agraden més els bolets?",
+    "options": [
+      "A la paella",
+      "Amb arròs"
+    ],
+    "note": "Pregunta de preferències culinàries; no dona instruccions de consum.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Enquesta. Pregunta: Com t’agraden més els bolets? Opcions: A la paella / Amb arròs. Pregunta de preferències culinàries; no dona instruccions de consum. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-09-20-6",
+    "dueAt": "2026-09-20T14:00:00.000Z",
+    "kind": "question",
+    "prompt": "Quin plat amb bolets no falla mai a casa?",
+    "options": [],
+    "note": "Recull idees de plats per al contingut futur.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Preguntes. Pregunta: Quin plat amb bolets no falla mai a casa? Recull idees de plats per al contingut futur. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-09-22-7",
+    "dueAt": "2026-09-22T14:00:00.000Z",
+    "kind": "poll",
+    "prompt": "Què et costa més?",
+    "options": [
+      "Reconèixer el bolet",
+      "Triar el bosc"
+    ],
+    "note": "Recull dubtes per a futures guies.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Enquesta. Pregunta: Què et costa més? Opcions: Reconèixer el bolet / Triar el bosc. Recull dubtes per a futures guies. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-09-23-8",
+    "dueAt": "2026-09-23T14:00:00.000Z",
+    "kind": "poll",
+    "prompt": "Com t’agrada fer la sortida?",
+    "options": [
+      "Ben d’hora",
+      "Sense presses"
+    ],
+    "note": "Preferències sobre el ritme de la sortida.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Enquesta. Pregunta: Com t’agrada fer la sortida? Opcions: Ben d’hora / Sense presses. Preferències sobre el ritme de la sortida. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-09-24-9",
+    "dueAt": "2026-09-24T14:00:00.000Z",
+    "kind": "quiz",
+    "prompt": "Una foto del barret és suficient per identificar un bolet?",
+    "options": [
+      "Sí",
+      "No"
+    ],
+    "note": "Resposta: No. Cal observar més trets i context; una fotografia no garanteix una identificació segura.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Quiz (si no està disponible, Enquesta). Pregunta: Una foto del barret és suficient per identificar un bolet? Opcions: Sí / No. Mostra després la resposta i l’explicació en una Story; no posis la solució damunt la pregunta. Resposta: No. Cal observar més trets i context; una fotografia no garanteix una identificació segura. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-09-26-10",
+    "dueAt": "2026-09-26T14:00:00.000Z",
+    "kind": "question",
+    "prompt": "Amb qui acostumes a anar al bosc?",
+    "options": [],
+    "note": "No demanis noms complets, etiquetes ni localitzacions.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Preguntes. Pregunta: Amb qui acostumes a anar al bosc? No demanis noms complets, etiquetes ni localitzacions. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-09-27-11",
+    "dueAt": "2026-09-27T14:00:00.000Z",
+    "kind": "poll",
+    "prompt": "Quin detall vols aprendre a observar?",
+    "options": [
+      "Làmines",
+      "Peu i base"
+    ],
+    "note": "Usa els resultats per prioritzar una lliçó.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Enquesta. Pregunta: Quin detall vols aprendre a observar? Opcions: Làmines / Peu i base. Usa els resultats per prioritzar una lliçó. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-09-29-12",
+    "dueAt": "2026-09-29T14:00:00.000Z",
+    "kind": "quiz",
+    "prompt": "El reig bord i l’ou de reig són la mateixa espècie?",
+    "options": [
+      "Sí",
+      "No"
+    ],
+    "note": "Resposta: No. Reig bord: Amanita muscaria. Ou de reig: Amanita caesarea. No identifiquis ni decideixis el consum només amb aquesta pregunta.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Quiz (si no està disponible, Enquesta). Pregunta: El reig bord i l’ou de reig són la mateixa espècie? Opcions: Sí / No. Mostra després la resposta i l’explicació en una Story; no posis la solució damunt la pregunta. Resposta: No. Reig bord: Amanita muscaria. Ou de reig: Amanita caesarea. No identifiquis ni decideixis el consum només amb aquesta pregunta. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-09-30-13",
+    "dueAt": "2026-09-30T14:00:00.000Z",
+    "kind": "question",
+    "prompt": "Com en dieu del rovelló a casa teva?",
+    "options": [],
+    "note": "Demana noms locals, no punts de recol·lecció.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Preguntes. Pregunta: Com en dieu del rovelló a casa teva? Demana noms locals, no punts de recol·lecció. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-10-01-14",
+    "dueAt": "2026-10-01T14:00:00.000Z",
+    "kind": "poll",
+    "prompt": "Quina guia vols després?",
+    "options": [
+      "Fredolics",
+      "Llenegues"
+    ],
+    "note": "La votació orienta futures ampliacions; no promet una nova fitxa que ja estigui programada.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Enquesta. Pregunta: Quina guia vols després? Opcions: Fredolics / Llenegues. La votació orienta futures ampliacions; no promet una nova fitxa que ja estigui programada. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-10-03-15",
+    "dueAt": "2026-10-03T14:00:00.000Z",
+    "kind": "poll",
+    "prompt": "Què vols veure més aquí?",
+    "options": [
+      "Espècies",
+      "Idees de cuina"
+    ],
+    "note": "Resultats entre els qui han votat, no representatius de tots els boletaires.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Enquesta. Pregunta: Què vols veure més aquí? Opcions: Espècies / Idees de cuina. Resultats entre els qui han votat, no representatius de tots els boletaires. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-10-04-16",
+    "dueAt": "2026-10-04T14:00:00.000Z",
+    "kind": "quiz",
+    "prompt": "El fredolic té…",
+    "options": [
+      "Làmines",
+      "Plecs",
+      "Porus"
+    ],
+    "note": "Resposta: Làmines. Aquest tret sol no identifica l’espècie ni garanteix la comestibilitat.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Quiz (si no està disponible, Enquesta). Pregunta: El fredolic té… Opcions: Làmines / Plecs / Porus. Mostra després la resposta i l’explicació en una Story; no posis la solució damunt la pregunta. Resposta: Làmines. Aquest tret sol no identifica l’espècie ni garanteix la comestibilitat. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-10-06-17",
+    "dueAt": "2026-10-06T14:00:00.000Z",
+    "kind": "poll",
+    "prompt": "Què consultes primer?",
+    "options": [
+      "Espècie",
+      "Territori"
+    ],
+    "note": "Pregunta sobre com prepares una sortida.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Enquesta. Pregunta: Què consultes primer? Opcions: Espècie / Territori. Pregunta sobre com prepares una sortida. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  },
+  {
+    "key": "interactive-2026-10-08-18",
+    "dueAt": "2026-10-08T14:00:00.000Z",
+    "kind": "quiz",
+    "prompt": "Un senyal alt al mapa confirma que trobaràs bolets?",
+    "options": [
+      "Sí",
+      "No"
+    ],
+    "note": "Resposta: No. El mapa estima condicions, no confirma presència ni troballes.",
+    "asset": {
+      "__typename": "ImageAsset",
+      "source": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa07bc1d6a6ee552003e8d6/1f90acfd379cf5819f835bec174df119.original.jpg",
+      "image": {
+        "altText": ""
+      }
+    },
+    "instructions": "Afegeix a Instagram l’adhesiu Quiz (si no està disponible, Enquesta). Pregunta: Un senyal alt al mapa confirma que trobaràs bolets? Opcions: Sí / No. Mostra després la resposta i l’explicació en una Story; no posis la solució damunt la pregunta. Resposta: No. El mapa estima condicions, no confirma presència ni troballes. Afegeix @bolets.app si vols una menció clicable. Imatge de l’arxiu, no una troballa d’avui; no vinculis la foto amb un lloc o una espècie de la pregunta. Ajusta el fons i la posició de l’adhesiu a Instagram."
+  }
+]

@@ -1,0 +1,148 @@
+[
+  {
+    "id": "01-pluja",
+    "postId": "6aa084aa33b409a786d1da4d",
+    "storyId": "6aa085c6fb4b289f26660e84",
+    "dueAt": "2026-09-22T17:00:00.000Z",
+    "storyDueAt": "2026-09-22T19:00:00.000Z",
+    "assets": [
+      {
+        "video": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa084a1fdbd0a5d43084e14/671fcc0e87968fbbb3f64b14c2d51b50.original_transcoded.mp4"
+        }
+      }
+    ]
+  },
+  {
+    "id": "03-abans-sortir",
+    "postId": "6aa084e2043b34d86c328ee2",
+    "storyId": "6aa085c96c58ba7c25f1f05f",
+    "dueAt": "2026-09-29T17:00:00.000Z",
+    "storyDueAt": "2026-09-29T19:00:00.000Z",
+    "assets": [
+      {
+        "video": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa084cd6c931c1a470e3b9d/3e892d07262f138534fec8abb34fc712.original.mp4"
+        }
+      }
+    ]
+  },
+  {
+    "id": "05-poc-senyal",
+    "postId": "6aa08512607605df69c157e0",
+    "storyId": "6aa085cc06c021630289a0b5",
+    "dueAt": "2026-10-06T17:00:00.000Z",
+    "storyDueAt": "2026-10-06T19:00:00.000Z",
+    "assets": [
+      {
+        "video": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa085011522b6acd10a4762/d86c318ee644f3e268899ef1cf60ab9c.original_transcoded.mp4"
+        }
+      }
+    ]
+  },
+  {
+    "id": "06-el-meu-bosc",
+    "postId": "6aa0853563e50cd0db6fec78",
+    "storyId": "6aa085ce7082feb000de3c5a",
+    "dueAt": "2026-10-08T17:00:00.000Z",
+    "storyDueAt": "2026-10-08T19:00:00.000Z",
+    "assets": [
+      {
+        "video": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa0852c62aec3b64c02f111/72d61f5e10dfce13d4df9036cdfd6c81.original_transcoded.mp4"
+        }
+      }
+    ]
+  },
+  {
+    "id": "02-foto-barret",
+    "postId": "6aa08571554a8974b16660ff",
+    "storyId": "6aa085d106c021630289a14f",
+    "dueAt": "2026-09-24T17:00:00.000Z",
+    "storyDueAt": "2026-09-24T19:00:00.000Z",
+    "assets": [
+      {
+        "image": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa085601111f422030bc888/fbf95e12e6360434bcafa08f3aaa1b86.original.jpg",
+          "metadata": {
+            "altText": "bolets.app. GUIA DE CAMP. OBSERVAR MILLOR. 1 / 4. Amb el barret\nno n’hi ha prou.. Una foto només explica una part.. Mira el conjunt. Guarda els detalls."
+          }
+        }
+      },
+      {
+        "image": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa085600e75270204075b6b/33c4ac73a3eb4763cadde5c395657718.original.jpg",
+          "metadata": {
+            "altText": "bolets.app. GUIA DE CAMP. OBSERVAR MILLOR. 2 / 4. Tres mirades\nque sumen.. Per dalt. Forma, color i superfície del barret.. Per sota. Làmines, plecs, porus o altres estructures.. De costat. El peu sencer i la base també importen.. Cap fotografia, tota sola, dona certesa."
+          }
+        }
+      },
+      {
+        "image": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa085604d01bc8af3015bc5/69d5e0af3104cbea56c17e27f26c6206.original.jpg",
+          "metadata": {
+            "altText": "bolets.app. GUIA DE CAMP. OBSERVAR MILLOR. 3 / 4. El context\ntambé compta.. Llum natural. Evita filtres que alterin els colors.. Entorn. Observa el sòl, la fusta i els arbres propers.. Detalls visibles. Conserva fotografies nítides del conjunt.. Documenta sense malmetre l’entorn."
+          }
+        }
+      },
+      {
+        "image": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa0856061ca8bb252051b95/bfcbe17981bb0bb9e6d2cc3d8adadbb6.original.jpg",
+          "metadata": {
+            "altText": "bolets.app. GUIA DE CAMP. OBSERVAR MILLOR. 4 / 4. Una foto\nno és un permís\nper menjar-lo.. Si tens dubtes, no el consumeixis.\nConsulta una persona experta.. Desa la llista per a la\npropera observació.. Guia completa: bolets.app/parts-dun-bolet. Educació de camp · no és una identificació"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "04-sota-barret",
+    "postId": "6aa0859b95f139fbcd532c57",
+    "storyId": "6aa085d37082feb000de3d1a",
+    "dueAt": "2026-10-01T17:00:00.000Z",
+    "storyDueAt": "2026-10-01T19:00:00.000Z",
+    "assets": [
+      {
+        "image": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa0858ddaa6a3e3d3015192/64c0e0268ddf5bf2eb64d34f48960663.original.jpg",
+          "metadata": {
+            "altText": "bolets.app. GUIA DE CAMP. SOTA EL BARRET. 1 / 5. Mira sota\nel barret.. Tres estructures. Una pista més.. LÀMINES. PLECS. PORUS. Aprèn a observar abans de posar-hi nom."
+          }
+        }
+      },
+      {
+        "image": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa0858db40dd7ec4d0a38e7/6b82488ffb4c146df9da2121fdcb2197.original.jpg",
+          "metadata": {
+            "altText": "bolets.app. GUIA DE CAMP. SOTA EL BARRET. 2 / 5. Làmines. Fulles fines que s’estenen\nsota el barret.. Esquema simplificat · no identifica l’espècie"
+          }
+        }
+      },
+      {
+        "image": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa0858d71beb1de77007937/cbd1c3efd8c5508b5302e39d70d39eac.original.jpg",
+          "metadata": {
+            "altText": "bolets.app. GUIA DE CAMP. SOTA EL BARRET. 3 / 5. Plecs. Relleus més gruixuts i arrodonits;\npoden ramificar-se i baixar pel peu.. Esquema simplificat · no identifica l’espècie"
+          }
+        }
+      },
+      {
+        "image": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa0858d3e2382f8a308ee1a/c7e8c87f3b0d53b004d606e55812fa13.original.jpg",
+          "metadata": {
+            "altText": "bolets.app. GUIA DE CAMP. SOTA EL BARRET. 4 / 5. Porus. Petites obertures dels tubs,\namb aspecte d’esponja.. Esquema simplificat · no identifica l’espècie"
+          }
+        }
+      },
+      {
+        "image": {
+          "url": "https://buffer-media-uploads.s3.amazonaws.com/6a95fdba6a3a94336a02bf5b/6aa0858da49760b40b0723e5/08245b0b3b0d7d67261760874d4f3e1d.original.jpg",
+          "metadata": {
+            "altText": "bolets.app. GUIA DE CAMP. SOTA EL BARRET. 5 / 5. Una pista\nno és un\nveredicte.. Contrasta també el barret,\nel peu, la base i l’hàbitat.. Làmines, plecs o porus no indiquen,\nper si sols, si es pot menjar.. També hi ha altres formes, com les agulletes.. Desa la comparació · bolets.app"
+          }
+        }
+      }
+    ]
+  }
+]
