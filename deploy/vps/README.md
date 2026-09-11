@@ -651,6 +651,12 @@ Ordinary application edits reuse those generated variants. The builder inherits
 the dependency stage directly, and npm downloads stay in a BuildKit cache mount
 rather than the exported dependency layer.
 
+The matching source archive uses the committed `.gitattributes` export rules to
+omit local campaign exports and video assets. These files can remain versioned
+in GitHub without entering the VPS release. Application media, migrations,
+functions and deployment scripts remain included. Actions checks the compressed
+archive against the receiver's 256 MiB limit before sending it over SSH.
+
 The forced-command SSH stream consists of `ghcr-v1`, the commit SHA, image
 reference, registry username and short-lived job token (one line each), followed
 by the gzip source archive. The receiver validates the fixed repository and

@@ -19,7 +19,7 @@
 - Set font sizes only through the type-scale tokens defined in `app/globals.css` (`--text-xs` … `--text-3xl` for fixed text, `--display-xs` … `--display-xl` for fluid titles); never hardcode px/rem sizes or new `clamp()` expressions. The only exceptions are the OG/share image generators and the few decorative watermark numerals already marked in the stylesheet.
 - Document important architectural decisions and update this file when project conventions change.
 - Keep active documentation indexed in `docs/README.md`. Move dated research and completed release receipts, with their evidence companions, to `docs/archive/`; label historical status and repair inbound links. Remove redundant handoffs once their useful instructions are retained in current guidance or an archived receipt.
-- Keep the repository map in `README.md` aligned with folder ownership. Retain dated research outside session scratch directories; exclude local `social/`, `artifacts/`, `output/` and `.codex-tmp/` material from the Docker build context.
+- Keep the repository map in `README.md` aligned with folder ownership. Retain dated research outside session scratch directories; exclude local `social/`, `artifacts/`, `output/` and `.codex-tmp/` material from the Docker build context. Omit local creative exports and `video/assets/` from source/release archives through committed `.gitattributes` export rules, and check the archive against the VPS 256 MiB transport limit before upload.
 
 ## Testing and verification
 

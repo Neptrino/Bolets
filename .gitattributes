@@ -1,0 +1,7 @@
+# Keep local creative assets in Git, but omit them from source/release archives.
+/output export-ignore
+/outputs export-ignore
+/artifacts export-ignore
+/social export-ignore
+/.codex-tmp export-ignore
+/video/assets export-ignore

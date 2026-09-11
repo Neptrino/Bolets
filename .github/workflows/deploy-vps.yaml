@@ -206,7 +206,15 @@ jobs:
             | jq -e '.ok == true' >/dev/null
 
       - name: Create the immutable release archive
-        run: git archive --format=tar.gz --output="$RUNNER_TEMP/bolets-release.tar.gz" "$GITHUB_SHA"
+        run: |
+          set -eu
+          release_archive="$RUNNER_TEMP/bolets-release.tar.gz"
+          git archive --format=tar.gz --output="$release_archive" "$GITHUB_SHA"
+          archive_size=$(wc -c < "$release_archive")
+          if [ "$archive_size" -gt 268435456 ]; then
+            echo 'The release archive exceeds the VPS 256 MiB limit; review export-ignore rules' >&2
+            exit 65
+          fi
 
       - name: Configure the deployment identity
         env:
