@@ -169,7 +169,7 @@ describe("conversion", () => {
       "2025-10-01,Suillus luteus,\"41.741599, 2.088082\",690,2,medium,N",
       "2025-09-21,Suillus luteus,\"41.751599, 2.098082\",700,4,high,S",
     ));
-    expect(converted.metadata.speciesCounts["suillus-luteus"]).toBe(2);
+    expect(converted.metadata.candidateSpeciesCounts["suillus-luteus"]).toBe(2);
     expect(converted.metadata.dateRange).toEqual({ first: "2025-09-21", last: "2025-10-01" });
     expect(JSON.stringify(converted.metadata)).not.toContain("41.74");
   });

@@ -1,5 +1,6 @@
 import { getSpecies, speciesProfiles } from "@/data/species";
 import type { PrivateHistoricalFinding } from "@/tests/helpers/historical-finding-replay";
+import { observationForSpecies } from "@/tests/helpers/finding-observations";
 
 /**
  * Converts a private field-findings spreadsheet (exported to CSV/TSV) into the
@@ -7,7 +8,7 @@ import type { PrivateHistoricalFinding } from "@/tests/helpers/historical-findin
  * touching the private file; the CLI wrapper owns path handling.
  */
 
-export const FINDINGS_SPREADSHEET_VERSION = "findings-spreadsheet-v1";
+export const FINDINGS_SPREADSHEET_VERSION = "findings-spreadsheet-v2";
 
 export const DEFAULT_BATCH_SIZE = 24;
 const MAX_SPECIES_PER_LOCATION = 8;
@@ -37,7 +38,8 @@ export type FindingsMetadata = {
   events: number;
   observedNegatives: number;
   skipped: { rowNumber: number; reason: string }[];
-  speciesCounts: Record<string, number>;
+  candidateSpeciesCounts: Record<string, number>;
+  recordedTaxonCounts: Record<string, number>;
   dateRange: { first: string; last: string } | null;
   /** Per-ordinal context, so reports can stratify without holding coordinates. */
   eventContext: LocationContext[];
@@ -411,12 +413,16 @@ function toFindings(rows: FindingsRow[]) {
       );
     }
     const first = group[0];
+    const observations = [...new Map(group.map((row) => [
+      [...row.speciesIds].sort().join("|"), observationForSpecies(row.speciesIds),
+    ])).values()];
     location += 1;
     findings.push({
       observedAt: first.observedAt,
       latitude: first.latitude,
       longitude: first.longitude,
       speciesIds,
+      observations,
     });
     context.push({
       location,
@@ -449,13 +455,17 @@ export function convertFindings(text: string): ConvertedFindings {
   const events = toFindings(positives);
   const observedNegatives = toFindings(negatives);
 
-  const speciesCounts: Record<string, number> = {};
+  const candidateSpeciesCounts: Record<string, number> = {};
   for (const row of positives) {
     for (const speciesId of row.speciesIds) {
-      speciesCounts[speciesId] = (speciesCounts[speciesId] ?? 0) + 1;
+      candidateSpeciesCounts[speciesId] = (candidateSpeciesCounts[speciesId] ?? 0) + 1;
     }
   }
   const dates = rows.map((row) => row.observedAt.slice(0, 10)).sort();
+  const recordedTaxonCounts: Record<string, number> = {};
+  for (const finding of events.findings) for (const observation of finding.observations ?? []) {
+    recordedTaxonCounts[observation.taxon] = (recordedTaxonCounts[observation.taxon] ?? 0) + 1;
+  }
 
   return {
     events: events.findings,
@@ -466,7 +476,8 @@ export function convertFindings(text: string): ConvertedFindings {
       events: events.findings.length,
       observedNegatives: observedNegatives.findings.length,
       skipped,
-      speciesCounts,
+      candidateSpeciesCounts,
+      recordedTaxonCounts,
       dateRange: dates.length ? { first: dates[0], last: dates[dates.length - 1] } : null,
       eventContext: events.context,
       observedNegativeContext: observedNegatives.context,

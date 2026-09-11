@@ -871,6 +871,7 @@ it.skipIf(!inputPath || !artifactsDir)(
               location,
               speciesId,
               kind: target.kind,
+              observations: finding.observations,
               date: target.date,
               offsetDaysFromFinding: target.kind === "event"
                 ? Math.round(

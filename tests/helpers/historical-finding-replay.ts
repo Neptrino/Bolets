@@ -1,4 +1,5 @@
 import { getSpecies } from "@/data/species";
+import { validateObservations, type FindingObservation } from "@/tests/helpers/finding-observations";
 
 export const HISTORICAL_FINDING_REPLAY_VERSION = "historical-finding-replay-v1";
 export const HISTORICAL_FORECAST_ENDPOINT =
@@ -35,6 +36,8 @@ export type PrivateHistoricalFinding = {
   latitude: number;
   longitude: number;
   speciesIds: string[];
+  /** Absent in legacy inputs; never infer ambiguity from their flat species list. */
+  observations?: FindingObservation[];
 };
 
 type HistoricalForecastRequest = {
@@ -139,6 +142,9 @@ function validateFinding(value: unknown): PrivateHistoricalFinding {
     latitude: record.latitude,
     longitude: record.longitude,
     speciesIds,
+    ...(record.observations === undefined ? {} : {
+      observations: validateObservations(record.observations, speciesIds),
+    }),
   };
 }
 

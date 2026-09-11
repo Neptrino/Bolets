@@ -1,11 +1,11 @@
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
 import {
   type EvaluationRecord,
-  renderSummaryTable,
-  summarizeEvaluation,
 } from "@/tests/helpers/finding-evaluation-report";
+import { attachObservationInputs, renderObservationSummary, summarizeObservationEvaluation } from "@/tests/helpers/finding-observation-report";
+import { parsePrivateEvaluationFindings } from "@/tests/helpers/historical-finding-replay";
 
 const artifactsDir = process.env.FINDING_EVAL_METRICS_ARTIFACTS;
 
@@ -25,18 +25,18 @@ it.skipIf(!artifactsDir)(
     }
     if (records.length === 0) throw new Error("Replay artifacts contained no records");
 
-    // Only the day of the finding itself counts as the positive; the flanking
-    // offsets are kept in the artifacts for trajectory inspection.
-    const scored = records.filter(
-      (record) =>
-        record.kind !== "event" ||
-        (record as { offsetDaysFromFinding?: number | null }).offsetDaysFromFinding === 0,
-    );
+    // Legacy artifacts need the original taxonomic grouping, never a guess
+    // based on a flat list of scored candidates. Scores remain immutable.
+    const input = process.env.FINDING_EVAL_METRICS_INPUT;
+    const inputFiles = input ? statSync(input).isDirectory()
+      ? readdirSync(input).filter((name) => name.endsWith(".json") && !name.includes("metadata"))
+          .map((name) => join(input, name))
+      : [input] : [];
+    const enriched = input ? attachObservationInputs(records, inputFiles.flatMap((file) =>
+      parsePrivateEvaluationFindings(readFileSync(file, "utf8")))) : records;
 
-    const report = summarizeEvaluation(scored, {
+    const report = summarizeObservationEvaluation(enriched, {
       artifactFiles: files.sort(),
-      sourceRecords: records.length,
-      scoredRecords: scored.length,
     });
 
     const reportOut = process.env.FINDING_EVAL_REPORT_OUT;
@@ -47,14 +47,12 @@ it.skipIf(!artifactsDir)(
     const encoded = JSON.stringify(report);
     expect(encoded).not.toMatch(/latitude|longitude|cellId/i);
     // Recomputing from the same artifacts must give the same report.
-    expect(JSON.stringify(summarizeEvaluation(scored, {
+    expect(JSON.stringify(summarizeObservationEvaluation(enriched, {
       artifactFiles: files.sort(),
-      sourceRecords: records.length,
-      scoredRecords: scored.length,
     }))).toBe(encoded);
 
     console.log(JSON.stringify(report, null, 2));
-    console.error(renderSummaryTable(report));
+    console.error(renderObservationSummary(report));
   },
   120_000,
 );

@@ -20,6 +20,7 @@ function usage() {
     "Phases (both run when neither flag is given):",
     "  --replay   # fetch archived weather and score events plus matched controls",
     "  --metrics  # recompute the report from saved artifacts, offline",
+    "  --input=/absolute/path/reconverted  # required for legacy artifacts without recorded-taxon metadata",
     "",
     "Options:",
     "  --controls=3            # background dates sampled per event",
@@ -107,8 +108,10 @@ if (runReplay) {
 
 if (runMetrics) {
   const out = argumentsByName.get("out");
+  const input = argumentsByName.get("input");
   runTool("tests/finding-evaluation-metrics.test.ts", {
     FINDING_EVAL_METRICS_ARTIFACTS: artifactsDir,
+    ...(input ? { FINDING_EVAL_METRICS_INPUT: externalAbsolutePath(input, "--input") } : {}),
     ...(out ? { FINDING_EVAL_REPORT_OUT: externalAbsolutePath(out, "--out") } : {}),
   });
 }

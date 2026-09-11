@@ -13,6 +13,7 @@ import {
   type ReplayRaw,
   waterFactors,
 } from "@/tests/helpers/finding-evaluation";
+import type { FindingObservation } from "@/tests/helpers/finding-observations";
 
 /**
  * Turns saved replay artifacts into the diagnostic report. Each section answers
@@ -22,6 +23,7 @@ import {
 export type EvaluationRecord = {
   location: number;
   speciesId: string;
+  observations?: FindingObservation[];
   kind: "event" | "control" | "observed-negative";
   date: string;
   opportunityIndex: number | null;
