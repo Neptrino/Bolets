@@ -7,7 +7,7 @@ import {
   publishInstagramGrowthPost,
   type InstagramGrowthPublication,
 } from "@/src/lib/buffer-instagram-growth-publisher";
-import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
+import { loadDailySharePublicationCard } from "@/src/lib/daily-share-cards";
 import {
   signedWeekendReelPath,
 } from "@/src/lib/social-growth-assets";
@@ -30,10 +30,10 @@ function noStoreJson(data: unknown, status = 200) {
 }
 
 async function runPublication(kind: InstagramGrowthPublication) {
-  const card = await loadDailyShareCard("catalunya");
+  const card = await loadDailySharePublicationCard();
   if (!card) {
     throw new BufferPublicationError(
-      "The Catalonia prediction card is unavailable",
+      "The Catalonia prediction card is unavailable or local readings are incomplete",
       503,
       "prediction_unavailable",
     );

@@ -271,6 +271,24 @@ export async function loadDailyShareCard(slug: string) {
   return cards.find((card) => card.slug === slug) ?? null;
 }
 
+/**
+ * Scheduled publications must wait for local zones. The interactive kit's
+ * short timeout may show regions while that cache warms, but signing that
+ * fallback would permanently omit the local readings from the published post.
+ */
+export async function loadDailySharePublicationCard() {
+  const overview = await loadWithin(
+    () => Promise.all([loadCachedCurrentOverview(), loadCachedAreaOverview()]),
+    null,
+    60_000,
+  );
+  if (!overview) return null;
+  const [items, territoryItems] = overview;
+  if (!territoryItems.some((item) => item.status === "available") ||
+    territoryItems.some((item) => item.status === "unavailable")) return null;
+  return createDailyShareCards(items, territoryItems)[0] ?? null;
+}
+
 const favourablePreviewSpecies = [
   { speciesId: "boletus-pinophilus", speciesName: "Cep roig" },
   { speciesId: "boletus-edulis", speciesName: "Cep" },

@@ -1,4 +1,4 @@
-import { loadDailyShareCard } from "@/src/lib/daily-share-cards";
+import { loadDailySharePublicationCard } from "@/src/lib/daily-share-cards";
 import { signedDailyShareImagePath } from "@/src/lib/daily-share-image-payload-server";
 import {
   bufferInstagramPublisherConfig,
@@ -21,10 +21,10 @@ function noStoreJson(data: unknown, status = 200) {
 }
 
 async function runPublication() {
-  const card = await loadDailyShareCard("catalunya");
+  const card = await loadDailySharePublicationCard();
   if (!card) {
     throw new BufferPublicationError(
-      "The Catalonia daily prediction card is unavailable",
+      "The Catalonia daily prediction card is unavailable or local readings are incomplete",
       503,
       "prediction_unavailable",
     );

@@ -31,6 +31,8 @@ The daily publisher does not publish a feed card. A feed-format renderer or prev
 
 Automated current-condition posts require signed, verified observations for the current Catalonia civil day, no preview data, and the channel's duplicate-publication checks. Withheld, stale or unavailable readings cannot produce a post. The weekend map represents current conditions even when the headline invites weekend planning. Operational setup lives in the [VPS runbook](../deploy/vps/README.md); this playbook does not replace its deployment instructions.
 
+The daily Story and weekend Reel wait up to 60 seconds for the shared regional and local overview data. They require publishable local readings and reject failed local hub loads before signing any artwork. The interactive sharing kit's shorter timeout may temporarily show broad regions while local data loads; that fallback must never become an automated publication.
+
 ## Production handoff
 
 Start creative work in the [visual guide](instagram-style-guide.md#start-here-one-publishing-system), which links the approved examples and reusable templates. Reuse the library's canonical assets and keep source/generation records with derivatives. Review the finished artwork and its copy together before uploading. A request to prepare artwork is not a request to publish it; once the user authorizes scheduling the specific finished piece, proceed and verify the saved result.
