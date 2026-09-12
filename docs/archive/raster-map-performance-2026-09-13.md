@@ -103,3 +103,12 @@ bounded cold downloads from two concurrent conversions. A regression test holds
 provider responses open and verifies other downloads still start. Cached
 responses bypass both queues. All 16 concurrent real-tile requests also pass in
 the local production build. No tile errors are cached.
+
+A final focused cleanup removes browser rescoring from species-map detail
+cards. Both species and combined views now preserve the server's published
+score, components and model version. The local map's decoded scripts decrease
+from 1,000,882 to 989,619 bytes in the same browser check. Two unit cases cover
+published readings, withheld/zero states and missing habitat; 15 further browser
+checks pass for map details, species changes, habitat views and responsive
+controls. Build, lint and type checks pass. The four public-data candidate maps
+again render without page/API errors.

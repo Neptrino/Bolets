@@ -15,7 +15,7 @@ import { regionLabels } from "@/data/regions";
 import { getConditionPredictionStatus } from "@/src/lib/condition-presentation";
 import { GLOBAL_SPECIES_ID } from "@/src/lib/global-map";
 import { formatGridDimensions } from "@/src/lib/map-grid";
-import { calculateSuitability } from "@/src/lib/scoring";
+import { resultFromCell } from "@/src/lib/prediction-cell-result";
 import { speciesMapHref } from "@/src/lib/species-map-pages";
 import { getSuitabilityBand } from "@/src/lib/suitability-scale";
 import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
@@ -33,33 +33,6 @@ import type {
 
 const allRegionIds = Object.keys(regionLabels) as RegionId[];
 
-/**
- * The combined map's detail response returns the top species' full prediction
- * cell, which already carries the scored result. Rebuilding the result from
- * the cell keeps the floating card working without shipping every species
- * profile to the client.
- */
-function resultFromCell(cell: PredictionCell): SuitabilityResult {
-  const missingComponents = cell.components
-    .filter((component) => component.score === null)
-    .map((component) => component.id);
-  return {
-    score: cell.score,
-    fruitingConditionsScore: cell.fruitingConditionsScore,
-    opportunityIndex: cell.opportunityIndex,
-    rawHabitatCoverage: cell.values.habitatCoveragePercent === undefined
-      ? null
-      : Math.max(0, Math.min(1, cell.values.habitatCoveragePercent / 100)),
-    effectiveHabitatCoverage: cell.effectiveHabitatCoverage,
-    label: cell.label,
-    components: cell.components,
-    modelVersion: "",
-    dataCompleteness: cell.components.length
-      ? (cell.components.length - missingComponents.length) / cell.components.length
-      : 0,
-    missingComponents,
-  };
-}
 
 export function MapExplorer({
   species,
@@ -167,9 +140,7 @@ export function MapExplorer({
   }, [cellDetailState.cellId, cellDetailState.status, speciesKey]);
   const snapshot: ConditionSnapshot = selectedCell ?? regionalSnapshot;
   const result = selectedCell
-    ? globalMode
-      ? resultFromCell(selectedCell)
-      : calculateSuitability(species!, snapshot)
+    ? resultFromCell(selectedCell)
     : regionalResult;
   const predictionStatus = getConditionPredictionStatus(snapshot.stale, result);
   const hasPrediction = predictionStatus.kind === "available" && result.score !== null;

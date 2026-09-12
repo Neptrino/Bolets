@@ -89,6 +89,11 @@ When persisting a fetched public bucket, reuse its successfully parsed JSON
 text instead of serializing every cell again. The same public resolution,
 truncation and freshness checks apply to both persistence paths.
 
+Map detail cards use the score, components and model version published in the
+cell response for both combined and species views. Do not run the scoring
+engine again in the browser: display values omit private thermal inputs, and
+coarse cells can carry the chosen child's complete reading.
+
 ## Verification
 
 Build production before checking prefetch or bundle behavior; development does
