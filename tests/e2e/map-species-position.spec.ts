@@ -32,6 +32,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function settled(page: Page) {
+  // Streamed SSR can briefly contain a hidden shell beside its fallback.
+  await expect(page.locator(".raster-map-surface")).toBeVisible();
   await expect(page.locator(".region-map")).toHaveAttribute("aria-busy", "false");
   await page.waitForTimeout(800); // Includes the map's 650 ms location animation.
 }

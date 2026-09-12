@@ -10,6 +10,19 @@ test.beforeEach(async ({ page }) => {
     route.fulfill({ contentType: "image/png", body: tile }));
 });
 
+test("renders the map shell on the server and initializes Leaflet only in the browser", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  const response = await page.goto("/map");
+  const html = await response!.text();
+  expect(html).toContain('class="region-map-surface"');
+  expect(html).not.toContain("BAILOUT_TO_CLIENT_SIDE_RENDERING");
+  await expect(page.locator(".raster-map-surface")).toBeVisible();
+  await expect(page.locator(".region-map")).toHaveCount(1);
+  await expect.poll(() => page.locator(".leaflet-tile-loaded").count()).toBeGreaterThan(0);
+  expect(errors).toEqual([]);
+});
+
 test("switches every raster basemap with attribution and without WebGL", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
@@ -22,6 +35,7 @@ test("switches every raster basemap with attribution and without WebGL", async (
     });
   });
   await page.goto("/map/cep");
+  await expect(page.locator(".raster-map-surface")).toBeVisible();
   await expect(page.locator(".full-map")).toHaveAttribute("aria-busy", "false");
   await page.getByRole("button", { name: "Mostra els controls del mapa", exact: true }).click();
   for (const option of basemapOptions) {

@@ -299,5 +299,117 @@
     "build": "passed",
     "typecheck": "passed",
     "lint": "passed"
+  },
+  "ssrStartupFollowUp": {
+    "baselineRevision": "ad41694c4dd8328173aee489f0febc039a5f50b2",
+    "method": "Alternating fresh Chromium mobile contexts; 412x823 DPR 1.75, CPU 4x, 150 ms latency, 200000 bytes/s; identical public prediction fixtures and warmed actual versioned tiles; production builds on separate ports.",
+    "runs": [
+      {
+        "port": 3106,
+        "errors": [],
+        "ssr": false,
+        "lcp": {
+          "time": 3112,
+          "url": "http://127.0.0.1:3106/api/map-tiles/icgc/v2/relief/7/64/47"
+        },
+        "blocking": 7,
+        "fcp": 1332,
+        "ttfb": 14.5,
+        "firstTile": 2777.5999999046326,
+        "paintedPixels": 154374
+      },
+      {
+        "port": 3105,
+        "errors": [],
+        "ssr": true,
+        "lcp": {
+          "time": 2804,
+          "url": "http://127.0.0.1:3105/api/map-tiles/icgc/v2/references/7/64/47"
+        },
+        "blocking": 10,
+        "fcp": 1284,
+        "ttfb": 23.899999856948853,
+        "firstTile": 2498.0999999046326,
+        "paintedPixels": 154374
+      },
+      {
+        "port": 3106,
+        "errors": [],
+        "ssr": false,
+        "lcp": {
+          "time": 3088,
+          "url": "http://127.0.0.1:3106/api/map-tiles/icgc/v2/relief/7/64/47"
+        },
+        "blocking": 6,
+        "fcp": 1340,
+        "ttfb": 14.800000190734863,
+        "firstTile": 2763.600000143051,
+        "paintedPixels": 154374
+      },
+      {
+        "port": 3105,
+        "errors": [],
+        "ssr": true,
+        "lcp": {
+          "time": 2832,
+          "url": "http://127.0.0.1:3105/api/map-tiles/icgc/v2/relief/7/64/47"
+        },
+        "blocking": 16,
+        "fcp": 1272,
+        "ttfb": 17.600000143051147,
+        "firstTile": 2502.5,
+        "paintedPixels": 154374
+      }
+    ],
+    "interpretation": "Median LCP 3100 to 2818 ms (9.1% earlier), first tile request 2770.6 to 2500.3 ms. Identical 154374 painted pixels; no browser errors. Local benchmark, not a PageSpeed score.",
+    "verification": "Production build, lint/source-size, typecheck, 9 adapter unit cases and 16 targeted browser cases pass. Two initial strict-selector failures were resolved by waiting for initialized raster surface during streamed SSR.",
+    "discardedExperiment": "Extra image head preloads did not justify competing with map script downloads; not retained."
+  },
+  "postWebpLiveVerification": {
+    "revision": "c1bb028727d9e0167d4c950f39b2b0559e35d057",
+    "pages": [
+      "/map",
+      "/bolets-avui",
+      "/bolets/cep",
+      "/bolets/pinetell"
+    ],
+    "result": "All four pages render actual prediction/habitat pixels with all tiles loaded and no page or API errors. All 16 concurrent real tile requests return 200.",
+    "controlledMobile": {
+      "beforeTileBytes": 203784,
+      "afterTileBytes": 62920,
+      "beforeLcpMs": 5212,
+      "afterLcpMs": 4896,
+      "note": "Separate fresh local Chromium visits to production; not Lighthouse TBT or score."
+    },
+    "pageSpeedReports": [
+      {
+        "token": "qph5hakmis",
+        "revision": "19adecb",
+        "mobile": 83,
+        "desktop": 88,
+        "note": "Repeat before WebP; shows audit variance."
+      },
+      {
+        "token": "z4xy7c4980",
+        "revision": "ba12e80",
+        "mobile": 52,
+        "note": "Before cold download queue correction."
+      },
+      {
+        "token": "cft28p10q2",
+        "revision": "c1bb028",
+        "desktop": 92,
+        "mobileExcluded": 98,
+        "reason": "Six required JavaScript requests timed out; map never initialized. Mobile result is invalid."
+      },
+      {
+        "token": "7n0mqodznq",
+        "revision": "c1bb028",
+        "mobile": 70,
+        "lcpSeconds": 5.6,
+        "tbtMs": 20,
+        "note": "Valid repeat without resource errors; late map rendering remains a bottleneck."
+      }
+    ]
   }
 }

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { Browser, point } from "leaflet";
 import { basemapOptions, basemapStyle } from "@/components/region-map/basemaps";
 import { MapEvents } from "@/components/region-map/map-adapter";
-import { RasterRegionMap } from "@/components/region-map/raster-map-instance";
+import { RasterRegionMap } from "@/components/region-map/raster-map-browser";
 import { RasterTiles, rasterStyleLayers } from "@/components/region-map/raster-tiles";
 
 const maps: RasterRegionMap[] = [];

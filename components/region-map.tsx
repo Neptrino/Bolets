@@ -8,7 +8,7 @@ export type { PredictionCellDetailState, PredictionViewportStatus } from "@/comp
 export const RegionMap = dynamic<RegionMapProps>(
   () => import("@/components/region-map/interactive-map").then(module => module.RegionMap),
   {
-    ssr: false,
+    ssr: true,
     loading: () => <div className="region-map full-map" aria-busy="true" role="region" aria-label="Mapa de bolets">
       <div className="region-map-viewport">
         <div className="prediction-map-loading" role="status"><div>Carregant el mapa…</div></div>

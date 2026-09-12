@@ -112,3 +112,29 @@ published readings, withheld/zero states and missing habitat; 15 further browser
 checks pass for map details, species changes, habitat views and responsive
 controls. Build, lint and type checks pass. The four public-data candidate maps
 again render without page/API errors.
+
+## Earlier map bundle loading
+
+After the queue correction, all four live map checks finish with loaded tiles,
+painted predictions/habitat and no page or API errors; 16 simultaneous cold tile
+requests also succeed. A controlled production visit transfers 62,920 tile bytes
+instead of 203,784. Valid repeated mobile PageSpeed map scores still vary: 83
+before WebP and 70 after the queue correction. A reported 98 is explicitly
+excluded because six JavaScript downloads timed out and the map never started.
+The error-free desktop result for that report is 92.
+
+The next candidate server-renders the map shell, enabling Next's client-bundle
+preload. A synchronous browser factory defers Leaflet evaluation until mount;
+Avui and species maps retain visibility-based imports. An isolated production
+build of `ad41694` provides the comparison baseline. Four alternating mobile
+runs under identical throttling show median LCP improving from 3,100 to 2,818 ms
+(9.1%), with the first tile request approximately 270 ms earlier. All runs paint
+the same 154,374 pixels and have no browser errors. These are local measurements,
+not a promised PageSpeed score. Extra image head preloads were tried and
+discarded because map code remained the critical path.
+
+Build, typecheck and lint/source-size checks pass, along with nine adapter unit
+cases and 16 targeted browser cases. Streamed server rendering briefly includes
+a hidden shell beside the visible fallback; camera/control checks now wait for
+the initialized raster surface before asserting strict selectors. Production
+deployment and fresh PageSpeed verification remain the next validation step.

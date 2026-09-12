@@ -48,13 +48,19 @@ resumption remain mandatory.
 ## Progressive map rendering
 
 Prediction and habitat maps use the pinned Leaflet raster adapter in
-`components/region-map/raster-map-instance.ts`. Community finding maps retain
+`components/region-map/raster-map-browser.ts`. Community finding maps retain
 the MapLibre factory in `map-instance.ts`. Both implement the small shared map
 interface; scoring, canonical bucket requests, clipping and canvas painting
-remain independent of the basemap renderer. Import the interactive map only
-through a browser-only dynamic boundary: Leaflet accesses `window` at module
-evaluation. Its stylesheet loads with that chunk, while the existing shared
-MapLibre control styles remain in the root.
+remain independent of the basemap renderer. Full-page map orchestration renders
+on the server so Next can preload its client bundle. Leaflet accesses `window`
+at module evaluation: the synchronous factory in `raster-map-instance.ts` defers
+that evaluation until the mount effect. Keep its literal require scoped there;
+an async factory would add a new download/initialization waterfall. Avui and
+species maps retain their visibility-based client imports. Leaflet's stylesheet
+loads with the renderer, while shared MapLibre control styles remain in the root.
+Browser checks must wait for the initialized `.raster-map-surface` before using
+strict shell selectors: streaming can briefly include a hidden shell alongside
+its visible fallback.
 
 The adapter translates Leaflet's 256-pixel zoom to the existing 512-pixel map
 convention and preserves subpixel Mercator projection. A documented tile-level
