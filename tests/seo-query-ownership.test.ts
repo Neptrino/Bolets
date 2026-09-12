@@ -32,7 +32,7 @@ describe("SEO query ownership", () => {
 
     const preview = document.querySelector(".home-map-feature");
     expect(preview?.querySelector("a.button")?.getAttribute("href")).toBe("/bolets-avui");
-    expect(preview?.querySelector("a.button")?.textContent?.trim()).toBe("Bolets avui");
+    expect(preview?.querySelector("a.button")?.textContent?.trim()).toBe("On trobar bolets avui");
     expect(preview?.querySelector("a.home-map-preview")?.getAttribute("href")).toBe("/bolets-avui");
     expect(document.querySelector(".hero-actions a")?.getAttribute("href")).toBe("/map");
   });

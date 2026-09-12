@@ -266,7 +266,7 @@ export default function MushroomsAfterRainPage() {
 
       <nav className="rain-guide-actions" aria-label="Continuar explorant les condicions dels bolets">
         <Link href="/map">Veure el mapa de condicions <ArrowUpRight size={16} /></Link>
-        <Link href="/bolets-avui">Consultar el resum d’avui <ArrowUpRight size={16} /></Link>
+        <Link href="/bolets-avui">On buscar bolets avui segons les condicions actuals <ArrowUpRight size={16} /></Link>
         <Link href="/metode#prediccio">Llegir el mètode complet <ArrowUpRight size={16} /></Link>
       </nav>
 

@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { buildSitemap } from "@/app/sitemap";
 import { getSpecies, speciesProfiles } from "@/data/species";
-import { currentSearchReadings, overviewExtent, overviewLimitingFactor } from "@/src/lib/current-overview-copy";
+import { currentSearchReadings, overviewExtent, overviewLimitingFactor, overviewReadingExplanation } from "@/src/lib/current-overview-copy";
 import {
   CURRENT_OVERVIEW_CONCURRENCY,
   DAILY_OVERVIEW_REVALIDATE_SECONDS,
@@ -430,5 +430,39 @@ describe("current search interpretation", () => {
     const before = structuredClone(item.summary.result.components);
     expect(overviewLimitingFactor(item)).toBe("Aigua disponible");
     expect(item.summary.result.components).toEqual(before);
+  });
+
+  it("explains territorial coverage and only factors already classified as favourable", () => {
+    const item = reading("pirineus");
+    const before = structuredClone(item);
+    const copy = overviewReadingExplanation(item);
+    expect(copy).toContain("el 50% de la zona per a aquesta espècie");
+    expect(copy).toContain("En el resum del territori");
+    expect(copy).toContain("temperatura");
+    expect(copy).not.toContain("aigua disponible");
+    expect(copy).not.toContain("74"); // best-cell score is not the territorial factor evidence
+    expect(item).toEqual(before);
+  });
+
+  it("withholds interpretation for stale, missing, incomplete and non-positive readings", () => {
+    const item = reading("pirineus");
+    item.summary.snapshot.stale = true;
+    expect(overviewReadingExplanation(item)).toBeNull();
+    item.summary.snapshot.stale = false;
+    item.summary.result.missingComponents = ["water"];
+    expect(overviewReadingExplanation(item)).toBeNull();
+    item.summary.result.missingComponents = [];
+    item.summary.bestCell.score = 0;
+    expect(overviewReadingExplanation(item)).toBeNull();
+    expect(overviewReadingExplanation({ ...reading("ports"), summary: null })).toBeNull();
+    expect(overviewReadingExplanation({ ...reading("ports"), status: "unavailable" })).toBeNull();
+  });
+
+  it("does not invent a favourable factor when none is supported", () => {
+    const item = reading("pirineus");
+    item.summary.result.components.forEach((component) => { component.state = "mixed"; });
+    item.summary.result.components[0]!.state = "favourable";
+    item.summary.result.components[0]!.score = Number.NaN;
+    expect(overviewReadingExplanation(item)).toBe("Condicions favorables en el 50% de la zona per a aquesta espècie.");
   });
 });

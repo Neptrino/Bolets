@@ -10,7 +10,7 @@ export function HomeMapFeature() {
         <h2 id="home-map-title">Bolets avui:<br /><i>condicions per territori.</i></h2>
         <p>Consulta les condicions actuals a Catalunya i compara zones i espècies abans de sortir al bosc.</p>
         <Link href="/bolets-avui" className="button">
-          Bolets avui <ArrowUpRight size={18} aria-hidden="true" />
+          On trobar bolets avui <ArrowUpRight size={18} aria-hidden="true" />
         </Link>
       </div>
       <Link href="/bolets-avui" className="home-map-preview" aria-label="Consulta Bolets avui: condicions actuals per territori">

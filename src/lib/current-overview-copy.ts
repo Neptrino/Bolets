@@ -24,6 +24,18 @@ export function overviewLimitingFactor(item: RankedOverviewItem) {
   return factor ? publicConditionFactorLabel(factor.id) : "Sense cap factor destacat";
 }
 
+/** Interpret the territorial summary, never the weather at its best cell. */
+export function overviewReadingExplanation(item: RankedOverviewItem) {
+  if (currentSearchReadings([item]).length === 0) return null;
+  const summary = item.summary!;
+  const factors = summary.result.components.filter((factor) =>
+    factor.score !== null && Number.isFinite(factor.score) && factor.state === "favourable",
+  ).map((factor) => publicConditionFactorLabel(factor.id).toLocaleLowerCase("ca"));
+  const extent = `${overviewExtent(summary)} per a aquesta espècie.`;
+  if (factors.length === 0) return extent;
+  return `${extent} En el resum del territori, els factors favorables són: ${new Intl.ListFormat("ca", { type: "conjunction" }).format(factors)}.`;
+}
+
 /** Keep the shared ranking; choose distinct territories without combining overlapping areas. */
 export function currentSearchReadings(rankedItems: RankedOverviewItem[], limit = 3) {
   const locations = new Set<string>();

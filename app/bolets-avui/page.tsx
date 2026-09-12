@@ -1,6 +1,6 @@
 import { developmentOverviewSimulation } from "@/src/lib/current-overview-simulation";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { IntentLink as Link } from "@/components/intent-link";
 import { connection } from "next/server";
 import { cache, Suspense } from "react";
 import {
@@ -37,7 +37,7 @@ import {
 } from "@/src/lib/seo";
 import { speciesMapHref } from "@/src/lib/species-map-pages";
 import { territorialMapPath } from "@/src/lib/territorial-map";
-import { currentSearchReadings, overviewExtent as extentMetric, overviewLimitingFactor as limitingFactor } from "@/src/lib/current-overview-copy";
+import { currentSearchReadings, overviewReadingExplanation, overviewExtent as extentMetric, overviewLimitingFactor as limitingFactor } from "@/src/lib/current-overview-copy";
 
 const overviewTitle = "On trobar bolets avui i aquesta setmana";
 const overviewDescription = metaDescription(
@@ -289,6 +289,17 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
         <section className="current-reading-notes" aria-labelledby="current-reading-notes-title">
           <h2 id="current-reading-notes-title">Com interpretar les dades</h2>
           <p>La puntuació correspon al millor sector de cada territori; l’abast indica fins on s’estenen les condicions favorables. La comparació inclou espècies comestibles de temporada amb lectures completes.</p>
+          {searchReadings.length > 0 && <>
+            <h3>Per què destaquen aquestes zones?</h3>
+            {searchReadings.map((item) => <p key={`${overviewLocationName(item)}:${item.speciesId}`}>
+              <strong>{overviewLocationName(item)} · {item.speciesName}.</strong>{" "}
+              {overviewReadingExplanation(item)}{" "}
+              <Link href={overviewMapPath(item)}>Compara els sectors al mapa de {item.speciesName.toLocaleLowerCase("ca")}</Link>.
+            </p>)}
+            <p>Els factors descriuen el resum del territori i poden variar entre sectors. Una zona que no apareix entre les primeres pot tenir condicions favorables per a una altra espècie; consulta el mapa abans de descartar-la.</p>
+          </>}
+          <h3>Com preparar la sortida d’aquesta setmana?</h3>
+          <p>Revisa la data de les lectures i compara el millor sector amb l’abast de les condicions dins la zona. Un sector ben valorat no vol dir que tot el bosc estigui igual. Consulta la <Link href="/quan-surten-els-bolets-despres-de-ploure">guia dels bolets després de ploure</Link> per entendre per què una pluja recent no garanteix una brotada immediata.</p>
           <p>Les condicions ambientals no confirmen presència de bolets i no són una previsió dels pròxims set dies. Revisa la lectura abans de sortir. <Link href="/metode">Consulta el mètode i els seus límits</Link>.</p>
           {overviewSources.length > 0 ? (
             <DataSourceCredits
