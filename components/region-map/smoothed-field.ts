@@ -77,6 +77,27 @@ export function fullSupportWeight(sigma: number, spacing: number) {
   return Math.PI * (sigma / Math.max(spacing, 1e-6)) ** 2;
 }
 
+function accumulateRow(
+  weight: Float32Array,
+  weightedScore: Float32Array,
+  weightedAlpha: Float32Array,
+  columnKernel: Float64Array,
+  row: number,
+  minX: number,
+  maxX: number,
+  rowKernel: number,
+  score: number,
+  alpha: number,
+) {
+  for (let x = minX; x <= maxX; x++) {
+    const kernel = columnKernel[x] * rowKernel;
+    const index = row + x;
+    weight[index] += kernel;
+    weightedScore[index] += kernel * score;
+    weightedAlpha[index] += kernel * alpha;
+  }
+}
+
 export function rasterizeSmoothedField(
   samples: Iterable<FieldSample>,
   width: number,
@@ -111,17 +132,19 @@ export function rasterizeSmoothedField(
     for (let y = minY; y <= maxY; y += 1) {
       const dy = y + 0.5 - sample.y;
       const dySquared = dy * dy;
+      if (dySquared > reachSquared) continue;
+      const horizontalReach = Math.sqrt(reachSquared - dySquared);
+      // Start conservatively outside the circle, then trim its two endpoints
+      // with the original squared-distance check. Interior pixels need no
+      // distance calculation or cutoff branch, even at a fractional boundary.
+      let rowMinX = Math.max(minX, Math.floor(sample.x - 0.5 - horizontalReach));
+      let rowMaxX = Math.min(maxX, Math.ceil(sample.x - 0.5 + horizontalReach));
+      while (rowMinX <= rowMaxX && columnDistanceSquared[rowMinX] + dySquared > reachSquared) rowMinX++;
+      while (rowMaxX >= rowMinX && columnDistanceSquared[rowMaxX] + dySquared > reachSquared) rowMaxX--;
       const rowKernel = Math.exp(-dySquared * inverseTwoSigmaSquared);
       const row = y * width;
-      for (let x = minX; x <= maxX; x += 1) {
-        const distanceSquared = columnDistanceSquared[x] + dySquared;
-        if (distanceSquared > reachSquared) continue;
-        const kernel = columnKernel[x] * rowKernel;
-        const index = row + x;
-        weight[index] += kernel;
-        weightedScore[index] += kernel * sample.score;
-        weightedAlpha[index] += kernel * sample.alpha;
-      }
+      accumulateRow(weight, weightedScore, weightedAlpha, columnKernel,
+        row, rowMinX, rowMaxX, rowKernel, sample.score, sample.alpha);
     }
   }
 
