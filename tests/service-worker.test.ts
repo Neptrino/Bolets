@@ -53,6 +53,7 @@ describe("service worker response delivery", () => {
   it.each([
     ["/bolets", "navigate"],
     [imagePath, "navigate"],
+    [imagePath.replace(/\.webp$/, ".avif"), "navigate"],
     ["/_next/static/chunk.js", "cors"],
     ["/maplibre/6.3.0/maplibre-gl-worker.mjs", "same-origin"],
     ["/api/predictions?resolution=5000", "cors"],
@@ -89,12 +90,13 @@ describe("service worker response delivery", () => {
     await expect(Promise.all(event.work)).resolves.toBeDefined();
   });
 
-  it("reuses a versioned image for both embedded and direct navigation requests", async () => {
+  it.each(["webp", "avif"])("reuses a versioned %s image for both embedded and direct navigation requests", async (format) => {
     const { dispatch, fetch, open } = setup();
-    const first = dispatch(imagePath);
+    const path = imagePath.replace(/\.webp$/, `.${format}`);
+    const first = dispatch(path);
     await first.response;
     await Promise.all(first.work);
-    const direct = dispatch(imagePath, "navigate");
+    const direct = dispatch(path, "navigate");
     expect(await (await direct.response!).text()).toBe("fresh");
     await Promise.all(direct.work);
     expect(fetch).toHaveBeenCalledOnce();

@@ -188,3 +188,11 @@ local improvement; fresh deployed PageSpeed scores remain required.
 Build, type checks and lint/source-size checks pass. Eleven browser cases cover
 mobile keyboard selection, native fullscreen portals, browsers without
 IntersectionObserver, camera restoration, basemaps, seams and geolocation.
+
+The hidden-selector release `55f47d4` deployed successfully and passed live
+real-data checks on all four map routes. Fresh map reports
+([first](https://pagespeed.web.dev/analysis/https-bolets-app-map/u7y7v78yok?form_factor=mobile),
+[repeat](https://pagespeed.web.dev/analysis/https-bolets-app-map/elmk47via5?form_factor=mobile))
+score 77/80 mobile and 96/97 desktop. Their mobile LCP remains 5.3/4.9 seconds.
+The controlled bundle/render improvement has therefore not yet produced a
+consistent green mobile map score; that part of the goal remains open.

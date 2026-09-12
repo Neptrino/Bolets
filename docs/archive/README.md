@@ -6,6 +6,8 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [Responsive AVIF imagery — 13 September 2026](avif-performance-2026-09-13.md)
+
 - [Raster map startup — 13 September 2026](raster-map-performance-2026-09-13.md)
 - [Avui viewport loading and map startup experiments — 12 September 2026](avui-viewport-performance-2026-09-12.md)
 - [SEO route stylesheet loading — 12 September 2026](seo-css-performance-2026-09-12.md)

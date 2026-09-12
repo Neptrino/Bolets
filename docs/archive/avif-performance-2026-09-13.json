@@ -1,0 +1,270 @@
+{
+  "baselineRevision": "55f47d4587620be735d63928441101fcd61fec94",
+  "method": "Alternating isolated production builds; fresh Chromium contexts at 412x823, DPR 1.75, 4x CPU, 150 ms latency and 200000 bytes/s. Service workers blocked and DNT enabled. Same source images, sizes, server data and page layout.",
+  "runs": [
+    {
+      "port": 3106,
+      "errors": [],
+      "lcp": {
+        "time": 2532,
+        "url": "http://127.0.0.1:3106/media/optimized/v14/wikimedia/boletus-edulis.w640.webp"
+      },
+      "fcp": 1376,
+      "ttfb": 12.900000095367432,
+      "hero": {
+        "src": "http://127.0.0.1:3106/media/optimized/v14/wikimedia/boletus-edulis.w640.webp",
+        "width": 364,
+        "height": 485,
+        "bytes": 110140,
+        "start": 174.90000009536743,
+        "end": 2503.7000000476837
+      },
+      "imageBytes": 163398
+    },
+    {
+      "port": 3105,
+      "errors": [],
+      "lcp": {
+        "time": 1936,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/wikimedia/boletus-edulis.w640.avif"
+      },
+      "fcp": 1384,
+      "ttfb": 8.599999904632568,
+      "hero": {
+        "src": "http://127.0.0.1:3105/media/optimized/v15/wikimedia/boletus-edulis.w640.avif",
+        "width": 364,
+        "height": 485,
+        "bytes": 63537,
+        "start": 165.29999995231628,
+        "end": 1927
+      },
+      "imageBytes": 92729
+    },
+    {
+      "port": 3106,
+      "errors": [],
+      "lcp": {
+        "time": 2532,
+        "url": "http://127.0.0.1:3106/media/optimized/v14/wikimedia/boletus-edulis.w640.webp"
+      },
+      "fcp": 1380,
+      "ttfb": 15.200000047683716,
+      "hero": {
+        "src": "http://127.0.0.1:3106/media/optimized/v14/wikimedia/boletus-edulis.w640.webp",
+        "width": 364,
+        "height": 485,
+        "bytes": 110140,
+        "start": 175.90000009536743,
+        "end": 2504.4000000953674
+      },
+      "imageBytes": 163398
+    },
+    {
+      "port": 3105,
+      "errors": [],
+      "lcp": {
+        "time": 1908,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/wikimedia/boletus-edulis.w640.avif"
+      },
+      "fcp": 1380,
+      "ttfb": 7.799999952316284,
+      "hero": {
+        "src": "http://127.0.0.1:3105/media/optimized/v15/wikimedia/boletus-edulis.w640.avif",
+        "width": 364,
+        "height": 485,
+        "bytes": 63537,
+        "start": 168.20000004768372,
+        "end": 1896.6000001430511
+      },
+      "imageBytes": 92729
+    }
+  ],
+  "layout": [
+    {
+      "width": 412,
+      "path": "/",
+      "rows": [
+        {
+          "port": 3106,
+          "hero": {
+            "x": 0,
+            "y": 58,
+            "width": 412,
+            "height": 782.625
+          },
+          "preview": {
+            "x": 25,
+            "y": 318.203125,
+            "width": 362,
+            "height": 263.015625
+          },
+          "overflow": false
+        },
+        {
+          "port": 3105,
+          "hero": {
+            "x": 0,
+            "y": 58,
+            "width": 412,
+            "height": 782.625
+          },
+          "preview": {
+            "x": 25,
+            "y": 318.203125,
+            "width": 362,
+            "height": 263.015625
+          },
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 412,
+      "path": "/bolets/cep",
+      "rows": [
+        {
+          "port": 3106,
+          "hero": {
+            "x": 24,
+            "y": 598.90625,
+            "width": 364,
+            "height": 253
+          },
+          "overflow": false
+        },
+        {
+          "port": 3105,
+          "hero": {
+            "x": 24,
+            "y": 598.90625,
+            "width": 364,
+            "height": 253
+          },
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 412,
+      "path": "/bolets/pinetell",
+      "rows": [
+        {
+          "port": 3106,
+          "hero": {
+            "x": 24,
+            "y": 598.90625,
+            "width": 364,
+            "height": 253
+          },
+          "overflow": false
+        },
+        {
+          "port": 3105,
+          "hero": {
+            "x": 24,
+            "y": 598.90625,
+            "width": 364,
+            "height": 253
+          },
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1350,
+      "path": "/",
+      "rows": [
+        {
+          "port": 3106,
+          "hero": {
+            "x": 0,
+            "y": 62,
+            "width": 1350,
+            "height": 698.875
+          },
+          "preview": {
+            "x": 676,
+            "y": 472.6875,
+            "width": 588,
+            "height": 427.21875
+          },
+          "overflow": false
+        },
+        {
+          "port": 3105,
+          "hero": {
+            "x": 0,
+            "y": 62,
+            "width": 1350,
+            "height": 698.875
+          },
+          "preview": {
+            "x": 676,
+            "y": 472.6875,
+            "width": 588,
+            "height": 427.21875
+          },
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1350,
+      "path": "/bolets/cep",
+      "rows": [
+        {
+          "port": 3106,
+          "hero": {
+            "x": 650.09375,
+            "y": 182.046875,
+            "width": 614.90625,
+            "height": 326
+          },
+          "overflow": false
+        },
+        {
+          "port": 3105,
+          "hero": {
+            "x": 650.09375,
+            "y": 182.046875,
+            "width": 614.90625,
+            "height": 326
+          },
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1350,
+      "path": "/bolets/pinetell",
+      "rows": [
+        {
+          "port": 3106,
+          "hero": {
+            "x": 650.09375,
+            "y": 182.046875,
+            "width": 614.90625,
+            "height": 326
+          },
+          "overflow": false
+        },
+        {
+          "port": 3105,
+          "hero": {
+            "x": 650.09375,
+            "y": 182.046875,
+            "width": 614.90625,
+            "height": 326
+          },
+          "overflow": false
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "browserCases": 10,
+    "unitCases": 27,
+    "caddy": "Direct AVIF MIME type and immutable caching pass against the production Caddy configuration.",
+    "visual": "640-pixel Cep and Pinetell codec comparisons inspected side by side; phone rendering and matching mobile/desktop image geometry inspected."
+  }
+}

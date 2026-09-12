@@ -4,6 +4,7 @@ import sharp from "sharp";
 import {
   STATIC_MEDIA_VERSION,
   STATIC_MEDIA_WIDTHS,
+  STATIC_MEDIA_FORMATS,
   staticMediaVariantPath,
 } from "../src/lib/static-media.ts";
 
@@ -36,11 +37,12 @@ const jobs = sourceFiles.flatMap((sourcePath) => {
   const relativePath = relative(mediaDirectory, sourcePath).split(sep).join("/");
   const publicPath = `/media/${relativePath}`;
 
-  return STATIC_MEDIA_WIDTHS.map((width) => ({
-    destinationPath: join(publicDirectory, staticMediaVariantPath(publicPath, width).slice(1)),
+  return STATIC_MEDIA_WIDTHS.flatMap((width) => STATIC_MEDIA_FORMATS.map((format) => ({
+    destinationPath: join(publicDirectory, staticMediaVariantPath(publicPath, width, format).slice(1)),
     sourcePath,
     width,
-  }));
+    format,
+  })));
 });
 
 let nextJob = 0;
@@ -50,10 +52,10 @@ async function work() {
     if (!job) return;
 
     await mkdir(dirname(job.destinationPath), { recursive: true });
-    await sharp(job.sourcePath)
-      .resize({ width: job.width, withoutEnlargement: true })
-      .webp({ quality: 72, effort: 4 })
-      .toFile(job.destinationPath);
+    const image = sharp(job.sourcePath).resize({ width: job.width, withoutEnlargement: true });
+    if (job.format === "avif") image.avif({ quality: job.width >= 960 ? 60 : 50, effort: 3 });
+    else image.webp({ quality: 72, effort: 4 });
+    await image.toFile(job.destinationPath);
   }
 }
 

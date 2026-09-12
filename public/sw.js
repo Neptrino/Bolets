@@ -225,7 +225,7 @@ self.addEventListener("fetch", (event) => {
   // own tab. Check before navigations so they use the asset cache, not a fresh
   // network request and another full-body write to the document cache.
   if (
-    /^\/media\/optimized\/v\d+\/.+\.webp$/.test(url.pathname)
+    /^\/media\/optimized\/v\d+\/.+\.(?:webp|avif)$/.test(url.pathname)
     || /^\/maplibre\/\d+\.\d+\.\d+\/maplibre-gl-(worker|shared)\.mjs$/.test(url.pathname)
   ) {
     respondWithCaching(event, (request, store) => cacheFirst(request, ASSET_CACHE, store));

@@ -24,6 +24,7 @@ try {
   await mkdir(join(directory, "static/media/optimized/v11"), { recursive: true });
   await mkdir(join(directory, "static/_next/static"), { recursive: true });
   await writeFile(join(directory, "static/media/optimized/v11/test.webp"), "static image");
+  await writeFile(join(directory, "static/media/optimized/v11/test.avif"), "static AVIF image");
   const code = "console.log('static');".repeat(100);
   await writeFile(join(directory, "static/_next/static/test.js"), code);
   await exec("docker", ["run", "--detach", "--rm", "--name", name,
@@ -49,6 +50,10 @@ try {
   const image = await get(`/media/optimized/v11/test.webp?secret=${sentinel}`);
   assert.equal(image.body, "static image");
   assert.equal(image.response.headers.get("cache-control"), "public, max-age=31536000, immutable");
+  const avif = await get("/media/optimized/v11/test.avif", { DNT: "1" });
+  assert.equal(avif.body, "static AVIF image");
+  assert.match(avif.response.headers.get("content-type") ?? "", /^image\/avif(?:;|$)/);
+  assert.equal(avif.response.headers.get("cache-control"), "public, max-age=31536000, immutable");
   const javascript = await get("/_next/static/test.js", { "Accept-Encoding": "gzip" });
   assert.equal(javascript.body, code);
   assert.equal(javascript.response.headers.get("content-encoding"), "gzip");

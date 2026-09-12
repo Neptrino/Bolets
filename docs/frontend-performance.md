@@ -34,6 +34,18 @@ so they do not compete with the first-screen image. Verify actual resource
 requests before adding preload hints, including duplicate downloads and the
 selected responsive variant.
 
+Local WebP sources are exported as responsive AVIF and WebP files by
+`media:build`. `StaticMediaImage` uses a native picture source and derives its
+candidates from Next's image sizing logic, retaining normal image events, blur
+handling and a WebP fallback. Requested preloads target AVIF only, with its MIME
+type and matching responsive candidates; unsupported formats fall back through
+HTML without JavaScript. The picture wrapper contributes no layout box.
+Version v15 uses AVIF quality 50 below 960 pixels and 60 at larger widths, effort
+3; WebP retains quality 72, effort 4. Source dimensions and crop remain unchanged.
+The versioned asset path invalidates older immutable encodings, while Caddy and
+the service worker retain both formats under the same public static policy.
+See the [AVIF measurement receipt](archive/avif-performance-2026-09-13.md).
+
 Keep normal public-page analytics after hydration so performance recording
 remains useful. The optional heatmap recorder loads through `lazyOnload`; the
 existing privacy guard must run before it. The homepage video uses an optimized

@@ -3,6 +3,8 @@ import nextConfig from "@/next.config";
 import {
   STATIC_MEDIA_VERSION,
   STATIC_MEDIA_WIDTHS,
+  STATIC_MEDIA_FORMATS,
+  staticAvifMediaLoader,
   staticMediaLoader,
   staticMediaVariantPath,
 } from "@/src/lib/static-media";
@@ -22,6 +24,14 @@ describe("static media variants", () => {
     expect(staticMediaVariantPath("/media/wikimedia/boletus-edulis.webp", 640)).toBe(
       `/media/optimized/${STATIC_MEDIA_VERSION}/wikimedia/boletus-edulis.w640.webp`,
     );
+  });
+
+  it("offers matching AVIF and WebP URLs without changing the source identifier", () => {
+    expect(STATIC_MEDIA_FORMATS).toEqual(["webp", "avif"]);
+    for (const width of STATIC_MEDIA_WIDTHS) {
+      const input = { src: "/media/wikimedia/boletus-edulis.webp", width };
+      expect(staticAvifMediaLoader(input)).toBe(staticMediaLoader(input).replace(/\.webp$/, ".avif"));
+    }
   });
 
   it("uses the requested responsive width in loader URLs", () => {
