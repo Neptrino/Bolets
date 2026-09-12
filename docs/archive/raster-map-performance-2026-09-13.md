@@ -136,5 +136,37 @@ discarded because map code remained the critical path.
 Build, typecheck and lint/source-size checks pass, along with nine adapter unit
 cases and 16 targeted browser cases. Streamed server rendering briefly includes
 a hidden shell beside the visible fallback; camera/control checks now wait for
-the initialized raster surface before asserting strict selectors. Production
-deployment and fresh PageSpeed verification remain the next validation step.
+the initialized raster surface before asserting strict selectors. Production results are recorded below.
+
+## Live SSR release results
+
+`d550dac` passed [CI and deployment](https://github.com/Neptrino/Bolets/actions/runs/34725255091); the production container reports that revision and healthy status.
+The full unit suite passes 1,566 cases (12 skipped). Real-data browser checks
+pass on `/map`, `/bolets-avui`, `/bolets/cep` and `/bolets/pinetell`, with all tiles
+loaded, nonzero prediction/habitat pixels and no page or API errors.
+
+The same throttled mobile production check measures 3,964 ms LCP, versus
+4,896 ms after the WebP queue correction; tile transfer remains 62,920 bytes.
+This individual live comparison is subject to network variance; the controlled
+local A/B remains the evidence for the isolated SSR improvement.
+
+[Fresh Google reports](raster-map-pagespeed-ssr-2026-09-13.json) give:
+
+| Page | Mobile | Desktop |
+| --- | ---: | ---: |
+| Map, first run | 75 | 91 |
+| Map, repeat | 86 | 97 |
+| Bolets avui | 94 | 99 |
+| Cep | 90 | 99 |
+| Pinetell | 90 | 100 |
+
+All completed reports score 100 for SEO. Both map audits report no console
+errors; mobile TBT rounds to zero, but LCP remains 4.1–4.9 seconds. The map
+therefore does **not** yet sustain a green mobile performance score. An initial
+Avui request failed in Google's URL resolver and was retried; it is not counted
+as a page-performance result. The valid repeat is listed above.
+
+A further mobile layout trace attributes two small shifts (0.00745 each) to the
+floating detail panel changing height while its status updates; these are
+secondary to image discovery/loading and do not justify changing map behavior
+without a separate measured candidate.
