@@ -47,6 +47,24 @@ resumption remain mandatory.
 
 ## Progressive map rendering
 
+Prediction and habitat maps use the pinned Leaflet raster adapter in
+`components/region-map/raster-map-instance.ts`. Community finding maps retain
+the MapLibre factory in `map-instance.ts`. Both implement the small shared map
+interface; scoring, canonical bucket requests, clipping and canvas painting
+remain independent of the basemap renderer. Import the interactive map only
+through a browser-only dynamic boundary: Leaflet accesses `window` at module
+evaluation. Its stylesheet loads with that chunk, while the existing shared
+MapLibre control styles remain in the root.
+
+The adapter translates Leaflet's 256-pixel zoom to the existing 512-pixel map
+convention and preserves subpixel Mercator projection. A documented tile-level
+transform override avoids camera-dependent fractional-pixel drift on restored
+views; check screenshot parity before changing the pinned Leaflet version.
+Map readiness does not wait for remote tiles. Keep the tile pane below the
+independent canvases and control corners at z-index 2, below site panels.
+Geolocation watches remain local to each mounted map; manual panning stops
+following, and restored species views never restart automatic geolocation.
+
 Bucket URL identity, access limits, deduplication and the shared network gate
 remain unchanged. Coalesce intermediate prediction coverage and paint updates
 within a 100 ms window. Each callback must check the current batch and abort

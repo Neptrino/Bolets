@@ -1,5 +1,5 @@
 import { useEffect, type RefObject } from "react";
-import type { Map as MapLibreMap } from "maplibre-gl";
+import type { RegionMapAdapter } from "./map-adapter";
 import { useContributorMapAccess } from "@/components/use-contributor-map-access";
 import { visibleGridSize } from "@/components/region-map/support";
 import { GLOBAL_MINIMUM_GRID_SIZE_M } from "@/src/lib/global-map";
@@ -7,7 +7,7 @@ import type { SpatialGridSizeM } from "@/src/lib/types";
 
 /** Call after the map's creation effect so its ref is ready when subscribing. */
 export function useMapResolutionAccess(
-  map: RefObject<MapLibreMap | null>,
+  map: RefObject<RegionMapAdapter | null>,
   globalPrediction: boolean,
   onDetailResolutionChange?: (gridSizeM: SpatialGridSizeM) => void,
 ) {

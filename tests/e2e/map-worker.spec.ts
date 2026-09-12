@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test.use({ serviceWorkers: "block", extraHTTPHeaders: { DNT: "1" } });
 
-for (const path of ["/map", "/bolets-avui"]) {
+for (const path of ["/troballes"]) {
   test(`${path} starts functional same-origin MapLibre module workers`, async ({ page }) => {
     await page.addInitScript(() => {
       const state = { urls: [] as string[], errors: [] as string[], replies: 0 };
@@ -17,7 +17,7 @@ for (const path of ["/map", "/bolets-avui"]) {
         }
       };
     });
-    await page.route("**/api/predictions?*", route => route.fulfill({ json: { cells: [], truncated: false } }));
+    await page.route("**/api/findings?*", route => route.fulfill({ json: { cells: [], truncated: false } }));
     await page.goto(path);
     await expect(page.locator(".region-map")).toHaveAttribute("aria-busy", "false", { timeout: 30_000 });
     await expect.poll(() => page.evaluate(() => Reflect.get(window, "workerCheck").replies)).toBeGreaterThan(0);

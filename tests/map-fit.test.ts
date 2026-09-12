@@ -36,7 +36,7 @@ describe("region map framing", () => {
   });
 
   it("refits static maps after their container is resized", () => {
-    const regionMapSource = readFileSync("components/region-map.tsx", "utf8");
+    const regionMapSource = readFileSync("components/region-map/interactive-map.tsx", "utf8");
 
     expect(regionMapSource).toContain(
       "!initialInteractive.current && !initialMapCentre.current && !initialFocusBounds.current && !initialRegion.current",

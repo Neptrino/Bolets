@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+test.use({ serviceWorkers: "block" });
+
 test("shows every featured seasonal species on mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -110,7 +112,7 @@ test("switches prediction and compatibility from the layer control", async ({
 
   await page.goto("/map?species=boletus-edulis&region=pirineus");
   const map = page.locator(".full-map");
-  const mapCanvas = map.locator(".maplibregl-canvas");
+  const mapCanvas = map.locator(".region-map-surface");
 
   await expect(
     page.getByRole("heading", { name: "Mapa del cep a Catalunya" }),
@@ -594,7 +596,7 @@ test("keeps condition labels readable on narrow maps", async ({ page }) => {
   await expect(mobileNav).toHaveAttribute("open", "");
   await page
     .getByRole("navigation", { name: "Navegació mòbil" })
-    .getByRole("link", { name: "Bolets", exact: true })
+    .getByRole("link", { name: "Espècies", exact: true })
     .click();
   await expect(page).toHaveURL("/bolets");
   await expect(mobileNav).not.toHaveAttribute("open", "");
@@ -663,9 +665,8 @@ test("starts a local guide habitat map at its local area", async ({ page }) => {
   await page.goto("/zones/ripolles/les-lloses/ceps");
   await page.getByRole("heading", { name: /On podria créixer a les Lloses/i }).scrollIntoViewIfNeeded();
 
-  // The initial view loads as a batch of cache-aligned buckets; the guide's
-  // local area must be among them, requested at a local (sub-half-degree)
-  // resolution.
+  // The public access floor uses half-degree 2.5 km buckets, even for a close
+  // local view. Check the bucket and the actual camera independently.
   await expect.poll(() => habitatRequests.some((url) => {
     const west = Number(url.searchParams.get("west"));
     const east = Number(url.searchParams.get("east"));
@@ -673,8 +674,20 @@ test("starts a local guide habitat map at its local area", async ({ page }) => {
     const north = Number(url.searchParams.get("north"));
     return west < 2.1167 && east > 2.1167 &&
       south < 42.1506 && north > 42.1506 &&
-      east - west < 0.5 && north - south < 0.5;
+      Number(url.searchParams.get("resolution")) === 2500;
   }), { timeout: 12_000 }).toBe(true);
+  await expect.poll(async () => page.locator(".region-map-surface").evaluate(surface => {
+    const tile = surface.querySelector<HTMLImageElement>('img[src*="/api/map-tiles/icgc/"]');
+    if (!tile) return Infinity;
+    const [zoom, x, y] = new URL(tile.src).pathname.split("/").slice(-3).map(Number);
+    const scale = 256 * 2 ** zoom;
+    const latitude = 42.1506 * Math.PI / 180;
+    const worldX = (2.1167 + 180) / 360 * scale;
+    const worldY = (1 - Math.log(Math.tan(latitude) + 1 / Math.cos(latitude)) / Math.PI) / 2 * scale;
+    const rect = tile.getBoundingClientRect(), map = surface.getBoundingClientRect();
+    return Math.hypot(rect.left + (worldX - x * 256) * rect.width / 256 - map.left - map.width / 2,
+      rect.top + (worldY - y * 256) * rect.height / 256 - map.top - map.height / 2);
+  })).toBeLessThan(1);
 });
 
 test("keeps ecologically excluded cells clickable after changing species", async ({
@@ -826,7 +839,7 @@ test("keeps ecologically excluded cells clickable after changing species", async
   await expect(page.locator(".full-map")).toHaveAttribute("aria-busy", "false");
   await page.locator(".map-page-panel-toggle").click();
 
-  const mapCanvas = page.locator(".full-map .maplibregl-canvas");
+  const mapCanvas = page.locator(".full-map .region-map-surface");
   const mapBounds = await mapCanvas.boundingBox();
   expect(mapBounds).not.toBeNull();
   let cellPoint: { x: number; y: number } | undefined;

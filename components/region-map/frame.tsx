@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode, RefObject } from "react";
-import type { Map as MapLibreMap } from "maplibre-gl";
+import type { RegionMapAdapter } from "./map-adapter";
 import { fitCatalonia } from "./support";
 
 export function RegionMapFrame({
@@ -23,7 +23,7 @@ export function RegionMapFrame({
   basemapId?: string;
   children?: ReactNode;
   className?: string;
-  map: RefObject<MapLibreMap | null>;
+  map: RefObject<RegionMapAdapter | null>;
   mapMode?: string;
   node: RefObject<HTMLDivElement | null>;
   selectedRegion?: string;

@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, type RefObject } from "react";
-import type { Map as MapLibreMap } from "maplibre-gl";
+import type { RegionMapAdapter } from "./map-adapter";
 import {
   basemapStorageKey,
   basemapStyle,
@@ -9,7 +9,7 @@ import {
 } from "./support";
 
 export function useRegionBasemap(
-  map: RefObject<MapLibreMap | null>,
+  map: RefObject<RegionMapAdapter | null>,
   drawCells: RefObject<() => void>,
   options: {
     initialBasemapId?: BasemapId;

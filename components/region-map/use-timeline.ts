@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type RefObject } from "react";
-import type { Map as MapLibreMap } from "maplibre-gl";
+import type { RegionMapAdapter } from "./map-adapter";
 import type { BucketNetworkGate } from "@/src/lib/bucket-loader";
 import { bucketsForBounds, prioritizeBucketsAround } from "@/src/lib/map-query";
 import { prefetchTimelineFrames } from "@/src/lib/prediction-timeline-prefetch";
@@ -16,7 +16,7 @@ export function usePredictionTimeline({
   onTimelineOffsetChange, selectedCellIdRef,
 }: {
   enabled: boolean;
-  map: RefObject<MapLibreMap | null>;
+  map: RefObject<RegionMapAdapter | null>;
   speciesId?: string;
   cellState: CellState;
   store: RefObject<Map<string, PredictionMapCell[]>>;

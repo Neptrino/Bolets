@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { Map as MapLibreMap } from "maplibre-gl";
+import type { RegionMapAdapter } from "./map-adapter";
 import type { RegionId, SpatialBounds } from "@/src/lib/types";
 
 type Viewport = { center: [number, number]; zoom: number };
@@ -39,7 +39,7 @@ export function useMapViewport(intent: ViewportIntent) {
 
   return useMemo(() => memory ? {
     restore: () => memory.restore(currentIntent.current),
-    track: (map: MapLibreMap) => {
+    track: (map: RegionMapAdapter) => {
       const remember = () => {
         const { lng, lat } = map.getCenter();
         memory.remember(currentIntent.current, { center: [lng, lat], zoom: map.getZoom() });

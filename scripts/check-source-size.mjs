@@ -31,7 +31,7 @@ const reviewedRuntimeFiles = new Map([
   ["app/metode/page.tsx", "one ordered technical-method document"],
   ["app/zones/ceps/page.tsx", "one editorial territorial dossier"],
   ["components/condition-comparison.tsx", "orchestrates extracted reading data and score presentation"],
-  ["components/region-map.tsx", "orchestrates map lifecycle, bucket loading and canvas drawing"],
+  ["components/region-map/interactive-map.tsx", "orchestrates map lifecycle, bucket loading and canvas drawing behind the browser-only map entry"],
   ["scripts/lib/arome-point-artifacts.mjs", "one offline AROME artefact comparison pipeline"],
   ["scripts/lib/clms-cdse.mjs", "one CDSE request and archive adapter"],
   ["src/lib/current-overview.ts", "regional and local overviews share candidate selection, publication gates, generation caches and ranking"],

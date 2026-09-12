@@ -257,7 +257,7 @@ describe("Umami analytics", () => {
       .toContain("queueUmamiEvent(UMAMI_EVENTS.mapGeolocationSuccess)");
     expect(readFileSync("components/prediction-timeline-control.tsx", "utf8"))
       .toContain("queueUmamiEvent(UMAMI_EVENTS.mapTimelineUsed)");
-    expect(readFileSync("components/region-map.tsx", "utf8"))
+    expect(readFileSync("components/region-map/interactive-map.tsx", "utf8"))
       .toContain("onGeolocationSuccess?.()");
     expect(readFileSync("app/bolets/[slug]/page.tsx", "utf8"))
       .toContain("analyticsEvent={UMAMI_EVENTS.speciesMapOpen}");

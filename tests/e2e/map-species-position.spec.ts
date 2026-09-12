@@ -37,7 +37,7 @@ async function settled(page: Page) {
 }
 
 async function pixels(page: Page, name = "before") {
-  return sharp(await page.locator(".maplibregl-canvas").screenshot({
+  return sharp(await page.locator(".region-map-surface").screenshot({
     path: test.info().outputPath(`${name}.png`),
     style: `.map-page-heading, .maplibregl-ctrl, .maplibregl-marker, nextjs-portal, .region-map-cells,
       .map-detail-panel, .map-reset-button, .map-layer-controls { visibility: hidden !important; }`,
@@ -58,7 +58,7 @@ async function expectSameCamera(page: Page, before: Buffer) {
 async function panAndZoom(page: Page) {
   await page.getByRole("button", { name: "Apropar", exact: true }).click();
   await settled(page);
-  const box = (await page.locator(".maplibregl-canvas").boundingBox())!;
+  const box = (await page.locator(".region-map-surface").boundingBox())!;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
   await page.mouse.move(box.x + box.width / 2 + 180, box.y + box.height / 2 + 100, { steps: 15 });

@@ -1,4 +1,4 @@
-import type { Map as MapLibreMap } from "maplibre-gl";
+import type { RegionMapAdapter } from "./map-adapter";
 import type { PredictionMapCell, SpatialBounds } from "@/src/lib/types";
 import { preparePredictionHeatRaster, type PredictionHeatRaster } from "./prediction-raster";
 import { createRasterWorkerClient } from "./raster-worker-client";
@@ -18,7 +18,7 @@ export function samePredictionCells(left: ReadonlyMap<string, PredictionMapCell>
 }
 
 export function createPredictionPainter({ map, canvas, cells, selectedCellId, rendering, interactive, territory }: {
-  map: MapLibreMap;
+  map: RegionMapAdapter;
   canvas: () => HTMLCanvasElement | null;
   cells: () => ReadonlyMap<string, PredictionMapCell>;
   selectedCellId: () => string | null;

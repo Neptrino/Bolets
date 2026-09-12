@@ -5,7 +5,7 @@ import { predictionViewportStatus } from "@/src/lib/prediction-map-status";
 
 describe("prediction map rendering", () => {
   const regionMapSource = readFileSync(
-    join(process.cwd(), "components", "region-map.tsx"),
+    join(process.cwd(), "components", "region-map", "interactive-map.tsx"),
     "utf8",
   );
   const regionMapSources = [

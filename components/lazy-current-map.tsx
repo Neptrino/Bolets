@@ -6,7 +6,7 @@ import { GLOBAL_SPECIES_ID } from "@/src/lib/global-map";
 import type { RegionId } from "@/src/lib/types";
 
 const CurrentRegionMap = dynamic(
-  () => import("@/components/region-map").then((module) => module.RegionMap),
+  () => import("@/components/region-map/interactive-map").then((module) => module.RegionMap),
   { ssr: false, loading: () => <CurrentMapPlaceholder /> },
 );
 

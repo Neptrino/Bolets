@@ -1,0 +1,95 @@
+{
+  "baselineRevision": "8b1f33d7ffe813dd6a160bf5272098607c9be188",
+  "setup": {
+    "viewport": [
+      1350,
+      940
+    ],
+    "cpuSlowdown": 4,
+    "rendering": "Chromium SwiftShader",
+    "serviceWorkers": "blocked",
+    "doNotTrack": true,
+    "fixtureLatencyMs": 60,
+    "notes": "Identical captured public prediction cells and basemap tile responses. No missing tile fixtures. Local HTML lacks production-only script configuration. Blocking is sum(max(longTaskDuration-50,0)), not Lighthouse TBT. This first comparison predates moving the color filter from each tile to its containing layer."
+  },
+  "runs": [
+    {
+      "run": 0,
+      "origin": "https://bolets.app",
+      "unmatchedTiles": 0,
+      "requests": 24,
+      "bytes": 2300174,
+      "errors": [],
+      "blocking": 2045,
+      "maxTask": 2013,
+      "webglContexts": [
+        1941.7999999523163
+      ],
+      "ready": "false"
+    },
+    {
+      "run": 1,
+      "origin": "http://127.0.0.1:3105",
+      "unmatchedTiles": 0,
+      "requests": 24,
+      "bytes": 1000681,
+      "errors": [],
+      "blocking": 449,
+      "maxTask": 499,
+      "webglContexts": [],
+      "ready": "false"
+    },
+    {
+      "run": 2,
+      "origin": "https://bolets.app",
+      "unmatchedTiles": 0,
+      "requests": 24,
+      "bytes": 2300174,
+      "errors": [],
+      "blocking": 2044,
+      "maxTask": 2009,
+      "webglContexts": [
+        1942.4000000953674
+      ],
+      "ready": "false"
+    },
+    {
+      "run": 3,
+      "origin": "http://127.0.0.1:3105",
+      "unmatchedTiles": 0,
+      "requests": 24,
+      "bytes": 1000681,
+      "errors": [],
+      "blocking": 408,
+      "maxTask": 458,
+      "webglContexts": [],
+      "ready": "false"
+    },
+    {
+      "run": 4,
+      "origin": "https://bolets.app",
+      "unmatchedTiles": 0,
+      "requests": 24,
+      "bytes": 2300174,
+      "errors": [],
+      "blocking": 2039,
+      "maxTask": 1994,
+      "webglContexts": [
+        1927.7999999523163
+      ],
+      "ready": "false"
+    },
+    {
+      "run": 5,
+      "origin": "http://127.0.0.1:3105",
+      "unmatchedTiles": 0,
+      "requests": 24,
+      "bytes": 1000681,
+      "errors": [],
+      "blocking": 457,
+      "maxTask": 507,
+      "webglContexts": [],
+      "ready": "false"
+    }
+  ]
+}

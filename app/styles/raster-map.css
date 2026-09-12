@@ -1,0 +1,12 @@
+/* Tiles stay below the independent prediction canvas; controls stay above it. */
+.raster-map-surface .raster-map-pane { z-index: 0; }
+.raster-map-surface .leaflet-top,
+.raster-map-surface .leaflet-bottom { z-index: 2; }
+.raster-map-surface,
+.raster-map-surface .leaflet-control { font-family: inherit; font-size: var(--text-xs); }
+.raster-map-surface .leaflet-control { clear: both; }
+.raster-map-surface .maplibregl-ctrl-attrib { max-width: min(36rem, calc(100vw - 3rem)); }
+.raster-map-surface .maplibregl-ctrl-attrib-button { position: absolute; }
+.raster-geolocation { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.raster-geolocation .maplibregl-user-location-dot { position: absolute; transform: translate(-50%, -50%); }
+.raster-geolocation .maplibregl-user-location-accuracy-circle { position: absolute; }

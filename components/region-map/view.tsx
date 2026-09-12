@@ -1,5 +1,5 @@
 import type { RefObject } from "react";
-import type { Map as MapLibreMap } from "maplibre-gl";
+import type { RegionMapAdapter } from "./map-adapter";
 import { HabitatMapLegend } from "@/components/habitat-map-legend";
 import { PredictionTimelineControl } from "@/components/prediction-timeline-control";
 import type { MapViewMode, PredictionTimelineOffset, RegionId } from "@/src/lib/types";
@@ -70,7 +70,7 @@ export function RegionMapView({
   interactive: boolean;
   layerControlsExpanded: boolean;
   layerControlsId: string;
-  map: RefObject<MapLibreMap | null>;
+  map: RefObject<RegionMapAdapter | null>;
   mode: MapViewMode;
   node: RefObject<HTMLDivElement | null>;
   onBasemapChange: (basemap: BasemapId) => void;

@@ -7,7 +7,7 @@ import type { RegionId } from "@/src/lib/types";
 
 const HabitatRegionMap = dynamic(
   () =>
-    import("@/components/region-map").then((module) => module.RegionMap),
+    import("@/components/region-map/interactive-map").then((module) => module.RegionMap),
   {
     loading: () => <HabitatMapPlaceholder loading />,
     ssr: false,

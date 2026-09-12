@@ -1,5 +1,5 @@
 import { Eye, EyeOff } from "lucide-react";
-import type { Map as MapLibreMap } from "maplibre-gl";
+import type { RegionMapAdapter } from "./map-adapter";
 import {
   basemapOptions,
   basemapStorageKey,
@@ -41,14 +41,14 @@ const cataloniaSpatialBounds = {
   east: cataloniaBounds[1][0],
   north: cataloniaBounds[1][1],
 };
-const fitCatalonia = (map: MapLibreMap, animate = true) => {
+const fitCatalonia = (map: RegionMapAdapter, animate = true) => {
   map.fitBounds(cataloniaBounds, {
     padding: { top: 54, right: 54, bottom: 54, left: 54 },
     duration: animate ? 650 : 0,
   });
 };
 
-const fitRegion = (map: MapLibreMap, region: RegionId, animate = true) => {
+const fitRegion = (map: RegionMapAdapter, region: RegionId, animate = true) => {
   const bounds = regionBounds[region];
   map.fitBounds(
     [
@@ -64,7 +64,7 @@ const fitRegion = (map: MapLibreMap, region: RegionId, animate = true) => {
 };
 
 const fitSpatialBounds = (
-  map: MapLibreMap,
+  map: RegionMapAdapter,
   bounds: SpatialBounds,
   animate = true,
 ) => {
@@ -83,7 +83,7 @@ const fitSpatialBounds = (
 
 function drawTerritorialWindow(
   context: CanvasRenderingContext2D,
-  map: MapLibreMap,
+  map: RegionMapAdapter,
   bounds: SpatialBounds | undefined,
 ) {
   if (!bounds) return;
@@ -204,7 +204,7 @@ function MapLayerControl({
   );
 }
 
-function visibleSpatialBounds(localMap: MapLibreMap): SpatialBounds {
+function visibleSpatialBounds(localMap: RegionMapAdapter): SpatialBounds {
   const bounds = localMap.getBounds();
   return {
     west: Math.max(bounds.getWest(), cataloniaBounds[0][0]),
@@ -215,7 +215,7 @@ function visibleSpatialBounds(localMap: MapLibreMap): SpatialBounds {
 }
 
 function visibleGridSize(
-  localMap: MapLibreMap,
+  localMap: RegionMapAdapter,
   minimumGridSizeM: SpatialGridSizeM = 250,
   maximumGridSizeM?: SpatialGridSizeM,
   rendering: PredictionRendering = "cells",
@@ -238,7 +238,7 @@ function visibleGridSize(
   return constrainGridSize(gridSizeM, minimumGridSizeM, maximumGridSizeM);
 }
 
-function visibleGridParams(localMap: MapLibreMap, speciesId: string, gridSizeM: SpatialGridSizeM, extras?: Record<string, string>) {
+function visibleGridParams(localMap: RegionMapAdapter, speciesId: string, gridSizeM: SpatialGridSizeM, extras?: Record<string, string>) {
   const cacheBounds = cacheAlignedMapBounds(
     visibleSpatialBounds(localMap),
     gridSizeM,
@@ -316,7 +316,7 @@ function createHistoricalEvidencePattern(context: CanvasRenderingContext2D) {
 
 function withCataloniaLandClip(
   context: CanvasRenderingContext2D,
-  localMap: MapLibreMap,
+  localMap: RegionMapAdapter,
   draw: () => void,
 ) {
   context.save();

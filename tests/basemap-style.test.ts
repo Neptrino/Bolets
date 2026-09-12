@@ -73,7 +73,7 @@ describe("region map basemaps", () => {
   });
 
   it("does not restore a saved basemap on static maps without layer controls", () => {
-    const regionMapSource = readFileSync("components/region-map.tsx", "utf8");
+    const regionMapSource = readFileSync("components/region-map/interactive-map.tsx", "utf8");
 
     expect(regionMapSource).toContain(
       "rememberSelection: interactive",

@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+test.use({ serviceWorkers: "block" });
+
 test("keeps rendered text at 12px or larger", async ({ page }) => {
   for (const route of ["/", "/bolets/cep", "/compare", "/map", "/metode"]) {
     await page.goto(route);
@@ -23,6 +25,7 @@ test("keeps rendered text at 12px or larger", async ({ page }) => {
 
 test("follows the user's location as they move", async ({ browser }) => {
   const context = await browser.newContext({
+    serviceWorkers: "block",
     geolocation: { longitude: 2.1734, latitude: 41.3851 },
     permissions: ["geolocation"],
   });
@@ -51,7 +54,7 @@ test("follows the user's location as they move", async ({ browser }) => {
   // identify the camera. Verify the location marker after its camera animation.
   await page.waitForTimeout(750);
   await expect.poll(async () => {
-    const map = (await page.locator(".maplibregl-canvas").boundingBox())!;
+    const map = (await page.locator(".region-map-surface").boundingBox())!;
     const dot = (await locationDot.boundingBox())!;
     return Math.max(Math.abs(dot.x + dot.width / 2 - map.x - map.width / 2),
       Math.abs(dot.y + dot.height / 2 - map.y - map.height / 2));

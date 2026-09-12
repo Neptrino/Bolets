@@ -6,7 +6,7 @@ Use this index for current guidance and open plans. Dated research and completed
 
 | Document | Use it for |
 | --- | --- |
-| [Frontend performance](frontend-performance.md) | Stylesheet ownership, intent prefetch, progressive map updates and verification |
+| [Frontend performance](frontend-performance.md) | Stylesheet ownership, intent prefetch, raster map rendering and verification |
 | [Architecture](architecture.md) | Data flow, scoring boundaries, privacy and deployment model |
 | [Repository guidance](../AGENTS.md) | Engineering conventions and required safeguards |
 | [Supabase runbook](../supabase/README.md) | Environmental pipelines, imports and database operations |

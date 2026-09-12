@@ -30,3 +30,19 @@ An instrumented software-rendering reproduction sometimes spent about 1.9 second
 A separate raster-only prototype compared MapLibre and Leaflet with the same ICGC tile coverage (90 successful tile responses each), in fresh software-rendering browsers with 4× CPU throttling. Its final document-driven runs measured MapLibre ready times of 1,156/956 ms and Leaflet 704/670 ms, with long-task blocking totals of 102/48 ms versus zero. Those totals are not Lighthouse TBT. Earlier protocol-driven variants were excluded because initialization could run under Runtime.evaluate. The prototype omits prediction overlays and application controls and has visual tile-seam differences, so it does not establish production parity or justify a renderer migration yet. No dependency was added.
 
 Normalized evidence is retained in [the measurement companion](avui-viewport-performance-2026-09-12.json). Larger traces, scripts and screenshots remain in ignored `artifacts/map-startup-performance-2026-09-12/`.
+
+## Live deployment and PageSpeed
+
+Release `8b1f33d7ffe813dd6a160bf5272098607c9be188` passed [CI and deployment](https://github.com/Neptrino/Bolets/actions/runs/34721174037): 1,547 unit tests passed and 12 were skipped, with all required verification and image smoke checks successful. The VPS release symlink and healthy container image revision match. Three browser checks also pass against production. A separate check with real public data painted 19,319 nontransparent prediction pixels without page errors or failed API responses.
+
+In the same fresh mobile browser setup, production now loads 691,822 decoded script bytes before scrolling (about 70% below the previous 2,276,810), with zero map API/tile/worker requests. The local candidate's smaller 496,351-byte figure excludes production-only script configuration; use the production-to-production comparison when reporting the live reduction.
+
+[Normalized live PageSpeed results](avui-viewport-performance-live-2026-09-12.json):
+
+| PageSpeed report | Performance | FCP | LCP | TBT | CLS |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| [Avui mobile](https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/g5o303ietz?form_factor=mobile) | 95 | 1.7 s | 2.9 s | 0 ms | 0 |
+| [Avui mobile second report](https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/5bblxo52oj?form_factor=mobile) | 95 | 1.7 s | 2.9 s | 0 ms | 0 |
+| [Avui desktop](https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/5bblxo52oj?form_factor=desktop) | 82 | 0.3 s | 0.5 s | 400 ms | 0 |
+
+Both mobile reports show the same capture minute and identical metrics, so they may reuse the same underlying audit; they are not proof of independent-run consistency. The first desktop attempt failed inside PageSpeed's driver with a closed Runtime.evaluate session; the second returned the result above. Mobile blocking is now zero in the reported audit, compared with 110–280 ms in the two pre-release reports. Desktop still initializes the visible map and remains below the high-score band. No new improvement to `/map` or species pages is claimed by this release.

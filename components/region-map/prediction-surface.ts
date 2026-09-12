@@ -1,4 +1,4 @@
-import type { Map as MapLibreMap } from "maplibre-gl";
+import type { RegionMapAdapter } from "./map-adapter";
 import {
   predictionMapCellColour,
 } from "@/src/lib/suitability-scale";
@@ -23,7 +23,7 @@ function heatCanvasFor(output: HTMLCanvasElement, width: number, height: number)
   return heatCanvas;
 }
 
-function cellScreenBounds(localMap: MapLibreMap, cell: PredictionMapCell) {
+function cellScreenBounds(localMap: RegionMapAdapter, cell: PredictionMapCell) {
   const [[west, south], [east, north]] = cell.cellBounds;
   const topLeft = localMap.project([west, north]);
   const bottomRight = localMap.project([east, south]);
@@ -37,7 +37,7 @@ function cellScreenBounds(localMap: MapLibreMap, cell: PredictionMapCell) {
 
 function drawCellGrid(
   context: CanvasRenderingContext2D,
-  localMap: MapLibreMap,
+  localMap: RegionMapAdapter,
   cells: Iterable<PredictionMapCell>,
   selectedCellId: string | null,
 ) {
@@ -67,7 +67,7 @@ function drawCellGrid(
 function drawHeatmap(
   context: CanvasRenderingContext2D,
   output: HTMLCanvasElement,
-  localMap: MapLibreMap,
+  localMap: RegionMapAdapter,
   cells: Iterable<PredictionMapCell>,
   selectedCellId: string | null,
   preparedRaster?: PredictionHeatRaster | null,
@@ -117,7 +117,7 @@ export function drawPredictionSurface({
 }: {
   cells: Iterable<PredictionMapCell>;
   context: CanvasRenderingContext2D;
-  localMap: MapLibreMap;
+  localMap: RegionMapAdapter;
   output: HTMLCanvasElement;
   rendering: PredictionRendering;
   selectedCellId: string | null;

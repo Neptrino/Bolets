@@ -10,6 +10,7 @@ Start with the [documentation index](docs/README.md) and [repository guidance](A
 | --- | --- |
 | `app/` | Next.js pages, layouts and server routes |
 | `components/` | Shared interface components |
+| `components/region-map/` | Prediction/habitat map orchestration, raster adapter and shared painting; retained MapLibre factory for finding maps |
 | `src/` | Application logic, adapters and utilities |
 | `data/` | Version-controlled catalogue, ecology and editorial configuration |
 | `public/` | Website assets; generated responsive media and versioned MapLibre workers remain ignored |

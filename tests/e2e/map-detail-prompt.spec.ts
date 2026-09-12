@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+test.use({ serviceWorkers: "block" });
+
 test("automatic geolocation keeps the public grid and leaves finer zoom to the user", async ({ context, page }) => {
   const location = { longitude: 2.15, latitude: 41.39 };
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -46,7 +48,7 @@ test("detail invitation follows zoom and stays centered above the responsive foo
     zoomSteps++;
   }
   await expect(prompt).toBeVisible();
-  await expect(prompt.getByRole("link")).toHaveAttribute("href", "/col-labora");
+  await expect(prompt.getByRole("link")).toHaveAttribute("href", "/troballes/nova");
   for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
     await expect(prompt).toBeVisible();

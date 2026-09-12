@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/g5o303ietz?form_factor=mobile",
+    "performance": 95,
+    "metrics": "First Contentful Paint\n1.7 s\nLargest Contentful Paint\n2.9 s\nTotal Blocking Time\n0 ms\nCumulative Layout Shift\n0\nSpeed Index\n1.7 s",
+    "error": null
+  },
+  {
+    "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/5bblxo52oj?form_factor=mobile",
+    "performance": 95,
+    "metrics": "First Contentful Paint\n1.7 s\nLargest Contentful Paint\n2.9 s\nTotal Blocking Time\n0 ms\nCumulative Layout Shift\n0\nSpeed Index\n1.7 s",
+    "error": null
+  },
+  {
+    "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/g5o303ietz?form_factor=desktop",
+    "performance": null,
+    "metrics": null,
+    "error": "PageSpeed driver Runtime.evaluate session closed"
+  },
+  {
+    "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/5bblxo52oj?form_factor=desktop",
+    "performance": 82,
+    "fcpSeconds": 0.3,
+    "lcpSeconds": 0.5,
+    "tbtMs": 400,
+    "cls": 0,
+    "speedIndexSeconds": 1.2,
+    "error": null
+  }
+]

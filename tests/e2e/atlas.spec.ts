@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+test.use({ serviceWorkers: "block" });
+
 test("explores the species atlas and comparison tools", async ({ page }) => {
   test.setTimeout(60_000);
   await page.goto("/");
@@ -139,7 +141,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await page.getByRole("button", { name: "Mostra els controls del mapa" }).click();
   await expect(layerControls).toBeVisible();
   const habitatMap = page.locator(".region-map-habitat");
-  const habitatMapCanvas = habitatMap.locator(".maplibregl-canvas");
+  const habitatMapCanvas = habitatMap.locator(".region-map-surface");
   await expect(
     page.getByLabel("Relleu ombrejat: Relleu ombrejat amb referències topogràfiques de l’ICGC"),
   ).toBeChecked();
