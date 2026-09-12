@@ -91,5 +91,213 @@
       "webglContexts": [],
       "ready": "false"
     }
-  ]
+  ],
+  "releaseRevision": "19adecbf783c1dd50b3f7efe72e9d5c6a224f403",
+  "releaseRuns": [
+    {
+      "run": 0,
+      "origin": "https://bolets.app",
+      "unmatchedTiles": 0,
+      "requests": 24,
+      "bytes": 2300174,
+      "errors": [],
+      "blocking": 1970,
+      "maxTask": 1939,
+      "webglContexts": [
+        1875.0999999046326
+      ],
+      "ready": "false"
+    },
+    {
+      "run": 1,
+      "origin": "http://127.0.0.1:3105",
+      "unmatchedTiles": 0,
+      "requests": 24,
+      "bytes": 1000695,
+      "errors": [],
+      "blocking": 412,
+      "maxTask": 449,
+      "webglContexts": [],
+      "ready": "false"
+    },
+    {
+      "run": 2,
+      "origin": "https://bolets.app",
+      "unmatchedTiles": 0,
+      "requests": 24,
+      "bytes": 2300174,
+      "errors": [],
+      "blocking": 2002,
+      "maxTask": 1968,
+      "webglContexts": [
+        1899.2000000476837
+      ],
+      "ready": "false"
+    },
+    {
+      "run": 3,
+      "origin": "http://127.0.0.1:3105",
+      "unmatchedTiles": 0,
+      "requests": 24,
+      "bytes": 1000695,
+      "errors": [],
+      "blocking": 448,
+      "maxTask": 498,
+      "webglContexts": [],
+      "ready": "false"
+    },
+    {
+      "run": 4,
+      "origin": "https://bolets.app",
+      "unmatchedTiles": 0,
+      "requests": 24,
+      "bytes": 2300174,
+      "errors": [],
+      "blocking": 1988,
+      "maxTask": 1955,
+      "webglContexts": [
+        1889.1000001430511
+      ],
+      "ready": "false"
+    },
+    {
+      "run": 5,
+      "origin": "http://127.0.0.1:3105",
+      "unmatchedTiles": 0,
+      "requests": 24,
+      "bytes": 1000695,
+      "errors": [],
+      "blocking": 442,
+      "maxTask": 492,
+      "webglContexts": [],
+      "ready": "false"
+    }
+  ],
+  "deployment": {
+    "revision": "19adecbf783c1dd50b3f7efe72e9d5c6a224f403",
+    "workflow": "https://github.com/Neptrino/Bolets/actions/runs/34723073939",
+    "conclusion": "success",
+    "vpsReleaseAndContainerRevisionMatch": true,
+    "containerHealth": "healthy",
+    "archiveMiB": 96.3
+  },
+  "liveBrowserChecks": [
+    {
+      "path": "/map",
+      "status": 200,
+      "scriptBytes": 1196110,
+      "errors": [],
+      "failures": [],
+      "paintedPixels": 641098,
+      "webglStarts": 0,
+      "loadedTiles": 40
+    },
+    {
+      "path": "/bolets-avui",
+      "status": 200,
+      "scriptBytes": 978065,
+      "errors": [],
+      "failures": [],
+      "paintedPixels": 98692,
+      "webglStarts": 0,
+      "loadedTiles": 48
+    },
+    {
+      "path": "/bolets/cep",
+      "status": 200,
+      "scriptBytes": 1016872,
+      "errors": [],
+      "failures": [],
+      "paintedPixels": 167214,
+      "webglStarts": 0,
+      "loadedTiles": 48
+    },
+    {
+      "path": "/bolets/pinetell",
+      "status": 200,
+      "scriptBytes": 1016872,
+      "errors": [],
+      "failures": [],
+      "paintedPixels": 169209,
+      "webglStarts": 0,
+      "loadedTiles": 48
+    }
+  ],
+  "startupFollowUp": {
+    "tileSamples": [
+      {
+        "layer": "relief",
+        "z": 7,
+        "original": 55015,
+        "webp": 22010
+      },
+      {
+        "layer": "references",
+        "z": 7,
+        "original": 25238,
+        "webp": 6944
+      },
+      {
+        "layer": "relief",
+        "z": 9,
+        "original": 81537,
+        "webp": 33114
+      },
+      {
+        "layer": "references",
+        "z": 9,
+        "original": 43538,
+        "webp": 18542
+      }
+    ],
+    "localBrowserChecks": [
+      {
+        "path": "/map",
+        "status": 200,
+        "scriptBytes": 1000882,
+        "errors": [],
+        "failures": [],
+        "paintedPixels": 641098,
+        "webglStarts": 0,
+        "loadedTiles": 40
+      },
+      {
+        "path": "/bolets-avui",
+        "status": 200,
+        "scriptBytes": 798734,
+        "errors": [],
+        "failures": [],
+        "paintedPixels": 98692,
+        "webglStarts": 0,
+        "loadedTiles": 48
+      },
+      {
+        "path": "/bolets/cep",
+        "status": 200,
+        "scriptBytes": 827258,
+        "errors": [],
+        "failures": [],
+        "paintedPixels": 167214,
+        "webglStarts": 0,
+        "loadedTiles": 48
+      },
+      {
+        "path": "/bolets/pinetell",
+        "status": 200,
+        "scriptBytes": 821644,
+        "errors": [],
+        "failures": [],
+        "paintedPixels": 169209,
+        "webglStarts": 0,
+        "loadedTiles": 48
+      }
+    ],
+    "dataSource": "Live public prediction/habitat responses forwarded into local candidate; local environmental service returned 503",
+    "unitPassed": 1563,
+    "unitSkipped": 12,
+    "browserPassed": 15,
+    "build": "passed",
+    "typecheck": "passed",
+    "lint": "passed"
+  }
 }

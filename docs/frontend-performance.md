@@ -65,6 +65,16 @@ independent canvases and control corners at z-index 2, below site panels.
 Geolocation watches remain local to each mounted map; manual panning stops
 following, and restored species views never restart automatic geolocation.
 
+Attach raster layers after the synchronous initial camera fit, so temporary
+startup views do not download tiles. The default relief/reference layers use
+versioned v2 WebP tiles at quality 85 with transparency preserved. Reuse the
+original allowlisted ICGC loader, persist encoded tiles in the Next data cache,
+coalesce identical cold requests and bound conversion work to two active jobs
+and 64 waiting jobs. Error responses remain uncached. Keep v1 URLs available
+for older clients and change the URL version when encoding policy changes.
+Do not initialize an empty canvas before its first data frame; an already
+painted canvas must still clear immediately when species or layers change.
+
 Bucket URL identity, access limits, deduplication and the shared network gate
 remain unchanged. Coalesce intermediate prediction coverage and paint updates
 within a 100 ms window. Each callback must check the current batch and abort
@@ -72,6 +82,10 @@ signal; cancel queued work on a new viewport, effect cleanup and completion.
 Always merge and draw the final arrivals before exposing final coverage. A
 partial or truncated viewport must never be reported as complete. Timeline
 frames remain atomic and are not shown one bucket at a time.
+
+When persisting a fetched public bucket, reuse its successfully parsed JSON
+text instead of serializing every cell again. The same public resolution,
+truncation and freshness checks apply to both persistence paths.
 
 ## Verification
 

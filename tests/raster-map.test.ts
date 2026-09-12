@@ -21,6 +21,27 @@ function createMap() {
   return map;
 }
 describe("raster map compatibility", () => {
+  it("requests tiles only after the initial camera is fitted", async () => {
+    const map = createMap();
+    expect(map.getCanvas().querySelectorAll(".leaflet-tile")).toHaveLength(0);
+    map.jumpTo({ center: [2, 41], zoom: 6 });
+    await Promise.resolve();
+    const tiles = [...map.getCanvas().querySelectorAll<HTMLImageElement>(".leaflet-tile")];
+    expect(tiles.length).toBeGreaterThan(0);
+    expect(tiles.every(tile => /\/(relief|references)\/7\//.test(tile.src))).toBe(true);
+  });
+  it("does not start superseded styles or a removed map's tile requests", async () => {
+    const map = createMap();
+    map.setStyle(basemapStyle("open-map"));
+    await Promise.resolve();
+    const tiles = [...map.getCanvas().querySelectorAll<HTMLImageElement>(".leaflet-tile")];
+    expect(tiles.length).toBeGreaterThan(0);
+    expect(tiles.every(tile => tile.src.includes("openstreetmap.org"))).toBe(true);
+    map.setStyle(basemapStyle("icgc-relief"));
+    map.remove(); maps.splice(maps.indexOf(map), 1);
+    await Promise.resolve();
+    expect(map.getCanvas().querySelectorAll(".leaflet-tile")).toHaveLength(0);
+  });
   it("preserves all configured raster providers and credits", () => {
     for (const option of basemapOptions) {
       const style = basemapStyle(option.id);

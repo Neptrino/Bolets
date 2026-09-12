@@ -6,6 +6,18 @@ afterEach(() => {
 });
 
 describe("bounded map requests", () => {
+  it("retains the original JSON for cache writes only after parsing succeeds", async () => {
+    const json = '{ "cells": [], "truncated": false }';
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce(new Response(json))
+      .mockResolvedValueOnce(new Response("invalid json")));
+    const retain = vi.fn();
+    await expect(fetchJsonWithRetry("/api/predictions", new AbortController().signal, 1, 1000, retain))
+      .resolves.toEqual({ cells: [], truncated: false });
+    expect(retain).toHaveBeenCalledExactlyOnceWith(json);
+    await expect(fetchJsonWithRetry("/api/predictions", new AbortController().signal, 1, 1000, retain))
+      .rejects.toBeInstanceOf(SyntaxError);
+    expect(retain).toHaveBeenCalledOnce();
+  });
   it("stops a stalled request at the shared deadline", async () => {
     vi.stubGlobal("fetch", vi.fn((
       _input: string | URL | Request,

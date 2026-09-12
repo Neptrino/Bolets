@@ -152,6 +152,7 @@ export async function loadBucketedCells<T>(
           }
           // Panning keeps paid-for work alive; timeline changes cancel obsolete
           // frames so they cannot occupy the shared request gate in the background.
+          let receivedJson: string | undefined;
           const payload = await withNetworkSlot(() => {
             if (!persistAfterAbort && signal.aborted)
               throw signal.reason ?? new DOMException("Aborted", "AbortError");
@@ -160,10 +161,11 @@ export async function loadBucketedCells<T>(
               persistAfterAbort ? new AbortController().signal : signal,
               attempts,
               timeoutMs,
+              (json) => { receivedJson = json; },
             );
           });
           onBucketSettled(payload, bucket);
-          await writeMapBucketPayload(url, payload);
+          await writeMapBucketPayload(url, payload, Date.now(), receivedJson);
         })();
         inFlight?.set(url, task);
         try {

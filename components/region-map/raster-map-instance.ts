@@ -105,13 +105,18 @@ export class RasterRegionMap extends MapEvents<RegionMapEvents> implements Regio
     }));
     for (const layer of this.layers) this.leaflet.removeLayer(layer);
     this.layers = next;
-    for (const layer of next) layer.addTo(this.leaflet);
+    // Initial bounds are fitted synchronously after construction. Waiting until
+    // that camera is settled avoids downloading tiles for the temporary view.
+    queueMicrotask(() => {
+      if (this.removed || this.layers !== next) return;
+      for (const layer of next) layer.addTo(this.leaflet);
+      this.emit("style.load", undefined);
+    });
     const background = style.layers.find(layer => layer.type === "background");
     const color = background?.type === "background" ? background.paint?.["background-color"] : undefined;
     this.leaflet.getContainer().style.backgroundColor = typeof color === "string" ? color : "#e8e6de";
     // Attribution strings are version-controlled basemap metadata, never provider responses.
     this.attribution.innerHTML = [...new Set(specifications.map(layer => layer.attribution))].join(" · ");
-    queueMicrotask(() => { if (!this.removed) this.emit("style.load", undefined); });
   }
   resize() {
     this.leaflet.invalidateSize({ pan: false });

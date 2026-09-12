@@ -74,6 +74,7 @@ export async function writeMapBucketPayload<T>(
   url: string,
   payload: BucketPayload<T>,
   now = Date.now(),
+  receivedJson?: string,
 ) {
   const storage = cacheStorage();
   if (!storage || !isPublicMapBucketUrl(url) || payload.truncated) return;
@@ -82,7 +83,7 @@ export async function writeMapBucketPayload<T>(
     const cache = await storage.open(MAP_BUCKET_CACHE_NAME);
     await cache.put(
       requestFor(url),
-      new Response(JSON.stringify(payload), {
+      new Response(receivedJson ?? JSON.stringify(payload), {
         headers: {
           "Content-Type": "application/json",
           [CACHED_AT_HEADER]: new Date(now).toISOString(),

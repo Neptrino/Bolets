@@ -1,0 +1,564 @@
+{
+  "revision": "19adecbf783c1dd50b3f7efe72e9d5c6a224f403",
+  "mobile": [
+    {
+      "path": "/map",
+      "pageId": 36,
+      "platform": "mobile",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/znc900n6wd?form_factor=mobile",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:21 AM",
+      "scores": [
+        "63\nPerformance",
+        "100\nAccessibility",
+        "92\nBest Practices",
+        "100\nSEO",
+        "100\nAccessibility",
+        "92\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "2.3 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "5.7 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "430 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0.023"
+        },
+        {
+          "title": "Speed Index",
+          "value": "4.4 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=2333&LCP=5701&TBT=430&CLS=0.02&SI=4395&TTI=5701&device=mobile&version=13.4.1"
+      ]
+    },
+    {
+      "path": "/bolets-avui",
+      "pageId": 37,
+      "platform": "mobile",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/k6b7q67p4d?form_factor=mobile",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:23 AM",
+      "scores": [
+        "95\nPerformance",
+        "96\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO",
+        "96\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "1.7 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "2.9 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "10 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0"
+        },
+        {
+          "title": "Speed Index",
+          "value": "1.7 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1703&LCP=2851&TBT=5&CLS=0&SI=1703&TTI=2851&device=mobile&version=13.4.1"
+      ]
+    },
+    {
+      "path": "/bolets/cep",
+      "pageId": 38,
+      "platform": "mobile",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-cep/qq6edd29vb?form_factor=mobile",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:23 AM",
+      "scores": [
+        "92\nPerformance",
+        "97\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO",
+        "97\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "1.4 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "2.6 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "210 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0"
+        },
+        {
+          "title": "Speed Index",
+          "value": "4.0 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1351&LCP=2551&TBT=207&CLS=0&SI=3977&TTI=4001&device=mobile&version=13.4.1"
+      ]
+    },
+    {
+      "path": "/bolets/pinetell",
+      "pageId": 39,
+      "platform": "mobile",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-pinetell/0xjmalcavr?form_factor=mobile",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:24 AM",
+      "scores": [
+        "92\nPerformance",
+        "97\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO",
+        "97\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "1.7 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "3.3 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "10 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0"
+        },
+        {
+          "title": "Speed Index",
+          "value": "1.7 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1669&LCP=3301&TBT=10&CLS=0&SI=1669&TTI=3339&device=mobile&version=13.4.1"
+      ]
+    },
+    {
+      "path": "/",
+      "pageId": 40,
+      "platform": "mobile",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app/0duqs8v1qo?form_factor=mobile",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:35 AM",
+      "scores": [
+        "92\nPerformance",
+        "100\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO",
+        "100\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "1.7 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "3.2 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "10 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0"
+        },
+        {
+          "title": "Speed Index",
+          "value": "2.6 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1674&LCP=3226&TBT=5&CLS=0&SI=2570&TTI=3267&device=mobile&version=13.4.1"
+      ]
+    },
+    {
+      "path": "/bolets",
+      "pageId": 41,
+      "platform": "mobile",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets/1g5x0b3egy?form_factor=mobile",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:37 AM",
+      "scores": [
+        "93\nPerformance",
+        "98\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO",
+        "98\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "1.9 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "3.0 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "20 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0"
+        },
+        {
+          "title": "Speed Index",
+          "value": "2.8 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1867&LCP=3002&TBT=15&CLS=0&SI=2832&TTI=3002&device=mobile&version=13.4.1"
+      ]
+    },
+    {
+      "path": "/zones/ceps",
+      "pageId": 42,
+      "platform": "mobile",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-zones-ceps/rl43ri9onf?form_factor=mobile",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:37 AM",
+      "scores": [
+        "94\nPerformance",
+        "96\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO",
+        "96\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "1.7 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "3.0 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "10 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0"
+        },
+        {
+          "title": "Speed Index",
+          "value": "2.4 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1682&LCP=3001&TBT=15&CLS=0&SI=2398&TTI=3044&device=mobile&version=13.4.1"
+      ]
+    }
+  ],
+  "desktop": [
+    {
+      "path": "/map",
+      "pageId": 36,
+      "platform": "desktop",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/znc900n6wd?form_factor=desktop",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:21 AM",
+      "scores": [
+        "87\nPerformance",
+        "100\nAccessibility",
+        "96\nBest Practices",
+        "100\nSEO",
+        "100\nAccessibility",
+        "96\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "0.5 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "2.3 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "80 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0.011"
+        },
+        {
+          "title": "Speed Index",
+          "value": "1.1 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=463&LCP=2342&TBT=78&CLS=0.01&SI=1149&TTI=2344&device=desktop&version=13.4.1"
+      ]
+    },
+    {
+      "path": "/bolets-avui",
+      "pageId": 37,
+      "platform": "desktop",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/k6b7q67p4d?form_factor=desktop",
+      "report": "Report from Sep 13, 2026, 12:39:23 AM",
+      "scores": [],
+      "metrics": [],
+      "calculator": [],
+      "error": "PageSpeed Insights\nCopy Link\nDocs\nThis site uses cookies from Google to deliver its services and to analyze traffic.\nLearn More.\nOk, Got it.\nReport from Sep 13, 2026, 12:39:23 AM\n\nEnter a valid URL\n\nAnalyze\nsmartphone\nMobile\ncomputer\nDesktop\nDiscover what your real users are experiencing\nNo Data\nDiagnose performance issues\nOops! Something went wrong.\ngeneric::internal: Unhandled exception in driver, line 1067: Uncaught (in promise) Error: Protocol error (Runtime.evaluate): Protocol error (Runtime.evaluate): Session closed. Most likely the page has been closed. at LighthouseError.fromProtocolMessage (<anonymous>:1067:436) at <anonymous>:2440:207 at async ExecutionContext._evaluateInContext (<anonymous>:1748:169) at async ExecutionContext.evaluateAsync (<anonymous>:1750:435) at async checkForQuiet (<anonymous>:1781:79)\nMore on PageSpeed Insights\nWhat's new\nDocumentation\nLearn about Web Performance\nAsk questions on Stack Overflow\nMailing list\nRelated Content\nUpdates\nWeb Fundamentals\nCase Studies\nPodcasts\nConnect\nTwitter\nYoutube\nChrome\nFirebase\nAll products\nTerms and Privacy Policy\nFor details, see the Google Developers Site Policies."
+    },
+    {
+      "path": "/bolets/cep",
+      "pageId": 38,
+      "platform": "desktop",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-cep/qq6edd29vb?form_factor=desktop",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:23 AM",
+      "scores": [
+        "99\nPerformance",
+        "97\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO",
+        "97\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "0.4 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "0.6 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "30 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0"
+        },
+        {
+          "title": "Speed Index",
+          "value": "1.1 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=374&LCP=627&TBT=33&CLS=0&SI=1134&TTI=795&device=desktop&version=13.4.1"
+      ]
+    },
+    {
+      "path": "/bolets/pinetell",
+      "pageId": 39,
+      "platform": "desktop",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-pinetell/0xjmalcavr?form_factor=desktop",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:24 AM",
+      "scores": [
+        "100\nPerformance",
+        "97\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO",
+        "97\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "0.5 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "0.6 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "0 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0"
+        },
+        {
+          "title": "Speed Index",
+          "value": "0.5 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=461&LCP=602&TBT=0&CLS=0&SI=535&TTI=602&device=desktop&version=13.4.1"
+      ]
+    },
+    {
+      "path": "/",
+      "pageId": 40,
+      "platform": "desktop",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app/0duqs8v1qo?form_factor=desktop",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:35 AM",
+      "scores": [
+        "100\nPerformance",
+        "100\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO",
+        "100\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "0.5 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "0.7 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "0 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0"
+        },
+        {
+          "title": "Speed Index",
+          "value": "0.6 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=465&LCP=722&TBT=5&CLS=0&SI=598&TTI=779&device=desktop&version=13.4.1"
+      ]
+    },
+    {
+      "path": "/bolets",
+      "pageId": 41,
+      "platform": "desktop",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets/1g5x0b3egy?form_factor=desktop",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:37 AM",
+      "scores": [
+        "100\nPerformance",
+        "95\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO",
+        "95\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "0.5 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "0.5 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "10 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0"
+        },
+        {
+          "title": "Speed Index",
+          "value": "0.6 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=516&LCP=521&TBT=12&CLS=0&SI=630&TTI=738&device=desktop&version=13.4.1"
+      ]
+    },
+    {
+      "path": "/zones/ceps",
+      "pageId": 42,
+      "platform": "desktop",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-zones-ceps/rl43ri9onf?form_factor=desktop",
+      "captured": "Captured at Sep 13, 2026, 12:39 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 12:39:37 AM",
+      "scores": [
+        "100\nPerformance",
+        "96\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO",
+        "96\nAccessibility",
+        "100\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "0.5 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "0.6 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "0 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0"
+        },
+        {
+          "title": "Speed Index",
+          "value": "0.5 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=459&LCP=601&TBT=0&CLS=0&SI=486&TTI=601&device=desktop&version=13.4.1"
+      ]
+    }
+  ]
+}

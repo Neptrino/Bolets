@@ -34,6 +34,17 @@ describe("persistent map bucket cache", () => {
     truncated: false,
   };
 
+  it("stores received JSON without serializing the cells a second time", async () => {
+    const { cache } = installCacheStorage();
+    const json = '{ "cells": [{"cellId":"cell-1","score":42}], "truncated": false }';
+    await writeMapBucketPayload(url, payload, Date.now(), json);
+    expect(await cache.put.mock.calls[0][1].text()).toBe(json);
+    await expect(readMapBucketPayload(url)).resolves.toEqual(payload);
+    await writeMapBucketPayload(url, { ...payload, truncated: true }, Date.now(), json);
+    await writeMapBucketPayload(url.replace("2500", "1000"), payload, Date.now(), json);
+    expect(cache.put).toHaveBeenCalledOnce();
+  });
+
   it("retains reusable browser buckets for one hour", () => {
     expect(MAP_BUCKET_CACHE_TTL_MS).toBe(60 * 60 * 1_000);
   });

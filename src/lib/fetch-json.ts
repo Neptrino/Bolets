@@ -27,6 +27,7 @@ export async function fetchJsonWithRetry<T>(
   signal: AbortSignal,
   attempts = 2,
   timeoutMs = DEFAULT_TIMEOUT_MS,
+  retainJson?: (json: string) => void,
 ): Promise<T> {
   const deadline = AbortSignal.timeout(timeoutMs);
   for (let attempt = 0; attempt < attempts; attempt += 1) {
@@ -45,7 +46,15 @@ export async function fetchJsonWithRetry<T>(
       await waitForRetry(signal);
       continue;
     }
-    if (response.ok) return response.json() as Promise<T>;
+    if (response.ok) {
+      if (!retainJson) return response.json() as Promise<T>;
+      // Bucket persistence can reuse the received JSON instead of serializing
+      // thousands of parsed cells again on the browser's main thread.
+      const json = await response.text();
+      const payload = JSON.parse(json) as T;
+      retainJson(json);
+      return payload;
+    }
     if (
       response.status < 500 ||
       deadline.aborted ||

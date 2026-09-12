@@ -44,7 +44,7 @@ export function createPredictionPainter({ map, canvas, cells, selectedCellId, re
     const currentCells = cells();
     const display = predictionRenderingForGrid(rendering, currentCells.values().next().value?.gridSizeM, interactive);
     const paint = (raster?: PredictionHeatRaster | null) => {
-      const context = prepareCanvas(output);
+      const context = prepareCanvas(output, currentCells.size === 0 && !territory());
       if (!context) return;
       withCataloniaLandClip(context, map, () => {
         drawPredictionSurface({ cells: currentCells.values(), context, localMap: map, output,

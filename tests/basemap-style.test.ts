@@ -27,10 +27,10 @@ describe("region map basemaps", () => {
       maxzoom: 18,
     });
     expect("tiles" in relief ? relief.tiles?.[0] : "").toContain(
-      "/api/map-tiles/icgc/v1/relief/{z}/{x}/{y}",
+      "/api/map-tiles/icgc/v2/relief/{z}/{x}/{y}",
     );
     expect("tiles" in references ? references.tiles?.[0] : "").toContain(
-      "/api/map-tiles/icgc/v1/references/{z}/{x}/{y}",
+      "/api/map-tiles/icgc/v2/references/{z}/{x}/{y}",
     );
     expect(style.layers.map((layer) => layer.id)).toEqual([
       "icgc-relief-background",

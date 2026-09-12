@@ -120,8 +120,8 @@ function icgcBasemapStyle(wmsLayer: IcgcBaseLayer): StyleSpecification {
 function icgcReliefStyle(): StyleSpecification {
   const reliefSourceId = "icgc-shaded-relief";
   const labelsSourceId = "icgc-relief-references";
-  const reliefTiles = "/api/map-tiles/icgc/v1/relief/{z}/{x}/{y}";
-  const referenceTiles = "/api/map-tiles/icgc/v1/references/{z}/{x}/{y}";
+  const reliefTiles = "/api/map-tiles/icgc/v2/relief/{z}/{x}/{y}";
+  const referenceTiles = "/api/map-tiles/icgc/v2/references/{z}/{x}/{y}";
 
   return {
     version: 8,

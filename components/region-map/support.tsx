@@ -279,7 +279,12 @@ function findCell(cells: Iterable<PredictionMapCell>, longitude: number, latitud
   }
 }
 
-function prepareCanvas(canvas: HTMLCanvasElement) {
+const initializedCanvases = new WeakSet<HTMLCanvasElement>();
+
+function prepareCanvas(canvas: HTMLCanvasElement, existingOnly = false) {
+  // A new canvas is already transparent. Avoid initializing the graphics
+  // backend for the empty loading frame, before any cells are available.
+  if (existingOnly && !initializedCanvases.has(canvas)) return null;
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
   const pixelRatio = window.devicePixelRatio || 1;
@@ -292,6 +297,7 @@ function prepareCanvas(canvas: HTMLCanvasElement) {
   }
   const context = canvas.getContext("2d");
   if (!context) return null;
+  initializedCanvases.add(canvas);
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   context.clearRect(0, 0, width, height);
   return context;
