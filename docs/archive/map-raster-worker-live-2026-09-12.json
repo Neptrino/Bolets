@@ -1,0 +1,86 @@
+{
+  "revision": "ca382a81fd8443425b97dfc2bb93a0f45b60341f",
+  "units": {
+    "fcp": "seconds",
+    "lcp": "seconds",
+    "tbt": "milliseconds"
+  },
+  "runs": [
+    {
+      "page": "/map",
+      "run": 1,
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/n0mhr1j54a",
+      "mobile": {
+        "score": 78,
+        "fcp": 1.7,
+        "lcp": 3.3,
+        "tbt": 500,
+        "cls": 0.007
+      },
+      "desktop": {
+        "score": 67,
+        "fcp": 0.5,
+        "lcp": 1,
+        "tbt": 1150,
+        "cls": 0
+      }
+    },
+    {
+      "page": "/map",
+      "run": 2,
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/ifldcwpmy9",
+      "mobile": {
+        "score": 52,
+        "fcp": 3.8,
+        "lcp": 6.2,
+        "tbt": 510,
+        "cls": 0.007
+      },
+      "desktop": {
+        "score": 70,
+        "fcp": 0.5,
+        "lcp": 1,
+        "tbt": 730,
+        "cls": 0
+      }
+    },
+    {
+      "page": "/bolets-avui",
+      "run": 1,
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/i4gllmcxwc",
+      "mobile": {
+        "score": 67,
+        "fcp": 2,
+        "lcp": 4.7,
+        "tbt": 450,
+        "cls": 0
+      },
+      "desktop": {
+        "score": 73,
+        "fcp": 0.5,
+        "lcp": 0.9,
+        "tbt": 710,
+        "cls": 0
+      }
+    },
+    {
+      "page": "/bolets-avui",
+      "run": 2,
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/lwd7bmqayp",
+      "mobile": {
+        "score": 65,
+        "fcp": 1.4,
+        "lcp": 4,
+        "tbt": 980,
+        "cls": 0
+      },
+      "desktop": {
+        "score": 86,
+        "fcp": 0.5,
+        "lcp": 0.9,
+        "tbt": 320,
+        "cls": 0
+      }
+    }
+  ]
+}

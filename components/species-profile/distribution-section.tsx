@@ -1,3 +1,4 @@
+import "@/app/styles/location-guides-components.css";
 import Link from "next/link";
 import { ArrowUpRight, MapPinned } from "lucide-react";
 import { LazyHabitatMap } from "@/components/lazy-habitat-map";

@@ -1,3 +1,4 @@
+import "@/app/styles/territorial-guides.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, BookOpenText, MapPinned, Snowflake, Trees } from "lucide-react";

@@ -1,3 +1,4 @@
+import "@/app/styles/findings.css";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { ModerationQueue } from "@/components/findings/moderation-queue";

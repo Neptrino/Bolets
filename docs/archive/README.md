@@ -6,6 +6,7 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [SEO route stylesheet loading — 12 September 2026](seo-css-performance-2026-09-12.md)
 - [Prediction raster worker — 12 September 2026](map-raster-worker-2026-09-12.md)
 - [Map and species performance: live verification — 12 September 2026](map-page-performance-live-2026-09-12.md)
 - [Map, Avui and species performance — 12 September 2026](map-page-performance-2026-09-12.md)
@@ -41,6 +42,7 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Evidence files
 
+- [map-raster-worker-live-2026-09-12.json](map-raster-worker-live-2026-09-12.json)
 - [frontend-performance-live-2026-09-12.json](frontend-performance-live-2026-09-12.json)
 - [frontend-performance-2026-09-12.json](frontend-performance-2026-09-12.json)
 - [forecast-cpu-investigation-2026-09-12.json](forecast-cpu-investigation-2026-09-12.json)

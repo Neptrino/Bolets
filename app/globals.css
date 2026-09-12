@@ -5,25 +5,14 @@
    map component lets the prediction canvas cover its controls and gestures. */
 @import "maplibre-gl/dist/maplibre-gl.css";
 @import "./styles/tokens.css";
-@import "./styles/daily-share.css";
 @import "./styles/today-map.css";
-@import "./styles/rovellons-guide.css";
-@import "./styles/ceps-and-guide-hubs.css";
-@import "./styles/territorial-responsive.css";
 @import "./styles/site-shell.css";
-@import "./styles/home-findings.css";
-@import "./styles/home-map-feature.css";
-@import "./styles/home-showcase.css";
 @import "./styles/site-components.css";
 @import "./styles/form-select.css";
 @import "./styles/site-dialog.css";
 @import "./styles/theme-foundations.css";
 @import "./styles/species-field-guide.css";
-@import "./styles/species-field-card.css";
-@import "./styles/comparison-guides.css";
 @import "./styles/search-guides.css";
-@import "./styles/location-guides-foundation.css";
-@import "./styles/location-guides-components.css";
 @import "./styles/condition-panels.css";
 @import "./styles/species-picker.css";
 @import "./styles/compact-species.css";
@@ -35,9 +24,6 @@
 @import "./styles/map-timeline.css";
 @import "./styles/map-info-panel.css";
 @import "./styles/offline.css";
-@import "./styles/findings.css";
-@import "./styles/my-forest.css";
-@import "./styles/contributions.css";
+@import "./styles/finding-controls.css";
 @import "./styles/guide-readings.css";
-@import "./styles/account.css";
 @import "./styles/reference-discovery.css";

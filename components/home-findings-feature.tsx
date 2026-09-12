@@ -1,3 +1,4 @@
+import "@/app/styles/home-findings.css";
 import { IntentLink as Link } from "@/components/intent-link";
 import { ArrowUpRight, CalendarClock, MapPinned, NotebookPen, ShieldCheck, WifiOff } from "lucide-react";
 import { StaticMediaImage } from "@/components/static-media-image";

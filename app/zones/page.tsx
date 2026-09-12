@@ -1,3 +1,4 @@
+import "@/app/styles/territorial-guides.css";
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Link from "next/link";

@@ -1,3 +1,4 @@
+import "@/app/styles/comparison-guides.css";
 import "@/app/styles/species-comparison.css";
 import Link from "next/link";
 import type { Metadata } from "next";

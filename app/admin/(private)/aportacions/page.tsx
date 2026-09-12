@@ -1,3 +1,4 @@
+import "@/app/styles/findings.css";
 import type { Metadata } from "next";
 import { CONTRIBUTION_KIND_LABELS } from "@/src/lib/contributions";
 import {

@@ -1,5 +1,7 @@
 "use client";
 
+import "@/app/styles/home-showcase.css";
+
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { LoaderCircle, Play, RotateCcw } from "lucide-react";
 import { staticMediaVariantPath } from "@/src/lib/static-media";

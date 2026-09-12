@@ -1,3 +1,4 @@
+import "@/app/styles/home-map-feature.css";
 import { IntentLink as Link } from "@/components/intent-link";
 import { ArrowUpRight, Gauge } from "lucide-react";
 import { StaticMediaImage } from "@/components/static-media-image";

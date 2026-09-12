@@ -1,3 +1,4 @@
+import "@/app/styles/my-forest.css";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AccountNav } from "@/components/account-nav";

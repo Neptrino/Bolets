@@ -1,3 +1,4 @@
+import "@/app/styles/findings.css";
 import type { Metadata } from "next";
 import { ArrowUpRight, CalendarDays, Map, UserRound } from "lucide-react";
 import Image from "next/image";

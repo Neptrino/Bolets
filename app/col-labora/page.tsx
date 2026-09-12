@@ -1,3 +1,4 @@
+import "@/app/styles/contributions.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContributionGuide } from "@/components/contribution-guide";

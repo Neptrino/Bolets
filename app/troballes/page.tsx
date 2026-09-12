@@ -1,3 +1,4 @@
+import "@/app/styles/findings.css";
 import type { Metadata } from "next";
 import { ArrowUpRight, Eye, FlaskConical, Grid3X3, Sprout } from "lucide-react";
 import Link from "next/link";

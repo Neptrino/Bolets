@@ -1,3 +1,4 @@
+import "@/app/styles/findings.css";
 import type { Metadata } from "next";
 import { ArrowUpRight, MapPinned } from "lucide-react";
 import Link from "next/link";

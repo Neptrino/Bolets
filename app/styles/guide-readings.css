@@ -32,7 +32,7 @@
   outline: 3px solid var(--clay);
   outline-offset: 3px;
 }
-.ceps-local-guides { margin-bottom: 48px; }
+.guide-types.ceps-local-guides { margin-bottom: 48px; }
 .ceps-other-guides { margin: 20px 0; }
 .ceps-other-guides summary {
   padding: 12px 0;

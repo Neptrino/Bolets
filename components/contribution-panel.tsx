@@ -1,5 +1,7 @@
 "use client";
 
+import "@/app/styles/findings.css";
+
 import { Camera, CheckCircle2, Clock3, ImagePlus, MapPinned, Send, ShieldCheck, Sprout, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";

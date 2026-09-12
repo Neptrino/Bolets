@@ -1,3 +1,5 @@
+import "@/app/styles/findings.css";
+import "@/app/styles/contributions.css";
 import type { Metadata } from "next";
 import { ArrowUpRight, CheckCircle2, MapPinned } from "lucide-react";
 import Link from "next/link";

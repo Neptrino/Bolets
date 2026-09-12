@@ -1,5 +1,7 @@
 "use client";
 
+import "@/app/styles/account.css";
+
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FindingDeleteDialog } from "@/components/findings/finding-delete-dialog";

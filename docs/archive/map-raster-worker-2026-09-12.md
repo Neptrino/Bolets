@@ -30,3 +30,20 @@ Median blocking fell from 426 to 152 ms (64%). This controlled-data comparison s
 - Four additional smoothing/access browser scenarios pass, including the 250 m authorized view and restoration of the public floor on expiry.
 - Unit coverage includes bounded coalescing, stale result rejection, cleanup, blocked/hung worker fallback, unchanged-data cache reuse and geographic placement during pan.
 - Local profiles, fixtures, comparison results and logs are in `artifacts/map-worker-performance-2026-09-12/`.
+
+## Live verification
+
+Release `ca382a81fd8443425b97dfc2bb93a0f45b60341f` passed [CI and deployment](https://github.com/Neptrino/Bolets/actions/runs/34719062803). The VPS release symlink and healthy application image revision both match. The retained source archive is 100,917,988 bytes, below the 256 MiB transport limit.
+
+Two fresh PageSpeed runs per page produced mixed results. All runs are retained in [the results file](map-raster-worker-live-2026-09-12.json); ranges must not be presented as consistent gains or real-user measurements.
+
+| Page | Mobile baseline → runs | Desktop baseline → runs | Desktop blocking baseline → runs |
+| --- | --- | --- | --- |
+| Map | 74 → 78, 52 | 66 → 67, 70 | 1,530 → 1,150, 730 ms |
+| Avui | 79 → 67, 65 | 70 → 73, 86 | 1,050 → 710, 320 ms |
+
+Reports: Map [first](https://pagespeed.web.dev/analysis/https-bolets-app-map/n0mhr1j54a) and [second](https://pagespeed.web.dev/analysis/https-bolets-app-map/ifldcwpmy9); Avui [first](https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/i4gllmcxwc) and [second](https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/lwd7bmqayp).
+
+Desktop blocking decreased in both runs, but mobile scores did not consistently improve. Avui's mobile runs were both worse than the baseline. Map mobile LCP varied from 3.3 to 6.2 seconds; Avui from 4.0 to 4.7 seconds. The remaining main-thread work is concentrated in MapLibre (about 1.86 seconds of desktop main-thread time in the first reports, predominantly categorized as Other), alongside React and application initialization. This supports investigating map startup and first-paint competition; it does not identify a specific native graphics operation as the cause. Shared render-blocking CSS is another measured candidate. Neither library patching nor changing the interactive map to a static preview is part of this release.
+
+Live browser checks at 390 and 1,350 px passed for both routes: pages and 186 observed prediction responses returned 200, both workers replied without errors, and Avui's tomorrow timeline worked at both widths. An intermittent mobile Avui layout shift of 0.102 appeared when the streamed summary above the map resolved; both PageSpeed runs measured zero CLS there. The map detail panel retains its small mobile shift. These are remaining issues, not fixed by raster offloading. Raw browser and PageSpeed snapshots are retained in `artifacts/map-worker-performance-2026-09-12/`.

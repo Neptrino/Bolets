@@ -1,3 +1,4 @@
+import "@/app/styles/account.css";
 import { BookOpen, HandHeart, Sprout, UserRound } from "lucide-react";
 import Link from "next/link";
 

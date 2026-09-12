@@ -1,3 +1,4 @@
+import "@/app/styles/species-field-card.css";
 import { SpeciesSearchSummary, hasSearchSummary } from "@/components/species-profile/search-summary";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
