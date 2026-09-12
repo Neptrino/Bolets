@@ -25,7 +25,7 @@ type SearchSelectProps = {
   "aria-label"?: string;
 };
 
-type QuerySelectProps = {
+export type QuerySelectProps = {
   value: string;
   items: QuerySelectItem[];
   parameter?: string;

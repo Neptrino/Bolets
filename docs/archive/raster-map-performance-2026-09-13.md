@@ -170,3 +170,21 @@ A further mobile layout trace attributes two small shifts (0.00745 each) to the
 floating detail panel changing height while its status updates; these are
 secondary to image discovery/loading and do not justify changing map behavior
 without a separate measured candidate.
+
+## Defer hidden species selectors
+
+The map still loaded searchable selectors inside its collapsed heading and
+fullscreen-only control. `VisibleQuerySelect` loads the existing combobox on
+first visibility, using React lazy/Suspense and a dimension-matched disabled
+placeholder. It retains the control after loading and keeps the existing
+fullscreen portal, route selection and keyboard behavior.
+
+Four alternating production-build mobile runs against isolated `2c69d02`
+reduce decoded initial scripts from 989,750 to 824,712 bytes (16.7%). Median LCP
+improves from 2,874 to 2,574 ms (10.4%), with matching painted pixels and no
+browser errors. The companion JSON retains every run. This is a controlled
+local improvement; fresh deployed PageSpeed scores remain required.
+
+Build, type checks and lint/source-size checks pass. Eleven browser cases cover
+mobile keyboard selection, native fullscreen portals, browsers without
+IntersectionObserver, camera restoration, basemaps, seams and geolocation.

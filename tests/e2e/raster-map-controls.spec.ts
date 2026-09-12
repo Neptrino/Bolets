@@ -23,6 +23,44 @@ test("renders the map shell on the server and initializes Leaflet only in the br
   expect(errors).toEqual([]);
 });
 
+test("loads the collapsed species selector on opening and preserves keyboard navigation", async ({ page }) => {
+  await page.setViewportSize({ width: 412, height: 823 });
+  await page.goto("/map?region=prepirineus");
+  await expect(page.locator(".raster-map-surface")).toBeVisible();
+  await expect(page.getByRole("combobox", { includeHidden: true })).toHaveCount(0);
+  await page.locator(".map-page-heading > summary").click();
+  const selector = page.getByRole("combobox", { name: "Espècie seleccionada", exact: true });
+  await selector.fill("Pinetell");
+  await expect(page.getByRole("option", { name: "Pinetell", exact: true })).toBeVisible();
+  await selector.press("ArrowDown");
+  await selector.press("Enter");
+  await expect(page).toHaveURL(/\/map\/pinetell\?region=prepirineus$/);
+});
+
+test("loads the fullscreen species selector and keeps its options inside fullscreen", async ({ page }) => {
+  await page.goto("/map/cep");
+  await expect(page.locator(".raster-map-surface")).toBeVisible();
+  await expect(page.getByRole("combobox", { includeHidden: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Veure el mapa a pantalla completa", exact: true }).click();
+  const selector = page.getByRole("combobox", { name: "Canvia l’espècie del mapa en pantalla completa", exact: true });
+  await selector.fill("Pinetell");
+  const option = page.getByRole("option", { name: "Pinetell", exact: true });
+  await expect(option).toBeVisible();
+  expect(await option.evaluate(node => document.fullscreenElement?.contains(node))).toBe(true);
+  await option.click();
+  await expect(page).toHaveURL(/\/map\/pinetell$/);
+});
+
+test("keeps species selection available without IntersectionObserver", async ({ page }) => {
+  await page.addInitScript(() => { Reflect.deleteProperty(window, "IntersectionObserver"); });
+  await page.goto("/map");
+  await page.locator(".map-page-heading > summary").click();
+  const selector = page.getByRole("combobox", { name: "Espècie seleccionada", exact: true });
+  await selector.fill("Pinetell");
+  await page.getByRole("option", { name: "Pinetell", exact: true }).click();
+  await expect(page).toHaveURL(/\/map\/pinetell$/);
+});
+
 test("switches every raster basemap with attribution and without WebGL", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));

@@ -411,5 +411,72 @@
         "note": "Valid repeat without resource errors; late map rendering remains a bottleneck."
       }
     ]
+  },
+  "visibleSelectorFollowUp": {
+    "baselineRevision": "2c69d02",
+    "method": "Same isolated production-build mobile A/B as the SSR comparison; actual warmed tiles and identical prediction fixtures. Fresh browser for every alternating run.",
+    "runs": [
+      {
+        "port": 3106,
+        "errors": [],
+        "scriptBytes": 989750,
+        "ssr": true,
+        "lcp": {
+          "time": 2908,
+          "url": "http://127.0.0.1:3106/api/map-tiles/icgc/v2/relief/7/64/47"
+        },
+        "blocking": 9,
+        "fcp": 1320,
+        "ttfb": 15.099999904632568,
+        "firstTile": 2505.0999999046326,
+        "paintedPixels": 154374
+      },
+      {
+        "port": 3105,
+        "errors": [],
+        "scriptBytes": 824712,
+        "ssr": true,
+        "lcp": {
+          "time": 2576,
+          "url": "http://127.0.0.1:3105/api/map-tiles/icgc/v2/relief/7/64/47"
+        },
+        "blocking": 11,
+        "fcp": 1324,
+        "ttfb": 20.799999952316284,
+        "firstTile": 2230.9000000953674,
+        "paintedPixels": 154374
+      },
+      {
+        "port": 3106,
+        "errors": [],
+        "scriptBytes": 989750,
+        "ssr": true,
+        "lcp": {
+          "time": 2840,
+          "url": "http://127.0.0.1:3106/api/map-tiles/icgc/v2/relief/7/64/47"
+        },
+        "blocking": 17,
+        "fcp": 1276,
+        "ttfb": 15,
+        "firstTile": 2495.0999999046326,
+        "paintedPixels": 154374
+      },
+      {
+        "port": 3105,
+        "errors": [],
+        "scriptBytes": 824712,
+        "ssr": true,
+        "lcp": {
+          "time": 2572,
+          "url": "http://127.0.0.1:3105/api/map-tiles/icgc/v2/relief/7/64/47"
+        },
+        "blocking": 8,
+        "fcp": 1292,
+        "ttfb": 12.299999952316284,
+        "firstTile": 2228.5,
+        "paintedPixels": 154374
+      }
+    ],
+    "interpretation": "Initial decoded scripts 989750 to 824712 bytes (-16.7%); median LCP 2874 to 2574 ms (-10.4%). Identical 154374 painted pixels; no page errors. Not a PageSpeed score."
   }
 }

@@ -10,7 +10,8 @@ import {
   type PredictionCellDetailState,
   type PredictionViewportStatus,
 } from "@/components/region-map";
-import { QuerySelect, type QuerySelectItem } from "@/components/ui/query-select";
+import type { QuerySelectItem } from "@/components/ui/query-select";
+import { VisibleQuerySelect } from "@/components/ui/visible-query-select";
 import { regionLabels } from "@/data/regions";
 import { getConditionPredictionStatus } from "@/src/lib/condition-presentation";
 import { GLOBAL_SPECIES_ID } from "@/src/lib/global-map";
@@ -209,7 +210,7 @@ export function MapExplorer({
       />
       <label className="map-fullscreen-species-control">
         <span>Espècie</span>
-        <QuerySelect
+        <VisibleQuerySelect
           value={speciesKey}
           items={speciesItems}
           fallbackPath="/map"

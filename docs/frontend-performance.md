@@ -62,6 +62,14 @@ Browser checks must wait for the initialized `.raster-map-surface` before using
 strict shell selectors: streaming can briefly include a hidden shell alongside
 its visible fallback.
 
+The map's heading and fullscreen species selectors use `VisibleQuerySelect`.
+Their controls remain behind the existing collapsed/hidden panels. Load the
+shared searchable combobox on first visibility through React lazy/Suspense,
+then keep it mounted so reopening is immediate. The placeholder retains the
+selected label and control dimensions, and cannot accept input while loading.
+This removes the combobox/floating-positioning code from map startup while
+retaining the shared accessible selector, route behavior and fullscreen portal.
+
 The adapter translates Leaflet's 256-pixel zoom to the existing 512-pixel map
 convention and preserves subpixel Mercator projection. A documented tile-level
 transform override avoids camera-dependent fractional-pixel drift on restored

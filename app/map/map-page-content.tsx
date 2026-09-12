@@ -4,7 +4,7 @@ import { DataSourceCredits } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { MapExplorer } from "@/components/map-explorer";
 import { PredictionMapLegend } from "@/components/prediction-map-legend";
-import { QuerySelect } from "@/components/ui/query-select";
+import { VisibleQuerySelect } from "@/components/ui/visible-query-select";
 import { coreEditorialSources, editorialArticleFields, environmentalSources } from "@/data/editorial";
 import { isRegionId } from "@/data/regions";
 import { getSpecies, speciesSelectItems } from "@/data/species";
@@ -159,7 +159,7 @@ export async function MapPageContent({ query, mapPage }: MapPageContentProps) {
       <div className="map-controls">
         <div className="map-species-picker">
           <span className="map-species-picker-label"><Trees size={17} aria-hidden="true" /> Espècie</span>
-          <QuerySelect
+          <VisibleQuerySelect
             value={species?.speciesId ?? GLOBAL_SPECIES_ID}
             items={mapSpeciesSelectItems}
             variant="map"
