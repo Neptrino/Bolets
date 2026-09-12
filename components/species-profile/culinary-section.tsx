@@ -1,3 +1,4 @@
+import "@/app/styles/culinary-dossier.css";
 import Link from "next/link";
 import {
   ArrowUpRight,

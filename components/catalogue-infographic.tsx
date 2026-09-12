@@ -1,3 +1,4 @@
+import "@/app/styles/catalogue-infographic.css";
 import { Images, ShieldAlert } from "lucide-react";
 import { InfographicActions } from "@/components/infographic-actions";
 import { StaticMediaImage } from "@/components/static-media-image";

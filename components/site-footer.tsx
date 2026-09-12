@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { IntentLink as Link } from "@/components/intent-link";
 import { Coffee } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { CurrentSeasonGuideLink } from "@/components/current-season-guide-link";

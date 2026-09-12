@@ -1,0 +1,1237 @@
+{
+  "date": "2026-09-12",
+  "status": "local-only-not-deployed",
+  "baselineCommit": "5b1fce37381b3e23bfb128055baa21e5bba391a9",
+  "method": {
+    "browser": "Playwright Chromium headless",
+    "cacheDisabled": true,
+    "serviceWorkers": "blocked",
+    "latencyMs": 150,
+    "downloadBytesPerSecond": 200000,
+    "uploadBytesPerSecond": 93750,
+    "cpuSlowdown": 4,
+    "window": "navigation through 8 seconds after load",
+    "metricNote": "tbt is observer long-task excess, not Lighthouse TBT"
+  },
+  "before": [
+    {
+      "device": "mobile",
+      "lcp": 2344,
+      "tbt": 37,
+      "cls": 0,
+      "longTasks": [
+        62,
+        75
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "startTime": 2344
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 2344
+        }
+      ],
+      "resources": [
+        {
+          "url": "/_next/static/media/f141b5b7abe57afc-s.p.380f-mwhk0aej.woff2",
+          "type": "link",
+          "bytes": 30948,
+          "transfer": 31248,
+          "duration": 906.3999998569489
+        },
+        {
+          "url": "/media/optimized/v14/generated/home-hero-boletus-v2.w960.webp",
+          "type": "link",
+          "bytes": 39616,
+          "transfer": 39916,
+          "duration": 1281.2999999523163
+        },
+        {
+          "url": "/_next/static/chunks/1jzdqc9io0b1s.css",
+          "type": "link",
+          "bytes": 702,
+          "transfer": 1002,
+          "duration": 162.5
+        },
+        {
+          "url": "/_next/static/chunks/31oyzvark5bqi.css",
+          "type": "link",
+          "bytes": 7106,
+          "transfer": 7406,
+          "duration": 305.40000009536743
+        },
+        {
+          "url": "/_next/static/chunks/0_nvqxh-gfvos.css",
+          "type": "link",
+          "bytes": 16163,
+          "transfer": 16463,
+          "duration": 612.2999999523163
+        },
+        {
+          "url": "/_next/static/chunks/25a31p-dofi2_.css",
+          "type": "link",
+          "bytes": 78432,
+          "transfer": 78732,
+          "duration": 2044.2999999523163
+        },
+        {
+          "url": "/_next/static/chunks/3qgcwm0q0nxzk.js",
+          "type": "link",
+          "bytes": 3918,
+          "transfer": 4218,
+          "duration": 590.2000000476837
+        },
+        {
+          "url": "/_next/static/chunks/0fy4h0ngk1igg.js",
+          "type": "script",
+          "bytes": 8461,
+          "transfer": 8761,
+          "duration": 987.0999999046326
+        },
+        {
+          "url": "/_next/static/chunks/0xmckmn224y77.js",
+          "type": "script",
+          "bytes": 34191,
+          "transfer": 34491,
+          "duration": 1654.7999999523163
+        },
+        {
+          "url": "/_next/static/chunks/09r5u0e8i36rz.js",
+          "type": "script",
+          "bytes": 71310,
+          "transfer": 71610,
+          "duration": 2793.7999999523163
+        },
+        {
+          "url": "/_next/static/chunks/11jq0c2_zavac.js",
+          "type": "script",
+          "bytes": 8504,
+          "transfer": 8804,
+          "duration": 1392.2000000476837
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-1mxczeztpvrwx.js",
+          "type": "script",
+          "bytes": 4298,
+          "transfer": 4598,
+          "duration": 1556
+        },
+        {
+          "url": "/_next/static/chunks/1_5ym01rlu3v1.js",
+          "type": "script",
+          "bytes": 12538,
+          "transfer": 12838,
+          "duration": 1871.4000000953674
+        },
+        {
+          "url": "/_next/static/chunks/3fntmmi971322.js",
+          "type": "script",
+          "bytes": 3661,
+          "transfer": 3961,
+          "duration": 1931.9000000953674
+        },
+        {
+          "url": "/_next/static/chunks/2gcyxo5yegltg.js",
+          "type": "script",
+          "bytes": 15635,
+          "transfer": 15935,
+          "duration": 2104.2999999523163
+        },
+        {
+          "url": "/_next/static/chunks/2x0o8jak9w5mk.js",
+          "type": "script",
+          "bytes": 7497,
+          "transfer": 7797,
+          "duration": 2216.7999999523163
+        },
+        {
+          "url": "/_next/static/chunks/1m0zp8i2jsyq9.js",
+          "type": "script",
+          "bytes": 66823,
+          "transfer": 67123,
+          "duration": 3168.4000000953674
+        },
+        {
+          "url": "/media/generated/home-showcase-poster.webp?v=2026-09-03-playback",
+          "type": "video",
+          "bytes": 43278,
+          "transfer": 43578,
+          "duration": 1414.1000001430511
+        },
+        {
+          "url": "/media/generated/home-showcase.mp4?v=2026-09-03-playback",
+          "type": "video",
+          "bytes": 0,
+          "transfer": 300,
+          "duration": 4277.5
+        },
+        {
+          "url": "/media/optimized/v14/editorial/home-map-simulated.w640.webp",
+          "type": "img",
+          "bytes": 22830,
+          "transfer": 23130,
+          "duration": 824.1000001430511
+        },
+        {
+          "url": "/media/optimized/v14/wikimedia/boletus-pinophilus.w640.webp",
+          "type": "img",
+          "bytes": 70930,
+          "transfer": 71230,
+          "duration": 1686.6000001430511
+        },
+        {
+          "url": "/media/optimized/v14/wikimedia/russula-virescens.w640.webp",
+          "type": "img",
+          "bytes": 88808,
+          "transfer": 89108,
+          "duration": 1888.8000001907349
+        },
+        {
+          "url": "/?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 305,
+          "transfer": 605,
+          "duration": 179.39999985694885
+        },
+        {
+          "url": "/map?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 161,
+          "transfer": 461,
+          "duration": 200.90000009536743
+        },
+        {
+          "url": "/bolets?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 163,
+          "transfer": 463,
+          "duration": 359.2999999523163
+        },
+        {
+          "url": "/compte/bosc?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 183,
+          "transfer": 483,
+          "duration": 554.3999998569489
+        },
+        {
+          "url": "/bolets-de-tardor?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 323,
+          "transfer": 623,
+          "duration": 205.20000004768372
+        },
+        {
+          "url": "/?_rsc=yIp22O3xgPPxC28X",
+          "type": "fetch",
+          "bytes": 3331,
+          "transfer": 3631,
+          "duration": 384.40000009536743
+        },
+        {
+          "url": "/?_rsc=8nTjltbQWvg6NcbE",
+          "type": "fetch",
+          "bytes": 8076,
+          "transfer": 8376,
+          "duration": 319
+        },
+        {
+          "url": "/map?_rsc=tXyZJ52UQVBCVsD3",
+          "type": "fetch",
+          "bytes": 1504,
+          "transfer": 1804,
+          "duration": 243.5
+        },
+        {
+          "url": "/acces?retorn=%2Fcompte%2Fbosc&_rsc=tXyZJ52UQVBCVsD3",
+          "type": "fetch",
+          "bytes": 1537,
+          "transfer": 1837,
+          "duration": 176.80000019073486
+        },
+        {
+          "url": "/bolets?_rsc=tXyZJ52UQVBCVsD3",
+          "type": "fetch",
+          "bytes": 1517,
+          "transfer": 1817,
+          "duration": 175.79999995231628
+        },
+        {
+          "url": "/bolets-de-tardor?_rsc=_cQRGX-Y0zIGPv7S",
+          "type": "fetch",
+          "bytes": 23437,
+          "transfer": 23737,
+          "duration": 326.40000009536743
+        },
+        {
+          "url": "/_next/static/chunks/02n92oajaql6f.js",
+          "type": "script",
+          "bytes": 5924,
+          "transfer": 6224,
+          "duration": 190.39999985694885
+        }
+      ],
+      "css": [
+        "/_next/static/chunks/1jzdqc9io0b1s.css",
+        "/_next/static/chunks/25a31p-dofi2_.css",
+        "/_next/static/chunks/31oyzvark5bqi.css",
+        "/_next/static/chunks/0_nvqxh-gfvos.css"
+      ]
+    },
+    {
+      "device": "desktop",
+      "lcp": 3184,
+      "tbt": 13,
+      "cls": 0,
+      "longTasks": [
+        63
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "startTime": 2476
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 2476
+        }
+      ],
+      "resources": [
+        {
+          "url": "/_next/static/media/f141b5b7abe57afc-s.p.380f-mwhk0aej.woff2",
+          "type": "link",
+          "bytes": 30948,
+          "transfer": 31248,
+          "duration": 913
+        },
+        {
+          "url": "/media/optimized/v14/generated/home-hero-boletus-v2.w1920.webp",
+          "type": "link",
+          "bytes": 112068,
+          "transfer": 112368,
+          "duration": 2983.7999999523163
+        },
+        {
+          "url": "/_next/static/chunks/1jzdqc9io0b1s.css",
+          "type": "link",
+          "bytes": 702,
+          "transfer": 1002,
+          "duration": 169.79999995231628
+        },
+        {
+          "url": "/_next/static/chunks/31oyzvark5bqi.css",
+          "type": "link",
+          "bytes": 7106,
+          "transfer": 7406,
+          "duration": 305.7000000476837
+        },
+        {
+          "url": "/_next/static/chunks/3qgcwm0q0nxzk.js",
+          "type": "link",
+          "bytes": 3918,
+          "transfer": 4218,
+          "duration": 590.7999999523163
+        },
+        {
+          "url": "/_next/static/chunks/0_nvqxh-gfvos.css",
+          "type": "link",
+          "bytes": 16163,
+          "transfer": 16463,
+          "duration": 702.0999999046326
+        },
+        {
+          "url": "/_next/static/chunks/25a31p-dofi2_.css",
+          "type": "link",
+          "bytes": 78432,
+          "transfer": 78732,
+          "duration": 2165.2000000476837
+        },
+        {
+          "url": "/_next/static/chunks/0fy4h0ngk1igg.js",
+          "type": "script",
+          "bytes": 8461,
+          "transfer": 8761,
+          "duration": 972.2999999523163
+        },
+        {
+          "url": "/_next/static/chunks/11jq0c2_zavac.js",
+          "type": "script",
+          "bytes": 8504,
+          "transfer": 8804,
+          "duration": 1392.6000001430511
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-1mxczeztpvrwx.js",
+          "type": "script",
+          "bytes": 4298,
+          "transfer": 4598,
+          "duration": 1699.9000000953674
+        },
+        {
+          "url": "/_next/static/chunks/0xmckmn224y77.js",
+          "type": "script",
+          "bytes": 34191,
+          "transfer": 34491,
+          "duration": 1790.1000001430511
+        },
+        {
+          "url": "/_next/static/chunks/09r5u0e8i36rz.js",
+          "type": "script",
+          "bytes": 71310,
+          "transfer": 71610,
+          "duration": 2915.2999999523163
+        },
+        {
+          "url": "/_next/static/chunks/1_5ym01rlu3v1.js",
+          "type": "script",
+          "bytes": 12538,
+          "transfer": 12838,
+          "duration": 1961.5
+        },
+        {
+          "url": "/_next/static/chunks/3fntmmi971322.js",
+          "type": "script",
+          "bytes": 3661,
+          "transfer": 3961,
+          "duration": 2240.2000000476837
+        },
+        {
+          "url": "/_next/static/chunks/2gcyxo5yegltg.js",
+          "type": "script",
+          "bytes": 15635,
+          "transfer": 15935,
+          "duration": 2343.5
+        },
+        {
+          "url": "/_next/static/chunks/2x0o8jak9w5mk.js",
+          "type": "script",
+          "bytes": 7497,
+          "transfer": 7797,
+          "duration": 2524
+        },
+        {
+          "url": "/_next/static/chunks/1m0zp8i2jsyq9.js",
+          "type": "script",
+          "bytes": 66823,
+          "transfer": 67123,
+          "duration": 3588.7000000476837
+        },
+        {
+          "url": "/media/generated/home-showcase-poster.webp?v=2026-09-03-playback",
+          "type": "video",
+          "bytes": 43278,
+          "transfer": 43578,
+          "duration": 1435.5999999046326
+        },
+        {
+          "url": "/media/generated/home-showcase.mp4?v=2026-09-03-playback",
+          "type": "video",
+          "bytes": 0,
+          "transfer": 300,
+          "duration": 4651.799999952316
+        },
+        {
+          "url": "/media/optimized/v14/editorial/home-map-simulated.w640.webp",
+          "type": "img",
+          "bytes": 22830,
+          "transfer": 23130,
+          "duration": 846.3999998569489
+        },
+        {
+          "url": "/media/optimized/v14/wikimedia/russula-virescens.w384.webp",
+          "type": "img",
+          "bytes": 34518,
+          "transfer": 34818,
+          "duration": 1378
+        },
+        {
+          "url": "/media/optimized/v14/wikimedia/boletus-pinophilus.w384.webp",
+          "type": "img",
+          "bytes": 29938,
+          "transfer": 30238,
+          "duration": 1566.8999998569489
+        },
+        {
+          "url": "/media/optimized/v14/wikimedia/amanita-caesarea.w384.webp",
+          "type": "img",
+          "bytes": 22958,
+          "transfer": 23258,
+          "duration": 1490.9000000953674
+        },
+        {
+          "url": "/media/optimized/v14/generated/macrolepiota-procera-field-aleix-v1.w640.webp",
+          "type": "img",
+          "bytes": 58156,
+          "transfer": 58456,
+          "duration": 2068.899999856949
+        },
+        {
+          "url": "/?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 305,
+          "transfer": 605,
+          "duration": 167.70000004768372
+        },
+        {
+          "url": "/bolets?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 163,
+          "transfer": 463,
+          "duration": 174.29999995231628
+        },
+        {
+          "url": "/temporada?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 328,
+          "transfer": 628,
+          "duration": 189.19999980926514
+        },
+        {
+          "url": "/guies?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 317,
+          "transfer": 617,
+          "duration": 256.80000019073486
+        },
+        {
+          "url": "/media/optimized/v14/generated/home-showcase-poster.w1280.webp",
+          "type": "img",
+          "bytes": 19952,
+          "transfer": 20252,
+          "duration": 649.2000000476837
+        },
+        {
+          "url": "/joc?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 315,
+          "transfer": 615,
+          "duration": 182.20000004768372
+        },
+        {
+          "url": "/bolets-avui?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 171,
+          "transfer": 471,
+          "duration": 199.29999995231628
+        },
+        {
+          "url": "/_next/static/chunks/21j1_0_0bahrd.css",
+          "type": "link",
+          "bytes": 1113,
+          "transfer": 1413,
+          "duration": 244.09999990463257
+        },
+        {
+          "url": "/map?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 161,
+          "transfer": 461,
+          "duration": 340.10000014305115
+        },
+        {
+          "url": "/compte/bosc?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 183,
+          "transfer": 483,
+          "duration": 649.0999999046326
+        },
+        {
+          "url": "/bolets-de-tardor?_rsc=5CB68i4pnAekjehf",
+          "type": "fetch",
+          "bytes": 323,
+          "transfer": 623,
+          "duration": 252.19999980926514
+        },
+        {
+          "url": "/?_rsc=yIp22O3xgPPxC28X",
+          "type": "fetch",
+          "bytes": 3331,
+          "transfer": 3631,
+          "duration": 348.89999985694885
+        },
+        {
+          "url": "/?_rsc=8nTjltbQWvg6NcbE",
+          "type": "fetch",
+          "bytes": 8076,
+          "transfer": 8376,
+          "duration": 303.7999999523163
+        },
+        {
+          "url": "/bolets?_rsc=tXyZJ52UQVBCVsD3",
+          "type": "fetch",
+          "bytes": 1517,
+          "transfer": 1817,
+          "duration": 190.90000009536743
+        },
+        {
+          "url": "/temporada?_rsc=ggQs5xhREyoyht81",
+          "type": "fetch",
+          "bytes": 26883,
+          "transfer": 27183,
+          "duration": 446.39999985694885
+        },
+        {
+          "url": "/guies?_rsc=bvs2HMnA9aQWNCLC",
+          "type": "fetch",
+          "bytes": 11189,
+          "transfer": 11489,
+          "duration": 318.7999999523163
+        },
+        {
+          "url": "/joc?_rsc=pNbFxaCPaR-0qLvC",
+          "type": "fetch",
+          "bytes": 6989,
+          "transfer": 7289,
+          "duration": 268.2999999523163
+        },
+        {
+          "url": "/bolets-avui?_rsc=Z9JDFZp_M-siJH8Q",
+          "type": "fetch",
+          "bytes": 2657,
+          "transfer": 2957,
+          "duration": 230.40000009536743
+        },
+        {
+          "url": "/_next/static/chunks/1ip8ch5qaomc4.js",
+          "type": "script",
+          "bytes": 6824,
+          "transfer": 7124,
+          "duration": 294.19999980926514
+        },
+        {
+          "url": "/_next/static/chunks/20xgsm1p1r2x3.js",
+          "type": "script",
+          "bytes": 9647,
+          "transfer": 9947,
+          "duration": 338.60000014305115
+        },
+        {
+          "url": "/map?_rsc=tXyZJ52UQVBCVsD3",
+          "type": "fetch",
+          "bytes": 1504,
+          "transfer": 1804,
+          "duration": 200.20000004768372
+        },
+        {
+          "url": "/_next/static/chunks/04h7btv5lsx67.js",
+          "type": "script",
+          "bytes": 2338,
+          "transfer": 2638,
+          "duration": 216.29999995231628
+        },
+        {
+          "url": "/_next/static/chunks/0doe57vrwllr1.js",
+          "type": "script",
+          "bytes": 40200,
+          "transfer": 40500,
+          "duration": 890.5
+        },
+        {
+          "url": "/_next/static/chunks/2lkfpla5r-z7w.js",
+          "type": "script",
+          "bytes": 10847,
+          "transfer": 11147,
+          "duration": 410.7000000476837
+        },
+        {
+          "url": "/acces?retorn=%2Fcompte%2Fbosc&_rsc=tXyZJ52UQVBCVsD3",
+          "type": "fetch",
+          "bytes": 1538,
+          "transfer": 1838,
+          "duration": 385.2999999523163
+        },
+        {
+          "url": "/_next/static/chunks/078_9k2nazc6-.js",
+          "type": "script",
+          "bytes": 4080,
+          "transfer": 4380,
+          "duration": 417.09999990463257
+        },
+        {
+          "url": "/_next/static/chunks/02ziocrirbo0k.js",
+          "type": "script",
+          "bytes": 274405,
+          "transfer": 274705,
+          "duration": 2165.7999999523163
+        },
+        {
+          "url": "/_next/static/chunks/15tyowplsghvw.js",
+          "type": "script",
+          "bytes": 13513,
+          "transfer": 13813,
+          "duration": 777.5
+        },
+        {
+          "url": "/bolets-de-tardor?_rsc=_cQRGX-Y0zIGPv7S",
+          "type": "fetch",
+          "bytes": 23437,
+          "transfer": 23737,
+          "duration": 947.5
+        },
+        {
+          "url": "/_next/static/chunks/02n92oajaql6f.js",
+          "type": "script",
+          "bytes": 5924,
+          "transfer": 6224,
+          "duration": 684.7000000476837
+        }
+      ],
+      "css": [
+        "/_next/static/chunks/1jzdqc9io0b1s.css",
+        "/_next/static/chunks/25a31p-dofi2_.css",
+        "/_next/static/chunks/31oyzvark5bqi.css",
+        "/_next/static/chunks/0_nvqxh-gfvos.css"
+      ]
+    }
+  ],
+  "after": [
+    {
+      "device": "mobile",
+      "lcp": 1988,
+      "tbt": 62,
+      "cls": 0,
+      "longTasks": [
+        90,
+        72
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "startTime": 1988
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 1988
+        }
+      ],
+      "resources": [
+        {
+          "url": "/_next/static/media/f141b5b7abe57afc-s.p.380f-mwhk0aej.woff2",
+          "type": "link",
+          "bytes": 30948,
+          "transfer": 31248,
+          "duration": 826.3999998569489
+        },
+        {
+          "url": "/media/optimized/v14/generated/home-hero-boletus-v2.w960.webp",
+          "type": "link",
+          "bytes": 39616,
+          "transfer": 39916,
+          "duration": 1079.0999999046326
+        },
+        {
+          "url": "/_next/static/chunks/1jzdqc9io0b1s.css",
+          "type": "link",
+          "bytes": 702,
+          "transfer": 1002,
+          "duration": 171.20000004768372
+        },
+        {
+          "url": "/_next/static/chunks/1keeqqdnjo1bn.css",
+          "type": "link",
+          "bytes": 808,
+          "transfer": 1108,
+          "duration": 262
+        },
+        {
+          "url": "/_next/static/chunks/31oyzvark5bqi.css",
+          "type": "link",
+          "bytes": 7106,
+          "transfer": 7406,
+          "duration": 307.09999990463257
+        },
+        {
+          "url": "/_next/static/chunks/0_osodsj-5c1v.css",
+          "type": "link",
+          "bytes": 62796,
+          "transfer": 63096,
+          "duration": 1596.2999999523163
+        },
+        {
+          "url": "/_next/static/chunks/3qgcwm0q0nxzk.js",
+          "type": "link",
+          "bytes": 3918,
+          "transfer": 4218,
+          "duration": 531.5999999046326
+        },
+        {
+          "url": "/_next/static/chunks/0fy4h0ngk1igg.js",
+          "type": "script",
+          "bytes": 8461,
+          "transfer": 8761,
+          "duration": 673.2999999523163
+        },
+        {
+          "url": "/_next/static/chunks/11jq0c2_zavac.js",
+          "type": "script",
+          "bytes": 8504,
+          "transfer": 8804,
+          "duration": 1056.7000000476837
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-266dw-fhheoi0.js",
+          "type": "script",
+          "bytes": 4298,
+          "transfer": 4598,
+          "duration": 1131.5999999046326
+        },
+        {
+          "url": "/_next/static/chunks/05nzjozu8bnl5.js",
+          "type": "script",
+          "bytes": 349,
+          "transfer": 649,
+          "duration": 1236.7000000476837
+        },
+        {
+          "url": "/_next/static/chunks/3fntmmi971322.js",
+          "type": "script",
+          "bytes": 3661,
+          "transfer": 3961,
+          "duration": 1393.5999999046326
+        },
+        {
+          "url": "/_next/static/chunks/0xmckmn224y77.js",
+          "type": "script",
+          "bytes": 34191,
+          "transfer": 34491,
+          "duration": 1551.9000000953674
+        },
+        {
+          "url": "/_next/static/chunks/0-h1i3ffazstd.js",
+          "type": "script",
+          "bytes": 13827,
+          "transfer": 14127,
+          "duration": 1588.7000000476837
+        },
+        {
+          "url": "/_next/static/chunks/09r5u0e8i36rz.js",
+          "type": "script",
+          "bytes": 71310,
+          "transfer": 71610,
+          "duration": 1768.5999999046326
+        },
+        {
+          "url": "/_next/static/chunks/0u_qscvow8kyy.js",
+          "type": "script",
+          "bytes": 7538,
+          "transfer": 7838,
+          "duration": 1610.4000000953674
+        },
+        {
+          "url": "/media/optimized/v14/generated/home-showcase-poster.w640.webp",
+          "type": "video",
+          "bytes": 9018,
+          "transfer": 9318,
+          "duration": 513
+        },
+        {
+          "url": "/media/optimized/v14/editorial/home-map-simulated.w640.webp",
+          "type": "img",
+          "bytes": 22830,
+          "transfer": 23130,
+          "duration": 493.60000014305115
+        },
+        {
+          "url": "/media/optimized/v14/wikimedia/russula-virescens.w640.webp",
+          "type": "img",
+          "bytes": 88808,
+          "transfer": 89108,
+          "duration": 1077.2999999523163
+        },
+        {
+          "url": "/media/optimized/v14/wikimedia/boletus-pinophilus.w640.webp",
+          "type": "img",
+          "bytes": 70930,
+          "transfer": 71230,
+          "duration": 980.9000000953674
+        }
+      ],
+      "css": [
+        "/_next/static/chunks/1jzdqc9io0b1s.css",
+        "/_next/static/chunks/0_osodsj-5c1v.css",
+        "/_next/static/chunks/31oyzvark5bqi.css",
+        "/_next/static/chunks/1keeqqdnjo1bn.css"
+      ]
+    },
+    {
+      "device": "desktop",
+      "lcp": 3008,
+      "tbt": 20,
+      "cls": 0,
+      "longTasks": [
+        70
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "startTime": 1964
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 1964
+        }
+      ],
+      "resources": [
+        {
+          "url": "/_next/static/media/f141b5b7abe57afc-s.p.380f-mwhk0aej.woff2",
+          "type": "link",
+          "bytes": 30948,
+          "transfer": 31248,
+          "duration": 809.4000000953674
+        },
+        {
+          "url": "/_next/static/chunks/1jzdqc9io0b1s.css",
+          "type": "link",
+          "bytes": 702,
+          "transfer": 1002,
+          "duration": 164.69999980926514
+        },
+        {
+          "url": "/_next/static/chunks/1keeqqdnjo1bn.css",
+          "type": "link",
+          "bytes": 808,
+          "transfer": 1108,
+          "duration": 170.5
+        },
+        {
+          "url": "/_next/static/chunks/31oyzvark5bqi.css",
+          "type": "link",
+          "bytes": 7106,
+          "transfer": 7406,
+          "duration": 267.59999990463257
+        },
+        {
+          "url": "/_next/static/chunks/0_osodsj-5c1v.css",
+          "type": "link",
+          "bytes": 62796,
+          "transfer": 63096,
+          "duration": 1663.8999998569489
+        },
+        {
+          "url": "/media/optimized/v14/generated/home-hero-boletus-v2.w1920.webp",
+          "type": "link",
+          "bytes": 112068,
+          "transfer": 112368,
+          "duration": 2803.2999999523163
+        },
+        {
+          "url": "/_next/static/chunks/3qgcwm0q0nxzk.js",
+          "type": "link",
+          "bytes": 3918,
+          "transfer": 4218,
+          "duration": 433.40000009536743
+        },
+        {
+          "url": "/_next/static/chunks/0fy4h0ngk1igg.js",
+          "type": "script",
+          "bytes": 8461,
+          "transfer": 8761,
+          "duration": 642.5999999046326
+        },
+        {
+          "url": "/_next/static/chunks/11jq0c2_zavac.js",
+          "type": "script",
+          "bytes": 8504,
+          "transfer": 8804,
+          "duration": 1032.8000001907349
+        },
+        {
+          "url": "/_next/static/chunks/0xmckmn224y77.js",
+          "type": "script",
+          "bytes": 34191,
+          "transfer": 34491,
+          "duration": 1640.1000001430511
+        },
+        {
+          "url": "/_next/static/chunks/09r5u0e8i36rz.js",
+          "type": "script",
+          "bytes": 71310,
+          "transfer": 71610,
+          "duration": 2142.4000000953674
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-266dw-fhheoi0.js",
+          "type": "script",
+          "bytes": 4298,
+          "transfer": 4598,
+          "duration": 1123.2999999523163
+        },
+        {
+          "url": "/_next/static/chunks/05nzjozu8bnl5.js",
+          "type": "script",
+          "bytes": 349,
+          "transfer": 649,
+          "duration": 1219.8999998569489
+        },
+        {
+          "url": "/_next/static/chunks/3fntmmi971322.js",
+          "type": "script",
+          "bytes": 3661,
+          "transfer": 3961,
+          "duration": 1505.7999999523163
+        },
+        {
+          "url": "/_next/static/chunks/0-h1i3ffazstd.js",
+          "type": "script",
+          "bytes": 13827,
+          "transfer": 14127,
+          "duration": 1669.7000000476837
+        },
+        {
+          "url": "/_next/static/chunks/0u_qscvow8kyy.js",
+          "type": "script",
+          "bytes": 7538,
+          "transfer": 7838,
+          "duration": 1805.2000000476837
+        },
+        {
+          "url": "/media/optimized/v14/generated/home-showcase-poster.w640.webp",
+          "type": "video",
+          "bytes": 9018,
+          "transfer": 9318,
+          "duration": 535.0999999046326
+        },
+        {
+          "url": "/media/optimized/v14/editorial/home-map-simulated.w640.webp",
+          "type": "img",
+          "bytes": 22830,
+          "transfer": 23130,
+          "duration": 807.4000000953674
+        },
+        {
+          "url": "/media/optimized/v14/wikimedia/amanita-caesarea.w384.webp",
+          "type": "img",
+          "bytes": 22958,
+          "transfer": 23258,
+          "duration": 867.4000000953674
+        },
+        {
+          "url": "/media/optimized/v14/wikimedia/boletus-pinophilus.w384.webp",
+          "type": "img",
+          "bytes": 29938,
+          "transfer": 30238,
+          "duration": 987.9000000953674
+        },
+        {
+          "url": "/media/optimized/v14/wikimedia/russula-virescens.w384.webp",
+          "type": "img",
+          "bytes": 34518,
+          "transfer": 34818,
+          "duration": 1070.7000000476837
+        },
+        {
+          "url": "/media/optimized/v14/generated/macrolepiota-procera-field-aleix-v1.w640.webp",
+          "type": "img",
+          "bytes": 58156,
+          "transfer": 58456,
+          "duration": 1340.6000001430511
+        },
+        {
+          "url": "/media/optimized/v14/generated/home-showcase-poster.w1280.webp",
+          "type": "img",
+          "bytes": 19952,
+          "transfer": 20252,
+          "duration": 662.2000000476837
+        }
+      ],
+      "css": [
+        "/_next/static/chunks/1jzdqc9io0b1s.css",
+        "/_next/static/chunks/0_osodsj-5c1v.css",
+        "/_next/static/chunks/31oyzvark5bqi.css",
+        "/_next/static/chunks/1keeqqdnjo1bn.css"
+      ]
+    }
+  ],
+  "styleChecks": [
+    {
+      "url": "/joc",
+      "width": 1350,
+      "status": 200,
+      "style": {
+        "display": "block",
+        "background": "rgb(13, 27, 24)",
+        "border": "30px",
+        "width": 1180,
+        "overflow": false
+      }
+    },
+    {
+      "url": "/metode",
+      "width": 1350,
+      "status": 200,
+      "style": {
+        "display": "grid",
+        "background": "rgb(32, 37, 35)",
+        "border": "0px",
+        "width": 1350,
+        "overflow": false
+      }
+    },
+    {
+      "url": "/compare",
+      "width": 1350,
+      "status": 200,
+      "style": {
+        "display": "grid",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "width": 1180,
+        "overflow": false
+      }
+    },
+    {
+      "url": "/parts-dun-bolet",
+      "width": 1350,
+      "status": 200,
+      "style": {
+        "display": "block",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "width": 1180,
+        "overflow": false
+      }
+    },
+    {
+      "url": "/bolets/infografia",
+      "width": 1350,
+      "status": 200,
+      "style": {
+        "display": "grid",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "24px",
+        "width": 1180,
+        "overflow": false
+      }
+    },
+    {
+      "url": "/bolets/cep",
+      "width": 1350,
+      "status": 200,
+      "style": {
+        "display": "grid",
+        "background": "rgb(52, 72, 58)",
+        "border": "15px",
+        "width": 890,
+        "overflow": false
+      }
+    },
+    {
+      "url": "/compare",
+      "width": 1350,
+      "navigation": true,
+      "display": "grid"
+    },
+    {
+      "url": "/joc",
+      "width": 1350,
+      "navigation": true,
+      "display": "block"
+    },
+    {
+      "url": "/parts-dun-bolet",
+      "width": 1350,
+      "navigation": true,
+      "display": "block"
+    },
+    {
+      "width": 1350,
+      "errors": []
+    },
+    {
+      "url": "/joc",
+      "width": 412,
+      "status": 200,
+      "style": {
+        "display": "block",
+        "background": "rgb(13, 27, 24)",
+        "border": "22px",
+        "width": 388,
+        "overflow": false
+      }
+    },
+    {
+      "url": "/metode",
+      "width": 412,
+      "status": 200,
+      "style": {
+        "display": "grid",
+        "background": "rgb(32, 37, 35)",
+        "border": "0px",
+        "width": 412,
+        "overflow": false
+      }
+    },
+    {
+      "url": "/compare",
+      "width": 412,
+      "status": 200,
+      "style": {
+        "display": "grid",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "width": 364,
+        "overflow": false
+      }
+    },
+    {
+      "url": "/parts-dun-bolet",
+      "width": 412,
+      "status": 200,
+      "style": {
+        "display": "block",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "width": 364,
+        "overflow": false
+      }
+    },
+    {
+      "url": "/bolets/infografia",
+      "width": 412,
+      "status": 200,
+      "style": {
+        "display": "grid",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "18px",
+        "width": 380.78125,
+        "overflow": false
+      }
+    },
+    {
+      "url": "/bolets/cep",
+      "width": 412,
+      "status": 200,
+      "style": {
+        "display": "grid",
+        "background": "rgb(52, 72, 58)",
+        "border": "15px",
+        "width": 364,
+        "overflow": false
+      }
+    },
+    {
+      "url": "/compare",
+      "width": 412,
+      "navigation": true,
+      "display": "grid"
+    },
+    {
+      "url": "/joc",
+      "width": 412,
+      "navigation": true,
+      "display": "block"
+    },
+    {
+      "url": "/parts-dun-bolet",
+      "width": 412,
+      "navigation": true,
+      "display": "block"
+    },
+    {
+      "width": 412,
+      "errors": []
+    }
+  ]
+}

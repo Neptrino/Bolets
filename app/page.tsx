@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { IntentLink as Link } from "@/components/intent-link";
 import type { Metadata } from "next";
 import { ArrowDown, ArrowUpRight, BookOpenText, CalendarDays, CloudRain, Leaf, Map, Snowflake, Sparkles, Sun, Trees } from "lucide-react";
 import { SpeciesCard } from "@/components/species-card";

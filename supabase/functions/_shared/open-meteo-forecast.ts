@@ -20,10 +20,9 @@ import {
   projectedSoilTrend,
 } from "./open-meteo-series.ts";
 
-function normalizedValuesAtTarget(
+function normalizedSeries(
   atmosphere: OpenMeteoLocation,
   soil: OpenMeteoLocation,
-  target: number,
   historicalAtmosphere?: OpenMeteoLocation,
   atmosphericCutover?: number,
 ) {
@@ -40,6 +39,14 @@ function normalizedValuesAtTarget(
   const precipitation = atmosphericSeries("precipitation");
   const evapotranspiration = atmosphericSeries("et0_fao_evapotranspiration");
   const soilMoisture = hourlySeries(soil, "soil_moisture_3_to_9cm");
+  return {
+    temperature, humidity, wind, gusts, precipitation, evapotranspiration, soilMoisture,
+    elevation: atmosphere.elevation,
+  };
+}
+
+function normalizedValuesAtTarget(series: ReturnType<typeof normalizedSeries>, target: number) {
+  const { temperature, humidity, wind, gusts, precipitation, evapotranspiration, soilMoisture } = series;
   const temperature7d = completeSummary(temperature, target, 168);
   const temperature14d = completeSummary(temperature, target, 336);
   const temperature20d = completeSummary(temperature, target, 480);
@@ -68,7 +75,7 @@ function normalizedValuesAtTarget(
     frostHours14d: temperature14d.values?.filter((value) => value <= 0).length,
     heatHours14d: temperature14d.values?.filter((value) => value >= HEAT_HOUR_THRESHOLD_C).length,
     temperatureAvg20dC: temperature20d.average,
-    thermalExposure: buildThermalExposure(temperature20d.values, atmosphere.elevation),
+    thermalExposure: buildThermalExposure(temperature20d.values, series.elevation),
     ...heatDegreeHoursFromTemperatures(temperature20d.values),
     frostHours20d: temperature20d.values?.filter((value) => value <= 0).length,
     heatHours20d: temperature20d.values?.filter((value) => value >= HEAT_HOUR_THRESHOLD_C).length,
@@ -125,8 +132,8 @@ export function normalizeOpenMeteoAt(
   if (!Number.isFinite(targetMilliseconds)) throw new Error("Historical snapshot target is invalid");
   const target = Math.floor(targetMilliseconds / 3_600_000) * 3600;
   const values = profile === "atmosphere"
-    ? normalizedValuesAtTarget(location, {}, target)
-    : normalizedValuesAtTarget({}, location, target);
+    ? normalizedValuesAtTarget(normalizedSeries(location, {}), target)
+    : normalizedValuesAtTarget(normalizedSeries({}, location), target);
   const required = profile === "atmosphere" ? requiredAtmosphericFields : requiredSoilFields;
   return {
     values,
@@ -188,15 +195,12 @@ export function normalizeOpenMeteoForecast(
     };
   }
 
+  // The issuance and observed/forecast cutover are identical for every horizon.
+  // Index and merge their hourly inputs once, then reuse the read-only maps.
+  const series = normalizedSeries(atmosphere, soil, historicalAtmosphere, baseHour);
   const output = FORECAST_OUTPUT_HOURS.map((horizonHours) => {
     const target = baseHour! + horizonHours * 3600;
-    const values = normalizedValuesAtTarget(
-      atmosphere,
-      soil,
-      target,
-      historicalAtmosphere,
-      baseHour,
-    );
+    const values = normalizedValuesAtTarget(series, target);
     // The soil-moisture forecast model reaches only about seven days, so
     // outlook horizons past the core would always miss the soil windows.
     // Scoring runs at soil weight zero and tolerates their absence; when a

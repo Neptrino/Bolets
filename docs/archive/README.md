@@ -6,6 +6,9 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [Frontend performance: PageSpeed audit and local optimization — 12 September 2026](frontend-performance-2026-09-12.md)
+- [Forecast CPU cancellations and local optimization — 12 September 2026](forecast-cpu-investigation-2026-09-12.md)
+
 - [Spatial memory and publication caching: local verification — 11 September 2026](spatial-memory-fix-2026-09-11.md)
 - [Umami performance and Edge worker memory failure — 10 September 2026](umami-performance-investigation-2026-09-10.md)
 - [Heat intensity: boundary check and release — 9 September 2026](heat-intensity-release-2026-09-09.md)
@@ -33,6 +36,9 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 - [Zones hub restructure — proposal](zones-hub-proposal.md)
 
 ## Evidence files
+
+- [frontend-performance-2026-09-12.json](frontend-performance-2026-09-12.json)
+- [forecast-cpu-investigation-2026-09-12.json](forecast-cpu-investigation-2026-09-12.json)
 
 - [spatial-memory-fix-2026-09-11.json](spatial-memory-fix-2026-09-11.json)
 - [umami-performance-investigation-2026-09-10.json](umami-performance-investigation-2026-09-10.json)

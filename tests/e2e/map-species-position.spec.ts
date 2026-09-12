@@ -1,7 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
 import sharp from "sharp";
 
-test.use({ geolocation: { longitude: 2.1734, latitude: 41.3851 }, permissions: ["geolocation"] });
+// Keep the prediction and tile fixtures observable by Playwright in production
+// builds too; a service worker can otherwise bypass page.route interception.
+test.use({ serviceWorkers: "block", geolocation: { longitude: 2.1734, latitude: 41.3851 }, permissions: ["geolocation"] });
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {

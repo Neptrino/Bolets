@@ -328,6 +328,35 @@ describe("Open-Meteo profiles", () => {
     expect(forecast.points.every((point) => point.unavailableFields.length === 0)).toBe(true);
   });
 
+  it("reuses one issuance without mixing the observed cutover or another location", () => {
+    const { atmosphere, soil, base, hourlyTimes } = forecastFixture();
+    const history = structuredClone(atmosphere);
+    // The latest three history hours are absent, so the cutover moves back.
+    history.hourly!.temperature_2m = hourlyTimes.map((time) =>
+      time > base - 3 * 3600 ? undefined : 8
+    );
+    const generatedAt = new Date(base * 1000).toISOString();
+    const forecast = normalizeOpenMeteoForecast(atmosphere, soil, generatedAt, history);
+    expect(forecast.baseline?.validAt).toBe(new Date((base - 3 * 3600) * 1000).toISOString());
+    expect(forecast.baseline?.values.temperatureC).toBe(8);
+    for (const point of forecast.points) {
+      // Future hours use the forecast, even before the issuance's wall time.
+      const futureHours = point.horizonHours;
+      expect(point.values.temperatureAvg20dC).toBe(
+        ((480 - futureHours) * 8 + futureHours * 14 + (futureHours >= 48 ? 3 : 0)) / 480,
+      );
+    }
+
+    // Reusing a caller-owned location after a provider revision must index the
+    // new values; these maps are issuance-local, never a cross-request cache.
+    history.hourly!.temperature_2m = hourlyTimes.map(() => 5);
+    const revised = normalizeOpenMeteoForecast(atmosphere, soil, generatedAt, history);
+    expect(revised.baseline?.validAt).toBe(new Date(base * 1000).toISOString());
+    expect(revised.baseline?.values.temperatureC).toBe(5);
+    expect(revised.baseline?.values.temperatureAvg20dC).toBe(5);
+    expect(forecast.baseline?.values.temperatureC).toBe(8);
+  });
+
   it("withholds hybrid temperature windows when verified history has a gap", () => {
     const { atmosphere, soil, base } = forecastFixture();
     const history: OpenMeteoLocation = {

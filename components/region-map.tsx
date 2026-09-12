@@ -6,6 +6,7 @@ import {
   type Map as MapLibreMap,
   type MapMouseEvent,
 } from "maplibre-gl";
+import { createProgressiveUpdate } from "@/components/region-map/progressive-update";
 import { createRegionMap } from "@/components/region-map/map-instance";
 import { fetchPredictionCellDetail } from "@/components/region-map/prediction-detail";
 import { predictionQueryBounds } from "@/components/region-map/smoothed-viewport";
@@ -681,6 +682,7 @@ export function RegionMap({
     const controller = new AbortController();
     request.current = controller;
 
+    let cancelProgress = () => {};
     const loadCells = async () => {
       const gridSizeM = viewportGridSize();
       const viewportBounds = visibleSpatialBounds(localMap);
@@ -698,6 +700,7 @@ export function RegionMap({
         requestKey === completedRequestKey.current
       )
         return;
+      cancelProgress();
       activeRequestKey.current = requestKey;
       batchId.current += 1;
       const batch = batchId.current;
@@ -723,6 +726,15 @@ export function RegionMap({
         ],
       );
       const truncatedBuckets = { any: false };
+      const progress = createProgressiveUpdate(() => {
+        if (!isCurrent() || timelineRun) return;
+        repaint();
+        const partialCoverage = summarizeBucketCoverage(cellsById.current.values(), {
+          truncated: truncatedBuckets.any, failed: 0,
+        });
+        setCellState({ ...partialCoverage, status: "loading", gridSizeM });
+      });
+      cancelProgress = progress.cancel;
       try {
         const { failed } = await loadBucketedCells<PredictionMapCell>(
           missing,
@@ -736,24 +748,15 @@ export function RegionMap({
               payload.cells,
               showTimeline ? 512 : 240,
             );
-            if (isCurrent() && !timelineRun) {
-              repaint();
-              const partialCoverage = summarizeBucketCoverage(
-                cellsById.current.values(),
-                { truncated: truncatedBuckets.any, failed: 0 },
-              );
-              setCellState({
-                ...partialCoverage,
-                status: "loading",
-                gridSizeM,
-              });
-            }
+            if (isCurrent() && !timelineRun) progress.schedule();
           },
           { inFlight: inFlightBuckets.current, networkGate: bucketNetworkGate.current,
             persistAfterAbort: !timelineRun, retryPasses: 2 },
         );
         if (!isCurrent()) return;
-        if (timelineRun) repaint();
+        progress.cancel();
+        // Always include the last arrivals before publishing final coverage.
+        repaint();
 
         const stillMissing = urls.filter((url) => !bucketCells.current.has(url)).length;
         // A viewport that resolved nothing at all is an error; one that
@@ -790,6 +793,7 @@ export function RegionMap({
           });
         }
       } finally {
+        progress.cancel();
         // A superseded batch must still release the key, or the viewport it
         // was replaced by matches it and never loads.
         if (activeRequestKey.current === requestKey)
@@ -917,6 +921,7 @@ export function RegionMap({
       activeRequestKey.current = null;
       if (geolocationReloadFrame !== undefined)
         window.cancelAnimationFrame(geolocationReloadFrame);
+      cancelProgress();
       localMap.off("moveend", reloadGeolocatedCells);
       localMap.off("load", activate);
       localMap.off("moveend", loadCells);

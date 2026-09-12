@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { LoaderCircle, Play, RotateCcw } from "lucide-react";
+import { staticMediaVariantPath } from "@/src/lib/static-media";
 import { StaticMediaImage } from "@/components/static-media-image";
 import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
@@ -86,8 +87,8 @@ export function HomeShowcaseVideo() {
           controls={!hydrated || playbackState === "playing"}
           muted
           playsInline
-          preload="metadata"
-          poster={`/media/generated/home-showcase-poster.webp?v=${SHOWCASE_MEDIA_VERSION}`}
+          preload="none"
+          poster={staticMediaVariantPath("/media/generated/home-showcase-poster.webp", 640)}
           aria-label="Presentació de Bolets de Catalunya"
           onTimeUpdate={confirmPlaybackStarted}
           onError={handlePlaybackError}

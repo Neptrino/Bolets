@@ -1,5 +1,7 @@
 "use client";
 
+import "@/app/styles/mushroom-parts-explorer.css";
+
 import { useState, type CSSProperties } from "react";
 import { ScanLine, ShieldAlert, X } from "lucide-react";
 import { SectionHeader } from "@/components/page-layout";

@@ -1,13 +1,12 @@
 "use client";
 
-import * as tus from "tus-js-client";
 import { publicSupabaseConfig } from "@/src/lib/supabase/config";
-import { createSupabaseBrowserClient } from "@/src/lib/supabase/client";
 import { deleteOutboxFinding, listOutboxFindings, updateOutboxFinding } from "@/src/lib/findings/outbox";
 import type { FindingOutboxRecord, FindingPhotoUpload } from "@/src/lib/findings/types";
 import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
-function uploadPhoto(blob: Blob, path: string, accessToken: string) {
+async function uploadPhoto(blob: Blob, path: string, accessToken: string) {
+  const tus = await import("tus-js-client");
   const { url } = publicSupabaseConfig();
   return new Promise<void>((resolve, reject) => {
     const upload = new tus.Upload(blob, {
@@ -60,10 +59,13 @@ async function syncRecord(record: FindingOutboxRecord, accessToken: string, user
 }
 
 export async function syncFindingOutbox(turnstileToken?: string | null) {
-  if (!navigator.onLine) return { synced: 0, pending: (await listOutboxFindings()).length, needsLogin: false, turnstileRequired: false, oneKmAccessUntil: null };
+  const records = await listOutboxFindings();
+  // Most public visitors have no pending finding. They need neither an auth
+  // client nor a resumable upload library just to read the atlas.
+  if (!records.length || !navigator.onLine) return { synced: 0, pending: records.length, needsLogin: false, turnstileRequired: false, oneKmAccessUntil: null };
+  const { createSupabaseBrowserClient } = await import("@/src/lib/supabase/client");
   const client = createSupabaseBrowserClient();
   const { data } = await client.auth.getSession();
-  const records = await listOutboxFindings();
   if (!data.session) return { synced: 0, pending: records.length, needsLogin: records.length > 0, turnstileRequired: false, oneKmAccessUntil: null };
   let synced = 0;
   let oneKmAccessUntil: string | null = null;

@@ -1,0 +1,187 @@
+{
+  "date": "2026-09-12",
+  "productionRevision": "5b1fce37381b3e23bfb128055baa21e5bba391a9",
+  "status": "Local optimization; not deployed by this investigation",
+  "incidents": [
+    {
+      "atUtc": "2026-09-12T00:12:30.688539132Z",
+      "soilRunStartedUtc": "2026-09-12T00:12:29.825952Z"
+    },
+    {
+      "atUtc": "2026-09-12T00:17:32.173065559Z",
+      "soilRunStartedUtc": "2026-09-12T00:17:28.420695Z"
+    }
+  ],
+  "runtime": {
+    "image": "supabase/edge-runtime:v1.74.0",
+    "cpuSoftLimitMs": 5000,
+    "cpuHardLimitMs": 10000,
+    "wallTimeoutMs": 150000,
+    "soilMaxPasses": 5,
+    "soilPassDelayMs": 25000
+  },
+  "pipeline": {
+    "forecastCompletedUtc": "2026-09-12T00:21:59.333034Z",
+    "conditionsPublishedUtc": "2026-09-12T03:01:00.018043Z",
+    "atmosphereFailures": 5,
+    "soilPartialRuns": 1,
+    "otherFailureCause": "Open-Meteo HTTP 503; subsequent retries succeeded",
+    "unfinishedSoilRuns": 2
+  },
+  "publicTraffic": {
+    "checkedAtUtc": "2026-09-12T19:34:00Z",
+    "window": "2026-09-12 Europe/Madrid day through check",
+    "mapDataRequests": 8935,
+    "mapDataHttp200": 8935,
+    "mapDataP95Ms": 143.9,
+    "mapDataP99Ms": 545.4,
+    "memoryLimitErrorsSinceDeployment": 0,
+    "cpuHardLimitEventsSinceDeployment": 2,
+    "cpuSoftLimitEventsSinceDeployment": 94
+  },
+  "benchmark": {
+    "parityCases": 14,
+    "pointsPerBatch": 50,
+    "before": [
+      {
+        "cpuMs": 440.378,
+        "wallMs": 435.4538749999999
+      },
+      {
+        "cpuMs": 443.251,
+        "wallMs": 440.02970800000026
+      },
+      {
+        "cpuMs": 433.566,
+        "wallMs": 430.7324999999996
+      },
+      {
+        "cpuMs": 462.479,
+        "wallMs": 445.95966599999974
+      },
+      {
+        "cpuMs": 448.926,
+        "wallMs": 444.5535410000002
+      },
+      {
+        "cpuMs": 447.377,
+        "wallMs": 440.7673329999998
+      },
+      {
+        "cpuMs": 465.823,
+        "wallMs": 444.84691699999985
+      }
+    ],
+    "after": [
+      {
+        "cpuMs": 143.202,
+        "wallMs": 139.09525000000008
+      },
+      {
+        "cpuMs": 149.07,
+        "wallMs": 147.89779199999998
+      },
+      {
+        "cpuMs": 144.477,
+        "wallMs": 142.475958
+      },
+      {
+        "cpuMs": 146.118,
+        "wallMs": 143.98229100000026
+      },
+      {
+        "cpuMs": 142.758,
+        "wallMs": 139.0864999999999
+      },
+      {
+        "cpuMs": 136.397,
+        "wallMs": 134.7219580000001
+      },
+      {
+        "cpuMs": 147.021,
+        "wallMs": 144.89333299999998
+      }
+    ],
+    "beforeMedianCpuMs": 447.377,
+    "afterMedianCpuMs": 144.477,
+    "cpuReductionPercent": 67.70576046600519
+  },
+  "runtimeNote": "Node 24.19.0 on local macOS; synthetic inputs; not production Edge CPU totals. All values deeply equal against the pre-change module in 14 scenarios.",
+  "benchmarkSource": "import assert from 'node:assert/strict';\nimport { writeFileSync } from 'node:fs';\nimport { normalizeOpenMeteoForecast as before } from './baseline-forecast.mts';\nimport { normalizeOpenMeteoForecast as after } from '../../supabase/functions/_shared/open-meteo-forecast.ts';\nconst generatedAt = '2026-09-12T00:06:00Z';\nconst base = Date.parse('2026-09-12T00:00:00Z') / 1000;\nfunction fixture(point: number, iso = false) {\n  const hours = Array.from({ length: 1056 }, (_, i) => base + (i - 719) * 3600);\n  const time = iso ? hours.map(t => new Date(t * 1000).toISOString()) : hours;\n  const atmosphere = { elevation: 700 + point * 10, hourly: { time,\n    temperature_2m: hours.map((_, i) => 14 + Math.sin(i / 7) * 20),\n    relative_humidity_2m: hours.map((_, i) => 60 + Math.sin(i) * 30),\n    wind_speed_10m: hours.map((_, i) => 7 + (i % 5)),\n    wind_gusts_10m: hours.map((_, i) => 17 + (i % 9)),\n    precipitation: hours.map((_, i) => i % 37 === 0 ? 1.7 : 0),\n    et0_fao_evapotranspiration: hours.map((_, i) => 0.03 + (i % 5) / 100),\n  }};\n  const soil = { hourly: { time, soil_moisture_3_to_9cm: hours.map((_, i) => .2 + Math.sin(i) / 20) }};\n  const history = structuredClone(atmosphere);\n  history.hourly.temperature_2m = hours.map((_, i) => 12 + Math.sin(i / 6) * 17);\n  history.hourly.precipitation = hours.map((_, i) => i % 23 === 0 ? .9 : 0);\n  return { atmosphere, soil, history };\n}\nconst fixtures = Array.from({ length: 50 }, (_, i) => fixture(i));\nfor (const iso of [false, true]) {\n  for (const variant of ['complete', 'gap', 'duplicate', 'cutover', 'no-history', 'short-soil', 'missing-base']) {\n    const f = fixture(0, iso);\n    if (variant === 'gap') f.history.hourly.temperature_2m[100] = NaN;\n    if (variant === 'duplicate') f.atmosphere.hourly.time[750] = f.atmosphere.hourly.time[751];\n    if (variant === 'cutover') f.history.hourly.temperature_2m[719] = NaN;\n    if (variant === 'short-soil') f.soil.hourly.soil_moisture_3_to_9cm.length = 880;\n    if (variant === 'missing-base') f.soil.hourly.soil_moisture_3_to_9cm.fill(NaN, 713, 720);\n    const h = variant === 'no-history' ? undefined : f.history;\n    assert.deepStrictEqual(after(f.atmosphere, f.soil, generatedAt, h), before(f.atmosphere, f.soil, generatedAt, h));\n  }\n}\nfunction batch(fn: typeof before) {\n  const start = process.cpuUsage();\n  const t = performance.now();\n  for (const f of fixtures) fn(f.atmosphere, f.soil, generatedAt, f.history);\n  const cpu = process.cpuUsage(start);\n  return { cpuMs: (cpu.user + cpu.system) / 1000, wallMs: performance.now() - t };\n}\nbatch(before); batch(after);\nconst results = { parityCases: 14, pointsPerBatch: 50, before: [], after: [] } as { parityCases: number; pointsPerBatch: number; before: unknown[]; after: unknown[] };\nfor (let i = 0; i < 7; i++) {\n  if (i % 2) { results.after.push(batch(after)); results.before.push(batch(before)); }\n  else { results.before.push(batch(before)); results.after.push(batch(after)); }\n}\nwriteFileSync(new URL('./forecast-benchmark.json', import.meta.url), JSON.stringify(results, null, 2));\nconsole.log(JSON.stringify(results));\n",
+  "baselinePreparation": "Save benchmarkSource as artifacts/cpu-investigation-2026-09-12/benchmark.mts. Read supabase/functions/_shared/open-meteo-forecast.ts from productionRevision with git show; replace its relative ./ imports with absolute paths to the checkout supabase/functions/_shared/ directory; save alongside as baseline-forecast.mts. Run with Node 24. Compare this unchanged shared-dependency baseline with the optimized checkout.",
+  "rainBenchmark": {
+    "pointsPerBatch": 50,
+    "stations": 180,
+    "hours": 720,
+    "before": [
+      {
+        "cpuMs": 37.84,
+        "wallMs": 38.53854200000001
+      },
+      {
+        "cpuMs": 37.528,
+        "wallMs": 37.513000000000034
+      },
+      {
+        "cpuMs": 35.991,
+        "wallMs": 35.859916999999996
+      },
+      {
+        "cpuMs": 36.567,
+        "wallMs": 36.50604199999998
+      },
+      {
+        "cpuMs": 36.408,
+        "wallMs": 36.33441699999992
+      },
+      {
+        "cpuMs": 38.391,
+        "wallMs": 38.25262500000008
+      },
+      {
+        "cpuMs": 39.702,
+        "wallMs": 40.42045900000005
+      }
+    ],
+    "after": [
+      {
+        "cpuMs": 37.123,
+        "wallMs": 36.330499999999915
+      },
+      {
+        "cpuMs": 36.51,
+        "wallMs": 36.34725000000003
+      },
+      {
+        "cpuMs": 37.495,
+        "wallMs": 37.38033400000006
+      },
+      {
+        "cpuMs": 36.142,
+        "wallMs": 36.13945799999999
+      },
+      {
+        "cpuMs": 36.77,
+        "wallMs": 36.69445799999994
+      },
+      {
+        "cpuMs": 34.566,
+        "wallMs": 34.534124999999904
+      },
+      {
+        "cpuMs": 38.584,
+        "wallMs": 38.49566699999991
+      }
+    ]
+  },
+  "rainNote": "Both implementations unchanged; approximately 37 ms CPU per synthetic 50-point batch. Profiled as a lower-priority candidate; no rain calculation changes.",
+  "verification": {
+    "testsPassed": 1525,
+    "testsSkipped": 12,
+    "lint": "passed",
+    "typecheck": "passed",
+    "denoCheck": "passed",
+    "productionBuild": "passed",
+    "generatedPages": 258
+  }
+}

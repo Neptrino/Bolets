@@ -1,3 +1,6 @@
+import "@/app/styles/method-foundation.css";
+import "@/app/styles/method-components.css";
+import "@/app/styles/method-responsive.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
