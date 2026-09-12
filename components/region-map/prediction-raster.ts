@@ -59,7 +59,7 @@ export function coverageAlpha(cell: PredictionMapCell) {
 }
 
 /** Shared Avui/interactive/social raster; no DOM or image-library dependency. */
-export function predictionHeatRaster(
+export function preparePredictionHeatRaster(
   localMap: MapProjection,
   cells: Iterable<PredictionMapCell>,
   width: number,
@@ -75,7 +75,7 @@ export function predictionHeatRaster(
   if (projected.length) {
     const gridSizeM = projected[0].cell.gridSizeM;
     const raster = smoothedViewportRaster(localMap, width, height, gridSizeM);
-    const { scale, width: rasterWidth, height: rasterHeight } = raster;
+    const { scale } = raster;
     const samples: FieldSample[] = projected.map(({ cell, x, y, sigma }) => ({
       x: (x - raster.left) / scale,
       y: (y - raster.top) / scale,
@@ -83,29 +83,36 @@ export function predictionHeatRaster(
       score: cell.score ?? 0,
       alpha: coverageAlpha(cell),
     }));
-    const field = rasterizeSmoothedField(
-      samples,
-      rasterWidth,
-      rasterHeight,
-      // The sigma/spacing ratio is geographic, independent of the first
-      // bucket's position or a clipped border cell's bounding box.
-      fullSupportWeight(smoothingSigmaMetres(gridSizeM), gridSizeM),
-    );
-
-    const colours = heatColours();
-    const pixels = new Uint8ClampedArray(rasterWidth * rasterHeight * 4);
-    for (let index = 0; index < field.score.length; index += 1) {
-      const score = field.score[index];
-      const alpha = field.alpha[index] * Math.min(1, score / LOW_SCORE_FADE);
-      if (alpha <= 0.003) continue;
-      const colour = Math.min(100, Math.max(0, Math.round(score))) * 4;
-      const offset = index * 4;
-      pixels[offset] = colours[colour];
-      pixels[offset + 1] = colours[colour + 1];
-      pixels[offset + 2] = colours[colour + 2];
-      pixels[offset + 3] = Math.round(colours[colour + 3] * alpha);
-    }
-    return { ...raster, pixels };
+    return { raster, samples, supportWeight: fullSupportWeight(smoothingSigmaMetres(gridSizeM), gridSizeM) };
   }
   return null;
+}
+
+export type PreparedHeatRaster = NonNullable<ReturnType<typeof preparePredictionHeatRaster>>;
+export type PredictionHeatRaster = ReturnType<typeof rasterizePreparedHeatRaster>;
+
+/** The worker and signed server maps share this exact pixel calculation. */
+export function rasterizePreparedHeatRaster({ raster, samples, supportWeight }: PreparedHeatRaster) {
+  const { width: rasterWidth, height: rasterHeight } = raster;
+  const field = rasterizeSmoothedField(samples, rasterWidth, rasterHeight, supportWeight);
+
+  const colours = heatColours();
+  const pixels = new Uint8ClampedArray(rasterWidth * rasterHeight * 4);
+  for (let index = 0; index < field.score.length; index += 1) {
+    const score = field.score[index];
+    const alpha = field.alpha[index] * Math.min(1, score / LOW_SCORE_FADE);
+    if (alpha <= 0.003) continue;
+    const colour = Math.min(100, Math.max(0, Math.round(score))) * 4;
+    const offset = index * 4;
+    pixels[offset] = colours[colour];
+    pixels[offset + 1] = colours[colour + 1];
+    pixels[offset + 2] = colours[colour + 2];
+    pixels[offset + 3] = Math.round(colours[colour + 3] * alpha);
+  }
+  return { ...raster, pixels };
+}
+
+export function predictionHeatRaster(localMap: MapProjection, cells: Iterable<PredictionMapCell>, width: number, height: number) {
+  const prepared = preparePredictionHeatRaster(localMap, cells, width, height);
+  return prepared ? rasterizePreparedHeatRaster(prepared) : null;
 }

@@ -1,0 +1,238 @@
+{
+  "revision": "1a8f6abee9410cd72a9f18f4fe8bf72329d8ef05",
+  "workflow": "https://github.com/Neptrino/Bolets/actions/runs/34717602046",
+  "workflowConclusion": "success",
+  "applicationHealth": "healthy",
+  "restarts": 0,
+  "oomKilled": false,
+  "browserChecks": {
+    "at": "2026-09-12T20:43:40.570Z",
+    "pages": [
+      {
+        "width": 390,
+        "path": "/map",
+        "status": 200,
+        "metrics": {
+          "workerUrls": [
+            "/maplibre/6.3.0/maplibre-gl-worker.mjs"
+          ],
+          "workerErrors": [],
+          "replies": 2,
+          "shifts": [
+            {
+              "value": 0.0070812132547000296,
+              "nodes": [
+                "map-detail-panel"
+              ]
+            },
+            {
+              "value": 0.0070812132547000296,
+              "nodes": [
+                "map-detail-panel"
+              ]
+            }
+          ]
+        },
+        "errors": [],
+        "predictions": 42,
+        "failedPredictions": []
+      },
+      {
+        "width": 390,
+        "path": "/bolets-avui",
+        "status": 200,
+        "metrics": {
+          "workerUrls": [
+            "/maplibre/6.3.0/maplibre-gl-worker.mjs"
+          ],
+          "workerErrors": [],
+          "replies": 2,
+          "shifts": []
+        },
+        "errors": [],
+        "predictions": 43,
+        "failedPredictions": [],
+        "tomorrow": true
+      },
+      {
+        "width": 390,
+        "path": "/bolets/cep",
+        "status": 200,
+        "metrics": {
+          "workerUrls": [],
+          "workerErrors": [],
+          "replies": 0,
+          "shifts": []
+        },
+        "hero": "high",
+        "errors": [],
+        "predictions": 0,
+        "failedPredictions": []
+      },
+      {
+        "width": 390,
+        "path": "/bolets/pinetell",
+        "status": 200,
+        "metrics": {
+          "workerUrls": [],
+          "workerErrors": [],
+          "replies": 0,
+          "shifts": []
+        },
+        "hero": "high",
+        "errors": [],
+        "predictions": 0,
+        "failedPredictions": []
+      },
+      {
+        "width": 1350,
+        "path": "/map",
+        "status": 200,
+        "metrics": {
+          "workerUrls": [
+            "/maplibre/6.3.0/maplibre-gl-worker.mjs"
+          ],
+          "workerErrors": [],
+          "replies": 2,
+          "shifts": []
+        },
+        "errors": [],
+        "predictions": 24,
+        "failedPredictions": []
+      },
+      {
+        "width": 1350,
+        "path": "/bolets-avui",
+        "status": 200,
+        "metrics": {
+          "workerUrls": [
+            "/maplibre/6.3.0/maplibre-gl-worker.mjs"
+          ],
+          "workerErrors": [],
+          "replies": 2,
+          "shifts": []
+        },
+        "errors": [],
+        "predictions": 61,
+        "failedPredictions": [],
+        "tomorrow": true
+      },
+      {
+        "width": 1350,
+        "path": "/bolets/cep",
+        "status": 200,
+        "metrics": {
+          "workerUrls": [],
+          "workerErrors": [],
+          "replies": 0,
+          "shifts": []
+        },
+        "hero": "high",
+        "errors": [],
+        "predictions": 0,
+        "failedPredictions": []
+      },
+      {
+        "width": 1350,
+        "path": "/bolets/pinetell",
+        "status": 200,
+        "metrics": {
+          "workerUrls": [],
+          "workerErrors": [],
+          "replies": 0,
+          "shifts": []
+        },
+        "hero": "high",
+        "errors": [],
+        "predictions": 0,
+        "failedPredictions": []
+      }
+    ]
+  },
+  "pageSpeedSnapshots": [
+    {
+      "pageId": 12,
+      "mobile": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Script ran on page and returned:\n```json\n{\"url\":\"https://pagespeed.web.dev/analysis/https-bolets-app-bolets-cep/wgii0ea2jw?form_factor=mobile\",\"text\":\"Diagnose performance issues\\n88\\nPerformance\\n97\\nAccessibility\\n100\\nBest Practices\\n100\\nSEO\\n2/2\\nAgentic Browsing\\n88\\nFCP\\n+9\\nLCP\\n+14\\nTBT\\n+30\\nCLS\\n+25\\nSI\\n+10\\nPerformance\\nValues are estimated and may vary. The performance score is calculated directly from these metrics.See calculator.\\n0–49\\n50–89\\n90–100\\nMETRICS\\nExpand view\\nFirst Contentful Paint\\n1.7 s\\nLargest Contentful Paint\\n3.8 s\\nTotal Blocking Time\\n0 ms\\nCumulative Layout Shift\\n0\\nSpeed Index\\n2.6 s\\nCaptured at Sep 12, 2026, 10:43 PM GMT+2\\nEmulated Moto G Power with Lighthouse 13.4.1\\nSingle page session\\nInitial page load\\nSlow 4G throttling\\nUsing HeadlessChromium 151.0.7922.173 with lr\\nView Treemap\\nShow audits relevant to:\\nAll\\nFCP\\nLCP\\nINSIGHTS\\nImprove image delivery Est savings of 107 KiB\\nRender-blocking requests Est savings of 410 ms\\nLegacy JavaScript Est savings of 24 KiB\\nNetwork dependency tree\\nLCP breakdown\\nThese insights are also available in the Chrome DevTools Performance Panel - record a trace to view more detailed information.\\nDIAGNOSTICS\\nReduce unused CSS Est savings of 51 KiB\\nReduce unused JavaScript Est savings of 81 KiB\\nMore information about the performance of your application. These numbers don't directly affect the Performance score.\\n\"}\n```"
+          }
+        ]
+      },
+      "desktop": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Script ran on page and returned:\n```json\n{\"url\":\"https://pagespeed.web.dev/analysis/https-bolets-app-bolets-cep/wgii0ea2jw?form_factor=desktop\",\"text\":\"PageSpeed Insights\\nCopy Link\\nDocs\\nThis site uses cookies from Google to deliver its services and to analyze traffic.\\nLearn More.\\nOk, Got it.\\nReport from Sep 12, 2026, 10:43:39 PM\\n\\nEnter a valid URL\\n\\nAnalyze\\nsmartphone\\nMobile\\ncomputer\\nDesktop\\nDiscover what your real users are experiencing\\nNo Data\\nDiagnose performance issues\\n100\\nPerformance\\n97\\nAccessibility\\n100\\nBest Practices\\n100\\nSEO\\n2/2\\nAgentic Browsing\\n100\\nFCP\\n+10\\nLCP\\n+25\\nTBT\\n+30\\nCLS\\n+25\\nSI\\n+10\\nPerformance\\nValues are estimated and may vary. The performance score is calculated directly from these metrics.See calculator.\\n0–49\\n50–89\\n90–100\\nMETRICS\\nExpand view\\nFirst Contentful Paint\\n0.4 s\\nLargest Contentful Paint\\n0.7 s\\nTotal Blocking Time\\n0 ms\\nCumulative Layout Shift\\n0\\nSpeed Index\\n0.5 s\\nCaptured at Sep 12, 2026, 10:43 PM GMT+2\\nEmulated Desktop with Lighthouse 13.4.1\\nSingle page session\\nInitial page load\\nCustom throttling\\nUsing HeadlessChromium 151.0.7922.173 with lr\\nView Treemap\\nShow audits relevant to:\\nAll\\nFCP\\nLCP\\nINSIGHTS\\nImprove image delivery Est savings of 72 KiB\\nForced reflow\\nNetwork dependency tree\\nRender-blocking requests Est savings of 20 ms\\nLegacy JavaScript Est savings of 24 KiB\\nLCP breakdown\\nThese insights are also available in the Chrome DevTools Performance Panel - record a trace to view more detailed information.\\nDIAGNOSTICS\\nReduce unused CSS Est savings of 53 KiB\\nReduce unused JavaScript Est savings of 363 KiB\\nMore information about the performance of your application. These numbers don't directly affect the Performance score.\\nPASSED AUDITS (19)\\nShow\\n97\\nAccessibility\\nThese checks highlight opportunities to improve the accessibility of your web app. Automatic detection can only detect a subset of issues and does not guarantee the accessibility of your web app, so manual testing is also encouraged.\\nCONTRAST\\nBackground and foreground colors do not have a sufficient contrast ratio.\\nThese are opportunities to improve the legibility of your content.\\nADDITIONAL ITEMS TO MANUALLY CHECK (10)\\nShow\\nThese items address areas which an automated testing tool cannot cover. Learn more in our guide on conducting an accessibility review.\\nPASSED AUDITS (26)\\nShow\\nNOT APPLICABLE (36)\\nShow\\n100\\nBest Practices\\nTRUST AND SAFETY\\nEnsure CSP is effective against XSS attacks\\nUse a strong HSTS policy\\nEnsure proper origin isolation with COOP\\nMitigate clickjacking with XFO or CSP\\nMitigate DOM-based XSS with Trusted Types\\nBROWSER COMPATIBILITY\\nBaseline Features\\nGENERAL\\nMissing source maps for large first-party JavaScript\\nPASSED AUDITS (12)\\nShow\\nNOT APPLICABLE (2)\\nShow\\n100\\nSEO\\nThese checks ensure that your page is following basic search engine optimization advice. There are many additional factors Lighthouse does not score here that may affect your search ranking, including performance on Core Web Vitals. Learn more about Google Search Essentials.\\nADDITIONAL ITEMS TO MANUALLY CHECK (1)\\nHide\\nStructured data is valid\\nRun these additional validators on your site to check additional SEO best practices.\\nPASSED AUDITS (10)\\nShow\\n2/2\\nAgentic Browsing\\nThese checks ensure high-quality, browsable websites for AI agents and validate the correctness of WebMCP integrations. This category is still under development and subject to change.\\nPASSED AUDITS (2)\\nShow\\nNOT APPLICABLE (4)\\nShow\\nMore on PageSpeed Insights\\nWhat's new\\nDocumentation\\nLearn about Web Performance\\nAsk questions on Stack Overflow\\nMailing list\\nRelated Content\\nUpdates\\nWeb Fundamentals\\nCase Studies\\nPodcasts\\nConnect\\nTwitter\\nYoutube\\nChrome\\nFirebase\\nAll products\\nTerms and Privacy Policy\\nFor details, see the Google Developers Site Policies.\"}\n```"
+          }
+        ]
+      }
+    },
+    {
+      "pageId": 13,
+      "mobile": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Script ran on page and returned:\n```json\n{\"url\":\"https://pagespeed.web.dev/analysis/https-bolets-app-map/1r20srq1bb?form_factor=mobile\",\"text\":\"Diagnose performance issues\\n74\\nPerformance\\n100\\nAccessibility\\n96\\nBest Practices\\n100\\nSEO\\n2/2\\nAgentic Browsing\\n74\\nFCP\\n+9\\nLCP\\n+19\\nTBT\\n+15\\nCLS\\n+25\\nSI\\n+6\\nPerformance\\nValues are estimated and may vary. The performance score is calculated directly from these metrics.See calculator.\\n0–49\\n50–89\\n90–100\\nMETRICS\\nExpand view\\nFirst Contentful Paint\\n1.7 s\\nLargest Contentful Paint\\n3.2 s\\nTotal Blocking Time\\n600 ms\\nCumulative Layout Shift\\n0.007\\nSpeed Index\\n5.1 s\\nCaptured at Sep 12, 2026, 10:43 PM GMT+2\\nEmulated Moto G Power with Lighthouse 13.4.1\\nSingle page session\\nInitial page load\\nSlow 4G throttling\\nUsing HeadlessChromium 151.0.7922.173 with lr\\nView Treemap\\nShow audits relevant to:\\nAll\\nFCP\\nLCP\\nTBT\\nCLS\\nINSIGHTS\\nRender-blocking requests Est savings of 280 ms\\nLegacy JavaScript Est savings of 24 KiB\\nNetwork dependency tree\\nLayout shift culprits\\nLCP breakdown\\nThese insights are also available in the Chrome DevTools Performance Panel - record a trace to view more detailed information.\\nDIAGNOSTICS\\nMinimize main-thread work 2.6 s\\nReduce unused CSS Est savings of 56 KiB\\nReduce unused JavaScript Est savings of 294 KiB\\nAvoid long main-thread tasks 14 long tasks found\\nMore information about the performance of your application. These numbers don't directly affect the Performance score.\\n\"}\n```"
+          }
+        ]
+      },
+      "desktop": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Script ran on page and returned:\n```json\n{\"url\":\"https://pagespeed.web.dev/analysis/https-bolets-app-map/1r20srq1bb?form_factor=desktop\",\"text\":\"PageSpeed Insights\\nCopy Link\\nDocs\\nThis site uses cookies from Google to deliver its services and to analyze traffic.\\nLearn More.\\nOk, Got it.\\nReport from Sep 12, 2026, 10:43:40 PM\\n\\nEnter a valid URL\\n\\nAnalyze\\nsmartphone\\nMobile\\ncomputer\\nDesktop\\nDiscover what your real users are experiencing\\nNo Data\\nDiagnose performance issues\\n66\\nPerformance\\n100\\nAccessibility\\n96\\nBest Practices\\n100\\nSEO\\n2/2\\nAgentic Browsing\\n66\\nFCP\\n+10\\nLCP\\n+25\\nTBT\\n+0\\nCLS\\n+25\\nSI\\n+6\\nPerformance\\nValues are estimated and may vary. The performance score is calculated directly from these metrics.See calculator.\\n0–49\\n50–89\\n90–100\\nMETRICS\\nExpand view\\nFirst Contentful Paint\\n0.5 s\\nLargest Contentful Paint\\n0.7 s\\nTotal Blocking Time\\n1,530 ms\\nCumulative Layout Shift\\n0\\nSpeed Index\\n1.9 s\\nCaptured at Sep 12, 2026, 10:43 PM GMT+2\\nEmulated Desktop with Lighthouse 13.4.1\\nSingle page session\\nInitial page load\\nCustom throttling\\nUsing HeadlessChromium 151.0.7922.173 with lr\\nView Treemap\\nShow audits relevant to:\\nAll\\nFCP\\nLCP\\nTBT\\nINSIGHTS\\nRender-blocking requests Est savings of 30 ms\\nLegacy JavaScript Est savings of 24 KiB\\nForced reflow\\nNetwork dependency tree\\nLCP breakdown\\nThese insights are also available in the Chrome DevTools Performance Panel - record a trace to view more detailed information.\\nDIAGNOSTICS\\nMinimize main-thread work 3.9 s\\nReduce JavaScript execution time 1.9 s\\nReduce unused JavaScript Est savings of 294 KiB\\nReduce unused CSS Est savings of 57 KiB\\nAvoid long main-thread tasks 20 long tasks found\\nMore information about the performance of your application. These numbers don't directly affect the Performance score.\\nPASSED AUDITS (17)\\nShow\\n100\\nAccessibility\\nThese checks highlight opportunities to improve the accessibility of your web app. Automatic detection can only detect a subset of issues and does not guarantee the accessibility of your web app, so manual testing is also encouraged.\\nADDITIONAL ITEMS TO MANUALLY CHECK (10)\\nHide\\nInteractive controls are keyboard focusable\\nInteractive elements indicate their purpose and state\\nThe page has a logical tab order\\nVisual order on the page follows DOM order\\nUser focus is not accidentally trapped in a region\\nThe user's focus is directed to new content added to the page\\nHTML5 landmark elements are used to improve navigation\\nOffscreen content is hidden from assistive technology\\nCustom controls have associated labels\\nCustom controls have ARIA roles\\nThese items address areas which an automated testing tool cannot cover. Learn more in our guide on conducting an accessibility review.\\nPASSED AUDITS (21)\\nShow\\nNOT APPLICABLE (42)\\nShow\\n96\\nBest Practices\\nTRUST AND SAFETY\\nRequests the geolocation permission on page load\\nEnsure CSP is effective against XSS attacks\\nUse a strong HSTS policy\\nEnsure proper origin isolation with COOP\\nMitigate clickjacking with XFO or CSP\\nMitigate DOM-based XSS with Trusted Types\\nBROWSER COMPATIBILITY\\nBaseline Features\\nGENERAL\\nMissing source maps for large first-party JavaScript\\nPASSED AUDITS (11)\\nShow\\nNOT APPLICABLE (2)\\nShow\\n100\\nSEO\\nThese checks ensure that your page is following basic search engine optimization advice. There are many additional factors Lighthouse does not score here that may affect your search ranking, including performance on Core Web Vitals. Learn more about Google Search Essentials.\\nADDITIONAL ITEMS TO MANUALLY CHECK (1)\\nHide\\nStructured data is valid\\nRun these additional validators on your site to check additional SEO best practices.\\nPASSED AUDITS (9)\\nShow\\nNOT APPLICABLE (1)\\nShow\\n2/2\\nAgentic Browsing\\nThese checks ensure high-quality, browsable websites for AI agents and validate the correctness of WebMCP integrations. This category is still under development and subject to change.\\nPASSED AUDITS (2)\\nShow\\nNOT APPLICABLE (4)\\nShow\\nMore on PageSpeed Insights\\nWhat's new\\nDocumentation\\nLearn about Web Performance\\nAsk questions on Stack Overflow\\nMailing list\\nRelated Content\\nUpdates\\nWeb Fundamentals\\nCase Studies\\nPodcasts\\nConnect\\nTwitter\\nYoutube\\nChrome\\nFirebase\\nAll products\\nTerms and Privacy Policy\\nFor details, see the Google Developers Site Policies.\"}\n```"
+          }
+        ]
+      }
+    },
+    {
+      "pageId": 14,
+      "mobile": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Script ran on page and returned:\n```json\n{\"url\":\"https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/70h6fgpr9h?form_factor=mobile\",\"text\":\"PageSpeed Insights\\nCopy Link\\nDocs\\nThis site uses cookies from Google to deliver its services and to analyze traffic.\\nLearn More.\\nOk, Got it.\\nReport from Sep 12, 2026, 10:43:40 PM\\n\\nEnter a valid URL\\n\\nAnalyze\\nsmartphone\\nMobile\\ncomputer\\nDesktop\\nDiscover what your real users are experiencing\\nThis URL\\nOrigin\\nCore Web Vitals Assessment: \\nPassed\\nExpand view\\nLargest Contentful Paint (LCP)\\n1.6 s\\nInteraction to Next Paint (INP)\\nN/A\\nCumulative Layout Shift (CLS)\\n0.02\\nOTHER NOTABLE METRICS\\nFirst Contentful Paint (FCP)\\n1.6 s\\nTime to First Byte (TTFB)\\n0.6 s\\nLatest 28-day period\\n(\\nhistory\\n)\\nVarious mobile devices\\nMany samples (\\nChrome UX Report\\n)\\nFull visit durations\\nVarious network connections\\nAll Chrome versions\\nDiagnose performance issues\\n79\\nPerformance\\n97\\nAccessibility\\n100\\nBest Practices\\n100\\nSEO\\n2/2\\nAgentic Browsing\\n79\\nFCP\\n+10\\nLCP\\n+13\\nTBT\\n+23\\nCLS\\n+25\\nSI\\n+9\\nPerformance\\nValues are estimated and may vary. The performance score is calculated directly from these metrics.See calculator.\\n0–49\\n50–89\\n90–100\\nMETRICS\\nExpand view\\nFirst Contentful Paint\\n1.4 s\\nLargest Contentful Paint\\n3.9 s\\nTotal Blocking Time\\n330 ms\\nCumulative Layout Shift\\n0\\nSpeed Index\\n3.7 s\\nCaptured at Sep 12, 2026, 10:43 PM GMT+2\\nEmulated Moto G Power with Lighthouse 13.4.1\\nSingle page session\\nInitial page load\\nSlow 4G throttling\\nUsing HeadlessChromium 151.0.7922.173 with lr\\nView Treemap\\nShow audits relevant to:\\nAll\\nFCP\\nLCP\\nTBT\\nINSIGHTS\\nRender-blocking requests Est savings of 1,100 ms\\nNetwork dependency tree\\nLegacy JavaScript Est savings of 24 KiB\\nLCP breakdown\\nThese insights are also available in the Chrome DevTools Performance Panel - record a trace to view more detailed information.\\nDIAGNOSTICS\\nReduce unused JavaScript Est savings of 268 KiB\\nMinimize main-thread work 2.3 s\\nReduce unused CSS Est savings of 57 KiB\\nAvoid long main-thread tasks 14 long tasks found\\nMore information about the performance of your application. These numbers don't directly affect the Performance score.\\nPASSED AUDITS (19)\\nShow\\n97\\nAccessibility\\nThese checks highlight opportunities to improve the accessibility of your web app. Automatic detection can only detect a subset of issues and does not guarantee the accessibility of your web app, so manual testing is also encouraged.\\nCONTRAST\\nBackground and foreground colors do not have a sufficient contrast ratio.\\nThese are opportunities to improve the legibility of your content.\\nBEST PRACTICES\\nIdentical links have the same purpose.\\nThese items highlight common accessibility best practices.\\nADDITIONAL ITEMS TO MANUALLY CHECK (10)\\nShow\\nThese items address areas which an automated testing tool cannot cover. Learn more in our guide on conducting an accessibility review.\\nPASSED AUDITS (26)\\nShow\\nNOT APPLICABLE (35)\\nShow\\n100\\nBest Practices\\nTRUST AND SAFETY\\nEnsure CSP is effective against XSS attacks\\nUse a strong HSTS policy\\nEnsure proper origin isolation with COOP\\nMitigate clickjacking with XFO or CSP\\nMitigate DOM-based XSS with Trusted Types\\nBROWSER COMPATIBILITY\\nBaseline Features\\nGENERAL\\nMissing source maps for large first-party JavaScript\\nPASSED AUDITS (12)\\nShow\\nNOT APPLICABLE (2)\\nShow\\n100\\nSEO\\nThese checks ensure that your page is following basic search engine optimization advice. There are many additional factors Lighthouse does not score here that may affect your search ranking, including performance on Core Web Vitals. Learn more about Google Search Essentials.\\nADDITIONAL ITEMS TO MANUALLY CHECK (1)\\nHide\\nStructured data is valid\\nRun these additional validators on your site to check additional SEO best practices.\\nPASSED AUDITS (9)\\nShow\\nNOT APPLICABLE (1)\\nShow\\n2/2\\nAgentic Browsing\\nThese checks ensure high-quality, browsable websites for AI agents and validate the correctness of WebMCP integrations. This category is still under development and subject to change.\\nPASSED AUDITS (2)\\nShow\\nNOT APPLICABLE (4)\\nShow\\nMore on PageSpeed Insights\\nWhat's new\\nDocumentation\\nLearn about Web Performance\\nAsk questions on Stack Overflow\\nMailing list\\nRelated Content\\nUpdates\\nWeb Fundamentals\\nCase Studies\\nPodcasts\\nConnect\\nTwitter\\nYoutube\\nChrome\\nFirebase\\nAll products\\nTerms and Privacy Policy\\nFor details, see the Google Developers Site Policies.\"}\n```"
+          }
+        ]
+      },
+      "desktop": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Script ran on page and returned:\n```json\n{\"url\":\"https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/70h6fgpr9h?form_factor=desktop\",\"text\":\"PageSpeed Insights\\nCopy Link\\nDocs\\nThis site uses cookies from Google to deliver its services and to analyze traffic.\\nLearn More.\\nOk, Got it.\\nReport from Sep 12, 2026, 10:43:40 PM\\n\\nEnter a valid URL\\n\\nAnalyze\\nsmartphone\\nMobile\\ncomputer\\nDesktop\\nDiscover what your real users are experiencing\\nNo Data\\nDiagnose performance issues\\nOops! Something went wrong.\\ngeneric::internal: Unhandled exception in driver, line 1067: Uncaught (in promise) Error: Protocol error (Runtime.evaluate): Protocol error (Runtime.evaluate): Target closed at LighthouseError.fromProtocolMessage (<anonymous>:1067:436) at <anonymous>:2440:207 at async ExecutionContext._evaluateInContext (<anonymous>:1748:169) at async ExecutionContext.evaluateAsync (<anonymous>:1750:435) at async checkForQuiet (<anonymous>:1781:79)\\nMore on PageSpeed Insights\\nWhat's new\\nDocumentation\\nLearn about Web Performance\\nAsk questions on Stack Overflow\\nMailing list\\nRelated Content\\nUpdates\\nWeb Fundamentals\\nCase Studies\\nPodcasts\\nConnect\\nTwitter\\nYoutube\\nChrome\\nFirebase\\nAll products\\nTerms and Privacy Policy\\nFor details, see the Google Developers Site Policies.\"}\n```"
+          }
+        ]
+      }
+    },
+    {
+      "pageId": 15,
+      "mobile": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Script ran on page and returned:\n```json\n{\"url\":\"https://pagespeed.web.dev/analysis/https-bolets-app-bolets-pinetell/fidal8jsto?form_factor=mobile\",\"text\":\"Diagnose performance issues\\n88\\nPerformance\\n97\\nAccessibility\\n100\\nBest Practices\\n100\\nSEO\\n2/2\\nAgentic Browsing\\n88\\nFCP\\n+9\\nLCP\\n+16\\nTBT\\n+30\\nCLS\\n+25\\nSI\\n+8\\nPerformance\\nValues are estimated and may vary. The performance score is calculated directly from these metrics.See calculator.\\n0–49\\n50–89\\n90–100\\nMETRICS\\nExpand view\\nFirst Contentful Paint\\n1.7 s\\nLargest Contentful Paint\\n3.5 s\\nTotal Blocking Time\\n40 ms\\nCumulative Layout Shift\\n0\\nSpeed Index\\n4.3 s\\nCaptured at Sep 12, 2026, 10:43 PM GMT+2\\nEmulated Moto G Power with Lighthouse 13.4.1\\nSingle page session\\nInitial page load\\nSlow 4G throttling\\nUsing HeadlessChromium 151.0.7922.173 with lr\\nView Treemap\\nShow audits relevant to:\\nAll\\nFCP\\nLCP\\nTBT\\nINSIGHTS\\nImprove image delivery Est savings of 59 KiB\\nLegacy JavaScript Est savings of 24 KiB\\nRender-blocking requests Est savings of 330 ms\\nLCP breakdown\\nNetwork dependency tree\\nOptimize DOM size\\nThese insights are also available in the Chrome DevTools Performance Panel - record a trace to view more detailed information.\\nDIAGNOSTICS\\nReduce unused CSS Est savings of 51 KiB\\nReduce unused JavaScript Est savings of 81 KiB\\nAvoid long main-thread tasks 1 long task found\\nMore information about the performance of your application. These numbers don't directly affect the Performance score.\\n\"}\n```"
+          }
+        ]
+      },
+      "desktop": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Script ran on page and returned:\n```json\n{\"url\":\"https://pagespeed.web.dev/analysis/https-bolets-app-bolets-pinetell/fidal8jsto?form_factor=desktop\",\"text\":\"PageSpeed Insights\\nCopy Link\\nDocs\\nThis site uses cookies from Google to deliver its services and to analyze traffic.\\nLearn More.\\nOk, Got it.\\nReport from Sep 12, 2026, 10:43:40 PM\\n\\nEnter a valid URL\\n\\nAnalyze\\nsmartphone\\nMobile\\ncomputer\\nDesktop\\nDiscover what your real users are experiencing\\nNo Data\\nDiagnose performance issues\\n100\\nPerformance\\n97\\nAccessibility\\n100\\nBest Practices\\n100\\nSEO\\n2/2\\nAgentic Browsing\\n100\\nFCP\\n+10\\nLCP\\n+25\\nTBT\\n+30\\nCLS\\n+25\\nSI\\n+10\\nPerformance\\nValues are estimated and may vary. The performance score is calculated directly from these metrics.See calculator.\\n0–49\\n50–89\\n90–100\\nMETRICS\\nExpand view\\nFirst Contentful Paint\\n0.5 s\\nLargest Contentful Paint\\n0.6 s\\nTotal Blocking Time\\n10 ms\\nCumulative Layout Shift\\n0\\nSpeed Index\\n0.5 s\\nCaptured at Sep 12, 2026, 10:43 PM GMT+2\\nEmulated Desktop with Lighthouse 13.4.1\\nSingle page session\\nInitial page load\\nCustom throttling\\nUsing HeadlessChromium 151.0.7922.173 with lr\\nView Treemap\\nShow audits relevant to:\\nAll\\nFCP\\nLCP\\nTBT\\nINSIGHTS\\nImprove image delivery Est savings of 26 KiB\\nLegacy JavaScript Est savings of 24 KiB\\nForced reflow\\nNetwork dependency tree\\nRender-blocking requests Est savings of 10 ms\\nOptimize DOM size\\nLCP breakdown\\nThese insights are also available in the Chrome DevTools Performance Panel - record a trace to view more detailed information.\\nDIAGNOSTICS\\nReduce unused CSS Est savings of 53 KiB\\nReduce unused JavaScript Est savings of 81 KiB\\nAvoid long main-thread tasks 2 long tasks found\\nMore information about the performance of your application. These numbers don't directly affect the Performance score.\\nPASSED AUDITS (17)\\nShow\\n97\\nAccessibility\\nThese checks highlight opportunities to improve the accessibility of your web app. Automatic detection can only detect a subset of issues and does not guarantee the accessibility of your web app, so manual testing is also encouraged.\\nCONTRAST\\nBackground and foreground colors do not have a sufficient contrast ratio.\\nThese are opportunities to improve the legibility of your content.\\nADDITIONAL ITEMS TO MANUALLY CHECK (10)\\nShow\\nThese items address areas which an automated testing tool cannot cover. Learn more in our guide on conducting an accessibility review.\\nPASSED AUDITS (26)\\nShow\\nNOT APPLICABLE (36)\\nShow\\n100\\nBest Practices\\nTRUST AND SAFETY\\nEnsure CSP is effective against XSS attacks\\nUse a strong HSTS policy\\nEnsure proper origin isolation with COOP\\nMitigate clickjacking with XFO or CSP\\nMitigate DOM-based XSS with Trusted Types\\nBROWSER COMPATIBILITY\\nBaseline Features\\nPASSED AUDITS (13)\\nShow\\nNOT APPLICABLE (2)\\nShow\\n100\\nSEO\\nThese checks ensure that your page is following basic search engine optimization advice. There are many additional factors Lighthouse does not score here that may affect your search ranking, including performance on Core Web Vitals. Learn more about Google Search Essentials.\\nADDITIONAL ITEMS TO MANUALLY CHECK (1)\\nHide\\nStructured data is valid\\nRun these additional validators on your site to check additional SEO best practices.\\nPASSED AUDITS (10)\\nShow\\n2/2\\nAgentic Browsing\\nThese checks ensure high-quality, browsable websites for AI agents and validate the correctness of WebMCP integrations. This category is still under development and subject to change.\\nPASSED AUDITS (2)\\nShow\\nNOT APPLICABLE (4)\\nShow\\nMore on PageSpeed Insights\\nWhat's new\\nDocumentation\\nLearn about Web Performance\\nAsk questions on Stack Overflow\\nMailing list\\nRelated Content\\nUpdates\\nWeb Fundamentals\\nCase Studies\\nPodcasts\\nConnect\\nTwitter\\nYoutube\\nChrome\\nFirebase\\nAll products\\nTerms and Privacy Policy\\nFor details, see the Google Developers Site Policies.\"}\n```"
+          }
+        ]
+      }
+    }
+  ],
+  "avuiDesktopRetry": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Script ran on page and returned:\n```json\n{\"url\":\"https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/ot8d9kf8pf?form_factor=desktop\",\"text\":\"PageSpeed Insights\\nCopy Link\\nDocs\\nThis site uses cookies from Google to deliver its services and to analyze traffic.\\nLearn More.\\nOk, Got it.\\nReport from Sep 12, 2026, 10:45:15 PM\\n\\nEnter a valid URL\\n\\nAnalyze\\nsmartphone\\nMobile\\ncomputer\\nDesktop\\nDiscover what your real users are experiencing\\nNo Data\\nDiagnose performance issues\\n70\\nPerformance\\n97\\nAccessibility\\n100\\nBest Practices\\n100\\nSEO\\n2/2\\nAgentic Browsing\\n70\\nFCP\\n+10\\nLCP\\n+24\\nTBT\\n+1\\nCLS\\n+25\\nSI\\n+10\\nPerformance\\nValues are estimated and may vary. The performance score is calculated directly from these metrics.See calculator.\\n0–49\\n50–89\\n90–100\\nMETRICS\\nExpand view\\nFirst Contentful Paint\\n0.5 s\\nLargest Contentful Paint\\n0.9 s\\nTotal Blocking Time\\n1,050 ms\\nCumulative Layout Shift\\n0\\nSpeed Index\\n0.8 s\\nCaptured at Sep 12, 2026, 10:45 PM GMT+2\\nEmulated Desktop with Lighthouse 13.4.1\\nSingle page session\\nInitial page load\\nCustom throttling\\nUsing HeadlessChromium 151.0.7922.173 with lr\\nView Treemap\\nShow audits relevant to:\\nAll\\nFCP\\nLCP\\nTBT\\nINSIGHTS\\nRender-blocking requests Est savings of 30 ms\\nLegacy JavaScript Est savings of 24 KiB\\nNetwork dependency tree\\nLCP breakdown\\nThese insights are also available in the Chrome DevTools Performance Panel - record a trace to view more detailed information.\\nDIAGNOSTICS\\nMinimize main-thread work 3.5 s\\nReduce JavaScript execution time 1.9 s\\nReduce unused JavaScript Est savings of 268 KiB\\nReduce unused CSS Est savings of 57 KiB\\nAvoid long main-thread tasks 17 long tasks found\\nMore information about the performance of your application. These numbers don't directly affect the Performance score.\\nPASSED AUDITS (18)\\nShow\\n97\\nAccessibility\\nThese checks highlight opportunities to improve the accessibility of your web app. Automatic detection can only detect a subset of issues and does not guarantee the accessibility of your web app, so manual testing is also encouraged.\\nCONTRAST\\nBackground and foreground colors do not have a sufficient contrast ratio.\\nThese are opportunities to improve the legibility of your content.\\nBEST PRACTICES\\nIdentical links have the same purpose.\\nThese items highlight common accessibility best practices.\\nADDITIONAL ITEMS TO MANUALLY CHECK (10)\\nShow\\nThese items address areas which an automated testing tool cannot cover. Learn more in our guide on conducting an accessibility review.\\nPASSED AUDITS (26)\\nShow\\nNOT APPLICABLE (35)\\nShow\\n100\\nBest Practices\\nTRUST AND SAFETY\\nEnsure CSP is effective against XSS attacks\\nUse a strong HSTS policy\\nEnsure proper origin isolation with COOP\\nMitigate clickjacking with XFO or CSP\\nMitigate DOM-based XSS with Trusted Types\\nBROWSER COMPATIBILITY\\nBaseline Features\\nGENERAL\\nMissing source maps for large first-party JavaScript\\nPASSED AUDITS (12)\\nShow\\nNOT APPLICABLE (2)\\nShow\\n100\\nSEO\\nThese checks ensure that your page is following basic search engine optimization advice. There are many additional factors Lighthouse does not score here that may affect your search ranking, including performance on Core Web Vitals. Learn more about Google Search Essentials.\\nADDITIONAL ITEMS TO MANUALLY CHECK (1)\\nHide\\nStructured data is valid\\nRun these additional validators on your site to check additional SEO best practices.\\nPASSED AUDITS (9)\\nShow\\nNOT APPLICABLE (1)\\nShow\\n2/2\\nAgentic Browsing\\nThese checks ensure high-quality, browsable websites for AI agents and validate the correctness of WebMCP integrations. This category is still under development and subject to change.\\nPASSED AUDITS (2)\\nShow\\nNOT APPLICABLE (4)\\nShow\\nMore on PageSpeed Insights\\nWhat's new\\nDocumentation\\nLearn about Web Performance\\nAsk questions on Stack Overflow\\nMailing list\\nRelated Content\\nUpdates\\nWeb Fundamentals\\nCase Studies\\nPodcasts\\nConnect\\nTwitter\\nYoutube\\nChrome\\nFirebase\\nAll products\\nTerms and Privacy Policy\\nFor details, see the Google Developers Site Policies.\"}\n```"
+      }
+    ]
+  }
+}

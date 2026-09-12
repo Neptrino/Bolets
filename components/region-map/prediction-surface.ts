@@ -3,11 +3,12 @@ import {
   predictionMapCellColour,
 } from "@/src/lib/suitability-scale";
 import type { PredictionMapCell } from "@/src/lib/types";
-import { coverageAlpha, predictionHeatRaster } from "./prediction-raster";
+import { coverageAlpha, predictionHeatRaster, type PredictionHeatRaster } from "./prediction-raster";
 
 export type PredictionRendering = "cells" | "heatmap";
 
 const heatCanvases = new WeakMap<HTMLCanvasElement, HTMLCanvasElement>();
+const paintedRasters = new WeakMap<HTMLCanvasElement, Uint8ClampedArray>();
 
 function heatCanvasFor(output: HTMLCanvasElement, width: number, height: number) {
   let heatCanvas = heatCanvases.get(output);
@@ -69,6 +70,7 @@ function drawHeatmap(
   localMap: MapLibreMap,
   cells: Iterable<PredictionMapCell>,
   selectedCellId: string | null,
+  preparedRaster?: PredictionHeatRaster | null,
 ) {
   const width = Math.round(output.clientWidth);
   const height = Math.round(output.clientHeight);
@@ -76,15 +78,18 @@ function drawHeatmap(
 
   const allCells = Array.from(cells);
   const selectedCell = allCells.find(cell => cell.cellId === selectedCellId);
-  const raster = predictionHeatRaster(localMap, allCells, width, height);
+  const raster = preparedRaster === undefined ? predictionHeatRaster(localMap, allCells, width, height) : preparedRaster;
   if (raster) {
     const { scale, width: rasterWidth, height: rasterHeight } = raster;
     const heatCanvas = heatCanvasFor(output, rasterWidth, rasterHeight);
     const heatContext = heatCanvas.getContext("2d");
     if (!heatContext) return;
-    const image = heatContext.createImageData(rasterWidth, rasterHeight);
-    image.data.set(raster.pixels);
-    heatContext.putImageData(image, 0, 0);
+    if (paintedRasters.get(output) !== raster.pixels) {
+      const image = heatContext.createImageData(rasterWidth, rasterHeight);
+      image.data.set(raster.pixels);
+      heatContext.putImageData(image, 0, 0);
+      paintedRasters.set(output, raster.pixels);
+    }
 
     context.save();
     context.imageSmoothingEnabled = true;
@@ -108,6 +113,7 @@ export function drawPredictionSurface({
   output,
   rendering,
   selectedCellId,
+  raster,
 }: {
   cells: Iterable<PredictionMapCell>;
   context: CanvasRenderingContext2D;
@@ -115,9 +121,10 @@ export function drawPredictionSurface({
   output: HTMLCanvasElement;
   rendering: PredictionRendering;
   selectedCellId: string | null;
+  raster?: PredictionHeatRaster | null;
 }) {
   if (rendering === "heatmap") {
-    drawHeatmap(context, output, localMap, cells, selectedCellId);
+    drawHeatmap(context, output, localMap, cells, selectedCellId, raster);
     return;
   }
   drawCellGrid(context, localMap, cells, selectedCellId);

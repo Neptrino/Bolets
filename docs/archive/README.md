@@ -6,6 +6,8 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [Prediction raster worker — 12 September 2026](map-raster-worker-2026-09-12.md)
+- [Map and species performance: live verification — 12 September 2026](map-page-performance-live-2026-09-12.md)
 - [Map, Avui and species performance — 12 September 2026](map-page-performance-2026-09-12.md)
 - [Frontend performance: live verification — 12 September 2026](frontend-performance-live-2026-09-12.md)
 - [Frontend performance: PageSpeed audit and local optimization — 12 September 2026](frontend-performance-2026-09-12.md)

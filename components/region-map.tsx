@@ -10,7 +10,7 @@ import { createProgressiveUpdate } from "@/components/region-map/progressive-upd
 import { createRegionMap } from "@/components/region-map/map-instance";
 import { fetchPredictionCellDetail } from "@/components/region-map/prediction-detail";
 import { predictionQueryBounds } from "@/components/region-map/smoothed-viewport";
-import { drawPredictionSurface } from "@/components/region-map/prediction-surface";
+import { createPredictionPainter } from "@/components/region-map/prediction-painter";
 import { predictionRenderingForGrid } from "@/components/region-map/prediction-view";
 import {
   basemapStyle,
@@ -638,23 +638,11 @@ export function RegionMap({
     let geolocationReloadFrame: number | undefined;
     let waitingForGeolocationMoveEnd = false;
 
-    const drawCells = () => {
-      const canvas = cellCanvas.current;
-      if (!canvas) return;
-      const context = prepareCanvas(canvas);
-      if (!context) return;
-      withCataloniaLandClip(context, localMap, () => {
-        drawPredictionSurface({
-          cells: cellsById.current.values(),
-          context,
-          localMap,
-          output: canvas,
-          rendering: predictionRenderingForGrid(rendering, cellsById.current.values().next().value?.gridSizeM, interactive),
-          selectedCellId: selectedCellIdRef.current,
-        });
-      });
-      drawTerritorialWindow(context, localMap, initialFocusBounds.current);
-    };
+    const drawCells = createPredictionPainter({
+      map: localMap, canvas: () => cellCanvas.current, cells: () => cellsById.current,
+      selectedCellId: () => selectedCellIdRef.current, rendering, interactive,
+      territory: () => initialFocusBounds.current,
+    });
     drawCellsRef.current = drawCells;
 
     // A species change must not leave the previous species painted while the
@@ -714,9 +702,9 @@ export function RegionMap({
           urls.flatMap((url) => bucketCells.current.get(url) ?? [])
             .map((cell) => [cell.cellId, cell] as const),
         );
-        drawCells();
+        return drawCells();
       };
-      if (!timelineRun) repaint();
+      if (!timelineRun) void repaint();
 
       const missing = prioritizeBucketsAround(
         buckets.filter((_, index) => !bucketCells.current.has(urls[index])),
@@ -755,8 +743,10 @@ export function RegionMap({
         );
         if (!isCurrent()) return;
         progress.cancel();
-        // Always include the last arrivals before publishing final coverage.
-        repaint();
+        // Publish readiness only after the final raster is painted.
+        await repaint();
+        await drawCells.settled();
+        if (!isCurrent()) return;
 
         const stillMissing = urls.filter((url) => !bucketCells.current.has(url)).length;
         // A viewport that resolved nothing at all is an error; one that
@@ -922,6 +912,7 @@ export function RegionMap({
       if (geolocationReloadFrame !== undefined)
         window.cancelAnimationFrame(geolocationReloadFrame);
       cancelProgress();
+      drawCells.dispose();
       localMap.off("moveend", reloadGeolocatedCells);
       localMap.off("load", activate);
       localMap.off("moveend", loadCells);
