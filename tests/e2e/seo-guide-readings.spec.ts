@@ -48,7 +48,7 @@ test("Prades compares its documented species and connects to current conditions"
 
 test("today's map follows the short answer and precedes the detailed ranking", async ({ page }) => {
   await page.goto("/bolets-avui");
-  await expect(page.locator(".current-search-answer")).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('.current-search-answer[aria-labelledby="current-search-answer-title"]')).toBeVisible({ timeout: 45_000 });
   await expect(page.locator(".current-reading-notes")).toContainText("no són una previsió dels pròxims set dies");
   expect(await page.locator(".current-map-overview").evaluate((element) => Boolean(
     element.compareDocumentPosition(document.querySelector(".current-board")!) & Node.DOCUMENT_POSITION_FOLLOWING,

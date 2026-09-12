@@ -13,7 +13,8 @@ import { InstagramMark } from "@/components/instagram-mark";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { PredictionMapLegend } from "@/components/prediction-map-legend";
-import { RegionMap } from "@/components/region-map";
+import { LazyCurrentMap } from "@/components/lazy-current-map";
+import { CurrentSearchAnswerLoading } from "@/components/current-search-answer-loading";
 import { editorialArticleFields } from "@/data/editorial";
 import { regionSelectItems } from "@/data/regions";
 import {
@@ -24,7 +25,6 @@ import {
   type RankedOverviewItem,
   type CurrentOverviewItem,
 } from "@/src/lib/current-overview";
-import { GLOBAL_SPECIES_ID } from "@/src/lib/global-map";
 import { SEASONAL_ACTIVITY_LABELS } from "@/src/lib/seasonality";
 import { opportunityLabel } from "@/src/lib/scoring";
 import {
@@ -357,22 +357,7 @@ function CurrentMap() {
           Obrir el mapa complet <ArrowUpRight size={16} aria-hidden="true" />
         </Link>
       </header>
-      <div className="current-map-frame">
-        <RegionMap
-          activeRegions={currentMapRegions}
-          autoGeolocate={false}
-          className="current-production-map"
-          compactLegend
-          interactive={false}
-          maximumPredictionGridSizeM={2500}
-          mode="prediction"
-          predictionAvailable
-          predictionRendering="heatmap"
-          showTimeline
-          showReadyStatus={false}
-          speciesId={GLOBAL_SPECIES_ID}
-        />
-      </div>
+      <LazyCurrentMap activeRegions={currentMapRegions} />
       <footer className="current-map-footer">
         <PredictionMapLegend />
       </footer>
@@ -393,7 +378,7 @@ export default async function MushroomsTodayPage({ searchParams }: {
         description="Compara les espècies comestibles de temporada i descobreix quins territoris de Catalunya tenen ara les condicions més favorables."
         layout="split"
       />
-      <Suspense fallback={<CurrentOverviewLoading />}>
+      <Suspense fallback={<CurrentSearchAnswerLoading />}>
         <CurrentOverview simulate={simulate} section="answer" />
       </Suspense>
       <CurrentMap />

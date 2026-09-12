@@ -20,6 +20,13 @@ game just because a link is visible. Preserve caller handlers and prevented
 events. A dynamically imported map must still be mounted only when needed;
 importing a map component eagerly in a prefetched route can fetch its engine.
 
+The Avui map mounts automatically within 200 px of the viewport. Keep its fixed
+responsive frame in the initial HTML and disconnect the observer after mounting.
+Browsers without IntersectionObserver initialize on the next animation frame.
+Its independent server-rendered summary reserves the usual content height while
+streaming; longer text can expand. Keep the map's timeline and full-map link,
+without making initialization depend on the summary or a click.
+
 Keep the homepage hero eager with high fetch priority and responsive `sizes`.
 The server-rendered HTML already emits its responsive image preload; do not add
 a second fixed-width preload. Leave the map preview and lower-page imagery lazy

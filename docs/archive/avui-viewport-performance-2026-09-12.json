@@ -1,0 +1,113 @@
+{
+  "scope": "Local experiments; not production PageSpeed scores",
+  "avuiFirstViewport": [
+    {
+      "origin": "https://bolets.app",
+      "scriptBytes": 2276810,
+      "mapRequests": 105,
+      "mapY": 1276.984375,
+      "mapHeight": 496,
+      "placeholder": false
+    },
+    {
+      "origin": "http://127.0.0.1:3105",
+      "scriptBytes": 496351,
+      "mapRequests": 0,
+      "mapY": 1284.90625,
+      "mapHeight": 496,
+      "placeholder": true
+    }
+  ],
+  "rasterOnlyRendererPrototype": [
+    {
+      "renderer": "maplibre",
+      "constructorMs": 140.70000004768372,
+      "readyMs": 1155.7000000476837,
+      "blocking": 102,
+      "maxTask": 146,
+      "errors": [],
+      "tiles": 90,
+      "failedTiles": []
+    },
+    {
+      "renderer": "leaflet",
+      "constructorMs": 8.700000047683716,
+      "readyMs": 704.2000000476837,
+      "blocking": 0,
+      "maxTask": 0,
+      "errors": [],
+      "tiles": 90,
+      "failedTiles": []
+    },
+    {
+      "renderer": "maplibre",
+      "constructorMs": 96.5,
+      "readyMs": 955.7999999523163,
+      "blocking": 48,
+      "maxTask": 98,
+      "errors": [],
+      "tiles": 90,
+      "failedTiles": []
+    },
+    {
+      "renderer": "leaflet",
+      "constructorMs": 4.599999904632568,
+      "readyMs": 669.6999998092651,
+      "blocking": 0,
+      "maxTask": 0,
+      "errors": [],
+      "tiles": 90,
+      "failedTiles": []
+    }
+  ],
+  "coldBlurComparison": [
+    {
+      "run": 0,
+      "noBlur": false,
+      "blocking": 169.58800000000002,
+      "maxTask": 126.955,
+      "commit": 402.9769999999999,
+      "maxCommit": 85.473
+    },
+    {
+      "run": 1,
+      "noBlur": true,
+      "blocking": 164.32599999999996,
+      "maxTask": 128.248,
+      "commit": 591.465,
+      "maxCommit": 85.297
+    },
+    {
+      "run": 2,
+      "noBlur": false,
+      "blocking": 164.74800000000002,
+      "maxTask": 127.955,
+      "commit": 427.202,
+      "maxCommit": 87.719
+    },
+    {
+      "run": 3,
+      "noBlur": true,
+      "blocking": 164.78799999999998,
+      "maxTask": 127.514,
+      "commit": 574.8430000000002,
+      "maxCommit": 87.497
+    },
+    {
+      "run": 4,
+      "noBlur": false,
+      "blocking": 169.221,
+      "maxTask": 130.042,
+      "commit": 509.09699999999987,
+      "maxCommit": 89.213
+    },
+    {
+      "run": 5,
+      "noBlur": true,
+      "blocking": 176.81000000000003,
+      "maxTask": 135.746,
+      "commit": 399.91299999999995,
+      "maxCommit": 86.543
+    }
+  ]
+}

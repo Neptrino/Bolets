@@ -33,6 +33,7 @@
 }
 
 .current-production-map { height: 100%; }
+.current-map-placeholder { display: grid; place-content: center; height: 100%; padding: 2rem; color: #fffaf0; font-size: var(--text-base); text-align: center; }
 .current-map-overview .map-data-state { top: 1rem; left: 1rem; max-width: 25rem; padding: .75rem .85rem; border-color: rgba(238, 176, 111, .42); border-radius: 11px; background: rgba(37, 50, 42, .91); backdrop-filter: blur(12px); }
 .current-map-overview .prediction-map-loading > div { border-radius: 11px; background: rgba(37, 50, 42, .94); backdrop-filter: blur(12px); }
 .current-map-overview .map-cell-visibility { top: 9.5rem; right: .75rem; border-radius: 11px; background: rgba(250, 246, 234, .95); backdrop-filter: blur(10px); }

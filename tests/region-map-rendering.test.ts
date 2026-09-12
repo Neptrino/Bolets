@@ -18,7 +18,7 @@ describe("prediction map rendering", () => {
     .map((file) => readFileSync(file, "utf8"))
     .join("\n");
   const todayPageSource = readFileSync(
-    join(process.cwd(), "app", "bolets-avui", "page.tsx"),
+    join(process.cwd(), "components", "lazy-current-map.tsx"),
     "utf8",
   );
   const mapExplorerSource = readFileSync(

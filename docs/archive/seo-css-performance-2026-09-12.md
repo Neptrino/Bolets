@@ -25,3 +25,27 @@ The two final spacing-selector edits can change these totals by a few bytes. Bui
 Artifacts, screenshots and computed-style comparisons are retained in `artifacts/seo-css-performance-2026-09-12/`. Live deployment and PageSpeed verification follow the final checks. AVIF sample encoding in that directory is an experiment, not part of this implementation.
 
 Fourteen navigation checks preserved the corrected layouts. Chrome sometimes serialized automatic margins as zero instead of their used values; direct production/local bounding-rectangle comparisons confirmed identical positions and widths at both viewports. The catalogue baseline before this release scored [93 mobile](https://pagespeed.web.dev/analysis/https-bolets-app-bolets/55qb009551?form_factor=mobile), with 3.0 s LCP, 30 ms TBT and zero CLS.
+
+## Deployment
+
+Release `a0bb7849e7faa8618e6cd8065a9f58d2040684d5` passed [CI and deployment](https://github.com/Neptrino/Bolets/actions/runs/34719918514). The VPS release symlink matches and the app is healthy. All eight checked SEO pages and their stylesheets return 200. Their loaded CSS retains MapLibre controls and excludes finding-form layouts and contribution panels. The image revision label also matches.
+
+
+## Live PageSpeed results
+
+[All twelve reports and their metrics](seo-css-performance-live-2026-09-12.json) are retained, including repeat runs. Ranges report both runs; they are not a claim of stable field performance.
+
+| Page | Mobile score | Desktop score |
+| --- | ---: | ---: |
+| Home | 88, 93 | 100, 100 |
+| Catalogue | 93 | 100 |
+| Cep | 87, 90 | 100, 100 |
+| Pinetell | 91 | 100 |
+| Map | 89, 72 | 72, 69 |
+| Avui | 88, 96 | 71, 82 |
+| Rovellons guide | 98 | 100 |
+| Ceps guide | 84 | 100 |
+
+PageSpeed's unused-CSS estimate fell from roughly 51–52 KiB to 29–31 KiB on the species/home pages. The catalogue and several editorial pages now reach the high-score band, but the objective is not complete: map performance remains inconsistent, desktop map/Avui blocking is still substantial, and Ceps/mobile image-led pages need further investigation. The fresh 4× CPU desktop map profile has 776 ms attributed to native/program work, 112 ms in the chunk loader, and no application function above 30 ms self-time. A browser timeline trace is needed to identify the native work before choosing another map change. The profile is in the artifact directory.
+
+The optional question about an Avui preview that becomes interactive on tap remains unanswered at the time of this receipt. This release preserves immediate map initialization. AVIF remains an experiment; it has not been shipped.
