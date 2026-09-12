@@ -17,6 +17,38 @@ function at(field: { width: number; score: Float32Array; alpha: Float32Array }, 
 }
 
 describe("smoothed prediction surface", () => {
+  it("preserves the circular Gaussian reference across overlapping and clipped samples", () => {
+    let seed = 7391;
+    const random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 2 ** 32);
+    const width = 61, height = 47, support = 2;
+    const samples = Array.from({ length: 180 }, () => sample({
+      x: random() * 81 - 10, y: random() * 67 - 10,
+      sigma: random() * 12, score: random() * 100, alpha: random(),
+    }));
+    const result = rasterizeSmoothedField(samples, width, height, support);
+    // Independent pixel-first reference, retaining the original Float32 sums.
+    const expectedScore = new Float32Array(width * height);
+    const expectedAlpha = new Float32Array(width * height);
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+      let weight = 0, score = 0, alpha = 0;
+      for (const point of samples) {
+        const sigma = Math.max(point.sigma, 0.5);
+        const distance = (x + 0.5 - point.x) ** 2 + (y + 0.5 - point.y) ** 2;
+        if (distance > (sigma * 2.5) ** 2) continue;
+        const kernel = Math.exp(-distance * (1 / (2 * sigma * sigma)));
+        weight = Math.fround(weight + kernel);
+        score = Math.fround(score + kernel * point.score);
+        alpha = Math.fround(alpha + kernel * point.alpha);
+      }
+      if (weight) {
+        expectedScore[y * width + x] = score / weight;
+        expectedAlpha[y * width + x] = alpha / weight * Math.min(1, weight / support);
+      }
+    }
+    expect(result.score).toEqual(expectedScore);
+    expect(result.alpha).toEqual(expectedAlpha);
+  });
+
   it("reads a lone cell's own value at its centre and nothing far away", () => {
     const field = rasterizeSmoothedField([sample({ score: 72, alpha: 0.8 })], 21, 21);
     expect(at(field, 10, 10).score).toBeCloseTo(72, 4);

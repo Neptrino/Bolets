@@ -16,6 +16,12 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: "/maplibre/:version/:file",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
         source: "/media/optimized/:path*",
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },

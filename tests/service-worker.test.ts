@@ -54,6 +54,7 @@ describe("service worker response delivery", () => {
     ["/bolets", "navigate"],
     [imagePath, "navigate"],
     ["/_next/static/chunk.js", "cors"],
+    ["/maplibre/6.3.0/maplibre-gl-worker.mjs", "same-origin"],
     ["/api/predictions?resolution=5000", "cors"],
     ["/api/findings", "cors"],
     ["/api/habitat?resolution=5000", "cors"],
@@ -108,6 +109,17 @@ describe("service worker response delivery", () => {
       await Promise.all(event.work);
     }
     expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it.each(["worker", "shared"])("reuses the versioned MapLibre %s module offline", async (module) => {
+    const { dispatch, fetch } = setup();
+    const path = `/maplibre/6.3.0/maplibre-gl-${module}.mjs`;
+    const first = dispatch(path);
+    await first.response;
+    await Promise.all(first.work);
+    fetch.mockRejectedValue(new Error("Offline"));
+    expect(await (await dispatch(path).response!).text()).toBe("fresh");
+    expect(fetch).toHaveBeenCalledOnce();
   });
 
   it("still uses the dated cached prediction when the network fails", async () => {

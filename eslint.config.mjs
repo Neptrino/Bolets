@@ -9,6 +9,7 @@ export default defineConfig([
     ".next/**",
     ".vercel/**",
     "node_modules/**",
+    "public/maplibre/**",
     "coverage/**",
     "artifacts/**",
     "output/**",

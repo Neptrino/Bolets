@@ -1,6 +1,7 @@
 node_modules/
 .next/
 public/media/optimized/
+public/maplibre/
 next-env.d.ts
 coverage/
 artifacts/

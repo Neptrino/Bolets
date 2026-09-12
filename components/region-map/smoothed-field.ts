@@ -87,6 +87,8 @@ export function rasterizeSmoothedField(
   const weight = new Float32Array(size);
   const weightedScore = new Float32Array(size);
   const weightedAlpha = new Float32Array(size);
+  const columnKernel = new Float64Array(width);
+  const columnDistanceSquared = new Float64Array(width);
 
   for (const sample of samples) {
     const sigma = Math.max(sample.sigma, 0.5);
@@ -98,14 +100,23 @@ export function rasterizeSmoothedField(
     const maxY = Math.min(height - 1, Math.ceil(sample.y + reach));
     if (minX > maxX || minY > maxY) continue;
     const inverseTwoSigmaSquared = 1 / (2 * sigma * sigma);
+    // exp(-(dx² + dy²) / 2σ²) is separable. Reuse each column's term
+    // across rows instead of evaluating an exponential at every pixel.
+    // Keep the original circular cutoff and Float32 accumulation order.
+    for (let x = minX; x <= maxX; x += 1) {
+      const dx = x + 0.5 - sample.x;
+      columnDistanceSquared[x] = dx * dx;
+      columnKernel[x] = Math.exp(-dx * dx * inverseTwoSigmaSquared);
+    }
     for (let y = minY; y <= maxY; y += 1) {
       const dy = y + 0.5 - sample.y;
+      const dySquared = dy * dy;
+      const rowKernel = Math.exp(-dySquared * inverseTwoSigmaSquared);
       const row = y * width;
       for (let x = minX; x <= maxX; x += 1) {
-        const dx = x + 0.5 - sample.x;
-        const distanceSquared = dx * dx + dy * dy;
+        const distanceSquared = columnDistanceSquared[x] + dySquared;
         if (distanceSquared > reachSquared) continue;
-        const kernel = Math.exp(-distanceSquared * inverseTwoSigmaSquared);
+        const kernel = columnKernel[x] * rowKernel;
         const index = row + x;
         weight[index] += kernel;
         weightedScore[index] += kernel * sample.score;

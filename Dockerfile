@@ -28,7 +28,7 @@ ENV SUPPORT_URL=$SUPPORT_URL
 COPY . .
 COPY --from=media /app/public/media/optimized ./public/media/optimized
 # The media stage owns prebuild; ordinary code changes reuse its output.
-RUN ./node_modules/.bin/next build && node scripts/image-build-config.mjs write
+RUN npm run map:worker && ./node_modules/.bin/next build && node scripts/image-build-config.mjs write
 
 FROM node:24-bookworm-slim AS runner
 WORKDIR /app

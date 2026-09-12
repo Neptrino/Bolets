@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { gridSizeForZoom } from "@/src/lib/map-grid";
 
-const constructors = vi.hoisted(() => ({ map: vi.fn(), geolocate: vi.fn() }));
+const constructors = vi.hoisted(() => ({ map: vi.fn(), geolocate: vi.fn(), workerUrl: vi.fn() }));
 vi.mock("maplibre-gl", () => ({
+  getVersion: () => "6.3.0",
+  setWorkerUrl: constructors.workerUrl,
   Map: class {
     constructor(options: unknown) { constructors.map(options); }
     addControl() {}
@@ -29,6 +31,8 @@ describe("automatic geolocation framing", () => {
       zoom: 8,
     });
     const options = constructors.geolocate.mock.calls[0][0];
+    expect(constructors.workerUrl).toHaveBeenCalledWith("/maplibre/6.3.0/maplibre-gl-worker.mjs");
+    expect(constructors.workerUrl.mock.invocationCallOrder[0]).toBeLessThan(constructors.map.mock.invocationCallOrder[0]);
     expect(gridSizeForZoom(options.fitBoundsOptions.maxZoom)).toBe(2500);
     expect(options.fitBoundsOptions.maxZoom).toBeLessThan(11.8);
     expect(constructors.map.mock.calls[0][0]).not.toHaveProperty("maxZoom");

@@ -224,7 +224,10 @@ self.addEventListener("fetch", (event) => {
   // Versioned catalogue images remain immutable even when opened in their
   // own tab. Check before navigations so they use the asset cache, not a fresh
   // network request and another full-body write to the document cache.
-  if (/^\/media\/optimized\/v\d+\/.+\.webp$/.test(url.pathname)) {
+  if (
+    /^\/media\/optimized\/v\d+\/.+\.webp$/.test(url.pathname)
+    || /^\/maplibre\/\d+\.\d+\.\d+\/maplibre-gl-(worker|shared)\.mjs$/.test(url.pathname)
+  ) {
     respondWithCaching(event, (request, store) => cacheFirst(request, ASSET_CACHE, store));
     return;
   }

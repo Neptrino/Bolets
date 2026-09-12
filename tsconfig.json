@@ -38,6 +38,9 @@
   ],
   "exclude": [
     "node_modules",
+    "social/**",
+    "artifacts/**",
+    ".codex-tmp/**",
     "supabase/functions/**",
     "workers/**"
   ]

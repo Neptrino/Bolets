@@ -3,6 +3,8 @@ import {
   GeolocateControl,
   Map as MapLibre,
   NavigationControl,
+  getVersion,
+  setWorkerUrl,
   type StyleSpecification,
 } from "maplibre-gl";
 import { regionMapPanBounds } from "@/src/lib/map-view-bounds";
@@ -34,6 +36,7 @@ export function createRegionMap({
   useGeolocation: boolean;
   zoom: number;
 }) {
+  setWorkerUrl(`/maplibre/${getVersion()}/maplibre-gl-worker.mjs`);
   const map = new MapLibre({
     container,
     style,

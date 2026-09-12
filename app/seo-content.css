@@ -236,6 +236,9 @@
 .current-overview-method svg { flex: 0 0 auto; margin-top: .18rem; color: #52664a; }
 .current-overview-method p { margin: 0; color: #485148; font-size: var(--text-base); line-height: 1.55; }
 .current-board { margin: 0 0 1.5rem; }
+/* The streamed page contains a full map. Keep the footer below the first
+   viewport while its route shell resolves, including on fast desktop loads. */
+.current-page-loading { min-height: 100svh; }
 .current-board-loading { display: flex; align-items: flex-start; gap: .8rem; color: #485148; }
 .current-board-loading svg { flex: 0 0 auto; margin-top: .15rem; color: #52664a; }
 .current-board-loading strong { display: block; color: #283d2e; font-size: var(--text-lg); }

@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "npm run media:build",
+    "predev": "npm run media:build && npm run map:worker",
     "dev": "next dev --port 3101",
-    "prebuild": "npm run media:build",
+    "prebuild": "npm run media:build && npm run map:worker",
+    "map:worker": "node scripts/copy-maplibre-worker.mjs",
     "build": "next build",
     "start": "next start --port 3101",
     "lint": "eslint . && npm run source:size",

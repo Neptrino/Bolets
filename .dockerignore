@@ -6,6 +6,7 @@
 .release-revision
 build-config.json
 public/media/optimized
+public/maplibre
 .supabase
 .vercel
 coverage
