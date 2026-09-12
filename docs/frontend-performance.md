@@ -70,7 +70,9 @@ startup views do not download tiles. The default relief/reference layers use
 versioned v2 WebP tiles at quality 85 with transparency preserved. Reuse the
 original allowlisted ICGC loader, persist encoded tiles in the Next data cache,
 coalesce identical cold requests and bound conversion work to two active jobs
-and 64 waiting jobs. Error responses remain uncached. Keep v1 URLs available
+and 64 waiting jobs. Bound cold downloads separately to 16 active and 128 waiting
+jobs: provider latency must not occupy a conversion slot. Error responses remain
+uncached. Keep v1 URLs available
 for older clients and change the URL version when encoding policy changes.
 Do not initialize an empty canvas before its first data frame; an already
 painted canvas must still clear immediately when species or layers change.

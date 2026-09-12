@@ -9,6 +9,19 @@ const request = new Request("https://bolets.test/api/map-tiles/icgc/v2/relief/7/
 afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
 describe("cached WebP map tiles", () => {
+  it("allows cold downloads to proceed while other tiles wait for the provider", async () => {
+    const png = await sharp({ create: { width: 256, height: 256, channels: 3, background: "white" } }).png().toBuffer();
+    const releases: Array<() => void> = [];
+    vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>(resolve => releases.push(() =>
+      resolve(new Response(png, { headers: { "Content-Type": "image/png" } }))))));
+    const jobs = Array.from({ length: 4 }, (_, i) => GET(request, {
+      params: Promise.resolve({ layer: "relief", z: "7", x: String(60 + i), y: "47" }),
+    }));
+    await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(4));
+    releases.forEach(release => release());
+    const results = await Promise.all(jobs);
+    expect(results.every(response => response.ok)).toBe(true);
+  });
   it("coalesces concurrent encodings and preserves dimensions and transparency", async () => {
     const png = await sharp({ create: { width: 256, height: 256, channels: 4,
       background: { r: 90, g: 110, b: 130, alpha: 0.5 } } }).png().toBuffer();

@@ -95,3 +95,11 @@ that attempt does not count as a successful rendering check. Candidate browser
 verification therefore also fetches public prediction/habitat data from the
 live site while exercising local WebP tile routes. Fresh post-deployment
 PageSpeed measurements remain required.
+
+The first WebP deployment (`ba12e80`) exposed an overly restrictive cold path:
+the two conversion slots also waited on the provider, and two Avui tile requests
+returned 503 during the live multi-page check. The correction separates 16
+bounded cold downloads from two concurrent conversions. A regression test holds
+provider responses open and verifies other downloads still start. Cached
+responses bypass both queues. All 16 concurrent real-tile requests also pass in
+the local production build. No tile errors are cached.

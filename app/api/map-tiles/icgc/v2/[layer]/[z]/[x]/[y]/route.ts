@@ -10,16 +10,20 @@ class TileError extends Error {
 // Only cold tiles enter the queue. Cached encodings survive application restarts
 // through Next's persistent data cache; concurrent misses share one conversion.
 const encodeTile = createBoundedWorkQueue({ concurrency: 2, maxQueued: 64, maxWaitMs: 8_000 });
+const loadTile = createBoundedWorkQueue({ concurrency: 16, maxQueued: 128, maxWaitMs: 8_000 });
 const pending = new Map<string, Promise<string>>();
 const readWebpTile = unstable_cache(async (params: Awaited<TileContext["params"]>) => {
   const key = JSON.stringify(params);
   const existing = pending.get(key);
   if (existing) return existing;
-  const task = encodeTile(async () => {
+  const task = loadTile(async () => {
     const original = await getIcgcTile(new Request("https://bolets.invalid"), { params: Promise.resolve(params) });
     if (!original.ok) throw new TileError(original.status);
-    const image = await sharp(Buffer.from(await original.arrayBuffer()), { limitInputPixels: 256 * 256 })
-      .webp({ quality: 85, effort: 4 }).toBuffer();
+    const body = Buffer.from(await original.arrayBuffer());
+    // Provider latency must not consume one of the scarce conversion slots.
+    // Bound downloads separately, including their small queued image buffers.
+    const image = await encodeTile(() => sharp(body, { limitInputPixels: 256 * 256 })
+      .webp({ quality: 85, effort: 4 }).toBuffer());
     return image.toString("base64");
   });
   pending.set(key, task);
