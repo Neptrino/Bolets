@@ -26,6 +26,16 @@ export class RasterTiles extends TileLayer {
   constructor(private template: string, private filter: string, options: ConstructorParameters<typeof TileLayer>[1]) {
     super(template, options);
   }
+  getEvents() {
+    const events = super.getEvents!();
+    // Non-animated wheel/keyboard zoom emits viewprereset. Leaflet normally
+    // discards every loaded tile there, exposing the background until the new
+    // level arrives. Keep geographic parents/children for its normal pruning
+    // to retain as fallbacks; zoom/viewreset still reproject all tile levels.
+    // This adapter uses one fixed CRS, so no projection reset is required.
+    delete events.viewprereset;
+    return events;
+  }
   getTileUrl(coords: Coords) {
     if (!this.template.includes("{bbox-epsg-3857}")) {
       const url = super.getTileUrl(coords);

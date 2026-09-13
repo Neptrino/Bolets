@@ -21,6 +21,29 @@ function createMap() {
   return map;
 }
 describe("raster map compatibility", () => {
+  it("retains loaded tiles through zoom resets until replacements are ready", async () => {
+    const map = createMap();
+    await Promise.resolve();
+    const before = [...map.getCanvas().querySelectorAll<HTMLImageElement>(".leaflet-tile")];
+    for (const tile of before) {
+      Object.defineProperty(tile, "complete", { value: true });
+      tile.dispatchEvent(new Event("load"));
+    }
+    map.jumpTo({ center: [1.7, 42], zoom: 9.25 });
+    expect(before.some(tile => tile.isConnected)).toBe(true);
+    const replacements = [...map.getCanvas().querySelectorAll<HTMLImageElement>(".leaflet-tile")].filter(tile => !before.includes(tile));
+    expect(replacements.length).toBeGreaterThan(0);
+    for (const tile of replacements) {
+      Object.defineProperty(tile, "complete", { value: true });
+      tile.dispatchEvent(new Event("load"));
+    }
+    // Loaded replacements allow normal Leaflet pruning; old levels are not
+    // retained indefinitely and removed maps still release every tile.
+    await new Promise(resolve => setTimeout(resolve, 300));
+    expect(before.every(tile => !tile.isConnected)).toBe(true);
+    map.remove(); maps.splice(maps.indexOf(map), 1);
+    expect(replacements.every(tile => !tile.isConnected)).toBe(true);
+  });
   it("registers every gesture handler in the raster-only Leaflet entry", () => {
     const map = createMap().leaflet;
     for (const name of ["dragging", "scrollWheelZoom", "doubleClickZoom", "touchZoom", "boxZoom", "keyboard"] as const) {

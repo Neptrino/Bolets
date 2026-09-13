@@ -114,6 +114,13 @@ The adapter translates Leaflet's 256-pixel zoom to the existing 512-pixel map
 convention and preserves subpixel Mercator projection. A documented tile-level
 transform override avoids camera-dependent fractional-pixel drift on restored
 views; check screenshot parity before changing the pinned Leaflet version.
+The fixed-CRS raster tile layer keeps loaded parent/child tiles through
+non-animated view resets. Its public event map omits the blanket pre-reset
+invalidation; normal zoom/viewreset reprojection and tile pruning still run.
+This prevents wheel/keyboard zoom from flashing the empty background while new
+tiles load. Test delayed zoom-in and zoom-out responses, replacement pruning and
+camera alignment when changing this behavior.
+
 Map readiness does not wait for remote tiles. Keep the tile pane below the
 independent canvases and control corners at z-index 2, below site panels.
 Geolocation watches remain local to each mounted map; manual panning stops
