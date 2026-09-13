@@ -4,7 +4,6 @@ import {
   finiteNumber,
   finishRun,
   json,
-  refreshSpatialLevelConditionsAfterIngestion,
   startRun,
   verifyIngestionRequest,
 } from "../_shared/pipeline.ts";
@@ -425,11 +424,10 @@ Deno.serve(async (request) => {
       .maybeSingle();
     if (cursorError) throw cursorError;
     if (cursor?.snapshot_date === today && cursor.last_cell_id === COMPLETE_CURSOR) {
-      const conditionsRefreshed = await refreshSpatialLevelConditionsAfterIngestion(supabase, today);
       return json({
         refreshed: 0,
         complete: true,
-        conditionsRefreshed,
+        conditionsRefreshed: false,
         snapshotDate: today,
       });
     }
@@ -637,9 +635,6 @@ Deno.serve(async (request) => {
         },
       },
     );
-    const conditionsRefreshed = generationComplete
-      ? await refreshSpatialLevelConditionsAfterIngestion(supabase, today)
-      : false;
     return json({
       runId,
       jobId: job.jobId,
@@ -647,7 +642,7 @@ Deno.serve(async (request) => {
       egressLane,
       refreshed: rows.length,
       complete: generationComplete,
-      conditionsRefreshed,
+      conditionsRefreshed: false,
       snapshotDate: today,
     });
   } catch (error) {

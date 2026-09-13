@@ -13,6 +13,8 @@ begin
     'refresh-spatial-environment',
     'refresh-spatial-soil',
     'refresh-spatial-condition-caches',
+    'refresh-spatial-condition-coarse',
+    'refresh-spatial-condition-territorial',
     'refresh-spatial-level-conditions',
     'refresh-species-occurrences-monthly',
     'refresh-species-occurrences-monthly-tail',
@@ -91,13 +93,16 @@ begin
 end
 $$;
 
+-- Separate commits and staggered starts; the functions also share a lock.
 select cron.schedule(
-  'refresh-spatial-condition-caches',
-  '* * * * *',
-  $command$
-    select public.refresh_spatial_level_conditions_after_ingestion(current_date);
-    select public.refresh_territorial_level_conditions_after_ingestion(current_date);
-  $command$
+  'refresh-spatial-condition-coarse',
+  '*/2 * * * *',
+  'select public.refresh_spatial_level_conditions_after_ingestion(current_date);'
+);
+select cron.schedule(
+  'refresh-spatial-condition-territorial',
+  '1-59/2 * * * *',
+  'select public.refresh_territorial_level_conditions_after_ingestion(current_date);'
 );
 
 select cron.schedule(
@@ -133,7 +138,8 @@ begin
       'refresh-environment-daily',
       'refresh-spatial-environment',
       'refresh-spatial-soil',
-      'refresh-spatial-condition-caches',
+      'refresh-spatial-condition-coarse',
+      'refresh-spatial-condition-territorial',
       'refresh-species-occurrences-monthly',
       'refresh-species-occurrences-monthly-tail',
       'bolets-pipeline-retention',
@@ -143,8 +149,8 @@ begin
       'import-xema-rain-3h',
       'cleanup-finding-photo-staging'
     )
-  ) <> 12 then
-    raise exception 'Expected twelve Bolets cron jobs';
+  ) <> 13 then
+    raise exception 'Expected thirteen Bolets cron jobs';
   end if;
 end
 $$;
@@ -162,7 +168,8 @@ begin
       'refresh-environment-daily',
       'refresh-spatial-environment',
       'refresh-spatial-soil',
-      'refresh-spatial-condition-caches',
+      'refresh-spatial-condition-coarse',
+      'refresh-spatial-condition-territorial',
       'refresh-species-occurrences-monthly',
       'refresh-species-occurrences-monthly-tail',
       'bolets-pipeline-retention',

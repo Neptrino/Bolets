@@ -199,6 +199,8 @@ docker compose $compose_files run --rm --no-deps --user 0 \
   --volume "$app_dir/.static:/export" --entrypoint node app \
   scripts/export-static-assets.mjs /export
 "$app_dir/deploy/vps/apply-database-migrations.sh" "$app_dir"
+docker exec -i supabase-db psql --username postgres --dbname postgres \
+  --set ON_ERROR_STOP=1 < "$app_dir/deploy/vps/verify-condition-publication.sql"
 "$app_dir/deploy/vps/sync-functions.sh" "$app_dir" "$supabase_dir"
 # shellcheck disable=SC2086
 docker compose $compose_files up -d --wait --no-build

@@ -123,7 +123,7 @@ describe("rolling observed-weather ingestion", () => {
       "refresh_territorial_level_conditions_after_ingestion(current_date)",
     );
     expect(cron).toContain("cleanup-finding-photo-staging");
-    expect(cron).toContain("Expected twelve Bolets cron jobs");
+    expect(cron).toContain("Expected thirteen Bolets cron jobs");
   });
 
   it("atomically records provider usage without applying local limits", () => {

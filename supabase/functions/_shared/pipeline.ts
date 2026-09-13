@@ -90,40 +90,6 @@ export async function finishRun(
   return true;
 }
 
-/**
- * Rebuild cached conditions once the two observed spatial streams are both
- * complete. Coarse and territorial levels use separate transactions so a
- * slower 1 km refresh cannot roll back the regional cache.
- */
-export async function refreshSpatialLevelConditionsAfterIngestion(
-  supabase: ReturnType<typeof createAdminClient>,
-  snapshotDate: string,
-) {
-  const { data: coarseData, error: coarseError } = await supabase.rpc(
-    "refresh_spatial_level_conditions_after_ingestion",
-    { p_snapshot_date: snapshotDate },
-  );
-  if (coarseError) {
-    console.error("Unable to refresh coarse spatial conditions after ingestion", {
-      snapshotDate,
-      message: coarseError.message,
-    });
-    return false;
-  }
-  const { data: territorialData, error: territorialError } = await supabase.rpc(
-    "refresh_territorial_level_conditions_after_ingestion",
-    { p_snapshot_date: snapshotDate },
-  );
-  if (territorialError) {
-    console.error("Unable to refresh 1 km spatial conditions after ingestion", {
-      snapshotDate,
-      message: territorialError.message,
-    });
-    return coarseData === true;
-  }
-  return coarseData === true || territorialData === true;
-}
-
 export function json(data: unknown, status = 200, headers: HeadersInit = {}) {
   return Response.json(data, {
     status,

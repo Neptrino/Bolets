@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import * as stationField from "@/supabase/functions/_shared/station-temperature-field";
 import { createStationTemperatureScorer, mergeThermalSources, thermalAggregates, type StationTemperatureWindow, type ThermalModelWindow } from "@/supabase/functions/_shared/station-temperature-scoring";
 import { STATION_TEMPERATURE_VERSION } from "@/supabase/functions/_shared/station-temperature-field";
 import { terrainThermalCorrection } from "@/src/lib/hydrothermal-v2";
@@ -16,8 +17,54 @@ const values = { ...thermalAggregates(model.temperaturesC), altitudeM: 1200, wea
   weatherModel: "Météo-France AROME France", atmosphericResolutionM: 2500, temperatureAvg7dC: 23,
   thermalSources: [{ id }], rainfall7dMm: 42, soilMoisture: 0.1 };
 const score = (w = window, m = model) => createStationTemperatureScorer(new Map([[id, m]]), new Map([["stations", w]]));
+afterEach(() => vi.restoreAllMocks());
 
 describe("published station/model temperature blend", () => {
+  it("interpolates shared station hours once per cell while retaining each model's correction", () => {
+    const observed = stationField.createStationObservedTemperature;
+    const interpolate = vi.fn();
+    vi.spyOn(stationField, "createStationObservedTemperature").mockImplementation((...args) => {
+      const field = observed(...args);
+      return (target) => {
+        const at = field(target);
+        return (...hourArgs) => { interpolate(); return at(...hourArgs); };
+      };
+    });
+    const secondId = "b".repeat(64);
+    const secondModel = { ...model, elevationM: 1002, temperaturesC: Array(480).fill(30) };
+    const secondValues = { ...values, ...thermalAggregates(secondModel.temperaturesC),
+      weatherElevationM: 1002, thermalSources: [{ id: secondId }] };
+    const scorer = createStationTemperatureScorer(new Map([[id, model], [secondId, secondModel]]), new Map([["stations", window]]));
+    const first = scorer(values, 42.3, 2.2);
+    const second = scorer(secondValues, 42.3, 2.2);
+    interpolate.mockClear();
+    const combinedValues = { ...values, temperatureAvg14dC: 29, temperatureAvg20dC: 29,
+      weatherElevationM: 1001, thermalSources: [{ id }, { id: secondId }] };
+    const result = scorer(combinedValues, 42.3, 2.2);
+    expect(interpolate).toHaveBeenCalledTimes(481);
+    for (const field of ["temperatureAvg14dC", "temperatureAvg20dC"] as const) {
+      expect(result[field]).toBe((Number(first[field]) + Number(second[field])) / 2);
+    }
+    for (const field of ["heatHours14d", "heatHours20d", "frostHours14d", "frostHours20d", "heatDegreeHours14d", "heatDegreeHours20d"] as const) {
+      expect(result[field]).toBe(Math.max(Number(first[field]), Number(second[field])));
+    }
+    const higher = scorer({ ...combinedValues, altitudeM: 1300 }, 42.3, 2.2);
+    expect(interpolate).toHaveBeenCalledTimes(962);
+    expect(higher.temperatureAvg20dC).not.toBe(result.temperatureAvg20dC);
+  });
+
+  it("keeps different frozen windows independent inside the same cell", () => {
+    const secondId = "b".repeat(64);
+    const colder = { ...window, hours: window.hours.map((h) => ({ ...h, temperatureC: 10 })) };
+    const scorer = createStationTemperatureScorer(
+      new Map([[id, model], [secondId, { ...model, stationWindowId: "colder" }]]),
+      new Map([["stations", window], ["colder", colder]]),
+    );
+    const combined = scorer({ ...values, thermalSources: [{ id }, { id: secondId }] }, 42.3, 2.2);
+    expect(combined.temperatureAvg20dC).toBeCloseTo(20.85);
+    expect(combined.temperatureAvg20dC).not.toBe(score()(values, 42.3, 2.2).temperatureAvg20dC);
+  });
+
   it("uses provisional complete hours, recounts after blending, and avoids a second lapse correction", () => {
     const result = score()(values, 42.3, 2.2);
     expect(result.temperatureAvg20dC).toBeCloseTo(23.35);

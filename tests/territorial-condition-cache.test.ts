@@ -19,10 +19,7 @@ const reader = readFileSync(
   join(process.cwd(), "supabase", "functions", "read-spatial-environment", "index.ts"),
   "utf8",
 );
-const pipeline = readFileSync(
-  join(process.cwd(), "supabase", "functions", "_shared", "pipeline.ts"),
-  "utf8",
-);
+const cron = readFileSync("deploy/vps/configure-cron.sql", "utf8");
 
 describe("territorial condition cache", () => {
   it("extends the canonical condition refresher and gates the daily 1 km refresh", () => {
@@ -46,10 +43,9 @@ describe("territorial condition cache", () => {
     expect(reader).toContain('? "read_precomputed_cell_environment"');
   });
 
-  it("keeps coarse and territorial refreshes in separate RPC transactions", () => {
-    expect(pipeline).toContain('"refresh_spatial_level_conditions_after_ingestion"');
-    expect(pipeline).toContain('"refresh_territorial_level_conditions_after_ingestion"');
-    expect(pipeline.indexOf('"refresh_spatial_level_conditions_after_ingestion"'))
-      .toBeLessThan(pipeline.indexOf('"refresh_territorial_level_conditions_after_ingestion"'));
+  it("schedules coarse and territorial publication as independent commands", () => {
+    expect(cron).toContain("'refresh-spatial-condition-coarse',\n  '*/2 * * * *'");
+    expect(cron).toContain("'refresh-spatial-condition-territorial',\n  '1-59/2 * * * *'");
+    expect(cron).not.toMatch(/\$command\$\s*select public\.refresh_spatial_level_conditions_after_ingestion/);
   });
 });

@@ -110,12 +110,19 @@ export function createStationTemperatureScorer(
     let provisional = false;
     let minimumDonors = Infinity;
     let modelOnlyHours = 0;
+    // Model points in a coarse cell usually share a frozen station window.
+    // Its target/hour interpolation is identical; only model correction varies.
+    const cellIntervals = new Map<string, Array<ReturnType<ReturnType<ReturnType<typeof createStationObservedTemperature>>>>>();
     for (const { model } of points) {
       const window = windows.get(model.stationWindowId);
       const field = fields.get(model.stationWindowId);
       if (!window || !field || window.endAt !== time || window.version !== model.version) return values;
-      const at = field({ station_code: "cell", latitude, longitude, altitude_m: altitudeM });
-      const intervals = Array.from({ length: 481 }, (_, i) => at(time - (480 - i) * HOUR, false));
+      let intervals = cellIntervals.get(model.stationWindowId);
+      if (!intervals) {
+        const at = field({ station_code: "cell", latitude, longitude, altitude_m: altitudeM });
+        intervals = Array.from({ length: 481 }, (_, i) => at(time - (480 - i) * HOUR, false));
+        cellIntervals.set(model.stationWindowId, intervals);
+      }
       const lag = stationTemperatureTailLag(intervals.map(Boolean));
       if (lag === undefined) return values;
       modelOnlyHours = Math.max(modelOnlyHours, lag);

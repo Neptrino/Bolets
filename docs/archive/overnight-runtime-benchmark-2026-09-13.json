@@ -1,0 +1,190 @@
+{
+  "capturedAt": "2026-09-13T20:38:51.228Z",
+  "comparisons": 240,
+  "scope": "Synthetic local Node 24 CPU: only repeated per-cell/window station interpolation reused; excludes DB and HTTP.",
+  "rows": [
+    {
+      "points": 1,
+      "cells": 100,
+      "stations": 160,
+      "runs": {
+        "original": [
+          {
+            "cpuMs": 157.196,
+            "wallMs": 148.90370800000005
+          },
+          {
+            "cpuMs": 144.302,
+            "wallMs": 144.136125
+          },
+          {
+            "cpuMs": 162.553,
+            "wallMs": 143.41408300000012
+          },
+          {
+            "cpuMs": 149.92,
+            "wallMs": 149.9130409999998
+          },
+          {
+            "cpuMs": 173.487,
+            "wallMs": 154.52870799999982
+          }
+        ],
+        "candidate": [
+          {
+            "cpuMs": 151.214,
+            "wallMs": 147.27487500000007
+          },
+          {
+            "cpuMs": 147.617,
+            "wallMs": 147.138958
+          },
+          {
+            "cpuMs": 168.34,
+            "wallMs": 150.07300000000032
+          },
+          {
+            "cpuMs": 151.768,
+            "wallMs": 152.18016699999998
+          },
+          {
+            "cpuMs": 160.994,
+            "wallMs": 144.3846249999997
+          }
+        ]
+      },
+      "originalCpuMs": 157.196,
+      "candidateCpuMs": 151.768
+    },
+    {
+      "points": 4,
+      "cells": 100,
+      "stations": 160,
+      "runs": {
+        "original": [
+          {
+            "cpuMs": 615.91,
+            "wallMs": 569.773917
+          },
+          {
+            "cpuMs": 500.283,
+            "wallMs": 502.3626250000002
+          },
+          {
+            "cpuMs": 510.559,
+            "wallMs": 512.2487500000007
+          },
+          {
+            "cpuMs": 503.547,
+            "wallMs": 505.3029999999999
+          },
+          {
+            "cpuMs": 521.971,
+            "wallMs": 531.7231250000004
+          }
+        ],
+        "candidate": [
+          {
+            "cpuMs": 172.406,
+            "wallMs": 168.54620799999975
+          },
+          {
+            "cpuMs": 167.981,
+            "wallMs": 168.3911250000001
+          },
+          {
+            "cpuMs": 185.105,
+            "wallMs": 194.751166
+          },
+          {
+            "cpuMs": 193.227,
+            "wallMs": 199.39808400000038
+          },
+          {
+            "cpuMs": 177.899,
+            "wallMs": 179.52750000000015
+          }
+        ]
+      },
+      "originalCpuMs": 510.559,
+      "candidateCpuMs": 177.899
+    },
+    {
+      "points": 16,
+      "cells": 100,
+      "stations": 160,
+      "runs": {
+        "original": [
+          {
+            "cpuMs": 2158.471,
+            "wallMs": 2172.3119159999997
+          },
+          {
+            "cpuMs": 2085.48,
+            "wallMs": 2115.208667000001
+          },
+          {
+            "cpuMs": 2001.661,
+            "wallMs": 2018.8780420000003
+          },
+          {
+            "cpuMs": 2005.725,
+            "wallMs": 2016.6263340000005
+          },
+          {
+            "cpuMs": 2084.051,
+            "wallMs": 2081.2585000000017
+          }
+        ],
+        "candidate": [
+          {
+            "cpuMs": 358.402,
+            "wallMs": 360.20758300000125
+          },
+          {
+            "cpuMs": 345.67,
+            "wallMs": 344.1971250000006
+          },
+          {
+            "cpuMs": 314.481,
+            "wallMs": 317.3509579999991
+          },
+          {
+            "cpuMs": 311.542,
+            "wallMs": 315.81258400000115
+          },
+          {
+            "cpuMs": 328.956,
+            "wallMs": 326.84620800000266
+          }
+        ]
+      },
+      "originalCpuMs": 2084.051,
+      "candidateCpuMs": 328.956
+    }
+  ],
+  "productionModelPointCounts": [
+    {
+      "gridSizeM": 1000,
+      "mean": 1.4,
+      "maximum": 4
+    },
+    {
+      "gridSizeM": 2500,
+      "mean": 1.0,
+      "maximum": 1
+    },
+    {
+      "gridSizeM": 5000,
+      "mean": 3.7,
+      "maximum": 4
+    },
+    {
+      "gridSizeM": 10000,
+      "mean": 13.5,
+      "maximum": 16
+    }
+  ],
+  "prototype": "Inside each cell scoring call, memoize the 481 interpolation results by stationWindowId; retain per-model window/version checks and model-specific arithmetic. No persistent cache change.",
+  "runtimeRevision": "635e004c013073f26f5e368c3912eeda254bd0cf"
+}

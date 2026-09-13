@@ -199,7 +199,7 @@ function rolloutFixture() {
   writeFileSync(join(app, "Dockerfile"), "FROM scratch\n");
   writeFileSync(join(app, ".release-image"), `${image}\n`);
   writeFileSync(join(app, ".release-revision"), `${revision}\n`);
-  for (const name of ["rollout.sh", "load-release-image.sh", "compose.yaml"])
+  for (const name of ["rollout.sh", "load-release-image.sh", "compose.yaml", "verify-condition-publication.sql"])
     writeFileSync(join(scripts, name), readFileSync(`deploy/vps/${name}`));
   for (const name of ["apply-database-migrations", "sync-functions", "bootstrap-umami", "warm-map-cache"])
     executable(join(scripts, `${name}.sh`), `#!/bin/sh\nprintf '%s\\n' '${name}' >> "$TEST_LOG"\n`);
@@ -226,11 +226,12 @@ case "$*" in
   'image inspect '*) test "$TEST_IMAGE_CACHED" = true ;;
   'pull '*) exit "$TEST_PULL_EXIT" ;;
   *'scripts/image-build-config.mjs verify') exit "$TEST_CONFIG_EXIT" ;;
+  'exec -i supabase-db psql '*) cat >/dev/null; exit "$TEST_PUBLICATION_EXIT" ;;
 esac
 `);
   const env = {
     ...process.env, PATH: `${bin}:${process.env.PATH}`, TEST_LOG: join(root, "events"),
-    TEST_IMAGE_REVISION: revision, TEST_IMAGE_CACHED: "true", TEST_PULL_EXIT: "0", TEST_CONFIG_EXIT: "0",
+    TEST_IMAGE_REVISION: revision, TEST_IMAGE_CACHED: "true", TEST_PULL_EXIT: "0", TEST_CONFIG_EXIT: "0", TEST_PUBLICATION_EXIT: "0",
     BOLETS_STATUS_ENV_FILE: status, BOLETS_UMAMI_ENV_FILE: umami,
     BOLETS_OBSERVABILITY_ENV_FILE: join(root, "absent"), BOLETS_INSTAGRAM_ENV_FILE: join(root, "absent"),
   };
@@ -260,6 +261,14 @@ describe("VPS image rollout", { timeout: 15_000 }, () => {
     const f = rolloutFixture();
     expect(f.run({ TEST_IMAGE_CACHED: "false" }).status).toBe(0);
     expect(f.log()).toContain(`pull ${image}`);
+  });
+
+  it("refuses function synchronization and activation when publication jobs are unavailable", () => {
+    const f = rolloutFixture();
+    expect(f.run({ TEST_PUBLICATION_EXIT: "1" }).status).not.toBe(0);
+    expect(f.log()).toContain("apply-database-migrations");
+    expect(f.log()).not.toContain("sync-functions");
+    expect(f.log()).not.toContain("up -d");
   });
 
   it.each([

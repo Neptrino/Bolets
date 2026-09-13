@@ -21,7 +21,8 @@ begin
       'refresh-environment-daily',
       'refresh-spatial-environment',
       'refresh-spatial-soil',
-      'refresh-spatial-condition-caches',
+      'refresh-spatial-condition-coarse',
+      'refresh-spatial-condition-territorial',
       'refresh-species-occurrences-monthly',
       'refresh-species-occurrences-monthly-tail',
       'bolets-pipeline-retention',
@@ -31,8 +32,8 @@ begin
       'import-xema-rain-3h',
       'cleanup-finding-photo-staging'
     )
-  ) <> 12 then
-    raise exception 'Expected twelve Bolets cron jobs';
+  ) <> 13 then
+    raise exception 'Expected thirteen Bolets cron jobs';
   end if;
 end
 $$;
@@ -48,7 +49,8 @@ begin
       'refresh-environment-daily',
       'refresh-spatial-environment',
       'refresh-spatial-soil',
-      'refresh-spatial-condition-caches',
+      'refresh-spatial-condition-coarse',
+      'refresh-spatial-condition-territorial',
       'refresh-species-occurrences-monthly',
       'refresh-species-occurrences-monthly-tail',
       'bolets-pipeline-retention',

@@ -39,13 +39,11 @@ describe("spatial condition refresh after ingestion", () => {
     expect(migration).toContain("perform public.refresh_spatial_level_conditions(10000, p_snapshot_date)");
   });
 
-  it("retries the idempotent refresh after ingestion cursors are already complete", () => {
-    expect(atmospherePipeline).toMatch(
-      /cursor\.last_cell_id === COMPLETE_CURSOR[\s\S]*refreshSpatialLevelConditionsAfterIngestion\(supabase, today\)/,
-    );
-    expect(soilPipeline).toMatch(
-      /soilAlreadyComplete && forecastAlreadyComplete[\s\S]*refreshSpatialLevelConditionsAfterIngestion\(supabase, today\)/,
-    );
+  it("leaves publication to the database jobs even when ingestion is complete", () => {
+    for (const pipeline of [atmospherePipeline, soilPipeline]) {
+      expect(pipeline).not.toContain("refreshSpatialLevelConditionsAfterIngestion");
+      expect(pipeline).toContain("conditionsRefreshed: false");
+    }
   });
 
   it("tracks the observed generation instead of skipping a same-day replay", () => {

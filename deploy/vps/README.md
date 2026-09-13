@@ -906,3 +906,25 @@ operations endpoint. The first complete minute establishes the initial sample.
 Useful initial investigation thresholds are repeated public response durations
 over one second and event-loop max delays above 0.2 seconds; tune alerts against
 actual traffic rather than treating these as availability guarantees.
+
+### Condition publication and cold temperature calculations
+
+The database owns condition publication through `refresh-spatial-condition-coarse`
+(even minutes) and `refresh-spatial-condition-territorial` (odd minutes). Each job
+commits independently; both use the coarse publication lock to prevent overlapping
+heavy work. The 1 km job also retains its territorial lock. Ingestion reports its
+own completion and leaves `conditionsRefreshed` false; publication readiness comes
+from the generation-bound condition cursors. Never rebuild these caches through
+PostgREST's short request timeout. Migrations preserve paused jobs for restore
+rehearsals; rollout verifies both jobs are active before synchronizing functions.
+The historical restore-baseline verifier remains fixed to its original schema.
+
+Run `sh scripts/verify-condition-publication.sh` for the isolated PostgreSQL tests
+(incomplete ingestion, retries, same-day publication, independent failure, locks,
+paused migration and rollout gates). This requires Docker and creates no host port
+or persistent test volume.
+
+Cold temperature scoring reuses each cell's station-hour interpolation across
+model points sharing the same frozen station window. The reuse is local to that
+cell evaluation; model-specific correction and persistent cache keys are unchanged.
+See the [dated review and benchmark](../../docs/archive/overnight-runtime-review-2026-09-13.md).

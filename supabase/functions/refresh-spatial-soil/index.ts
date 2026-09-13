@@ -1,4 +1,4 @@
-import { createAdminClient, finiteNumber, finishRun, json, refreshSpatialLevelConditionsAfterIngestion, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
+import { createAdminClient, finiteNumber, finishRun, json, startRun, verifyIngestionRequest } from "../_shared/pipeline.ts";
 import {
   configureOpenMeteoForecastHistoryRequest,
   configureOpenMeteoForecastRequest,
@@ -417,9 +417,8 @@ async function runSoilAndForecastBatch(
     const soilAlreadyComplete = soilLastPointId === COMPLETE_CURSOR;
     const forecastAlreadyComplete = forecastLastPointId === COMPLETE_CURSOR;
     if (soilAlreadyComplete && forecastAlreadyComplete) {
-      const conditionsRefreshed = await refreshSpatialLevelConditionsAfterIngestion(supabase, today);
       return {
-        payload: { refreshed: 0, forecasted: 0, complete: true, conditionsRefreshed, snapshotDate: today },
+        payload: { refreshed: 0, forecasted: 0, complete: true, conditionsRefreshed: false, snapshotDate: today },
         complete: true,
         halt: false,
       };
@@ -487,16 +486,13 @@ async function runSoilAndForecastBatch(
           forecastReconciliation,
         },
       });
-      const conditionsRefreshed = soilErrorMessage
-        ? false
-        : await refreshSpatialLevelConditionsAfterIngestion(supabase, today);
       return {
         payload: {
           runId,
           refreshed: 0,
           forecasted: 0,
           complete: !cursorError,
-          conditionsRefreshed,
+          conditionsRefreshed: false,
           snapshotDate: today,
         },
         complete: !cursorError,
@@ -802,9 +798,6 @@ async function runSoilAndForecastBatch(
       },
     );
     const complete = soilComplete && forecastComplete;
-    const conditionsRefreshed = soilComplete
-      ? await refreshSpatialLevelConditionsAfterIngestion(supabase, today)
-      : false;
     return {
       payload: {
         runId,
@@ -813,7 +806,7 @@ async function runSoilAndForecastBatch(
         forecastAvailable: forecastPoints.length === 0 || forecastBatchSucceeded,
         forecastRealigned: forecastReconciliation.realigned,
         complete,
-        conditionsRefreshed,
+        conditionsRefreshed: false,
         snapshotDate: today,
       },
       complete,
