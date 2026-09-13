@@ -28,3 +28,24 @@ the test's interaction, not missing or damaged map tiles.
 This candidate removes the application's tile handling from the opening view.
 Its deployed PageSpeed impact remains to be measured; no score improvement is
 claimed from the path change alone.
+
+
+Four alternating local production-build runs compare the same client bundle
+and prediction fixture, routing opening tile requests through the normal API
+or static path. LCP was 2,736/2,600 ms through the API and 2,580/2,580 ms through
+static files (median 2,668 → 2,580 ms). Initial decoded JavaScript was identical
+at 825,666 bytes and each run painted 154,374 prediction pixels without browser
+errors. This small local comparison does not model Cloudflare edge distance or
+prove a live PageSpeed gain. Raw runs are retained in the companion JSON.
+
+
+The first CI image build (34727050926) failed before activation because the
+isolated Docker media stage copied only the earlier media builder inputs. The
+follow-up adds the bootstrap helper, URL module and source catalogue to that
+stage. Production retained the healthy `fbfe76f` release throughout.
+
+The corrected COPY set passes an isolated Linux amd64 Docker check: starting
+from an existing local Node application image, an empty `/bootstrap` directory
+receives exactly the media stage's COPY inputs and successfully exports all
+18 verified tiles. This checks dependency packaging, not the full release image;
+Actions must still complete its normal build and smoke test.

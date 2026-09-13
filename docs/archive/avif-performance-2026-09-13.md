@@ -42,3 +42,30 @@ photos; they now verify the existing static variant contract and derive the
 gallery count from its actual thumbnails.
 
 The production build, type checks and lint/source-size checks also pass.
+
+## Deployed PageSpeed check
+
+Release `fbfe76f` deployed successfully through Actions run 34726502096 and
+reported healthy on the VPS. The [Google reports](avif-pagespeed-live-2026-09-13.json)
+retain mobile and desktop results, including the outlier and tool failure:
+
+| Route | Mobile | Desktop |
+| --- | ---: | ---: |
+| `/` | 91 | 100 |
+| `/bolets` | 93 | 100 |
+| `/bolets-avui` | 95; repeat 95 | Google driver error; repeat 99 |
+| `/bolets/cep` | 91 | 100 |
+| `/bolets/pinetell` | 79; repeat 89 | 100; repeat 100 |
+| `/zones/ceps` | 96 | 100 |
+
+All completed SEO audits score 100. Pinetell's first mobile report includes
+517 ms TBT; the repeat has 69 ms, but a slower FCP of 2.3 seconds. Neither result
+is discarded. Both report zero layout shift and no browser console errors.
+Images are discovered from initial HTML with high fetch priority; Cep's
+observed mobile LCP breakdown now spends 90 ms loading the image but 1,050 ms
+waiting to render. Remaining first-paint/render work therefore matters more
+than further image compression. The local controlled AVIF gains do not imply
+that every deployed audit score improved.
+
+Three live browser checks also pass: the single preferred-format hero preload,
+gallery navigation/lightbox and descriptive thumbnails.

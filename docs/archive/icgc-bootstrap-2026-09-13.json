@@ -710,5 +710,71 @@
   ],
   "frozenZoom": 7,
   "frozenTiles": 18,
-  "totalBytes": 62920
+  "totalBytes": 62920,
+  "localComparison": [
+    {
+      "mode": "api",
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2736,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 111,
+      "fcp": 1412,
+      "ttfb": 29.600000143051147,
+      "firstTile": 2385.5,
+      "paintedPixels": 154374
+    },
+    {
+      "mode": "static",
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2580,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 21,
+      "fcp": 1284,
+      "ttfb": 12.5,
+      "firstTile": 2247.5,
+      "paintedPixels": 154374
+    },
+    {
+      "mode": "api",
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2600,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 22,
+      "fcp": 1284,
+      "ttfb": 20.200000047683716,
+      "firstTile": 2254.7999999523163,
+      "paintedPixels": 154374
+    },
+    {
+      "mode": "static",
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2580,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 11,
+      "fcp": 1272,
+      "ttfb": 14.5,
+      "firstTile": 2235.7000000476837,
+      "paintedPixels": 154374
+    }
+  ]
 }

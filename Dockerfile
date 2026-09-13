@@ -8,7 +8,10 @@ RUN --mount=type=cache,target=/root/.npm npm ci
 
 FROM dependencies AS media
 COPY scripts/build-static-media.mts ./scripts/build-static-media.mts
+COPY scripts/copy-icgc-bootstrap.mts ./scripts/copy-icgc-bootstrap.mts
 COPY src/lib/static-media.ts ./src/lib/static-media.ts
+COPY src/lib/icgc-bootstrap.ts ./src/lib/icgc-bootstrap.ts
+COPY data/icgc-bootstrap ./data/icgc-bootstrap
 COPY public/media ./public/media
 RUN npm run media:build
 
