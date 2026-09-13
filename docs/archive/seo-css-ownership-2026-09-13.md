@@ -69,5 +69,10 @@ condition cards have longer map-link labels than the unavailable local readings.
 The link retained `white-space: nowrap`. The follow-up permits wrapping and
 bounds the link width; the regression now waits for the streamed reading to
 resolve. A browser-only candidate-style check passes all four actual live cards
-at 320, 390 and 1350 px, and the longest label was inspected visually. Its final
-production verification follows deployment of that correction.
+at 320, 390 and 1350 px, and the longest label was inspected visually. The correction then deployed as
+`0164fe6472b021ba9e287949018041451133ba04` through successful
+[Actions run 34729020692](https://github.com/Neptrino/Bolets/actions/runs/34729020692).
+The VPS revision is healthy; all three live width cases pass across the four
+guides, and all four live map checks again paint their real data without page
+or API errors. This follow-up changes only local-guide link wrapping and test
+waiting, so the measured map and main SEO-page assets remain equivalent.

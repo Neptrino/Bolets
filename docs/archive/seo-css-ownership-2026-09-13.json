@@ -118,5 +118,60 @@
     "afterNodes": 2336,
     "difference": "Four transient Avui loading nodes disappeared. No added or changed styled nodes; other 21 views identical. Territorial table conditional content not covered by this capture."
   },
-  "scope": "Current readings, rain, preservation and season CSS moved to owner imports. Shared editorial/navigation rules retained. Local-guide CSS order and narrow viewport overflow corrected."
+  "scope": "Current readings, rain, preservation and season CSS moved to owner imports. Shared editorial/navigation rules retained. Local-guide CSS order and narrow viewport overflow corrected.",
+  "finalLiveVerification": {
+    "revision": "0164fe6472b021ba9e287949018041451133ba04",
+    "deploymentRun": 34729020692,
+    "deploymentConclusion": "success",
+    "containerHealth": "healthy",
+    "guideWidths": [
+      320,
+      390,
+      1350
+    ],
+    "guidesPerWidth": 4,
+    "allGuideCasesPassed": true,
+    "maps": [
+      {
+        "path": "/map",
+        "status": 200,
+        "scriptBytes": 1021081,
+        "errors": [],
+        "failures": [],
+        "paintedPixels": 43699,
+        "webglStarts": 0,
+        "loadedTiles": 18
+      },
+      {
+        "path": "/bolets-avui",
+        "status": 200,
+        "scriptBytes": 979214,
+        "errors": [],
+        "failures": [],
+        "paintedPixels": 18571,
+        "webglStarts": 0,
+        "loadedTiles": 18
+      },
+      {
+        "path": "/bolets/cep",
+        "status": 200,
+        "scriptBytes": 1019023,
+        "errors": [],
+        "failures": [],
+        "paintedPixels": 29066,
+        "webglStarts": 0,
+        "loadedTiles": 12
+      },
+      {
+        "path": "/bolets/pinetell",
+        "status": 200,
+        "scriptBytes": 1019023,
+        "errors": [],
+        "failures": [],
+        "paintedPixels": 33897,
+        "webglStarts": 0,
+        "loadedTiles": 12
+      }
+    ]
+  }
 }
