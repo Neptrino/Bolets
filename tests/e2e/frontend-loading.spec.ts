@@ -33,7 +33,7 @@ test("map paints intermediate cells before the remaining buckets finish", async 
   const remaining = new Promise<void>((resolve) => { release = resolve; });
   let count = 0;
   // The prediction overlay must work independently of the external basemap.
-  await page.route("**/api/map-tiles/icgc/**", (route) => route.abort());
+  await page.route(/\/api\/map-tiles\/icgc\/|\/media\/optimized\/v\d+\/icgc-bootstrap\//, (route) => route.abort());
   await page.route("**/api/predictions?**", async (route) => {
     const index = count++;
     await (index === 0 ? first : remaining);

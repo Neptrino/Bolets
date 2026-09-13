@@ -677,9 +677,9 @@ test("starts a local guide habitat map at its local area", async ({ page }) => {
       Number(url.searchParams.get("resolution")) === 2500;
   }), { timeout: 12_000 }).toBe(true);
   await expect.poll(async () => page.locator(".region-map-surface").evaluate(surface => {
-    const tile = surface.querySelector<HTMLImageElement>('img[src*="/api/map-tiles/icgc/"]');
+    const tile = surface.querySelector<HTMLImageElement>('img[src*="/api/map-tiles/icgc/"], img[src*="/icgc-bootstrap/"]');
     if (!tile) return Infinity;
-    const [zoom, x, y] = new URL(tile.src).pathname.split("/").slice(-3).map(Number);
+    const [zoom, x, y] = new URL(tile.src).pathname.replace(/\.webp$/, "").split("/").slice(-3).map(Number);
     const scale = 256 * 2 ** zoom;
     const latitude = 42.1506 * Math.PI / 180;
     const worldX = (2.1167 + 180) / 360 * scale;

@@ -12,7 +12,7 @@ Start with the [documentation index](docs/README.md) and [repository guidance](A
 | `components/` | Shared interface components |
 | `components/region-map/` | Prediction/habitat map orchestration, raster adapter and shared painting; retained MapLibre factory for finding maps |
 | `src/` | Application logic, adapters and utilities |
-| `data/` | Version-controlled catalogue, ecology and editorial configuration |
+| `data/` | Version-controlled catalogue, ecology, editorial configuration and opening-map cartography |
 | `public/` | Website assets; generated responsive media and versioned MapLibre workers remain ignored |
 | `supabase/` | Migrations, Edge Functions and database operations |
 | `workers/`, `lambda/` | Narrow environmental-provider egress services |

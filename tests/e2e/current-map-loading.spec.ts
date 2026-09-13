@@ -6,9 +6,9 @@ test("Avui keeps offscreen map work deferred and loads its timeline on approach"
   await page.setViewportSize({ width: 390, height: 844 });
   const mapRequests: string[] = [];
   page.on("request", request => {
-    if (/\/api\/(predictions|map-tiles)|\/maplibre\//.test(request.url())) mapRequests.push(request.url());
+    if (/\/api\/(predictions|map-tiles)|\/maplibre\/|\/icgc-bootstrap\//.test(request.url())) mapRequests.push(request.url());
   });
-  await page.route("**/api/map-tiles/**", route => route.abort());
+  await page.route(/\/api\/map-tiles\/|\/media\/optimized\/v\d+\/icgc-bootstrap\//, route => route.abort());
   await page.route("**/api/predictions?**", route => route.fulfill({ json: {
     cells: [{ cellId: "today-loading", gridSizeM: 2500, cellBounds: [[1.65, 42.15], [1.69, 42.18]], score: 61, habitatCoverage: 0.6 }],
     truncated: false,
@@ -35,7 +35,7 @@ test("Avui keeps offscreen map work deferred and loads its timeline on approach"
 for (const observerAvailable of [true, false]) test(`Avui starts a visible map automatically (observer: ${observerAvailable})`, async ({ page }) => {
   await page.setViewportSize({ width: 1350, height: 1080 });
   if (!observerAvailable) await page.addInitScript(() => { Reflect.deleteProperty(window, "IntersectionObserver"); });
-  await page.route("**/api/map-tiles/**", route => route.abort());
+  await page.route(/\/api\/map-tiles\/|\/media\/optimized\/v\d+\/icgc-bootstrap\//, route => route.abort());
   await page.route("**/api/predictions?**", route => route.fulfill({ json: { cells: [], truncated: false } }));
   await page.goto("/bolets-avui");
   await expect(page.locator(".current-production-map")).toBeAttached();

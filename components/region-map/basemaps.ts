@@ -140,7 +140,7 @@ function icgcReliefStyle(): StyleSpecification {
         tileSize: 256,
         minzoom: 0,
         maxzoom: 18,
-        attribution: "© Institut Cartogràfic i Geològic de Catalunya",
+        attribution: '© Institut Cartogràfic i Geològic de Catalunya · © <a href="https://openmaptiles.org/">OpenMapTiles</a> · © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
       },
     },
     layers: [

@@ -1,0 +1,119 @@
+{
+  "capturedAt": "2026-09-12T23:56:34.157Z",
+  "encoding": "Unmodified public v2 tile response: WebP quality 85, effort 4, 256 pixels; original relief transparency retained.",
+  "sourceRevision": "55f47d4587620be735d63928441101fcd61fec94",
+  "provider": "Institut Cartogràfic i Geològic de Catalunya",
+  "providerService": "https://www.icgc.cat/ca/Geoinformacio-i-mapes/Servei-de-Mapa-Base",
+  "licence": "ICGC CC BY 4.0; reference cartography outside Catalonia includes OpenMapTiles/OpenStreetMap under ODbL.",
+  "licenceUrl": "https://www.icgc.cat/ca/LICGC/Informacio-publica/Transparencia/Reutilitzacio-de-la-informacio",
+  "entries": [
+    {
+      "key": "references/7/63/46",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/references/7/63/46",
+      "bytes": 3310,
+      "sha256": "6660164359ae1fe971ac47389da33f2d425bfdb2a917b8d40386b43b2ac29346"
+    },
+    {
+      "key": "references/7/63/47",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/references/7/63/47",
+      "bytes": 7038,
+      "sha256": "56be5383007db86512d72b49da3892ef95a69f55d1e2bd93e4e569c8737e4d74"
+    },
+    {
+      "key": "references/7/63/48",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/references/7/63/48",
+      "bytes": 3400,
+      "sha256": "439f95c1505b0dfd2577cee571fedc47d3598fe892b7bb04c67a3242bb6a4033"
+    },
+    {
+      "key": "references/7/64/46",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/references/7/64/46",
+      "bytes": 3634,
+      "sha256": "c1eced46c75180dda265bfd168a5bcb447f00f7bbda2b543147cb9c5251e0d0d"
+    },
+    {
+      "key": "references/7/64/47",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/references/7/64/47",
+      "bytes": 6944,
+      "sha256": "9db5ccb0c37fa89389b1713fbda075ab8329f901d47ea77d826a52d281f584d8"
+    },
+    {
+      "key": "references/7/64/48",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/references/7/64/48",
+      "bytes": 2122,
+      "sha256": "866123ba75ecc1dd608bcf04d1775c178502fbdf8beae74d08fb6d42483b3000"
+    },
+    {
+      "key": "references/7/65/46",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/references/7/65/46",
+      "bytes": 5738,
+      "sha256": "bf7d40ba895653ae660b55d8f154ad6e7a5a50b6b81ab38fa23b28c9e907b22e"
+    },
+    {
+      "key": "references/7/65/47",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/references/7/65/47",
+      "bytes": 1250,
+      "sha256": "585ffb80197452e727191d87368b8a6747b55b7eca3ad48e92d17919631a798d"
+    },
+    {
+      "key": "references/7/65/48",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/references/7/65/48",
+      "bytes": 1514,
+      "sha256": "a8a742e87d74573ae13f1b42189a4a8800d6076abf0c9ff2d7d8ca6b37d9d678"
+    },
+    {
+      "key": "relief/7/63/46",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/relief/7/63/46",
+      "bytes": 222,
+      "sha256": "95b0164339cb1d6fc90504fa25185488c287a6473f37ed4d59f94b23a004e361"
+    },
+    {
+      "key": "relief/7/63/47",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/relief/7/63/47",
+      "bytes": 222,
+      "sha256": "95b0164339cb1d6fc90504fa25185488c287a6473f37ed4d59f94b23a004e361"
+    },
+    {
+      "key": "relief/7/63/48",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/relief/7/63/48",
+      "bytes": 222,
+      "sha256": "95b0164339cb1d6fc90504fa25185488c287a6473f37ed4d59f94b23a004e361"
+    },
+    {
+      "key": "relief/7/64/46",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/relief/7/64/46",
+      "bytes": 222,
+      "sha256": "95b0164339cb1d6fc90504fa25185488c287a6473f37ed4d59f94b23a004e361"
+    },
+    {
+      "key": "relief/7/64/47",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/relief/7/64/47",
+      "bytes": 22010,
+      "sha256": "0d158df7af5f641c9016f43861e4191666ff909e34e446fd48d553dbdd9dbd67"
+    },
+    {
+      "key": "relief/7/64/48",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/relief/7/64/48",
+      "bytes": 2092,
+      "sha256": "6abe310ae4bb7af9ad86b263330e2844bc555ec3217eb7cf9172798765eb06b2"
+    },
+    {
+      "key": "relief/7/65/46",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/relief/7/65/46",
+      "bytes": 222,
+      "sha256": "95b0164339cb1d6fc90504fa25185488c287a6473f37ed4d59f94b23a004e361"
+    },
+    {
+      "key": "relief/7/65/47",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/relief/7/65/47",
+      "bytes": 2536,
+      "sha256": "3aa68ae07b32edae9becd129d62039bea7f3cfb7ea48cd1972e59da964e17e6d"
+    },
+    {
+      "key": "relief/7/65/48",
+      "source": "https://bolets.app/api/map-tiles/icgc/v2/relief/7/65/48",
+      "bytes": 222,
+      "sha256": "95b0164339cb1d6fc90504fa25185488c287a6473f37ed4d59f94b23a004e361"
+    }
+  ]
+}

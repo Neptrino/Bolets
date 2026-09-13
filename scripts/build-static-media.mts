@@ -1,6 +1,7 @@
 import { mkdir, readdir, rm } from "node:fs/promises";
 import { dirname, join, relative, sep } from "node:path";
 import sharp from "sharp";
+import { copyIcgcBootstrap } from "./copy-icgc-bootstrap.mts";
 import {
   STATIC_MEDIA_VERSION,
   STATIC_MEDIA_WIDTHS,
@@ -60,4 +61,5 @@ async function work() {
 }
 
 await Promise.all(Array.from({ length: 8 }, work));
+await copyIcgcBootstrap(process.cwd());
 console.log(`Generated ${jobs.length} responsive ${STATIC_MEDIA_VERSION} media variants from ${sourceFiles.length} sources.`);

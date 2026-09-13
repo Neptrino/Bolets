@@ -6,7 +6,7 @@ test.use({ serviceWorkers: "block", extraHTTPHeaders: { DNT: "1" } });
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/predictions?*", route => route.fulfill({ json: { cells: [], truncated: false } }));
   const tile = await sharp({ create: { width: 256, height: 256, channels: 3, background: "#c4c4b4" } }).png().toBuffer();
-  await page.route(/\/api\/map-tiles\/|geoserveis\.icgc\.cat|tile\.openstreetmap\.org|server\.arcgisonline\.com/, route =>
+  await page.route(/\/api\/map-tiles\/|\/media\/optimized\/v\d+\/icgc-bootstrap\/|geoserveis\.icgc\.cat|tile\.openstreetmap\.org|server\.arcgisonline\.com/, route =>
     route.fulfill({ contentType: "image/png", body: tile }));
 });
 

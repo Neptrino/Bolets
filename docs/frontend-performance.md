@@ -91,6 +91,15 @@ independent canvases and control corners at z-index 2, below site panels.
 Geolocation watches remain local to each mounted map; manual panning stops
 following, and restored species views never restart automatic geolocation.
 
+The 18 default zoom-7 opening tiles (relief/reference, x 63–65, y 46–48) are
+frozen under `data/icgc-bootstrap/` with source attribution and checksums.
+`media:build` validates all files before copying them unchanged into the existing
+versioned optimized-media path. They use Caddy/CDN static serving; all other
+coordinates, zooms and providers retain their normal paths. This caches only
+background cartography. Predictions retain publication-aware freshness. Refresh
+with a new bootstrap version, never by overwriting an immutable URL. Browser
+checks verify exact tile bytes and the normal API after zooming.
+
 Attach raster layers after the synchronous initial camera fit, so temporary
 startup views do not download tiles. The default relief/reference layers use
 versioned v2 WebP tiles at quality 85 with transparency preserved. Reuse the

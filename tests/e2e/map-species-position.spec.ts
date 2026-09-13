@@ -20,8 +20,8 @@ test.beforeEach(async ({ page }) => {
   } }));
   // A deterministic geographic tile pattern makes camera comparison independent
   // of remote basemap availability. Position and scale both affect the pixels.
-  await page.route("**/api/map-tiles/icgc/**", async (route) => {
-    const [, x, y] = new URL(route.request().url()).pathname.split("/").slice(-3).map(Number);
+  await page.route(/\/api\/map-tiles\/icgc\/|\/media\/optimized\/v\d+\/icgc-bootstrap\//, async (route) => {
+    const [, x, y] = new URL(route.request().url()).pathname.replace(/\.webp$/, "").split("/").slice(-3).map(Number);
     const body = await sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">
       <rect width="256" height="256" fill="rgb(${x % 200},${y % 200},130)"/>
       <path d="M0 0H256V256H0Z M0 100H256 M100 0V256" fill="none" stroke="white" stroke-width="4"/>

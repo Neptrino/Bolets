@@ -1,5 +1,6 @@
 import { CRS, DomUtil, TileLayer, point, type Coords, type LatLng, type Map as LeafletMap, type Point } from "leaflet";
 import type { StyleSpecification } from "maplibre-gl";
+import { icgcBootstrapTileUrl } from "@/src/lib/icgc-bootstrap";
 
 /** Translate the existing raster-only styles without duplicating providers. */
 export function rasterStyleLayers(style: StyleSpecification) {
@@ -26,7 +27,10 @@ export class RasterTiles extends TileLayer {
     super(template, options);
   }
   getTileUrl(coords: Coords) {
-    if (!this.template.includes("{bbox-epsg-3857}")) return super.getTileUrl(coords);
+    if (!this.template.includes("{bbox-epsg-3857}")) {
+      const url = super.getTileUrl(coords);
+      return icgcBootstrapTileUrl(url) ?? url;
+    }
     const size = this.getTileSize();
     const northwest = CRS.EPSG3857.project(CRS.EPSG3857.pointToLatLng(point(coords.x * size.x, coords.y * size.y), coords.z));
     const southeast = CRS.EPSG3857.project(CRS.EPSG3857.pointToLatLng(point((coords.x + 1) * size.x, (coords.y + 1) * size.y), coords.z));
