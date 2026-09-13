@@ -1,0 +1,234 @@
+{
+  "date": "2026-09-13",
+  "baselineRevision": "b154062912176ea0c16092463c96343cfcf69f18",
+  "method": "Six alternating fresh Chromium mobile contexts, 412x823 DPR1.75, CPU4x, latency150ms, throughput200000B/s. Warm gzip HTTP proxies to the same candidate. Only the main stylesheet response differs; shared remaining CSS, JS, images and prediction fixture are identical. Service workers blocked, DNT enabled. PerformanceObserver metrics are not Lighthouse scores.",
+  "stylesheetBytes": {
+    "path": "/_next/static/chunks/0hlbzspjw93qz.css",
+    "before": {
+      "decoded": 256471,
+      "gzip": 42932
+    },
+    "after": {
+      "decoded": 224378,
+      "gzip": 37409
+    }
+  },
+  "runs": [
+    {
+      "port": 3110,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2368,
+        "url": "http://127.0.0.1:3110/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 12,
+      "fcp": 1244,
+      "ttfb": 10.299999952316284,
+      "firstTile": 178.29999995231628,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3111,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2364,
+        "url": "http://127.0.0.1:3111/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 13,
+      "fcp": 1152,
+      "ttfb": 16.5,
+      "firstTile": 178.29999995231628,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3111,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2332,
+        "url": "http://127.0.0.1:3111/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 15,
+      "fcp": 1132,
+      "ttfb": 11.899999856948853,
+      "firstTile": 171.5,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3110,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2364,
+        "url": "http://127.0.0.1:3110/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 10,
+      "fcp": 1220,
+      "ttfb": 10.200000047683716,
+      "firstTile": 170.90000009536743,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3110,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2376,
+        "url": "http://127.0.0.1:3110/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 10,
+      "fcp": 1228,
+      "ttfb": 11,
+      "firstTile": 171.70000004768372,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3111,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2344,
+        "url": "http://127.0.0.1:3111/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 13,
+      "fcp": 1136,
+      "ttfb": 10.400000095367432,
+      "firstTile": 171.40000009536743,
+      "paintedPixels": 154374
+    }
+  ],
+  "medianMilliseconds": {
+    "before": {
+      "lcp": 2368,
+      "fcp": 1228
+    },
+    "after": {
+      "lcp": 2344,
+      "fcp": 1136
+    }
+  },
+  "validation": {
+    "preservedSelectorContextSequences": 818,
+    "computedStyleViews": 30,
+    "identicalSampledNodes": 23168,
+    "computedStyleDifferences": [],
+    "browserCasesPassed": 22,
+    "productionBuild": "pass",
+    "lintAndSourceSize": "pass",
+    "typecheck": "pass"
+  },
+  "stylesheetOwnership": [
+    {
+      "path": "/map",
+      "hasCatalogue": false,
+      "styles": [
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1jzdqc9io0b1s.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0hlbzspjw93qz.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0sz__7aelm7lu.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0g3i1jl3_0eez.css",
+          "hasCatalogue": false
+        }
+      ]
+    },
+    {
+      "path": "/bolets-avui",
+      "hasCatalogue": false,
+      "styles": [
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1jzdqc9io0b1s.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0hlbzspjw93qz.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0sz__7aelm7lu.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0x4dctvql2n0-.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1keeqqdnjo1bn.css",
+          "hasCatalogue": false
+        }
+      ]
+    },
+    {
+      "path": "/bolets",
+      "hasCatalogue": true,
+      "styles": [
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1jzdqc9io0b1s.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0hlbzspjw93qz.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0sz__7aelm7lu.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1keeqqdnjo1bn.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/2ieogyljsade9.css",
+          "hasCatalogue": true
+        }
+      ]
+    },
+    {
+      "path": "/bolets/cep",
+      "hasCatalogue": true,
+      "styles": [
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1jzdqc9io0b1s.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0hlbzspjw93qz.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0sz__7aelm7lu.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1ljmpc_3b1n0e.css",
+          "hasCatalogue": false
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/2ieogyljsade9.css",
+          "hasCatalogue": true
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0fzmgzwthssk9.css",
+          "hasCatalogue": false
+        }
+      ]
+    }
+  ]
+}

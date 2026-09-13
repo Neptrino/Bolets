@@ -61,35 +61,4 @@
   .directory-search { flex-wrap: wrap; }
   .directory-search .search-field { flex-basis: 100%; }
   .directory-search-submit { min-height: 44px; }
-  .compact-species-page .species-aside {
-    display: flex;
-    position: static;
-    width: 100%;
-    max-width: 100%;
-    gap: .5rem;
-    overflow-x: auto;
-    margin: 0 0 1.5rem;
-    padding: .5rem 0 .75rem;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    background: var(--paper);
-  }
-  .compact-species-page .species-aside::before,
-  .compact-species-page .species-aside > p,
-  .compact-species-page .species-aside > a::before { display: none; }
-  .compact-species-page .species-aside > a:not(.aside-map-link),
-  .compact-species-page .species-aside .aside-map-link {
-    display: inline-flex;
-    align-items: center;
-    flex: 0 0 auto;
-    min-height: 44px;
-    margin: 0;
-    padding: .5rem .75rem;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    background: var(--surface);
-    font-size: var(--text-xs);
-    white-space: nowrap;
-  }
 }

@@ -1,0 +1,4 @@
+/* Keep catalogue foundations, components and responsive overrides ordered. */
+@import "./catalogue-foundation.css";
+@import "./catalogue-components.css";
+@import "./catalogue-responsive.css";

@@ -1,3 +1,4 @@
+import "@/app/styles/species-catalogue.css";
 import { Star, TriangleAlert } from "lucide-react";
 import { getEdibilityPresentation } from "@/src/lib/edibility-presentation";
 import type { CulinaryProfile, EdibilityStatus } from "@/src/lib/types";

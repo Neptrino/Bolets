@@ -1,3 +1,4 @@
+import "@/app/styles/species-catalogue.css";
 import {
   SEASON_MONTHS,
   SEASONAL_ACTIVITY_LABELS,

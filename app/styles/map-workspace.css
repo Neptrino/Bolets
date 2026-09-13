@@ -905,18 +905,6 @@
   }
 }
 
-@media (max-width: 420px) {
-  .card-season-grid {
-    gap: 2px;
-  }
-  .card-season-label-wide {
-    display: none;
-  }
-  .card-season-label-narrow {
-    display: inline;
-  }
-}
-
 @media (max-width: 380px) {
   .brand-lockup small {
     display: none;

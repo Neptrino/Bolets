@@ -1,15 +1,4 @@
 /* Species catalogue refresh: a calm, photographic field-guide hierarchy. */
-.visually-hidden {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
-}
 
 .culinary-rating {
   width: fit-content;
@@ -95,35 +84,6 @@
 .directory-summary span {
   font-size: var(--text-base);
   font-weight: 750;
-}
-.search-field {
-  width: min(470px, 100%);
-  min-height: 50px;
-  padding: 0 14px;
-  border: 1px solid rgba(89, 53, 37, 0.17);
-  border-radius: 13px;
-  background: #fffdf8;
-  transition: border-color 160ms ease, box-shadow 160ms ease;
-}
-.search-field:focus-within {
-  border-color: var(--clay);
-  box-shadow: 0 0 0 3px rgba(189, 89, 42, 0.12);
-}
-.search-field input {
-  min-height: 46px;
-  font-size: var(--text-base);
-}
-.search-field button {
-  width: 32px;
-  height: 32px;
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: #eee6d8;
-  color: var(--bark);
 }
 .directory-shortcuts {
   display: grid;

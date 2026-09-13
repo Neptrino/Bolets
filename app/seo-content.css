@@ -214,10 +214,6 @@
 .comparison-reference-images figcaption a { font-size: var(--text-xs); color: #5c665b; }
 .comparison-reference-images figcaption a { margin-top: .25rem; }
 
-.species-card-genus,
-.species-card-facts dt { color: #526248; }
-.species-card-heading em { color: #595f58; }
-
 .species-official-safety { display: grid; grid-template-columns: minmax(12rem, .42fr) minmax(0, 1.58fr); gap: 1rem; align-items: center; margin-top: 1rem; padding: .75rem .9rem; border: 1px solid rgba(184, 92, 72, .48); border-left: 3px solid #b85c48; border-radius: 9px; background: rgba(255, 246, 241, .72); color: #50261e; }
 .species-official-safety-title { display: flex; align-items: center; gap: .55rem; }
 .species-official-safety-title svg { flex: 0 0 auto; width: 18px; height: 18px; color: #a34f3e; }

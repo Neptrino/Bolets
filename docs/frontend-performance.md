@@ -20,6 +20,17 @@ in order. Do not move a stylesheet solely by its filename: several catalogue
 and field-guide files also contain shared classes. See the
 [stylesheet measurement receipt](archive/seo-css-ownership-2026-09-13.md).
 
+The photographic catalogue styles use the ordered `styles/species-catalogue.css`
+entry, imported by `CulinaryRating` and `SeasonIndicator`. This brings catalogue
+cards, galleries and profile styles to their public component owners without
+loading that bundle on map or Avui. Keep the card contrast and mobile species
+navigation overrides in this same ordered bundle. Shared visually hidden text
+and search controls remain in `site-shell.css`, including their responsive rule,
+because private findings also use the search field. Some other species rules
+remain shared; moving a file requires a selector and computed-style check, not
+only a filename match. See the
+[catalogue stylesheet receipt](archive/catalogue-css-performance-2026-09-13.md).
+
 `IntentLink` keeps Next.js navigation and native anchor semantics but enables
 prefetch only after mouse hover, keyboard focus or touch. Use it in primary
 navigation and acquisition links so a static page does not download the map or

@@ -325,3 +325,56 @@
     padding-inline: 8px;
   }
 }
+
+@media (max-width: 420px) {
+  .card-season-grid {
+    gap: 2px;
+  }
+  .card-season-label-wide {
+    display: none;
+  }
+  .card-season-label-narrow {
+    display: inline;
+  }
+}
+@media (max-width: 680px) {
+  .compact-species-page .species-aside {
+    display: flex;
+    position: static;
+    width: 100%;
+    max-width: 100%;
+    gap: .5rem;
+    overflow-x: auto;
+    margin: 0 0 1.5rem;
+    padding: .5rem 0 .75rem;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: var(--paper);
+  }
+}
+@media (max-width: 680px) {
+  .compact-species-page .species-aside::before,
+  .compact-species-page .species-aside > p,
+  .compact-species-page .species-aside > a::before { display: none; }
+}
+@media (max-width: 680px) {
+  .compact-species-page .species-aside > a:not(.aside-map-link),
+  .compact-species-page .species-aside .aside-map-link {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-height: 44px;
+    margin: 0;
+    padding: .5rem .75rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    font-size: var(--text-xs);
+    white-space: nowrap;
+  }
+}
+
+.species-card-genus,
+.species-card-facts dt { color: #526248; }
+.species-card-heading em { color: #595f58; }

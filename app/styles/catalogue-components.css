@@ -633,9 +633,6 @@
     flex-direction: column;
     padding: 16px;
   }
-  .search-field {
-    width: 100%;
-  }
   .compact-species-page .species-hero-grid {
     grid-template-columns: 1fr;
   }
