@@ -6,7 +6,7 @@
 - Preserve the agreed homepage SEO wording when adjusting its marketing layout: H1 “Bolets de Catalunya. Mapa, espècies i temporada.” and title “Bolets de Catalunya: mapa, espècies i temporada”. Express the immediate prediction benefit through the supporting copy and map action.
 - Prefer existing standard components, utilities, and project patterns before creating custom abstractions.
 - Follow best practices for accessibility, maintainability, performance, security, responsive behavior, and clear naming.
-- Keep changes focused and avoid unnecessary dependencies or unrelated refactors.
+- Keep changes focused and avoid unnecessary dependencies or unrelated refactors. Keep page-specific CSS at its route/component owner, and use `app/styles/local-guides.css` to preserve local-guide foundation-before-responsive ordering.
 - Treat 500 lines as a review threshold and 1,000 lines as the hard limit for maintained runtime source files. Prefer cohesive domain extractions over mechanical slicing; keep reviewed exceptions and their reasons in `scripts/check-source-size.mjs`. Declarative version-controlled catalogues, immutable migrations, focused tests and ordered CSS may exceed the review threshold, but only the explicit catalogue exceptions may exceed the hard limit.
 - Preserve the single source of truth for species ecology and prediction-model configuration.
 - Reserve mathematical symbols such as `H`, `F`, `O`, `P`, `W`, `T`, and `E` for the technical method and internal documentation. In normal product interfaces, use complete plain-language labels and explain the relationship without requiring users to decode a formula.

@@ -6,6 +6,8 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [SEO stylesheet ownership — 13 September 2026](seo-css-ownership-2026-09-13.md)
+
 - [Opening map static tiles — 13 September 2026](icgc-bootstrap-2026-09-13.md)
 
 - [Responsive AVIF imagery — 13 September 2026](avif-performance-2026-09-13.md)

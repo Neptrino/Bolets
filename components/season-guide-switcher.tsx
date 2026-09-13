@@ -1,3 +1,4 @@
+import "@/app/styles/season-guide.css";
 import Link from "next/link";
 import { seasonGuides, type SeasonGuideId } from "@/src/lib/season-guides";
 

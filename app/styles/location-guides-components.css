@@ -448,7 +448,7 @@
 }
 @media (max-width: 1100px) {
   .local-species-columns {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       "current"
       "landscape"
@@ -551,7 +551,7 @@
   .local-fact-placeholder { grid-template-columns: 1fr; }
   .local-resource-shelf ul { grid-template-columns: 1fr; }
   .local-current-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       "heading"
       "interpretation"
@@ -560,9 +560,13 @@
       "action";
   }
   .local-current-card .local-current-signals { grid-template-columns: 1fr; }
+  .local-current-card .local-current-updated { white-space: normal; }
   .local-current-card .button { justify-self: start; }
   .local-related-guides > div { grid-template-columns: 1fr; }
   .local-related-guides { margin-top: 0; padding-top: 44px; }
+}
+@media (max-width: 400px) {
+  .local-calendar-section .season-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
 @media (prefers-reduced-motion: reduce) {
   .local-fact-placeholder span { animation: none; }

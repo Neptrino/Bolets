@@ -1,0 +1,51 @@
+.preservation-direct-answer { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; align-items: start; margin-bottom: 4rem; padding: 1.35rem 1.5rem; border-radius: 14px; background: #304839; color: #fffaf0; box-shadow: 0 16px 38px rgba(40, 54, 43, .1); }
+.preservation-direct-answer > svg { margin-top: .18rem; color: #ffc28f; }
+.preservation-direct-answer .eyebrow { margin: 0 0 .35rem; color: #ffc28f; }
+.preservation-direct-answer h2 { margin: 0; color: inherit; font-size: var(--display-xs); line-height: 1.15; letter-spacing: -.02em; }
+.preservation-direct-answer p:last-child { margin: .55rem 0 0; color: #e4e9df; line-height: 1.65; }
+.preservation-steps,
+.preservation-methods,
+.preservation-species,
+.preservation-faq { margin-top: 4.5rem; }
+.preservation-step-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; margin: 1.35rem 0 0; padding: 0; list-style: none; counter-reset: none; }
+.preservation-step-grid li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .8rem; padding: 1.15rem; border: 1px solid rgba(47, 65, 42, .14); border-radius: 14px; background: rgba(255, 252, 244, .5); }
+.preservation-step-grid li > span { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 999px; background: #304839; color: #fffaf0; font-size: var(--text-xs); font-weight: 900; }
+.preservation-step-grid h3 { margin: .2rem 0 .35rem; color: #304839; font-size: var(--text-lg); }
+.preservation-step-grid p { margin: 0; color: #566156; line-height: 1.6; }
+.preservation-method-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.35rem; }
+.preservation-method-grid article { min-height: 12rem; padding: 1.35rem; border-radius: 16px; background: #f4efe5; }
+.preservation-method-grid svg { color: #a95027; }
+.preservation-method-grid h3 { margin: 2.1rem 0 .5rem; color: #304839; font-size: var(--text-lg); }
+.preservation-method-grid p { margin: 0; color: #566156; line-height: 1.6; }
+.preservation-species-list { margin-top: 1.35rem; border-top: 1px solid rgba(47, 65, 42, .2); }
+.preservation-species-list article { display: grid; grid-template-columns: minmax(10rem, .7fr) minmax(0, 1.2fr) auto; gap: 1rem 1.5rem; align-items: center; padding: 1rem 0; border-bottom: 1px solid rgba(47, 65, 42, .16); }
+.preservation-species-list article > div { display: grid; gap: .12rem; }
+.preservation-species-list strong { color: #304839; font-size: var(--text-lg); }
+.preservation-species-list em { color: #687066; font-size: var(--text-xs); }
+.preservation-species-list p { margin: 0; color: #525e53; line-height: 1.55; }
+.preservation-species-copy { display: grid; gap: .35rem; }
+.preservation-species-copy small { color: #687066; font-size: var(--text-xs); line-height: 1.5; }
+.preservation-species-list article[id] { scroll-margin-top: 7rem; }
+.preservation-cold-chain { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 2rem; margin-top: 4.5rem; padding: 1.5rem; border-radius: 16px; background: #304839; color: #fffaf0; }
+.preservation-cold-chain h2 { margin: .3rem 0 0; color: inherit; font-size: var(--display-xs); line-height: 1.15; }
+.preservation-cold-chain > div:last-child { display: grid; gap: .7rem; }
+.preservation-cold-chain > div:last-child p { display: flex; gap: .65rem; align-items: flex-start; margin: 0; padding: .7rem 0; border-bottom: 1px solid rgba(255, 255, 255, .14); color: #e4e9df; line-height: 1.55; }
+.preservation-cold-chain > div:last-child p:last-child { border-bottom: 0; }
+.preservation-cold-chain svg { flex: 0 0 auto; margin-top: .12rem; color: #ffc28f; }
+.preservation-faq > div { display: grid; gap: .65rem; margin-top: 1.35rem; }
+.preservation-faq details { padding: .95rem 1rem; border: 1px solid rgba(47, 65, 42, .16); border-radius: 11px; background: rgba(255, 252, 244, .5); }
+.preservation-faq summary { cursor: pointer; color: #304839; font-weight: 850; }
+.preservation-faq details p { margin: .75rem 0 0; color: #525e53; line-height: 1.65; }
+
+@media (max-width: 900px) {
+  .preservation-method-grid { grid-template-columns: 1fr; }
+  .preservation-method-grid article { min-height: 0; }
+}
+
+@media (max-width: 640px) {
+  .preservation-direct-answer,
+.preservation-step-grid,
+.preservation-cold-chain { grid-template-columns: 1fr; }
+  .preservation-species-list article { grid-template-columns: 1fr; gap: .5rem; }
+  .preservation-species-list article > a { justify-self: start; }
+}

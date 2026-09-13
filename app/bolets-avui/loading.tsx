@@ -1,3 +1,4 @@
+import "@/app/styles/current-readings.css";
 import { Map } from "lucide-react";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { CurrentSearchAnswerLoading } from "@/components/current-search-answer-loading";

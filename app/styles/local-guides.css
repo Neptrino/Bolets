@@ -1,0 +1,3 @@
+/* Local layouts depend on the territorial foundation; responsive rules follow it. */
+@import "./territorial-guides.css";
+@import "./location-guides-components.css";

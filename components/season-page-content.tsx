@@ -1,3 +1,4 @@
+import "@/app/styles/season-guide.css";
 import { cepSpeciesIds } from "@/src/lib/ceps-guide";
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays, CloudRain, Map } from "lucide-react";

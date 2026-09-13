@@ -1,3 +1,4 @@
+import "@/app/styles/current-readings.css";
 import { developmentOverviewSimulation } from "@/src/lib/current-overview-simulation";
 import type { Metadata } from "next";
 import { IntentLink as Link } from "@/components/intent-link";

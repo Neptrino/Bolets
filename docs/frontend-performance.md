@@ -9,9 +9,16 @@ stylesheet, hydration or rendering work.
 Shared design tokens, layout, reusable controls and MapLibre's control stylesheet
 remain in `app/globals.css`. Feature-specific game, method, comparison,
 infographic, mushroom-parts and culinary dossier styles are imported by their
-owning page or component. Keep related foundation/component/responsive imports
+owning page or component. Current-condition readings, rain explanations,
+preservation guides and seasonal controls also load at their route/component
+owners; only their shared editorial/navigation rules remain in `seo-content.css`.
+Territorial routes with local guide layouts use `styles/local-guides.css`, which
+loads the territorial foundation before the local components and responsive
+rules. Importing these independently in the opposite order breaks mobile grids.
+Keep related foundation/component/responsive imports
 in order. Do not move a stylesheet solely by its filename: several catalogue
-and field-guide files also contain shared classes.
+and field-guide files also contain shared classes. See the
+[stylesheet measurement receipt](archive/seo-css-ownership-2026-09-13.md).
 
 `IntentLink` keeps Next.js navigation and native anchor semantics but enables
 prefetch only after mouse hover, keyboard focus or touch. Use it in primary

@@ -21,8 +21,8 @@ test("the ceps guide opens a local reading with its species and territory preser
   }
 });
 
-test("all four winning local introductions are visible and have usable mobile actions", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+for (const width of [320, 390, 1350]) test(`all four local introductions and actions fit at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 844 });
   for (const [route, introduction] of [
     ["/zones/solsones/port-del-comte/ceps", "Port del Comte"],
     ["/zones/bergueda/rasos-de-peguera/ceps", "Les cotes i els boscos dels Rasos de Peguera"],

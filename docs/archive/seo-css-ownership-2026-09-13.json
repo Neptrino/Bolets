@@ -1,0 +1,122 @@
+{
+  "date": "2026-09-13",
+  "baselineCommit": "0cf3464ff51481350d5fdca59ee7e189aa518969",
+  "stylesheetBytes": {
+    "path": "/_next/static/chunks/13q_c7mkfuqio.css",
+    "before": {
+      "decoded": 38407,
+      "gzip": 7147
+    },
+    "after": {
+      "decoded": 14112,
+      "gzip": 3235
+    }
+  },
+  "controlledMapRuns": [
+    {
+      "port": 3110,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2388,
+        "url": "http://127.0.0.1:3110/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 13,
+      "fcp": 1304,
+      "ttfb": 12.5,
+      "firstTile": 177.5,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3111,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2368,
+        "url": "http://127.0.0.1:3111/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 17,
+      "fcp": 1268,
+      "ttfb": 10.900000095367432,
+      "firstTile": 170.20000004768372,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3111,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2364,
+        "url": "http://127.0.0.1:3111/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 6,
+      "fcp": 1260,
+      "ttfb": 11.700000047683716,
+      "firstTile": 178.60000014305115,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3110,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2372,
+        "url": "http://127.0.0.1:3110/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 8,
+      "fcp": 1280,
+      "ttfb": 12.200000047683716,
+      "firstTile": 178.29999995231628,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3110,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2384,
+        "url": "http://127.0.0.1:3110/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 10,
+      "fcp": 1304,
+      "ttfb": 14.5,
+      "firstTile": 180.5,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3111,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2360,
+        "url": "http://127.0.0.1:3111/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 9,
+      "fcp": 1292,
+      "ttfb": 11.399999856948853,
+      "firstTile": 179.59999990463257,
+      "paintedPixels": 154374
+    }
+  ],
+  "method": "Alternating fresh Chromium mobile contexts, 412x823 DPR1.75, CPU4x, latency150ms, throughput200000B/s. Warm HTTP proxies; only the shared SEO stylesheet response differs, both gzip. Same built candidate, JS, images and prediction fixture. Service workers blocked and DNT enabled. Local PerformanceObserver, not Lighthouse.",
+  "declarationEquivalence": {
+    "selectorContextSequences": 431,
+    "preserved": true
+  },
+  "computedStyles": {
+    "views": 22,
+    "widths": [
+      390,
+      1350
+    ],
+    "afterNodes": 2336,
+    "difference": "Four transient Avui loading nodes disappeared. No added or changed styled nodes; other 21 views identical. Territorial table conditional content not covered by this capture."
+  },
+  "scope": "Current readings, rain, preservation and season CSS moved to owner imports. Shared editorial/navigation rules retained. Local-guide CSS order and narrow viewport overflow corrected."
+}

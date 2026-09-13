@@ -1,5 +1,5 @@
-import "@/app/styles/location-guides-components.css";
-import "@/app/styles/territorial-guides.css";
+import "@/app/styles/current-readings.css";
+import "@/app/styles/local-guides.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
