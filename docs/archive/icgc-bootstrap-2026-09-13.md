@@ -98,3 +98,26 @@ reports have no console errors. This does **not** establish a PageSpeed score
 gain from static serving alone; the remaining startup bottleneck is open.
 The low-priority preload follow-up above is separately tested and awaiting its
 own deployed measurement.
+
+
+## Preload release check
+
+Release `a64370a` completed Actions run 34727745654 and is healthy. All four
+live map routes retain real painted data, successful tile loads and no
+browser/API errors. Live bootstrap checks verify exactly 18 opening requests,
+byte-for-byte source tiles, normal API tiles after zooming, no desktop hinted
+downloads and no hints on explicit map views.
+
+The production streamed response repeats identical hint tags in its HTML. The
+browser deduplicates the two resources and respects every media/priority
+attribute. The browser test now checks unique resource identities and actual
+network behavior instead of assuming an exact count of serialized tags.
+
+Fresh PageSpeed reports score 79 then 89 mobile, and 96 then 97 desktop.
+Mobile LCP is 4.2 then 3.6 seconds, versus 4.8 seconds in the recent pre-bootstrap
+baseline. All reports retain SEO 100 and no console errors. The first run also
+has slower first paint and Speed Index; it is retained, not replaced by the
+better repeat. The mobile map therefore still does **not** consistently reach
+90. In the first run, the central tile is discovered after 240 ms and loads in
+30 ms, followed by 2,330 ms render delay. More image prioritization cannot
+remove that remaining initialization/rendering work.

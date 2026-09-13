@@ -53,7 +53,17 @@ test("restricts opening preloads to the default mobile view", async ({ browser, 
     const tiles: string[] = [];
     page.on("request", request => { if (request.url().includes("/icgc-bootstrap/")) tiles.push(request.url()); });
     await page.goto(view.path);
-    await expect(page.locator('link[rel="preload"][as="image"][href*="/icgc-bootstrap/"]')).toHaveCount(view.links);
+    // Next's production streaming response can repeat an identical resource
+    // hint. Verify unique resources and every hint's conditions, then assert
+    // the browser actually skips them on desktop.
+    const hints = await page.locator('link[rel="preload"][as="image"][href*="/icgc-bootstrap/"]').evaluateAll(nodes => nodes.map(node => ({
+      href: node.getAttribute("href"), media: node.getAttribute("media"), priority: node.getAttribute("fetchpriority"),
+    })));
+    expect(new Set(hints.map(hint => hint.href)).size).toBe(view.links);
+    for (const hint of hints) {
+      expect(hint.media).toBe("(max-width: 680px)");
+      expect(hint.priority).toBe("low");
+    }
     expect(tiles).toEqual([]);
     await context.close();
   }
