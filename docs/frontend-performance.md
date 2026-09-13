@@ -93,8 +93,10 @@ including every map gesture handler, tile layers, projection and base controls.
 It excludes unused vector renderers, markers, popups and built-in controls.
 Keep the matching declarations in `leaflet-source.d.ts` narrow, and rerun gesture
 and camera tests for a Leaflet upgrade. This saves 69,320 decoded JavaScript bytes
-on the default map; local cold-load LCP changed only slightly, so this is a bundle
-reduction rather than a claimed PageSpeed score gain.
+on the default map. Local cold-load LCP changed only slightly. Live PageSpeed
+recorded a map median of 90 mobile / 95 desktop across three runs, with meaningful
+variation; see the [release measurements](archive/raster-module-performance-2026-09-13.md)
+for all scores and limitations.
 
 Browser checks must wait for the initialized `.raster-map-surface` before using
 strict shell selectors: streaming can briefly include a hidden shell alongside

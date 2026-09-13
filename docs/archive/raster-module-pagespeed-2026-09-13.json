@@ -1,0 +1,756 @@
+{
+  "release": "5b72b464f3b689958c659d06b7ac9fe83db69a69",
+  "ci": "https://github.com/Neptrino/Bolets/actions/runs/34730696588",
+  "reports": [
+    {
+      "mobile": {
+        "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/6b0ccx5boy?form_factor=mobile",
+        "captured": "Captured at Sep 13, 2026, 3:35 AM GMT+2",
+        "scores": [
+          "90\nPerformance",
+          "100\nAccessibility",
+          "92\nBest Practices",
+          "92\nSEO",
+          "100\nAccessibility",
+          "92\nBest Practices",
+          "92\nSEO"
+        ],
+        "metrics": [
+          {
+            "title": "First Contentful Paint",
+            "value": "1.4 s"
+          },
+          {
+            "title": "Largest Contentful Paint",
+            "value": "3.4 s"
+          },
+          {
+            "title": "Total Blocking Time",
+            "value": "10 ms"
+          },
+          {
+            "title": "Cumulative Layout Shift",
+            "value": "0.039"
+          },
+          {
+            "title": "Speed Index",
+            "value": "3.3 s"
+          }
+        ],
+        "calculator": [
+          "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1351&LCP=3396&TBT=10&CLS=0.04&SI=3284&TTI=3405&device=mobile&version=13.4.1"
+        ],
+        "audits": [
+          {
+            "id": "render-blocking-insight",
+            "text": "      Render-blocking requests Est savings of 880 ms          Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCPUnscored     Show 3rd-party resources (0)  URLTransfer SizeDurationbolets.app 1st party49.5 KiB1,950 ms…chunks/0hlbzspjw93qz.css(bolets.app)40.1 KiB900 ms…chunks/0sz__7aelm7lu.css(bolets.app)4.2 KiB450 ms…chunks/0g3i1jl3_0eez.css(bolets.app)3.7 KiB450 ms…chunks/1jzdqc9io0b1s.css(bolets.app)1.6 KiB150 ms "
+          },
+          {
+            "id": "lcp-breakdown-insight",
+            "text": "      LCP breakdown           Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCPUnscored  SubpartDurationTime to first byte30 msResource load delay670 msResource load duration60 msElement render delay420 ms              div.leaflet-pane > div.leaflet-layer > div.leaflet-tile-container > img.leaflet-tile<img alt=\"\" src=\"/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(23px, 177px, 0px);\"> "
+          },
+          {
+            "id": "long-tasks",
+            "text": "      Avoid long main-thread tasks 1 long task found          Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBTUnscored     Show 3rd-party resources (0)  URLStart TimeDurationbolets.app 1st party60 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)2,727 ms60 ms "
+          },
+          {
+            "id": "bootup-time",
+            "text": "      JavaScript execution time 0.9 s          Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBTUnscored     Show 3rd-party resources (0)  URLTotal CPU TimeScript EvaluationScript Parsebolets.app 1st party1,214 ms757 ms41 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)754 ms437 ms10 ms…chunks/09r5u0e8i36rz.js(bolets.app)315 ms251 ms26 ms/map(bolets.app)78 ms5 ms4 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)67 ms65 ms2 msUnattributable335 ms139 ms0 msUnattributable335 ms139 ms0 ms "
+          },
+          {
+            "id": "errors-in-console",
+            "text": "      No browser errors logged to the console           Errors logged to the console indicate unresolved problems. They can come from network request failures and other browser concerns. Learn more about this errors in console diagnostic audit   "
+          }
+        ]
+      },
+      "desktop": {
+        "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/6b0ccx5boy?form_factor=desktop",
+        "captured": "Captured at Sep 13, 2026, 3:35 AM GMT+2",
+        "scores": [
+          "95\nPerformance",
+          "100\nAccessibility",
+          "96\nBest Practices",
+          "92\nSEO",
+          "100\nAccessibility",
+          "96\nBest Practices",
+          "92\nSEO"
+        ],
+        "metrics": [
+          {
+            "title": "First Contentful Paint",
+            "value": "0.3 s"
+          },
+          {
+            "title": "Largest Contentful Paint",
+            "value": "0.9 s"
+          },
+          {
+            "title": "Total Blocking Time",
+            "value": "10 ms"
+          },
+          {
+            "title": "Cumulative Layout Shift",
+            "value": "0.011"
+          },
+          {
+            "title": "Speed Index",
+            "value": "2.1 s"
+          }
+        ],
+        "calculator": [
+          "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=321&LCP=881&TBT=6&CLS=0.01&SI=2128&TTI=1242&device=desktop&version=13.4.1"
+        ],
+        "audits": [
+          {
+            "id": "render-blocking-insight",
+            "text": "      Render-blocking requests Est savings of 190 ms          Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCPUnscored  \n    .lh-3p-filter {\n      color: var(--color-gray-600);\n      float: right;\n      padding: 6px var(--stackpack-padding-horizontal);\n    }\n    .lh-3p-filter-label, .lh-3p-filter-input {\n      vertical-align: middle;\n      user-select: none;\n    }\n    .lh-3p-filter-input:disabled + .lh-3p-ui-string {\n      text-decoration: line-through;\n    }\n     Show 3rd-party resources (0)  URLTransfer SizeDurationbolets.app 1st party49.5 KiB450 ms…chunks/0hlbzspjw93qz.css(bolets.app)40.1 KiB200 ms…chunks/1jzdqc9io0b1s.css(bolets.app)1.6 KiB…chunks/0sz__7aelm7lu.css(bolets.app)4.2 KiB120 ms…chunks/0g3i1jl3_0eez.css(bolets.app)3.7 KiB120 ms "
+          },
+          {
+            "id": "lcp-breakdown-insight",
+            "text": "      LCP breakdown           Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCPUnscored  SubpartDurationTime to first byte0 msResource load delay810 msResource load duration1,690 msElement render delay70 ms              div.leaflet-pane > div.leaflet-layer > div.leaflet-tile-container > img.leaflet-tile<img alt=\"\" src=\"/api/map-tiles/icgc/v2/references/9/258/190\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(479px, 389px, 0px);\"> "
+          },
+          {
+            "id": "long-tasks",
+            "text": "      Avoid long main-thread tasks 3 long tasks found          Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBTUnscored     Show 3rd-party resources (0)  URLStart TimeDurationbolets.app 1st party104 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)863 ms53 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)917 ms51 msUnattributable54 msUnattributable1,216 ms54 ms "
+          },
+          {
+            "id": "bootup-time",
+            "text": "      JavaScript execution time 0.6 s          Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBTUnscored     Show 3rd-party resources (0)  URLTotal CPU TimeScript EvaluationScript Parsebolets.app 1st party896 ms460 ms28 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)532 ms234 ms7 ms…chunks/09r5u0e8i36rz.js(bolets.app)219 ms172 ms16 ms/map(bolets.app)91 ms3 ms3 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)53 ms51 ms2 msUnattributable264 ms89 ms0 msUnattributable264 ms89 ms0 ms "
+          },
+          {
+            "id": "errors-in-console",
+            "text": "      No browser errors logged to the console           Errors logged to the console indicate unresolved problems. They can come from network request failures and other browser concerns. Learn more about this errors in console diagnostic audit   "
+          }
+        ]
+      }
+    },
+    {
+      "mobile": {
+        "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-cep/lqj8u1y6c8?form_factor=mobile",
+        "captured": "Captured at Sep 13, 2026, 3:35 AM GMT+2",
+        "scores": [
+          "90\nPerformance",
+          "97\nAccessibility",
+          "100\nBest Practices",
+          "100\nSEO",
+          "97\nAccessibility",
+          "100\nBest Practices",
+          "100\nSEO"
+        ],
+        "metrics": [
+          {
+            "title": "First Contentful Paint",
+            "value": "1.7 s"
+          },
+          {
+            "title": "Largest Contentful Paint",
+            "value": "3.2 s"
+          },
+          {
+            "title": "Total Blocking Time",
+            "value": "10 ms"
+          },
+          {
+            "title": "Cumulative Layout Shift",
+            "value": "0"
+          },
+          {
+            "title": "Speed Index",
+            "value": "4.6 s"
+          }
+        ],
+        "calculator": [
+          "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1672&LCP=3151&TBT=6&CLS=0&SI=4595&TTI=3151&device=mobile&version=13.4.1"
+        ],
+        "audits": [
+          {
+            "id": "render-blocking-insight",
+            "text": "      Render-blocking requests Est savings of 260 ms          Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCPUnscored     Show 3rd-party resources (0)  URLTransfer SizeDurationbolets.app 1st party60.7 KiB3,160 ms…chunks/0fzmgzwthssk9.css(bolets.app)4.1 KiB450 ms…chunks/2ieogyljsade9.css(bolets.app)7.7 KiB600 ms…chunks/0hlbzspjw93qz.css(bolets.app)40.1 KiB1,050 ms…chunks/1ljmpc_3b1n0e.css(bolets.app)3.1 KiB450 ms…chunks/1jzdqc9io0b1s.css(bolets.app)1.6 KiB150 ms…chunks/0sz__7aelm7lu.css(bolets.app)4.2 KiB450 ms "
+          },
+          {
+            "id": "lcp-breakdown-insight",
+            "text": "      LCP breakdown           Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCPUnscored  SubpartDurationTime to first byte0 msResource load delay2,600 msResource load duration20 msElement render delay170 ms              Exemplar de Boletus edulis en un bosc mixt de muntanya.<img alt=\"Exemplar de Boletus edulis en un bosc mixt de muntanya.\" fetchpriority=\"high\" loading=\"eager\" decoding=\"async\" data-nimg=\"fill\" class=\"specimen-photo\" style=\"position: absolute; height: 100%; width: 100%; inset: 0px;\" sizes=\"(max-width: 760px) calc(100vw - 48px), (max-width: 1000px) calc(55vw - 45p…\" srcset=\"/media/optimized/v15/wikimedia/boletus-edulis.w64.webp 64w, /media/optimiz…\" src=\"https://bolets.app/media/optimized/v15/wikimedia/boletus-edulis.w640.avif\"> "
+          },
+          {
+            "id": "long-tasks",
+            "text": "      Avoid long main-thread tasks 2 long tasks found          Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBTUnscored     Show 3rd-party resources (0)  URLStart TimeDurationbolets.app 1st party110 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)3,031 ms56 ms/bolets/cep(bolets.app)928 ms54 ms "
+          },
+          {
+            "id": "bootup-time",
+            "text": "      JavaScript execution time 0.2 s          Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBTUnscored     Show 3rd-party resources (0)  URLTotal CPU TimeScript EvaluationScript Parsebolets.app 1st party326 ms172 ms20 ms/bolets/cep(bolets.app)138 ms3 ms4 ms…chunks/09r5u0e8i36rz.js(bolets.app)126 ms110 ms14 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)62 ms60 ms2 msUnattributable52 ms4 ms0 msUnattributable52 ms4 ms0 ms "
+          },
+          {
+            "id": "errors-in-console",
+            "text": "      No browser errors logged to the console           Errors logged to the console indicate unresolved problems. They can come from network request failures and other browser concerns. Learn more about this errors in console diagnostic audit   "
+          }
+        ]
+      },
+      "desktop": {
+        "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-cep/lqj8u1y6c8?form_factor=desktop",
+        "captured": "Captured at Sep 13, 2026, 3:35 AM GMT+2",
+        "scores": [
+          "95\nPerformance",
+          "97\nAccessibility",
+          "100\nBest Practices",
+          "100\nSEO",
+          "97\nAccessibility",
+          "100\nBest Practices",
+          "100\nSEO"
+        ],
+        "metrics": [
+          {
+            "title": "First Contentful Paint",
+            "value": "0.5 s"
+          },
+          {
+            "title": "Largest Contentful Paint",
+            "value": "0.6 s"
+          },
+          {
+            "title": "Total Blocking Time",
+            "value": "0 ms"
+          },
+          {
+            "title": "Cumulative Layout Shift",
+            "value": "0"
+          },
+          {
+            "title": "Speed Index",
+            "value": "2.2 s"
+          }
+        ],
+        "calculator": [
+          "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=461&LCP=641&TBT=0&CLS=0&SI=2167&TTI=641&device=desktop&version=13.4.1"
+        ],
+        "audits": [
+          {
+            "id": "render-blocking-insight",
+            "text": "      Render-blocking requests Est savings of 30 ms          Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCPUnscored     Show 3rd-party resources (0)  URLTransfer SizeDurationbolets.app 1st party60.7 KiB770 ms…chunks/2ieogyljsade9.css(bolets.app)7.7 KiB160 ms…chunks/0fzmgzwthssk9.css(bolets.app)4.1 KiB120 ms…chunks/1ljmpc_3b1n0e.css(bolets.app)3.1 KiB120 ms…chunks/0sz__7aelm7lu.css(bolets.app)4.2 KiB120 ms…chunks/0hlbzspjw93qz.css(bolets.app)40.1 KiB240 ms…chunks/1jzdqc9io0b1s.css(bolets.app)1.6 KiB "
+          },
+          {
+            "id": "lcp-breakdown-insight",
+            "text": "      LCP breakdown           Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCPUnscored  SubpartDurationTime to first byte730 msResource load delay2,340 msResource load duration30 msElement render delay270 ms              Exemplar de Boletus edulis en un bosc mixt de muntanya.<img alt=\"Exemplar de Boletus edulis en un bosc mixt de muntanya.\" fetchpriority=\"high\" loading=\"eager\" decoding=\"async\" data-nimg=\"fill\" class=\"specimen-photo\" style=\"position: absolute; height: 100%; width: 100%; inset: 0px;\" sizes=\"(max-width: 760px) calc(100vw - 48px), (max-width: 1000px) calc(55vw - 45p…\" srcset=\"/media/optimized/v15/wikimedia/boletus-edulis.w64.webp 64w, /media/optimiz…\" src=\"https://bolets.app/media/optimized/v15/wikimedia/boletus-edulis.w640.avif\"> "
+          },
+          {
+            "id": "bootup-time",
+            "text": "      JavaScript execution time 0.2 s          Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBTUnscored     Show 3rd-party resources (0)  URLTotal CPU TimeScript EvaluationScript Parsebolets.app 1st party308 ms187 ms25 ms…chunks/09r5u0e8i36rz.js(bolets.app)104 ms91 ms11 ms/bolets/cep(bolets.app)89 ms2 ms3 ms…chunks/0xmckmn224y77.js(bolets.app)58 ms43 ms6 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)57 ms52 ms5 msUnattributable52 ms5 ms0 msUnattributable52 ms5 ms0 ms "
+          },
+          {
+            "id": "long-tasks",
+            "text": "      Avoid long main-thread tasks           Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBTUnscored   "
+          },
+          {
+            "id": "errors-in-console",
+            "text": "      No browser errors logged to the console           Errors logged to the console indicate unresolved problems. They can come from network request failures and other browser concerns. Learn more about this errors in console diagnostic audit   "
+          }
+        ]
+      }
+    },
+    {
+      "mobile": {
+        "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-pinetell/gv1sv84dz2?form_factor=mobile",
+        "captured": "Captured at Sep 13, 2026, 3:35 AM GMT+2",
+        "scores": [
+          "94\nPerformance",
+          "97\nAccessibility",
+          "100\nBest Practices",
+          "100\nSEO",
+          "97\nAccessibility",
+          "100\nBest Practices",
+          "100\nSEO"
+        ],
+        "metrics": [
+          {
+            "title": "First Contentful Paint",
+            "value": "1.7 s"
+          },
+          {
+            "title": "Largest Contentful Paint",
+            "value": "3.0 s"
+          },
+          {
+            "title": "Total Blocking Time",
+            "value": "0 ms"
+          },
+          {
+            "title": "Cumulative Layout Shift",
+            "value": "0"
+          },
+          {
+            "title": "Speed Index",
+            "value": "2.3 s"
+          }
+        ],
+        "calculator": [
+          "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1671&LCP=3001&TBT=1&CLS=0&SI=2276&TTI=3029&device=mobile&version=13.4.1"
+        ],
+        "audits": [
+          {
+            "id": "render-blocking-insight",
+            "text": "      Render-blocking requests Est savings of 260 ms          Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCPUnscored     Show 3rd-party resources (0)  URLTransfer SizeDurationbolets.app 1st party60.7 KiB3,160 ms…chunks/0fzmgzwthssk9.css(bolets.app)4.1 KiB450 ms…chunks/2ieogyljsade9.css(bolets.app)7.7 KiB600 ms…chunks/0hlbzspjw93qz.css(bolets.app)40.1 KiB1,050 ms…chunks/0sz__7aelm7lu.css(bolets.app)4.2 KiB450 ms…chunks/1ljmpc_3b1n0e.css(bolets.app)3.1 KiB450 ms…chunks/1jzdqc9io0b1s.css(bolets.app)1.6 KiB150 ms "
+          },
+          {
+            "id": "lcp-breakdown-insight",
+            "text": "      LCP breakdown           Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCPUnscored  SubpartDurationTime to first byte220 msResource load delay740 msResource load duration40 msElement render delay150 ms              Lactarius deliciosus: Barret ataronjat amb cercles concèntrics i el centre depr…<img alt=\"Lactarius deliciosus: Barret ataronjat amb cercles concèntrics i el centre…\" fetchpriority=\"high\" loading=\"eager\" decoding=\"async\" data-nimg=\"fill\" class=\"specimen-photo\" style=\"position: absolute; height: 100%; width: 100%; inset: 0px;\" sizes=\"(max-width: 760px) calc(100vw - 48px), (max-width: 1000px) calc(55vw - 45p…\" srcset=\"/media/optimized/v15/contributed/lactarius-deliciosus-field-aleix-20241124…\" src=\"https://bolets.app/media/optimized/v15/contributed/lactarius-deliciosus-fi…\"> "
+          },
+          {
+            "id": "long-tasks",
+            "text": "      Avoid long main-thread tasks 1 long task found          Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBTUnscored     Show 3rd-party resources (0)  URLStart TimeDurationbolets.app 1st party51 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)3,001 ms51 ms "
+          },
+          {
+            "id": "bootup-time",
+            "text": "      JavaScript execution time 0.2 s          Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBTUnscored     Show 3rd-party resources (0)  URLTotal CPU TimeScript EvaluationScript Parsebolets.app 1st party265 ms136 ms30 ms/bolets/pinetell(bolets.app)106 ms2 ms7 ms…chunks/09r5u0e8i36rz.js(bolets.app)101 ms78 ms21 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)57 ms55 ms2 ms "
+          },
+          {
+            "id": "errors-in-console",
+            "text": "      No browser errors logged to the console           Errors logged to the console indicate unresolved problems. They can come from network request failures and other browser concerns. Learn more about this errors in console diagnostic audit   "
+          }
+        ]
+      },
+      "desktop": {
+        "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-pinetell/gv1sv84dz2?form_factor=desktop",
+        "captured": "Captured at Sep 13, 2026, 3:35 AM GMT+2",
+        "scores": [
+          "100\nPerformance",
+          "97\nAccessibility",
+          "100\nBest Practices",
+          "100\nSEO",
+          "97\nAccessibility",
+          "100\nBest Practices",
+          "100\nSEO"
+        ],
+        "metrics": [
+          {
+            "title": "First Contentful Paint",
+            "value": "0.5 s"
+          },
+          {
+            "title": "Largest Contentful Paint",
+            "value": "0.7 s"
+          },
+          {
+            "title": "Total Blocking Time",
+            "value": "0 ms"
+          },
+          {
+            "title": "Cumulative Layout Shift",
+            "value": "0"
+          },
+          {
+            "title": "Speed Index",
+            "value": "0.8 s"
+          }
+        ],
+        "calculator": [
+          "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=487&LCP=681&TBT=0&CLS=0&SI=841&TTI=681&device=desktop&version=13.4.1"
+        ],
+        "audits": [
+          {
+            "id": "render-blocking-insight",
+            "text": "      Render-blocking requests Est savings of 50 ms          Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCPUnscored     Show 3rd-party resources (0)  URLTransfer SizeDurationbolets.app 1st party60.7 KiB870 ms…chunks/0fzmgzwthssk9.css(bolets.app)4.1 KiB150 ms…chunks/2ieogyljsade9.css(bolets.app)7.7 KiB150 ms…chunks/0hlbzspjw93qz.css(bolets.app)40.1 KiB290 ms…chunks/0sz__7aelm7lu.css(bolets.app)4.2 KiB150 ms…chunks/1ljmpc_3b1n0e.css(bolets.app)3.1 KiB150 ms…chunks/1jzdqc9io0b1s.css(bolets.app)1.6 KiB "
+          },
+          {
+            "id": "lcp-breakdown-insight",
+            "text": "      LCP breakdown           Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCPUnscored  SubpartDurationTime to first byte210 msResource load delay590 msResource load duration50 msElement render delay190 ms              Lactarius deliciosus: Barret ataronjat amb cercles concèntrics i el centre depr…<img alt=\"Lactarius deliciosus: Barret ataronjat amb cercles concèntrics i el centre…\" fetchpriority=\"high\" loading=\"eager\" decoding=\"async\" data-nimg=\"fill\" class=\"specimen-photo\" style=\"position: absolute; height: 100%; width: 100%; inset: 0px;\" sizes=\"(max-width: 760px) calc(100vw - 48px), (max-width: 1000px) calc(55vw - 45p…\" srcset=\"/media/optimized/v15/contributed/lactarius-deliciosus-field-aleix-20241124…\" src=\"https://bolets.app/media/optimized/v15/contributed/lactarius-deliciosus-fi…\"> "
+          },
+          {
+            "id": "bootup-time",
+            "text": "      JavaScript execution time 0.2 s          Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBTUnscored     Show 3rd-party resources (0)  URLTotal CPU TimeScript EvaluationScript Parsebolets.app 1st party291 ms160 ms37 ms…chunks/09r5u0e8i36rz.js(bolets.app)96 ms77 ms18 ms/bolets/pinetell(bolets.app)91 ms2 ms5 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)52 ms50 ms2 ms…chunks/0xmckmn224y77.js(bolets.app)52 ms31 ms13 ms "
+          },
+          {
+            "id": "long-tasks",
+            "text": "      Avoid long main-thread tasks           Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBTUnscored   "
+          },
+          {
+            "id": "errors-in-console",
+            "text": "      No browser errors logged to the console           Errors logged to the console indicate unresolved problems. They can come from network request failures and other browser concerns. Learn more about this errors in console diagnostic audit   "
+          }
+        ]
+      }
+    },
+    {
+      "mobile": {
+        "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/g15xxeb2lw?form_factor=mobile",
+        "captured": "Captured at Sep 13, 2026, 3:37 AM GMT+2",
+        "scores": [
+          "91\nPerformance",
+          "100\nAccessibility",
+          "92\nBest Practices",
+          "100\nSEO",
+          "100\nAccessibility",
+          "92\nBest Practices",
+          "100\nSEO"
+        ],
+        "metrics": [
+          {
+            "title": "First Contentful Paint",
+            "value": "1.7 s"
+          },
+          {
+            "title": "Largest Contentful Paint",
+            "value": "3.4 s"
+          },
+          {
+            "title": "Total Blocking Time",
+            "value": "0 ms"
+          },
+          {
+            "title": "Cumulative Layout Shift",
+            "value": "0.015"
+          },
+          {
+            "title": "Speed Index",
+            "value": "2.3 s"
+          }
+        ],
+        "calculator": [
+          "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1669&LCP=3376&TBT=0&CLS=0.01&SI=2329&TTI=3384&device=mobile&version=13.4.1"
+        ],
+        "audits": [
+          {
+            "id": "render-blocking-insight",
+            "text": "      Render-blocking requests Est savings of 140 ms          Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCPUnscored     Show 3rd-party resources (0)  URLTransfer SizeDurationbolets.app 1st party49.5 KiB1,950 ms…chunks/0hlbzspjw93qz.css(bolets.app)40.1 KiB900 ms…chunks/0sz__7aelm7lu.css(bolets.app)4.2 KiB450 ms…chunks/0g3i1jl3_0eez.css(bolets.app)3.7 KiB450 ms…chunks/1jzdqc9io0b1s.css(bolets.app)1.6 KiB150 ms "
+          },
+          {
+            "id": "lcp-breakdown-insight",
+            "text": "      LCP breakdown           Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCPUnscored  SubpartDurationTime to first byte10 msResource load delay230 msResource load duration40 msElement render delay330 ms              div.leaflet-pane > div.leaflet-layer > div.leaflet-tile-container > img.leaflet-tile<img alt=\"\" src=\"/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(23px, 177px, 0px);\"> "
+          },
+          {
+            "id": "long-tasks",
+            "text": "      Avoid long main-thread tasks 1 long task found          Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBTUnscored     Show 3rd-party resources (0)  URLStart TimeDurationbolets.app 1st party50 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)3,968 ms50 ms "
+          },
+          {
+            "id": "bootup-time",
+            "text": "      JavaScript execution time 0.7 s          Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBTUnscored     Show 3rd-party resources (0)  URLTotal CPU TimeScript EvaluationScript Parsebolets.app 1st party644 ms454 ms32 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)335 ms236 ms9 ms…chunks/09r5u0e8i36rz.js(bolets.app)253 ms215 ms20 ms/map(bolets.app)55 ms3 ms4 msUnattributable402 ms249 ms0 msUnattributable402 ms249 ms0 ms "
+          },
+          {
+            "id": "errors-in-console",
+            "text": "      No browser errors logged to the console           Errors logged to the console indicate unresolved problems. They can come from network request failures and other browser concerns. Learn more about this errors in console diagnostic audit   "
+          }
+        ]
+      },
+      "desktop": {
+        "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/g15xxeb2lw?form_factor=desktop",
+        "captured": "Captured at Sep 13, 2026, 3:37 AM GMT+2",
+        "scores": [
+          "77\nPerformance",
+          "100\nAccessibility",
+          "96\nBest Practices",
+          "100\nSEO",
+          "100\nAccessibility",
+          "96\nBest Practices",
+          "100\nSEO"
+        ],
+        "metrics": [
+          {
+            "title": "First Contentful Paint",
+            "value": "0.3 s"
+          },
+          {
+            "title": "Largest Contentful Paint",
+            "value": "1.0 s"
+          },
+          {
+            "title": "Total Blocking Time",
+            "value": "440 ms"
+          },
+          {
+            "title": "Cumulative Layout Shift",
+            "value": "0.011"
+          },
+          {
+            "title": "Speed Index",
+            "value": "1.7 s"
+          }
+        ],
+        "calculator": [
+          "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=295&LCP=1041&TBT=435&CLS=0.01&SI=1682&TTI=1672&device=desktop&version=13.4.1"
+        ],
+        "audits": [
+          {
+            "id": "render-blocking-insight",
+            "text": "      Render-blocking requests Est savings of 150 ms          Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCPUnscored     Show 3rd-party resources (0)  URLTransfer SizeDurationbolets.app 1st party49.5 KiB440 ms…chunks/0hlbzspjw93qz.css(bolets.app)40.1 KiB200 ms…chunks/0sz__7aelm7lu.css(bolets.app)4.2 KiB120 ms…chunks/0g3i1jl3_0eez.css(bolets.app)3.7 KiB120 ms…chunks/1jzdqc9io0b1s.css(bolets.app)1.6 KiB "
+          },
+          {
+            "id": "lcp-breakdown-insight",
+            "text": "      LCP breakdown           Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCPUnscored  SubpartDurationTime to first byte10 msResource load delay980 msResource load duration130 msElement render delay620 ms              div.leaflet-pane > div.leaflet-layer > div.leaflet-tile-container > img.leaflet-tile<img alt=\"\" src=\"/api/map-tiles/icgc/v2/relief/9/258/189\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(479px, 133px, 0px);\"> "
+          },
+          {
+            "id": "bootup-time",
+            "text": "      Reduce JavaScript execution time 1.5 s          Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBTUnscored     Show 3rd-party resources (0)  URLTotal CPU TimeScript EvaluationScript Parsebolets.app 1st party1,562 ms954 ms129 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)661 ms409 ms12 ms…chunks/09r5u0e8i36rz.js(bolets.app)490 ms362 ms62 ms/map(bolets.app)200 ms11 ms16 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)148 ms142 ms6 ms/recorder.js(analytics.bolets.app)63 ms30 ms32 msUnattributable783 ms381 ms0 msUnattributable783 ms381 ms0 ms "
+          },
+          {
+            "id": "long-tasks",
+            "text": "      Avoid long main-thread tasks 9 long tasks found          Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBTUnscored     Show 3rd-party resources (0)  URLStart TimeDurationbolets.app 1st party807 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)1,163 ms197 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)791 ms133 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)1,439 ms125 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)1,640 ms89 ms…chunks/09r5u0e8i36rz.js(bolets.app)1,022 ms88 ms…chunks/09r5u0e8i36rz.js(bolets.app)688 ms63 ms/recorder.js(analytics.bolets.app)1,740 ms59 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)1,380 ms53 msUnattributable126 msUnattributable357 ms126 ms "
+          },
+          {
+            "id": "errors-in-console",
+            "text": "      No browser errors logged to the console           Errors logged to the console indicate unresolved problems. They can come from network request failures and other browser concerns. Learn more about this errors in console diagnostic audit   "
+          }
+        ]
+      }
+    },
+    {
+      "mobile": {
+        "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/srs5ubzsfq?form_factor=mobile",
+        "captured": "Captured at Sep 13, 2026, 3:38 AM GMT+2",
+        "scores": [
+          "88\nPerformance",
+          "100\nAccessibility",
+          "92\nBest Practices",
+          "100\nSEO",
+          "100\nAccessibility",
+          "92\nBest Practices",
+          "100\nSEO"
+        ],
+        "metrics": [
+          {
+            "title": "First Contentful Paint",
+            "value": "1.7 s"
+          },
+          {
+            "title": "Largest Contentful Paint",
+            "value": "3.7 s"
+          },
+          {
+            "title": "Total Blocking Time",
+            "value": "110 ms"
+          },
+          {
+            "title": "Cumulative Layout Shift",
+            "value": "0.039"
+          },
+          {
+            "title": "Speed Index",
+            "value": "2.4 s"
+          }
+        ],
+        "calculator": [
+          "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1681&LCP=3689&TBT=108&CLS=0.04&SI=2372&TTI=4292&device=mobile&version=13.4.1"
+        ],
+        "audits": [
+          {
+            "id": "render-blocking-insight",
+            "text": "      Render-blocking requests Est savings of 120 ms          Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCPUnscored     Show 3rd-party resources (0)  URLTransfer SizeDurationbolets.app 1st party49.6 KiB1,950 ms…chunks/0hlbzspjw93qz.css(bolets.app)40.1 KiB900 ms…chunks/1jzdqc9io0b1s.css(bolets.app)1.6 KiB150 ms…chunks/0sz__7aelm7lu.css(bolets.app)4.2 KiB450 ms…chunks/0g3i1jl3_0eez.css(bolets.app)3.7 KiB450 ms "
+          },
+          {
+            "id": "lcp-breakdown-insight",
+            "text": "      LCP breakdown           Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCPUnscored  SubpartDurationTime to first byte10 msResource load delay100 msResource load duration90 msElement render delay530 ms              div.leaflet-pane > div.leaflet-layer > div.leaflet-tile-container > img.leaflet-tile<img alt=\"\" src=\"/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(23px, 177px, 0px);\"> "
+          },
+          {
+            "id": "bootup-time",
+            "text": "      Reduce JavaScript execution time 1.4 s          Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBTUnscored     Show 3rd-party resources (0)  URLTotal CPU TimeScript EvaluationScript Parsebolets.app 1st party1,285 ms871 ms98 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)637 ms472 ms13 ms…chunks/09r5u0e8i36rz.js(bolets.app)379 ms290 ms39 ms/map(bolets.app)120 ms4 ms5 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)91 ms87 ms3 ms/recorder.js(analytics.bolets.app)58 ms18 ms39 msUnattributable673 ms434 ms0 msUnattributable673 ms434 ms0 ms "
+          },
+          {
+            "id": "long-tasks",
+            "text": "      Avoid long main-thread tasks 7 long tasks found          Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBTUnscored     Show 3rd-party resources (0)  URLStart TimeDurationbolets.app 1st party496 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)4,105 ms82 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)2,740 ms80 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)3,960 ms76 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)4,336 ms75 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)4,232 ms70 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)4,039 ms63 ms/recorder.js(analytics.bolets.app)3,606 ms50 ms "
+          },
+          {
+            "id": "errors-in-console",
+            "text": "      No browser errors logged to the console           Errors logged to the console indicate unresolved problems. They can come from network request failures and other browser concerns. Learn more about this errors in console diagnostic audit   "
+          }
+        ]
+      },
+      "desktop": {
+        "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/srs5ubzsfq?form_factor=desktop",
+        "captured": "Captured at Sep 13, 2026, 3:38 AM GMT+2",
+        "scores": [
+          "97\nPerformance",
+          "100\nAccessibility",
+          "96\nBest Practices",
+          "100\nSEO",
+          "100\nAccessibility",
+          "96\nBest Practices",
+          "100\nSEO"
+        ],
+        "metrics": [
+          {
+            "title": "First Contentful Paint",
+            "value": "0.5 s"
+          },
+          {
+            "title": "Largest Contentful Paint",
+            "value": "1.2 s"
+          },
+          {
+            "title": "Total Blocking Time",
+            "value": "40 ms"
+          },
+          {
+            "title": "Cumulative Layout Shift",
+            "value": "0.011"
+          },
+          {
+            "title": "Speed Index",
+            "value": "1.1 s"
+          }
+        ],
+        "calculator": [
+          "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=467&LCP=1208&TBT=38&CLS=0.01&SI=1087&TTI=1211&device=desktop&version=13.4.1"
+        ],
+        "audits": [
+          {
+            "id": "render-blocking-insight",
+            "text": "      Render-blocking requests           Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCPUnscored     Show 3rd-party resources (0)  URLTransfer SizeDurationbolets.app 1st party49.5 KiB440 ms…chunks/0hlbzspjw93qz.css(bolets.app)40.1 KiB200 ms…chunks/0sz__7aelm7lu.css(bolets.app)4.2 KiB120 ms…chunks/0g3i1jl3_0eez.css(bolets.app)3.7 KiB120 ms…chunks/1jzdqc9io0b1s.css(bolets.app)1.6 KiB "
+          },
+          {
+            "id": "lcp-breakdown-insight",
+            "text": "      LCP breakdown           Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCPUnscored  SubpartDurationTime to first byte10 msResource load delay680 msResource load duration50 msElement render delay230 ms              div.leaflet-pane > div.leaflet-layer > div.leaflet-tile-container > img.leaflet-tile<img alt=\"\" src=\"/api/map-tiles/icgc/v2/relief/9/258/189\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(479px, 133px, 0px);\"> "
+          },
+          {
+            "id": "long-tasks",
+            "text": "      Avoid long main-thread tasks 3 long tasks found          Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBTUnscored     Show 3rd-party resources (0)  URLStart TimeDurationbolets.app 1st party210 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)670 ms75 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)315 ms72 ms…chunks/09r5u0e8i36rz.js(bolets.app)809 ms63 ms "
+          },
+          {
+            "id": "bootup-time",
+            "text": "      JavaScript execution time 0.7 s          Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBTUnscored     Show 3rd-party resources (0)  URLTotal CPU TimeScript EvaluationScript Parsebolets.app 1st party748 ms494 ms45 ms…chunks/09r5u0e8i36rz.js(bolets.app)299 ms227 ms29 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)273 ms184 ms11 ms/map(bolets.app)93 ms3 ms4 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)82 ms80 ms2 msUnattributable279 ms118 ms0 msUnattributable279 ms118 ms0 ms "
+          },
+          {
+            "id": "errors-in-console",
+            "text": "      No browser errors logged to the console           Errors logged to the console indicate unresolved problems. They can come from network request failures and other browser concerns. Learn more about this errors in console diagnostic audit   "
+          }
+        ]
+      }
+    },
+    {
+      "mobile": {
+        "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/3crcrpxg32?form_factor=mobile",
+        "captured": "Captured at Sep 13, 2026, 3:38 AM GMT+2",
+        "scores": [
+          "96\nPerformance",
+          "96\nAccessibility",
+          "100\nBest Practices",
+          "100\nSEO",
+          "96\nAccessibility",
+          "100\nBest Practices",
+          "100\nSEO"
+        ],
+        "metrics": [
+          {
+            "title": "First Contentful Paint",
+            "value": "1.7 s"
+          },
+          {
+            "title": "Largest Contentful Paint",
+            "value": "2.7 s"
+          },
+          {
+            "title": "Total Blocking Time",
+            "value": "10 ms"
+          },
+          {
+            "title": "Cumulative Layout Shift",
+            "value": "0"
+          },
+          {
+            "title": "Speed Index",
+            "value": "1.7 s"
+          }
+        ],
+        "calculator": [
+          "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1673&LCP=2701&TBT=14&CLS=0&SI=1673&TTI=2765&device=mobile&version=13.4.1"
+        ],
+        "audits": [
+          {
+            "id": "render-blocking-insight",
+            "text": "      Render-blocking requests Est savings of 260 ms          Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCPUnscored  \n    .lh-3p-filter {\n      color: var(--color-gray-600);\n      float: right;\n      padding: 6px var(--stackpack-padding-horizontal);\n    }\n    .lh-3p-filter-label, .lh-3p-filter-input {\n      vertical-align: middle;\n      user-select: none;\n    }\n    .lh-3p-filter-input:disabled + .lh-3p-ui-string {\n      text-decoration: line-through;\n    }\n     Show 3rd-party resources (0)  URLTransfer SizeDurationbolets.app 1st party50.8 KiB2,560 ms…chunks/0hlbzspjw93qz.css(bolets.app)40.1 KiB1,050 ms…chunks/1keeqqdnjo1bn.css(bolets.app)1.7 KiB450 ms…chunks/0x4dctvql2n0-.css(bolets.app)3.3 KiB450 ms…chunks/0sz__7aelm7lu.css(bolets.app)4.2 KiB450 ms…chunks/1jzdqc9io0b1s.css(bolets.app)1.6 KiB150 ms "
+          },
+          {
+            "id": "lcp-breakdown-insight",
+            "text": "      LCP breakdown           Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCPUnscored  SubpartDurationTime to first byte40 msElement render delay300 ms              On trobar bolets avui\ni aquesta setmana?<h1 class=\"page-layout-module__VtGzRG__pageTitle\"> "
+          },
+          {
+            "id": "long-tasks",
+            "text": "      Avoid long main-thread tasks 1 long task found          Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBTUnscored     Show 3rd-party resources (0)  URLStart TimeDurationbolets.app 1st party64 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)2,701 ms64 ms "
+          },
+          {
+            "id": "bootup-time",
+            "text": "      JavaScript execution time 0.2 s          Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBTUnscored     Show 3rd-party resources (0)  URLTotal CPU TimeScript EvaluationScript Parsebolets.app 1st party308 ms165 ms33 ms…chunks/09r5u0e8i36rz.js(bolets.app)119 ms92 ms25 ms/bolets-avui(bolets.app)118 ms5 ms6 ms…chunks/3qgcwm0q0nxzk.js(bolets.app)70 ms68 ms2 msUnattributable55 ms2 ms0 msUnattributable55 ms2 ms0 ms "
+          },
+          {
+            "id": "errors-in-console",
+            "text": "      No browser errors logged to the console           Errors logged to the console indicate unresolved problems. They can come from network request failures and other browser concerns. Learn more about this errors in console diagnostic audit   "
+          }
+        ]
+      },
+      "desktop": {
+        "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/3crcrpxg32?form_factor=desktop",
+        "captured": "Captured at Sep 13, 2026, 3:38 AM GMT+2",
+        "scores": [
+          "100\nPerformance",
+          "100\nAccessibility",
+          "100\nBest Practices",
+          "100\nSEO",
+          "100\nAccessibility",
+          "100\nBest Practices",
+          "100\nSEO"
+        ],
+        "metrics": [
+          {
+            "title": "First Contentful Paint",
+            "value": "0.3 s"
+          },
+          {
+            "title": "Largest Contentful Paint",
+            "value": "0.5 s"
+          },
+          {
+            "title": "Total Blocking Time",
+            "value": "40 ms"
+          },
+          {
+            "title": "Cumulative Layout Shift",
+            "value": "0"
+          },
+          {
+            "title": "Speed Index",
+            "value": "0.6 s"
+          }
+        ],
+        "calculator": [
+          "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=321&LCP=481&TBT=36&CLS=0&SI=572&TTI=1240&device=desktop&version=13.4.1"
+        ],
+        "audits": [
+          {
+            "id": "render-blocking-insight",
+            "text": "      Render-blocking requests Est savings of 180 ms          Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCPUnscored  \n    .lh-3p-filter {\n      color: var(--color-gray-600);\n      float: right;\n      padding: 6px var(--stackpack-padding-horizontal);\n    }\n    .lh-3p-filter-label, .lh-3p-filter-input {\n      vertical-align: middle;\n      user-select: none;\n    }\n    .lh-3p-filter-input:disabled + .lh-3p-ui-string {\n      text-decoration: line-through;\n    }\n     Show 3rd-party resources (0)  URLTransfer SizeDurationbolets.app 1st party50.8 KiB560 ms…chunks/0x4dctvql2n0-.css(bolets.app)3.3 KiB120 ms…chunks/0hlbzspjw93qz.css(bolets.app)40.1 KiB200 ms…chunks/0sz__7aelm7lu.css(bolets.app)4.2 KiB120 ms…chunks/1jzdqc9io0b1s.css(bolets.app)1.6 KiB…chunks/1keeqqdnjo1bn.css(bolets.app)1.7 KiB120 ms "
+          },
+          {
+            "id": "lcp-breakdown-insight",
+            "text": "      LCP breakdown           Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCPUnscored  SubpartDurationTime to first byte40 msElement render delay390 ms              On trobar bolets avui\ni aquesta setmana?<h1 class=\"page-layout-module__VtGzRG__pageTitle\"> "
+          },
+          {
+            "id": "long-tasks",
+            "text": "      Avoid long main-thread tasks 3 long tasks found          Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBTUnscored     Show 3rd-party resources (0)  URLStart TimeDurationbolets.app 1st party205 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)1,117 ms92 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)1,235 ms57 ms…chunks/09r5u0e8i36rz.js(bolets.app)624 ms56 ms "
+          },
+          {
+            "id": "bootup-time",
+            "text": "      JavaScript execution time 1.2 s          Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBTUnscored     Show 3rd-party resources (0)  URLTotal CPU TimeScript EvaluationScript Parsebolets.app 1st party1,100 ms662 ms34 ms…chunks/3yv8_x2sqq6bu.js(bolets.app)562 ms390 ms9 ms…chunks/09r5u0e8i36rz.js(bolets.app)336 ms268 ms19 ms/bolets-avui(bolets.app)202 ms3 ms5 msUnattributable756 ms454 ms0 msUnattributable756 ms454 ms0 ms "
+          },
+          {
+            "id": "errors-in-console",
+            "text": "      No browser errors logged to the console           Errors logged to the console indicate unresolved problems. They can come from network request failures and other browser concerns. Learn more about this errors in console diagnostic audit   "
+          }
+        ]
+      }
+    }
+  ],
+  "failedAttempts": [
+    {
+      "url": "https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fbolets.app%2Fbolets-avui",
+      "error": "Unable to resolve https://bolets.app/bolets-avui"
+    },
+    {
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-bolets-avui/v393cgd001?form_factor=mobile",
+      "scores": [],
+      "metrics": [],
+      "calculator": [],
+      "audits": [],
+      "error": "PageSpeed Insights\nCopy Link\nDocs\nThis site uses cookies from Google to deliver its services and to analyze traffic.\nLearn More.\nOk, Got it.\nReport from Sep 13, 2026, 3:36:59 AM\n\nEnter a valid URL\n\nAnalyze\nsmartphone\nMobile\ncomputer\nDesktop\nDiscover what your real users are experiencing\nThis URL\nOrigin\nCore Web Vitals Assessment: \nPassed\nExpand view\nLargest Contentful Paint (LCP)\n1.6 s\nInteraction to Next Paint (INP)\nN/A\nCumulative Layout Shift (CLS)\n0.02\nOTHER NOTABLE METRICS\nFirst Contentful Paint (FCP)\n1.6 s\nTime to First Byte (TTFB)\n0.6 s\nLatest 28-day period\n(\nhistory\n)\nVarious mobile devices\nMany samples (\nChrome UX Report\n)\nFull visit durations\nVarious network connections\nAll Chrome versions\nDiagnose performance issues\nOops! Something went wrong.\nfailed to retrieve the LHR\nMore on PageSpeed Insights\nWhat's new\nDocumentation\nLearn about Web Performance\nAsk questions on Stack Overflow\nMailing list\nRelated Content\nUpdates\nWeb Fundamentals\nCase Studies\nPodcasts\nConnect\nTwitter\nYoutube\nChrome\nFirebase\nAll products\nTerms and Privacy Policy\nFor details, see the Google Developers Site Policies."
+    }
+  ],
+  "notes": [
+    "First map report robots.txt audit timed out: performance result valid; direct robots fetch returned HTTP 200 in 173ms and both repeated map SEO audits scored 100.",
+    "Map desktop 77 is retained: 435ms TBT, no browser errors. Other map desktop runs scored 95 and 97. Do not claim every run scores 90+."
+  ]
+}

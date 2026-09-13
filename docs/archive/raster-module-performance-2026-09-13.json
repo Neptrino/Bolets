@@ -1349,5 +1349,115 @@
       "firstTile": 182.29999995231628,
       "paintedPixels": 154374
     }
+  ],
+  "liveChecks": [
+    {
+      "path": "/map",
+      "status": 200,
+      "scriptBytes": 951761,
+      "errors": [],
+      "failures": [],
+      "paintedPixels": 43699,
+      "webglStarts": 0,
+      "loadedTiles": 18,
+      "tileSources": [
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/48.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/48.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/48.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/48.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/48.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/48.webp"
+      ]
+    },
+    {
+      "path": "/bolets-avui",
+      "status": 200,
+      "scriptBytes": 909894,
+      "errors": [],
+      "failures": [],
+      "paintedPixels": 18571,
+      "webglStarts": 0,
+      "loadedTiles": 18,
+      "tileSources": [
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/48.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/48.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/48.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/48.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/48.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/48.webp"
+      ]
+    },
+    {
+      "path": "/bolets/cep",
+      "status": 200,
+      "scriptBytes": 949703,
+      "errors": [],
+      "failures": [],
+      "paintedPixels": 29066,
+      "webglStarts": 0,
+      "loadedTiles": 12,
+      "tileSources": [
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp"
+      ]
+    },
+    {
+      "path": "/bolets/pinetell",
+      "status": 200,
+      "scriptBytes": 949703,
+      "errors": [],
+      "failures": [],
+      "paintedPixels": 33897,
+      "webglStarts": 0,
+      "loadedTiles": 12,
+      "tileSources": [
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+        "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp"
+      ]
+    }
   ]
 }
