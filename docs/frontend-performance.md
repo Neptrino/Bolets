@@ -88,6 +88,14 @@ that evaluation until the mount effect. Keep its literal require scoped there;
 an async factory would add a new download/initialization waterfall. Avui and
 species maps retain their visibility-based client imports. Leaflet's stylesheet
 loads with the renderer, while shared MapLibre control styles remain in the root.
+The raster entry in `leaflet-raster.ts` imports the pinned package’s source modules,
+including every map gesture handler, tile layers, projection and base controls.
+It excludes unused vector renderers, markers, popups and built-in controls.
+Keep the matching declarations in `leaflet-source.d.ts` narrow, and rerun gesture
+and camera tests for a Leaflet upgrade. This saves 69,320 decoded JavaScript bytes
+on the default map; local cold-load LCP changed only slightly, so this is a bundle
+reduction rather than a claimed PageSpeed score gain.
+
 Browser checks must wait for the initialized `.raster-map-surface` before using
 strict shell selectors: streaming can briefly include a hidden shell alongside
 its visible fallback.

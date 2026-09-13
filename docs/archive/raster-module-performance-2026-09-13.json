@@ -1,0 +1,1353 @@
+{
+  "captured": "2026-09-13",
+  "baseline": "9bec1d0",
+  "method": {
+    "viewport": [
+      412,
+      823
+    ],
+    "deviceScaleFactor": 1.75,
+    "cpuSlowdown": 4,
+    "latencyMs": 150,
+    "downloadBytesPerSecond": 200000,
+    "serviceWorkers": "blocked",
+    "predictionData": "fixed real bucket fixture",
+    "order": [
+      3106,
+      3105,
+      3105,
+      3106,
+      3106,
+      3105
+    ],
+    "baselineBuild": "separate worktree; same dependencies, media and environment; Turbopack root explicitly points to shared workspace"
+  },
+  "runs": [
+    {
+      "port": 3106,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2340,
+        "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "dom": {
+        "renderer": 2303.0999999046326,
+        "tile": 2314.899999856949,
+        "tileLoaded": 2322.7000000476837,
+        "predictionReady": 3303.5
+      },
+      "resources": [
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3ivcc6t1s04dh.js",
+          "start": 172.20000004768372,
+          "end": 477.2999999523163,
+          "duration": 305.09999990463257
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/0hekridxpmztk.js",
+          "start": 172.20000004768372,
+          "end": 642.5,
+          "duration": 470.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/0xmckmn224y77.js",
+          "start": 172.29999995231628,
+          "end": 1332.5,
+          "duration": 1160.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/10kyhiutpuiph.js",
+          "start": 172.70000004768372,
+          "end": 860.7999999523163,
+          "duration": 688.0999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/turbopack-08ahj506se0s8.js",
+          "start": 172.70000004768372,
+          "end": 957.8999998569489,
+          "duration": 785.1999998092651
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/2b1hxya2j0b3t.js",
+          "start": 172.70000004768372,
+          "end": 1042,
+          "duration": 869.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/37kcvu8aqwa6a.js",
+          "start": 172.70000004768372,
+          "end": 1229,
+          "duration": 1056.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3zhqpk_phiw0f.js",
+          "start": 172.70000004768372,
+          "end": 1258.3999998569489,
+          "duration": 1085.6999998092651
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3jwr4syr635q8.js",
+          "start": 172.70000004768372,
+          "end": 1384.8999998569489,
+          "duration": 1212.1999998092651
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/42ac-711_a0yc.js",
+          "start": 172.70000004768372,
+          "end": 1401,
+          "duration": 1228.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3dimeivoukz4e.js",
+          "start": 172.70000004768372,
+          "end": 2046.8999998569489,
+          "duration": 1874.1999998092651
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3pli1xrvc3ftl.js",
+          "start": 172.79999995231628,
+          "end": 1497.5,
+          "duration": 1324.7000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/0sasf278dz0pl.js",
+          "start": 172.79999995231628,
+          "end": 1613.0999999046326,
+          "duration": 1440.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/2cb7ig9-w1y3r.js",
+          "start": 172.79999995231628,
+          "end": 2077.2999999523163,
+          "duration": 1904.5
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/01evozfqsefyc.js",
+          "start": 172.79999995231628,
+          "end": 2239.7999999523163,
+          "duration": 2067
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+          "start": 180.5,
+          "end": 2054.399999856949,
+          "duration": 1873.8999998569489
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+          "start": 181.39999985694885,
+          "end": 1828.2999999523163,
+          "duration": 1646.9000000953674
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+          "start": 2315.5,
+          "end": 2472.5,
+          "duration": 157
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+          "start": 2315.5,
+          "end": 2482.399999856949,
+          "duration": 166.89999985694885
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+          "start": 2315.5,
+          "end": 2512.2999999523163,
+          "duration": 196.79999995231628
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/48.webp",
+          "start": 2315.5,
+          "end": 2517.399999856949,
+          "duration": 201.89999985694885
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+          "start": 2315.899999856949,
+          "end": 2502.399999856949,
+          "duration": 186.5
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/48.webp",
+          "start": 2315.899999856949,
+          "end": 2629.899999856949,
+          "duration": 314
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+          "start": 2315.899999856949,
+          "end": 2789.7999999523163,
+          "duration": 473.90000009536743
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/48.webp",
+          "start": 2315.899999856949,
+          "end": 2884.7000000476837,
+          "duration": 568.8000001907349
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp",
+          "start": 2316,
+          "end": 2547.5,
+          "duration": 231.5
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+          "start": 2316,
+          "end": 2697.5,
+          "duration": 381.5
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+          "start": 2316,
+          "end": 2735.899999856949,
+          "duration": 419.89999985694885
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/48.webp",
+          "start": 2316.0999999046326,
+          "end": 2706,
+          "duration": 389.90000009536743
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/48.webp",
+          "start": 2316.0999999046326,
+          "end": 2713.899999856949,
+          "duration": 397.7999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+          "start": 2316.0999999046326,
+          "end": 2767,
+          "duration": 450.90000009536743
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/48.webp",
+          "start": 2316.0999999046326,
+          "end": 2870.7000000476837,
+          "duration": 554.6000001430511
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+          "start": 2316.0999999046326,
+          "end": 2895,
+          "duration": 578.9000000953674
+        }
+      ],
+      "blocking": 13,
+      "fcp": 1152,
+      "ttfb": 13.5,
+      "firstTile": 180.5,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 756346,
+      "ssr": true,
+      "lcp": {
+        "time": 2328,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "dom": {
+        "renderer": 2296.2999999523163,
+        "tile": 2308,
+        "tileLoaded": 2313,
+        "predictionReady": 3303.7999999523163
+      },
+      "resources": [
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/3qgcwm0q0nxzk.js",
+          "start": 175.09999990463257,
+          "end": 481.39999985694885,
+          "duration": 306.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0fy4h0ngk1igg.js",
+          "start": 175.09999990463257,
+          "end": 643.3999998569489,
+          "duration": 468.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/11jq0c2_zavac.js",
+          "start": 175.09999990463257,
+          "end": 868.5,
+          "duration": 693.4000000953674
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/turbopack-1mxczeztpvrwx.js",
+          "start": 175.09999990463257,
+          "end": 951.2999999523163,
+          "duration": 776.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/05nzjozu8bnl5.js",
+          "start": 175.09999990463257,
+          "end": 1041.2999999523163,
+          "duration": 866.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/3fntmmi971322.js",
+          "start": 175.09999990463257,
+          "end": 1214.3999998569489,
+          "duration": 1039.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0xmckmn224y77.js",
+          "start": 175.09999990463257,
+          "end": 1333.2999999523163,
+          "duration": 1158.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0-h1i3ffazstd.js",
+          "start": 175.09999990463257,
+          "end": 1371.2999999523163,
+          "duration": 1196.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/09r5u0e8i36rz.js",
+          "start": 175.09999990463257,
+          "end": 2061.2999999523163,
+          "duration": 1886.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/3--6dsr2l7gb2.js",
+          "start": 176.09999990463257,
+          "end": 1229.0999999046326,
+          "duration": 1053
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1e28vl-jrzg1h.js",
+          "start": 176.09999990463257,
+          "end": 1401,
+          "duration": 1224.9000000953674
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1251_lq19-_2b.js",
+          "start": 176.20000004768372,
+          "end": 1477.2999999523163,
+          "duration": 1301.0999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0jkv85yy44q09.js",
+          "start": 176.20000004768372,
+          "end": 1604.0999999046326,
+          "duration": 1427.8999998569489
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/42b1aydtbssvd.js",
+          "start": 176.20000004768372,
+          "end": 2077,
+          "duration": 1900.7999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/3yv8_x2sqq6bu.js",
+          "start": 176.20000004768372,
+          "end": 2136.0999999046326,
+          "duration": 1959.8999998569489
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+          "start": 179.5,
+          "end": 1813.3999998569489,
+          "duration": 1633.8999998569489
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+          "start": 179.5,
+          "end": 2046.0999999046326,
+          "duration": 1866.5999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+          "start": 2308,
+          "end": 2466,
+          "duration": 158
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+          "start": 2308.399999856949,
+          "end": 2489.7999999523163,
+          "duration": 181.40000009536743
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+          "start": 2308.399999856949,
+          "end": 2496.0999999046326,
+          "duration": 187.70000004768372
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+          "start": 2308.399999856949,
+          "end": 2506.2000000476837,
+          "duration": 197.80000019073486
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/48.webp",
+          "start": 2308.399999856949,
+          "end": 2511.0999999046326,
+          "duration": 202.70000004768372
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+          "start": 2308.5,
+          "end": 2675.899999856949,
+          "duration": 367.39999985694885
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/48.webp",
+          "start": 2308.5,
+          "end": 2848.5999999046326,
+          "duration": 540.0999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+          "start": 2308.5999999046326,
+          "end": 2571.2000000476837,
+          "duration": 262.60000014305115
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+          "start": 2308.5999999046326,
+          "end": 2683.899999856949,
+          "duration": 375.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/48.webp",
+          "start": 2308.5999999046326,
+          "end": 2745.7999999523163,
+          "duration": 437.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+          "start": 2308.5999999046326,
+          "end": 2752.399999856949,
+          "duration": 443.7999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp",
+          "start": 2308.5999999046326,
+          "end": 2804.0999999046326,
+          "duration": 495.5
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/48.webp",
+          "start": 2308.5999999046326,
+          "end": 2893.899999856949,
+          "duration": 585.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+          "start": 2308.7000000476837,
+          "end": 2728.2999999523163,
+          "duration": 419.59999990463257
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/48.webp",
+          "start": 2309.7000000476837,
+          "end": 2641.5,
+          "duration": 331.7999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/48.webp",
+          "start": 2309.7000000476837,
+          "end": 2857,
+          "duration": 547.2999999523163
+        }
+      ],
+      "blocking": 9,
+      "fcp": 1152,
+      "ttfb": 16.700000047683716,
+      "firstTile": 179.5,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 756346,
+      "ssr": true,
+      "lcp": {
+        "time": 2340,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "dom": {
+        "renderer": 2304.9000000953674,
+        "tile": 2317.100000143051,
+        "tileLoaded": 2322.2000000476837,
+        "predictionReady": 3304.600000143051
+      },
+      "resources": [
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/3qgcwm0q0nxzk.js",
+          "start": 172.5,
+          "end": 478.10000014305115,
+          "duration": 305.60000014305115
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0fy4h0ngk1igg.js",
+          "start": 172.60000014305115,
+          "end": 643.1000001430511,
+          "duration": 470.5
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/11jq0c2_zavac.js",
+          "start": 172.60000014305115,
+          "end": 860.5,
+          "duration": 687.8999998569489
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/turbopack-1mxczeztpvrwx.js",
+          "start": 172.60000014305115,
+          "end": 953.7000000476837,
+          "duration": 781.0999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0xmckmn224y77.js",
+          "start": 172.60000014305115,
+          "end": 1325.2000000476837,
+          "duration": 1152.5999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/09r5u0e8i36rz.js",
+          "start": 172.60000014305115,
+          "end": 2060.4000000953674,
+          "duration": 1887.7999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/05nzjozu8bnl5.js",
+          "start": 172.70000004768372,
+          "end": 1035,
+          "duration": 862.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/3--6dsr2l7gb2.js",
+          "start": 172.70000004768372,
+          "end": 1220.8000001907349,
+          "duration": 1048.1000001430511
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/3fntmmi971322.js",
+          "start": 172.70000004768372,
+          "end": 1245,
+          "duration": 1072.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0-h1i3ffazstd.js",
+          "start": 172.70000004768372,
+          "end": 1377.9000000953674,
+          "duration": 1205.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1e28vl-jrzg1h.js",
+          "start": 173.40000009536743,
+          "end": 1432.1000001430511,
+          "duration": 1258.7000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1251_lq19-_2b.js",
+          "start": 173.40000009536743,
+          "end": 1492.8000001907349,
+          "duration": 1319.4000000953674
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0jkv85yy44q09.js",
+          "start": 173.40000009536743,
+          "end": 1603.4000000953674,
+          "duration": 1430
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/42b1aydtbssvd.js",
+          "start": 173.40000009536743,
+          "end": 2069.9000000953674,
+          "duration": 1896.5
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/3yv8_x2sqq6bu.js",
+          "start": 173.40000009536743,
+          "end": 2144.100000143051,
+          "duration": 1970.7000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+          "start": 180.60000014305115,
+          "end": 2076.100000143051,
+          "duration": 1895.5
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+          "start": 180.70000004768372,
+          "end": 1827.8000001907349,
+          "duration": 1647.1000001430511
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+          "start": 2317.2000000476837,
+          "end": 2480.600000143051,
+          "duration": 163.40000009536743
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+          "start": 2317.2000000476837,
+          "end": 2495.300000190735,
+          "duration": 178.10000014305115
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/48.webp",
+          "start": 2317.2000000476837,
+          "end": 2518.4000000953674,
+          "duration": 201.20000004768372
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+          "start": 2317.2000000476837,
+          "end": 2527.300000190735,
+          "duration": 210.10000014305115
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+          "start": 2317.300000190735,
+          "end": 2510.600000143051,
+          "duration": 193.29999995231628
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/48.webp",
+          "start": 2317.300000190735,
+          "end": 2750.5,
+          "duration": 433.19999980926514
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/48.webp",
+          "start": 2317.300000190735,
+          "end": 2802.7000000476837,
+          "duration": 485.39999985694885
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+          "start": 2317.300000190735,
+          "end": 2870.9000000953674,
+          "duration": 553.5999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+          "start": 2317.300000190735,
+          "end": 2908.2000000476837,
+          "duration": 590.8999998569489
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp",
+          "start": 2318.2000000476837,
+          "end": 2690.300000190735,
+          "duration": 372.10000014305115
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+          "start": 2318.2000000476837,
+          "end": 2768.300000190735,
+          "duration": 450.10000014305115
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/48.webp",
+          "start": 2318.4000000953674,
+          "end": 2577.800000190735,
+          "duration": 259.40000009536743
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+          "start": 2318.4000000953674,
+          "end": 2678,
+          "duration": 359.59999990463257
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+          "start": 2318.4000000953674,
+          "end": 2758,
+          "duration": 439.59999990463257
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/48.webp",
+          "start": 2318.4000000953674,
+          "end": 2856.4000000953674,
+          "duration": 538
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/48.webp",
+          "start": 2318.7000000476837,
+          "end": 2646.800000190735,
+          "duration": 328.10000014305115
+        }
+      ],
+      "blocking": 9,
+      "fcp": 1176,
+      "ttfb": 9.200000047683716,
+      "firstTile": 180.60000014305115,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3106,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2388,
+        "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "dom": {
+        "renderer": 2347.4000000953674,
+        "tile": 2359.5,
+        "tileLoaded": 2369.2000000476837,
+        "predictionReady": 3355.7999999523163
+      },
+      "resources": [
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3ivcc6t1s04dh.js",
+          "start": 180,
+          "end": 493.5,
+          "duration": 313.5
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/0hekridxpmztk.js",
+          "start": 180.10000014305115,
+          "end": 665.9000000953674,
+          "duration": 485.7999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/10kyhiutpuiph.js",
+          "start": 180.10000014305115,
+          "end": 876.7000000476837,
+          "duration": 696.5999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/turbopack-08ahj506se0s8.js",
+          "start": 180.10000014305115,
+          "end": 973.5,
+          "duration": 793.3999998569489
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/2b1hxya2j0b3t.js",
+          "start": 180.10000014305115,
+          "end": 1057.1000001430511,
+          "duration": 877
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/0xmckmn224y77.js",
+          "start": 180.10000014305115,
+          "end": 1343.6000001430511,
+          "duration": 1163.5
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3jwr4syr635q8.js",
+          "start": 180.10000014305115,
+          "end": 1393.7000000476837,
+          "duration": 1213.5999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3dimeivoukz4e.js",
+          "start": 180.10000014305115,
+          "end": 2083.4000000953674,
+          "duration": 1903.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/37kcvu8aqwa6a.js",
+          "start": 180.20000004768372,
+          "end": 1243.5,
+          "duration": 1063.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3zhqpk_phiw0f.js",
+          "start": 180.20000004768372,
+          "end": 1258.6000001430511,
+          "duration": 1078.4000000953674
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/42ac-711_a0yc.js",
+          "start": 180.29999995231628,
+          "end": 1426.6000001430511,
+          "duration": 1246.3000001907349
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3pli1xrvc3ftl.js",
+          "start": 180.29999995231628,
+          "end": 1505.9000000953674,
+          "duration": 1325.6000001430511
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/0sasf278dz0pl.js",
+          "start": 180.29999995231628,
+          "end": 1627.4000000953674,
+          "duration": 1447.1000001430511
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/2cb7ig9-w1y3r.js",
+          "start": 180.29999995231628,
+          "end": 2098.2999999523163,
+          "duration": 1918
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/01evozfqsefyc.js",
+          "start": 180.29999995231628,
+          "end": 2258,
+          "duration": 2077.7000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+          "start": 189.10000014305115,
+          "end": 1836.7000000476837,
+          "duration": 1647.5999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+          "start": 189.10000014305115,
+          "end": 2075.7999999523163,
+          "duration": 1886.6999998092651
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+          "start": 2359.600000143051,
+          "end": 2518.5,
+          "duration": 158.89999985694885
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+          "start": 2359.600000143051,
+          "end": 2534,
+          "duration": 174.39999985694885
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+          "start": 2359.600000143051,
+          "end": 2558.2999999523163,
+          "duration": 198.69999980926514
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/48.webp",
+          "start": 2359.600000143051,
+          "end": 2563.7999999523163,
+          "duration": 204.19999980926514
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+          "start": 2359.7000000476837,
+          "end": 2549.7000000476837,
+          "duration": 190
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/48.webp",
+          "start": 2360.5,
+          "end": 2676.2999999523163,
+          "duration": 315.7999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+          "start": 2360.5,
+          "end": 2797.100000143051,
+          "duration": 436.60000014305115
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+          "start": 2360.5,
+          "end": 2834,
+          "duration": 473.5
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/48.webp",
+          "start": 2360.5,
+          "end": 2931.5,
+          "duration": 571
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp",
+          "start": 2360.9000000953674,
+          "end": 2585.9000000953674,
+          "duration": 225
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+          "start": 2360.9000000953674,
+          "end": 2750.7999999523163,
+          "duration": 389.89999985694885
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/48.webp",
+          "start": 2361,
+          "end": 2759.100000143051,
+          "duration": 398.10000014305115
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+          "start": 2361,
+          "end": 2946.7999999523163,
+          "duration": 585.7999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/48.webp",
+          "start": 2361.100000143051,
+          "end": 2765.9000000953674,
+          "duration": 404.7999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+          "start": 2361.100000143051,
+          "end": 2818.2999999523163,
+          "duration": 457.19999980926514
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/48.webp",
+          "start": 2361.100000143051,
+          "end": 2918.100000143051,
+          "duration": 557
+        }
+      ],
+      "blocking": 18,
+      "fcp": 1196,
+      "ttfb": 22.799999952316284,
+      "firstTile": 189.10000014305115,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3106,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2360,
+        "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "dom": {
+        "renderer": 2314.7999999523163,
+        "tile": 2327.600000143051,
+        "tileLoaded": 2336.100000143051,
+        "predictionReady": 3284.100000143051
+      },
+      "resources": [
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3ivcc6t1s04dh.js",
+          "start": 171.79999995231628,
+          "end": 480.60000014305115,
+          "duration": 308.80000019073486
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/0hekridxpmztk.js",
+          "start": 171.79999995231628,
+          "end": 660,
+          "duration": 488.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/10kyhiutpuiph.js",
+          "start": 171.79999995231628,
+          "end": 868.4000000953674,
+          "duration": 696.6000001430511
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/turbopack-08ahj506se0s8.js",
+          "start": 171.79999995231628,
+          "end": 974.4000000953674,
+          "duration": 802.6000001430511
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/0xmckmn224y77.js",
+          "start": 171.79999995231628,
+          "end": 1319.4000000953674,
+          "duration": 1147.6000001430511
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3dimeivoukz4e.js",
+          "start": 171.79999995231628,
+          "end": 2053.5,
+          "duration": 1881.7000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/2b1hxya2j0b3t.js",
+          "start": 172.20000004768372,
+          "end": 1048.2000000476837,
+          "duration": 876
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/37kcvu8aqwa6a.js",
+          "start": 172.20000004768372,
+          "end": 1228.7999999523163,
+          "duration": 1056.5999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3zhqpk_phiw0f.js",
+          "start": 172.20000004768372,
+          "end": 1235.6000001430511,
+          "duration": 1063.4000000953674
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3jwr4syr635q8.js",
+          "start": 172.20000004768372,
+          "end": 1393.7000000476837,
+          "duration": 1221.5
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/42ac-711_a0yc.js",
+          "start": 172.29999995231628,
+          "end": 1417.7000000476837,
+          "duration": 1245.4000000953674
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/3pli1xrvc3ftl.js",
+          "start": 172.29999995231628,
+          "end": 1490.7999999523163,
+          "duration": 1318.5
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/0sasf278dz0pl.js",
+          "start": 172.29999995231628,
+          "end": 1625.7999999523163,
+          "duration": 1453.5
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/2cb7ig9-w1y3r.js",
+          "start": 172.29999995231628,
+          "end": 2091,
+          "duration": 1918.7000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3106/_next/static/chunks/01evozfqsefyc.js",
+          "start": 172.29999995231628,
+          "end": 2240.600000143051,
+          "duration": 2068.300000190735
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+          "start": 179.40000009536743,
+          "end": 2069,
+          "duration": 1889.5999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+          "start": 180,
+          "end": 1820.9000000953674,
+          "duration": 1640.9000000953674
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+          "start": 2327.600000143051,
+          "end": 2488.5,
+          "duration": 160.89999985694885
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+          "start": 2327.600000143051,
+          "end": 2495.7999999523163,
+          "duration": 168.19999980926514
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+          "start": 2327.600000143051,
+          "end": 2526.4000000953674,
+          "duration": 198.79999995231628
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+          "start": 2327.7000000476837,
+          "end": 2518.5,
+          "duration": 190.79999995231628
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/48.webp",
+          "start": 2327.7000000476837,
+          "end": 2533.2999999523163,
+          "duration": 205.59999990463257
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+          "start": 2327.7000000476837,
+          "end": 2653.2999999523163,
+          "duration": 325.59999990463257
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/48.webp",
+          "start": 2327.7000000476837,
+          "end": 2833.600000143051,
+          "duration": 505.90000009536743
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/48.webp",
+          "start": 2327.7999999523163,
+          "end": 2683.4000000953674,
+          "duration": 355.60000014305115
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+          "start": 2327.7999999523163,
+          "end": 2879.7999999523163,
+          "duration": 552
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+          "start": 2327.7999999523163,
+          "end": 2916.9000000953674,
+          "duration": 589.1000001430511
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp",
+          "start": 2328.600000143051,
+          "end": 2557.4000000953674,
+          "duration": 228.79999995231628
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/48.webp",
+          "start": 2328.600000143051,
+          "end": 2671.2000000476837,
+          "duration": 342.59999990463257
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+          "start": 2328.600000143051,
+          "end": 2706.2000000476837,
+          "duration": 377.59999990463257
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/48.webp",
+          "start": 2328.600000143051,
+          "end": 2715.5,
+          "duration": 386.89999985694885
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/48.webp",
+          "start": 2328.600000143051,
+          "end": 2731.5,
+          "duration": 402.89999985694885
+        },
+        {
+          "url": "http://127.0.0.1:3106/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+          "start": 2328.600000143051,
+          "end": 2857.7999999523163,
+          "duration": 529.1999998092651
+        }
+      ],
+      "blocking": 15,
+      "fcp": 1172,
+      "ttfb": 12.100000143051147,
+      "firstTile": 179.40000009536743,
+      "paintedPixels": 154374
+    },
+    {
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 756346,
+      "ssr": true,
+      "lcp": {
+        "time": 2344,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "dom": {
+        "renderer": 2310.399999856949,
+        "tile": 2322.7000000476837,
+        "tileLoaded": 2328,
+        "predictionReady": 3260.7000000476837
+      },
+      "resources": [
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/3qgcwm0q0nxzk.js",
+          "start": 173.5,
+          "end": 479.7000000476837,
+          "duration": 306.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0fy4h0ngk1igg.js",
+          "start": 173.59999990463257,
+          "end": 635.7999999523163,
+          "duration": 462.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0xmckmn224y77.js",
+          "start": 173.59999990463257,
+          "end": 1325.8999998569489,
+          "duration": 1152.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/09r5u0e8i36rz.js",
+          "start": 173.59999990463257,
+          "end": 2068.5,
+          "duration": 1894.9000000953674
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/11jq0c2_zavac.js",
+          "start": 174,
+          "end": 868.2999999523163,
+          "duration": 694.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/turbopack-1mxczeztpvrwx.js",
+          "start": 174,
+          "end": 951.2999999523163,
+          "duration": 777.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/05nzjozu8bnl5.js",
+          "start": 174,
+          "end": 1048.5,
+          "duration": 874.5
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/3--6dsr2l7gb2.js",
+          "start": 174,
+          "end": 1230.5999999046326,
+          "duration": 1056.5999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/3fntmmi971322.js",
+          "start": 174,
+          "end": 1244.5999999046326,
+          "duration": 1070.5999999046326
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0-h1i3ffazstd.js",
+          "start": 174,
+          "end": 1378.5,
+          "duration": 1204.5
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1e28vl-jrzg1h.js",
+          "start": 174.09999990463257,
+          "end": 1415.7999999523163,
+          "duration": 1241.7000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/1251_lq19-_2b.js",
+          "start": 174.09999990463257,
+          "end": 1491.3999998569489,
+          "duration": 1317.2999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/0jkv85yy44q09.js",
+          "start": 174.09999990463257,
+          "end": 1611.2999999523163,
+          "duration": 1437.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/42b1aydtbssvd.js",
+          "start": 174.20000004768372,
+          "end": 2086.2000000476837,
+          "duration": 1912
+        },
+        {
+          "url": "http://127.0.0.1:3105/_next/static/chunks/3yv8_x2sqq6bu.js",
+          "start": 174.20000004768372,
+          "end": 2145.0999999046326,
+          "duration": 1970.8999998569489
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+          "start": 182.29999995231628,
+          "end": 1828.2000000476837,
+          "duration": 1645.9000000953674
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+          "start": 182.29999995231628,
+          "end": 2061,
+          "duration": 1878.7000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+          "start": 2323.0999999046326,
+          "end": 2482,
+          "duration": 158.90000009536743
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+          "start": 2323.0999999046326,
+          "end": 2488.5999999046326,
+          "duration": 165.5
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+          "start": 2323.0999999046326,
+          "end": 2512.399999856949,
+          "duration": 189.29999995231628
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+          "start": 2323.0999999046326,
+          "end": 2518.7999999523163,
+          "duration": 195.70000004768372
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/48.webp",
+          "start": 2323.0999999046326,
+          "end": 2525.7000000476837,
+          "duration": 202.60000014305115
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+          "start": 2323.0999999046326,
+          "end": 2638.2999999523163,
+          "duration": 315.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/48.webp",
+          "start": 2323.2000000476837,
+          "end": 2668.399999856949,
+          "duration": 345.19999980926514
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+          "start": 2323.2999999523163,
+          "end": 2608.2999999523163,
+          "duration": 285
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/48.webp",
+          "start": 2323.2999999523163,
+          "end": 2654.5,
+          "duration": 331.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp",
+          "start": 2323.2999999523163,
+          "end": 2692.5,
+          "duration": 369.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+          "start": 2323.2999999523163,
+          "end": 2791.7000000476837,
+          "duration": 468.40000009536743
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/48.webp",
+          "start": 2323.2999999523163,
+          "end": 2813.5,
+          "duration": 490.2000000476837
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+          "start": 2324.2999999523163,
+          "end": 2820.399999856949,
+          "duration": 496.09999990463257
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+          "start": 2324.2999999523163,
+          "end": 2885.7999999523163,
+          "duration": 561.5
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/48.webp",
+          "start": 2324.5,
+          "end": 2700.2999999523163,
+          "duration": 375.7999999523163
+        },
+        {
+          "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/48.webp",
+          "start": 2324.5,
+          "end": 2842.899999856949,
+          "duration": 518.3999998569489
+        }
+      ],
+      "blocking": 11,
+      "fcp": 1180,
+      "ttfb": 15.700000047683716,
+      "firstTile": 182.29999995231628,
+      "paintedPixels": 154374
+    }
+  ]
+}

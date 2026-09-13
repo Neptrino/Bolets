@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { Browser, point } from "leaflet";
+import { Browser, point } from "@/components/region-map/leaflet-raster";
 import { basemapOptions, basemapStyle } from "@/components/region-map/basemaps";
 import { MapEvents } from "@/components/region-map/map-adapter";
 import { RasterRegionMap } from "@/components/region-map/raster-map-browser";
@@ -21,6 +21,16 @@ function createMap() {
   return map;
 }
 describe("raster map compatibility", () => {
+  it("registers every gesture handler in the raster-only Leaflet entry", () => {
+    const map = createMap().leaflet;
+    for (const name of ["dragging", "scrollWheelZoom", "doubleClickZoom", "touchZoom", "boxZoom", "keyboard"] as const) {
+      expect(map[name], name).toBeDefined();
+      expect(map[name].enabled(), name).toBe(false);
+      map[name].enable();
+      expect(map[name].enabled(), name).toBe(true);
+      map[name].disable();
+    }
+  });
   it("requests tiles only after the initial camera is fitted", async () => {
     const map = createMap();
     expect(map.getCanvas().querySelectorAll(".leaflet-tile")).toHaveLength(0);

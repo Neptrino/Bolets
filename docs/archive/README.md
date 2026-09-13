@@ -6,6 +6,8 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [Raster source-module performance check — 13 September 2026](raster-module-performance-2026-09-13.md) · [measurement data](raster-module-performance-2026-09-13.json)
+
 - [Catalogue stylesheet ownership — 13 September 2026](catalogue-css-performance-2026-09-13.md)
 
 - [SEO stylesheet ownership — 13 September 2026](seo-css-ownership-2026-09-13.md)

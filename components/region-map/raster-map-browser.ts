@@ -1,4 +1,4 @@
-import { Control, DomEvent, Map as LeafletMap, latLngBounds, type LeafletMouseEvent } from "leaflet";
+import { Control, DomEvent, Map as LeafletMap, latLngBounds, type LeafletMouseEvent } from "./leaflet-raster";
 import type { StyleSpecification } from "maplibre-gl";
 import { regionMapPanBounds } from "@/src/lib/map-view-bounds";
 import type { createRegionMap } from "./map-instance";

@@ -142,3 +142,41 @@ test("manual pan stops location following without ending the watch", async ({ co
   expect(await transform()).toBe(before);
   await expect(location).toHaveClass(/maplibregl-ctrl-geolocate-background/);
 });
+
+test("keeps keyboard pan and wheel zoom working with the raster entry", async ({ page }) => {
+  await page.goto("/map?region=prepirineus");
+  const surface = page.locator(".raster-map-surface");
+  await expect(surface).toBeVisible();
+  const transform = () => page.locator(".leaflet-map-pane").getAttribute("style");
+  await surface.focus();
+  const before = await transform();
+  await page.keyboard.press("ArrowRight");
+  await expect.poll(transform).not.toBe(before);
+  const initialTiles = await page.locator(".leaflet-tile").evaluateAll(tiles => tiles.map(tile => (tile as HTMLImageElement).src).sort().join());
+  await surface.hover({ position: { x: 600, y: 300 } });
+  await page.mouse.wheel(0, -250);
+  await expect.poll(() => page.locator(".leaflet-tile").evaluateAll(tiles => tiles.map(tile => (tile as HTMLImageElement).src).sort().join())).not.toBe(initialTiles);
+});
+
+test("retains two-finger zoom on touch screens", async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, viewport: { width: 412, height: 823 }, isMobile: true, hasTouch: true, serviceWorkers: "block", extraHTTPHeaders: { DNT: "1" } });
+  const page = await context.newPage();
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await page.route("**/api/predictions?*", route => route.fulfill({ json: { cells: [], truncated: false } }));
+  const tile = await sharp({ create: { width: 256, height: 256, channels: 3, background: "#c4c4b4" } }).png().toBuffer();
+  await page.route(/\/api\/map-tiles\/|\/media\/optimized\/v\d+\/icgc-bootstrap\//, route => route.fulfill({ contentType: "image/png", body: tile }));
+  await page.goto("/map?region=prepirineus");
+  await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
+  const sources = () => page.locator(".leaflet-tile").evaluateAll(tiles => tiles.map(tile => (tile as HTMLImageElement).src).sort().join());
+  const before = await sources();
+  const session = await context.newCDPSession(page);
+  await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 180, y: 350, id: 1 }, { x: 230, y: 350, id: 2 }] });
+  for (let step = 1; step <= 6; step++) {
+    await session.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 180 - 10 * step, y: 350, id: 1 }, { x: 230 + 10 * step, y: 350, id: 2 }] });
+  }
+  await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await expect.poll(sources).not.toBe(before);
+  expect(errors).toEqual([]);
+  await context.close();
+});

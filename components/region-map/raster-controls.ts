@@ -1,4 +1,4 @@
-import { Control, DomEvent, type Map as LeafletMap } from "leaflet";
+import { Control, DomEvent, type Map as LeafletMap } from "./leaflet-raster";
 
 export function mapButton(label: string, className: string, action: () => void) {
   const button = document.createElement("button");

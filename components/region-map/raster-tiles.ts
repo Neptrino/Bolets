@@ -1,4 +1,4 @@
-import { CRS, DomUtil, TileLayer, point, type Coords, type LatLng, type Map as LeafletMap, type Point } from "leaflet";
+import { EPSG3857, DomUtil, TileLayer, point, type Coords, type LatLng, type Map as LeafletMap, type Point } from "./leaflet-raster";
 import type { StyleSpecification } from "maplibre-gl";
 import { icgcBootstrapTileUrl } from "@/src/lib/icgc-bootstrap";
 
@@ -32,8 +32,8 @@ export class RasterTiles extends TileLayer {
       return icgcBootstrapTileUrl(url) ?? url;
     }
     const size = this.getTileSize();
-    const northwest = CRS.EPSG3857.project(CRS.EPSG3857.pointToLatLng(point(coords.x * size.x, coords.y * size.y), coords.z));
-    const southeast = CRS.EPSG3857.project(CRS.EPSG3857.pointToLatLng(point((coords.x + 1) * size.x, (coords.y + 1) * size.y), coords.z));
+    const northwest = EPSG3857.project(EPSG3857.pointToLatLng(point(coords.x * size.x, coords.y * size.y), coords.z));
+    const southeast = EPSG3857.project(EPSG3857.pointToLatLng(point((coords.x + 1) * size.x, (coords.y + 1) * size.y), coords.z));
     return this.template.replace("{bbox-epsg-3857}", [northwest.x, southeast.y, southeast.x, northwest.y].join(","));
   }
   onAdd(map: LeafletMap) {

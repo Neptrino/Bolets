@@ -1,4 +1,4 @@
-import { latLng, latLngBounds, type Map as LeafletMap } from "leaflet";
+import { latLng, latLngBounds, type Map as LeafletMap } from "./leaflet-raster";
 import { regionMapPanBounds } from "@/src/lib/map-view-bounds";
 import { MapEvents, type LocationEvents, type RegionGeolocateControl } from "./map-adapter";
 import { addMapButtons, mapButton } from "./raster-controls";
