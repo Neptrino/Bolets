@@ -49,3 +49,29 @@ from an existing local Node application image, an empty `/bootstrap` directory
 receives exactly the media stage's COPY inputs and successfully exports all
 18 verified tiles. This checks dependency packaging, not the full release image;
 Actions must still complete its normal build and smoke test.
+
+
+## Low-priority mobile preloads
+
+A subsequent controlled HTML experiment uses the static tile path in both
+arms, rewriting the document in both arms and adding only two low-priority
+image preloads to the candidate. Four alternating mobile runs give LCP
+2,620/2,396 ms without hints and 2,240/2,236 ms with hints (median 2,508 →
+2,238 ms, 10.8%). Both arms load the same 825,666 bytes of client scripts and
+paint 154,374 prediction pixels. The cold first control run also has slower
+first paint; the second pair still improves LCP by 160 ms.
+
+The candidate adds hints only on the default `/map` without requested map
+parameters, restricted to screens at most 680 pixels wide. Both use low fetch
+priority, exact immutable central-tile URLs and normal browser request reuse.
+Explicit territory/region/species views do not add hints. A previously saved
+alternative basemap can make these two hints unnecessary; they remain bounded
+to 28,954 bytes and never preload prediction data. Desktop ignores their media
+condition. This differs from earlier unsuccessful high-priority API hints.
+
+
+The preload candidate passes the production build, targeted lint, type checks
+and four browser checks. The opening view makes exactly 18 tile requests,
+including reuse of the two preloads; desktop makes no hinted image requests
+with JavaScript disabled, and explicit region/species/territory HTML has no
+hints. Incremental prediction painting and homepage navigation also pass.

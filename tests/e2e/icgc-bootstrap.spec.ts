@@ -8,7 +8,9 @@ test.use({ viewport: { width: 412, height: 823 }, serviceWorkers: "block", extra
 test("loads the opening map from static build assets and keeps live tiles for zooming", async ({ page }) => {
   const errors: string[] = [];
   const apiTiles: string[] = [];
+  const staticRequests: string[] = [];
   const staticTiles = new Map<string, Promise<Buffer>>();
+  page.on("request", request => { if (request.url().includes("/icgc-bootstrap/")) staticRequests.push(request.url()); });
   page.on("pageerror", error => errors.push(error.message));
   page.on("response", response => {
     const key = response.url().split(`/icgc-bootstrap/${ICGC_BOOTSTRAP_VERSION}/`)[1]?.replace(/\.webp$/, "");
@@ -28,6 +30,7 @@ test("loads the opening map from static build assets and keeps live tiles for zo
     tiles.length === 18 && tiles.every(tile => (tile as HTMLImageElement).complete && (tile as HTMLImageElement).naturalWidth === 256),
   )).toBe(true);
   expect(apiTiles).toEqual([]);
+  expect(staticRequests).toHaveLength(18); // Preload and tile renderer share downloads.
   expect([...staticTiles.keys()].sort()).toEqual([...ICGC_BOOTSTRAP_KEYS].sort());
   for (const [key, body] of staticTiles)
     expect(await body).toEqual(await readFile(join(process.cwd(), "data/icgc-bootstrap", ICGC_BOOTSTRAP_VERSION, `${key}.webp`)));
@@ -36,4 +39,22 @@ test("loads the opening map from static build assets and keeps live tiles for zo
   await expect.poll(() => apiTiles.some(url => /\/(relief|references)\/8\//.test(url))).toBe(true);
   await expect.poll(() => page.locator('.leaflet-tile-loaded[src*="/api/map-tiles/"]').count()).toBeGreaterThan(0);
   expect(errors).toEqual([]);
+});
+
+test("restricts opening preloads to the default mobile view", async ({ browser, baseURL }) => {
+  for (const view of [
+    { width: 1350, path: "/map", links: 2 },
+    { width: 412, path: "/map?region=prepirineus", links: 0 },
+    { width: 412, path: "/map/cep", links: 0 },
+    { width: 412, path: "/map?west=1.5&south=42&east=1.6&north=42.1", links: 0 },
+  ]) {
+    const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: view.width, height: 823 }, extraHTTPHeaders: { DNT: "1" } });
+    const page = await context.newPage();
+    const tiles: string[] = [];
+    page.on("request", request => { if (request.url().includes("/icgc-bootstrap/")) tiles.push(request.url()); });
+    await page.goto(view.path);
+    await expect(page.locator('link[rel="preload"][as="image"][href*="/icgc-bootstrap/"]')).toHaveCount(view.links);
+    expect(tiles).toEqual([]);
+    await context.close();
+  }
 });

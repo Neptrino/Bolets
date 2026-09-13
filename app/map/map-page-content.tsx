@@ -29,6 +29,7 @@ import {
 import { territorialBoundsFromQuery } from "@/src/lib/territorial-map";
 import type { MapViewMode, RegionId, SuitabilityResult } from "@/src/lib/types";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
+import { icgcBootstrapAssetPath } from "@/src/lib/icgc-bootstrap";
 
 export type MapPageQuery = {
   species?: string;
@@ -64,6 +65,7 @@ type MapPageContentProps = {
 };
 
 export async function MapPageContent({ query, mapPage }: MapPageContentProps) {
+  const preloadOpeningTiles = !mapPage && !Object.values(query).some(Boolean);
   const territorialBounds = territorialBoundsFromQuery(query);
   const requestedSpeciesId = mapPage?.speciesId ?? query.species ?? GLOBAL_SPECIES_ID;
   // Unknown species ids fall back to the combined map, the page's default view.
@@ -104,6 +106,10 @@ export async function MapPageContent({ query, mapPage }: MapPageContentProps) {
     : null;
 
   return <section className="map-page">
+    {preloadOpeningTiles && ["relief", "references"].map(layer => (
+      <link key={layer} rel="preload" as="image" fetchPriority="low" media="(max-width: 680px)"
+        href={icgcBootstrapAssetPath(`${layer}/7/64/47`)} />
+    ))}
     <JsonLd data={{
       "@context": "https://schema.org",
       "@graph": [

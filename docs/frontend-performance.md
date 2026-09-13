@@ -98,7 +98,11 @@ versioned optimized-media path. They use Caddy/CDN static serving; all other
 coordinates, zooms and providers retain their normal paths. This caches only
 background cartography. Predictions retain publication-aware freshness. Refresh
 with a new bootstrap version, never by overwriting an immutable URL. Browser
-checks verify exact tile bytes and the normal API after zooming.
+checks verify exact tile bytes and the normal API after zooming. The default
+`/map` without map parameters preloads only the two central static tiles at low
+priority, with a max-width 680px media condition. Desktop and explicit
+region/species/territory views must not download unnecessary hinted tiles;
+normal tile rendering reuses the preload requests.
 
 Attach raster layers after the synchronous initial camera fit, so temporary
 startup views do not download tiles. The default relief/reference layers use

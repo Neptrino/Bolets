@@ -776,5 +776,71 @@
       "firstTile": 2235.7000000476837,
       "paintedPixels": 154374
     }
+  ],
+  "lowPriorityPreloadExperiment": [
+    {
+      "mode": "plain",
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2620,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 72,
+      "fcp": 1376,
+      "ttfb": 61.799999952316284,
+      "firstTile": 2276,
+      "paintedPixels": 154374
+    },
+    {
+      "mode": "preload",
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2240,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 9,
+      "fcp": 1168,
+      "ttfb": 17.300000190734863,
+      "firstTile": 26.100000143051147,
+      "paintedPixels": 154374
+    },
+    {
+      "mode": "plain",
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2396,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 11,
+      "fcp": 1156,
+      "ttfb": 12.300000190734863,
+      "firstTile": 2060.100000143051,
+      "paintedPixels": 154374
+    },
+    {
+      "mode": "preload",
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2236,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 14,
+      "fcp": 1168,
+      "ttfb": 12.5,
+      "firstTile": 23,
+      "paintedPixels": 154374
+    }
   ]
 }
