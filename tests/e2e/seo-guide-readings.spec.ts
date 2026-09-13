@@ -32,6 +32,7 @@ for (const width of [320, 390, 1350]) test(`all four local introductions and act
     await page.goto(route!);
     await expect(page.locator(".local-species-hero")).toContainText(introduction!);
     await expect(page.getByRole("navigation", { name: "Prepara la sortida" }).getByRole("link")).toHaveCount(3);
+    await expect(page.locator(".local-current-card, .local-current-unavailable")).toBeVisible({ timeout: 45_000 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
 });

@@ -561,7 +561,7 @@
   }
   .local-current-card .local-current-signals { grid-template-columns: 1fr; }
   .local-current-card .local-current-updated { white-space: normal; }
-  .local-current-card .button { justify-self: start; }
+  .local-current-card .button { justify-self: start; max-width: 100%; white-space: normal; text-align: left; }
   .local-related-guides > div { grid-template-columns: 1fr; }
   .local-related-guides { margin-top: 0; padding-top: 44px; }
 }

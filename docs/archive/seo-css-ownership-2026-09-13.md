@@ -38,3 +38,36 @@ Production build, lint/source-size, type checks, seven seasonality unit cases
 and all 15 relevant browser cases pass. The narrow calendar was also inspected
 visually. Live PageSpeed results will be recorded separately
 once the candidate has deployed; no live score gain is claimed here.
+
+
+## Live verification
+
+Release `a55a05288f10d03b9a23a5c8257816f390a9ef6b` deployed successfully via
+[Actions run 34728658988](https://github.com/Neptrino/Bolets/actions/runs/34728658988)
+and its container revision and healthy status were checked directly on the VPS.
+The [fresh Google reports](seo-css-pagespeed-2026-09-13.json) retain all results:
+
+| Page | Mobile performance | Desktop performance |
+| --- | --- | --- |
+| Home | 94 | 100 |
+| Catalogue | 94 | 100 |
+| Avui | 98, 93 | Google driver failed, 100 |
+| Cep | 93 | 99 |
+| Pinetell | 93, 94 | 100, 100 |
+| Map | 88, 90 | 92, 98 |
+
+All valid reports score 100 for SEO and report no browser console errors. The
+map is still less consistent than the content pages; two runs do not establish
+a stable 90+ score. Google field data cannot yet isolate this release. These
+are fresh lab samples, not a controlled attribution of the entire improvement
+to the CSS split.
+
+Live browser checks confirm real tile and prediction/habitat pixels on map,
+Avui, Cep and Pinetell, with no page errors or failed API responses. However,
+the initial live local-guide regression failed at 320/390 px: fully loaded
+condition cards have longer map-link labels than the unavailable local readings.
+The link retained `white-space: nowrap`. The follow-up permits wrapping and
+bounds the link width; the regression now waits for the streamed reading to
+resolve. A browser-only candidate-style check passes all four actual live cards
+at 320, 390 and 1350 px, and the longest label was inspected visually. Its final
+production verification follows deployment of that correction.
