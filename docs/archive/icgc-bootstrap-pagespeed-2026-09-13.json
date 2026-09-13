@@ -1,0 +1,168 @@
+{
+  "reports": [
+    {
+      "revision": "fbfe76f",
+      "form": "mobile",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/0bvipaadax?form_factor=mobile",
+      "captured": "Captured at Sep 13, 2026, 2:08 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 2:08:50 AM",
+      "scores": [
+        "80\nPerformance",
+        "100\nAccessibility",
+        "92\nBest Practices",
+        "100\nSEO",
+        "100\nAccessibility",
+        "92\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "1.7 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "4.8 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "60 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0.039"
+        },
+        {
+          "title": "Speed Index",
+          "value": "3.7 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1710&LCP=4801&TBT=62&CLS=0.04&SI=3748&TTI=4801&device=mobile&version=13.4.1"
+      ]
+    },
+    {
+      "revision": "fbfe76f",
+      "form": "desktop",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/0bvipaadax?form_factor=desktop",
+      "captured": "Captured at Sep 13, 2026, 2:08 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 2:08:50 AM",
+      "scores": [
+        "99\nPerformance",
+        "100\nAccessibility",
+        "96\nBest Practices",
+        "100\nSEO",
+        "100\nAccessibility",
+        "96\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "0.4 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "0.9 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "0 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0.011"
+        },
+        {
+          "title": "Speed Index",
+          "value": "0.9 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=446&LCP=901&TBT=0&CLS=0.01&SI=916&TTI=901&device=desktop&version=13.4.1"
+      ]
+    },
+    {
+      "revision": "019f8bd",
+      "form": "mobile",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/0h53rtohqz?form_factor=mobile",
+      "captured": "Captured at Sep 13, 2026, 2:19 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 2:19:45 AM",
+      "scores": [
+        "78\nPerformance",
+        "100\nAccessibility",
+        "92\nBest Practices",
+        "100\nSEO",
+        "100\nAccessibility",
+        "92\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "1.7 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "4.6 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "110 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0.007"
+        },
+        {
+          "title": "Speed Index",
+          "value": "5.0 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1678&LCP=4576&TBT=111&CLS=0.01&SI=5018&TTI=4584&device=mobile&version=13.4.1"
+      ]
+    },
+    {
+      "revision": "019f8bd",
+      "form": "desktop",
+      "url": "https://pagespeed.web.dev/analysis/https-bolets-app-map/0h53rtohqz?form_factor=desktop",
+      "captured": "Captured at Sep 13, 2026, 2:19 AM GMT+2",
+      "report": "Report from Sep 13, 2026, 2:19:45 AM",
+      "scores": [
+        "95\nPerformance",
+        "100\nAccessibility",
+        "96\nBest Practices",
+        "100\nSEO",
+        "100\nAccessibility",
+        "96\nBest Practices",
+        "100\nSEO"
+      ],
+      "metrics": [
+        {
+          "title": "First Contentful Paint",
+          "value": "0.5 s"
+        },
+        {
+          "title": "Largest Contentful Paint",
+          "value": "1.1 s"
+        },
+        {
+          "title": "Total Blocking Time",
+          "value": "50 ms"
+        },
+        {
+          "title": "Cumulative Layout Shift",
+          "value": "0.011"
+        },
+        {
+          "title": "Speed Index",
+          "value": "1.9 s"
+        }
+      ],
+      "calculator": [
+        "https://googlechrome.github.io/lighthouse/scorecalc/#FCP=493&LCP=1081&TBT=47&CLS=0.01&SI=1946&TTI=1085&device=desktop&version=13.4.1"
+      ]
+    }
+  ]
+}

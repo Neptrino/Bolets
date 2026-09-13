@@ -842,5 +842,161 @@
       "firstTile": 23,
       "paintedPixels": 154374
     }
-  ]
+  ],
+  "compiledPreloadChecks": [
+    {
+      "mode": "compiled-preload",
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2564,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 113,
+      "fcp": 1388,
+      "ttfb": 33.700000047683716,
+      "firstTile": 205.09999990463257,
+      "paintedPixels": 154374
+    },
+    {
+      "mode": "compiled-preload",
+      "port": 3105,
+      "errors": [],
+      "scriptBytes": 825666,
+      "ssr": true,
+      "lcp": {
+        "time": 2384,
+        "url": "http://127.0.0.1:3105/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp"
+      },
+      "blocking": 9,
+      "fcp": 1276,
+      "ttfb": 12.399999856948853,
+      "firstTile": 170.89999985694885,
+      "paintedPixels": 154374
+    }
+  ],
+  "liveStaticRelease": {
+    "revision": "019f8bd695750cf7c74cabfcedcb97eb7af71d66",
+    "workflow": 34727177035,
+    "health": "healthy",
+    "routes": [
+      {
+        "path": "/map",
+        "status": 200,
+        "scriptBytes": 1021081,
+        "errors": [],
+        "failures": [],
+        "paintedPixels": 54698,
+        "webglStarts": 0,
+        "loadedTiles": 18,
+        "tileSources": [
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/48.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/48.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/48.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/48.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/48.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/48.webp"
+        ]
+      },
+      {
+        "path": "/bolets-avui",
+        "status": 200,
+        "scriptBytes": 979214,
+        "errors": [],
+        "failures": [],
+        "paintedPixels": 23099,
+        "webglStarts": 0,
+        "loadedTiles": 18,
+        "tileSources": [
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/48.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/48.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/48.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/48.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/48.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/48.webp"
+        ]
+      },
+      {
+        "path": "/bolets/cep",
+        "status": 200,
+        "scriptBytes": 1019023,
+        "errors": [],
+        "failures": [],
+        "paintedPixels": 29066,
+        "webglStarts": 0,
+        "loadedTiles": 12,
+        "tileSources": [
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp"
+        ]
+      },
+      {
+        "path": "/bolets/pinetell",
+        "status": 200,
+        "scriptBytes": 1019023,
+        "errors": [],
+        "failures": [],
+        "paintedPixels": 33897,
+        "webglStarts": 0,
+        "loadedTiles": 12,
+        "tileSources": [
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/64/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/63/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/relief/7/65/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/64/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/46.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/63/47.webp",
+          "https://bolets.app/media/optimized/v15/icgc-bootstrap/2026-09-13/references/7/65/47.webp"
+        ]
+      }
+    ],
+    "centralTileHeaders": {
+      "status": 200,
+      "contentType": "image/webp",
+      "contentLength": 22010,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "cfCacheStatus": "HIT"
+    }
+  }
 }

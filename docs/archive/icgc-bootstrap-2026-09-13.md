@@ -75,3 +75,26 @@ and four browser checks. The opening view makes exactly 18 tile requests,
 including reuse of the two preloads; desktop makes no hinted image requests
 with JavaScript disabled, and explicit region/species/territory HTML has no
 hints. Incremental prediction painting and homepage navigation also pass.
+
+
+Two checks of the actual compiled preload build (without HTML rewriting) give
+LCP 2,564 and 2,384 ms, unchanged script bytes and matching prediction pixels.
+These are implementation checks, not a second controlled A/B; they should not
+be substituted for the original experiment or deployed Google measurements.
+
+
+## Static-tile release check
+
+Release `019f8bd` completed Actions run 34727177035 and is healthy on the VPS.
+Live mobile map, Avui, Cep and Pinetell views paint real prediction/habitat
+pixels with no browser/API errors and use only static bootstrap tiles for their
+opening basemap. The central relief tile responds 200, `image/webp`, 22,010
+bytes, immutable one-year caching, and Cloudflare `HIT`.
+
+The [fresh before/after Google reports](icgc-bootstrap-pagespeed-2026-09-13.json)
+score 80/99 mobile/desktop before and 78/95 after. Mobile LCP decreases from
+4.8 to 4.6 seconds, but TBT and Speed Index are worse in the latter run. Both
+reports have no console errors. This does **not** establish a PageSpeed score
+gain from static serving alone; the remaining startup bottleneck is open.
+The low-priority preload follow-up above is separately tested and awaiting its
+own deployed measurement.
