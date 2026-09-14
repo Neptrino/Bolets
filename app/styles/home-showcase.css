@@ -1,5 +1,5 @@
 .home-showcase-section {
-  margin-top: 5.5rem;
+  margin-block: 5.5rem;
   scroll-margin-top: 6rem;
 }
 .home-showcase-header {
@@ -79,13 +79,16 @@
 
 @media (max-width: 860px) {
   .hero-actions { flex-wrap: wrap; }
-  .home-showcase-section { margin-top: 4.5rem; }
+  .home-showcase-section { margin-block: 4.5rem; }
   .home-showcase-header { grid-template-columns: 1fr; gap: 1rem; }
   .home-showcase-player { border-radius: 18px; }
 }
 
 @media (max-width: 640px) {
-  .home-showcase-section { margin-top: 3.5rem; }
+  .home-showcase-section { margin-block: 3.5rem; }
   .home-showcase-header h2 { font-size: var(--display-sm); }
   .home-showcase-section + .home-intro { padding-top: 4.5rem; }
 }
+
+.home-showcase-header .eyebrow { display: flex; align-items: center; gap: 6px; }
+.home-showcase-header .eyebrow svg { flex: 0 0 auto; }

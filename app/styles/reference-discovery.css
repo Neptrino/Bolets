@@ -93,3 +93,6 @@
   .directory-search .search-field { flex-basis: 100%; }
   .directory-search-submit { min-height: 44px; }
 }
+
+.home-reference-meta { display: inline-flex; align-items: center; gap: 6px; }
+.home-reference-meta svg { flex: 0 0 auto; }

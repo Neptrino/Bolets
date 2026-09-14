@@ -27,7 +27,7 @@ export function HomeReferenceFeature({ speciesCount, seasonGuide, children }: {
   ];
   return (
     <section className="home-reference page-width" aria-labelledby="home-reference-title">
-      <SectionHeader meta="Cada bolet, una descoberta" title="Guia d’espècies de bolets de Catalunya" titleId="home-reference-title" description={`Del nom que has sentit a casa als detalls que observes al bosc: ${speciesCount} fitxes amb fotografies, trets, hàbitat i temporada, incloses les espècies tòxiques.`} />
+      <SectionHeader meta={<span className="home-reference-meta"><BookOpenText size={16} aria-hidden="true" />Cada bolet, una descoberta</span>} title="Guia d’espècies de bolets de Catalunya" titleId="home-reference-title" description={`Del nom que has sentit a casa als detalls que observes al bosc: ${speciesCount} fitxes amb fotografies, trets, hàbitat i temporada, incloses les espècies tòxiques.`} />
       <form action="/bolets" method="get" role="search" aria-label="Cerca un bolet" className="home-reference-searchbar">
         <label htmlFor="home-species-search">Quin bolet busques?</label>
         <div className="home-reference-input"><Search size={20} aria-hidden="true" /><input id="home-species-search" name="q" maxLength={120} placeholder="Rovelló, pinetell, Boletus…" /></div>

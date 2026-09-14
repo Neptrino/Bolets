@@ -76,7 +76,7 @@ export function HomeShowcaseVideo() {
     <section id="com-funciona" className="home-showcase-section page-width" aria-labelledby="home-showcase-title">
       <header className="home-showcase-header">
         <div>
-          <p className="eyebrow">Bolets en 48 segons</p>
+          <p className="eyebrow"><Play size={16} aria-hidden="true" />Bolets en 48 segons</p>
           <h2 id="home-showcase-title">Del catàleg al territori.</h2>
         </div>
         <p>Un recorregut visual per les condicions d’avui, les espècies, les guies locals, el mapa i el quadern de camp.</p>
