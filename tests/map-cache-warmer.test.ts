@@ -25,7 +25,7 @@ describe("map cache warmer", () => {
       active--;
       return { truncated: false };
     });
-    const warm = createMapCacheWarmer({ generation: async () => current, load });
+    const warm = createMapCacheWarmer({ targets: mapWarmTargets, generation: async () => current, load });
     const [first, duplicate] = await Promise.all([warm(), warm()]);
     expect(first).toEqual(duplicate);
     expect(first.status).toBe("warmed");
@@ -40,7 +40,7 @@ describe("map cache warmer", () => {
   it("retries truncated or failed runs and publication changes", async () => {
     const load = vi.fn(async () => ({ truncated: true }));
     const generation = vi.fn(async () => "generation-1");
-    const warm = createMapCacheWarmer({ generation, load });
+    const warm = createMapCacheWarmer({ targets: mapWarmTargets, generation, load });
     expect((await warm()).status).toBe("incomplete");
     load.mockResolvedValue({ truncated: false });
     generation.mockResolvedValueOnce("generation-1").mockResolvedValueOnce("generation-2");
@@ -50,7 +50,7 @@ describe("map cache warmer", () => {
 
   it("does no work without a complete published generation", async () => {
     const load = vi.fn();
-    const warm = createMapCacheWarmer({ generation: async () => null, load });
+    const warm = createMapCacheWarmer({ targets: mapWarmTargets, generation: async () => null, load });
     expect((await warm()).status).toBe("unavailable");
     expect(load).not.toHaveBeenCalled();
   });
@@ -91,4 +91,21 @@ it("resumes successful buckets across its deadline without repeating work", asyn
   clock += 23 * 3_600_000;
   expect((await warm()).status).toBe("incomplete");
   expect(calls.length).toBeGreaterThan(6);
+});
+
+it("supports sequential local-guide targets without changing the public bucket defaults", async () => {
+  let active = 0;
+  let maximum = 0;
+  const warm = createMapCacheWarmer({
+    targets: () => [{ url: "/zones/example#facts" }, { url: "/zones/example#conditions" }],
+    generation: async () => "publication-1", concurrency: 1, cacheSeconds: 3600,
+    load: async () => {
+      maximum = Math.max(maximum, ++active);
+      await Promise.resolve();
+      active--;
+      return { truncated: false };
+    },
+  });
+  expect(await warm()).toEqual({ status: "warmed", completed: 2, total: 2 });
+  expect(maximum).toBe(1);
 });

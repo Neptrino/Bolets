@@ -326,11 +326,14 @@ export async function getRegionalPredictionSummaries(
  * region, so the median stops mixing valleys 100 km apart — the reading a
  * boletaire actually wants for "com està el Port del Comte".
  */
+export type AreaPredictionReadOptions = { generation?: string; background?: boolean };
+
 export async function getAreaPredictionSummary(
   speciesId: string,
   area: { slug: string; regionId: RegionId; bounds: SpatialBounds },
+  options: AreaPredictionReadOptions = {},
 ): Promise<AreaPredictionSummary | null> {
-  const summaries = await getAreaPredictionSummaries([speciesId], area);
+  const summaries = await getAreaPredictionSummaries([speciesId], area, options);
   return summaries[speciesId] ?? null;
 }
 
@@ -418,6 +421,7 @@ function areaBucketKey(bounds: SpatialBounds) {
 
 export async function getAreaPredictionSummaryBatches(
   requests: AreaPredictionBatchRequest[],
+  options: AreaPredictionReadOptions = {},
 ): Promise<Array<PromiseSettledResult<Record<string, AreaPredictionSummary | null>>>> {
   const requestState = requests.map(({ speciesIds, area }) => ({
     speciesIds: [...new Set(speciesIds)],
@@ -450,6 +454,7 @@ export async function getAreaPredictionSummaryBatches(
           allSpeciesIds,
           1000,
           AREA_SUMMARY_GRID_SIZE_M,
+          { ...options, scoringBounds: bucket.requestIndexes.map((index) => requestState[index]!.area.bounds) },
         );
         if (payload.truncated) {
           throw new Error("Territorial overview bucket was truncated");
@@ -508,8 +513,9 @@ export async function getAreaPredictionSummaryBatches(
 export async function getAreaPredictionSummaries(
   speciesIds: string[],
   area: { slug: string; regionId: RegionId; bounds: SpatialBounds },
+  options: AreaPredictionReadOptions = {},
 ): Promise<Record<string, AreaPredictionSummary | null>> {
-  const [result] = await getAreaPredictionSummaryBatches([{ speciesIds, area }]);
+  const [result] = await getAreaPredictionSummaryBatches([{ speciesIds, area }], options);
   if (!result || result.status === "rejected") {
     throw result?.reason ?? new Error(`Area prediction failed in ${area.slug}`);
   }

@@ -18,11 +18,11 @@ const loadCachedLocalGuideFacts = unstable_cache(
   ) => {
     void modelVersion;
     void placeKey;
-    const result = await getPotentialHabitatCoverage(speciesId, bounds, 1000, 1000);
-    if (result.truncated) return null;
+    const result = await getPotentialHabitatCoverage(speciesId, bounds, 1000, 1000, true);
+    if (result.truncated) throw new Error("Local habitat evidence was truncated; retry without caching");
     return aggregateLocalGuideFacts(result.cells, bounds, scopeLabel);
   },
-  ["local-guide-facts-v2"],
+  ["local-guide-facts-v3"],
   {
     revalidate: LOCAL_FACTS_REVALIDATE_SECONDS,
     tags: ["local-guide-facts"],

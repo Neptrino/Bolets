@@ -82,6 +82,7 @@ export async function fetchGlobalEnvironment(
   gridSizeM: GlobalGridSizeM,
   readShapeVersion?: string,
   background = false,
+  conditionGeneration?: string,
 ): Promise<GlobalEnvironmentPayload> {
   const spatialService = spatialServiceConfig(gridSizeM);
   const query = new URLSearchParams({
@@ -96,6 +97,7 @@ export async function fetchGlobalEnvironment(
     viewVersion: PREDICTION_CACHE_VERSION,
     setVersion: globalSpeciesSetKey,
     ...(readShapeVersion ? { readShapeVersion } : {}),
+    ...(conditionGeneration ? { conditionGeneration } : {}),
   });
   const url = `${spatialService.url}/functions/v1/read-spatial-environment?${query}`;
   const pending = globalEnvironmentInFlight.get(url);
@@ -363,6 +365,7 @@ export async function getCandidatePredictionCells(
   speciesIds: string[],
   limit = 1000,
   gridSizeM: GlobalGridSizeM = 1000,
+  options: { scoringBounds?: SpatialBounds[]; generation?: string; background?: boolean } = {},
 ) {
   const requestedIds = new Set(speciesIds);
   const requestedSpecies = globalCandidateSpecies.filter((species) =>
@@ -372,13 +375,24 @@ export async function getCandidatePredictionCells(
     throw new Error("Territorial candidate set contains an unsupported species");
   }
 
-  const payload = await fetchGlobalEnvironment(bounds, limit, gridSizeM);
+  const payload = await fetchGlobalEnvironment(
+    bounds, limit, gridSizeM, undefined, options.background, options.generation,
+  );
   const candidates = resolveCandidateSlots(payload.habitatProfiles, requestedSpecies);
   const cellsBySpecies = Object.fromEntries(
     candidates.map((candidate) => [candidate.species.speciesId, [] as PredictionCell[]]),
   ) as Record<string, PredictionCell[]>;
 
   for (const cell of payload.cells) {
+    // Summary buckets are deliberately larger than a local reading window.
+    // Keep boundary cells, but avoid scoring cells discarded by every summary.
+    if (options.scoringBounds) {
+      const [[west, south], [east, north]] = cell.bounds;
+      const longitude = (west + east) / 2;
+      const latitude = (south + north) / 2;
+      if (!options.scoringBounds.some((window) => longitude >= window.west &&
+        longitude <= window.east && latitude >= window.south && latitude <= window.north)) continue;
+    }
     for (const candidate of candidates) {
       cellsBySpecies[candidate.species.speciesId]!.push(
         toCandidatePredictionCell(cell, candidate),

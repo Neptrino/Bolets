@@ -1,5 +1,5 @@
 [Unit]
-Description=Warm published public Bolets map caches
+Description=Warm published public Bolets map and local-guide caches
 After=docker.service
 Requires=docker.service
 ConditionFileIsExecutable=/opt/bolets/app/deploy/vps/warm-map-cache.sh
@@ -7,5 +7,5 @@ ConditionFileIsExecutable=/opt/bolets/app/deploy/vps/warm-map-cache.sh
 [Service]
 Type=oneshot
 ExecStart=/opt/bolets/app/deploy/vps/warm-map-cache.sh
-TimeoutStartSec=140
+TimeoutStartSec=260
 Nice=10

@@ -168,6 +168,31 @@ cell response for both combined and species views. Do not run the scoring
 engine again in the browser: display values omit private thermal inputs, and
 coarse cells can carry the chosen child's complete reading.
 
+## Territorial readings
+
+Local species guides stream their condition and habitat panels independently of
+editorial content. Their slow cold response is chiefly the shared 1 km environment
+read, not the initial HTML. Filter shared bucket cells against the union of the
+requested territorial windows before scoring; preserve inclusive centre-based
+boundaries, complete-payload validation and truncation failures.
+
+The existing host warming service also primes each published local guide's exact
+condition and habitat cache. It uses the separate warming credential, one local
+target at a time and the spatial queue's background slot for condition reads.
+Successful targets resume across the 90-second budget; concurrent triggers
+coalesce and a publication change invalidates progress. No page rendering, private
+map access or analytics is involved in warming. Two sequential HTTP calls have
+120-second client deadlines and a 260-second systemd ceiling.
+
+Condition cache keys include both completed publication markers, the Catalonia
+civil day and a twelve-hour period. Pass the publication identity through to the
+upstream environment fetch too, so an old five-minute environment entry cannot
+populate a new final-summary cache. Background priority must not change cache
+identity. Reject stale/incomplete summaries and truncated habitat reads before
+caching; an empty verified habitat result and a complete zero score remain valid.
+Keep this warming optional and resumable so publication and deployment readiness
+do not wait for it.
+
 ## Verification
 
 Build production before checking prefetch or bundle behavior; development does

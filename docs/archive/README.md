@@ -6,6 +6,8 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [Territorial cold-response investigation — 14 September 2026](territorial-performance-2026-09-14.md) · [benchmark](territorial-performance-2026-09-14.json)
+
 - [Overnight CPU, cache publication and backup review — 13 September 2026](overnight-runtime-review-2026-09-13.md)
 
 - [Raster source-module performance check — 13 September 2026](raster-module-performance-2026-09-13.md) · [measurement data](raster-module-performance-2026-09-13.json)

@@ -884,12 +884,20 @@ This is applied by the normal release workflow, not by changing the live router.
 `bolets-map-cache.timer` checks approximately every minute for completed coarse
 and territorial publication markers. Its private POST route uses the separately
 generated `CACHE_WARM_SECRET` in the root-only status environment. A run warms
-only the canonical combined-map 5 km and 10 km buckets (at most 64), with two
-concurrent reads and a 90-second scheduling budget. Concurrent triggers coalesce;
-partial runs and publication changes retry. Unchanged generations do no scoring
-work. After the required daily-overview readiness check, rollout requests the
-same systemd service without waiting for optional map warming to finish; failure
-leaves the timer to retry.
+the canonical public combined-map buckets (2.5 km, 5 km and 10 km) and eight
+5 km timeline days, with two concurrent reads and a 90-second scheduling budget.
+It then calls `/api/internal/warm-local-guides` with the same warming credential
+to prime the condition and habitat caches used by published local guides. Local
+targets run sequentially with one background spatial slot and their own
+90-second budget. Each HTTP call has a 120-second deadline; the combined service
+has a 260-second ceiling. Concurrent triggers coalesce; successful targets resume
+on the next run, while publication changes discard obsolete progress. Unchanged
+generations do no scoring work. Guide condition keys also rotate at the Catalonia
+civil-day and twelve-hour boundaries, and pass the publication identity to the
+upstream environment cache. Failed, stale or incomplete readings remain retryable.
+After the required daily-overview readiness check, rollout requests the same
+systemd service without waiting for optional warming to finish; failure leaves
+the timer to retry.
 The service is skipped on rollback to a release without the warming script.
 
 Caddy public timing logs contain only fixed route groups, status, size, total

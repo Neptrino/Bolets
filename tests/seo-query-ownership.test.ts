@@ -97,12 +97,11 @@ describe("SEO query ownership", () => {
     expect(html).toContain("Obrir el comparador complet");
   });
 
-  it("links the permanent season overview and the current seasonal guide from the footer", () => {
+  it("links the permanent season overview from the simplified footer", () => {
     const html = renderToStaticMarkup(createElement(SiteFooter));
 
     expect(html).toContain('href="/temporada"');
-    expect(html).toContain("Temporada de bolets");
-    expect(html).toMatch(/href="\/bolets-(?:de-primavera|d-estiu|de-tardor|d-hivern)"/);
+    expect(html).toContain(">Temporada</a>");
   });
 
   it("keeps the coordinated release URL-neutral", () => {

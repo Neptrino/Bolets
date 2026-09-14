@@ -500,3 +500,39 @@ describe("bestRegionalSuitability", () => {
     expect(GLOBAL_SPECIES_ID).toBe("all");
   });
 });
+
+describe("territorial scoring windows", () => {
+  it("keeps exact scores at inclusive window edges and skips unrelated cells", async () => {
+    const profiles = habitatProfiles();
+    const coverages = profiles.map(() => 0.7);
+    const positions = [1.05, 1.125, 1.25, 1.5, 1.875];
+    const cells = positions.map((longitude, index) => environmentCell({
+      cellId: `${cellId}-${index}`,
+      bounds: [[longitude - 0.01, 41.115], [longitude + 0.01, 41.135]],
+      habitatCoverages: coverages,
+      habitatWeightedCoverages: coverages,
+      stale: index === 2,
+    }));
+    const fetchMock = stubGlobalFeed({ cells, truncated: true, bounds, habitatProfiles: profiles });
+    const ids = ["boletus-edulis", "cantharellus-cibarius"];
+    const baseline = await getCandidatePredictionCells(bounds, ids, 1000, 5000);
+    const windows = [
+      { west: 1.125, east: 1.25, south: 41, north: 42 },
+      { west: 1.875, east: 1.875, south: 41, north: 42 },
+    ];
+    const selected = await getCandidatePredictionCells(bounds, ids, 1000, 5000, {
+      scoringBounds: windows, generation: "completed-publication-2",
+    });
+    expect(selected.truncated).toBe(true);
+    for (const id of ids) {
+      expect(selected.cellsBySpecies[id]).toEqual(
+        baseline.cellsBySpecies[id]!.filter((_, index) => [1, 2, 4].includes(index)),
+      );
+    }
+    expect(new URL(String(fetchMock.mock.calls[1]![0])).searchParams.get("conditionGeneration"))
+      .toBe("completed-publication-2");
+    const empty = await getCandidatePredictionCells(bounds, ids, 1000, 5000, { scoringBounds: [] });
+    expect(empty.cellsBySpecies[ids[0]!]).toEqual([]);
+    expect(empty.truncated).toBe(true);
+  });
+});

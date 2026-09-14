@@ -9,6 +9,7 @@ import {
 import { spatialHabitatResponseSchema } from "@/src/lib/schema";
 import type { PotentialHabitatCell, SpatialBounds, SpatialGridSizeM, SpeciesProfile } from "@/src/lib/types";
 import { spatialServiceConfig } from "@/src/lib/spatial-service-auth.server";
+import { runSpatialRead } from "@/src/lib/spatial-read-queue.server";
 
 type SpatialHabitatResponse = z.infer<typeof spatialHabitatResponseSchema>;
 
@@ -82,7 +83,8 @@ export async function getPotentialHabitatCoverage(
   speciesId: string,
   bounds: SpatialBounds,
   limit = 1000,
-  gridSizeM: SpatialGridSizeM = 5000
+  gridSizeM: SpatialGridSizeM = 5000,
+  background = false,
 ) {
   const species = getSpecies(speciesId);
   if (!species) throw new Error("Unknown species");
@@ -138,18 +140,21 @@ export async function getPotentialHabitatCoverage(
     }
   }
 
-  const response = await fetch(`${spatialService.url}/functions/v1/read-spatial-environment?${query}`, {
-    headers: {
-      Authorization: `Bearer ${spatialService.key}`,
-      apikey: spatialService.key
-    },
-    // Static habitat is versioned by both model and profile keys in the URL.
-    // Keep the service read in the Data Cache for the same lifetime advertised
-    // by the public route instead of repeating an expensive spatial query.
-    cache: "force-cache",
-    next: { revalidate: 86_400 },
-  });
-  if (!response.ok) throw new Error(`Spatial habitat service returned ${response.status}`);
-  const payload = spatialHabitatResponseSchema.parse(await response.json());
+  const payload = await runSpatialRead(async () => {
+    const response = await fetch(`${spatialService.url}/functions/v1/read-spatial-environment?${query}`, {
+      headers: {
+        Authorization: `Bearer ${spatialService.key}`,
+        apikey: spatialService.key
+      },
+      // Static habitat is versioned by both model and profile keys in the URL.
+      // Keep the service read in the Data Cache for the same lifetime advertised
+      // by the public route instead of repeating an expensive spatial query.
+      cache: "force-cache",
+      next: { revalidate: 86_400 },
+      signal: AbortSignal.timeout(5_000),
+    });
+    if (!response.ok) throw new Error(`Spatial habitat service returned ${response.status}`);
+    return spatialHabitatResponseSchema.parse(await response.json());
+  }, { background });
   return toPotentialHabitatResponse(speciesId, payload);
 }

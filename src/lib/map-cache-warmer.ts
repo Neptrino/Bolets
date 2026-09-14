@@ -25,17 +25,24 @@ export function timelineWarmTargets() {
   );
 }
 
-type Target = ReturnType<typeof mapWarmTargets>[number] | ReturnType<typeof timelineWarmTargets>[number];
 type Result = { status: "warmed" | "unchanged" | "unavailable" | "incomplete"; completed: number; total: number };
-type Dependencies = {
+type Dependencies<T extends { url: string }> = {
   generation: () => Promise<string | null>;
-  load: (target: Target) => Promise<{ truncated: boolean }>;
+  load: (target: T) => Promise<{ truncated: boolean }>;
   now?: () => number;
-  targets?: () => Target[];
+  targets: () => T[];
+  concurrency?: number;
+  cacheSeconds?: number;
 };
 
-/** Two bounded reads at a time; retain successful targets across the 90-second run budget. */
-export function createMapCacheWarmer({ generation, load, now = Date.now, targets: getTargets = mapWarmTargets }: Dependencies) {
+/** At most two reads at a time; resume successful targets across the 90-second budget. */
+export function createMapCacheWarmer<T extends { url: string }>({
+  generation, load, now = Date.now, targets: getTargets,
+  concurrency = 2, cacheSeconds = TIMELINE_CACHE_SECONDS,
+}: Dependencies<T>) {
+  if (concurrency < 1 || concurrency > 2 || !Number.isInteger(concurrency) || cacheSeconds <= 0) {
+    throw new Error("Invalid cache warming limits");
+  }
   let completedKey: string | null = null;
   let completedAt = 0;
   let progressKey: string | null = null;
@@ -48,7 +55,7 @@ export function createMapCacheWarmer({ generation, load, now = Date.now, targets
     if (!initial) return { status: "unavailable", completed: 0, total: targets.length };
     const day = new Date(now()).toLocaleDateString("en-CA", { timeZone: "Europe/Madrid" });
     const key = `${initial}:${day}`;
-    if (key === completedKey && now() - completedAt < TIMELINE_CACHE_SECONDS * 1000) return { status: "unchanged", completed: 0, total: targets.length };
+    if (key === completedKey && now() - completedAt < cacheSeconds * 1000) return { status: "unchanged", completed: 0, total: targets.length };
     if (progressKey !== key || key === completedKey) {
       finished.clear();
       progressKey = key;
@@ -57,7 +64,7 @@ export function createMapCacheWarmer({ generation, load, now = Date.now, targets
     const remaining = targets.filter((target) => !finished.has(target.url));
     const deadline = now() + 90_000;
     let next = 0;
-    await Promise.all(Array.from({ length: 2 }, async () => {
+    await Promise.all(Array.from({ length: concurrency }, async () => {
       while (next < remaining.length && now() < deadline) {
         const target = remaining[next++];
         try {

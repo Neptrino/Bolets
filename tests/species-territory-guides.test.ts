@@ -1,4 +1,7 @@
 import { readFileSync } from "node:fs";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import ZonesPage from "@/app/zones/page";
 import { describe, expect, it } from "vitest";
 import { buildSitemap as sitemap } from "@/app/sitemap";
 import { getEditorialMetadata } from "@/data/editorial";
@@ -51,7 +54,9 @@ describe("species territory guide registry", () => {
     expect(territoryGuideForSpecies("amanita-phalloides")).toBeUndefined();
   });
 
-  it("links the high-priority rovellons hub from the global footer", () => {
-    expect(footer).toContain('href="/zones/rovellons"');
+  it("keeps species territory hubs reachable through the footer's zones directory", () => {
+    expect(footer).toContain('href="/zones"');
+    const html = renderToStaticMarkup(createElement(ZonesPage));
+    for (const guide of speciesTerritoryGuides) expect(html).toContain(`href="${guide.path}"`);
   });
 });

@@ -1,0 +1,83 @@
+{
+  "method": "Alternating old/new summary implementations on the same four production environment responses, Node.js 24 on VPS; all complete summary JSON outputs equal. First iteration includes upstream reads. Other iterations include Response decoding, schema validation, scoring and aggregation, without network. Small sample, not a page-load or p95 benchmark.",
+  "measurements": [
+    {
+      "stage": "environment",
+      "ms": 864.326435,
+      "bytes": 1295756,
+      "status": 200
+    },
+    {
+      "stage": "environment",
+      "ms": 965.8883620000001,
+      "bytes": 1370522,
+      "status": 200
+    },
+    {
+      "stage": "environment",
+      "ms": 388.00443700000005,
+      "bytes": 871125,
+      "status": 200
+    },
+    {
+      "stage": "environment",
+      "ms": 566.0765489999999,
+      "bytes": 1438290,
+      "status": 200
+    },
+    {
+      "variant": "after",
+      "stage": "cold",
+      "ms": 1940.3705360000001,
+      "score": 37
+    },
+    {
+      "variant": "before",
+      "stage": "cached-environment",
+      "ms": 695.0484420000003,
+      "score": 37
+    },
+    {
+      "variant": "after",
+      "stage": "cached-environment",
+      "ms": 487.922227,
+      "score": 37
+    },
+    {
+      "variant": "before",
+      "stage": "cached-environment",
+      "ms": 415.55860500000017,
+      "score": 37
+    },
+    {
+      "variant": "after",
+      "stage": "cached-environment",
+      "ms": 305.2543049999995,
+      "score": 37
+    },
+    {
+      "variant": "before",
+      "stage": "cached-environment",
+      "ms": 397.2387809999991,
+      "score": 37
+    },
+    {
+      "variant": "after",
+      "stage": "cached-environment",
+      "ms": 378.31576699999914,
+      "score": 37
+    },
+    {
+      "variant": "before",
+      "stage": "cached-environment",
+      "ms": 420.3975130000008,
+      "score": 37
+    },
+    {
+      "variant": "after",
+      "stage": "cached-environment",
+      "ms": 272.54574200000025,
+      "score": 37
+    }
+  ]
+}

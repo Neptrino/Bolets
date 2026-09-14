@@ -67,7 +67,8 @@ describe("mushroom preservation guide", () => {
   });
 
   it("is linked from high-value discovery and culinary surfaces", () => {
-    for (const component of [SiteFooter, GuidesPage, EdibleMushroomsPage]) {
+    expect(renderToStaticMarkup(createElement(SiteFooter))).toContain('href="/guies"');
+    for (const component of [GuidesPage, EdibleMushroomsPage]) {
       expect(renderToStaticMarkup(createElement(component))).toContain('href="/conservar-bolets"');
     }
   });

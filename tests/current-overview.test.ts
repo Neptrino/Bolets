@@ -180,7 +180,7 @@ describe("current-condition overview", () => {
     );
 
     expect(localGuideSource).toContain("readCurrentOverviewGeneration");
-    expect(localGuideSource).toContain("loadCachedLocalGuideCondition(");
+    expect(localGuideSource).toContain("loadCachedLocalGuideCondition = conditionCache(false)");
     expect(localGuideSource).toContain('tags: ["local-guide-condition"]');
   });
 
