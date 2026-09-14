@@ -18,6 +18,7 @@ Campaign captions, upload packs and proposed calendars below stay with their med
 
 | Folder | What it holds |
 | --- | --- |
+| `2026-09-12-new-posts/` | New 21-second map tutorial and two five-slide «Quin arbre?» quizzes: alzina/faig and avet/pi roig; captions, alt text, Story covers, source records and preview. Local drafts, not scheduled. |
 | `2026-09-11-diada/` | Approved photographic Story and dated Buffer scheduling receipt; frozen reference and reusable renderer in `asset-library/`. |
 | `2026-09-forest-discoveries/` | Ten finished local drafts: «Quin arbre?» alzina (6 slides), pi roig, castanyer, faig and avet plus a pi roig/pi negre comparison (5 each); rovelló, cep and rossinyol close-ups (4 each); and a 15-second empty-basket Reel; whole-tree covers and illustrative woodland mushroom rows; preview, captions, provenance, alt text and correctly framed Stories. Not scheduled. Reusable renderers in `asset-library/templates/forest-discoveries/`. |
 | `story-framing-2026-09-09/` | Audit of 29 queued Stories, 25 corrected 9:16 image frames, source-to-upload mappings and verified Buffer replacement receipts. Original schedules and feed posts retained. Reusable wrapper in `asset-library/templates/story-frame/`. |

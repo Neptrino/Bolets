@@ -145,6 +145,7 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
         {activeSpecies.filter((species) => cepSpeciesIds.some((id) => id === species.speciesId) || ["craterellus-lutescens", "tricholoma-terreum"].includes(species.speciesId)).map((species) => (
           <Link key={species.speciesId} href={speciesPath(species)}>{species.identity.commonName}: hàbitat i confusions <ArrowUpRight size={15} aria-hidden="true" /></Link>
         ))}
+        <Link href="/bolets/infografia">Infografia de bolets: el calendari de totes les espècies en un pòster <ArrowUpRight size={15} aria-hidden="true" /></Link>
       </nav>
 
       <SectionHeader

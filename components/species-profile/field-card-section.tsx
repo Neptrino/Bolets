@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PanelsTopLeft, ShieldAlert } from "lucide-react";
 import { SpeciesFieldCardActions } from "@/components/species-field-card-actions";
 import { speciesFieldCardPath } from "@/src/lib/seo";
@@ -45,6 +46,10 @@ export function SpeciesFieldCardSection({
               speciesId={species.speciesId}
               speciesName={species.identity.commonName}
             />
+            <p className="species-field-card-poster-link">
+              Vols totes les espècies en una sola làmina?{" "}
+              <Link href="/bolets/infografia">Consulta la infografia del catàleg de bolets</Link>.
+            </p>
           </div>
           <figure className="species-field-card-preview">
             <a href={imagePath} target="_blank" rel="noreferrer">

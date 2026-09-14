@@ -290,20 +290,30 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
         </section>
 
         <section className="current-reading-notes" aria-labelledby="current-reading-notes-title">
-          <h2 id="current-reading-notes-title">Com interpretar les dades</h2>
-          <p>La puntuació correspon al millor sector de cada territori; l’abast indica fins on s’estenen les condicions favorables. La comparació inclou espècies comestibles de temporada amb lectures completes.</p>
-          {searchReadings.length > 0 && <>
-            <h3>Per què destaquen aquestes zones?</h3>
-            {searchReadings.map((item) => <p key={`${overviewLocationName(item)}:${item.speciesId}`}>
-              <strong>{overviewLocationName(item)} · {item.speciesName}.</strong>{" "}
-              {overviewReadingExplanation(item)}{" "}
-              <UmamiEventLink href={overviewMapPath(item)} analyticsEvent={UMAMI_EVENTS.avuiMapOpen}>Compara els sectors al mapa de {item.speciesName.toLocaleLowerCase("ca")}</UmamiEventLink>.
-            </p>)}
-            <p>Els factors descriuen el resum del territori i poden variar entre sectors. Una zona que no apareix entre les primeres pot tenir condicions favorables per a una altra espècie; consulta el mapa abans de descartar-la.</p>
-          </>}
-          <h3>Com preparar la sortida d’aquesta setmana?</h3>
-          <p>Revisa la data de les lectures i compara el millor sector amb l’abast de les condicions dins la zona. Un sector ben valorat no vol dir que tot el bosc estigui igual. Consulta la <Link href="/quan-surten-els-bolets-despres-de-ploure">guia dels bolets després de ploure</Link> per entendre per què una pluja recent no garanteix una brotada immediata.</p>
-          <p>Les condicions ambientals no confirmen presència de bolets i no són una previsió dels pròxims set dies. Revisa la lectura abans de sortir. <Link href="/metode">Consulta el mètode i els seus límits</Link>.</p>
+          <div className="current-reading-notes-intro">
+            <h2 id="current-reading-notes-title">Com interpretar les dades</h2>
+            <p>La puntuació correspon al millor sector de cada territori; l’abast indica fins on s’estenen les condicions favorables. La comparació inclou espècies comestibles de temporada amb lectures completes.</p>
+          </div>
+          <div className="current-reading-notes-grid">
+            {searchReadings.length > 0 && <div className="current-reading-notes-block">
+              <h3>Per què destaquen aquestes zones?</h3>
+              <ul className="current-reading-highlights">
+                {searchReadings.map((item) => <li key={`${overviewLocationName(item)}:${item.speciesId}`}>
+                  <strong>{overviewLocationName(item)} · {item.speciesName}</strong>
+                  <p>{overviewReadingExplanation(item)}</p>
+                  <UmamiEventLink href={overviewMapPath(item)} analyticsEvent={UMAMI_EVENTS.avuiMapOpen}>
+                    Compara els sectors al mapa de {item.speciesName.toLocaleLowerCase("ca")}<ArrowUpRight size={14} />
+                  </UmamiEventLink>
+                </li>)}
+              </ul>
+              <p className="current-reading-notes-footnote">Els factors descriuen el resum del territori i poden variar entre sectors. Una zona que no apareix entre les primeres pot tenir condicions favorables per a una altra espècie; consulta el mapa abans de descartar-la.</p>
+            </div>}
+            <div className="current-reading-notes-block">
+              <h3>Com preparar la sortida d’aquesta setmana?</h3>
+              <p>Revisa la data de les lectures i compara el millor sector amb l’abast de les condicions dins la zona. Un sector ben valorat no vol dir que tot el bosc estigui igual. Consulta la <Link href="/quan-surten-els-bolets-despres-de-ploure">guia dels bolets després de ploure</Link> per entendre per què una pluja recent no garanteix una brotada immediata.</p>
+              <p>Les condicions ambientals no confirmen presència de bolets i no són una previsió dels pròxims set dies. Revisa la lectura abans de sortir. <Link href="/metode">Consulta el mètode i els seus límits</Link>.</p>
+            </div>
+          </div>
           {overviewSources.length > 0 ? (
             <DataSourceCredits
               sources={overviewSources}

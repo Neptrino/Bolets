@@ -54,7 +54,7 @@ beforeEach(async () => {
   vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => undefined);
 
   await act(async () => {
-    root.render(createElement(InfographicActions, { posterPath: "/poster.png" }));
+    root.render(createElement(InfographicActions, { posterPath: "/poster.png", pdfPath: "/poster.pdf" }));
   });
 });
 afterEach(async () => {

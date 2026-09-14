@@ -180,3 +180,6 @@
     grid-column: 1 / -1;
   }
 }
+
+.species-field-card-copy > .species-field-card-poster-link { margin: 0; color: #59625a; font-size: var(--text-sm); line-height: 1.55; }
+.species-field-card-poster-link a { color: #304839; font-weight: 700; }

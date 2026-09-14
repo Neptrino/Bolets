@@ -4,9 +4,9 @@ Infografia: Bolets Atles · https://bolets.app/bolets
 Les fotografies s'han retallat i redimensionat per a la composició del pòster.
 
 Apagallums (Macrolepiota procera)
-  Fotografia: Holger Krisp
-  Llicència: CC BY 3.0
-  Font: https://commons.wikimedia.org/wiki/File:Parasol-Macrolepiota-procera.jpg
+  Fotografia: Aleix Ventayol
+  Llicència: © Aleix Ventayol
+  Font: https://bolets.app/equip-editorial#autoria
 
 Bolet d’olivera (Omphalotus olearius)
   Fotografia: Antonio Abbatiello
@@ -34,9 +34,9 @@ Camagroc (Craterellus lutescens)
   Font: https://commons.wikimedia.org/wiki/File:Cantharellus_lutescens.jpg
 
 Camasec (Marasmius oreades)
-  Fotografia: Alan Rockefeller
-  Llicència: CC BY 4.0
-  Font: https://commons.wikimedia.org/wiki/File:Michigan_Marasmius_oreades.jpg
+  Fotografia: Aleix Ventayol
+  Llicència: © Aleix Ventayol
+  Font: https://bolets.app/equip-editorial#autoria
 
 Camperol (Agaricus campestris)
   Fotografia: Strobilomyces
@@ -74,9 +74,9 @@ Cep negre (Boletus aereus)
   Font: https://commons.wikimedia.org/wiki/File:Boletus_aereus_(29105181796).jpg
 
 Cep rogenc (Boletus pinophilus)
-  Fotografia: Paffka
-  Llicència: CC BY-SA 3.0
-  Font: https://commons.wikimedia.org/wiki/File:Boletus_pinophilus3.JPG
+  Fotografia: Aleix Ventayol
+  Llicència: © Aleix Ventayol
+  Font: https://bolets.app/equip-editorial#autoria
 
 Cigró (Leccinellum lepidum)
   Fotografia: Davide Puddu
@@ -264,9 +264,9 @@ Pimpinella morada (Lepista nuda)
   Font: https://commons.wikimedia.org/wiki/File:Lepista_nuda_LC0372.jpg
 
 Pinetell (Lactarius deliciosus)
-  Fotografia: Eric Steinert
-  Llicència: CC BY-SA 3.0
-  Font: https://commons.wikimedia.org/wiki/File:Lactarius_deliciosus.jpg
+  Fotografia: Aleix Ventayol
+  Llicència: © Aleix Ventayol
+  Font: https://bolets.app/equip-editorial#autoria
 
 Pinetell bord (Lactarius chrysorrheus)
   Fotografia: Richard Daniel (RichardDaniel)

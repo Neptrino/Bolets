@@ -3,6 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import { chromium } from "@playwright/test";
 import {
   readMediaCredits,
   readSpecies,
@@ -88,13 +89,63 @@ const posterMonthLabels = {
   des: "DES",
 };
 
-function bestMonthsLabel(item) {
-  if (!item.seasonality) return item.seasonLabel?.toLocaleUpperCase("ca") ?? "—";
+const seasonMonths = {
+  primavera: ["mar", "abr", "mai"],
+  estiu: ["jun", "jul", "ago"],
+  tardor: ["set", "oct", "nov"],
+  hivern: ["des", "gen", "feb"],
+};
+
+/** Months covered by a described season such as "Estiu i tardor" or "De primavera a tardor". */
+function monthsFromSeasonLabel(label) {
+  const text = (label ?? "").toLocaleLowerCase("ca");
+  const seasons = Object.keys(seasonMonths).filter((season) => text.includes(season));
+  if (seasons.length === 0) return [];
+  if (/^de\s/.test(text) && seasons.length >= 2) {
+    const start = monthOrder.indexOf(seasonMonths[seasons[0]][0]);
+    const end = monthOrder.indexOf(seasonMonths[seasons[seasons.length - 1]].at(-1));
+    return monthOrder.filter((_, index) => (start <= end ? index >= start && index <= end : index >= start || index <= end));
+  }
+  return monthOrder.filter((month) => seasons.some((season) => seasonMonths[season].includes(month)));
+}
+
+function bestMonths(item) {
+  if (!item.seasonality) return monthsFromSeasonLabel(item.seasonLabel);
   const peak = monthOrder.filter((month) => item.seasonality[month] === "peak");
-  const best = peak.length > 0
+  return peak.length > 0
     ? peak
     : monthOrder.filter((month) => item.seasonality[month] === "good");
+}
+
+function bestMonthsLabel(item) {
+  const best = bestMonths(item);
   return best.length > 0 ? best.map((month) => posterMonthLabels[month]).join(" · ") : "—";
+}
+
+const monthStripPitch = 12.5;
+const monthStripRadius = 4.3;
+const monthStripWidth = monthStripPitch * (monthOrder.length - 1) + monthStripRadius * 2;
+
+/** Twelve month dots, the best months filled: a glance replaces the month names. */
+function monthStripSvg(x, y, months, colour) {
+  return monthOrder.map((month, index) => {
+    const cx = x + monthStripRadius + index * monthStripPitch;
+    const active = months.includes(month);
+    return `
+      <circle cx="${cx}" cy="${y}" r="${monthStripRadius}" fill="${active ? colour : "none"}" stroke="${active ? colour : "#c9bfa9"}" stroke-width="1.4"/>
+      <text x="${cx}" y="${y + 17}" text-anchor="middle" class="month-initial">${posterMonthLabels[month][0]}</text>`;
+  }).join("");
+}
+
+function mountainIconSvg(x, y, colour) {
+  return `<path d="M${x} ${y + 14} L${x + 6.5} ${y + 2} L${x + 10.5} ${y + 9} L${x + 12.5} ${y + 6} L${x + 18} ${y + 14} Z" fill="${colour}"/>`;
+}
+
+function treeIconSvg(x, y, colour) {
+  return `
+    <path d="M${x + 7} ${y} L${x + 12.5} ${y + 6.5} H${x + 1.5} Z" fill="${colour}"/>
+    <path d="M${x + 7} ${y + 3.5} L${x + 14} ${y + 11} H${x} Z" fill="${colour}"/>
+    <rect x="${x + 5.6}" y="${y + 11}" width="2.8" height="4" fill="${colour}"/>`;
 }
 
 function compactLabel(value, maximumLength = 30) {
@@ -125,7 +176,12 @@ async function readImageDataUris(species) {
       }
       // librsvg, used by Sharp for the final poster render, does not decode
       // embedded WebP reliably. JPEG keeps the SVG self-contained and portable.
-      const jpeg = await sharp(imagePath).jpeg({ quality: 84, mozjpeg: true }).toBuffer();
+      // Cards are 190 px wide on the sheet, so 640 px sources keep the print
+      // sharp while holding the SVG and PDF to a reasonable size.
+      const jpeg = await sharp(imagePath)
+        .resize({ width: 640, withoutEnlargement: true })
+        .jpeg({ quality: 84, mozjpeg: true })
+        .toBuffer();
       return [speciesId, `data:image/jpeg;base64,${jpeg.toString("base64")}`];
     }),
   );
@@ -148,11 +204,10 @@ function cardSvg(item, index, x, y, colour, images) {
   if (!image) throw new Error(`Missing embedded image for ${item.speciesId}`);
   const radius = 28;
   const number = String(index + 1).padStart(2, "0");
-  const habitatLabel = compactLabel(item.habitatTypes[0] ?? "Hàbitat divers");
-  const altitudeLabel = item.altitude
-    ? `${item.altitude[0]}–${item.altitude[1]} m`
-    : "altitud —";
+  const habitatLabel = compactLabel(item.habitatTypes[0] ?? "Hàbitat divers", 27);
+  const altitudeLabel = item.altitude ? `${item.altitude[0]}–${item.altitude[1]} m` : null;
   const seasonLabel = bestMonthsLabel(item);
+  const textX = x + cardImageWidth + 34;
 
   return `
     <g aria-label="${escapeXml(`${item.commonName}, ${item.scientificName}`)}">
@@ -167,10 +222,12 @@ function cardSvg(item, index, x, y, colour, images) {
       <rect x="${x + cardImageWidth}" y="${y}" width="9" height="${cardHeight}" fill="${colour}"/>
       <circle cx="${x + 42}" cy="${y + 41}" r="25" fill="#fffaf0" opacity="0.96"/>
       <text x="${x + 42}" y="${y + 49}" text-anchor="middle" class="number">${number}</text>
-      <text x="${x + cardImageWidth + 34}" y="${y + 45}" class="card-meta">${escapeXml(`${seasonLabel}  ·  ${altitudeLabel}`)}</text>
-      <text x="${x + cardImageWidth + 34}" y="${y + 101}" class="common-name">${escapeXml(item.commonName)}</text>
-      <text x="${x + cardImageWidth + 34}" y="${y + 135}" class="scientific-name">${escapeXml(item.scientificName)}</text>
-      <text x="${x + cardImageWidth + 34}" y="${y + 194}" class="card-habitat">${escapeXml(habitatLabel)}</text>
+      <g aria-label="${escapeXml(`Millors mesos: ${seasonLabel}`)}">${monthStripSvg(textX, y + 38, bestMonths(item), "#8a5d3f")}</g>
+      <text x="${textX}" y="${y + 101}" class="common-name">${escapeXml(item.commonName)}</text>
+      <text x="${textX}" y="${y + 135}" class="scientific-name">${escapeXml(item.scientificName)}</text>
+      ${treeIconSvg(textX, y + 156, "#4e574d")}
+      <text x="${textX + 21}" y="${y + 170}" class="card-habitat">${escapeXml(habitatLabel)}</text>
+      ${altitudeLabel ? `<g aria-label="${escapeXml(`Altitud ${altitudeLabel}`)}">${mountainIconSvg(textX, y + 185, "#8a5d3f")}<text x="${textX + 23}" y="${y + 200}" class="card-meta">${escapeXml(altitudeLabel)}</text></g>` : ""}
     </g>`;
 }
 
@@ -262,6 +319,8 @@ function buildSvg(species, images) {
     .scientific-name { fill: #706d66; font-family: Georgia, "Times New Roman", serif; font-size: 19px; font-style: italic; }
     .card-habitat { fill: #4e574d; font-size: 18px; font-weight: 750; }
     .card-meta { fill: #8a5d3f; font-size: 16px; font-weight: 850; letter-spacing: 0.4px; }
+    .month-initial { fill: #8a5d3f; font-size: 8.5px; font-weight: 800; }
+    .legend { fill: #706d66; font-size: 21px; font-weight: 650; }
     .footer-kicker { fill: #f2a766; font-size: 25px; font-weight: 900; letter-spacing: 3px; }
     .footer-copy { fill: #fff7e8; font-size: 26px; font-weight: 650; }
     .footer-meta { fill: #c7d0ba; font-size: 21px; font-weight: 550; }
@@ -278,6 +337,14 @@ function buildSvg(species, images) {
   <text x="${margin + 150}" y="150" class="eyebrow">BOLETS ATLES · CATALUNYA</text>
   <text x="${margin}" y="342" class="title">BOLETS DE CATALUNYA</text>
   <text x="${margin}" y="420" class="subtitle">${species.length} espècies · noms · millors mesos · hàbitat i altitud</text>
+  <g aria-label="Llegenda de les targetes" transform="translate(${width - margin - 560} 398)">
+    ${monthStripSvg(0, 12, ["oct", "nov"], "#8a5d3f")}
+    <text x="${monthStripWidth + 14}" y="19" class="legend">millors mesos</text>
+    ${mountainIconSvg(monthStripWidth + 172, 4, "#8a5d3f")}
+    <text x="${monthStripWidth + 198}" y="19" class="legend">altitud</text>
+    ${treeIconSvg(monthStripWidth + 300, 2, "#4e574d")}
+    <text x="${monthStripWidth + 322}" y="19" class="legend">hàbitat</text>
+  </g>
   <g transform="translate(${margin} 470)">
     <rect x="0" y="0" width="${width - margin * 2}" height="72" rx="24" fill="#fff9ed" stroke="#d1c5aa" stroke-width="2"/>
     <circle cx="39" cy="36" r="18" fill="#bd592a"/>
@@ -327,6 +394,40 @@ function buildCredits(species, credits) {
   return lines.join("\n");
 }
 
+/**
+ * Print-ready A3 PDF with vector text, rendered by Chromium from the same SVG.
+ * The SVG is inlined into the document so Chromium embeds the fonts instead of
+ * rasterising the sheet.
+ */
+async function renderPdf(svg, pdfPath) {
+  const html = `<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Bolets de Catalunya · infografia de les espècies del catàleg</title>
+<style>
+  @page { size: ${width / 300 * 25.4}mm ${height / 300 * 25.4}mm; margin: 0; }
+  html, body { margin: 0; padding: 0; }
+  svg { display: block; width: ${width / 300 * 25.4}mm; height: ${height / 300 * 25.4}mm; }
+</style>
+</head>
+<body>${svg}</body>
+</html>`;
+  const browser = await chromium.launch();
+  try {
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "load" });
+    await page.pdf({
+      path: pdfPath,
+      preferCSSPageSize: true,
+      printBackground: true,
+      tagged: false,
+    });
+  } finally {
+    await browser.close();
+  }
+}
+
 async function main() {
   const species = readSpecies(projectRoot);
   const credits = readMediaCredits(projectRoot);
@@ -341,6 +442,7 @@ async function main() {
   const creditsPath = path.join(outputDirectory, `${filePrefix}-credits.txt`);
   const siteMediaPath = path.join(siteMediaDirectory, "bolets-catalunya-infografia.webp");
   const siteDownloadPath = path.join(siteDownloadDirectory, "bolets-catalunya-infografia.png");
+  const sitePdfPath = path.join(siteDownloadDirectory, "bolets-catalunya-infografia.pdf");
   const siteCreditsPath = path.join(siteDownloadDirectory, "bolets-catalunya-infografia-credits.txt");
   const creditText = buildCredits(species, credits);
 
@@ -357,9 +459,10 @@ async function main() {
   await sharp(png).webp({ quality: 88, effort: 5 }).toFile(siteMediaPath);
   fs.writeFileSync(siteDownloadPath, png);
   fs.writeFileSync(siteCreditsPath, creditText);
+  await renderPdf(svg, sitePdfPath);
 
   process.stdout.write(
-    `${JSON.stringify({ species: species.length, svgPath, pngPath, previewPath, creditsPath, siteMediaPath, siteDownloadPath, siteCreditsPath }, null, 2)}\n`,
+    `${JSON.stringify({ species: species.length, svgPath, pngPath, previewPath, creditsPath, siteMediaPath, siteDownloadPath, sitePdfPath, siteCreditsPath }, null, 2)}\n`,
   );
 }
 

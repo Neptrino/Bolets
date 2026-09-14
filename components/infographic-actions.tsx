@@ -1,11 +1,12 @@
 "use client";
 
-import { Download, ExternalLink, Share2 } from "lucide-react";
+import { Download, FileText, Share2 } from "lucide-react";
 import { useState } from "react";
 import { queueUmamiEvent, UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
 type InfographicActionsProps = {
   posterPath: string;
+  pdfPath: string;
 };
 
 const filename = "bolets-catalunya-infografia.png";
@@ -25,7 +26,7 @@ function savePoster(blob: Blob) {
   URL.revokeObjectURL(href);
 }
 
-export function InfographicActions({ posterPath }: InfographicActionsProps) {
+export function InfographicActions({ posterPath, pdfPath }: InfographicActionsProps) {
   const [activeAction, setActiveAction] = useState<"download" | "share" | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -93,8 +94,17 @@ export function InfographicActions({ posterPath }: InfographicActionsProps) {
         onClick={() => void download()}
       >
         <Download size={17} aria-hidden="true" />
-        {activeAction === "download" ? "Preparant…" : "Baixar el pòster PNG"}
+        {activeAction === "download" ? "Preparant…" : "Baixar el pòster de bolets (PNG)"}
       </button>
+      <a
+        className="button infographic-share-button"
+        href={pdfPath}
+        download="bolets-catalunya-infografia.pdf"
+        onClick={() => queueUmamiEvent(UMAMI_EVENTS.infographicDownloaded)}
+      >
+        <FileText size={17} aria-hidden="true" />
+        Baixar en PDF (A3)
+      </a>
       <button
         className="button infographic-share-button"
         type="button"
@@ -104,9 +114,6 @@ export function InfographicActions({ posterPath }: InfographicActionsProps) {
         <Share2 size={17} aria-hidden="true" />
         {activeAction === "share" ? "Preparant…" : "Compartir"}
       </button>
-      <a className="text-link" href={posterPath} target="_blank" rel="noreferrer">
-        Veure a mida completa <ExternalLink size={16} aria-hidden="true" />
-      </a>
       <span className="catalogue-infographic-action-status" aria-live="polite">
         {message}
       </span>

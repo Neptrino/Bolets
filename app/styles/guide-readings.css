@@ -85,10 +85,59 @@
   line-height: 1.5;
   text-align: left;
 }
-.current-reading-notes { margin: 32px 0; }
-.current-reading-notes h2 { font-size: var(--text-xl); color: var(--forest-panel); }
-.current-reading-notes p { line-height: 1.65; }
+.current-reading-notes { margin: 40px 0 32px; }
+.current-reading-notes-intro { max-width: 62rem; margin-bottom: 24px; }
+.current-reading-notes h2 { margin: 0 0 8px; font-size: var(--text-xl); color: var(--forest-panel); }
+.current-reading-notes p { margin: 0; line-height: 1.65; }
 .current-reading-notes a { color: var(--clay); }
+.current-reading-notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 20px;
+}
+.current-reading-notes-block {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 20px 22px;
+  border: 1px solid rgba(47, 65, 42, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 252, 244, 0.58);
+}
+.current-reading-notes-block h3 {
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(47, 65, 42, 0.14);
+  color: var(--forest-panel);
+  font-size: var(--text-lg);
+}
+.current-reading-notes-block > p { color: #485148; }
+.current-reading-highlights {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.current-reading-highlights li {
+  display: grid;
+  gap: 4px;
+  padding-left: 14px;
+  border-left: 3px solid #61704d;
+}
+.current-reading-highlights strong { color: var(--forest-panel); font-size: var(--text-base); }
+.current-reading-highlights p { color: #485148; font-size: var(--text-base); line-height: 1.55; }
+.current-reading-highlights a {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  justify-self: start;
+  margin-top: 2px;
+  font-weight: 750;
+}
+.current-reading-highlights a svg { flex-shrink: 0; }
+.current-reading-notes-footnote { padding-top: 12px; border-top: 1px dashed rgba(47, 65, 42, 0.18); color: #687067; font-size: var(--text-xs); }
+.current-reading-notes .data-source-credits--panel { margin-top: 24px; }
 .poisonous-comparisons { margin: 40px 0 56px; }
 .poisonous-comparison-grid {
   display: grid;
