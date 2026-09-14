@@ -1,21 +1,11 @@
 import { IntentLink as Link } from "@/components/intent-link";
 import { Coffee } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
-import { CurrentSeasonGuideLink } from "@/components/current-season-guide-link";
 import { InstagramMark } from "@/components/instagram-mark";
 import { InstallApp } from "@/components/install-app";
-import { seasonGuides } from "@/src/lib/season-guides";
-import { monthInTimeZone } from "@/src/lib/seasonality";
 import { resolveSupportUrl } from "@/src/lib/support";
 
-const seasonalFooterGuides = seasonGuides.map(({ path, cardTitle, months }) => ({
-  path,
-  cardTitle,
-  months,
-}));
-
 export function SiteFooter() {
-  const initialMonth = monthInTimeZone();
   const supportUrl = resolveSupportUrl(process.env.SUPPORT_URL);
 
   return (
@@ -52,28 +42,34 @@ export function SiteFooter() {
               </a>
             </div>
           ) : null}
+          <InstallApp />
         </div>
-        <nav className="site-footer-links" aria-label="Guies i informació editorial">
-          <Link href="/bolets-avui">Bolets avui</Link>
-          <Link href="/troballes">Troballes comunitàries</Link>
-          <Link href="/troballes/nova">Anota una troballa</Link>
-          <Link href="/zones">Zones</Link>
-          <Link href="/zones/rovellons">Rovellons a Catalunya</Link>
-          <Link href="/guies">Guies locals</Link>
-          <Link href="/compare">Comparador d’espècies</Link>
-          <Link href="/joc">Joc del bosc</Link>
-          <Link href="/temporada">Temporada de bolets</Link>
-          <CurrentSeasonGuideLink guides={seasonalFooterGuides} initialMonth={initialMonth} />
-          <Link href="/quan-surten-els-bolets-despres-de-ploure">Després de ploure</Link>
-          <Link href="/conservar-bolets">Conservar i congelar bolets</Link>
-          <Link href="/parts-dun-bolet">Parts d’un bolet</Link>
-          <Link href="/normativa-bolets">Permisos i recol·lecció</Link>
-          <Link href="/preguntes-frequents-bolets">Preguntes freqüents</Link>
-          <Link href="/col-labora">Col·labora amb Bolets</Link>
-          <Link href="/equip-editorial">Equip editorial</Link>
-          <Link href="/avis-legal">Avís legal i privadesa</Link>
+        <nav className="site-footer-links" aria-label="Navegació del peu de pàgina">
+          <div className="site-footer-group">
+            <h2>Espècies i guies</h2>
+            <Link href="/bolets">Espècies</Link>
+            <Link href="/compare">Comparador d’espècies</Link>
+            <Link href="/parts-dun-bolet">Parts d’un bolet</Link>
+            <Link href="/temporada">Temporada</Link>
+            <Link href="/preguntes-frequents-bolets">Preguntes freqüents</Link>
+          </div>
+          <div className="site-footer-group">
+            <h2>Mapa i territori</h2>
+            <Link href="/bolets-avui">Bolets avui</Link>
+            <Link href="/zones">Zones</Link>
+            <Link href="/guies">Guies locals</Link>
+            <Link href="/quan-surten-els-bolets-despres-de-ploure">Després de ploure</Link>
+            <Link href="/troballes">Troballes</Link>
+            <Link href="/normativa-bolets">Permisos i recol·lecció</Link>
+          </div>
+          <div className="site-footer-group">
+            <h2>Sobre Bolets</h2>
+            <Link href="/metode">Mètode del mapa</Link>
+            <Link href="/equip-editorial">Equip editorial</Link>
+            <Link href="/col-labora">Col·labora</Link>
+            <Link href="/avis-legal">Avís legal</Link>
+          </div>
         </nav>
-        <InstallApp />
       </div>
     </footer>
   );

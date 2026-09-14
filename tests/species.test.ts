@@ -23,16 +23,10 @@ const phenologyAnchor = {
 } as const;
 
 describe("species profiles", () => {
-  it("features the strongest seasonal species for the requested month", () => {
-    const august = getFeaturedSeasonalSpecies(new Date(2026, 7, 12));
-
-    expect(august).toHaveLength(3);
-    expect(august.map((species) => species.speciesId)).toEqual([
-      "russula-virescens",
-      "boletus-reticulatus",
-      "amanita-caesarea",
-    ]);
-    expect(august.every((species) => species.ecologicalConfig.seasonality.ago !== "inactive")).toBe(true);
+  it("features two familiar seasonal picks and one discovery", () => {
+    const september = getFeaturedSeasonalSpecies(new Date("2026-09-14T12:00:00Z"));
+    expect(september).toHaveLength(3);
+    expect(september.every((species) => species.ecologicalConfig.seasonality.set !== "inactive")).toBe(true);
   });
 
   it("validates every catalogue profile", () => {

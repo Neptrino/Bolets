@@ -144,7 +144,10 @@ export default function MethodPage() {
       <section id="principi" className="page-width method-principle" aria-labelledby="principle-title">
         <div className="method-section-heading">
           <p className="eyebrow">Una distinció important</p>
-          <h2 id="principle-title">On pot viure no és<br />el mateix que si fructifica ara.</h2>
+          <div>
+            <h2 id="principle-title">On pot viure no és<br />el mateix que si fructifica ara.</h2>
+            <p>Un radar de pluja mostra on es detecta precipitació. Un «radar de bolets» és una manera de descriure un mapa de condicions favorables: a Bolets relacionem la pluja i l’aigua disponible amb la temperatura, la temporada i l’hàbitat de cada espècie. No detectem bolets ni confirmem que n’hi hagi; la pluja per si sola no explica si fructificaran.</p>
+          </div>
         </div>
         <div className="method-dual-track">
           <article>

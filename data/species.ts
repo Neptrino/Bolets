@@ -1,3 +1,4 @@
+import { selectFeaturedSpecies } from "@/src/lib/featured-species";
 import type { Month, SeasonalActivity, SpeciesProfile } from "@/src/lib/types";
 import { culinaryProfiles } from "@/data/culinary-profiles";
 import { modelConfigForSpecies, TUBER_SHORT_TERM_CAVEAT } from "@/data/model-priors";
@@ -340,14 +341,6 @@ speciesProfiles.push(
     idealConditions: ["Prats calcaris amb panical", "9–20 °C després de pluges", "Primavera i tardor", "Confirmar l’hoste herbaci i descartar bolets taronja sobre fusta"]
   })
 );
-
-const seasonalActivityRank: Record<SeasonalActivity, number> = {
-  inactive: 0,
-  possible: 1,
-  moderate: 2,
-  good: 3,
-  peak: 4,
-};
 
 function season(overrides: Partial<Record<Month, SeasonalActivity>>) {
   return Object.fromEntries(months.map((name) => [name, overrides[name] ?? "inactive"])) as Record<Month, SeasonalActivity>;
@@ -1425,22 +1418,9 @@ speciesProfiles.push(
   })
 );
 
-/**
- * Select the featured species for the current calendar month. The ecological
- * seasonality remains the source of truth; prediction scores are intentionally
- * not fetched here because they require a spatial scan of Catalonia.
- */
+/** Editorial seasonal discovery; the shared ecology remains unchanged. */
 export function getFeaturedSeasonalSpecies(date = new Date(), limit = 3) {
-  const month = months[date.getMonth()];
-  const edibleStatuses = new Set(["excellent_edible", "edible", "edible_with_conditions"]);
-  return speciesProfiles
-    .filter((species) =>
-      species.predictionMode === "current" &&
-      edibleStatuses.has(species.identity.edibility) &&
-      species.ecologicalConfig.seasonality[month] !== "inactive"
-    )
-    .sort((left, right) => seasonalActivityRank[right.ecologicalConfig.seasonality[month]] - seasonalActivityRank[left.ecologicalConfig.seasonality[month]])
-    .slice(0, limit);
+  return selectFeaturedSpecies(speciesProfiles, date, limit);
 }
 
 export const speciesById = Object.fromEntries(speciesProfiles.map((item) => [item.speciesId, item]));

@@ -21,7 +21,8 @@ const seasonGuideIcons = {
   hivern: Snowflake,
 } satisfies Record<SeasonGuideId, typeof Leaf>;
 
-export const revalidate = 86400;
+// Refresh cached HTML hourly so the daily editorial rotation can roll over.
+export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Bolets de Catalunya: mapa, espècies i temporada",
   description: `Consulta la predicció de bolets a Catalunya i explora el mapa de condicions. Descobreix ${catalogueSpecies.length} fitxes d’espècies, guies de temporada i consells de recol·lecció.`,

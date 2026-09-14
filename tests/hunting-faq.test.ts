@@ -15,10 +15,10 @@ const html = renderToStaticMarkup(createElement(HuntingFaqPage));
 const document = new DOMParser().parseFromString(html, "text/html");
 
 describe("mushroom-hunting FAQ", () => {
-  it("server-renders fifteen practical answers in four linked topics", () => {
+  it("server-renders seventeen practical answers in four linked topics", () => {
     expect(document.querySelectorAll("h1")).toHaveLength(1);
     expect(document.querySelectorAll("section[aria-labelledby]")).toHaveLength(4);
-    expect(document.querySelectorAll("details")).toHaveLength(15);
+    expect(document.querySelectorAll("details")).toHaveLength(17);
     expect(document.querySelectorAll("details[open]")).toHaveLength(1);
     expect(document.querySelector("details")?.hasAttribute("open")).toBe(true);
     for (const question of document.querySelectorAll("details")) {

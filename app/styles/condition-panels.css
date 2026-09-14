@@ -346,6 +346,7 @@
   .site-footer-links {
     grid-template-columns: repeat(2, max-content);
     justify-content: start;
+    row-gap: 26px;
     padding-top: 18px;
     border-top: 1px solid rgba(255, 247, 232, 0.14);
   }

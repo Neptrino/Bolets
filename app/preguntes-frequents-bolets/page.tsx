@@ -69,6 +69,16 @@ const topics: HuntingTopic[] = [
         answer: <>No busquis només un nom de comarca: cal que el tipus de bosc sigui adequat per a l’espècie. La <Link href="/zones/rovellons">guia de rovellons i pinetells</Link> se centra en les pinedes; la <Link href="/zones/ceps">guia de ceps</Link> distingeix diverses espècies amb arbres associats i calendaris diferents. El tipus de bosc és una pista, no una prova que hi hagi bolets ni una identificació de l’exemplar.</>,
       },
       {
+        id: "radar-de-bolets",
+        question: "Com funciona un radar de bolets?",
+        answer: <>Un radar de bolets és una manera de descriure un mapa que estima condicions favorables per orientar la sortida. El <Link href="/map">mapa de Bolets</Link> combina l’hàbitat de cada espècie, la temporada, l’aigua disponible i la temperatura. No és un radar de pluja ni detecta bolets: compara condicions, sense confirmar que n’hi hagi. Consulta el <Link href="/metode">mètode del mapa i els seus límits</Link> per entendre com es calcula.</>,
+      },
+      {
+        id: "radar-pluja-vs-radar-bolets",
+        question: "Quina diferència hi ha entre un radar de pluja i un radar de bolets?",
+        answer: <>Un radar de pluja mostra on es detecta precipitació en aquell moment. Un radar de bolets, com el <Link href="/map">mapa de Bolets</Link>, estima si el bosc i les condicions ambientals són favorables per a cada espècie: relaciona l’aigua disponible amb la temperatura, la temporada i l’hàbitat. Que plogui avui no vol dir que demà hi hagi bolets; també importen la humitat prèvia i el temps transcorregut. Consulta <Link href="/quan-surten-els-bolets-despres-de-ploure">quan surten els bolets després de ploure</Link> per entendre aquesta resposta. Cap dels dos mapes confirma presència de bolets.</>,
+      },
+      {
         id: "mapa-i-presencia",
         question: "Una zona favorable al mapa garanteix que hi trobaré bolets?",
         answer: <>No. El <Link href="/map">mapa de bolets</Link> compara el terreny i les condicions del moment; no mostra observacions ni punts de recol·lecció confirmats. Una valoració alta no garanteix que n’hi hagi, i una valoració zero tampoc demostra absència. Consulta <Link href="/metode">com funciona el mapa i quins límits té</Link> abans d’interpretar-lo com una recomanació de sortida.</>,

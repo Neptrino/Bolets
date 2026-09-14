@@ -9,7 +9,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 800, height: 900 
     expect(response?.ok()).toBe(true);
     await expect(page.locator("h1")).toHaveCount(1);
     await expect(page.locator("h1")).toContainText("Anar a buscar bolets");
-    await expect(page.locator("main details")).toHaveCount(15);
+    await expect(page.locator("main details")).toHaveCount(17);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://bolets.app${path}`);
 
     const first = page.locator("main details").first();
@@ -53,7 +53,7 @@ test("questions, answers and internal links work without JavaScript", async ({ b
   const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
   const page = await context.newPage();
   await page.goto(path);
-  await expect(page.locator("main details")).toHaveCount(15);
+  await expect(page.locator("main details")).toHaveCount(17);
   await page.getByText("Rovelló i pinetell són el mateix bolet?", { exact: true }).click();
   const comparison = page.locator('main details a[href="/compare/rovello-vs-pinetell"]');
   await expect(comparison).toBeVisible();
@@ -73,7 +73,7 @@ for (const javaScriptEnabled of [true, false]) {
     });
     await page.goto(path);
     const fragments = await page.locator('main details a[href^="#"]').evaluateAll((links) => links.map((link) => link.getAttribute("href")!));
-    expect(fragments).toHaveLength(15);
+    expect(fragments).toHaveLength(17);
     for (const fragment of fragments) {
       // Leave the document so this also tests initial fragment navigation,
       // not only changing the hash on an already hydrated FAQ.
