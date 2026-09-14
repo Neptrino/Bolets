@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
+import { headers } from "next/headers";
+import { isMapWarmRequestAuthorized } from "@/src/lib/cache-warm-auth.server";
 import { Suspense } from "react";
 import { ArrowUpRight, BookOpenCheck, CalendarDays, Clock3, Gauge, Info, Layers3, Map, MapPinned, Mountain, ShieldAlert, Sprout, Trees } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
@@ -91,6 +93,7 @@ async function LocalEvidencePanel({
   const bounds = placeBounds(location);
   await connection();
   let evidence = null;
+  let evidenceFailed = false;
   try {
     evidence = await loadLocalGuideFacts(
       species.speciesId,
@@ -99,11 +102,11 @@ async function LocalEvidencePanel({
       `entorn de ${location.name}`,
     );
   } catch {
-    evidence = null;
+    evidenceFailed = true;
   }
 
   return (
-    <section className="local-evidence-strip" aria-labelledby="local-evidence-title">
+    <section className="local-evidence-strip" aria-labelledby="local-evidence-title" data-local-evidence-state={evidenceFailed ? "unavailable" : evidence ? "available" : "empty"}>
       <header>
         <Layers3 size={20} aria-hidden="true" />
         <div>
@@ -201,22 +204,25 @@ async function LocalConditionsCard({
   // bounded, generation-cached read until a real request reaches the page.
   await connection();
   let summary = null;
+  let conditionFailed = false;
+  const background = isMapWarmRequestAuthorized(await headers());
   try {
     summary = await loadLocalGuideCondition(
       species.speciesId,
       `${area.slug}/${location.slug}`,
       area.regionId,
       bounds,
+      background,
     );
   } catch {
-    summary = null;
+    conditionFailed = true;
   }
   if (!summary ||
     summary.result.score === null ||
     summary.result.missingComponents.length > 0 ||
     summary.snapshot.stale) {
     return (
-      <aside className="local-map-cta local-current-unavailable">
+      <aside className="local-map-cta local-current-unavailable" data-local-condition-state={conditionFailed || summary ? "unavailable" : "empty"}>
         <Gauge size={20} aria-hidden="true" />
         <p className="eyebrow light">Condicions actuals</p>
         <h2>Condicions no disponibles</h2>
@@ -228,7 +234,7 @@ async function LocalConditionsCard({
 
   const score = summary.bestCell.score;
   return (
-    <aside className="local-map-cta local-current-card" aria-labelledby="local-current-title">
+    <aside className="local-map-cta local-current-card" aria-labelledby="local-current-title" data-local-condition-state="available">
       <div className="local-current-heading">
         <div><p className="eyebrow light"><Gauge size={15} aria-hidden="true" /> Condicions actuals</p><h2 id="local-current-title">Lectura {location.prepositionalName}</h2></div>
         <div className="local-current-score" aria-label={`Millor sector ${score} sobre 100, ${opportunityLabel(score)}`}><strong>{score}</strong><span>/100</span></div>

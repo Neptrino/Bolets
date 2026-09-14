@@ -1,27 +1,46 @@
 import "server-only";
 
-import { areasBySlug, getPlace, locationPagePath, placeBounds, speciesLocationPages } from "@/data/location-pages";
+import { areasBySlug, locationPagePath, speciesLocationPages } from "@/data/location-pages";
 import { getSpecies } from "@/data/species";
 import { readCurrentOverviewGeneration } from "@/src/lib/current-overview-generation-server";
-import { loadLocalGuideCondition, localGuideConditionPeriod } from "@/src/lib/local-guide-conditions-server";
-import { loadLocalGuideFacts } from "@/src/lib/local-guide-facts-server";
+import { localGuideConditionPeriod } from "@/src/lib/local-guide-conditions-server";
 import { createMapCacheWarmer } from "@/src/lib/map-cache-warmer";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 
 export function localGuideWarmTargets() {
   const month = monthInTimeZone();
-  return speciesLocationPages.flatMap((page) => {
+  return speciesLocationPages.map((page) => {
     const species = getSpecies(page.speciesId)!;
     const regionId = areasBySlug[page.areaSlug]!.regionId;
-    const eligible = species.predictionMode === "current" &&
+    const conditions = species.predictionMode === "current" &&
       species.ecologicalConfig.regions.includes(regionId) &&
       species.ecologicalConfig.seasonality[month] !== "inactive";
-    return (eligible ? ["facts", "conditions"] as const : ["facts"] as const)
-      .map((kind) => ({ page, kind, url: `${locationPagePath(page)}#${kind}` }));
+    return { url: locationPagePath(page), conditions };
   });
 }
 
-/** Prime the exact page caches; one background read leaves room for visitors. */
+export async function warmLocalGuidePage(target: ReturnType<typeof localGuideWarmTargets>[number]) {
+  const secret = process.env.CACHE_WARM_SECRET;
+  if (!secret) throw new Error("Internal warming credential is missing");
+  const port = process.env.PORT ?? "3000";
+  if (!/^\d{1,5}$/.test(port)) throw new Error("Invalid local application port");
+  // Next's cache key includes the compiled callback text. Route-handler and
+  // RSC bundles can minify that text differently, even for a shared module.
+  // Render the actual page so warming and visitors use the same cache entries.
+  const response = await fetch(`http://127.0.0.1:${port}${target.url}`, {
+    headers: { Authorization: `Bearer ${secret}`, DNT: "1" },
+    cache: "no-store",
+    redirect: "error",
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!response.ok) throw new Error(`Local guide warming returned ${response.status}`);
+  const html = await response.text();
+  const evidenceComplete = /data-local-evidence-state="(?:available|empty)"/.test(html);
+  const conditionsComplete = !target.conditions || /data-local-condition-state="(?:available|empty)"/.test(html);
+  return { truncated: !evidenceComplete || !conditionsComplete };
+}
+
+/** Prime visitor entries through one loopback page request at a time. */
 export const warmLocalGuideCaches = createMapCacheWarmer({
   targets: localGuideWarmTargets,
   concurrency: 1,
@@ -30,15 +49,5 @@ export const warmLocalGuideCaches = createMapCacheWarmer({
     const generation = await readCurrentOverviewGeneration();
     return generation.startsWith("fallback:") ? null : `${generation}:${localGuideConditionPeriod()}`;
   },
-  load: async ({ page, kind }) => {
-    const location = getPlace(page.areaSlug, page.placeSlug)!;
-    const slug = `${location.areaSlug}/${location.slug}`;
-    const bounds = placeBounds(location);
-    if (kind === "facts") {
-      await loadLocalGuideFacts(page.speciesId, slug, bounds, `entorn de ${location.name}`);
-    } else {
-      await loadLocalGuideCondition(page.speciesId, slug, areasBySlug[page.areaSlug]!.regionId, bounds, true);
-    }
-    return { truncated: false };
-  },
+  load: warmLocalGuidePage,
 });

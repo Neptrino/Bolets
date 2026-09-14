@@ -1,6 +1,5 @@
 import "server-only";
 
-import { timingSafeEqual } from "node:crypto";
 import { cataloniaSpatialBounds } from "@/data/regions";
 import { bucketsForBounds } from "@/src/lib/map-query";
 import { readTimelineGeneration, TIMELINE_CACHE_SECONDS } from "@/src/lib/prediction-timeline-generation";
@@ -100,11 +99,4 @@ export const warmMapCaches = createMapCacheWarmer({
     : getCachedPredictionMapTimelineFrame("all", bounds, 1000, resolution, offset),
 });
 
-export function isMapWarmRequestAuthorized(headers: Headers) {
-  const secret = process.env.CACHE_WARM_SECRET;
-  const authorization = headers.get("authorization");
-  if (!secret || !authorization?.startsWith("Bearer ")) return false;
-  const expected = Buffer.from(secret);
-  const received = Buffer.from(authorization.slice(7));
-  return expected.length === received.length && timingSafeEqual(expected, received);
-}
+export { isMapWarmRequestAuthorized } from "@/src/lib/cache-warm-auth.server";

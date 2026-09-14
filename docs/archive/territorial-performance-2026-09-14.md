@@ -42,3 +42,11 @@ generation propagation, shared cache identity, concurrent visitors, recovery aft
 failures, civil-day/period expiry, warmer authentication and resumable concurrency.
 The earlier simplified-footer change left three obsolete assertions blocking CI;
 they now verify access through the retained guide, season and zones directories.
+
+
+The first live test caught distinct cache entries in the API and RSC bundles:
+Turbopack minified the same callback differently, and Next incorporates its source
+text in the cache key. Warming now requests the actual public guide routes through
+authenticated loopback with Do Not Track. Completed panel markers distinguish
+verified empty readings from transient failures. The signed warming header selects
+background condition priority; it does not grant access to private data.

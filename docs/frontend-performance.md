@@ -179,9 +179,12 @@ boundaries, complete-payload validation and truncation failures.
 The existing host warming service also primes each published local guide's exact
 condition and habitat cache. It uses the separate warming credential, one local
 target at a time and the spatial queue's background slot for condition reads.
-Successful targets resume across the 90-second budget; concurrent triggers
-coalesce and a publication change invalidates progress. No page rendering, private
-map access or analytics is involved in warming. Two sequential HTTP calls have
+The warmer makes authenticated, Do-Not-Track loopback requests to the actual
+page routes and validates completed panel markers. Next includes compiled callback
+text in cache keys; calling the same loader from an API bundle does not reliably
+populate the RSC bundle cache. Successful targets resume across the 90-second budget; concurrent triggers
+coalesce and a publication change invalidates progress. No browser scripts, private
+map access or analytics run during warming. Two sequential HTTP calls have
 120-second client deadlines and a 260-second systemd ceiling.
 
 Condition cache keys include both completed publication markers, the Catalonia
