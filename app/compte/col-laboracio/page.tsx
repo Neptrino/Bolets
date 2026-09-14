@@ -71,7 +71,7 @@ export default async function AccountContributionPage() {
         </div>
         {access.active ? (
           <Link href="/map">
-            Obrir el mapa <ArrowUpRight size={17} aria-hidden="true" />
+            Obrir el mapa de bolets <ArrowUpRight size={17} aria-hidden="true" />
           </Link>
         ) : null}
       </section>

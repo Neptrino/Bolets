@@ -71,12 +71,12 @@ const topics: HuntingTopic[] = [
       {
         id: "radar-de-bolets",
         question: "Com funciona un radar de bolets?",
-        answer: <>Un radar de bolets és una manera de descriure un mapa que estima condicions favorables per orientar la sortida. El <Link href="/map">mapa de Bolets</Link> combina l’hàbitat de cada espècie, la temporada, l’aigua disponible i la temperatura. No és un radar de pluja ni detecta bolets: compara condicions, sense confirmar que n’hi hagi. Consulta el <Link href="/metode">mètode del mapa i els seus límits</Link> per entendre com es calcula.</>,
+        answer: <>Un radar de bolets és una manera de descriure un mapa que estima condicions favorables per orientar la sortida. El <Link href="/map">mapa de bolets de Catalunya</Link> combina l’hàbitat de cada espècie, la temporada, l’aigua disponible i la temperatura. No és un radar de pluja ni detecta bolets: compara condicions, sense confirmar que n’hi hagi. Consulta el <Link href="/metode">mètode del mapa i els seus límits</Link> per entendre com es calcula.</>,
       },
       {
         id: "radar-pluja-vs-radar-bolets",
         question: "Quina diferència hi ha entre un radar de pluja i un radar de bolets?",
-        answer: <>Un radar de pluja mostra on es detecta precipitació en aquell moment. Un radar de bolets, com el <Link href="/map">mapa de Bolets</Link>, estima si el bosc i les condicions ambientals són favorables per a cada espècie: relaciona l’aigua disponible amb la temperatura, la temporada i l’hàbitat. Que plogui avui no vol dir que demà hi hagi bolets; també importen la humitat prèvia i el temps transcorregut. Consulta <Link href="/quan-surten-els-bolets-despres-de-ploure">quan surten els bolets després de ploure</Link> per entendre aquesta resposta. Cap dels dos mapes confirma presència de bolets.</>,
+        answer: <>Un radar de pluja mostra on es detecta precipitació en aquell moment. Un radar de bolets, com el <Link href="/map">mapa de bolets</Link>, estima si el bosc i les condicions ambientals són favorables per a cada espècie: relaciona l’aigua disponible amb la temperatura, la temporada i l’hàbitat. Que plogui avui no vol dir que demà hi hagi bolets; també importen la humitat prèvia i el temps transcorregut. Consulta <Link href="/quan-surten-els-bolets-despres-de-ploure">quan surten els bolets després de ploure</Link> per entendre aquesta resposta. Cap dels dos mapes confirma presència de bolets.</>,
       },
       {
         id: "mapa-i-presencia",

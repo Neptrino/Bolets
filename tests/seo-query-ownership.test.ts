@@ -29,11 +29,17 @@ describe("SEO query ownership", () => {
     expect(document.querySelector("h1")?.textContent).toBe("Bolets de Catalunya.Mapa, espècies i temporada.");
     expect(Array.from(document.querySelectorAll("h1, h2"), heading => heading.textContent))
       .not.toContain("On trobar bolets avui i aquesta setmana?");
+    // The reference block carries a descriptive heading instead of a slogan.
+    expect(Array.from(document.querySelectorAll("h2"), heading => heading.textContent))
+      .toContain("Guia d’espècies de bolets de Catalunya");
 
     const preview = document.querySelector(".home-map-feature");
-    expect(preview?.querySelector("a.button")?.getAttribute("href")).toBe("/bolets-avui");
-    expect(preview?.querySelector("a.button")?.textContent?.trim()).toBe("On trobar bolets avui");
-    expect(preview?.querySelector("a.home-map-preview")?.getAttribute("href")).toBe("/bolets-avui");
+    expect(preview?.querySelector("a.button")?.getAttribute("href")).toBe("/map");
+    expect(preview?.querySelector("a.button")?.textContent?.trim()).toBe("Obrir el mapa");
+    expect(preview?.querySelector("a.home-map-preview")?.getAttribute("href")).toBe("/map");
+    // The overview keeps owning "on trobar bolets avui": the homepage links it with that exact anchor.
+    expect(preview?.querySelector('a[href="/bolets-avui"]')?.className).toContain("button");
+    expect(preview?.querySelector('a[href="/bolets-avui"]')?.textContent?.trim()).toBe("Consulta on trobar bolets avui");
     expect(document.querySelector(".hero-actions a")?.getAttribute("href")).toBe("/map");
   });
 

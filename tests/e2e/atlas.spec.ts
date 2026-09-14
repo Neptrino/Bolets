@@ -10,7 +10,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   ).toBeVisible();
   await expect(page.locator('header a[href="/map"]')).toHaveCount(1);
   await expect(page.locator('header a[href="/map"]')).toHaveText(
-    "Mapa de condicions",
+    "Mapa de bolets",
   );
   await expect(page.locator('header > a[href="/compte/bosc"]')).toHaveText(
     "El meu bosc",

@@ -12,6 +12,7 @@ import { speciesProfiles } from "@/data/species";
 import { catalogueSpecies } from "@/data/catalogue";
 import { seasonMonthPath, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { seasonGuides } from "@/src/lib/season-guides";
+import { INFOGRAPHIC_INDEXED_IMAGE_PATH } from "@/src/lib/infographic-media";
 import { absoluteUrl, speciesImage, speciesPath } from "@/src/lib/seo";
 import { speciesMapPages } from "@/src/lib/species-map-pages";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
@@ -49,7 +50,7 @@ export function buildSitemap(
     { url: absoluteUrl(), lastModified, images: [absoluteUrl("/media/generated/home-hero-boletus-v2.webp")] },
     { url: absoluteUrl("/bolets"), lastModified: new Date(`${getEditorialMetadata("bolets").updatedAt}T00:00:00+02:00`) },
     { url: absoluteUrl("/noms-de-bolets-catala-castella"), lastModified: speciesNamesLastModified },
-    { url: absoluteUrl("/bolets/infografia"), lastModified, images: [absoluteUrl("/media/editorial/bolets-catalunya-infografia.webp")] },
+    { url: absoluteUrl("/bolets/infografia"), lastModified, images: [absoluteUrl(INFOGRAPHIC_INDEXED_IMAGE_PATH)] },
     { url: absoluteUrl("/bolets-avui"), lastModified: currentOverviewLastModified },
     ...seasonGuides.map((guide) => ({
       url: absoluteUrl(guide.path),
@@ -69,7 +70,7 @@ export function buildSitemap(
       url: absoluteUrl(seasonMonthPath(key)),
       lastModified: seasonPagesLastModified,
     })),
-    { url: absoluteUrl("/map"), lastModified },
+    { url: absoluteUrl("/map"), lastModified: new Date(`${getEditorialMetadata("map").updatedAt}T00:00:00+02:00`) },
     ...speciesMapPages.map((page) => ({
       url: absoluteUrl(`/map/${page.slug}`),
       lastModified,

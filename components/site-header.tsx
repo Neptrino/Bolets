@@ -71,7 +71,7 @@ export function SiteHeader() {
       <nav className="primary-nav" aria-label="Navegació principal">
         {links.map((link) => <Link key={link.href} href={link.href} className={link.featured ? "primary-nav-today" : undefined} aria-current={isCurrentLink(link) ? "page" : undefined}>{link.label}</Link>)}
       </nav>
-      <Link href="/map" className="header-map-link"><Map size={16} aria-hidden="true" /> <span>Mapa de condicions</span></Link>
+      <Link href="/map" className="header-map-link"><Map size={16} aria-hidden="true" /> <span>Mapa de bolets</span></Link>
       <Link
         href="/compte/bosc"
         className="header-account-link"

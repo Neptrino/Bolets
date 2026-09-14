@@ -26,6 +26,10 @@ Use this index for current guidance and open plans. Dated research and completed
 | [Product roadmap](product-planning-journey-plan-2026-09-06.md) | Reference discovery committed; later releases remain proposed |
 | [Recipe content plan](recipe-cms-and-content-plan-2026-09-03.md) | Proposed architecture; later candidate research is linked from the plan |
 | [SEO operations](seo-launch-operations.md) | Release checks and measurement; account baseline is explicitly dated |
+| [Map discovery plan](map-discovery-plan.md) | Proposed homepage/map clarity release, followed by Avui and local-guide journey improvements |
+| [Map discovery — 14 September](archive/map-discovery-2026-09-14.md) | Indexed-map diagnosis, query/device baseline and local navigation/freshness corrections |
+| [Map-search competitors — 14 September](archive/map-search-competitors-2026-09-14.md) | Dated ranking evidence, competitor presentation and proposed map-discovery improvements |
+| [Analytics review — 14 September](archive/analytics-review-2026-09-14.md) | Dated search, website and Instagram evidence with proposed optimization priorities |
 | [Backlink campaign](backlink-outreach-campaign.md) | Editorial pitch material; recheck targets and campaign eligibility before contact |
 | [Optional mycological review](mycological-review-checklist.md) | Future review checklist; no reviewer appointed or review planned |
 

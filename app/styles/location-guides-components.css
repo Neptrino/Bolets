@@ -472,7 +472,8 @@
   .location-hub-copy { padding-bottom: 0; }
   .location-hub-copy .location-back { margin-bottom: 50px; }
   .location-hub-portrait { min-height: 430px; margin-top: 0; }
-  .location-hub-principle > a { grid-column: 1; }
+  .location-hub-principle > a,
+  .location-hub-principle > .location-hub-principle-actions { grid-column: 1; }
   .location-area-grid { grid-template-columns: 1fr; }
   .local-species-hero-grid {
     grid-template-columns: 1fr;
@@ -571,3 +572,10 @@
 @media (prefers-reduced-motion: reduce) {
   .local-fact-placeholder span { animation: none; }
 }
+
+.local-map-next { margin-top: 28px; padding: 24px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); }
+.local-map-next .eyebrow { margin: 0; }
+.local-map-next h2 { margin: 8px 0 8px; font-size: var(--text-xl); line-height: 1.1; letter-spacing: -0.02em; }
+.local-map-next > p:not(.eyebrow) { max-width: 60ch; margin: 0 0 16px; color: var(--muted); }
+.local-map-next .guide-reading-actions { margin: 0; }
+.location-hub-principle-actions { display: flex; flex-wrap: wrap; gap: 10px 22px; }

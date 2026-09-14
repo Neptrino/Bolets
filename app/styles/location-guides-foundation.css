@@ -317,7 +317,9 @@
 .location-hub-principle > div > svg { margin-bottom: 18px; color: #d8b971; }
 .location-hub-principle h2 { margin: 6px 0 0; font-size: var(--text-3xl); line-height: 1.1; }
 .location-hub-principle > p { margin: 0; color: var(--on-dark-muted); font-size: var(--text-base); line-height: 1.7; }
-.location-hub-principle > a { grid-column: 2; color: var(--on-dark); }
+.location-hub-principle > a,
+.location-hub-principle > .location-hub-principle-actions { grid-column: 2; color: var(--on-dark); }
+.location-hub-principle-actions a { color: var(--on-dark); }
 .local-species-hero {
   padding: 48px 0 58px;
   background: var(--forest-panel);

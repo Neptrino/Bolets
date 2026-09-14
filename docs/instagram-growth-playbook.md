@@ -86,6 +86,8 @@ Reply to comments when practical and collect recurring questions. Review results
 
 ## Measurement and next decisions
 
+The [14 September cross-channel review](archive/analytics-review-2026-09-14.md) provides a newer dated account check: the completed main promotion reports €58.79 spent and 389 attributed follows (about €0.15 each), exceeding the retained €0.06 stop rule. Both promotions displayed in native Ad tools were completed. Consult that review before reusing the earlier follower-cost scenario; its €66.36 visible spend is not a complete billing reconciliation or a new spending authorization.
+
 Record the reporting period, source and paid/organic scope with every measurement. Use native Instagram/ad reporting for follower and paid metrics, `/admin/publicacio` for available post performance, and the existing privacy-preserving website analytics for site actions. Profile visits divided into total follower growth are not a verified paid conversion funnel.
 
 | Measure | Decision it informs |

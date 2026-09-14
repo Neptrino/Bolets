@@ -6,7 +6,13 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [Map-search competitor review — 14 September 2026](map-search-competitors-2026-09-14.md) · [ranking evidence](map-search-competitors-2026-09-14.json)
+
+- [Map discovery diagnosis and local corrections — 14 September 2026](map-discovery-2026-09-14.md)
+
 - [Territorial cold-response investigation — 14 September 2026](territorial-performance-2026-09-14.md) · [benchmark](territorial-performance-2026-09-14.json)
+
+- [Cross-channel analytics review — 14 September 2026](analytics-review-2026-09-14.md) · [read-only aggregate evidence](analytics-review-2026-09-14/)
 
 - [Overnight CPU, cache publication and backup review — 13 September 2026](overnight-runtime-review-2026-09-13.md)
 

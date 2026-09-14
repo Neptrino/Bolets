@@ -330,21 +330,23 @@ test("keeps only useful map controls on mobile", async ({ page }) => {
     const toggle = document.querySelector(".map-page-panel-toggle")?.getBoundingClientRect();
     const settings = document.querySelector(".map-cell-visibility-panel-toggle")?.getBoundingClientRect();
     const title = document.querySelector(".map-page-heading h1")?.getBoundingClientRect();
+    const copy = document.querySelector(".map-page-title > p:last-child")?.getBoundingClientRect();
     return {
       compactTitleVisible: Boolean(title && title.width > 0 && title.height > 0),
+      compactCopyVisible: Boolean(copy && copy.width > 0 && copy.height > 0),
       controlsDoNotOverlap: Boolean(drawer && settings && drawer.right <= settings.left),
       panelWidth: drawer?.width,
       panelToggleTop: toggle?.top,
       panelLeft: drawer?.left,
-      verticallyCentered: Boolean(drawer && toggle && Math.abs(
-        toggle.top + toggle.height / 2 - (drawer.top + drawer.height / 2),
-      ) <= 4),
+      toggleInsideDrawer: Boolean(drawer && toggle && toggle.top >= drawer.top && toggle.bottom <= drawer.bottom),
     };
   });
   expect(collapsedDrawerLayout.compactTitleVisible).toBe(true);
+  // The collapsed drawer must already explain the map: no panel expansion needed.
+  expect(collapsedDrawerLayout.compactCopyVisible).toBe(true);
   expect(collapsedDrawerLayout.controlsDoNotOverlap).toBe(true);
   await expect(page.getByRole("heading", { name: "Mapa del cep a Catalunya" })).toBeVisible();
-  expect(collapsedDrawerLayout.verticallyCentered).toBe(true);
+  expect(collapsedDrawerLayout.toggleInsideDrawer).toBe(true);
   await page.locator(".map-page-panel-toggle").click();
   await expect(page.locator(".map-page-heading")).toHaveAttribute("open", "");
   await expect(

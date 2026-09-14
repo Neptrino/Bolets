@@ -1,6 +1,6 @@
 import { IntentLink as Link } from "@/components/intent-link";
 import type { Metadata } from "next";
-import { ArrowDown, ArrowUpRight, BookOpenText, CalendarDays, CloudRain, Leaf, Map, Snowflake, Sparkles, Sun, Trees } from "lucide-react";
+import { ArrowDown, ArrowUpRight, BookOpenText, CalendarDays, Map, Sparkles } from "lucide-react";
 import { SpeciesCard } from "@/components/species-card";
 import { HomeFindingsFeature } from "@/components/home-findings-feature";
 import { HomeMapFeature } from "@/components/home-map-feature";
@@ -10,16 +10,9 @@ import { StaticMediaImage } from "@/components/static-media-image";
 import { UmamiEventLink } from "@/components/umami-event-link";
 import { getFeaturedSeasonalSpecies } from "@/data/species";
 import { catalogueSpecies } from "@/data/catalogue";
-import { seasonGuideForMonth, type SeasonGuideId } from "@/src/lib/season-guides";
+import { seasonGuideForMonth } from "@/src/lib/season-guides";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
-
-const seasonGuideIcons = {
-  primavera: Leaf,
-  estiu: Sun,
-  tardor: Trees,
-  hivern: Snowflake,
-} satisfies Record<SeasonGuideId, typeof Leaf>;
 
 // Refresh cached HTML hourly so the daily editorial rotation can roll over.
 export const revalidate = 3600;
@@ -32,7 +25,6 @@ export const metadata: Metadata = {
 export default function HomePage() {
   const featuredSpecies = getFeaturedSeasonalSpecies();
   const currentSeasonGuide = seasonGuideForMonth(monthInTimeZone());
-  const CurrentSeasonIcon = seasonGuideIcons[currentSeasonGuide.id];
   return (
     <>
       <section className="hero">
@@ -59,13 +51,9 @@ export default function HomePage() {
         <div className="hero-scroll"><ArrowDown size={16} aria-hidden="true" /> continua descobrint</div>
       </section>
       <HomeMapFeature />
-      <HomeReferenceFeature speciesCount={catalogueSpecies.length} />
-      <nav className="home-search-guides page-width" aria-label="Guies destacades">
-        <Link href="/guies"><BookOpenText size={19} /><span><strong>Guies locals</strong><small>Comarques, massissos i indrets documentats</small></span><ArrowUpRight size={16} /></Link>
-        <Link href={currentSeasonGuide.path}><CurrentSeasonIcon size={19} /><span><strong>{currentSeasonGuide.cardTitle}</strong><small>Espècies actives {currentSeasonGuide.rangeSentence}</small></span><ArrowUpRight size={16} /></Link>
-        <Link href="/quan-surten-els-bolets-despres-de-ploure"><CloudRain size={19} /><span><strong>Després de ploure</strong><small>Com interpretar la resposta de cada espècie</small></span><ArrowUpRight size={16} /></Link>
-      </nav>
-      <section className="home-cards page-width"><div className="section-topline"><div><p className="eyebrow">Comença aquí</p><h2>Espècies de temporada</h2></div><Link href="/bolets" className="text-link">Veure les {catalogueSpecies.length} fitxes <ArrowUpRight size={16} /></Link></div><div className="species-grid featured-grid">{featuredSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} />)}</div></section>
+      <HomeReferenceFeature speciesCount={catalogueSpecies.length} seasonGuide={currentSeasonGuide}>
+        <div className="species-grid featured-grid">{featuredSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} />)}</div>
+      </HomeReferenceFeature>
       <HomeShowcaseVideo />
       <HomeFindingsFeature />
       <HomeEditorialNote />

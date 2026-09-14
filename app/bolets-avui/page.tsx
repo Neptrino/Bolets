@@ -2,6 +2,8 @@ import "@/app/styles/current-readings.css";
 import { developmentOverviewSimulation } from "@/src/lib/current-overview-simulation";
 import type { Metadata } from "next";
 import { IntentLink as Link } from "@/components/intent-link";
+import { UmamiEventLink } from "@/components/umami-event-link";
+import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 import { connection } from "next/server";
 import { cache, Suspense } from "react";
 import {
@@ -277,9 +279,9 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
                   ) : (
                     <p className="current-row-signals-empty">—</p>
                   )}
-                  <Link href={mapPath} className="current-row-map" aria-label={`Veure al mapa: ${locationName}, ${item.speciesName}`}>
+                  <UmamiEventLink href={mapPath} className="current-row-map" analyticsEvent={UMAMI_EVENTS.avuiMapOpen} aria-label={`Veure al mapa: ${locationName}, ${item.speciesName}`}>
                     <Map size={15} /><span>Veure mapa</span>
-                  </Link>
+                  </UmamiEventLink>
                 </li>
               );
               })}
@@ -295,7 +297,7 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
             {searchReadings.map((item) => <p key={`${overviewLocationName(item)}:${item.speciesId}`}>
               <strong>{overviewLocationName(item)} · {item.speciesName}.</strong>{" "}
               {overviewReadingExplanation(item)}{" "}
-              <Link href={overviewMapPath(item)}>Compara els sectors al mapa de {item.speciesName.toLocaleLowerCase("ca")}</Link>.
+              <UmamiEventLink href={overviewMapPath(item)} analyticsEvent={UMAMI_EVENTS.avuiMapOpen}>Compara els sectors al mapa de {item.speciesName.toLocaleLowerCase("ca")}</UmamiEventLink>.
             </p>)}
             <p>Els factors descriuen el resum del territori i poden variar entre sectors. Una zona que no apareix entre les primeres pot tenir condicions favorables per a una altra espècie; consulta el mapa abans de descartar-la.</p>
           </>}
@@ -354,9 +356,9 @@ function CurrentMap() {
           <h2 id="current-map-title">Les condicions d’avui, sobre el territori</h2>
           <p>El color mostra quina espècie comestible té les millors condicions a cada sector.</p>
         </div>
-        <Link href="/map" className="current-map-open">
-          Obrir el mapa complet <ArrowUpRight size={16} aria-hidden="true" />
-        </Link>
+        <UmamiEventLink href="/map" className="current-map-open" analyticsEvent={UMAMI_EVENTS.avuiMapOpen}>
+          Obrir el mapa de bolets de Catalunya <ArrowUpRight size={16} aria-hidden="true" />
+        </UmamiEventLink>
       </header>
       <LazyCurrentMap activeRegions={currentMapRegions} />
       <footer className="current-map-footer">
@@ -388,7 +390,7 @@ export default async function MushroomsTodayPage({ searchParams }: {
         <CurrentOverview simulate={simulate} section="ranking" />
       </Suspense>
       <nav className="guide-reading-actions" aria-label="Guies relacionades amb les condicions actuals">
-          <Link href="/map">Mapa de bolets de Catalunya <ArrowUpRight size={15} aria-hidden="true" /></Link>
+          <UmamiEventLink href="/map" analyticsEvent={UMAMI_EVENTS.avuiMapOpen}>Mapa de bolets de Catalunya <ArrowUpRight size={15} aria-hidden="true" /></UmamiEventLink>
           <Link href="/quan-surten-els-bolets-despres-de-ploure">Quan surten després de ploure <ArrowUpRight size={15} aria-hidden="true" /></Link>
           <Link href="/zones/ceps">Ceps de Catalunya <ArrowUpRight size={15} aria-hidden="true" /></Link>
           <Link href="/zones/rovellons">Rovellons a Catalunya <ArrowUpRight size={15} aria-hidden="true" /></Link>

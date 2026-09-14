@@ -27,6 +27,8 @@ import { monthInTimeZone } from "@/src/lib/seasonality";
 import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, pageTitle } from "@/src/lib/seo";
 import { territorialMapPath } from "@/src/lib/territorial-map";
+import { UmamiEventLink } from "@/components/umami-event-link";
+import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 import type { AreaPredictionSummary } from "@/src/lib/types";
 
 export const revalidate = 300;
@@ -106,6 +108,7 @@ export default async function AreaPage({ params }: Props) {
   });
   const guideCount = cards.reduce((total, card) => total + card.pages.length, 0);
   const conditions = await loadAreaConditions(areaSlug);
+  const areaMapSpeciesId = conditions[0]?.speciesId ?? locationPagesForArea(areaSlug)[0]?.speciesId;
   const territoryGuides = [...new Map(
     locationPagesForArea(areaSlug)
       .flatMap((page) => {
@@ -219,7 +222,10 @@ export default async function AreaPage({ params }: Props) {
         <aside className="location-hub-principle">
           <div><MapPinned size={24} /><p className="eyebrow light">Com llegir aquestes guies</p><h2>El territori filtra.<br />El temps decideix.</h2></div>
           <p>La guia explica on encaixa l’espècie i el mapa compara les condicions actuals. Cap dels dos confirma presència ni revela una localització exacta.</p>
-          <Link href="/metode" className="text-link">Entendre el mètode <ArrowUpRight size={17} /></Link>
+          <div className="location-hub-principle-actions">
+            {areaMapSpeciesId ? <UmamiEventLink href={territorialMapPath(areaMapSpeciesId, area.regionId, areaBounds(area))} analyticsEvent={UMAMI_EVENTS.guideMapOpen} className="text-link">Mapa de bolets {area.prepositionalName} <ArrowUpRight size={17} /></UmamiEventLink> : null}
+            <Link href="/metode" className="text-link">Entendre el mètode <ArrowUpRight size={17} /></Link>
+          </div>
         </aside>
 
         <DataSourceCredits

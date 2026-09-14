@@ -168,9 +168,6 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
-.map-page-heading:not([open]) .map-page-title > p:last-child {
-  display: none;
-}
 .map-page-panel-toggle {
   display: grid;
   width: 38px;
@@ -707,6 +704,7 @@
     line-height: 1.08;
   }
   .map-page-heading:not([open]) h1 {
+    margin-bottom: 2px;
     font-size: var(--text-lg);
   }
   .map-page-heading .map-page-title > p:last-child {

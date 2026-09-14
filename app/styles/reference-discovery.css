@@ -9,28 +9,56 @@
   text-underline-offset: 4px;
 }
 .hero-season-link svg { flex-shrink: 0; }
-.home-reference { padding-block: 4.5rem 2rem; }
-.home-reference-body {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-  gap: 3rem;
-  margin-top: 2rem;
+.home-reference {
+  margin-top: 3rem;
+  padding: 2.5rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 18px 44px rgb(52 57 45 / 10%);
 }
-.home-reference-search { padding: 2rem; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
-.home-reference-search form { display: grid; gap: 1rem; }
-.home-reference-search label { font-weight: 750; font-size: var(--text-lg); }
-.home-reference-search button { justify-self: start; }
-.home-reference-input { display: flex; align-items: center; gap: .65rem; padding: .75rem; border: 1px solid var(--line); background: var(--paper); border-radius: 6px; }
+.home-reference-season { margin-top: 2.25rem; }
+.home-reference-season .section-topline { margin-bottom: 1.25rem; }
+.home-reference-season h3 { margin: .2rem 0 0; font-size: var(--text-2xl); line-height: 1.1; letter-spacing: -.02em; }
+.home-reference-tiles-title { margin: 2.5rem 0 0; color: var(--clay); font-size: var(--text-xs); font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.home-reference-searchbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1.75rem;
+}
+.home-reference-searchbar label { font-weight: 750; font-size: var(--text-lg); white-space: nowrap; }
+.home-reference-input { display: flex; align-items: center; gap: .65rem; min-height: 52px; padding: .6rem 1rem; border: 1.5px solid rgba(89, 53, 37, 0.32); background: #fff; border-radius: 999px; box-shadow: inset 0 1px 2px rgb(52 57 45 / 6%); }
+.home-reference-input:hover { border-color: rgba(89, 53, 37, 0.5); }
+.home-reference-input input::placeholder { color: #7a736b; }
 .home-reference-input:focus-within { outline: 2px solid var(--moss); outline-offset: 3px; }
 .home-reference-input input { width: 100%; min-width: 0; border: 0; outline: 0; font: inherit; font-size: var(--text-base); background: transparent; }
 .home-reference-input svg { flex-shrink: 0; color: var(--moss); }
-.home-reference-search > p { margin-block: 1.25rem; color: var(--muted); font-size: var(--text-xs); line-height: 1.65; }
-.home-reference-topics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
-.home-reference-topics > div { min-width: 0; padding-top: 1rem; border-top: 1px solid var(--line); }
-.home-reference-topics > div > svg { color: var(--clay); }
-.home-reference-topics h3 { margin: .65rem 0 1rem; font-size: var(--text-xl); }
-.home-reference-topics a { display: flex; align-items: baseline; gap: .4rem; width: fit-content; margin-top: .65rem; color: var(--moss); font-size: var(--text-xs); line-height: 1.5; text-underline-offset: 4px; }
-.home-reference-topics a svg { flex-shrink: 0; }
+.home-reference-searchbar .button { white-space: nowrap; }
+.home-reference-tiles {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: .9rem;
+  margin-top: .9rem;
+}
+.home-reference-tiles a {
+  display: grid;
+  gap: .3rem;
+  align-content: start;
+  min-width: 0;
+  padding: 1.1rem 1.1rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.home-reference-tiles a:hover, .home-reference-tiles a:focus-visible { transform: translateY(-3px); border-color: var(--moss); box-shadow: 0 12px 28px rgb(52 57 45 / 10%); }
+.home-reference-tiles a svg { margin-bottom: .45rem; color: var(--clay); }
+.home-reference-tiles a strong { font-size: var(--text-base); font-weight: 750; line-height: 1.25; }
+.home-reference-tiles a small { color: var(--muted); font-size: var(--text-xs); line-height: 1.4; }
 .home-editorial-note { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1.5rem; padding-block: 3rem; border-top: 1px solid var(--line); }
 .home-editorial-note > svg { color: var(--clay); }
 .home-editorial-note .eyebrow { margin: 0 0 .65rem; }
@@ -49,15 +77,18 @@
 .species-page :is(#noms, #confusions, #fonts) { scroll-margin-top: 6.5rem; }
 
 @media (max-width: 900px) {
-  .home-reference-body { grid-template-columns: 1fr; gap: 2rem; }
-  .home-reference-search { padding: 1.5rem; }
+  .home-reference-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .home-editorial-note { grid-template-columns: auto minmax(0, 1fr); }
   .home-editorial-note > a { grid-column: 2; }
 }
 @media (max-width: 680px) {
-  .home-reference { padding-top: 2.5rem; }
-  .home-reference-topics { gap: 1.5rem; }
-  .home-reference-topics h3 { font-size: var(--text-lg); }
+  .home-reference { margin-top: 2rem; padding: 1.1rem; border-radius: 14px; }
+  /* Inside the card the species cards are narrower than in the catalogue: stack the fact chips. */
+  .home-reference .species-card-facts { grid-template-columns: 1fr; }
+  .home-reference-searchbar { grid-template-columns: 1fr; gap: .75rem; }
+  .home-reference-searchbar .button { justify-self: start; }
+  .home-reference-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; }
+  .home-reference-tiles a { padding: .9rem; }
   .directory-search { flex-wrap: wrap; }
   .directory-search .search-field { flex-basis: 100%; }
   .directory-search-submit { min-height: 44px; }

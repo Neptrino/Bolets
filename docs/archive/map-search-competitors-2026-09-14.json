@@ -1,0 +1,304 @@
+{
+  "date": "2026-09-14",
+  "keyword": "mapa bolets Catalunya",
+  "note": "Sep14 competitor URL fields are null; Sep13 URLs retained as last observed, not newly verified Sep14 landing URLs.",
+  "sources": {
+    "comp-vade": [
+      {
+        "site_engine_id": 1386756,
+        "keywords": [
+          {
+            "id": 149902650,
+            "name": "mapa bolets Catalunya",
+            "volume": "170",
+            "positions": [
+              {
+                "date": "2026-09-13",
+                "pos": 1,
+                "change": 0,
+                "url": "https://www.vadebolets.cat/"
+              },
+              {
+                "date": "2026-09-14",
+                "pos": 1,
+                "change": 0,
+                "url": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "site_engine_id": 1387419,
+        "keywords": [
+          {
+            "id": 149902650,
+            "name": "mapa bolets Catalunya",
+            "volume": "170",
+            "positions": [
+              {
+                "date": "2026-09-13",
+                "pos": 1,
+                "change": 0,
+                "url": "https://www.vadebolets.cat/mapa-boletaire-setmanal/"
+              },
+              {
+                "date": "2026-09-14",
+                "pos": 2,
+                "change": -1,
+                "url": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "site_engine_id": 1391820,
+        "keywords": [
+          {
+            "id": 149902650,
+            "name": "mapa bolets Catalunya",
+            "volume": "140",
+            "positions": [
+              {
+                "date": "2026-09-13",
+                "pos": 100,
+                "change": 0,
+                "url": null
+              },
+              {
+                "date": "2026-09-14",
+                "pos": 100,
+                "change": 0,
+                "url": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "site_engine_id": 1393908,
+        "keywords": []
+      }
+    ],
+    "comp-trobar": [
+      {
+        "site_engine_id": 1386756,
+        "keywords": [
+          {
+            "id": 149902650,
+            "name": "mapa bolets Catalunya",
+            "volume": "170",
+            "positions": [
+              {
+                "date": "2026-09-13",
+                "pos": 3,
+                "change": 0,
+                "url": "https://www.trobarbolets.cat/"
+              },
+              {
+                "date": "2026-09-14",
+                "pos": 3,
+                "change": 0,
+                "url": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "site_engine_id": 1387419,
+        "keywords": [
+          {
+            "id": 149902650,
+            "name": "mapa bolets Catalunya",
+            "volume": "170",
+            "positions": [
+              {
+                "date": "2026-09-13",
+                "pos": 2,
+                "change": 0,
+                "url": "https://www.trobarbolets.cat/"
+              },
+              {
+                "date": "2026-09-14",
+                "pos": 1,
+                "change": 1,
+                "url": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "site_engine_id": 1391820,
+        "keywords": [
+          {
+            "id": 149902650,
+            "name": "mapa bolets Catalunya",
+            "volume": "140",
+            "positions": [
+              {
+                "date": "2026-09-13",
+                "pos": 100,
+                "change": 0,
+                "url": null
+              },
+              {
+                "date": "2026-09-14",
+                "pos": 100,
+                "change": 0,
+                "url": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "site_engine_id": 1393908,
+        "keywords": []
+      }
+    ],
+    "comp-own": [
+      {
+        "site_engine_id": 1386756,
+        "keywords": [
+          {
+            "id": "149902650",
+            "positions": [
+              {
+                "date": "2026-09-13",
+                "pos": 48,
+                "depth": 100,
+                "change": 0,
+                "price": 0,
+                "is_map": 0,
+                "map_position": 0,
+                "paid_position": 0
+              },
+              {
+                "date": "2026-09-14",
+                "pos": 32,
+                "depth": 100,
+                "change": 16,
+                "price": 0,
+                "is_map": 0,
+                "map_position": 0,
+                "paid_position": 0
+              }
+            ],
+            "name": "mapa bolets Catalunya",
+            "group_id": 2401665,
+            "volume": 170,
+            "competition": 0,
+            "suggested_bid": 0,
+            "cpc": 0,
+            "results": 115,
+            "landing_pages": [
+              {
+                "url": "https://bolets.app/",
+                "ascii_url": "https://bolets.app/",
+                "date": "2026-09-01"
+              }
+            ],
+            "total_sum": 0
+          }
+        ]
+      },
+      {
+        "site_engine_id": 1387419,
+        "keywords": [
+          {
+            "id": "149902650",
+            "positions": [
+              {
+                "date": "2026-09-13",
+                "pos": 44,
+                "depth": 100,
+                "change": 0,
+                "price": 0,
+                "is_map": 0,
+                "map_position": 0,
+                "paid_position": 0
+              },
+              {
+                "date": "2026-09-14",
+                "pos": 32,
+                "depth": 100,
+                "change": 12,
+                "price": 0,
+                "is_map": 0,
+                "map_position": 0,
+                "paid_position": 0
+              }
+            ],
+            "name": "mapa bolets Catalunya",
+            "group_id": 2401665,
+            "volume": 170,
+            "competition": 0,
+            "suggested_bid": 0,
+            "cpc": 0,
+            "results": 115,
+            "landing_pages": [
+              {
+                "url": "https://bolets.app/",
+                "ascii_url": "https://bolets.app/",
+                "date": "2026-09-01"
+              }
+            ],
+            "total_sum": 0
+          }
+        ]
+      },
+      {
+        "site_engine_id": 1391820,
+        "keywords": [
+          {
+            "id": "149902650",
+            "positions": [
+              {
+                "date": "2026-09-13",
+                "pos": 0,
+                "depth": 100,
+                "change": 0,
+                "price": 0,
+                "is_map": 0,
+                "map_position": 0,
+                "paid_position": 0
+              },
+              {
+                "date": "2026-09-14",
+                "pos": 0,
+                "depth": 100,
+                "change": 0,
+                "price": 0,
+                "is_map": 0,
+                "map_position": 0,
+                "paid_position": 0
+              }
+            ],
+            "name": "mapa bolets Catalunya",
+            "group_id": 2401665,
+            "volume": 140,
+            "competition": 0,
+            "suggested_bid": 0,
+            "cpc": 0,
+            "results": null,
+            "landing_pages": [
+              {
+                "url": "https://bolets.app/",
+                "ascii_url": "https://bolets.app/",
+                "date": "2026-09-02"
+              }
+            ],
+            "total_sum": 0
+          }
+        ]
+      },
+      {
+        "site_engine_id": 1393908,
+        "keywords": []
+      }
+    ]
+  }
+}

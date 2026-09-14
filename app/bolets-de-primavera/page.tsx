@@ -73,7 +73,7 @@ export default function SpringMushroomsPage() {
         <div className="intent-reading-grid">
           <div>
             <p>La selecció de bolets de primavera es basa en el calendari ecològic de cada espècie. La data orienta, però la pluja acumulada, la temperatura, l’altitud i el bosc decideixen si pot fructificar en un lloc concret.</p>
-            <p>Per preparar una sortida, consulta les <Link href="/bolets-avui">condicions actuals</Link> i el <Link href="/map">mapa de condicions</Link>; després contrasta sempre l’exemplar amb la seva fitxa.</p>
+            <p>Per preparar una sortida, consulta les <Link href="/bolets-avui">condicions actuals</Link> i el <Link href="/map">mapa de bolets de Catalunya</Link>; després contrasta sempre l’exemplar amb la seva fitxa.</p>
           </div>
           <ol>
             <li>Comença per espècies que encaixin amb el mes i l’hàbitat.</li>

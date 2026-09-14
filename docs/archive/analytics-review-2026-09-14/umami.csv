@@ -1,0 +1,73 @@
+BEGIN
+SET
+section,period,item,events,visitors,visits
+devices,Aug 31–Sep 6,desktop,699,15,81
+devices,Sep 7–13,desktop,363,24,68
+devices,Aug 31–Sep 6,laptop,432,85,105
+devices,Sep 7–13,laptop,812,115,154
+devices,Aug 31–Sep 6,mobile,2247,559,657
+devices,Sep 7–13,mobile,4798,951,1192
+devices,Aug 31–Sep 6,tablet,52,3,5
+devices,Sep 7–13,tablet,44,10,11
+events,Aug 31–Sep 6,app-install-accepted,3,3,3
+events,Sep 7–13,app-install-accepted,15,14,14
+events,Aug 31–Sep 6,app-install-started,9,8,8
+events,Sep 7–13,app-install-started,27,23,23
+events,Aug 31–Sep 6,app-installed,17,17,17
+events,Sep 7–13,app-installed,24,24,24
+events,Aug 31–Sep 6,finding-added,1,1,1
+events,Sep 7–13,finding-added,2,2,2
+events,Aug 31–Sep 6,finding-draft-saved,1,1,1
+events,Sep 7–13,finding-draft-saved,3,3,3
+events,Aug 31–Sep 6,finding-form-started,7,6,6
+events,Sep 7–13,finding-form-started,9,8,8
+events,Aug 31–Sep 6,homepage-map-cta-click,108,93,93
+events,Sep 7–13,homepage-map-cta-click,233,182,200
+events,Aug 31–Sep 6,homepage-video-complete,5,4,5
+events,Sep 7–13,homepage-video-complete,4,4,4
+events,Aug 31–Sep 6,homepage-video-play,46,13,16
+events,Sep 7–13,homepage-video-play,5,5,5
+events,Aug 31–Sep 6,infographic-downloaded,4,4,4
+events,Sep 7–13,infographic-downloaded,12,8,9
+events,Aug 31–Sep 6,map-cell-click,4428,262,317
+events,Sep 7–13,map-cell-click,9141,417,538
+events,Aug 31–Sep 6,map-change-species,108,43,47
+events,Sep 7–13,map-change-species,101,50,54
+events,Aug 31–Sep 6,map-geolocation-success,459,178,224
+events,Sep 7–13,map-geolocation-success,653,266,360
+events,Aug 31–Sep 6,map-timeline-used,77,58,69
+events,Sep 7–13,map-timeline-used,190,162,180
+events,Aug 31–Sep 6,signup-started,19,16,17
+events,Sep 7–13,signup-started,37,27,28
+events,Aug 31–Sep 6,species-map-open,13,10,10
+events,Sep 7–13,species-map-open,90,65,67
+events,Aug 31–Sep 6,user-signup,11,11,11
+events,Sep 7–13,user-signup,16,15,15
+pages,Aug 31–Sep 6,/,498,229,286
+pages,Sep 7–13,/,767,372,463
+pages,Aug 31–Sep 6,/bolets,175,50,82
+pages,Sep 7–13,/bolets,290,113,130
+pages,Aug 31–Sep 6,/bolets-avui,527,284,330
+pages,Sep 7–13,/bolets-avui,1060,524,623
+pages,Aug 31–Sep 6,/map,631,308,376
+pages,Sep 7–13,/map,1207,550,716
+pages,Aug 31–Sep 6,/map/cep,310,178,212
+pages,Sep 7–13,/map/cep,546,273,330
+pages,Aug 31–Sep 6,/temporada,29,10,15
+pages,Sep 7–13,/temporada,84,55,62
+pages,Aug 31–Sep 6,/zones/ceps,104,60,62
+pages,Sep 7–13,/zones/ceps,131,75,78
+referrers,Aug 31–Sep 6,(direct/unknown),2915,496,655
+referrers,Sep 7–13,(direct/unknown),5027,848,1115
+referrers,Aug 31–Sep 6,chatgpt.com,12,9,11
+referrers,Sep 7–13,chatgpt.com,34,20,24
+referrers,Sep 7–13,com.google.android.googlequicksearchbox,9,8,9
+referrers,Sep 7–13,facebook.com,10,9,9
+referrers,Aug 31–Sep 6,google.com,239,188,206
+referrers,Sep 7–13,google.com,441,323,371
+referrers,Aug 31–Sep 6,l.instagram.com,241,181,195
+referrers,Sep 7–13,l.instagram.com,479,356,391
+referrers,Aug 31–Sep 6,m.facebook.com,14,13,13
+totals,Aug 31–Sep 6,pageviews,3430,662,848
+totals,Sep 7–13,pageviews,6017,1100,1425
+COMMIT

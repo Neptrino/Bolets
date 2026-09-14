@@ -711,7 +711,7 @@ export default function MethodPage() {
           </div>
           <div>
             <p>Selecciona una espècie i una zona per veure l’hàbitat, les condicions actuals i els límits de les dades.</p>
-            <Link href="/map" className="button">Obre el mapa de condicions <ArrowUpRight size={17} /></Link>
+            <Link href="/map" className="button">Obre el mapa de bolets de Catalunya <ArrowUpRight size={17} /></Link>
           </div>
         </div>
       </section>

@@ -160,6 +160,8 @@ const defaultMetadata: EditorialMetadata = {
 };
 
 const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
+  // Map explanation updated in af85f59; keep the sitemap and page metadata aligned.
+  map: { updatedAt: "2026-09-14" },
   "species:lycoperdon-perlatum": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
   "species:calvatia-gigantea": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
   "species:lycoperdon-utriforme": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },

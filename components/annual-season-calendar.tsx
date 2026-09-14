@@ -29,7 +29,7 @@ export function AnnualSeasonCalendar({ currentMonth, selectedMonth = currentMont
         title="La temporada, mes a mes"
         titleId="annual-calendar-title"
         description="Compara el calendari habitual dels bolets comestibles amb informació estacional al catàleg. Cada fila enllaça a la fitxa, on trobaràs l’hàbitat, les confusions i les condicions de consum."
-        actions={<Link href="/map" className={`text-link ${styles.mapLink}`}>Condicions al mapa <ArrowUpRight size={16} aria-hidden="true" /></Link>}
+        actions={<Link href="/map" className={`text-link ${styles.mapLink}`}>Mapa de bolets <ArrowUpRight size={16} aria-hidden="true" /></Link>}
       />
       <ul className={styles.legend} aria-label="Llegenda d’activitat estacional">
         {(Object.keys(activitySymbols) as SeasonalActivity[]).map((activity) => (

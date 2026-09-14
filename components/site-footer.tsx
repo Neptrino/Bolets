@@ -50,11 +50,13 @@ export function SiteFooter() {
             <Link href="/bolets">Espècies</Link>
             <Link href="/compare">Comparador d’espècies</Link>
             <Link href="/parts-dun-bolet">Parts d’un bolet</Link>
+            <Link href="/bolets/infografia">Infografia de bolets</Link>
             <Link href="/temporada">Temporada</Link>
             <Link href="/preguntes-frequents-bolets">Preguntes freqüents</Link>
           </div>
           <div className="site-footer-group">
             <h2>Mapa i territori</h2>
+            <Link href="/map">Mapa de bolets de Catalunya</Link>
             <Link href="/bolets-avui">Bolets avui</Link>
             <Link href="/zones">Zones</Link>
             <Link href="/guies">Guies locals</Link>

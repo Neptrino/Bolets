@@ -31,7 +31,7 @@ export default function OfflinePage() {
 
       <p className="offline-actions">
         <Link href="/map" className="header-map-link">
-          <MapPinned size={15} aria-hidden="true" /> Obre el mapa
+          <MapPinned size={15} aria-hidden="true" /> Obre el mapa de bolets
         </Link>
       </p>
     </PageShell>

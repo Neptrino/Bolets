@@ -195,7 +195,7 @@ async function LocalConditionsCard({
         <p className="eyebrow light">Condicions actuals</p>
         <h2>{species.predictionMode === "current" ? "Fora de temporada" : "Només hàbitat"}</h2>
         <p>{species.predictionMode === "current" ? "Ara no és la temporada habitual d’aquesta espècie. Encara pots consultar els boscos adequats." : "Per a aquesta espècie mostrem on encaixa el terreny, però no una valoració actual."}</p>
-        <Link href={mapPath} className="button light-button">Veure el mapa <ArrowUpRight size={16} aria-hidden="true" /></Link>
+        <UmamiEventLink href={mapPath} analyticsEvent={UMAMI_EVENTS.guideMapOpen} className="button light-button">Obrir el mapa de {species.identity.commonName.toLocaleLowerCase("ca")} {location.prepositionalName} <ArrowUpRight size={16} aria-hidden="true" /></UmamiEventLink>
       </aside>
     );
   }
@@ -227,7 +227,7 @@ async function LocalConditionsCard({
         <p className="eyebrow light">Condicions actuals</p>
         <h2>Condicions no disponibles</h2>
         <p>Falten lectures recents per donar una valoració completa. Torna-ho a provar més tard.</p>
-        <Link href={mapPath} className="button light-button">Obrir el mapa <ArrowUpRight size={16} aria-hidden="true" /></Link>
+        <UmamiEventLink href={mapPath} analyticsEvent={UMAMI_EVENTS.guideMapOpen} className="button light-button">Obrir el mapa de {species.identity.commonName.toLocaleLowerCase("ca")} {location.prepositionalName} <ArrowUpRight size={16} aria-hidden="true" /></UmamiEventLink>
       </aside>
     );
   }
@@ -245,7 +245,7 @@ async function LocalConditionsCard({
         <div><dt>Principal fre</dt><dd>{limitingFactor(summary)}</dd></div>
       </dl>
       <p className="local-current-updated"><Clock3 size={14} aria-hidden="true" /> Dades de {dateTime.format(new Date(summary.snapshot.observedAt))}</p>
-      <UmamiEventLink href={mapPath} analyticsEvent={UMAMI_EVENTS.speciesMapOpen} className="button light-button"><Map size={16} aria-hidden="true" /> Mapa de {species.identity.commonName.toLocaleLowerCase("ca")} {location.prepositionalName}</UmamiEventLink>
+      <UmamiEventLink href={mapPath} analyticsEvent={UMAMI_EVENTS.guideMapOpen} className="button light-button"><Map size={16} aria-hidden="true" /> Mapa de {species.identity.commonName.toLocaleLowerCase("ca")} {location.prepositionalName}</UmamiEventLink>
     </aside>
   );
 }
@@ -279,6 +279,8 @@ export default async function SpeciesLocationPage({ params }: Props) {
   const species = page ? getSpecies(page.speciesId) : undefined;
   if (!page || !location || !area || !species) notFound();
   const url = absoluteUrl(locationPagePath(page));
+  const mapPath = territorialMapPath(species.speciesId, area.regionId, placeBounds(location));
+  const speciesName = species.identity.commonName.toLocaleLowerCase("ca");
   const image = speciesImage(species);
   const referenceImage = species.media.find((asset) => asset.identificationReference) ?? species.media[0];
   const habitat = species.ecologicalConfig.habitat;
@@ -314,8 +316,8 @@ export default async function SpeciesLocationPage({ params }: Props) {
       <div className="page-width local-species-content">
         <nav className="guide-reading-actions" aria-label="Prepara la sortida">
           <a href="#local-current">Consulta la lectura local <ArrowUpRight size={16} aria-hidden="true" /></a>
-          <UmamiEventLink href={territorialMapPath(species.speciesId, area.regionId, placeBounds(location))} analyticsEvent={UMAMI_EVENTS.speciesMapOpen}>
-            <Map size={16} aria-hidden="true" /> Mapa de {species.identity.commonName.toLocaleLowerCase("ca")} {location.prepositionalName}
+          <UmamiEventLink href={mapPath} analyticsEvent={UMAMI_EVENTS.guideMapOpen}>
+            <Map size={16} aria-hidden="true" /> Mapa de {speciesName} {location.prepositionalName}
           </UmamiEventLink>
           <Link href="/bolets-avui">Compara les condicions d’avui a Catalunya <ArrowUpRight size={16} aria-hidden="true" /></Link>
         </nav>
@@ -355,6 +357,15 @@ export default async function SpeciesLocationPage({ params }: Props) {
           </aside>
         </div>
         <Suspense fallback={<LocalEvidenceLoading location={location} />}><LocalEvidencePanel species={species} location={location} /></Suspense>
+        <section className="local-map-next" aria-labelledby="local-map-next-title">
+          <p className="eyebrow"><Map size={15} aria-hidden="true" /> Prepara la sortida</p>
+          <h2 id="local-map-next-title">On buscar {speciesName} {location.prepositionalName} avui?</h2>
+          <p>La guia explica on encaixa l’hàbitat. El mapa de bolets compara les condicions actuals sector a sector, amb la data de les dades i la llegenda, i no confirma cap troballa.</p>
+          <nav className="guide-reading-actions" aria-label="Del territori al mapa">
+            <UmamiEventLink href={mapPath} analyticsEvent={UMAMI_EVENTS.guideMapOpen}><Map size={16} aria-hidden="true" /> Mapa de {speciesName} {location.prepositionalName}</UmamiEventLink>
+            <Link href="/bolets-avui">On trobar bolets avui a Catalunya <ArrowUpRight size={16} aria-hidden="true" /></Link>
+          </nav>
+        </section>
         <EditorialAttribution contentId={editorialContentId} sources={[...species.references, territorialSource, ...environmentalSources]} variant="compact" />
         {(samePlaceGuides.length > 0 || sameSpeciesGuides.length > 0) ? <section className="local-related-guides" aria-labelledby="local-related-title"><header><p className="eyebrow"><BookOpenCheck size={15} aria-hidden="true" /> Continua explorant</p><h2 id="local-related-title">Guies relacionades</h2></header><div>{samePlaceGuides.length > 0 ? <section><h3>Altres espècies {location.prepositionalName}</h3><ul>{samePlaceGuides.map((candidate) => <li key={locationPagePath(candidate)}><Link href={locationPagePath(candidate)}><span>{candidate.titlePhrase}</span><ArrowUpRight size={15} aria-hidden="true" /></Link></li>)}</ul></section> : null}{sameSpeciesGuides.length > 0 ? <section><h3>{species.identity.commonName} en altres territoris</h3><ul>{sameSpeciesGuides.map((candidate) => { const candidatePlace = getPlace(candidate.areaSlug, candidate.placeSlug); return <li key={locationPagePath(candidate)}><Link href={locationPagePath(candidate)}><span>{candidate.titlePhrase}<small>{candidatePlace?.typeLabel} · {areasBySlug[candidate.areaSlug]?.name}</small></span><ArrowUpRight size={15} aria-hidden="true" /></Link></li>; })}</ul></section> : null}</div></section> : null}
       </div>

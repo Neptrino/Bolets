@@ -1,0 +1,18 @@
+BEGIN
+SET
+period,source,entry_visits,visits_with_map,visits_with_cell_click,visits_with_timeline,visits_with_signup_start,ordered_signup_completions
+Aug 31–Sep 6,Google,201,105,63,12,3,2
+Sep 7–13,Google,362,200,117,34,2,2
+Aug 31–Sep 6,Instagram,195,107,66,32,3,2
+Sep 7–13,Instagram,388,232,139,86,11,2
+Aug 31–Sep 6,Other/direct,452,277,171,25,11,6
+Sep 7–13,Other/direct,675,447,273,59,13,8
+day,lcp_samples,lcp_p75_ms,inp_samples,inp_p75_ms
+2026-09-07,29,1256,150,656
+2026-09-08,29,1862,166,792
+2026-09-09,121,1082,378,168
+2026-09-10,78,1640,260,144
+2026-09-11,59,1406,217,160
+2026-09-12,65,1896,172,144
+2026-09-13,75,1818,171,132
+COMMIT
