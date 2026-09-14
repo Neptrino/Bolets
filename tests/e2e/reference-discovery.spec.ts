@@ -9,7 +9,7 @@ test.describe("reference without JavaScript", () => {
     await expect(page.locator(".hero").getByRole("link", { name: "Mapa de bolets" })).toBeVisible();
     const search = page.getByRole("search", { name: "Cerca un bolet" });
     await search.getByRole("textbox").fill("pinetell bord");
-    await search.getByRole("button", { name: "Cerca al catàleg" }).click();
+    await search.getByRole("textbox").press("Enter");
     // This regional name belongs to both profiles; readers must see the ambiguity.
     await expect(page.locator(".directory-shell .species-card")).toHaveCount(2);
     await page.getByRole("link", { name: "Obre la fitxa de Pinetell bord", exact: true }).click();
@@ -43,7 +43,8 @@ for (const width of [360, 390, 1280]) {
     });
     await page.goto("/bolets/fals-rossinyol");
     const contents = page.getByRole("navigation", { name: "Contingut de la fitxa" });
-    for (const [name, id] of [["Noms", "noms"], ["Espècies semblants", "confusions"], ["Hàbitat i temporada", "ecologia"], ["Fonts i autoria", "fonts"]]) {
+    if (width <= 760) await contents.getByRole("button", { name: "Contingut de la fitxa" }).click();
+    for (const [name, id] of [["Noms", "noms"], ["Possibles confusions", "confusions"], ["On i quan creix", "ecologia"], ["Fonts i autoria", "fonts"]]) {
       await contents.getByRole("link", { name, exact: true }).click();
       await expect(page.locator(`#${id}`)).toBeInViewport();
     }
@@ -60,7 +61,7 @@ for (const width of [360, 390, 1280]) {
 test("keeps the cep learning path connected when the habitat service is unavailable", async ({ page }) => {
   await page.route("**/api/habitat**", route => route.fulfill({ status: 503, contentType: "application/json", body: '{"error":"Unavailable in local test"}' }));
   await page.goto("/bolets/cep");
-  await expect(page.locator("#identificació")).toContainText("Com reconèixer-lo");
+  await expect(page.locator("#identificació")).toContainText("Com reconèixer el cep");
   await expect(page.locator("#confusions a[href^='/bolets/']").first()).toBeVisible();
   await expect(page.locator("#ecologia").getByRole("link", { name: "Calendari de bolets" })).toBeVisible();
   await expect(page.locator("#cuina a[href^='/conservar-bolets']").first()).toBeVisible();

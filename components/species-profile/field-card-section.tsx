@@ -1,46 +1,45 @@
+import { ProfileSection } from "@/components/species-profile/profile-section";
 import Link from "next/link";
-import { PanelsTopLeft, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import { SpeciesFieldCardActions } from "@/components/species-field-card-actions";
 import { speciesFieldCardPath } from "@/src/lib/seo";
+import { speciesHeadings } from "@/src/lib/species-headings";
 import type { CatalogueSpecies } from "@/src/lib/types";
 
 export function SpeciesFieldCardSection({
   species,
-  sectionNumber = "05",
 }: {
   species: CatalogueSpecies;
-  sectionNumber?: string;
 }) {
   const imagePath = speciesFieldCardPath(species);
 
   return (
-    <section
-      id="targeta-de-camp"
-      className="content-section species-field-card-section"
-      aria-labelledby="field-card-title"
-    >
-      <div className="section-kicker">
-        <PanelsTopLeft size={17} aria-hidden="true" />
-        <span>{sectionNumber}</span>
-      </div>
-      <div>
-        <p className="eyebrow">Per guardar i compartir</p>
-        <h2 id="field-card-title">Targeta de camp</h2>
+    <ProfileSection species={species} id="targeta-de-camp" className="species-field-card-section" eyebrow="Per guardar i compartir" title={speciesHeadings(species.identity.commonName).fieldCard}>
         <div className="species-field-card-layout">
+          <figure className="species-field-card-preview">
+            <a href={imagePath} target="_blank" rel="noreferrer">
+              {/* The image is produced by the species-specific server route. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`${imagePath}?preview=384`}
+                srcSet={`${imagePath}?preview=384 384w, ${imagePath}?preview=768 768w`}
+                sizes="(max-width: 600px) 160px, 132px"
+                width="384"
+                height="480"
+                loading="lazy"
+                decoding="async"
+                alt={`Targeta de camp del ${species.identity.commonName} amb fotografia, comestibilitat, trets d’identificació, temporada, hàbitat i advertiment de confusió.`}
+              />
+            </a>
+          </figure>
           <div className="species-field-card-copy">
             <p>
-              {"scope" in species
-                ? "Una fitxa visual en format 4:5 amb els trets principals, la temporada descrita, l’hàbitat i la confusió més rellevant."
-                : "Una fitxa visual en format 4:5 amb els trets principals, els millors mesos, el bosc o hàbitat, l’altitud documentada i la confusió més rellevant."}
+              Fitxa visual 4:5 amb els trets principals, la temporada, l’hàbitat i la confusió més rellevant, a punt per guardar al mòbil o compartir.
             </p>
-            <div className="species-field-card-safety">
-              <ShieldAlert size={19} aria-hidden="true" />
-              <p>
-                És una ajuda de camp, no una confirmació d’identitat. Revisa la
-                fitxa completa i consulta una persona experta abans de consumir
-                cap bolet.
-              </p>
-            </div>
+            <p className="species-field-card-safety">
+              <ShieldAlert size={16} aria-hidden="true" />
+              <span>És una ajuda de camp, no una confirmació d’identitat: revisa la fitxa completa i consulta una persona experta abans de consumir-ne cap.</span>
+            </p>
             <SpeciesFieldCardActions
               imagePath={imagePath}
               speciesId={species.speciesId}
@@ -51,25 +50,7 @@ export function SpeciesFieldCardSection({
               <Link href="/bolets/infografia">Consulta la infografia del catàleg de bolets</Link>.
             </p>
           </div>
-          <figure className="species-field-card-preview">
-            <a href={imagePath} target="_blank" rel="noreferrer">
-              {/* The image is produced by the species-specific server route. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`${imagePath}?preview=384`}
-                srcSet={`${imagePath}?preview=384 384w, ${imagePath}?preview=768 768w`}
-                sizes="(max-width: 900px) 380px, 320px"
-                width="384"
-                height="480"
-                loading="lazy"
-                decoding="async"
-                alt={`Infografia vertical del ${species.identity.commonName} amb fotografia, comestibilitat, trets d’identificació, temporada, hàbitat i advertiment de confusió.`}
-              />
-            </a>
-            <figcaption>1080 × 1350 px · Format 4:5</figcaption>
-          </figure>
         </div>
-      </div>
-    </section>
+    </ProfileSection>
   );
 }

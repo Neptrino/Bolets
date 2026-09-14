@@ -62,13 +62,16 @@ test("today's map follows the short answer and precedes the detailed ranking", a
 test("priority profiles expose habitat, season and contextual guides", async ({ page }) => {
   for (const slug of ["cep", "cep-rogenc", "cep-negre", "cep-d-estiu", "fredolic", "camagroc", "rovello", "pinetell"]) {
     await page.goto(`/bolets/${slug}`);
-    const summary = page.locator(".species-search-summary");
-    await expect(summary).toContainText("El pic habitual");
-    await expect(summary.getByRole("link", { name: /condicions d’avui/ })).toHaveAttribute("href", "/bolets-avui");
-    expect(await summary.locator('a[href^="/zones/"]').count()).toBeGreaterThan(0);
+    await expect(page.locator(".species-search-summary")).toHaveCount(0);
+    await expect(page.locator("#ecologia").getByRole("link", { name: /condicions d’avui/ })).toHaveAttribute("href", "/bolets-avui");
+    expect(await page.locator('#identificació a[href^="/zones/"], #distribució a[href^="/zones/"]').count()).toBeGreaterThan(0);
+    if (["cep", "cep-rogenc", "cep-negre", "cep-d-estiu"].includes(slug)) {
+      await expect(page.locator('#identificació a[href="/zones/ceps"]')).toBeVisible();
+      await expect(page.locator('#distribució a[href="/zones/ceps"]')).toHaveCount(0);
+    }
     if (["rovello", "pinetell"].includes(slug)) {
-      await expect(summary.locator('a[href="/zones/rovellons"]')).toBeVisible();
-      await expect(summary.locator('a[href="/compare/rovello-vs-pinetell"]')).toBeVisible();
+      await expect(page.locator('#identificació a[href="/zones/rovellons"]')).toBeVisible();
+      await expect(page.locator('#confusions nav a[href="/compare/rovello-vs-pinetell"]')).toBeVisible();
     }
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://bolets.app/bolets/${slug}`);
   }

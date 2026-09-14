@@ -82,10 +82,6 @@
   font-weight: 700;
 }
 .home-map-steps strong { color: var(--forest-panel); }
-.home-map-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem 1.4rem; max-width: 34rem; }
-.home-map-action { display: grid; gap: .5rem; justify-items: start; }
-.home-map-action .button { white-space: nowrap; }
-.home-map-action small { color: var(--muted); font-size: var(--text-xs); line-height: 1.45; }
 .home-map-today {
   display: grid;
   grid-column: 1 / -1;
@@ -102,7 +98,6 @@
 .home-map-today .button { white-space: nowrap; }
 
 @media (max-width: 1000px) {
-  .home-map-actions { grid-template-columns: 1fr; max-width: none; }
   .home-map-today { grid-template-columns: 1fr; padding: 1.5rem; justify-items: start; }
   .home-map-today .button { white-space: normal; }
 }

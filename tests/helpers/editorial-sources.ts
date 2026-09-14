@@ -54,7 +54,7 @@ const SPECIES_TEMPLATE = [
   file("components/species-profile/ecology-section.tsx"),
   file("components/species-profile/field-card-section.tsx"),
   file("components/species-profile/identification-section.tsx"),
-  file("components/species-profile/search-summary.tsx"),
+  file("components/species-profile/profile-section.tsx"),
 ];
 
 const TERRITORY_TEMPLATE = [file("components/territory-portrait.tsx")];

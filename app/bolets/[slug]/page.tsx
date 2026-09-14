@@ -1,5 +1,8 @@
+import "@/app/styles/species-profile.css";
 import "@/app/styles/species-field-card.css";
-import { SpeciesSearchSummary, hasSearchSummary } from "@/components/species-profile/search-summary";
+import { SpeciesContents } from "@/components/species-profile/species-contents";
+import { ProfileSection } from "@/components/species-profile/profile-section";
+import { speciesProfileSections } from "@/src/lib/species-headings";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { Map } from "lucide-react";
@@ -10,6 +13,7 @@ import { SpeciesDistributionSection } from "@/components/species-profile/distrib
 import { SpeciesEcologySection } from "@/components/species-profile/ecology-section";
 import { SpeciesFieldCardSection } from "@/components/species-profile/field-card-section";
 import { SpeciesIdentificationSection } from "@/components/species-profile/identification-section";
+import { SpeciesSectionTracker } from "@/components/species-profile/section-tracker";
 import { SpeciesHero } from "@/components/species-hero";
 import { UmamiEventLink } from "@/components/umami-event-link";
 import {
@@ -33,16 +37,6 @@ import { speciesMapHref } from "@/src/lib/species-map-pages";
 import type { Month, RegionId, SeasonalActivity } from "@/src/lib/types";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
-const sections = [
-  { id: "identificació", label: "Trets d’identificació" },
-  { id: "noms", label: "Noms" },
-  { id: "confusions", label: "Espècies semblants" },
-  { id: "cuina", label: "Cuina i seguretat" },
-  { id: "ecologia", label: "Hàbitat i temporada" },
-  { id: "distribució", label: "Distribució" },
-  { id: "targeta-de-camp", label: "Targeta de camp" },
-  { id: "fonts", label: "Fonts i autoria" },
-];
 const catalanList = new Intl.ListFormat("ca-ES", {
   style: "long",
   type: "conjunction",
@@ -154,18 +148,21 @@ export default async function SpeciesPage({
       ? query.region
       : scoredSpecies.ecologicalConfig.regions[0] ?? "prepirineus"
     : null;
-  const habitatLabel = "scope" in species
-    ? species.ecology.habitats[0]
-    : species.ecologicalConfig.habitat.forestTypes[0];
+  const habitats = "scope" in species
+    ? species.ecology.habitats
+    : species.ecologicalConfig.habitat.forestTypes;
+  const habitatLabel = habitats.length > 1
+    ? `${habitats[0]} i ${habitats.length - 1} més`
+    : habitats[0];
   const season = "scope" in species
     ? species.ecology.season
     : seasonSummary(species.ecologicalConfig.seasonality);
   const canonicalUrl = `${SITE_URL}${speciesPath(species)}`;
   const image = speciesImage(species);
   const spanishNames = getSpanishSpeciesNames(species.speciesId);
-  const visibleSections = scoredSpecies
-    ? sections
-    : sections.filter((section) => section.id !== "distribució");
+  const primaryLookalike = species.similarSpecies.find((item) => item.warning || item.edibility.includes("toxic"))
+    ?? species.similarSpecies[0];
+  const visibleSections = speciesProfileSections(species);
 
   return (
     <section
@@ -247,14 +244,16 @@ export default async function SpeciesPage({
         habitatLabel={habitatLabel}
         altitudeLabel={scoredSpecies ? `${scoredSpecies.ecologicalConfig.habitat.altitude[0]}–${scoredSpecies.ecologicalConfig.habitat.altitude[1]} m` : undefined}
         seasonLabel={season}
+        lookalike={primaryLookalike ? { name: primaryLookalike.commonName, edibility: primaryLookalike.edibility, href: "#confusions" } : undefined}
       />
 
       <div className="page-width species-content">
-        <nav className="species-aside" aria-label="Contingut de la fitxa">
+        <SpeciesContents>
           <p>CONTINGUT</p>
           {visibleSections.map((section) => (
             <a href={`#${section.id}`} key={section.id}>
-              {section.id === "cuina" && species.culinaryProfile.kind !== "culinary" ? "Consum i precaucions" : section.label}
+              <span className="species-nav-number" aria-hidden="true">{section.number}</span>
+              {section.label}
             </a>
           ))}
           {scoredSpecies && region && (
@@ -270,26 +269,32 @@ export default async function SpeciesPage({
               {scoredSpecies.predictionMode === "habitat_only" ? "Mapa d’hàbitat" : "Mapa actual"}
             </UmamiEventLink>
           )}
-        </nav>
+        </SpeciesContents>
 
         <div className="species-main">
-          {scoredSpecies && hasSearchSummary(species.speciesId) && <SpeciesSearchSummary species={scoredSpecies} />}
           <SpeciesIdentificationSection species={species} />
           <SpeciesCulinarySection species={species} />
           <SpeciesEcologySection species={species} />
-          {scoredSpecies && region && (
-            <SpeciesDistributionSection
-              autoGeolocate={!isRegionId(query.region)}
-              region={region}
-              species={scoredSpecies}
-            />
-          )}
-          <SpeciesFieldCardSection species={species} sectionNumber={scoredSpecies ? "05" : "04"} />
+          {scoredSpecies && region && <SpeciesDistributionSection autoGeolocate={!isRegionId(query.region)} region={region} species={scoredSpecies} />}
+          <SpeciesFieldCardSection species={species} />
+          <ProfileSection species={species} id="fonts" eyebrow="Referències" title="Fonts i autoria">
           <EditorialAttribution
-            id="fonts"
             contentId={`species:${species.speciesId}`}
             sources={[...species.references, officialSafetySource]}
             variant="compact"
+          />
+          </ProfileSection>
+          <SpeciesSectionTracker
+            navSelector=".species-aside"
+            sections={[
+              { id: "identificació", event: UMAMI_EVENTS.speciesSectionIdentificacio },
+              { id: "confusions", event: UMAMI_EVENTS.speciesSectionConfusions },
+              { id: "cuina", event: UMAMI_EVENTS.speciesSectionCuina },
+              { id: "ecologia", event: UMAMI_EVENTS.speciesSectionEcologia },
+              { id: "distribució", event: UMAMI_EVENTS.speciesSectionDistribucio },
+              { id: "targeta-de-camp", event: UMAMI_EVENTS.speciesSectionTargeta },
+              { id: "fonts", event: UMAMI_EVENTS.speciesSectionFonts },
+            ]}
           />
         </div>
       </div>

@@ -1,20 +1,26 @@
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, Mountain, MoveVertical, ScanLine, Trees } from "lucide-react";
+import { ArrowLeft, CalendarDays, Mountain, MoveVertical, ScanLine, ShieldAlert, Trees } from "lucide-react";
 import { CulinaryRating } from "@/components/culinary-rating";
+import { EdibilityBadge } from "@/components/edibility-badge";
+import { UmamiEventLink } from "@/components/umami-event-link";
+import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 import { SpeciesGallery } from "@/components/species-gallery";
 import { identificationDifficultyLabel } from "@/src/lib/identification-difficulty";
-import type { SpeciesProfile } from "@/src/lib/types";
+import type { EdibilityStatus, SpeciesProfile } from "@/src/lib/types";
+
+export type HeroLookalike = { name: string; edibility: EdibilityStatus; href: string };
 
 const camagrocCaptions: Record<string, string> = {
   "wikimedia-craterellus-lutescens": "Barrets bruns i peus grocs: aquesta vista mostra el contrast de colors. Cal examinar també la cara inferior i la resta de trets de la fitxa.",
   "wikimedia-craterellus-lutescens-gallery-3": "Cara inferior del barret: observa les arrugues irregulars i com baixen cap al peu groc. Aquesta fotografia de detall no substitueix la comparació de l’exemplar complet.",
 };
 
-export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel }: {
+export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel, lookalike }: {
   species: Pick<SpeciesProfile, "identity" | "culinaryProfile" | "media">;
   habitatLabel: string;
   altitudeLabel?: string;
   seasonLabel: string;
+  lookalike?: HeroLookalike;
 }) {
   return (
     <div className="species-hero">
@@ -22,22 +28,8 @@ export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel 
         <Link href="/bolets" className="back-link"><ArrowLeft size={15} />Tots els bolets</Link>
         <div className="species-hero-grid">
           <div className="species-hero-copy">
-            <p className="eyebrow light">{species.identity.family} · {species.identity.genus}</p>
+            <p className="eyebrow light">{species.identity.scientificName}</p>
             <h1>{species.identity.commonName}</h1>
-            <em>{species.identity.scientificName}</em>
-            {species.identity.alternateNames.length > 0 && (
-              <p className="species-alternate-names"><span>Altres noms catalans:</span>{" "}{species.identity.alternateNames.join(", ")}</p>
-            )}
-            <p className="species-dek">{species.identity.shortDescription}</p>
-            <div className="species-hero-status"><CulinaryRating profile={species.culinaryProfile} status={species.identity.edibility} /></div>
-            <div className="species-hero-facts" aria-label="Dades principals">
-              <div><Trees size={16} aria-hidden="true" /><span>Hàbitat</span><strong>{habitatLabel}</strong></div>
-              {altitudeLabel
-                ? <div><Mountain size={16} aria-hidden="true" /><span>Altitud</span><strong>{altitudeLabel}</strong></div>
-                : <div><MoveVertical size={16} aria-hidden="true" /><span>Mida</span><strong>{species.identity.typicalSize}</strong></div>}
-              <div><CalendarDays size={16} aria-hidden="true" /><span>Temporada</span><strong>{seasonLabel}</strong></div>
-              <div><ScanLine size={16} aria-hidden="true" /><span>Identificació</span><strong>{identificationDifficultyLabel(species.identity.identificationDifficulty)}</strong></div>
-            </div>
           </div>
           <div className={`specimen-panel${species.media.length > 0 ? " has-photos" : ""}`}>
             {species.media.length > 0 ? <SpeciesGallery images={species.media} speciesName={species.identity.scientificName} captions={species.identity.scientificName === "Craterellus lutescens" ? camagrocCaptions : undefined} /> : (
@@ -47,6 +39,30 @@ export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel 
                 <span>Les imatges d’identificació només s’afegeixen amb llicència, atribució i validació explícites.</span>
               </>
             )}
+          </div>
+          <div className="species-hero-details">
+            <p className="species-dek">{species.identity.shortDescription}</p>
+            <div className="species-hero-status">
+              <CulinaryRating profile={species.culinaryProfile} status={species.identity.edibility} />
+              {lookalike && (
+                <UmamiEventLink href={lookalike.href} className="species-hero-lookalike" analyticsEvent={UMAMI_EVENTS.speciesLookalikeClick}>
+                  <ShieldAlert size={15} aria-hidden="true" />
+                  <span>No el confonguis amb <strong>{lookalike.name}</strong></span>
+                  <EdibilityBadge status={lookalike.edibility} compact />
+                </UmamiEventLink>
+              )}
+            </div>
+            {species.identity.alternateNames.length > 0 && (
+              <p className="species-alternate-names"><span>Altres noms catalans:</span>{" "}{species.identity.alternateNames.join(", ")}</p>
+            )}
+            <div className="species-hero-facts" aria-label="Dades principals">
+              <div className="species-hero-habitats"><Trees size={16} aria-hidden="true" /><span>Hàbitat</span><strong><a href="#ecologia">{habitatLabel}</a></strong></div>
+              {altitudeLabel
+                ? <div><Mountain size={16} aria-hidden="true" /><span>Altitud</span><strong>{altitudeLabel}</strong></div>
+                : <div><MoveVertical size={16} aria-hidden="true" /><span>Mida</span><strong>{species.identity.typicalSize}</strong></div>}
+              <div><CalendarDays size={16} aria-hidden="true" /><span>Temporada</span><strong>{seasonLabel}</strong></div>
+              <div><ScanLine size={16} aria-hidden="true" /><span>Identificació</span><strong>{identificationDifficultyLabel(species.identity.identificationDifficulty)}</strong></div>
+            </div>
           </div>
         </div>
       </div>

@@ -928,3 +928,32 @@
     left: auto;
   }
 }
+
+@media (max-width: 680px) {
+  .map-floating-card.has-species-score {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 14px;
+  }
+  .has-species-score .map-floating-card-context,
+  .has-species-score .map-footer-actions,
+  .has-species-score .map-alternative-species {
+    grid-column: 1 / -1;
+  }
+  .has-species-score .map-score-reading {
+    grid-column: 1;
+    grid-row: 2;
+    grid-template-columns: auto;
+    gap: 5px;
+  }
+  .has-species-score .map-condition-summary {
+    display: contents;
+  }
+  .has-species-score .map-condition-headline {
+    grid-column: 2;
+    grid-row: 2;
+    min-width: 0;
+  }
+  .has-species-score .map-best-option-label {
+    display: none;
+  }
+}

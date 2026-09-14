@@ -1,28 +1,34 @@
+import { ProfileSection } from "@/components/species-profile/profile-section";
 import Link from "next/link";
 import {
   ArrowRightLeft,
   ArrowUpRight,
-  BookOpen,
   CircleHelp,
+  FlaskConical,
+  Languages,
   Palette,
   RefreshCw,
   ShieldAlert,
+  Sparkles,
   Wind,
-  Languages,
 } from "lucide-react";
 import { EdibilityBadge } from "@/components/edibility-badge";
+import { MediaImage } from "@/components/media-image";
 import {
   MushroomCapIcon,
   MushroomFleshIcon,
   MushroomHymeniumIcon,
   MushroomStemIcon,
 } from "@/components/mushroom-anatomy-icons";
+import { ProfileFacts } from "@/components/species-profile/profile-facts";
 import { comparisonPagesForSpecies } from "@/data/comparison-pages";
 import { getSpanishSpeciesNames } from "@/data/species-common-names";
 import { getReferenceSpeciesByScientificName } from "@/data/reference-species";
 import { getSpeciesByScientificName } from "@/data/species";
 import { commonNameDisplayLabel } from "@/src/lib/common-name";
 import { speciesPath } from "@/src/lib/seo";
+import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
+import { speciesHeadings } from "@/src/lib/species-headings";
 import type { CatalogueSpecies } from "@/src/lib/types";
 
 export function SpeciesIdentificationSection({
@@ -35,92 +41,57 @@ export function SpeciesIdentificationSection({
   );
   const speciesComparisons = comparisonPagesForSpecies(species.speciesId);
   const spanishNames = getSpanishSpeciesNames(species.speciesId);
+  const headings = speciesHeadings(species.identity.commonName);
+  const morphology = species.morphology;
+  const territoryGuide = territoryGuideForSpecies(species.speciesId);
 
   return (
-<section id="identificació" className="content-section">
-  <div className="section-kicker">
-    <BookOpen size={17} />
-    <span>01</span>
-  </div>
-  <div>
-    <p className="eyebrow">Lectura de camp</p>
-    <div className="species-identification-heading">
-      <h2>Com reconèixer-lo</h2>
-      <Link href="/parts-dun-bolet" className="species-anatomy-guide-link">
-        Guia de les parts
-        <ArrowUpRight size={14} aria-hidden="true" />
-      </Link>
-    </div>
-    <div className="morphology-grid">
-      <article>
-        <h3><MushroomCapIcon size={20} />Barret</h3>
-        <p>{species.morphology.cap}</p>
-      </article>
-      <article>
-        <h3><MushroomHymeniumIcon size={20} />Himeni</h3>
-        <p>{species.morphology.hymenium}</p>
-      </article>
-      <article>
-        <h3><MushroomStemIcon size={20} />Peu</h3>
-        <p>{species.morphology.stem}</p>
-      </article>
-      <article>
-        <h3><MushroomFleshIcon size={20} />Carn i tacte</h3>
-        <p>
-          {species.morphology.flesh} {species.morphology.texture}
+<>
+<ProfileSection species={species} id="identificació" eyebrow="Lectura de camp" title={headings.identify}
+  action={<Link href="/parts-dun-bolet" className="species-anatomy-guide-link">Parts d’un bolet <ArrowUpRight size={14} aria-hidden="true" /></Link>}>
+    <div className="profile-panel">
+      <div className="profile-panel-head">
+        <Sparkles size={18} aria-hidden="true" />
+        <p className="profile-tags">
+          <span>Trets clau</span>
+          {morphology.keyFeatures.map((feature) => (
+            <b key={feature}>{feature}</b>
+          ))}
         </p>
-      </article>
-    </div>
-    <div className="field-notes">
-      <div>
-        <span className="fact-label"><Wind size={14} aria-hidden="true" />OLOR</span>
-        <p>{species.morphology.smell}</p>
       </div>
-      <div>
-        <span className="fact-label"><Palette size={14} aria-hidden="true" />COLOR</span>
-        <p>{species.morphology.colour}</p>
+      <div className="profile-panel-body">
+      <ProfileFacts
+        label="Trets d’identificació"
+        items={[
+          { key: "cap", icon: <MushroomCapIcon size={18} />, term: "Barret", detail: morphology.cap },
+          { key: "hymenium", icon: <MushroomHymeniumIcon size={18} />, term: "Himeni", detail: morphology.hymenium },
+          { key: "stem", icon: <MushroomStemIcon size={18} />, term: "Peu", detail: morphology.stem },
+          { key: "flesh", icon: <MushroomFleshIcon size={18} />, term: "Carn i tacte", detail: `${morphology.flesh} ${morphology.texture}` },
+          { key: "smell", icon: <Wind size={16} />, term: "Olor", detail: morphology.smell },
+          { key: "colour", icon: <Palette size={16} />, term: "Color", detail: morphology.colour },
+          { key: "variation", icon: <RefreshCw size={16} />, term: "Variació", detail: morphology.variation, wide: true },
+        ]}
+      />
       </div>
-      <div>
-        <span className="fact-label"><RefreshCw size={14} aria-hidden="true" />VARIACIÓ</span>
-        <p>{species.morphology.variation}</p>
-      </div>
-    </div>
-    <div className="key-features">
-      <span>Trets rellevants</span>
-      {species.morphology.keyFeatures.map((feature) => (
-        <b key={feature}>{feature}</b>
-      ))}
     </div>
 
-    <div id="noms" className="species-language-names">
-      <div><Languages size={19} aria-hidden="true" /><span>Noms en català i castellà</span></div>
-      <dl>
-        <div><dt>Català</dt><dd>{[species.identity.commonName, ...species.identity.alternateNames].join(" · ")}</dd></div>
-        <div><dt>Castellà</dt><dd lang="es">{spanishNames ? [commonNameDisplayLabel(spanishNames.primary, "es-ES"), ...(spanishNames.alternatives ?? [])].join(" · ") : "Sense equivalència verificada"}</dd></div>
-        <div><dt>Nom científic</dt><dd><i>{species.identity.scientificName}</i></dd></div>
-      </dl>
-      <Link href="/noms-de-bolets-catala-castella" className="text-link">Consultar el glossari complet <ArrowUpRight size={15} aria-hidden="true" /></Link>
-    </div>
-
-    <div id="confusions" className="content-subsection lookalikes-subsection">
-      <p className="eyebrow">Identificació responsable</p>
-      <h3 className="subsection-title">Espècies semblants</h3>
+    {territoryGuide && <p className="profile-links">
+      <Link href={territoryGuide.path} className="text-link">
+        {territoryGuide.profileLinkTitle} <ArrowUpRight size={16} aria-hidden="true" />
+      </Link>
+    </p>}
+</ProfileSection>
+<ProfileSection species={species} id="confusions" eyebrow="Identificació responsable" title={headings.lookalikes} className="lookalikes-subsection">
       {hasToxicLookalike && (
-        <div className="warning-callout">
-          <ShieldAlert size={18} />
-          <strong>
-            Atenció: hi ha confusions possibles amb espècies tòxiques.
-          </strong>
-          <span>
-            Verifica tots els trets abans de consumir-ne cap exemplar.
-          </span>
+        <div className="profile-warning">
+          <ShieldAlert size={18} aria-hidden="true" />
+          <strong>Atenció: hi ha confusions possibles amb espècies tòxiques.</strong>
+          <span>Verifica tots els trets abans de consumir-ne cap exemplar.</span>
         </div>
       )}
-      <div className="similar-list">
+      <div className="profile-lookalikes">
         {species.similarSpecies.map((item) => {
-          const relatedSpecies = getSpeciesByScientificName(
-            item.scientificName,
-          );
+          const relatedSpecies = getSpeciesByScientificName(item.scientificName);
           const relatedProfile = relatedSpecies ?? getReferenceSpeciesByScientificName(item.scientificName);
           const comparison = relatedProfile
             ? speciesComparisons.find((page) => (
@@ -133,33 +104,43 @@ export function SpeciesIdentificationSection({
             : relatedSpecies && "ecologicalConfig" in species
               ? `/compare?left=${species.speciesId}&right=${relatedSpecies.speciesId}`
               : undefined;
+          const thumbnail = relatedProfile?.media.find((asset) => asset.identificationReference) ?? relatedProfile?.media[0];
 
           return (
-            <article key={item.scientificName}>
+            <article key={item.scientificName} className={thumbnail ? undefined : "no-thumb"}>
+              {thumbnail && relatedProfile && (
+                <Link href={speciesPath(relatedProfile)} className="profile-lookalike-photo-link">
+                  <MediaImage
+                    asset={thumbnail}
+                    alt={`${item.commonName} (${item.scientificName})`}
+                    className="profile-lookalike-thumb"
+                    width={168}
+                    height={168}
+                    sizes="84px"
+                  />
+                </Link>
+              )}
               <div>
                 <em>{item.scientificName}</em>
                 <h3>
                   {relatedProfile ? (
-                    <Link
-                      href={speciesPath(relatedProfile)}
-                      className="similar-profile-link"
-                    >
+                    <Link href={speciesPath(relatedProfile)}>
                       {item.commonName}
                       <ArrowUpRight size={17} aria-hidden="true" />
                     </Link>
                   ) : item.commonName}
                 </h3>
+                <p>{item.mainDifferences}</p>
               </div>
-              <p>{item.mainDifferences}</p>
-              <div className="similar-card-footer">
+              <div className="profile-lookalike-footer">
                 <EdibilityBadge status={item.edibility} compact />
                 {comparisonHref && (
                   <Link
                     href={comparisonHref}
-                    className="similar-comparison-link"
+                    className="profile-compare-link"
                     aria-label={`Comparar ${species.identity.commonName} i ${item.commonName}`}
                   >
-                    <ArrowRightLeft size={15} aria-hidden="true" />
+                    <ArrowRightLeft size={14} aria-hidden="true" />
                     Comparar amb {item.commonName}
                   </Link>
                 )}
@@ -169,29 +150,43 @@ export function SpeciesIdentificationSection({
         })}
       </div>
       {(species.speciesId === "cantharellus-cibarius" || species.speciesId === "hygrophoropsis-aurantiaca") && (
-        <p>
+        <p className="profile-links">
           <Link href="/fals-rossinyol" className="text-link">
             Guia del fals rossinyol <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         </p>
       )}
-    </div>
+      {speciesComparisons.length > 0 && <nav className="profile-links" aria-label="Comparacions de l’espècie">
+        {speciesComparisons.map((comparison) => <Link key={comparison.slug} href={`/compare/${comparison.slug}`} className="text-link">{comparison.shortTitle} <ArrowUpRight size={15} aria-hidden="true" /></Link>)}
+      </nav>}
+</ProfileSection>
 
     {species.seo?.faqs?.length ? (
-      <div className="content-subsection species-search-answers">
-        <p className="eyebrow">Preguntes habituals</p>
-        <h3 className="subsection-title">Comestibilitat i confusions</h3>
-        <div className="species-search-answer-list">
+      <ProfileSection species={species} id="preguntes" eyebrow="Preguntes habituals" title={headings.faq}>
+        <div className="profile-faq">
           {species.seo.faqs.map((faq) => (
             <article key={faq.question}>
-              <h3><CircleHelp size={17} aria-hidden="true" /> {faq.question}</h3>
+              <h3><CircleHelp size={16} aria-hidden="true" /> {faq.question}</h3>
               <p>{faq.answer}</p>
             </article>
           ))}
         </div>
-      </div>
+      </ProfileSection>
     ) : null}
-  </div>
-</section>
+
+    <ProfileSection species={species} id="noms" eyebrow="Noms" title={headings.names}>
+      <ProfileFacts
+        label="Noms de l’espècie"
+        items={[
+          { key: "ca", icon: <Languages size={16} />, term: "Català", detail: [species.identity.commonName, ...species.identity.alternateNames].join(" · ") },
+          { key: "es", icon: <Languages size={16} />, term: "Castellà", detail: <span lang="es">{spanishNames ? [commonNameDisplayLabel(spanishNames.primary, "es-ES"), ...(spanishNames.alternatives ?? [])].join(" · ") : "Sense equivalència verificada"}</span> },
+          { key: "sci", icon: <FlaskConical size={16} />, term: "Nom científic", detail: <i>{species.identity.scientificName}</i> },
+        ]}
+      />
+      <p className="profile-links">
+        <Link href="/noms-de-bolets-catala-castella" className="text-link">Consultar el glossari complet <ArrowUpRight size={15} aria-hidden="true" /></Link>
+      </p>
+    </ProfileSection>
+</>
   );
 }

@@ -16,15 +16,14 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
     "El meu bosc",
   );
   await expect(page.locator(".primary-nav > a")).toHaveText([
-    "Bolets",
-    "Troballes",
-    "Guies",
-    "Comparador",
+    "Espècies",
+    "Temporada",
+    "Guies locals",
     "Joc",
     "Avui",
   ]);
   const guidesNavLink = page.locator(".primary-nav").getByRole("link", {
-    name: "Guies",
+    name: "Guies locals",
     exact: true,
   });
   await expect(guidesNavLink).toHaveAttribute("href", "/guies");
@@ -70,9 +69,10 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(page.locator(".species-hero .culinary-rating")).toHaveAccessibleName(
     "Valor culinari orientatiu: Excel·lent, 3 de 3 estrelles",
   );
-  await expect(page.locator(".section-kicker svg")).toHaveCount(5);
+  await expect(page.locator(".profile-section-number")).toHaveText(["01", "02", "03", "04", "05", "06", "07", "08"]);
+  await expect(page.locator(".species-nav-number")).toHaveText(["01", "02", "03", "04", "05", "06", "07", "08"]);
   await expect(
-    page.getByRole("heading", { name: "De la cistella a la cuina" }),
+    page.getByRole("heading", { name: "El cep a la cuina" }),
   ).toBeVisible();
   await expect(page.getByText("Per què aquesta nota?", { exact: true })).toBeVisible();
   const culinaryRatingHelp = page.getByRole("button", {
@@ -92,7 +92,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Condicions actuals" }),
   ).toHaveCount(0);
-  await expect(page.locator(".species-disclosure")).toHaveCount(2);
+  await expect(page.locator(".profile-more")).toHaveCount(1);
   await expect(
     page.getByText(
       "Fagedes, avetanoses, rouredes i pinedes de muntanya",
@@ -103,22 +103,9 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
     () => document.documentElement.scrollHeight,
   );
   expect(expandedSpeciesHeight).toBeLessThan(7500);
-  const climateDisclosure = page
-    .locator(".disclosure-grid .species-disclosure")
-    .filter({ hasText: "Clima i pluja" });
-  await expect(page.locator(".ecology-detail-panel summary")).toHaveCount(0);
+  await expect(page.getByText("Després de ploure", { exact: true })).toBeVisible();
   await expect(
-    climateDisclosure.getByText("Després de ploure", { exact: true }),
-  ).toBeVisible();
-  const climateDisclosureWidths = await climateDisclosure.evaluate((details) => ({
-    details: details.getBoundingClientRect().width,
-    grid: details.parentElement?.getBoundingClientRect().width ?? 0,
-    }));
-  expect(
-    Math.abs(climateDisclosureWidths.details - climateDisclosureWidths.grid),
-  ).toBeLessThan(2);
-  await expect(
-    page.getByRole("heading", { name: "On podria créixer a Catalunya" }),
+    page.getByRole("heading", { name: "On podria créixer el cep a Catalunya" }),
   ).toBeVisible();
   await expect(page.getByText(/És un mapa dels terrenys on l’espècie podria créixer/)).toBeVisible();
   await page.locator("#distribució").scrollIntoViewIfNeeded();

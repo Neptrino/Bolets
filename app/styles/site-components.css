@@ -150,28 +150,6 @@
   width: 10px;
   height: 10px;
 }
-.habitat-map-explainer {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: stretch;
-  gap: 16px;
-  margin-top: 12px;
-  padding: 14px 16px;
-  border: 1px solid rgba(89, 53, 37, 0.14);
-  background: #f6f0df;
-}
-.habitat-map-explainer > p {
-  align-self: center;
-  margin: 0;
-  color: #657064;
-  font-size: var(--text-base);
-  line-height: 1.55;
-}
-.habitat-map-explainer > p strong {
-  display: block;
-  color: var(--bark);
-  font-size: var(--text-base);
-}
 .habitat-map-link {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

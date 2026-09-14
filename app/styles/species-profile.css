@@ -1,0 +1,964 @@
+/* Species profile (/bolets/<slug>) layout.
+   One row pattern for every fact on the page, ruled groups instead of boxes,
+   and cards only where the eye should stop: lookalike species, the safety
+   note, the map block and the field card. Colour is left for meaning
+   (edibility badges, season levels, the clay call to action). */
+.compact-species-page {
+  --profile-line: #c9bb9c;
+  --profile-label: #5a564e;
+  --profile-heading: #262823;
+  --profile-tint: rgba(89, 53, 37, 0.08);
+  --profile-accent: var(--warning-surface);
+  background: var(--paper);
+}
+.compact-species-page .species-main {
+  color: var(--ink);
+}
+.compact-species-page .content-section h2 {
+  color: var(--profile-heading);
+}
+
+/* Facts: unboxed tiles, two columns wide, one on phones */
+.compact-species-page .profile-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 36px;
+  margin: 0;
+  padding: 4px 0;
+  border-top: 1px solid var(--profile-line);
+  border-bottom: 1px solid var(--profile-line);
+}
+.compact-species-page .profile-facts > div {
+  min-width: 0;
+  padding: 14px 0;
+}
+.compact-species-page .profile-facts > div.wide {
+  grid-column: 1 / -1;
+}
+.compact-species-page .profile-facts dt {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 0;
+  color: var(--profile-heading);
+  font-size: var(--text-base);
+  font-weight: 800;
+  line-height: 1.25;
+}
+.compact-species-page .profile-fact-icon {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--profile-tint);
+  color: var(--gold);
+}
+.compact-species-page .profile-facts dd {
+  margin: 6px 0 0 42px;
+  color: var(--ink);
+  font-size: var(--text-base);
+  line-height: 1.55;
+}
+.compact-species-page .profile-facts dd > strong {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--profile-heading);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1.2;
+}
+.compact-species-page .profile-facts dd ol,
+.compact-species-page .profile-facts dd ul {
+  margin: 0;
+  padding-left: 20px;
+}
+.compact-species-page .profile-facts dd li + li {
+  margin-top: 4px;
+}
+.compact-species-page .profile-facts dd ol {
+  list-style: decimal;
+}
+.compact-species-page .profile-facts dd ul {
+  list-style: disc;
+}
+.compact-species-page .profile-facts dd .text-link {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 8px;
+  font-weight: 750;
+}
+
+/* Tags, ledes, notes, links */
+.compact-species-page .profile-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin: 14px 0 0;
+}
+.compact-species-page .profile-facts .profile-tags {
+  margin: 0;
+}
+.compact-species-page .profile-tags > span {
+  margin-right: 4px;
+  color: var(--profile-label);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+.compact-species-page .profile-tags b {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: var(--profile-tint);
+  color: var(--bark);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  line-height: 1.2;
+}
+.compact-species-page .profile-lede {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font-size: var(--text-lg);
+  line-height: 1.55;
+}
+.compact-species-page .profile-lede strong {
+  color: var(--profile-heading);
+}
+.compact-species-page .profile-tags + .profile-facts,
+.compact-species-page .profile-lede + .profile-facts {
+  margin-top: 14px;
+}
+.compact-species-page .profile-note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 12px 0 0;
+  padding-left: 12px;
+  border-left: 3px solid var(--profile-line);
+  color: var(--profile-label);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+.compact-species-page .profile-note svg {
+  flex: 0 0 auto;
+  margin-top: 3px;
+  color: var(--gold);
+}
+.compact-species-page .profile-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 14px 0 0;
+}
+.compact-species-page .profile-links .text-link {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  font-weight: 750;
+}
+
+/* Subsections */
+.compact-species-page .profile-subsection {
+  margin-top: 30px;
+}
+.compact-species-page .profile-subsection h3 {
+  margin: 0 0 12px;
+  color: var(--profile-heading);
+  font-size: var(--text-2xl);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.compact-species-page .profile-subsection .eyebrow {
+  margin-bottom: 6px;
+}
+
+/* Warning line above the lookalikes */
+.compact-species-page .profile-warning {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px 10px;
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-left: 4px solid var(--clay);
+  border-radius: 0 10px 10px 0;
+  background: var(--profile-accent);
+  color: var(--bark);
+}
+.compact-species-page .profile-warning svg {
+  grid-row: span 2;
+  align-self: center;
+  color: var(--clay);
+}
+.compact-species-page .profile-warning strong {
+  color: var(--profile-heading);
+}
+.compact-species-page .profile-warning span {
+  font-size: var(--text-sm);
+}
+
+/* Lookalike cards */
+.compact-species-page .profile-lookalikes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.compact-species-page .profile-lookalikes article {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 6px 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--profile-line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.compact-species-page .profile-lookalikes article.no-thumb {
+  grid-template-columns: minmax(0, 1fr);
+}
+.compact-species-page .profile-lookalike-photo-link {
+  grid-area: 1 / 1 / 2 / 2;
+  align-self: start;
+  display: block;
+  border-radius: 10px;
+}
+.compact-species-page .profile-lookalike-thumb {
+  grid-area: 1 / 1 / 2 / 2;
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  border: 1px solid var(--profile-line);
+  border-radius: 10px;
+  background: var(--forest-panel);
+}
+.compact-species-page .profile-lookalikes em {
+  display: block;
+  color: var(--gold);
+  font-size: var(--text-sm);
+  font-style: italic;
+}
+.compact-species-page .profile-lookalikes article > div:not(.profile-lookalike-footer) {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+}
+.compact-species-page .profile-lookalikes article > p {
+  grid-column: 1 / -1;
+}
+.compact-species-page .profile-lookalikes article.no-thumb > div,
+.compact-species-page .profile-lookalikes article.no-thumb > p {
+  grid-column: 1 / -1;
+}
+.compact-species-page .profile-lookalikes h3 {
+  margin: 0;
+  color: var(--profile-heading);
+  font-size: var(--text-lg);
+  line-height: 1.2;
+}
+.compact-species-page .profile-lookalikes h3 a {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  color: inherit;
+  text-decoration: none;
+}
+.compact-species-page .profile-lookalikes h3 a svg {
+  flex: 0 0 auto;
+  color: var(--gold);
+}
+.compact-species-page .profile-lookalikes h3 a:hover,
+.compact-species-page .profile-lookalikes h3 a:focus-visible {
+  color: var(--clay);
+}
+.compact-species-page .profile-lookalikes p {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-base);
+  line-height: 1.45;
+}
+.compact-species-page .profile-lookalike-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+.compact-species-page .profile-compare-link {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 10px;
+  border: 1px solid var(--profile-line);
+  border-radius: 999px;
+  color: var(--forest-panel);
+  font-size: var(--text-xs);
+  font-weight: 850;
+  line-height: 1.35;
+  text-decoration: none;
+}
+.compact-species-page .profile-compare-link:hover,
+.compact-species-page .profile-compare-link:focus-visible {
+  border-color: var(--clay);
+  background: var(--profile-tint);
+  color: var(--clay);
+}
+
+/* FAQ */
+.compact-species-page .profile-faq {
+  border-top: 1px solid var(--profile-line);
+}
+.compact-species-page .profile-faq article {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--profile-line);
+}
+.compact-species-page .profile-faq h3 {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 0 0 4px;
+  color: var(--profile-heading);
+  font-size: var(--text-base);
+}
+.compact-species-page .profile-faq h3 svg {
+  flex: 0 0 auto;
+  color: var(--gold);
+}
+.compact-species-page .profile-faq p {
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+/* Cuina */
+.compact-species-page .profile-rating {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  margin: 0 0 16px;
+}
+.compact-species-page .profile-rating .culinary-rating {
+  box-shadow: none;
+}
+.compact-species-page .profile-rating-scale {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.compact-species-page .profile-rating-scale .culinary-rating-help {
+  margin: 0;
+}
+.compact-species-page .profile-rating-why {
+  flex: 1 1 100%;
+  margin: 4px 0 0;
+  color: var(--ink);
+  line-height: 1.55;
+}
+.compact-species-page .profile-rating-why strong {
+  color: var(--profile-heading);
+}
+.compact-species-page .culinary-rating-help {
+  position: relative;
+  display: inline-flex;
+  margin: 0 6px 0 4px;
+  vertical-align: middle;
+}
+.compact-species-page .culinary-rating-help button {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--profile-line);
+  border-radius: 50%;
+  background: var(--profile-tint);
+  color: var(--clay);
+  cursor: pointer;
+}
+.compact-species-page .culinary-rating-help button:focus-visible {
+  outline: 3px solid var(--clay);
+  outline-offset: 2px;
+}
+/* Portalled popup follows its trigger and avoids viewport edges. */
+.culinary-tooltip-positioner {
+  z-index: 80;
+}
+.culinary-rating-tooltip {
+  width: min(290px, calc(100vw - 32px));
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--forest-panel);
+  box-shadow: 0 8px 24px rgba(19, 24, 20, 0.18);
+  color: var(--on-dark);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* The one safety card of the page */
+.compact-species-page .profile-safety {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--profile-line);
+  border-left: 4px solid var(--clay);
+  border-radius: 10px;
+  background: var(--profile-accent);
+  color: var(--bark);
+}
+.compact-species-page .profile-safety-title {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  color: var(--profile-heading);
+}
+.compact-species-page .profile-safety-title svg {
+  color: var(--clay);
+}
+.compact-species-page .profile-safety ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+  line-height: 1.5;
+}
+.compact-species-page .profile-safety li + li {
+  margin-top: 3px;
+}
+.compact-species-page .profile-safety > p:not(.profile-safety-title) {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid rgba(89, 53, 37, 0.18);
+  line-height: 1.5;
+}
+.compact-species-page .profile-safety p svg {
+  flex: 0 0 auto;
+  margin-top: 4px;
+  color: var(--clay);
+}
+.compact-species-page .profile-safety a {
+  color: var(--gold);
+  font-weight: 750;
+}
+
+/* Ecology */
+.compact-species-page .ecology-section .season-calendar {
+  margin: 16px 0 0;
+  padding: 12px 0 10px;
+  border: 0;
+  border-bottom: 1px solid var(--profile-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.compact-species-page .ecology-section .season-calendar-label {
+  margin-bottom: 10px;
+  color: var(--profile-heading);
+}
+.compact-species-page .ecology-section .season-level {
+  height: 24px;
+}
+.compact-species-page .ecology-section .season-legend {
+  margin-top: 8px;
+}
+.compact-species-page .profile-more {
+  margin-top: 18px;
+  border-top: 1px solid var(--profile-line);
+  border-bottom: 1px solid var(--profile-line);
+}
+.compact-species-page .profile-more summary {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 0;
+  color: var(--profile-heading);
+  font-weight: 800;
+  list-style: none;
+  cursor: pointer;
+}
+.compact-species-page .profile-more summary::-webkit-details-marker {
+  display: none;
+}
+.compact-species-page .profile-more summary::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  margin-left: auto;
+  border-right: 2px solid var(--profile-label);
+  border-bottom: 2px solid var(--profile-label);
+  transform: translateY(-3px) rotate(45deg);
+  transition: transform 150ms ease;
+}
+.compact-species-page .profile-more[open] summary::after {
+  transform: translateY(2px) rotate(-135deg);
+}
+.compact-species-page .profile-more summary:focus-visible {
+  outline: 3px solid var(--clay);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.compact-species-page .profile-more .profile-facts {
+  border-top: 1px solid var(--profile-line);
+}
+.compact-species-page .profile-more .profile-facts > div:last-child {
+  border-bottom: 0;
+}
+.compact-species-page .profile-more .profile-facts > div:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+.compact-species-page .profile-more .profile-note {
+  margin: 8px 0 14px;
+}
+
+/* Map block: the explainer and the guide list stay cards */
+.compact-species-page .distribution-section .habitat-map-explainer {
+  border: 1px solid var(--profile-line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.compact-species-page .distribution-section .habitat-map-explainer > p {
+  color: var(--ink);
+}
+.compact-species-page .distribution-section .species-local-guides {
+  border-color: var(--profile-line);
+  background: var(--surface);
+}
+.compact-species-page .distribution-section .species-local-guides h3 {
+  margin: 0;
+  color: var(--profile-heading);
+  font-size: var(--text-lg);
+  line-height: 1.25;
+}
+.compact-species-page .distribution-section .species-local-guide-links a {
+  padding-inline: 0;
+  border: 0;
+  border-bottom: 1px solid var(--profile-line);
+  border-radius: 0;
+  background: transparent;
+}
+.compact-species-page .distribution-section .species-local-guide-links a:hover {
+  border-color: var(--clay);
+  background: transparent;
+}
+.compact-species-page .distribution-section .species-local-guide-links .species-territory-hub-link {
+  padding-inline: 11px;
+  border: 1px solid var(--profile-line);
+  border-radius: 8px;
+  background: var(--profile-tint);
+}
+.compact-species-page .distribution-section .habitat-map-legend {
+  background: var(--surface);
+}
+
+/* Hero facts and field card share the same line and surface */
+.compact-species-page .species-hero .species-hero-facts {
+  border-color: var(--profile-line);
+  background: var(--profile-line);
+}
+.compact-species-page .species-hero .species-hero-facts > div {
+  background: var(--surface-warm);
+}
+.compact-species-page .species-hero .species-hero-facts strong {
+  color: var(--profile-heading);
+}
+.compact-species-page .species-hero .species-hero-habitats strong {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.compact-species-page .species-hero-habitats a {
+  text-decoration: underline;
+  text-decoration-color: var(--profile-line);
+  text-underline-offset: 3px;
+}
+.compact-species-page .species-hero-habitats a:hover {
+  text-decoration-color: currentColor;
+}
+.compact-species-page .species-hero .species-hero-facts span {
+  color: var(--profile-label);
+}
+.compact-species-page .species-hero .species-hero-lookalike {
+  border-color: var(--profile-line);
+  background: var(--surface);
+}
+.compact-species-page .species-aside {
+  border-color: var(--profile-line);
+  background: var(--surface-warm);
+  box-shadow: none;
+}
+.compact-species-page .species-main .species-field-card-layout {
+  border-color: var(--profile-line);
+  background: var(--surface);
+  box-shadow: none;
+}
+.compact-species-page .species-main .field-card-download {
+  border-color: var(--profile-line);
+  background: transparent;
+}
+
+@media (max-width: 680px) {
+  .compact-species-page .profile-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .compact-species-page .profile-facts > div {
+    padding: 12px 0;
+  }
+  .compact-species-page .profile-facts > div + div {
+    border-top: 1px solid rgba(89, 53, 37, 0.12);
+  }
+  .compact-species-page .profile-lookalikes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .compact-species-page .profile-subsection {
+    margin-top: 24px;
+  }
+}
+
+/* Section panels: one container per group, a dark head with the lead fact
+   and a light body of tiles separated by grid lines */
+.compact-species-page .profile-panel {
+  overflow: hidden;
+  margin-top: 4px;
+  border: 1px solid var(--profile-line);
+  border-radius: 16px;
+  background: var(--surface-warm);
+}
+.compact-species-page .profile-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  padding: 16px 20px;
+  background: var(--forest-panel);
+  color: var(--on-dark);
+}
+.compact-species-page .profile-panel-head > svg {
+  flex: 0 0 auto;
+  color: var(--pumpkin);
+}
+.compact-species-page .profile-panel-head p {
+  flex: 1 1 320px;
+  margin: 0;
+  color: var(--on-dark);
+  font-size: var(--text-base);
+  line-height: 1.5;
+}
+.compact-species-page .profile-panel-head strong {
+  color: var(--on-dark);
+}
+.compact-species-page .profile-panel-head .profile-tags {
+  flex: 1 1 320px;
+  margin: 0;
+}
+.compact-species-page .profile-panel-head.profile-rating {
+  margin: 0;
+}
+.compact-species-page .profile-panel-head .profile-tags > span {
+  color: var(--on-dark-muted);
+}
+.compact-species-page .profile-panel-head .profile-tags b {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--on-dark);
+}
+.compact-species-page .profile-panel-head .edibility-badge {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+.compact-species-page .profile-panel-head .profile-rating-why {
+  flex: 1 1 100%;
+  margin: 2px 0 0;
+  color: var(--on-dark);
+}
+.compact-species-page .profile-panel-head .culinary-rating-help button {
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--on-dark);
+}
+.compact-species-page .profile-panel-head .habitat-map-link {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 2px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--on-dark);
+  text-decoration: none;
+}
+.compact-species-page .profile-panel-head .habitat-map-link span {
+  color: var(--on-dark-muted);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.compact-species-page .profile-panel-head .habitat-map-link strong {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.compact-species-page .profile-panel-head .habitat-map-link svg {
+  color: var(--on-dark);
+}
+.compact-species-page .profile-panel-head .habitat-map-link:hover,
+.compact-species-page .profile-panel-head .habitat-map-link:focus-visible {
+  background: rgba(255, 255, 255, 0.18);
+}
+.compact-species-page .profile-panel-body {
+  padding: 0;
+}
+.compact-species-page .profile-panel-body > .profile-lede {
+  margin: 0;
+  padding: 16px 20px 14px;
+}
+.compact-species-page .profile-panel-body .profile-facts {
+  gap: 1px;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid var(--profile-line);
+  background: var(--profile-line);
+}
+.compact-species-page .profile-panel-body .profile-facts > div {
+  padding: 16px 20px;
+  background: var(--surface-warm);
+}
+.compact-species-page .profile-panel-body > .profile-lede + .profile-facts {
+  margin-top: 0;
+}
+.compact-species-page .profile-panel-body .season-calendar {
+  margin: 0;
+  padding: 14px 20px 12px;
+  border-top: 1px solid var(--profile-line);
+  border-bottom: 0;
+}
+.compact-species-page .profile-panel-body > .profile-note,
+.compact-species-page .profile-panel-body > .profile-links,
+.compact-species-page .profile-panel-body > .profile-lede + .profile-lede {
+  margin: 12px 20px 0;
+}
+.compact-species-page .profile-panel-body > .profile-links {
+  padding-bottom: 14px;
+}
+.compact-species-page .profile-panel-body .profile-more {
+  margin-top: 0;
+  border-bottom: 0;
+}
+.compact-species-page .profile-panel-body .profile-more summary {
+  padding: 12px 20px;
+}
+.compact-species-page .profile-panel-body .profile-more .profile-facts {
+  border-top: 1px solid var(--profile-line);
+}
+.compact-species-page .profile-panel-body .profile-more .profile-note {
+  margin: 12px 20px 14px;
+}
+.compact-species-page .profile-map-panel .profile-panel-body > .region-map-habitat,
+.compact-species-page .profile-map-panel .profile-panel-body > div:first-child {
+  border-radius: 0;
+}
+.compact-species-page .profile-map-panel .species-map {
+  margin-top: 0;
+}
+.compact-species-page .profile-map-panel .region-pill-row {
+  padding: 14px 20px 0;
+}
+.compact-species-page .profile-map-panel .species-local-guides {
+  margin: 14px 0 0;
+  padding: 16px 20px 18px;
+  border: 0;
+  border-top: 1px solid var(--profile-line);
+  border-radius: 0;
+  background: transparent;
+}
+@media (max-width: 680px) {
+  .compact-species-page .profile-panel {
+    border-radius: 12px;
+  }
+  .compact-species-page .profile-panel-head {
+    padding: 14px 16px;
+  }
+  .compact-species-page .profile-panel-body .profile-facts > div {
+    padding: 12px 16px;
+    border-top: 0;
+  }
+  .compact-species-page .profile-panel-body > .profile-lede {
+    padding: 14px 16px 12px;
+  }
+  .compact-species-page .profile-panel-body .season-calendar {
+    padding-inline: 16px;
+  }
+  .compact-species-page .profile-panel-body > .profile-note,
+  .compact-species-page .profile-panel-body > .profile-links,
+  .compact-species-page .profile-panel-body .profile-more .profile-note {
+    margin-inline: 16px;
+  }
+  .compact-species-page .profile-panel-body .profile-more summary {
+    padding-inline: 16px;
+  }
+  .compact-species-page .profile-map-panel .region-pill-row,
+  .compact-species-page .profile-map-panel .species-local-guides {
+    padding-inline: 16px;
+  }
+}
+
+/* Numbered cards share the same hierarchy as the contents menu. */
+.compact-species-page .content-section.profile-section {
+  display: block;
+  min-width: 0;
+  margin: 0 0 24px;
+  padding: 24px;
+  border: 1px solid var(--profile-line);
+  border-radius: 18px;
+  background: var(--surface-warm);
+}
+.compact-species-page .profile-section-heading {
+  position: relative;
+  padding-right: 36px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+.compact-species-page .profile-section-heading > div {
+  flex: 1;
+  min-width: 0;
+}
+.compact-species-page .profile-section .profile-section-heading .eyebrow {
+  margin: 0 0 6px;
+}
+.compact-species-page .profile-section .profile-section-heading h2 {
+  margin: 0;
+  font-size: var(--display-xs);
+  line-height: 1.15;
+}
+.compact-species-page .profile-section-number {
+  display: grid;
+  flex: 0 0 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--forest-panel);
+  color: var(--on-dark);
+  font-size: var(--text-base);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.compact-species-page .profile-section-heading .species-anatomy-guide-link {
+  align-self: flex-end;
+}
+.compact-species-page .profile-section > .editorial-panel {
+  margin: 0;
+}
+.compact-species-page .species-aside > a:not(.aside-map-link)::before {
+  content: none;
+}
+.compact-species-page .species-nav-number {
+  color: var(--profile-label);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 680px) {
+  .compact-species-page .content-section.profile-section {
+    padding: 16px;
+    border-radius: 14px;
+    margin-bottom: 18px;
+  }
+  .compact-species-page .profile-section-heading {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .compact-species-page .profile-section-heading .species-anatomy-guide-link {
+    flex-basis: calc(100% - 48px);
+    margin-left: 48px;
+  }
+}
+
+/* A single card boundary per numbered section; inner content uses rules. */
+.compact-species-page .profile-section .profile-panel {
+  overflow: visible;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.compact-species-page .profile-section .profile-panel-head {
+  --on-dark: var(--profile-heading);
+  --on-dark-muted: var(--profile-label);
+  padding: 0 0 16px;
+  border-bottom: 1px solid var(--profile-line);
+  background: transparent;
+  color: var(--profile-heading);
+}
+.compact-species-page .profile-section .profile-panel-head .profile-tags b,
+.compact-species-page .profile-section .profile-panel-head .culinary-rating-help button,
+.compact-species-page .profile-section .profile-panel-head .habitat-map-link {
+  border-color: var(--profile-line);
+  background: var(--profile-tint);
+}
+.compact-species-page .profile-section .profile-panel-head .habitat-map-link:hover {
+  background: var(--surface-muted);
+}
+.compact-species-page .profile-section .profile-panel-body .profile-facts {
+  gap: 0 24px;
+  border: 0;
+  background: transparent;
+}
+.compact-species-page .profile-section .profile-panel-body .profile-facts > div {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--profile-line);
+  background: transparent;
+}
+.compact-species-page .profile-section .profile-panel-body > .profile-lede,
+.compact-species-page .profile-section .profile-panel-body .season-calendar {
+  padding-inline: 0;
+}
+.compact-species-page .profile-section .profile-panel-body > .profile-note,
+.compact-species-page .profile-section .profile-panel-body > .profile-links,
+.compact-species-page .profile-section .profile-panel-body .profile-more .profile-note {
+  margin-inline: 0;
+}
+.compact-species-page .profile-section .profile-panel-body .profile-more summary,
+.compact-species-page .profile-section .profile-map-panel .region-pill-row,
+.compact-species-page .profile-section .profile-map-panel .species-local-guides {
+  padding-inline: 0;
+}
+.compact-species-page .profile-section .profile-lookalikes article {
+  padding: 16px 0;
+  border: 0;
+  border-bottom: 1px solid var(--profile-line);
+  border-radius: 0;
+  background: transparent;
+}
+.compact-species-page .profile-section .profile-warning,
+.compact-species-page .profile-section .profile-safety {
+  border: 0;
+  border-left: 3px solid var(--clay);
+  border-radius: 0;
+}
+.compact-species-page .profile-section .species-field-card-layout,
+.compact-species-page .profile-section > .editorial-panel {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+@media (min-width: 761px) {
+  .compact-species-page .species-hero-grid > .specimen-panel.has-photos {
+    align-self: stretch;
+  }
+}
+
+.compact-species-page .profile-section-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: var(--clay);
+  pointer-events: none;
+}

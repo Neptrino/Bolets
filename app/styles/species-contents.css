@@ -1,0 +1,54 @@
+.species-contents-toggle {
+  display: none;
+}
+@media (max-width: 760px) {
+  .compact-species-page nav.species-aside {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 16px;
+    overflow: visible;
+    margin: 0 0 20px;
+    padding: 0 16px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface-warm);
+  }
+  .species-aside .species-contents-toggle {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+    padding: 12px 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font-size: var(--text-base);
+    font-weight: 750;
+    cursor: pointer;
+  }
+  .species-aside.is-expanded .species-contents-toggle svg {
+    transform: rotate(180deg);
+  }
+  .compact-species-page nav.species-aside > a:not(.aside-map-link),
+  .compact-species-page nav.species-aside > a.aside-map-link {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 0;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    white-space: normal;
+    font-size: var(--text-sm);
+  }
+  .compact-species-page nav.species-aside:not(.is-expanded) > a {
+    display: none;
+  }
+  .compact-species-page nav.species-aside > p {
+    display: none;
+  }
+}

@@ -1,0 +1,33 @@
+.season-calendar .card-season {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.season-calendar .season-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+.season-calendar .season-legend .card-season-level {
+  width: 16px;
+  flex: 0 0 16px;
+  align-self: center;
+}
+.season-calendar .card-season-month {
+  grid-template-rows: 15px 26px;
+}
+.season-calendar .card-season-grid .card-season-level {
+  height: 6px;
+}
+.season-calendar .card-season-grid .card-season-level.possible {
+  height: 11px;
+}
+.season-calendar .card-season-grid .card-season-level.moderate {
+  height: 15px;
+}
+.season-calendar .card-season-grid .card-season-level.good {
+  height: 20px;
+}
+.season-calendar .card-season-grid .card-season-level.peak {
+  height: 26px;
+}

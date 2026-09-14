@@ -2,62 +2,45 @@
   scroll-margin-top: 96px;
 }
 
-/* The compact editorial credit supplies the closing divider on profile pages. */
-.species-main > .content-section.species-field-card-section {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: 0;
-}
-
 .species-field-card-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 338px);
-  gap: 34px;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 22px;
   align-items: center;
   overflow: hidden;
-  padding: 30px;
+  padding: 18px 22px;
   border: 1px solid rgba(89, 53, 37, 0.16);
   border-radius: 18px;
-  background:
-    radial-gradient(circle at 90% 9%, rgba(242, 138, 46, 0.16), transparent 28%),
-    linear-gradient(135deg, rgba(255, 250, 240, 0.94), rgba(235, 223, 196, 0.76));
+  background: var(--surface-warm);
   box-shadow: 0 18px 46px rgba(89, 53, 37, 0.09);
 }
 
 .species-field-card-copy {
   display: grid;
   align-content: center;
-  gap: 22px;
+  gap: 12px;
 }
 
 .species-field-card-copy > p {
-  max-width: 620px;
   margin: 0;
   color: #545950;
-  font-size: var(--text-lg);
-  line-height: 1.6;
+  font-size: var(--text-base);
+  line-height: 1.55;
 }
 
-.species-field-card-safety {
+.species-field-card-copy > .species-field-card-safety {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 12px;
-  max-width: 620px;
-  padding: 16px 18px;
-  border-left: 4px solid var(--clay);
-  background: rgba(255, 249, 237, 0.84);
-  color: var(--bark);
+  gap: 8px;
+  align-items: start;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
 }
 
 .species-field-card-safety svg {
-  margin-top: 3px;
+  margin-top: 2px;
   color: var(--clay);
-}
-
-.species-field-card-safety p {
-  margin: 0;
-  font-size: var(--text-base);
-  line-height: 1.5;
 }
 
 .species-field-card-actions {
@@ -80,7 +63,7 @@
 
 .species-field-card-actions .field-card-download {
   border-color: rgba(89, 53, 37, 0.22);
-  background: rgba(255, 250, 240, 0.82);
+  background: var(--surface-warm);
   color: var(--bark);
 }
 
@@ -98,26 +81,15 @@
 
 .species-field-card-preview {
   position: relative;
-  width: min(100%, 320px);
-  margin: 2px auto 0;
-  transform: rotate(0.7deg);
-}
-
-.species-field-card-preview::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  inset: 10px -10px -10px 10px;
-  border: 1px solid rgba(89, 53, 37, 0.18);
-  border-radius: 16px;
-  background: #dfd3b8;
+  width: 132px;
+  margin: 0;
 }
 
 .species-field-card-preview > a {
   position: relative;
   z-index: 1;
   display: block;
-  border-radius: 15px;
+  border-radius: 10px;
   transition: transform 160ms ease;
 }
 
@@ -135,9 +107,9 @@
   width: 100%;
   height: auto;
   border: 1px solid rgba(59, 59, 59, 0.24);
-  border-radius: 15px;
+  border-radius: 10px;
   background: var(--forest-panel);
-  box-shadow: 0 22px 48px rgba(41, 37, 30, 0.2);
+  box-shadow: 0 10px 24px rgba(41, 37, 30, 0.18);
   cursor: zoom-in;
 }
 
@@ -152,28 +124,28 @@
   text-align: center;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .species-field-card-layout {
-    grid-template-columns: 1fr;
-    gap: 28px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    margin-inline: 0;
+    padding: 16px 14px;
+    border-radius: 13px;
   }
 
   .species-field-card-preview {
-    order: -1;
-    width: min(100%, 380px);
-  }
-}
-
-@media (max-width: 600px) {
-  .species-field-card-layout {
-    margin-inline: -14px;
-    padding: 20px 18px 24px;
-    border-radius: 13px;
+    width: 160px;
+    justify-self: center;
   }
 
   .species-field-card-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .species-field-card-actions .button {
+    padding-inline: 12px;
+    white-space: nowrap;
   }
 
   .species-field-card-status {
@@ -183,3 +155,7 @@
 
 .species-field-card-copy > .species-field-card-poster-link { margin: 0; color: #59625a; font-size: var(--text-sm); line-height: 1.55; }
 .species-field-card-poster-link a { color: #304839; font-weight: 700; }
+
+.species-field-card-status:empty {
+  display: none;
+}

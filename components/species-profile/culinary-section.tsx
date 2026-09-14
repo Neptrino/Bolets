@@ -1,17 +1,12 @@
-import "@/app/styles/culinary-dossier.css";
+import { CulinaryRatingHelp } from "@/components/species-profile/culinary-rating-help";
+import { ProfileSection } from "@/components/species-profile/profile-section";
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  ChefHat,
-  CircleHelp,
-  ShieldAlert,
-  ShieldCheck,
-  Snowflake,
-  Utensils,
-} from "lucide-react";
+import { ArrowUpRight, ChefHat, Flame, Hand, ShieldAlert, ShieldCheck, Snowflake, Utensils } from "lucide-react";
 import { CulinaryRating } from "@/components/culinary-rating";
 import { EdibilityBadge } from "@/components/edibility-badge";
+import { ProfileFacts } from "@/components/species-profile/profile-facts";
 import { officialSafetySource } from "@/data/editorial";
+import { speciesHeadings } from "@/src/lib/species-headings";
 import type { CatalogueSpecies } from "@/src/lib/types";
 
 function preservationGuideHref(speciesId: string) {
@@ -30,145 +25,65 @@ export function SpeciesCulinarySection({
   const hasToxicLookalike = species.similarSpecies.some(
     (item) => item.warning || item.edibility.includes("toxic"),
   );
+  const profile = species.culinaryProfile;
+  // Safety profiles already show their consumption warning in CulinaryRating.
+  const showConsumptionBadge = profile.kind === "culinary"
+    && species.identity.edibility !== "excellent_edible"
+    && species.identity.edibility !== "edible";
+  const headings = speciesHeadings(species.identity.commonName);
 
   return (
-<section id="cuina" className="content-section culinary-section">
-  <div className="section-kicker">
-    <ChefHat size={17} aria-hidden="true" />
-    <span>02</span>
-  </div>
-  <div>
-    <p className="eyebrow">Valor gastronòmic i seguretat</p>
-    <h2>{species.culinaryProfile.kind === "culinary" ? "De la cistella a la cuina" : "Consum i precaucions"}</h2>
-
-    <div className={`culinary-rating-panel ${species.culinaryProfile.kind}`}>
-      <div className="culinary-rating-score">
-        <span>VALOR CULINARI ORIENTATIU</span>
-        <CulinaryRating
-          profile={species.culinaryProfile}
-          status={species.identity.edibility}
-        />
-        <EdibilityBadge status={species.identity.edibility} />
-      </div>
-      <div className="culinary-rating-copy">
-        <div className="culinary-rating-title">
-          <strong>Per què aquesta nota?</strong>
-          <span className="culinary-rating-help">
-            <button
-              type="button"
-              aria-label="Com s’interpreta el valor culinari"
-              aria-describedby={`culinary-rating-help-${species.speciesId}`}
-            >
-              <CircleHelp size={16} aria-hidden="true" />
-            </button>
-            <span
-              className="culinary-rating-tooltip"
-              id={`culinary-rating-help-${species.speciesId}`}
-              role="tooltip"
-            >
-              Les estrelles valoren l’interès gastronòmic; la
-              classificació de consum indica si calen condicions de
-              seguretat.
-            </span>
-          </span>
-        </div>
-        <p>{species.culinaryProfile.ratingRationale}</p>
-      </div>
+<ProfileSection species={species} id="cuina" className="culinary-section" eyebrow="Valor gastronòmic i seguretat" title={profile.kind === "culinary" ? headings.cuisine : headings.edible}>
+    <div className="profile-panel">
+    <div className="profile-panel-head profile-rating">
+      <span className="profile-rating-scale">
+        <CulinaryRating profile={profile} status={species.identity.edibility} />
+        <CulinaryRatingHelp />
+      </span>
+      {showConsumptionBadge && <EdibilityBadge status={species.identity.edibility} />}
+      <p className="profile-rating-why">
+        <strong>Per què aquesta nota?</strong>
+        {" "}{profile.ratingRationale}
+      </p>
     </div>
-
-    {species.culinaryProfile.kind === "culinary" ? (
+    <div className="profile-panel-body">
+    {profile.kind === "culinary" ? (
       <>
-        <div className="culinary-profile-note">
-          <p className="culinary-lede">
-            {species.culinaryProfile.summary}
-          </p>
-          <dl className="culinary-senses" aria-label="Perfil sensorial">
-            <div>
-              <dt>Sabor i aroma</dt>
-              <dd>{species.culinaryProfile.flavour}</dd>
-            </div>
-            <div>
-              <dt>Textura</dt>
-              <dd>{species.culinaryProfile.texture}</dd>
-            </div>
-          </dl>
-        </div>
-
-        <div className="culinary-uses">
-          <div className="culinary-mini-heading">
-            <Utensils size={16} aria-hidden="true" />
-            <h3>On funciona millor</h3>
-          </div>
-          <div className="culinary-use-list">
-            {species.culinaryProfile.bestUses.map((use) => (
-              <span key={use}>{use}</span>
-            ))}
-          </div>
-        </div>
-
-        <div className="culinary-methods">
-          <article>
-            <div className="culinary-mini-heading">
-              <ChefHat size={16} aria-hidden="true" />
-              <h3>Abans de menjar</h3>
-            </div>
-            <ol>
-              {species.culinaryProfile.preparation.map((step) => (
-                <li key={step}>{step}</li>
-              ))}
-            </ol>
-          </article>
-          <article>
-            <div className="culinary-mini-heading">
-              <Snowflake size={16} aria-hidden="true" />
-              <h3>Com conservar-lo</h3>
-            </div>
-            <ul>
-              {species.culinaryProfile.preservation.map((method) => (
-                <li key={method}>{method}</li>
-              ))}
-            </ul>
-          </article>
-        </div>
-        <p>
-          <Link href={preservationGuideHref(species.speciesId)} className="text-link">
-            Guia per conservar i congelar bolets amb seguretat <ArrowUpRight size={16} aria-hidden="true" />
-          </Link>
-        </p>
+        <p className="profile-lede">{profile.summary}</p>
+        <ProfileFacts
+          label="Perfil culinari"
+          items={[
+            { key: "flavour", icon: <Flame size={16} />, term: "Sabor i aroma", detail: profile.flavour },
+            { key: "texture", icon: <Hand size={16} />, term: "Textura", detail: profile.texture },
+            { key: "uses", icon: <Utensils size={16} />, term: "On funciona millor", wide: true, detail: <span className="profile-tags">{profile.bestUses.map((use) => <b key={use}>{use}</b>)}</span> },
+            { key: "preparation", icon: <ChefHat size={16} />, term: "Abans de menjar", detail: <ol>{profile.preparation.map((step) => <li key={step}>{step}</li>)}</ol> },
+            { key: "preservation", icon: <Snowflake size={16} />, term: "Com conservar-lo", detail: <><ul>{profile.preservation.map((method) => <li key={method}>{method}</li>)}</ul><Link href={preservationGuideHref(species.speciesId)} className="text-link">Guia per conservar i congelar bolets amb seguretat <ArrowUpRight size={15} aria-hidden="true" /></Link></> },
+          ]}
+        />
       </>
     ) : (
-      <div className="culinary-safety-only">
-        <ShieldAlert size={24} aria-hidden="true" />
-        <div>
-          <strong>Sense usos culinaris recomanats</strong>
-          <p>{species.culinaryProfile.summary}</p>
-        </div>
-      </div>
+      <p className="profile-lede"><strong>Sense usos culinaris recomanats.</strong> {profile.summary}</p>
     )}
-
-    <div className={`culinary-cautions ${species.culinaryProfile.kind}`}>
-      <ShieldCheck size={19} aria-hidden="true" />
-      <div>
-        <strong>{species.culinaryProfile.kind === "culinary" ? "Punts de prudència" : "Advertiment de seguretat"}</strong>
-        <ul>
-          {species.culinaryProfile.cautions.map((caution) => (
-            <li key={caution}>{caution}</li>
-          ))}
-        </ul>
-      </div>
+    </div>
     </div>
 
-    {(species.culinaryProfile.kind === "safety" || hasToxicLookalike) && (
-      <aside className="species-official-safety">
-        <div className="species-official-safety-title">
-          <ShieldAlert size={18} aria-hidden="true" />
-          <strong>Identificació i urgències</strong>
-        </div>
-        <p>No consumeixis aquest bolet sense una identificació experta. Davant una ingestió sospitosa, consulta la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a> i truca al <a href="tel:061">061 Salut Respon</a>.</p>
-      </aside>
-    )}
-
-  </div>
-</section>
+    <aside className="profile-safety">
+      <p className="profile-safety-title">
+        <ShieldCheck size={18} aria-hidden="true" />
+        <strong>{profile.kind === "culinary" ? "Punts de prudència" : "Advertiment de seguretat"}</strong>
+      </p>
+      <ul>
+        {profile.cautions.map((caution) => (
+          <li key={caution}>{caution}</li>
+        ))}
+      </ul>
+      {(profile.kind === "safety" || hasToxicLookalike) && (
+        <p>
+          <ShieldAlert size={15} aria-hidden="true" />
+          <span>No consumeixis aquest bolet sense una identificació experta. Davant una ingestió sospitosa, consulta la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a> i truca al <a href="tel:061">061 Salut Respon</a>.</span>
+        </p>
+      )}
+    </aside>
+</ProfileSection>
   );
 }

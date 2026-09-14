@@ -201,13 +201,11 @@ export function ConditionComparison({
     >
       <div className={`conditions-heading ${predictionStatus.kind}`}>
         <div>
-          <p className="eyebrow">
-            {cellId
-              ? `Sector seleccionat · ${regionLabels[snapshot.regionId]}`
-              : regionalSummary
-                ? `Resum de ${regionLabels[snapshot.regionId]}`
-                : "Lectura territorial"}
-          </p>
+          {!cellId && (
+            <p className="eyebrow">
+              {regionalSummary ? `Resum de ${regionLabels[snapshot.regionId]}` : "Lectura territorial"}
+            </p>
+          )}
           <p className="condition-last-updated">
             <Clock3 size={13} aria-hidden="true" />
             Dades meteorològiques actualitzades: {weatherUpdatedAt}
@@ -452,8 +450,8 @@ export function ConditionComparison({
                 </span>
                 <span className="factor-bar-reading">
                   <strong>{entry.score}%</strong>
-                  {limiting && <small>Més restrictiu</small>}
                 </span>
+                {limiting && <small className="factor-bar-note">Més restrictiu</small>}
                 <span
                   className="factor-bar-meter"
                   role="meter"

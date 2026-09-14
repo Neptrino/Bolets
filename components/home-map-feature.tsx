@@ -17,14 +17,9 @@ export function HomeMapFeature() {
           <li><span><strong>Compara zones</strong> i acosta’t al territori que t’interessa.</span></li>
           <li><span><strong>Revisa el dia i la llegenda</strong> per saber com de recents són les dades.</span></li>
         </ol>
-        <div className="home-map-actions">
-          <div className="home-map-action">
-            <UmamiEventLink href="/map" className="button" analyticsEvent={UMAMI_EVENTS.homepageMapSectionClick}>
-              Obrir el mapa <Map size={18} aria-hidden="true" />
-            </UmamiEventLink>
-            <small>Tria espècie, zona i dia, i compara-ho tu mateix.</small>
-          </div>
-        </div>
+        <UmamiEventLink href="/map" className="button" analyticsEvent={UMAMI_EVENTS.homepageMapSectionClick}>
+          Obrir el mapa <Map size={18} aria-hidden="true" />
+        </UmamiEventLink>
       </section>
       <UmamiEventLink href="/map" className="home-map-preview" analyticsEvent={UMAMI_EVENTS.homepageMapSectionClick} aria-label="Obrir el mapa de bolets de Catalunya">
         <StaticMediaImage

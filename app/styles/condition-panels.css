@@ -109,6 +109,11 @@
   .factor-bar-reading {
     grid-column: 2;
   }
+  .factor-bar-note {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-top: 0;
+  }
   .factor-bar-meter {
     grid-column: 1 / -1;
     grid-row: 2;
@@ -249,9 +254,6 @@
   }
 }
 @media (max-width: 680px) {
-  .habitat-map-explainer {
-    grid-template-columns: 1fr;
-  }
   .habitat-map-link {
     min-width: 0;
   }
@@ -286,7 +288,7 @@
 }
 @media (max-width: 900px) {
   .site-footer-inner {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 24px 40px;
   }
   .site-footer-links {
@@ -338,13 +340,13 @@
     margin-left: auto;
   }
   .site-footer-inner {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 22px;
     min-height: 0;
     padding: 30px 0 34px;
   }
   .site-footer-links {
-    grid-template-columns: repeat(2, max-content);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-content: start;
     row-gap: 26px;
     padding-top: 18px;

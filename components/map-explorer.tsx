@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { ArrowUpRight, CheckCircle2, Clock3, Info, ListFilter, LoaderCircle, Map as MapIcon, Trees, X } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Info, ListFilter, LoaderCircle, Map as MapIcon, Trees, X } from "lucide-react";
 import Link from "next/link";
 import { ConditionComparison } from "@/components/condition-comparison";
 import { MapDetailAccessNotice } from "@/components/map-detail-access-notice";
@@ -246,7 +246,7 @@ export function MapExplorer({
           aria-label={globalMode ? "Informació del sector" : "Condicions del sector"}
         >
           {!detailOpen && !infoOpen ? <MapDetailAccessNotice resolution={detailResolution} /> : null}
-          <div className="map-floating-card" aria-live="polite">
+          <div className={`map-floating-card${globalMode && hasPrediction && !emptySelection ? " has-species-score" : ""}`} aria-live="polite">
             <div className="map-floating-card-context">
               <div className="map-floating-card-label">
                 <MapIcon size={17} aria-hidden="true" />
@@ -293,28 +293,30 @@ export function MapExplorer({
                 : "Falten lectures recents per valorar aquest sector."}</p>
             ) : hasPrediction ? (
               <div className="map-condition-summary">
+                <div className="map-condition-headline">
                 {globalMode ? (
-                  <strong>{selectedCell && topSpeciesId
-                    ? `Millor opció · ${speciesName(topSpeciesId)}`
-                    : regionalTopSpeciesName
-                      ? `Millor opció · ${regionalTopSpeciesName}`
-                      : "Espècie amb millors condicions"}</strong>
+                  <strong><span className="map-best-option-label">Millor opció · </span>{selectedCell && topSpeciesId
+                    ? speciesName(topSpeciesId)
+                    : regionalTopSpeciesName ?? "Espècie amb millors condicions"}</strong>
                 ) : null}
-                <div className="map-condition-metrics">
-                  <span className="map-condition-band">
-                    {result.label}
-                  </span>
-                  {result.fruitingConditionsScore !== null ? (
-                    <span><Clock3 size={14} aria-hidden="true" />Condicions <strong>{result.fruitingConditionsScore}/100</strong></span>
-                  ) : null}
-                  {!globalMode && selectedEffectiveHabitat !== undefined ? (
+                {!globalMode && selectedEffectiveHabitat !== undefined ? (
+                  <div className="map-condition-metrics">
                     <span><Trees size={14} aria-hidden="true" />Terreny <strong>{Math.round(selectedEffectiveHabitat * 100)}%</strong></span>
-                  ) : null}
+                  </div>
+                ) : null}
                 </div>
                 {globalMode && runnersUp.length ? (
-                  <p>{`També: ${runnersUp
-                    .map((item) => `${speciesName(item.speciesId)} ${item.score}`)
-                    .join(" · ")}`}</p>
+                  <ul className="map-alternative-species" aria-label="Altres espècies del sector">
+                    {runnersUp.map((item) => (
+                      <li key={item.speciesId}>
+                        <span>{speciesName(item.speciesId)}</span>
+                        <span className="map-alternative-bar" aria-hidden="true">
+                          <i style={{ width: `${item.score}%`, backgroundColor: getSuitabilityBand(item.score).color }} />
+                        </span>
+                        <strong>{item.score}<small>/100</small></strong>
+                      </li>
+                    ))}
+                  </ul>
                 ) : null}
               </div>
             ) : viewportStatus ? (
@@ -400,6 +402,13 @@ export function MapExplorer({
                     Veure el mapa complet <ArrowUpRight size={15} />
                   </Link>
                 </p>
+                {result.fruitingConditionsScore !== null && (
+                  <p>
+                    <strong>Condicions del moment: {result.fruitingConditionsScore}/100.</strong>{" "}
+                    Aquest valor resumeix les condicions meteorològiques per a {speciesName(topSpeciesId)}.
+                    La puntuació global també té en compte si el terreny és adequat per a l’espècie.
+                  </p>
+                )}
                 {CellScoreHistory ? <CellScoreHistory
                   key={`${topSpeciesId}:${selectedCell.cellId}`}
                   speciesId={topSpeciesId}

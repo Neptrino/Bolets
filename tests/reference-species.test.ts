@@ -65,9 +65,9 @@ describe("descriptive catalogue species", () => {
     expect(html).toContain('"datePublished":"2026-09-02"');
     expect(html).toContain('data-species-scope="reference-only"');
     expect(html).toContain("Editorial, no micològica");
-    expect(html).toContain('id="identificació" class="content-section"');
-    expect(html).toContain('id="cuina" class="content-section culinary-section"');
-    expect(html).toContain('id="ecologia" class="content-section ecology-section"');
+    expect(html).toContain('id="identificació" class="content-section profile-section"');
+    expect(html).toContain('id="cuina" class="content-section profile-section culinary-section"');
+    expect(html).toContain('id="ecologia" class="content-section profile-section ecology-section"');
     expect(html).not.toContain('id="distribució"');
     expect(html).toContain('data-mushroom-icon="cap"');
     expect(html).not.toContain('href="/map?');
@@ -183,9 +183,9 @@ describe("descriptive catalogue species", () => {
     expect(html).toContain('href="/bolets/infografia"');
     expect(html).toContain(`src="${speciesFieldCardPath(species)}?preview=384"`);
     expect(html).toContain(`href="${speciesFieldCardPath(species)}" target="_blank"`);
-    expect(html).toContain("1080 × 1350 px · Format 4:5");
+    expect(html).toContain("Fitxa visual 4:5 amb els trets principals");
     expect(html).not.toContain("Instagram");
-    expect(html).toContain("Infografia vertical del Fals rossinyol amb fotografia, comestibilitat, trets d’identificació, temporada, hàbitat i advertiment de confusió.");
+    expect(html).toContain("Targeta de camp del Fals rossinyol amb fotografia, comestibilitat, trets d’identificació, temporada, hàbitat i advertiment de confusió.");
     expect(sitemap().find(item => item.url.endsWith(speciesPath(species)))).toMatchObject({
       lastModified: editorialLastModified("species:hygrophoropsis-aurantiaca"),
       images: ["https://bolets.app/media/wikimedia/hygrophoropsis-aurantiaca.webp"],
@@ -195,7 +195,7 @@ describe("descriptive catalogue species", () => {
   it("links the existing chanterelle profile to the descriptive lookalike without an unsupported comparator", async () => {
     const html = renderToStaticMarkup(await SpeciesPage({ params: Promise.resolve({ slug: "rossinyol" }), searchParams: Promise.resolve({}) }));
     expect(html).toContain('class="species-anatomy-guide-link"');
-    expect(html).toContain("Guia de les parts");
+    expect(html).toContain("Parts d’un bolet");
     for (const icon of ["cap", "hymenium", "stem", "flesh-reaction"]) {
       expect(html).toContain(`data-mushroom-icon="${icon}"`);
     }
