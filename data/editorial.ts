@@ -18,10 +18,10 @@ export const EDITORIAL_LAUNCH_DATE = "2026-08-13";
 // a page family changes visibly (`tests/editorial-freshness.test.ts` names
 // the constant to bump). Per-item overrides below date content changes to a
 // single page; the later of the two wins.
-export const LOCAL_GUIDES_UPDATED_AT = "2026-09-14";
+export const LOCAL_GUIDES_UPDATED_AT = "2026-09-15";
 export const SPECIES_PAGES_UPDATED_AT = "2026-09-14";
-export const ZONE_PAGES_UPDATED_AT = "2026-09-14";
-export const PLACE_PAGES_UPDATED_AT = "2026-09-06";
+export const ZONE_PAGES_UPDATED_AT = "2026-09-15";
+export const PLACE_PAGES_UPDATED_AT = "2026-09-15";
 export const COMPARISON_PAGES_UPDATED_AT = "2026-09-02";
 export const MAP_PAGES_UPDATED_AT = "2026-08-31";
 
@@ -199,7 +199,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   },
   "preguntes-frequents-bolets": {
     publishedAt: "2026-08-27",
-    updatedAt: "2026-09-14",
+    updatedAt: "2026-09-15",
   },
   "species:hygrophoropsis-aurantiaca": {
     publishedAt: "2026-08-27",
@@ -284,8 +284,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   joc: { updatedAt: "2026-09-01" },
   metode: { updatedAt: "2026-09-14" },
   "col-labora": { updatedAt: "2026-09-02" },
-  zones: { updatedAt: "2026-08-31" },
-  guies: { updatedAt: "2026-09-03" },
+  guies: { updatedAt: "2026-09-15" },
 };
 
 export function getEditorialMetadata(contentId: string): EditorialMetadata {

@@ -1,13 +1,15 @@
-import "@/app/styles/current-readings.css";
 import "@/app/styles/local-guides.css";
+import "@/app/styles/place-hub.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, BookOpen, BookOpenText, Gauge, Layers3, Map as MapIcon, MapPinned, ShieldCheck } from "lucide-react";
+import { Suspense } from "react";
+import { ArrowLeft, ArrowUpRight, BookOpen, BookOpenText, MapPinned } from "lucide-react";
 import { DataSourceCredits } from "@/components/editorial-attribution";
+import { HubFacts, HubSeasonMatrix, HubTodayPanel, hubSpeciesList, type HubReading } from "@/components/hub-sections";
+import { HubMapPortrait } from "@/components/hub-map-portrait";
 import { JsonLd } from "@/components/json-ld";
 import { MediaImage } from "@/components/media-image";
-import { TerritoryPortrait } from "@/components/territory-portrait";
 import { regionLabels } from "@/data/regions";
 import { getSpecies } from "@/data/species";
 import {
@@ -21,62 +23,77 @@ import {
   placePath,
   placesForArea,
 } from "@/data/location-pages";
+import { areaMapPath, areaMapSpec } from "@/src/lib/place-map";
 import { getAreaPredictionSummaries } from "@/src/lib/predictions";
-import { opportunityLabel } from "@/src/lib/scoring";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, pageTitle } from "@/src/lib/seo";
+import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, pageTitle, speciesPath } from "@/src/lib/seo";
 import { territorialMapPath } from "@/src/lib/territorial-map";
-import { UmamiEventLink } from "@/components/umami-event-link";
-import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
-import type { AreaPredictionSummary } from "@/src/lib/types";
+import type { AreaProfile } from "@/data/location-pages";
+import type { Month, SpeciesProfile } from "@/src/lib/types";
 
 export const revalidate = 300;
 
 type Props = { params: Promise<{ place: string }> };
 
-/** Live hub readings for every species with a local guide in the area. */
-async function loadAreaConditions(areaSlug: string) {
-  const area = areasBySlug[areaSlug];
-  const month = monthInTimeZone();
-  const speciesIds = [...new Set(locationPagesForArea(areaSlug).map((page) => page.speciesId))]
-    .filter((speciesId) => {
-      const species = getSpecies(speciesId);
-      return species?.predictionMode === "current" &&
-        species.ecologicalConfig.regions.includes(area.regionId) &&
-        species.ecologicalConfig.seasonality[month] !== "inactive";
-    });
-  const bounds = areaBounds(area);
-  try {
-    const summaries = await getAreaPredictionSummaries(speciesIds, {
-      slug: area.slug,
-      regionId: area.regionId,
-      bounds,
-    });
-    return speciesIds.flatMap((speciesId) => {
-      const summary = summaries[speciesId];
-      return summary && summary.result.score !== null &&
-          summary.result.missingComponents.length === 0 && !summary.snapshot.stale
-        ? [{ speciesId, summary }]
-        : [];
-    }).sort((left, right) =>
-      (right.summary.bestCell.score - left.summary.bestCell.score) ||
-      (right.summary.score20CellShare - left.summary.score20CellShare) ||
-      (right.summary.positiveCellShare - left.summary.positiveCellShare)
-    );
-  } catch {
-    return [] as Array<{ speciesId: string; summary: AreaPredictionSummary }>;
-  }
+function readsConditionsNow(species: SpeciesProfile, area: AreaProfile, month: Month) {
+  return species.predictionMode === "current" &&
+    species.ecologicalConfig.regions.includes(area.regionId) &&
+    species.ecologicalConfig.seasonality[month] !== "inactive";
 }
 
-function areaExtent(summary: AreaPredictionSummary) {
-  if (summary.score20CellCount > 0) {
-    return `Condicions favorables en el ${Math.round(summary.score20CellShare * 100)}% de la zona`;
+/** Every species with a local guide somewhere in the area, in guide order. */
+function areaSpecies(areaSlug: string) {
+  return [...new Set(locationPagesForArea(areaSlug).map((page) => page.speciesId))]
+    .map((speciesId) => getSpecies(speciesId))
+    .filter((species): species is SpeciesProfile => Boolean(species));
+}
+
+/** The species page, or the territory guide when the species has one. */
+function speciesGuideHref(species: SpeciesProfile) {
+  return territoryGuideForSpecies(species.speciesId)?.path ?? speciesPath(species);
+}
+
+function todayCopy(area: AreaProfile, species: SpeciesProfile[]) {
+  return {
+    title: `Bolets ${area.prepositionalName} avui: com estan els boscos`,
+    intro: `Condicions actuals per anar a buscar ${hubSpeciesList(species)} ${area.prepositionalName}, calculades amb la pluja, la humitat i la temperatura dels boscos de tota la ${area.typeLabel === "massís" ? "zona" : "comarca"}. Comparen sectors: no confirmen que hi hagi bolets ni mostren punts exactes.`,
+    liveMapLabel: `Mapa en viu ${area.prepositionalName}`,
+  };
+}
+
+/** Live hub readings for every guide species in season, over the area window. */
+async function AreaConditionsBoard({ area, species, liveMapHref }: { area: AreaProfile; species: SpeciesProfile[]; liveMapHref?: string }) {
+  const month = monthInTimeZone();
+  const active = species.filter((entry) => readsConditionsNow(entry, area, month));
+  const resting = species.filter((entry) => !readsConditionsNow(entry, area, month));
+  const note = resting.length > 0
+    ? <p className="place-today-note">Fora de temporada ara: {resting.map((entry) => entry.identity.commonName).join(", ")}.</p>
+    : undefined;
+  const copy = todayCopy(area, active.length > 0 ? active : species);
+  if (active.length === 0) {
+    return <HubTodayPanel {...copy} liveMapHref={liveMapHref} readings={[]} state="off-season" note={note ?? <p className="place-today-note">Cap espècie amb guia és en temporada ara mateix.</p>} />;
   }
-  if (summary.positiveCellCount > 0) {
-    return `Alguna resposta favorable en el ${Math.round(summary.positiveCellShare * 100)}% de la zona`;
+  const bounds = areaBounds(area);
+  let summaries: Awaited<ReturnType<typeof getAreaPredictionSummaries>> = {};
+  try {
+    summaries = await getAreaPredictionSummaries(active.map((entry) => entry.speciesId), { slug: area.slug, regionId: area.regionId, bounds });
+  } catch {
+    summaries = {};
   }
-  return "Cap sector favorable ara mateix";
+  const readings = active.map((entry): HubReading & { observedAt?: string } => {
+    const summary = summaries[entry.speciesId];
+    const usable = summary && summary.result.score !== null && summary.result.missingComponents.length === 0 && !summary.snapshot.stale;
+    return {
+      species: entry,
+      score: usable ? summary.bestCell.score : null,
+      observedAt: usable ? summary.snapshot.observedAt : undefined,
+      guideHref: speciesGuideHref(entry),
+      mapHref: territorialMapPath(entry.speciesId, area.regionId, bounds),
+    };
+  }).sort((left, right) => (right.score ?? -1) - (left.score ?? -1));
+  const observedAt = readings.map((reading) => reading.observedAt).filter((value): value is string => Boolean(value)).sort().at(-1);
+  return <HubTodayPanel {...copy} liveMapHref={liveMapHref} readings={readings} observedAt={observedAt} note={note} state={readings.some((reading) => reading.score !== null) ? "available" : "unavailable"} />;
 }
 
 export function generateStaticParams() {
@@ -106,15 +123,16 @@ export default async function AreaPage({ params }: Props) {
     const species = pages[0] ? getSpecies(pages[0].speciesId) : undefined;
     return { place, pages, species };
   });
-  const guideCount = cards.reduce((total, card) => total + card.pages.length, 0);
-  const conditions = await loadAreaConditions(areaSlug);
-  const areaMapSpeciesId = conditions[0]?.speciesId ?? locationPagesForArea(areaSlug)[0]?.speciesId;
+  const species = areaSpecies(areaSlug);
+  const month = monthInTimeZone();
+  const bounds = areaBounds(area);
+  const liveMapSpecies = species.find((entry) => readsConditionsNow(entry, area, month)) ?? species[0];
+  const liveMapHref = liveMapSpecies ? territorialMapPath(liveMapSpecies.speciesId, area.regionId, bounds) : undefined;
   const territoryGuides = [...new Map(
-    locationPagesForArea(areaSlug)
-      .flatMap((page) => {
-        const guide = territoryGuideForSpecies(page.speciesId);
-        return guide ? [[guide.path, guide] as const] : [];
-      }),
+    species.flatMap((entry) => {
+      const guide = territoryGuideForSpecies(entry.speciesId);
+      return guide ? [[guide.path, guide] as const] : [];
+    }),
   ).values()];
 
   return (
@@ -124,65 +142,47 @@ export default async function AreaPage({ params }: Props) {
         <div className="page-width location-hub-hero-grid">
           <div className="location-hub-copy">
             <Link href="/guies" className="back-link location-back"><ArrowLeft size={15} /> Totes les guies</Link>
-            <p className="eyebrow light"><MapPinned size={15} /> {area.typeLabel} · lectura territorial</p>
+            <p className="eyebrow light"><MapPinned size={15} /> {area.typeLabel} · {regionLabels[area.regionId]}</p>
             <h1>Bolets<br /><i>{area.prepositionalName}.</i></h1>
             <p>{area.description} {area.landscape}</p>
           </div>
-          <TerritoryPortrait
-            atlasLabel="Guies del territori"
+          <HubMapPortrait
+            src={areaMapPath(area)}
+            spec={areaMapSpec(bounds)}
             name={area.name}
-            regionLabel={regionLabels[area.regionId]}
+            regionLabel={`${area.typeLabel} · ${regionLabels[area.regionId]}`}
+            atlasLabel="Guies del territori"
             count={places.length}
             countLabel={places.length === 1 ? "indret documentat" : "indrets documentats"}
+            liveMapHref={liveMapHref}
+            marker={false}
           />
         </div>
       </header>
 
       <div className="page-width location-hub-body">
-        <section className="location-hub-facts" aria-label="Resum de la col·lecció">
-          <div><Layers3 size={19} /><span>Zona del mapa</span><strong>{regionLabels[area.regionId]}</strong></div>
-          <div><BookOpen size={19} /><span>Guies</span><strong>{guideCount} {guideCount === 1 ? "espècie" : "espècies"}</strong></div>
-          <div><ShieldCheck size={19} /><span>Privadesa</span><strong>Sense punts de recol·lecció</strong></div>
-        </section>
+        <HubFacts species={species} />
 
-        {conditions.length > 0 ? (
-          <section className="current-board" aria-labelledby="area-conditions-title">
-            <header className="current-board-heading">
-              <div>
-                <p className="eyebrow"><Gauge size={15} /> Condicions ara</p>
-                <h2 id="area-conditions-title">Lectura actual {area.prepositionalName}</h2>
-              </div>
-            </header>
-            <ol className="current-overview-grid" aria-label={`Lectures actuals per espècie ${area.prepositionalName}`}>
-              {conditions.map(({ speciesId, summary }, index) => {
-                const species = getSpecies(speciesId)!;
-                const score = summary.bestCell.score;
-                return (
-                  <li className="current-overview-card is-available" key={speciesId}>
-                    <span className="current-row-rank">{String(index + 1).padStart(2, "0")}</span>
-                    <div className="current-overview-card-heading">
-                      <h3>{species.identity.commonName}</h3>
-                      <p className="current-row-species"><span>Condicions {area.typeLabel === "massís" ? "del massís" : "de la comarca"}</span></p>
-                    </div>
-                    {score !== null && score !== undefined ? (
-                      <div className="current-score" aria-label={`Millor sector ${score} sobre 100, ${opportunityLabel(score)}`}>
-                        <div><strong>{score}</strong><span>/100 · {opportunityLabel(score)}</span></div>
-                        <span className="current-score-track" aria-hidden="true"><span style={{ width: `${score}%` }} /></span>
-                      </div>
-                    ) : null}
-                    <dl className="current-row-signals">
-                      <div><dt>Abast dins la zona</dt><dd>{areaExtent(summary)}</dd></div>
-                    </dl>
-                    <Link href={territorialMapPath(speciesId, area.regionId, areaBounds(area))} className="current-row-map" aria-label={`Veure al mapa: ${species.identity.commonName} ${area.prepositionalName}`}>
-                      <MapIcon size={15} /><span>Veure mapa</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ol>
-            <p className="prediction-zone-note">Espècies ordenades per la millor lectura de la zona. La valoració compara condicions; no confirma presència ni garanteix trobar bolets.</p>
-          </section>
-        ) : null}
+        <Suspense fallback={<HubTodayPanel {...todayCopy(area, species)} liveMapHref={liveMapHref} readings={[]} state="loading" />}>
+          <AreaConditionsBoard area={area} species={species} liveMapHref={liveMapHref} />
+        </Suspense>
+
+        <HubSeasonMatrix title={`Quan és temporada ${area.prepositionalName}`} rows={species.map((entry) => ({ species: entry, href: speciesGuideHref(entry) }))} month={month} />
+
+        <section className="location-guide-gallery" aria-labelledby="places-title">
+          <header><div><p className="eyebrow">Guies per indret</p><h2 id="places-title">Indrets {area.prepositionalName}</h2></div><p>Cada indret té les seves guies: només les espècies que encaixen amb els seus boscos.</p></header>
+          <div className="location-guide-grid location-area-grid">
+            {cards.map(({ place, pages, species }, index) => {
+              const image = species?.media.find((asset) => asset.identificationReference) ?? species?.media[0];
+              return (
+                <Link href={placePath(place)} className="location-guide-card" key={place.slug}>
+                  <div className={`location-guide-card-media${image ? " has-image" : ""}`}>{image && <MediaImage asset={image} alt={image.alt} fill preload={index === 0} sizes="(max-width: 760px) calc(100vw - 48px), 50vw" />}<span>{place.typeLabel} · {pages.length} {pages.length === 1 ? "guia" : "guies"}</span></div>
+                  <div className="location-guide-card-copy"><div className="location-guide-card-title"><h3>{place.name}</h3><ArrowUpRight size={20} /></div><p>{place.description} {place.landscape}</p><div className="location-guide-card-facts"><span><MapPinned size={15} /> {area.name}</span><span><BookOpen size={15} /> {pages.map((page) => displaySearchName(page.searchName)).join(", ")}</span></div></div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
 
         {territoryGuides.length > 0 ? (
           <section
@@ -204,33 +204,12 @@ export default async function AreaPage({ params }: Props) {
           </section>
         ) : null}
 
-        <section className="location-guide-gallery" aria-labelledby="places-title">
-          <header><div><p className="eyebrow">Indrets documentats</p><h2 id="places-title">Boscos, valls i municipis</h2></div><p>Cada indret agrupa només les espècies amb una relació ecològica defensable i contingut territorial propi.</p></header>
-          <div className="location-guide-grid location-area-grid">
-            {cards.map(({ place, pages, species }, index) => {
-              const image = species?.media.find((asset) => asset.identificationReference) ?? species?.media[0];
-              return (
-                <Link href={placePath(place)} className="location-guide-card" key={place.slug}>
-                  <div className={`location-guide-card-media${image ? " has-image" : ""}`}>{image && <MediaImage asset={image} alt={image.alt} fill preload={index === 0} sizes="(max-width: 760px) calc(100vw - 48px), 50vw" />}<span>{place.typeLabel} · {pages.length} {pages.length === 1 ? "guia" : "guies"}</span></div>
-                  <div className="location-guide-card-copy"><div className="location-guide-card-title"><h3>{place.name}</h3><ArrowUpRight size={20} /></div><p>{place.description} {place.landscape}</p><div className="location-guide-card-facts"><span><MapPinned size={15} /> {area.name}</span><span><BookOpen size={15} /> {pages.map((page) => displaySearchName(page.searchName)).join(", ")}</span></div></div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-
-        <aside className="location-hub-principle">
-          <div><MapPinned size={24} /><p className="eyebrow light">Com llegir aquestes guies</p><h2>El territori filtra.<br />El temps decideix.</h2></div>
-          <p>La guia explica on encaixa l’espècie i el mapa compara les condicions actuals. Cap dels dos confirma presència ni revela una localització exacta.</p>
-          <div className="location-hub-principle-actions">
-            {areaMapSpeciesId ? <UmamiEventLink href={territorialMapPath(areaMapSpeciesId, area.regionId, areaBounds(area))} analyticsEvent={UMAMI_EVENTS.guideMapOpen} className="text-link">Mapa de bolets {area.prepositionalName} <ArrowUpRight size={17} /></UmamiEventLink> : null}
-            <Link href="/metode" className="text-link">Entendre el mètode <ArrowUpRight size={17} /></Link>
-          </div>
-        </aside>
-
         <DataSourceCredits
           label="Font territorial"
-          sources={[{ label: area.source.title, url: area.source.url }]}
+          sources={[
+            { label: area.source.title, url: area.source.url },
+            { label: "Base topogràfica: Institut Cartogràfic i Geològic de Catalunya", url: "https://www.icgc.cat/" },
+          ]}
         />
       </div>
     </div>

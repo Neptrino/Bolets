@@ -82,7 +82,6 @@ describe("search-intent species collections", () => {
     for (const { key } of SEASON_MONTHS) {
       expect(urls).toContain(`https://bolets.app${seasonMonthPath(key)}`);
     }
-    expect(urls).toContain("https://bolets.app/zones");
     expect(urls).toContain("https://bolets.app/guies");
     for (const guide of speciesTerritoryGuides) {
       expect(urls).toContain(`https://bolets.app${guide.path}`);

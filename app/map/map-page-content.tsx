@@ -239,17 +239,17 @@ export async function MapPageContent({ query, mapPage }: MapPageContentProps) {
                 : <Link href={`${speciesPath(species)}?region=${region}`} className="text-link">Veure {species.identity.commonName} <ArrowUpRight size={17} /></Link>}
             </nav>
           </aside>
-          <nav className="map-page-guide-links" aria-label="Guies relacionades amb el mapa de bolets"><Link href="/bolets-avui">Resum de bolets avui <ArrowUpRight size={16} /></Link><Link href="/zones">Comparar zones de Catalunya <ArrowUpRight size={16} /></Link><Link href="/bolets">Consultar espècies <ArrowUpRight size={16} /></Link><Link href="/quan-surten-els-bolets-despres-de-ploure">Quan surten després de ploure <ArrowUpRight size={16} /></Link></nav>
+          <nav className="map-page-guide-links" aria-label="Guies relacionades amb el mapa de bolets"><Link href="/bolets-avui">Resum de bolets avui <ArrowUpRight size={16} /></Link><Link href="/guies">Guies locals per territori <ArrowUpRight size={16} /></Link><Link href="/bolets">Consultar espècies <ArrowUpRight size={16} /></Link><Link href="/quan-surten-els-bolets-despres-de-ploure">Quan surten després de ploure <ArrowUpRight size={16} /></Link></nav>
           <section className="map-page-seo-copy" aria-labelledby="map-search-guide-title">
             <p className="eyebrow">{pageName}</p>
             <h2 id="map-search-guide-title">{mapPage ? `Com interpretar el mapa ${mapPage.mapNoun}` : species ? "Com interpretar el mapa d’aquesta espècie" : "Un radar de bolets per orientar la sortida"}</h2>
             {species ? <>
               <p>Aquest mapa combina l’hàbitat compatible de <i>{species.identity.scientificName}</i> amb les condicions recents. Té en compte entorns com {habitatSummary}, però no mostra troballes ni garanteix que hi hagi bolets.</p>
-              <p>Compara diversos sectors i consulta també la <Link href={speciesPath(species)}>fitxa de {species.identity.commonName}</Link>, el resum de <Link href="/bolets-avui">bolets avui</Link> i les <Link href="/zones">guies de zones</Link>.</p>
+              <p>Compara diversos sectors i consulta també la <Link href={speciesPath(species)}>fitxa de {species.identity.commonName}</Link>, el resum de <Link href="/bolets-avui">bolets avui</Link> i les <Link href="/guies">guies locals per territori</Link>.</p>
             </> : <>
               <p>Consulta quines zones de Catalunya tenen condicions més favorables per a cada espècie segons la pluja, la temperatura, la temporada i l’hàbitat. Aquest radar de bolets estima les condicions: no detecta bolets ni confirma que n’hi hagi.</p>
               <p>Comença pel mapa general per comparar zones. Després tria una espècie per veure on encaixa el seu hàbitat i com hi influeixen les condicions recents. Consulta el <Link href="/metode">mètode del mapa i els seus límits</Link> per interpretar-ne els resultats.</p>
-              <p>Consulta també el resum de <Link href="/bolets-avui">bolets avui</Link>, la <Link href="/bolets">fitxa de cada espècie</Link> i les <Link href="/zones">guies de zones</Link>.</p>
+              <p>Consulta també el resum de <Link href="/bolets-avui">bolets avui</Link>, la <Link href="/bolets">fitxa de cada espècie</Link> i les <Link href="/guies">guies locals per territori</Link>.</p>
             </>}
             <DataSourceCredits sources={[...environmentalSources, ...coreEditorialSources]} label="Fonts de les dades del mapa" />
           </section>

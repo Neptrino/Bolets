@@ -63,7 +63,7 @@ describe("mushroom-hunting FAQ", () => {
       url.hash = "";
       expect(canonicalUrls.has(url.href), url.href).toBe(true);
     }
-    for (const target of ["/temporada", "/bolets-avui", "/zones", "/zones/rovellons", "/zones/ceps", "/bolets-verinosos", "/normativa-bolets", "/quan-surten-els-bolets-despres-de-ploure"]) {
+    for (const target of ["/temporada", "/bolets-avui", "/guies", "/zones/rovellons", "/zones/ceps", "/bolets-verinosos", "/normativa-bolets", "/quan-surten-els-bolets-despres-de-ploure"]) {
       expect(document.querySelector(`details a[href="${target}"]`), target).not.toBeNull();
     }
   });

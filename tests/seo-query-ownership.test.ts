@@ -113,7 +113,7 @@ describe("SEO query ownership", () => {
   it("keeps the coordinated release URL-neutral", () => {
     const entries = buildSitemap();
 
-    expect(entries).toHaveLength(217);
+    expect(entries).toHaveLength(216);
     expect(entries.some(({ url }) => url.endsWith("/noms-de-bolets-catala-castella"))).toBe(true);
     expect(new Set(entries.map(({ url }) => url)).size).toBe(entries.length);
   });

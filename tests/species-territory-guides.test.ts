@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import ZonesPage from "@/app/zones/page";
+import GuidesPage from "@/app/guies/page";
 import { describe, expect, it } from "vitest";
 import { buildSitemap as sitemap } from "@/app/sitemap";
 import { getEditorialMetadata } from "@/data/editorial";
@@ -54,9 +54,9 @@ describe("species territory guide registry", () => {
     expect(territoryGuideForSpecies("amanita-phalloides")).toBeUndefined();
   });
 
-  it("keeps species territory hubs reachable through the footer's zones directory", () => {
-    expect(footer).toContain('href="/zones"');
-    const html = renderToStaticMarkup(createElement(ZonesPage));
+  it("keeps species territory hubs reachable through the footer's guides index", () => {
+    expect(footer).toContain('href="/guies"');
+    const html = renderToStaticMarkup(createElement(GuidesPage));
     for (const guide of speciesTerritoryGuides) expect(html).toContain(`href="${guide.path}"`);
   });
 });

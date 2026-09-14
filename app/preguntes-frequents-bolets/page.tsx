@@ -61,7 +61,7 @@ const topics: HuntingTopic[] = [
       {
         id: "cap-de-setmana",
         question: "On trobar bolets avui o aquesta setmana?",
-        answer: <>Comença per comparar les <Link href="/bolets-avui">condicions de bolets avui</Link> i la data de les lectures. Després, consulta les <Link href="/zones">zones de Catalunya</Link> per entendre l’hàbitat i les espècies de cada territori. Les dades actuals no garanteixen el temps del cap de setmana ni que hi trobaràs bolets: abans de sortir, confirma també la previsió meteorològica i els avisos d’accés del lloc.</>,
+        answer: <>Comença per comparar les <Link href="/bolets-avui">condicions de bolets avui</Link> i la data de les lectures. Després, consulta les <Link href="/guies">guies per territori</Link> per entendre l’hàbitat i les espècies de cada comarca o massís. Les dades actuals no garanteixen el temps del cap de setmana ni que hi trobaràs bolets: abans de sortir, confirma també la previsió meteorològica i els avisos d’accés del lloc.</>,
       },
       {
         id: "boscos",
@@ -147,7 +147,7 @@ const topics: HuntingTopic[] = [
       {
         id: "amb-nens",
         question: "Com preparar una sortida a buscar bolets amb nens?",
-        answer: <>Tria un recorregut conegut i adequat a l’edat i la condició física del grup. Consulta el temps, porta aigua, menjar, roba visible i mitjans d’orientació, mantén el contacte visual i planifica el retorn abans que es faci fosc. Les <Link href="/zones">guies de zones</Link> expliquen el context del bosc, però no certifiquen itineraris aptes per a infants. Revisa també les <Link href="/normativa-bolets">normes d’accés i recol·lecció</Link> abans de sortir.</>,
+        answer: <>Tria un recorregut conegut i adequat a l’edat i la condició física del grup. Consulta el temps, porta aigua, menjar, roba visible i mitjans d’orientació, mantén el contacte visual i planifica el retorn abans que es faci fosc. Les <Link href="/guies">guies locals</Link> expliquen el context del bosc, però no certifiquen itineraris aptes per a infants. Revisa també les <Link href="/normativa-bolets">normes d’accés i recol·lecció</Link> abans de sortir.</>,
         sources: [collectingSources.mountainSafety],
       },
     ],

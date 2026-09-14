@@ -759,6 +759,26 @@ export function placesForArea(areaSlug: string) {
   return placeProfiles.filter((place) => place.areaSlug === areaSlug);
 }
 
+export function placeDistanceKm(from: PlaceProfile, to: PlaceProfile) {
+  const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+  const [fromLongitude, fromLatitude] = from.mapCentre;
+  const [toLongitude, toLatitude] = to.mapCentre;
+  const dLatitude = toRadians(toLatitude - fromLatitude);
+  const dLongitude = toRadians(toLongitude - fromLongitude);
+  const a = Math.sin(dLatitude / 2) ** 2 +
+    Math.cos(toRadians(fromLatitude)) * Math.cos(toRadians(toLatitude)) * Math.sin(dLongitude / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(a));
+}
+
+/** Other documented places, nearest first, across every area. */
+export function nearbyPlaces(place: PlaceProfile, limit = 4) {
+  return placeProfiles
+    .filter((candidate) => candidate !== place)
+    .map((candidate) => ({ place: candidate, distanceKm: placeDistanceKm(place, candidate) }))
+    .sort((left, right) => left.distanceKm - right.distanceKm)
+    .slice(0, limit);
+}
+
 export function locationPagesForPlace(areaSlug: string, placeSlug: string) {
   return speciesLocationPages.filter((page) => page.areaSlug === areaSlug && page.placeSlug === placeSlug);
 }

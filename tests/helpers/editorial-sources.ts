@@ -57,7 +57,7 @@ const SPECIES_TEMPLATE = [
   file("components/species-profile/profile-section.tsx"),
 ];
 
-const TERRITORY_TEMPLATE = [file("components/territory-portrait.tsx")];
+const HUB_TEMPLATE = [file("components/hub-map-portrait.tsx"), file("components/hub-sections.tsx")];
 
 const STATIC_PAGES: Record<string, ContentSource[]> = {
   home: [
@@ -114,7 +114,6 @@ const STATIC_PAGES: Record<string, ContentSource[]> = {
   "col-labora": [file("app/col-labora/page.tsx"), file("components/contribution-guide.tsx")],
   "equip-editorial": [file("app/equip-editorial/page.tsx")],
   "avis-legal": [file("app/avis-legal/page.tsx")],
-  zones: [file("app/zones/page.tsx"), file("src/lib/zone-directory.ts")],
   guies: [file("app/guies/page.tsx"), file("components/guide-directory.tsx")],
   "zones-rovellons": [
     file("app/zones/rovellons/page.tsx"),
@@ -173,7 +172,7 @@ export function editorialSourcesFor(contentId: string): EditorialSourceSet {
         sectionConstant: "ZONE_PAGES_UPDATED_AT",
         sources: [
           file("app/zones/[place]/page.tsx"),
-          ...TERRITORY_TEMPLATE,
+          ...HUB_TEMPLATE,
           block("data/location-pages.ts", `slug: "${key}"`, "export const areaProfiles"),
         ],
       };
@@ -183,7 +182,8 @@ export function editorialSourcesFor(contentId: string): EditorialSourceSet {
         sectionConstant: "PLACE_PAGES_UPDATED_AT",
         sources: [
           file("app/zones/[place]/[species]/page.tsx"),
-          ...TERRITORY_TEMPLATE,
+          ...HUB_TEMPLATE,
+          file("components/local-resources.tsx"),
           block("data/location-pages.ts", `areaSlug: "${area}", slug: "${place}"`, "export const placeProfiles"),
         ],
       };
@@ -194,6 +194,8 @@ export function editorialSourcesFor(contentId: string): EditorialSourceSet {
         sectionConstant: "LOCAL_GUIDES_UPDATED_AT",
         sources: [
           file("app/zones/[place]/[species]/[guide]/page.tsx"),
+          file("components/local-resources.tsx"),
+          file("src/lib/local-landscape.ts"),
           block(
             "data/location-pages.ts",
             [`areaSlug: "${area}", placeSlug: "${place}", `, `speciesId: "${speciesId}"`],

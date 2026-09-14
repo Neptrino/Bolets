@@ -1,85 +1,51 @@
 import "@/app/styles/local-guides.css";
+import "@/app/styles/place-hub.css";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { headers } from "next/headers";
 import { isMapWarmRequestAuthorized } from "@/src/lib/cache-warm-auth.server";
-import { Suspense } from "react";
-import { ArrowUpRight, BookOpenCheck, CalendarDays, Clock3, Gauge, Info, Layers3, Map, MapPinned, Mountain, ShieldAlert, Sprout, Trees } from "lucide-react";
+import { Suspense, type CSSProperties, type ReactNode } from "react";
+import { ArrowUpRight, BookOpenCheck, CalendarDays, Compass, Droplets, Info, Map as MapIcon, MapPinned, Mountain, ShieldAlert, Sprout, Sun, Trees, TrendingUp, type LucideIcon } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
+import { LocalResources } from "@/components/local-resources";
 import { MediaImage } from "@/components/media-image";
-import { LazyHabitatMap } from "@/components/lazy-habitat-map";
+import { MushroomSpecimen } from "@/components/mushroom-game-illustrations";
+import { HubTodayPanel } from "@/components/hub-sections";
 import { UmamiEventLink } from "@/components/umami-event-link";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
+import { LazyHabitatMap } from "@/components/lazy-habitat-map";
 import { SeasonCalendar } from "@/components/season-calendar";
 import { getSpecies } from "@/data/species";
 import { editorialArticleFields, environmentalSources } from "@/data/editorial";
 import { areasBySlug, displaySearchName, getLocationPage, getPlace, locationPagePath, locationPagesForPlace, locationPagesForSpecies, placeBounds, placePath, speciesLocationPages } from "@/data/location-pages";
 import { loadLocalGuideCondition } from "@/src/lib/local-guide-conditions-server";
 import { loadLocalGuideFacts } from "@/src/lib/local-guide-facts-server";
-import { opportunityLabel } from "@/src/lib/scoring";
-import { absoluteUrl, metaDescription, pageTitle, SITE_URL, speciesDescription, speciesImage, speciesPath } from "@/src/lib/seo";
+import { localLandscapeParagraphs } from "@/src/lib/local-landscape";
+import { loadLocalLandscape } from "@/src/lib/local-landscape-server";
+import { absoluteUrl, metaDescription, pageTitle, SITE_URL, speciesImage, speciesPath } from "@/src/lib/seo";
 import { monthInTimeZone, SEASON_MONTHS } from "@/src/lib/seasonality";
+import { placeBannerSpec, placeMapPath } from "@/src/lib/place-map";
+import { speciesArticle } from "@/src/lib/species-headings";
+import { speciesDrawing, speciesIllustration } from "@/src/lib/species-illustrations";
 import { territorialMapPath } from "@/src/lib/territorial-map";
-import { publicConditionFactorLabel } from "@/src/lib/condition-presentation";
 import type { AreaProfile, PlaceProfile } from "@/data/location-pages";
 import type { SourceReference, SpeciesProfile } from "@/src/lib/types";
 
 type Props = { params: Promise<{ place: string; species: string; guide: string }> };
 
-const dateTime = new Intl.DateTimeFormat("ca-ES", {
-  dateStyle: "medium",
-  timeStyle: "short",
-  timeZone: "Europe/Madrid",
-});
-
 const localFactNumber = new Intl.NumberFormat("ca-ES", {
-  maximumFractionDigits: 1,
+  maximumFractionDigits: 0,
 });
-
-function LocalResources({ location }: { location: PlaceProfile }) {
-  const resources = [
-    { label: "Context local", ...location.source },
-    ...location.resources,
-  ];
-
-  return (
-    <aside className="local-resource-shelf" aria-labelledby="local-resources-title">
-      <header>
-        <p className="eyebrow">Més informació</p>
-        <h3 id="local-resources-title">Descobreix {location.name}</h3>
-        <p>Webs externes per preparar una visita i conèixer millor el territori.</p>
-      </header>
-      <ul>
-        {resources.map((resource) => (
-          <li key={resource.url}>
-            <a href={resource.url} target="_blank" rel="noreferrer" aria-label={`${resource.title} (s’obre en una pestanya nova)`}>
-              <span>{resource.label}</span>
-              <strong>{resource.title}</strong>
-              <ArrowUpRight size={16} aria-hidden="true" />
-            </a>
-          </li>
-        ))}
-      </ul>
-    </aside>
-  );
-}
 
 function LocalEvidenceLoading({ location }: { location: PlaceProfile }) {
   return (
-    <section className="local-evidence-strip local-evidence-loading" aria-busy="true" aria-live="polite">
-      <header>
-        <Layers3 size={20} aria-hidden="true" />
-        <div>
-          <p className="eyebrow">Dades de l’entorn</p>
-          <h2>Preparant l’hàbitat al voltant de {location.name}…</h2>
-          <p>La resta de la guia ja és disponible mentre carreguem aquestes dades.</p>
-        </div>
-      </header>
-      <div className="local-fact-placeholder" aria-hidden="true"><span /><span /><span /></div>
-    </section>
+    <div className="local-evidence local-evidence-loading" aria-busy="true" aria-live="polite">
+      <p className="guide-panel-text"><strong>Comptant el bosc al voltant de {location.nameWithArticle}…</strong> La resta de la guia ja es pot llegir.</p>
+    </div>
   );
 }
 
@@ -104,81 +70,121 @@ async function LocalEvidencePanel({
   } catch {
     evidenceFailed = true;
   }
+  const name = species.identity.commonName.toLocaleLowerCase("ca");
+  const area = evidence?.facts.find((fact) => fact.kind === "derived" && fact.metric === "compatible-area");
+  const altitude = evidence?.facts.find((fact) => fact.kind === "derived" && fact.metric === "altitude-retention");
 
   return (
-    <section className="local-evidence-strip" aria-labelledby="local-evidence-title" data-local-evidence-state={evidenceFailed ? "unavailable" : evidence ? "available" : "empty"}>
-      <header>
-        <Layers3 size={20} aria-hidden="true" />
-        <div>
-          <p className="eyebrow">Dades de l’entorn</p>
-          <h2 id="local-evidence-title">L’hàbitat al voltant de {location.name}</h2>
-          <p>Resum d’una àrea àmplia al voltant del lloc, no d’un límit oficial ni d’un bosc concret.</p>
-        </div>
-      </header>
-      {evidence ? (
-        <div className="local-evidence-body">
-          <ul className="local-fact-grid" aria-label={`Dades d’hàbitat de ${species.identity.commonName} al voltant de ${location.name}`}>
-            {evidence.facts.filter((fact) => fact.kind === "derived").map((fact) => (
-              <li key={fact.metric}>
-                <span>{fact.label}</span>
-                <strong>{fact.metric === "compatible-cells" ? Math.round(fact.value) : localFactNumber.format(fact.value)} <small>{fact.unit}</small></strong>
-                <p>{fact.description}</p>
-              </li>
-            ))}
-          </ul>
-          <footer className="local-evidence-provenance">
-            <Info size={16} aria-hidden="true" />
-            <p>Aquest resum compara el tipus de bosc, el sòl i l’altitud d’una àrea àmplia. No fa servir observacions de bolets.</p>
-          </footer>
-        </div>
+    <div className="local-evidence" id="local-evidence" data-local-evidence-state={evidenceFailed ? "unavailable" : evidence ? "available" : "empty"}>
+      <p className="guide-panel-text"><strong>Quant bosc hi ha al voltant de {location.nameWithArticle}.</strong> Comptat en uns 15 km al voltant del poble, no dins el terme municipal ni en un bosc concret.</p>
+      {area?.kind === "derived" && altitude?.kind === "derived" ? (
+        <GuideFacts
+          label={`Bosc adequat per a ${species.identity.commonName} al voltant de ${location.nameWithArticle}`}
+          items={[
+            { key: "area", icon: <Trees size={16} />, term: "Bosc on pot créixer", value: `${localFactNumber.format(area.value)} km²`, detail: `Bosc amb els arbres i el sòl que necessita el ${name}.` },
+            { key: "altitude", icon: <Mountain size={16} />, term: "A l’altitud que li convé", value: `${localFactNumber.format(altitude.value)} %`, detail: "Part d’aquest bosc dins la franja d’altitud on l’espècie sol fructificar." },
+          ]}
+        />
       ) : (
-        <div className="local-evidence-unavailable">
-          <p><strong>Ara no podem mostrar aquestes xifres.</strong> Falten dades completes de l’entorn i no volem omplir els buits amb suposicions.</p>
-          <p>La resta de la guia continua disponible sense indicar boscos ni coordenades de recol·lecció.</p>
-        </div>
+        <p className="guide-panel-note"><Info size={14} aria-hidden="true" /><span><strong>Ara no podem mostrar aquestes xifres.</strong> Falten dades de l’entorn i no volem omplir els buits amb suposicions.</span></p>
       )}
-      <LocalResources location={location} />
+      {area ? <p className="guide-panel-note"><Info size={14} aria-hidden="true" /><span>Calculat amb mapes de bosc, sòl i relleu, no amb troballes de bolets.</span></p> : null}
+    </div>
+  );
+}
+
+type GuideFact = { key: string; icon: ReactNode; term: string; value?: ReactNode; detail: ReactNode; wide?: boolean };
+
+/** Icon, label, optional big value and a line of detail; two columns with hairlines, no boxes. */
+function GuideFacts({ label, items }: { label: string; items: GuideFact[] }) {
+  return (
+    <dl className="guide-facts" aria-label={label}>
+      {items.map((item) => (
+        <div key={item.key} className={item.wide ? "is-wide" : undefined}>
+          <dt><span className="guide-fact-icon" aria-hidden="true">{item.icon}</span>{item.term}</dt>
+          <dd>{item.value ? <strong>{item.value}</strong> : null}<span>{item.detail}</span></dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/** Terrain portrait built from the 1 km cells around the place; silent when the data is short. */
+async function LocalLandscapeText({ species, location }: { species: SpeciesProfile; location: PlaceProfile }) {
+  await connection();
+  let landscape = null;
+  try {
+    landscape = await loadLocalLandscape(species.speciesId, `${location.areaSlug}/${location.slug}`, placeBounds(location));
+  } catch {
+    landscape = null;
+  }
+  if (!landscape) return null;
+  const paragraphs = localLandscapeParagraphs(landscape, { placeName: location.nameWithArticle, speciesWithArticle: speciesArticle(species.identity.commonName).withArticle });
+  return (
+    <div className="local-landscape" data-local-landscape-state="available">
+      {paragraphs.map((paragraph) => <p className="guide-panel-text" key={paragraph}>{paragraph}</p>)}
+      <p className="guide-panel-note"><Info size={14} aria-hidden="true" /><span>Comptat en uns 15 km al voltant del poble amb mapes de cobertes del sòl, relleu, sòls i geologia.</span></p>
+    </div>
+  );
+}
+
+/** "per al cep", "per a la múrgola", "per a l’apagallums". */
+function forSpecies(name: string) {
+  const { withArticle } = speciesArticle(name);
+  return withArticle.startsWith("el ") ? `per al ${withArticle.slice(3)}` : `per a ${withArticle}`;
+}
+
+/** One card per section, with the Today panel's chrome: inline icon in the eyebrow, heading, lede. */
+function GuideSection({ id, icon: Icon, eyebrow, title, lede, action, flush, children }: {
+  id: string;
+  icon: LucideIcon;
+  eyebrow: string;
+  title: string;
+  lede?: ReactNode;
+  action?: ReactNode;
+  /** Body without padding, for the map. */
+  flush?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <section id={id} className="guide-panel" aria-labelledby={`${id}-title`}>
+      <header className="guide-panel-head">
+        <div>
+          <p className="eyebrow"><Icon size={15} aria-hidden="true" /> {eyebrow}</p>
+          <h2 id={`${id}-title`}>{title}</h2>
+          {lede ? <p className="guide-panel-lede">{lede}</p> : null}
+        </div>
+        {action}
+      </header>
+      <div className={flush ? "guide-panel-body is-flush" : "guide-panel-body"}>{children}</div>
     </section>
   );
 }
 
-function extentMetric(summary: Awaited<ReturnType<typeof loadLocalGuideCondition>>) {
-  if (!summary) return "Sense dades suficients";
-  if (summary.score20CellCount > 0) {
-    return `Condicions favorables en el ${Math.round(summary.score20CellShare * 100)}% de la zona`;
-  }
-  if (summary.positiveCellCount > 0) {
-    return `Alguna resposta favorable en el ${Math.round(summary.positiveCellShare * 100)}% de la zona`;
-  }
-  return "Cap sector favorable ara mateix";
+/** The H2 repeats the guide's own search phrase (plural common name + place) and adds the "avui" intent. */
+function todayCopy(species: SpeciesProfile, location: PlaceProfile, titlePhrase: string) {
+  const name = species.identity.commonName.toLocaleLowerCase("ca");
+  return {
+    title: `${titlePhrase} avui: com estan els boscos`,
+    intro: `Condicions actuals per anar a buscar ${name} ${location.prepositionalName}, calculades amb la pluja, la humitat i la temperatura dels boscos de l’entorn. Comparen sectors: no confirmen que hi hagi bolets ni mostren punts exactes.`,
+    liveMapLabel: `Mapa de ${name} ${location.prepositionalName}`,
+  };
 }
 
-function limitingFactor(summary: NonNullable<Awaited<ReturnType<typeof loadLocalGuideCondition>>>) {
-  const factor = summary.result.components
-    .filter((component) => component.score !== null)
-    .sort((left, right) => (left.score ?? 0) - (right.score ?? 0))[0];
-  return factor ? publicConditionFactorLabel(factor.id) : "Sense cap factor destacat";
-}
-
-function LocalConditionsLoading() {
-  return (
-    <aside className="local-map-cta local-current-loading" aria-busy="true" aria-live="polite">
-      <Clock3 size={20} aria-hidden="true" />
-      <p className="eyebrow light">Condicions actuals</p>
-      <h2>Comprovant la lectura local…</h2>
-      <p>La guia ja és disponible mentre carreguem les dades més recents.</p>
-    </aside>
-  );
+function LocalConditionsLoading({ species, location, titlePhrase, mapPath }: { species: SpeciesProfile; location: PlaceProfile; titlePhrase: string; mapPath: string }) {
+  return <HubTodayPanel id="local-current" {...todayCopy(species, location, titlePhrase)} liveMapHref={mapPath} readings={[]} state="loading" />;
 }
 
 async function LocalConditionsCard({
   species,
   area,
   location,
+  titlePhrase,
 }: {
   species: SpeciesProfile;
   area: AreaProfile;
   location: PlaceProfile;
+  titlePhrase: string;
 }) {
   const bounds = placeBounds(location);
   const mapPath = territorialMapPath(species.speciesId, area.regionId, bounds);
@@ -187,66 +193,40 @@ async function LocalConditionsCard({
   const eligible = species.predictionMode === "current" &&
     species.ecologicalConfig.regions.includes(area.regionId) &&
     seasonalActivity !== "inactive";
+  const copy = todayCopy(species, location, titlePhrase);
 
   if (!eligible) {
-    return (
-      <aside className="local-map-cta">
-        <Map size={20} aria-hidden="true" />
-        <p className="eyebrow light">Condicions actuals</p>
-        <h2>{species.predictionMode === "current" ? "Fora de temporada" : "Només hàbitat"}</h2>
-        <p>{species.predictionMode === "current" ? "Ara no és la temporada habitual d’aquesta espècie. Encara pots consultar els boscos adequats." : "Per a aquesta espècie mostrem on encaixa el terreny, però no una valoració actual."}</p>
-        <UmamiEventLink href={mapPath} analyticsEvent={UMAMI_EVENTS.guideMapOpen} className="button light-button">Obrir el mapa de {species.identity.commonName.toLocaleLowerCase("ca")} {location.prepositionalName} <ArrowUpRight size={16} aria-hidden="true" /></UmamiEventLink>
-      </aside>
-    );
+    const note = species.predictionMode === "current"
+      ? "Ara no és la temporada habitual d’aquesta espècie. Els boscos adequats es poden consultar igualment al mapa."
+      : "Per a aquesta espècie mostrem on encaixa el terreny, però no una valoració actual.";
+    return <HubTodayPanel id="local-current" className="local-current-unavailable" {...copy} liveMapHref={mapPath} readings={[]} state="off-season" note={<p className="place-today-note">{note}</p>} />;
   }
 
   // Production builds intentionally have no database credentials. Defer this
   // bounded, generation-cached read until a real request reaches the page.
   await connection();
   let summary = null;
-  let conditionFailed = false;
   const background = isMapWarmRequestAuthorized(await headers());
   try {
-    summary = await loadLocalGuideCondition(
-      species.speciesId,
-      `${area.slug}/${location.slug}`,
-      area.regionId,
-      bounds,
-      background,
-    );
+    summary = await loadLocalGuideCondition(species.speciesId, `${area.slug}/${location.slug}`, area.regionId, bounds, background);
   } catch {
-    conditionFailed = true;
+    summary = null;
   }
-  if (!summary ||
-    summary.result.score === null ||
-    summary.result.missingComponents.length > 0 ||
-    summary.snapshot.stale) {
-    return (
-      <aside className="local-map-cta local-current-unavailable" data-local-condition-state={conditionFailed || summary ? "unavailable" : "empty"}>
-        <Gauge size={20} aria-hidden="true" />
-        <p className="eyebrow light">Condicions actuals</p>
-        <h2>Condicions no disponibles</h2>
-        <p>Falten lectures recents per donar una valoració completa. Torna-ho a provar més tard.</p>
-        <UmamiEventLink href={mapPath} analyticsEvent={UMAMI_EVENTS.guideMapOpen} className="button light-button">Obrir el mapa de {species.identity.commonName.toLocaleLowerCase("ca")} {location.prepositionalName} <ArrowUpRight size={16} aria-hidden="true" /></UmamiEventLink>
-      </aside>
-    );
-  }
-
-  const score = summary.bestCell.score;
+  const usable = summary && summary.result.score !== null && summary.result.missingComponents.length === 0 && !summary.snapshot.stale
+    ? summary
+    : null;
+  const reading = { species, score: usable ? usable.bestCell.score : null, guideHref: speciesPath(species), mapHref: mapPath };
   return (
-    <aside className="local-map-cta local-current-card" aria-labelledby="local-current-title" data-local-condition-state="available">
-      <div className="local-current-heading">
-        <div><p className="eyebrow light"><Gauge size={15} aria-hidden="true" /> Condicions actuals</p><h2 id="local-current-title">Lectura {location.prepositionalName}</h2></div>
-        <div className="local-current-score" aria-label={`Millor sector ${score} sobre 100, ${opportunityLabel(score)}`}><strong>{score}</strong><span>/100</span></div>
-      </div>
-      <p className="local-current-interpretation">Millor sector · {opportunityLabel(score)}. Les condicions poden variar dins l’indret.</p>
-      <dl className="local-current-signals">
-        <div><dt>Abast dins la zona</dt><dd>{extentMetric(summary)}</dd></div>
-        <div><dt>Principal fre</dt><dd>{limitingFactor(summary)}</dd></div>
-      </dl>
-      <p className="local-current-updated"><Clock3 size={14} aria-hidden="true" /> Dades de {dateTime.format(new Date(summary.snapshot.observedAt))}</p>
-      <UmamiEventLink href={mapPath} analyticsEvent={UMAMI_EVENTS.guideMapOpen} className="button light-button"><Map size={16} aria-hidden="true" /> Mapa de {species.identity.commonName.toLocaleLowerCase("ca")} {location.prepositionalName}</UmamiEventLink>
-    </aside>
+    <HubTodayPanel
+      id="local-current"
+      className={usable ? "local-current-card" : "local-current-unavailable"}
+      {...copy}
+      liveMapHref={mapPath}
+      readings={[reading]}
+      observedAt={usable ? usable.snapshot.observedAt : undefined}
+      note={usable ? undefined : <p className="place-today-note">Falten lectures recents per donar una valoració completa. Torna-hi més tard.</p>}
+      state={usable ? "available" : "unavailable"}
+    />
   );
 }
 
@@ -280,9 +260,11 @@ export default async function SpeciesLocationPage({ params }: Props) {
   if (!page || !location || !area || !species) notFound();
   const url = absoluteUrl(locationPagePath(page));
   const mapPath = territorialMapPath(species.speciesId, area.regionId, placeBounds(location));
-  const speciesName = species.identity.commonName.toLocaleLowerCase("ca");
   const image = speciesImage(species);
   const referenceImage = species.media.find((asset) => asset.identificationReference) ?? species.media[0];
+  const banner = placeBannerSpec(location);
+  const drawing = speciesDrawing(species.speciesId);
+  const illustration = speciesIllustration(species.speciesId);
   const habitat = species.ecologicalConfig.habitat;
   const soil = species.ecologicalConfig.soil;
   const peakMonths = SEASON_MONTHS.filter(({ key }) => species.ecologicalConfig.seasonality[key] === "peak").map(({ label }) => label);
@@ -303,70 +285,93 @@ export default async function SpeciesLocationPage({ params }: Props) {
   return (
     <article className="local-species-page">
       <JsonLd data={{ "@context": "https://schema.org", "@graph": [{ "@type": "Article", "@id": `${url}#article`, headline: page.titlePhrase, description: page.habitatNote, url, inLanguage: "ca", image, isPartOf: { "@id": `${SITE_URL}/#website` }, publisher: { "@id": `${SITE_URL}/#organization` }, ...editorialArticleFields(editorialContentId), about: [{ "@type": "Taxon", name: species.identity.scientificName, alternateName: [species.identity.commonName, ...species.identity.alternateNames], taxonRank: "species" }, { "@type": "Place", name: location.name, containedInPlace: { "@type": "Place", name: area.name } }] }, { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL }, { "@type": "ListItem", position: 2, name: "Guies", item: absoluteUrl("/guies") }, { "@type": "ListItem", position: 3, name: area.name, item: absoluteUrl(`/zones/${area.slug}`) }, { "@type": "ListItem", position: 4, name: location.name, item: absoluteUrl(placePath(location)) }, { "@type": "ListItem", position: 5, name: displaySearchName(page.searchName), item: url }] }] }} />
-      <header className="local-species-hero">
-        <div className="page-width local-species-hero-grid">
-          <div>
+      <header className="local-species-hero guide-hero">
+        <div className="guide-hero-map" aria-hidden="true">
+          <Image src={placeMapPath(location, "banner")} alt="" width={banner.width} height={banner.height} unoptimized priority style={{ objectPosition: `${banner.focus.x * 100}% ${banner.focus.y * 100}%` }} />
+        </div>
+        <div className="guide-hero-pin" style={{ "--pin-x": `${banner.focus.x * 100}%`, "--pin-y": `${banner.focus.y * 100}%` } as CSSProperties}>
+          <span className={`guide-hero-pin-badge${drawing ? " has-drawing" : illustration ? "" : " has-photo"}`}>
+            {drawing
+              ? <Image src={drawing.src} alt={species.identity.commonName} width={240} height={240} unoptimized />
+              : illustration
+                ? <MushroomSpecimen kind={illustration} />
+                : referenceImage && <MediaImage asset={referenceImage} alt={species.identity.commonName} fill sizes="120px" />}
+          </span>
+          <span className="guide-hero-pin-tail" aria-hidden="true" />
+          <strong>{location.name}</strong>
+        </div>
+        <div className="guide-hero-scale" role="img" aria-label={`Escala: ${banner.scaleBar.metres / 1000} km`}>
+          <i style={{ width: `${banner.scaleBar.widthPercent}%` }} /><span>{banner.scaleBar.metres / 1000} km</span>
+        </div>
+        <small className="guide-hero-credit">Base topogràfica © ICGC</small>
+        <div className="guide-hero-fade" aria-hidden="true" />
+        <div className="page-width guide-hero-layout">
+          <div className="guide-hero-copy">
             <nav className="local-species-breadcrumbs" aria-label="Fil d’Ariadna"><Link href="/guies">Guies</Link><span aria-hidden="true">/</span><Link href={`/zones/${area.slug}`}>{area.name}</Link><span aria-hidden="true">/</span><Link href={placePath(location)}>{location.name}</Link><span aria-hidden="true">/</span><span aria-current="page">{displaySearchName(page.searchName)}</span></nav>
-            <p className="eyebrow light"><MapPinned size={15} /> {area.name} · guia ecològica local</p>
+            <p className="eyebrow light"><MapPinned size={15} /> {location.typeLabel} · {area.name}</p>
             <h1>{page.titlePhrase}</h1><em>{species.identity.scientificName}</em><p>{page.introduction}</p>
           </div>
-          {referenceImage && <div className="local-species-image"><MediaImage asset={referenceImage} alt={referenceImage.alt} fill preload sizes="(max-width: 760px) calc(100vw - 48px), 42vw" /></div>}
         </div>
       </header>
       <div className="page-width local-species-content">
-        <nav className="guide-reading-actions" aria-label="Prepara la sortida">
-          <a href="#local-current">Consulta la lectura local <ArrowUpRight size={16} aria-hidden="true" /></a>
-          <UmamiEventLink href={mapPath} analyticsEvent={UMAMI_EVENTS.guideMapOpen}>
-            <Map size={16} aria-hidden="true" /> Mapa de {speciesName} {location.prepositionalName}
-          </UmamiEventLink>
-          <Link href="/bolets-avui">Compara les condicions d’avui a Catalunya <ArrowUpRight size={16} aria-hidden="true" /></Link>
-        </nav>
         <section className="local-species-summary" aria-label="Resum ecològic">
           <div><Trees size={19} /><span>Bosc habitual</span><strong>{habitat.forestTypes.slice(0, 2).join(" i ")}</strong></div>
           <div><Mountain size={19} /><span>Altitud habitual</span><strong>{habitat.altitude[0]}–{habitat.altitude[1]} m</strong></div>
           <div><CalendarDays size={19} /><span>Millors mesos</span><strong>{peakMonths.join(" i ") || "Sense un pic clar"}</strong></div>
         </section>
+        <Suspense fallback={<LocalConditionsLoading species={species} location={location} titlePhrase={page.titlePhrase} mapPath={mapPath} />}><LocalConditionsCard species={species} area={area} location={location} titlePhrase={page.titlePhrase} /></Suspense>
         <div className="local-species-columns">
-          <div className="local-current-slot" id="local-current"><Suspense fallback={<LocalConditionsLoading />}><LocalConditionsCard species={species} area={area} location={location} /></Suspense></div>
-          <div className="local-species-main">
-            <section className="local-landscape-section"><p className="eyebrow">Lectura del paisatge</p><h2>Quins sectors poden encaixar-hi</h2><p>{page.habitatNote}</p><p>{location.landscape}</p></section>
-            <section className="local-factors-section"><p className="eyebrow">Bosc i terreny</p><h2>Què necessita aquesta espècie</h2><p>El tipus de bosc, el sòl i el relleu ajuden a saber on pot encaixar l’espècie.</p><div className="local-factor-grid">
-              <article><Trees size={20} /><h3>Bosc i arbres</h3><p>{habitat.forestTypes.join(", ")}.{habitat.treeAssociations.length > 0 ? ` Arbres habituals: ${habitat.treeAssociations.join(", ")}.` : ""}</p></article>
-              <article><Sprout size={20} /><h3>Sòl</h3><p>{habitat.soilPreference}. {soil.texture}, de reacció {soil.reaction.toLocaleLowerCase("ca")} i amb drenatge {soil.drainage.toLocaleLowerCase("ca")}.</p></article>
-              <article><Mountain size={20} /><h3>Relleu</h3><p>{habitat.altitude[0]}–{habitat.altitude[1]} m, {habitat.aspect.toLocaleLowerCase("ca")}; {habitat.landscapePosition.toLocaleLowerCase("ca")}.</p></article>
-            </div></section>
-            <section className="local-habitat-section">
-              <p className="eyebrow">Mapa de l’espècie</p>
-              <h2>On podria créixer {location.prepositionalName}</h2>
-              <p>El blau mostra on el bosc, el sòl i l’altitud encaixen amb {species.identity.commonName}. No confirma que hi hagi bolets.</p>
-              <LazyHabitatMap
-                activeRegions={species.ecologicalConfig.regions}
-                autoGeolocate={false}
-                compactLegend
-                initialCentre={location.mapCentre}
-                initialZoom={12}
-                selectedRegion={area.regionId}
-                speciesId={species.speciesId}
-              />
-            </section>
-            <section className="local-calendar-section"><p className="eyebrow">Calendari ecològic</p><h2>Quan és temporada</h2><p>{page.seasonNote}</p><SeasonCalendar species={species} /></section>
-          </div>
-          <aside className="local-species-aside">
-            <div className="local-safety-card"><ShieldAlert size={20} /><div><strong>No és una guia de recol·lecció</strong><p>No publiquem coordenades ni presències exactes. No consumeixis cap bolet sense una identificació experta. <Link href="/normativa-bolets">Comprova els permisos i les restriccions d’accés</Link> abans de sortir.</p></div></div>
-            <Link href={speciesPath(species)} className="local-profile-link"><span>Fitxa completa</span><strong>{species.identity.commonName}</strong><small>{speciesDescription(species)}</small><ArrowUpRight size={18} /></Link>
-          </aside>
+          <GuideSection id="paisatge" icon={MapPinned} eyebrow="Lectura del paisatge" title={`Els boscos de ${location.nameWithArticle} ${forSpecies(species.identity.commonName)}`} lede={page.habitatNote}>
+            <Suspense fallback={null}><LocalLandscapeText species={species} location={location} /></Suspense>
+            <p className="guide-panel-text">{location.landscape}</p>
+            <p className="guide-panel-text"><strong>{area.name}.</strong> {area.landscape}</p>
+            <GuideFacts
+              label="Com reconèixer un bon racó"
+              items={[
+                { key: "moisture", icon: <Droplets size={16} />, term: "Humitat del sòl", detail: habitat.moisture },
+                { key: "shade", icon: <Sun size={16} />, term: "Ombra", detail: habitat.shade },
+                { key: "slope", icon: <TrendingUp size={16} />, term: "Pendent", detail: habitat.slope },
+                { key: "aspect", icon: <Compass size={16} />, term: "Orientació", detail: habitat.aspect },
+              ]}
+            />
+            <p className="guide-panel-note"><ShieldAlert size={14} aria-hidden="true" /><span><Link href="/normativa-bolets">Comprova els permisos i les restriccions d’accés</Link> abans de sortir.</span></p>
+          </GuideSection>
+          <GuideSection id="bosc-i-terreny" icon={Trees} eyebrow="Bosc i terreny" title="Què necessita aquesta espècie" lede="El tipus de bosc, el sòl i el relleu diuen on pot encaixar; el temps decideix si fructifica.">
+            <GuideFacts
+              label="Bosc, sòl i relleu"
+              items={[
+                { key: "relief", icon: <Mountain size={16} />, term: "Altitud i relleu", value: `${habitat.altitude[0]}–${habitat.altitude[1]} m`, detail: `${habitat.landscapePosition}.` },
+                { key: "soil", icon: <Sprout size={16} />, term: "Sòl", detail: `${habitat.soilPreference}. ${soil.texture}, ${soil.reaction.toLocaleLowerCase("ca")}, ${soil.drainage.toLocaleLowerCase("ca")}.` },
+                { key: "forest", icon: <Trees size={16} />, term: "Bosc i arbres", detail: `${habitat.forestTypes.join(", ")}.${habitat.treeAssociations.length > 0 ? ` Arbres habituals: ${habitat.treeAssociations.join(", ")}.` : ""}`, wide: true },
+              ]}
+            />
+          </GuideSection>
+          <GuideSection
+            id="mapa"
+            icon={MapIcon}
+            eyebrow="Mapa de l’espècie"
+            title={`On podria créixer ${location.prepositionalName}`}
+            lede={<>El blau mostra on el bosc, el sòl i l’altitud encaixen amb el {species.identity.commonName.toLocaleLowerCase("ca")}. No confirma que hi hagi bolets.</>}
+            action={<UmamiEventLink href={mapPath} className="button" analyticsEvent={UMAMI_EVENTS.guideMapOpen}><MapIcon size={17} aria-hidden="true" /> Condicions d’avui al mapa</UmamiEventLink>}
+            flush
+          >
+            <LazyHabitatMap
+              activeRegions={species.ecologicalConfig.regions}
+              autoGeolocate={false}
+              compactLegend
+              initialCentre={location.mapCentre}
+              initialZoom={12}
+              selectedRegion={area.regionId}
+              speciesId={species.speciesId}
+            />
+          </GuideSection>
+          <GuideSection id="temporada" icon={CalendarDays} eyebrow="Temporada i entorn" title={`Quan és temporada ${location.prepositionalName}`} lede={page.seasonNote}>
+            <SeasonCalendar species={species} />
+            <Suspense fallback={<LocalEvidenceLoading location={location} />}><LocalEvidencePanel species={species} location={location} /></Suspense>
+          </GuideSection>
         </div>
-        <Suspense fallback={<LocalEvidenceLoading location={location} />}><LocalEvidencePanel species={species} location={location} /></Suspense>
-        <section className="local-map-next" aria-labelledby="local-map-next-title">
-          <p className="eyebrow"><Map size={15} aria-hidden="true" /> Prepara la sortida</p>
-          <h2 id="local-map-next-title">On buscar {speciesName} {location.prepositionalName} avui?</h2>
-          <p>La guia explica on encaixa l’hàbitat. El mapa de bolets compara les condicions actuals sector a sector, amb la data de les dades i la llegenda, i no confirma cap troballa.</p>
-          <nav className="guide-reading-actions" aria-label="Del territori al mapa">
-            <UmamiEventLink href={mapPath} analyticsEvent={UMAMI_EVENTS.guideMapOpen}><Map size={16} aria-hidden="true" /> Mapa de {speciesName} {location.prepositionalName}</UmamiEventLink>
-            <Link href="/bolets-avui">On trobar bolets avui a Catalunya <ArrowUpRight size={16} aria-hidden="true" /></Link>
-          </nav>
-        </section>
-        <EditorialAttribution contentId={editorialContentId} sources={[...species.references, territorialSource, ...environmentalSources]} variant="compact" />
+        <LocalResources location={location} />
+        <EditorialAttribution contentId={editorialContentId} sources={[...species.references, territorialSource, ...environmentalSources, ...(drawing?.credit ? [{ id: `illustration-${species.speciesId}`, title: drawing.credit.text, publisher: drawing.credit.license, url: drawing.credit.url, confidence: "high" as const }] : [])]} variant="compact" />
         {(samePlaceGuides.length > 0 || sameSpeciesGuides.length > 0) ? <section className="local-related-guides" aria-labelledby="local-related-title"><header><p className="eyebrow"><BookOpenCheck size={15} aria-hidden="true" /> Continua explorant</p><h2 id="local-related-title">Guies relacionades</h2></header><div>{samePlaceGuides.length > 0 ? <section><h3>Altres espècies {location.prepositionalName}</h3><ul>{samePlaceGuides.map((candidate) => <li key={locationPagePath(candidate)}><Link href={locationPagePath(candidate)}><span>{candidate.titlePhrase}</span><ArrowUpRight size={15} aria-hidden="true" /></Link></li>)}</ul></section> : null}{sameSpeciesGuides.length > 0 ? <section><h3>{species.identity.commonName} en altres territoris</h3><ul>{sameSpeciesGuides.map((candidate) => { const candidatePlace = getPlace(candidate.areaSlug, candidate.placeSlug); return <li key={locationPagePath(candidate)}><Link href={locationPagePath(candidate)}><span>{candidate.titlePhrase}<small>{candidatePlace?.typeLabel} · {areasBySlug[candidate.areaSlug]?.name}</small></span><ArrowUpRight size={15} aria-hidden="true" /></Link></li>; })}</ul></section> : null}</div></section> : null}
       </div>
     </article>

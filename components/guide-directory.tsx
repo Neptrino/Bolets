@@ -10,6 +10,7 @@ import {
 import { FormSelect } from "@/components/ui/form-select";
 
 const catalanCollator = new Intl.Collator("ca", { sensitivity: "base" });
+const INITIAL_VISIBLE_GUIDES = 16;
 
 export function GuideDirectory({ items }: { items: GuideDirectoryItem[] }) {
   const [query, setQuery] = useState("");
@@ -35,7 +36,10 @@ export function GuideDirectory({ items }: { items: GuideDirectoryItem[] }) {
     habitat,
   }), [areaSlug, habitat, items, query, speciesId]);
   const hasFilters = Boolean(query || speciesId || areaSlug || habitat);
-  const visibleItems = hasFilters || expanded ? filteredItems : filteredItems.slice(0, 16);
+  // Every guide is rendered so the full directory is present in the server
+  // HTML; the collapsed state only hides the tail visually.
+  const collapsed = !hasFilters && !expanded;
+  const visibleCount = collapsed ? Math.min(INITIAL_VISIBLE_GUIDES, filteredItems.length) : filteredItems.length;
 
   function resetFilters() {
     setQuery("");
@@ -64,8 +68,8 @@ export function GuideDirectory({ items }: { items: GuideDirectoryItem[] }) {
 
       {filteredItems.length > 0 ? (
         <ol className="guide-browser-results">
-          {visibleItems.map((item) => (
-            <li key={item.href}>
+          {filteredItems.map((item, index) => (
+            <li key={item.href} hidden={index >= visibleCount}>
               <Link href={item.href} className="guide-browser-card">
                 <span className="guide-browser-card-kicker"><MapPinned size={14} aria-hidden="true" /> {item.placeType} · {item.areaName}</span>
                 <div><h3>{item.title}</h3><ArrowUpRight size={19} aria-hidden="true" /></div>
@@ -85,9 +89,9 @@ export function GuideDirectory({ items }: { items: GuideDirectoryItem[] }) {
           <button type="button" onClick={resetFilters}>Veure totes les guies</button>
         </div>
       )}
-      {!hasFilters && !expanded && filteredItems.length > visibleItems.length ? (
+      {collapsed && filteredItems.length > visibleCount ? (
         <button className="guide-browser-more" type="button" onClick={() => setExpanded(true)}>
-          Mostra les {filteredItems.length - visibleItems.length} guies restants <ArrowUpRight size={16} aria-hidden="true" />
+          Mostra les {filteredItems.length - visibleCount} guies restants <ArrowUpRight size={16} aria-hidden="true" />
         </button>
       ) : null}
     </div>

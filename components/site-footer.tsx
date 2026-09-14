@@ -58,7 +58,6 @@ export function SiteFooter() {
             <h2>Mapa i territori</h2>
             <Link href="/map">Mapa de bolets de Catalunya</Link>
             <Link href="/bolets-avui">Bolets avui</Link>
-            <Link href="/zones">Zones</Link>
             <Link href="/guies">Guies locals</Link>
             <Link href="/quan-surten-els-bolets-despres-de-ploure">Després de ploure</Link>
             <Link href="/troballes">Troballes</Link>

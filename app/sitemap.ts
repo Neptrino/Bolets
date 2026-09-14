@@ -62,7 +62,6 @@ export function sitemapContentEntries(): SitemapContentEntry[] {
     { path: "/col-labora", contentId: "col-labora" },
     { path: "/equip-editorial", contentId: "equip-editorial" },
     { path: "/avis-legal", contentId: "avis-legal" },
-    { path: "/zones", contentId: "zones" },
     { path: "/guies", contentId: "guies" },
     ...speciesTerritoryGuides.map((guide) => ({ path: guide.path, contentId: guide.contentId })),
     ...areaProfiles.map((area) => ({ path: `/zones/${area.slug}`, contentId: `zone:${area.slug}` })),

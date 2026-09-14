@@ -56,7 +56,6 @@ for (const route of [
   "/bolets-d-estiu",
   "/bolets-de-tardor",
   "/bolets-d-hivern",
-  "/zones",
   "/guies",
   "/zones/rovellons",
   "/zones/ceps",
@@ -242,57 +241,30 @@ test("the current overview stays usable without publishing invented scores", asy
   }
 });
 
-test("the zones directory lists every prediction region with representative species", async ({ page }) => {
-  const response = await page.goto("/zones");
-  expect(response?.status()).toBe(200);
-
-  const list = page.locator("[data-prediction-zone-list]");
-  const cards = list.locator(":scope > li");
-  await expect(cards).toHaveCount(9);
-  await expect(page.locator("[data-local-guide-list]")).toHaveCount(0);
-
-  const expectedRegions = [
-    ["pirineus", "Pirineus"],
-    ["prepirineus", "Prepirineus"],
-    ["emporda", "Empordà"],
-    ["catalunya-central", "Catalunya Central"],
-    ["muntanyes-interiors", "Sistemes interiors"],
-    ["montseny", "Montseny"],
-    ["serralades-costeres", "Serralades Costeres"],
-    ["serralades-prelitorals", "Serralades Prelitorals"],
-    ["ports", "Ports"],
-  ] as const;
-
-  for (const [regionId, label] of expectedRegions) {
-    const card = list.locator(`li[data-region="${regionId}"]`);
-    await expect(card.locator(".region-map-link-name")).toHaveText(label);
-    await expect(card.locator(".region-map-link-count")).toContainText(/\d+ espècies/);
-    const mapLink = card.getByRole("link", { name: `Veure ${label} al mapa` });
-    const mapUrl = new URL((await mapLink.getAttribute("href"))!, "http://localhost");
-    const speciesId = speciesIdFromMapUrl(mapUrl);
-
-    expect(mapUrl.pathname === "/map" || speciesMapPages.some((page) => mapUrl.pathname === `/map/${page.slug}`)).toBe(true);
-    expect(mapUrl.searchParams.get("region")).toBe(regionId);
-    expect(speciesId).toBeTruthy();
-  }
-});
-
 test("the guides hub owns the curated local directory", async ({ page }) => {
   const response = await page.goto("/guies");
   expect(response?.status()).toBe(200);
 
   const guideList = page.locator("[data-local-guide-list]");
-  await expect(guideList.locator(".guide-browser-card")).toHaveCount(
+  // Every local guide is linked in the HTML; only the tail is collapsed.
+  await expect(guideList.locator(".guide-browser-card")).toHaveCount(speciesLocationPages.length);
+  await expect(guideList.locator(".guide-browser-card:visible")).toHaveCount(
     Math.min(16, speciesLocationPages.length),
   );
+  const territoryLinks = page.locator("[data-guides-territory-list] a");
+  await expect(territoryLinks).toHaveCount(areaProfiles.length);
+  for (const area of areaProfiles) {
+    await expect(page.locator(`[data-guides-territory-list] a[href="/zones/${area.slug}"]`)).toHaveCount(1);
+  }
   await expect(guideList.locator(".guide-browser-status")).toContainText(
     `${speciesLocationPages.length} guies locals`,
   );
-  const summaryItems = page.locator(".guides-summary > div");
-  await expect(summaryItems.nth(0).locator("dd")).toHaveText(String(areaProfiles.length));
-  await expect(summaryItems.nth(1).locator("dd")).toHaveText(String(placeProfiles.length));
-  await expect(summaryItems.nth(2).locator("dd")).toHaveText(String(speciesLocationPages.length));
-  await expect(page.getByRole("link", { name: /Comparar zones/ })).toHaveAttribute("href", "/zones");
+  await expect(page.locator("#guides-territories-title")).toBeVisible();
+  await expect(page.locator(".guides-territories [data-section-header]")).toContainText(
+    `${areaProfiles.length} territoris · ${placeProfiles.length} indrets · ${speciesLocationPages.length} guies locals`,
+  );
+  await expect(page.getByRole("link", { name: /Condicions d’avui per zona/ })).toHaveAttribute("href", "/bolets-avui");
+  await expect(page.locator(".guides-reading-links a")).toHaveCount(3);
   const speciesGuideList = page.locator("[data-species-guide-list]");
   await expect(speciesGuideList).toHaveCount(1);
   await expect(speciesGuideList.locator(".guides-species-module-label")).toHaveCount(1);

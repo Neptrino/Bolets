@@ -42,7 +42,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(page.locator(".hero .home-showcase-trigger")).toHaveCount(0);
   await expect(page.locator(".featured-grid .card-season")).toHaveCount(0);
 
-  await page.goto("/zones");
+  await page.goto("/guies");
   await expect(guidesNavLink).toHaveAttribute("aria-current", "page");
 
   await page.goto("/bolets");

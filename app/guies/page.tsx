@@ -1,9 +1,11 @@
 import "@/app/styles/territorial-guides.css";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, BookOpenText, MapPinned, Snowflake, Trees } from "lucide-react";
+import { ArrowUpRight, BookOpenText, Languages, Search, Snowflake, Trees } from "lucide-react";
 import { GuideDirectory } from "@/components/guide-directory";
 import { JsonLd } from "@/components/json-ld";
+import { MushroomSpecimen } from "@/components/mushroom-game-illustrations";
 import {
   PageHeader,
   PageShell,
@@ -11,6 +13,7 @@ import {
   SectionHeader,
 } from "@/components/page-layout";
 import {
+  areaPath,
   areaProfiles,
   areasBySlug,
   getPlace,
@@ -20,6 +23,8 @@ import {
 } from "@/data/location-pages";
 import { getSpecies } from "@/data/species";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
+import { areaMapPath } from "@/src/lib/place-map";
+import { speciesDrawing, speciesIllustration } from "@/src/lib/species-illustrations";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 
 export const metadata: Metadata = {
@@ -36,7 +41,45 @@ export const metadata: Metadata = {
   },
 };
 
+const catalanCollator = new Intl.Collator("ca", { sensitivity: "base" });
+
+/** Species list forest types with a capital only on the first entry; the filter shows them all the same way. */
+function sentenceCase(value: string) {
+  const lower = value.toLocaleLowerCase("ca");
+  return lower.charAt(0).toLocaleUpperCase("ca") + lower.slice(1);
+}
+
+function guideCountForArea(areaSlug: string) {
+  return speciesLocationPages.filter((page) => page.areaSlug === areaSlug).length;
+}
+
+function placeCountForArea(areaSlug: string) {
+  return placeProfiles.filter((place) => place.areaSlug === areaSlug).length;
+}
+
+/**
+ * Species with a guide in the area, in guide order. Species that share a game
+ * drawing (rovelló and pinetell, the ceps) collapse into one icon unless each
+ * has its own editorial drawing; the tooltip names every species behind an icon.
+ */
+function speciesForArea(areaSlug: string) {
+  const species = [...new Set(speciesLocationPages.filter((page) => page.areaSlug === areaSlug).map((page) => page.speciesId))]
+    .flatMap((speciesId) => getSpecies(speciesId) ?? []);
+  const icons = new Map<string, { drawing?: string; illustration: ReturnType<typeof speciesIllustration>; label: string }>();
+  for (const entry of species) {
+    const drawing = speciesDrawing(entry.speciesId)?.src;
+    const illustration = speciesIllustration(entry.speciesId);
+    const key = drawing ? entry.speciesId : illustration ?? `initial:${entry.identity.commonName.charAt(0).toLocaleLowerCase("ca")}`;
+    const existing = icons.get(key);
+    icons.set(key, { drawing, illustration, label: existing ? `${existing.label} · ${entry.identity.commonName}` : entry.identity.commonName });
+  }
+  return { names: species.map((entry) => entry.identity.commonName), icons: [...icons.entries()].map(([key, icon]) => ({ key, ...icon })) };
+}
+
 export default function GuidesPage() {
+  const territories = [...areaProfiles].sort((left, right) =>
+    catalanCollator.compare(left.name, right.name),
+  );
   const directoryItems = speciesLocationPages.flatMap((page) => {
     const species = getSpecies(page.speciesId);
     const area = areasBySlug[page.areaSlug];
@@ -55,58 +98,104 @@ export default function GuidesPage() {
       areaType: area.typeLabel,
       placeName: place.name,
       placeType: place.typeLabel,
-      habitats: species.ecologicalConfig.habitat.forestTypes,
+      habitats: species.ecologicalConfig.habitat.forestTypes.map(sentenceCase),
       altitudeLabel: `${species.ecologicalConfig.habitat.altitude[0]}–${species.ecologicalConfig.habitat.altitude[1]} m`,
     }];
-  });
+  }).sort((left, right) =>
+    catalanCollator.compare(left.areaName, right.areaName)
+    || catalanCollator.compare(left.placeName, right.placeName)
+    || catalanCollator.compare(left.speciesName, right.speciesName),
+  );
 
   return (
     <PageShell className="guides-page">
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          name: "Guies locals de bolets de Catalunya",
-          url: absoluteUrl("/guies"),
-          inLanguage: "ca",
-          mainEntity: {
-            "@type": "ItemList",
-            numberOfItems: speciesLocationPages.length + speciesTerritoryGuides.length,
-            itemListElement: [
-              ...speciesTerritoryGuides.map((guide, index) => ({
-                "@type": "ListItem",
-                position: index + 1,
-                name: guide.title,
-                url: absoluteUrl(guide.path),
-              })),
-              ...speciesLocationPages.map((page, index) => ({
-                "@type": "ListItem",
-                position: index + speciesTerritoryGuides.length + 1,
-                name: page.titlePhrase,
-                url: absoluteUrl(locationPagePath(page)),
-              })),
-            ],
-          },
+          "@graph": [
+            {
+              "@type": "CollectionPage",
+              name: "Guies locals de bolets de Catalunya",
+              url: absoluteUrl("/guies"),
+              inLanguage: "ca",
+              mainEntity: {
+                "@type": "ItemList",
+                numberOfItems: speciesLocationPages.length + speciesTerritoryGuides.length,
+                itemListElement: [
+                  ...speciesTerritoryGuides.map((guide, index) => ({
+                    "@type": "ListItem",
+                    position: index + 1,
+                    name: guide.title,
+                    url: absoluteUrl(guide.path),
+                  })),
+                  ...speciesLocationPages.map((page, index) => ({
+                    "@type": "ListItem",
+                    position: index + speciesTerritoryGuides.length + 1,
+                    name: page.titlePhrase,
+                    url: absoluteUrl(locationPagePath(page)),
+                  })),
+                ],
+              },
+            },
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Inici", item: absoluteUrl() },
+                { "@type": "ListItem", position: 2, name: "Guies", item: absoluteUrl("/guies") },
+              ],
+            },
+          ],
         }}
       />
       <PageHeader
         eyebrow={<><BookOpenText size={15} /> Guies locals publicades</>}
         title={<>Guies de bolets<br /><PageTitleAccent>per territori.</PageTitleAccent></>}
         description="Busca una espècie i un indret. Cada guia explica quin bosc hi encaixa, quan és temporada i què cal tenir en compte, sense publicar punts de recol·lecció."
+        actions={<a href="#cerca-una-guia" className="button"><Search size={17} aria-hidden="true" /> Cerca una guia</a>}
         tone="forest"
       />
 
-      <dl className="guides-summary" aria-label="Abast de les guies locals">
-        <div><dt>Territoris</dt><dd>{areaProfiles.length}</dd></div>
-        <div><dt>Indrets</dt><dd>{placeProfiles.length}</dd></div>
-        <div><dt>Guies locals d’espècie</dt><dd>{speciesLocationPages.length}</dd></div>
-      </dl>
-
-      <Link href="/zones" className="location-species-feature location-current-feature guides-zones-feature">
-        <span><MapPinned size={18} /> Directori territorial</span>
-        <div><h2>Vols comparar territoris?</h2><p>Les zones agrupen massissos, paratges, comarques i regions amb les condicions actuals disponibles.</p></div>
-        <strong>Comparar zones <ArrowUpRight size={17} /></strong>
-      </Link>
+      <section className="guides-territories" aria-labelledby="guides-territories-title">
+        <SectionHeader
+          meta={`${territories.length} territoris · ${placeProfiles.length} indrets · ${speciesLocationPages.length} guies locals`}
+          title="Guies per territori"
+          titleId="guides-territories-title"
+          description="Cada comarca o massís agrupa els seus indrets documentats i les guies d’espècie que hi encaixen."
+          actions={<Link href="/bolets-avui" className="text-link">Condicions d’avui per zona <ArrowUpRight size={16} aria-hidden="true" /></Link>}
+          size="compact"
+        />
+        <ul className="guides-territory-list" data-guides-territory-list>
+          {territories.map((area) => {
+            const guideCount = guideCountForArea(area.slug);
+            const placeCount = placeCountForArea(area.slug);
+            const areaSpecies = speciesForArea(area.slug);
+            return (
+              <li key={area.slug}>
+                <Link href={areaPath(area)}>
+                  <span className="guides-territory-map">
+                    <Image src={areaMapPath(area)} alt="" width={650} height={812} unoptimized sizes="400px" />
+                    <span className="guides-territory-species" role="img" aria-label={`Espècies: ${areaSpecies.names.join(", ")}`}>
+                      {areaSpecies.icons.map(({ key, drawing, illustration, label }) => (
+                        <span key={key} className="guides-territory-species-icon" data-tooltip={label}>
+                          {drawing
+                            ? <Image src={drawing} alt="" width={64} height={64} unoptimized />
+                            : illustration ? <MushroomSpecimen kind={illustration} /> : <i>{label.charAt(0)}</i>}
+                        </span>
+                      ))}
+                    </span>
+                  </span>
+                  <span className="guides-territory-copy">
+                    <span className="guides-territory-type">{area.typeLabel}</span>
+                    <strong>{area.name}</strong>
+                    <small>{guideCount} {guideCount === 1 ? "guia" : "guies"} · {placeCount} {placeCount === 1 ? "indret" : "indrets"}</small>
+                    <ArrowUpRight size={16} aria-hidden="true" />
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
 
       <section
         className="guides-species-module"
@@ -126,7 +215,7 @@ export default function GuidesPage() {
         </div>
       </section>
 
-      <section className="guides-directory" aria-labelledby="guides-directory-title">
+      <section className="guides-directory" id="cerca-una-guia" aria-labelledby="guides-directory-title">
         <SectionHeader
           meta={`${speciesLocationPages.length} guies disponibles`}
           title="Troba la guia concreta"
@@ -136,23 +225,37 @@ export default function GuidesPage() {
         <GuideDirectory items={directoryItems} />
       </section>
 
-      <Link href="/preguntes-frequents-bolets" className="location-species-feature location-current-feature">
-        <span><BookOpenText size={18} aria-hidden="true" /> Abans de sortir</span>
-        <div><h2>Preguntes sobre anar a buscar bolets</h2><p>Temporada, pluja, boscos, identificació i permisos: respostes curtes amb guies per aprofundir-hi.</p></div>
-        <strong>Consultar les preguntes <ArrowUpRight size={17} aria-hidden="true" /></strong>
-      </Link>
-
-      <Link href="/conservar-bolets" className="location-species-feature location-current-feature">
-        <span><Snowflake size={18} aria-hidden="true" /> Guia pràctica</span>
-        <div><h2>Com conservar i congelar bolets</h2><p>Escaldat, cocció, porcions, etiquetatge i descongelació segura segons les recomanacions de l’ACSA.</p></div>
-        <strong>Obrir la guia <ArrowUpRight size={17} aria-hidden="true" /></strong>
-      </Link>
-
-      <Link href="/noms-de-bolets-catala-castella" className="location-species-feature location-current-feature">
-        <span><BookOpenText size={18} aria-hidden="true" /> Glossari</span>
-        <div><h2>Noms de bolets en català i castellà</h2><p>Compara noms populars, variants i noms científics sense convertir una traducció en una identificació.</p></div>
-        <strong>Consultar el glossari <ArrowUpRight size={17} aria-hidden="true" /></strong>
-      </Link>
+      <section className="guides-reading" aria-labelledby="guides-reading-title">
+        <SectionHeader
+          meta="Abans de sortir"
+          title="Lectura complementària"
+          titleId="guides-reading-title"
+          size="compact"
+        />
+        <ul className="guides-reading-links">
+          <li>
+            <Link href="/preguntes-frequents-bolets">
+              <BookOpenText size={20} aria-hidden="true" />
+              <span><strong>Preguntes sobre anar a buscar bolets</strong><small>Temporada, pluja, boscos, identificació i permisos.</small></span>
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </Link>
+          </li>
+          <li>
+            <Link href="/conservar-bolets">
+              <Snowflake size={20} aria-hidden="true" />
+              <span><strong>Com conservar i congelar bolets</strong><small>Escaldat, cocció, porcions i descongelació segura.</small></span>
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </Link>
+          </li>
+          <li>
+            <Link href="/noms-de-bolets-catala-castella">
+              <Languages size={20} aria-hidden="true" />
+              <span><strong>Noms de bolets en català i castellà</strong><small>Noms populars, variants i noms científics.</small></span>
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </Link>
+          </li>
+        </ul>
+      </section>
 
       <aside className="location-safety-note">
         <Trees size={22} />

@@ -198,12 +198,6 @@ const FIXED_CAMPAIGNS = [
     resourceSummary: "la metodologia, les dades i els límits del mapa de condicions",
     topicTerms: ["model", "bolets", "pluja", "temperatura", "sòl"],
   }),
-  campaign({
-    id: "territory-index", shortLabel: "Zones", targetPath: "/zones", targetTitle: "Zones de bolets de Catalunya",
-    fallbackQueries: ["zones de bolets Catalunya boscos guia"],
-    resourceSummary: "guies territorials basades en hàbitat potencial sense revelar localitzacions sensibles",
-    topicTerms: ["zones", "bolets", "boscos", "territori", "catalunya"],
-  }),
 ];
 
 const MONTH_CAMPAIGNS = SEASON_MONTHS.map((month) => campaign({

@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const routeGroups = {
-  stacked: ["/bolets", "/compare", "/compare/rovello-vs-pinetell", "/zones", "/guies"],
+  stacked: ["/bolets", "/compare", "/compare/rovello-vs-pinetell", "/guies"],
   split: [
     "/bolets-comestibles",
     "/bolets-verinosos",

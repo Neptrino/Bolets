@@ -31,6 +31,8 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // The zones index was folded into the guides index on 2026-09-15.
+      { source: "/zones", destination: "/guies", permanent: true },
       {
         source: "/:path*",
         has: [
@@ -77,7 +79,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ["image/webp"],
-    deviceSizes: [384, 640, 960, 1280, 1920],
+    deviceSizes: [384, 640, 960, 1280, 1920, 2560],
     imageSizes: [64, 96, 192, 256],
     qualities: [65, 75],
     minimumCacheTTL: 2678400,
