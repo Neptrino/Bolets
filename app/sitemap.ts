@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { EDITORIAL_LAUNCH_DATE, getEditorialMetadata } from "@/data/editorial";
+import { getEditorialMetadata } from "@/data/editorial";
 import { comparisonPages } from "@/data/comparison-pages";
 import {
   locationPagePath,
@@ -12,115 +12,93 @@ import { speciesProfiles } from "@/data/species";
 import { catalogueSpecies } from "@/data/catalogue";
 import { seasonMonthPath, SEASON_MONTHS } from "@/src/lib/seasonality";
 import { seasonGuides } from "@/src/lib/season-guides";
+import { INFOGRAPHIC_INDEXED_IMAGE_PATH } from "@/src/lib/infographic-media";
 import { absoluteUrl, speciesImage, speciesPath } from "@/src/lib/seo";
 import { speciesMapPages } from "@/src/lib/species-map-pages";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 
-const lastModified = new Date(`${EDITORIAL_LAUNCH_DATE}T00:00:00+02:00`);
-const rainGuideLastModified = new Date(
-  `${getEditorialMetadata("quan-surten-els-bolets-despres-de-ploure").updatedAt}T00:00:00+02:00`,
-);
-const editorialCurrentOverviewLastModified = new Date(
-  `${getEditorialMetadata("bolets-avui").updatedAt}T00:00:00+02:00`,
-);
-const mushroomPartsGuideLastModified = new Date(
-  `${getEditorialMetadata("parts-dun-bolet").updatedAt}T00:00:00+02:00`,
-);
-const edibleGuideLastModified = new Date(
-  `${getEditorialMetadata("bolets-comestibles").updatedAt}T00:00:00+02:00`,
-);
-const poisonousGuideLastModified = new Date(
-  `${getEditorialMetadata("bolets-verinosos").updatedAt}T00:00:00+02:00`,
-);
-const preservationGuideLastModified = new Date(
-  `${getEditorialMetadata("conservar-bolets").updatedAt}T00:00:00+02:00`,
-);
-const seasonPagesLastModified = new Date(
-  `${getEditorialMetadata("temporada").updatedAt}T00:00:00+02:00`,
-);
-const speciesNamesLastModified = new Date(
-  `${getEditorialMetadata("noms-de-bolets-catala-castella").updatedAt}T00:00:00+02:00`,
-);
+/**
+ * A public URL and the editorial content id that dates it. Every entry is
+ * dated through `getEditorialMetadata`, so `data/editorial.ts` is the single
+ * place where a page's last change is recorded, and
+ * `tests/editorial-freshness.test.ts` can check those dates against git.
+ */
+export interface SitemapContentEntry {
+  path: string;
+  contentId: string;
+  images?: string[];
+}
 
-export function buildSitemap(
-  currentOverviewLastModified = editorialCurrentOverviewLastModified,
-): MetadataRoute.Sitemap {
-  const pages: MetadataRoute.Sitemap = [
-    { url: absoluteUrl(), lastModified, images: [absoluteUrl("/media/generated/home-hero-boletus-v2.webp")] },
-    { url: absoluteUrl("/bolets"), lastModified: new Date(`${getEditorialMetadata("bolets").updatedAt}T00:00:00+02:00`) },
-    { url: absoluteUrl("/noms-de-bolets-catala-castella"), lastModified: speciesNamesLastModified },
-    { url: absoluteUrl("/bolets/infografia"), lastModified, images: [absoluteUrl("/media/editorial/bolets-catalunya-infografia.webp")] },
-    { url: absoluteUrl("/bolets-avui"), lastModified: currentOverviewLastModified },
-    ...seasonGuides.map((guide) => ({
-      url: absoluteUrl(guide.path),
-      lastModified: new Date(`${getEditorialMetadata(guide.path.slice(1)).updatedAt}T00:00:00+02:00`),
-    })),
-    { url: absoluteUrl("/quan-surten-els-bolets-despres-de-ploure"), lastModified: rainGuideLastModified },
-    { url: absoluteUrl("/conservar-bolets"), lastModified: preservationGuideLastModified },
-    { url: absoluteUrl("/parts-dun-bolet"), lastModified: mushroomPartsGuideLastModified },
-    { url: absoluteUrl("/bolets-de-soca"), lastModified: new Date(`${getEditorialMetadata("bolets-de-soca").updatedAt}T00:00:00+02:00`) },
-    { url: absoluteUrl("/fals-rossinyol"), lastModified: new Date(`${getEditorialMetadata("fals-rossinyol").updatedAt}T00:00:00+02:00`) },
-    { url: absoluteUrl("/normativa-bolets"), lastModified: new Date(`${getEditorialMetadata("normativa-bolets").updatedAt}T00:00:00+02:00`) },
-    { url: absoluteUrl("/preguntes-frequents-bolets"), lastModified: new Date(`${getEditorialMetadata("preguntes-frequents-bolets").updatedAt}T00:00:00+02:00`) },
-    { url: absoluteUrl("/bolets-comestibles"), lastModified: edibleGuideLastModified },
-    { url: absoluteUrl("/bolets-verinosos"), lastModified: poisonousGuideLastModified },
-    { url: absoluteUrl("/temporada"), lastModified: seasonPagesLastModified },
-    ...SEASON_MONTHS.map(({ key }) => ({
-      url: absoluteUrl(seasonMonthPath(key)),
-      lastModified: seasonPagesLastModified,
-    })),
-    { url: absoluteUrl("/map"), lastModified: new Date(`${getEditorialMetadata("map").updatedAt}T00:00:00+02:00`) },
-    ...speciesMapPages.map((page) => ({
-      url: absoluteUrl(`/map/${page.slug}`),
-      lastModified,
-    })),
-    { url: absoluteUrl("/troballes"), lastModified },
-    { url: absoluteUrl("/compare"), lastModified },
-    { url: absoluteUrl("/joc"), lastModified },
-    ...comparisonPages.map((page) => ({
-      url: absoluteUrl(`/compare/${page.slug}`),
-      lastModified,
-    })),
-    { url: absoluteUrl("/metode"), lastModified },
-    { url: absoluteUrl("/col-labora"), lastModified },
-    { url: absoluteUrl("/equip-editorial"), lastModified: new Date(`${getEditorialMetadata("equip-editorial").updatedAt}T00:00:00+02:00`) },
-    { url: absoluteUrl("/avis-legal"), lastModified },
-    { url: absoluteUrl("/zones"), lastModified },
-    { url: absoluteUrl("/guies"), lastModified },
-    ...speciesTerritoryGuides.map((guide) => ({
-      url: absoluteUrl(guide.path),
-      lastModified: new Date(
-        `${getEditorialMetadata(guide.contentId).updatedAt}T00:00:00+02:00`,
-      ),
-    })),
-    ...areaProfiles.map((area) => ({
-      url: absoluteUrl(`/zones/${area.slug}`),
-      lastModified,
-    })),
-    ...placeProfiles.map((place) => ({
-      url: absoluteUrl(placePath(place)),
-      lastModified,
-    })),
+export function editorialLastModified(contentId: string) {
+  return new Date(`${getEditorialMetadata(contentId).updatedAt}T00:00:00+02:00`);
+}
+
+export function sitemapContentEntries(): SitemapContentEntry[] {
+  const entries: SitemapContentEntry[] = [
+    { path: "/", contentId: "home", images: [absoluteUrl("/media/generated/home-hero-boletus-v2.webp")] },
+    { path: "/bolets", contentId: "bolets" },
+    { path: "/noms-de-bolets-catala-castella", contentId: "noms-de-bolets-catala-castella" },
+    { path: "/bolets/infografia", contentId: "bolets-infografia", images: [absoluteUrl(INFOGRAPHIC_INDEXED_IMAGE_PATH)] },
+    { path: "/bolets-avui", contentId: "bolets-avui" },
+    ...seasonGuides.map((guide) => ({ path: guide.path, contentId: guide.path.slice(1) })),
+    { path: "/quan-surten-els-bolets-despres-de-ploure", contentId: "quan-surten-els-bolets-despres-de-ploure" },
+    { path: "/conservar-bolets", contentId: "conservar-bolets" },
+    { path: "/parts-dun-bolet", contentId: "parts-dun-bolet" },
+    { path: "/bolets-de-soca", contentId: "bolets-de-soca" },
+    { path: "/fals-rossinyol", contentId: "fals-rossinyol" },
+    { path: "/normativa-bolets", contentId: "normativa-bolets" },
+    { path: "/preguntes-frequents-bolets", contentId: "preguntes-frequents-bolets" },
+    { path: "/bolets-comestibles", contentId: "bolets-comestibles" },
+    { path: "/bolets-verinosos", contentId: "bolets-verinosos" },
+    { path: "/temporada", contentId: "temporada" },
+    ...SEASON_MONTHS.map(({ key }) => ({ path: seasonMonthPath(key), contentId: "temporada" })),
+    { path: "/map", contentId: "map" },
+    ...speciesMapPages.map((page) => ({ path: `/map/${page.slug}`, contentId: `map:${page.slug}` })),
+    { path: "/troballes", contentId: "troballes" },
+    { path: "/compare", contentId: "compare" },
+    { path: "/joc", contentId: "joc" },
+    ...comparisonPages.map((page) => ({ path: `/compare/${page.slug}`, contentId: `compare:${page.slug}` })),
+    { path: "/metode", contentId: "metode" },
+    { path: "/col-labora", contentId: "col-labora" },
+    { path: "/equip-editorial", contentId: "equip-editorial" },
+    { path: "/avis-legal", contentId: "avis-legal" },
+    { path: "/zones", contentId: "zones" },
+    { path: "/guies", contentId: "guies" },
+    ...speciesTerritoryGuides.map((guide) => ({ path: guide.path, contentId: guide.contentId })),
+    ...areaProfiles.map((area) => ({ path: `/zones/${area.slug}`, contentId: `zone:${area.slug}` })),
+    ...placeProfiles.map((place) => ({ path: placePath(place), contentId: `place:${place.areaSlug}:${place.slug}` })),
     ...speciesLocationPages.map((page) => {
       const species = speciesProfiles.find((item) => item.speciesId === page.speciesId);
       const image = species ? speciesImage(species) : undefined;
       return {
-        url: absoluteUrl(locationPagePath(page)),
-        lastModified,
+        path: locationPagePath(page),
+        // Same id the local guide page uses for its JSON-LD dateModified.
+        contentId: `guide:${page.areaSlug}:${page.placeSlug}:${page.speciesId}`,
         images: image ? [image] : undefined,
       };
     }),
     ...catalogueSpecies.map((species) => {
       const image = speciesImage(species);
       return {
-        url: absoluteUrl(speciesPath(species)),
-        lastModified: new Date(`${getEditorialMetadata(`species:${species.speciesId}`).updatedAt}T00:00:00+02:00`),
+        path: speciesPath(species),
+        contentId: `species:${species.speciesId}`,
         images: image ? [image] : undefined,
       };
     }),
   ];
 
-  return [...new Map(pages.map((page) => [page.url, page])).values()];
+  return [...new Map(entries.map((entry) => [entry.path, entry])).values()];
+}
+
+export function buildSitemap(
+  currentOverviewLastModified = editorialLastModified("bolets-avui"),
+): MetadataRoute.Sitemap {
+  return sitemapContentEntries().map((entry) => ({
+    url: absoluteUrl(entry.path),
+    lastModified:
+      entry.contentId === "bolets-avui" ? currentOverviewLastModified : editorialLastModified(entry.contentId),
+    ...(entry.images ? { images: entry.images } : {}),
+  }));
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -129,5 +107,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   );
   const publishedAt = await readCurrentOverviewLastModified();
 
-  return buildSitemap(publishedAt ?? editorialCurrentOverviewLastModified);
+  return buildSitemap(publishedAt ?? editorialLastModified("bolets-avui"));
 }

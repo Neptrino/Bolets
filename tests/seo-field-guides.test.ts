@@ -5,7 +5,7 @@ import WoodFungiPage, { metadata as woodMetadata } from "@/app/bolets-de-soca/pa
 import FalseChanterellePage, { metadata as falseMetadata } from "@/app/fals-rossinyol/page";
 import CollectingPage, { metadata as collectingMetadata } from "@/app/normativa-bolets/page";
 import EditorialTeamPage from "@/app/equip-editorial/page";
-import { buildSitemap as sitemap } from "@/app/sitemap";
+import { buildSitemap as sitemap, editorialLastModified } from "@/app/sitemap";
 import { editorialArticleFields, getEditorialMetadata, publicEditorialItems } from "@/data/editorial";
 import { speciesGalleryMedia } from "@/data/species-gallery-media";
 import { getSpecies, speciesProfiles } from "@/data/species";
@@ -30,7 +30,7 @@ describe("source-linked field guides", () => {
     expect(html).toContain('"@type":"Article"');
     expect(html).toContain('"@type":"BreadcrumbList"');
     expect(html).not.toContain('"reviewedBy"');
-    expect(sitemap().find(entry => entry.url.endsWith(`/${id}`))?.lastModified).toEqual(new Date("2026-08-27T00:00:00+02:00"));
+    expect(sitemap().find(entry => entry.url.endsWith(`/${id}`))?.lastModified).toEqual(editorialLastModified(id));
     expect(publicEditorialItems).toContain(id);
     expect(getEditorialMetadata(id).reviewStatus).toBe("editorial-only");
     expect(editorialArticleFields(id)).not.toHaveProperty("reviewedBy");
@@ -111,7 +111,7 @@ describe("source-linked field guides", () => {
     expect(html).not.toContain('"reviewedBy"');
     for (const source of ["https://interior.gencat.cat/", "https://parcs.diba.cat/", "https://parcsnaturals.gencat.cat/", "https://acsa.gencat.cat/"]) expect(html).toContain(source);
     expect(publicEditorialItems).toContain("normativa-bolets");
-    expect(sitemap().find(entry => entry.url.endsWith("/normativa-bolets"))?.lastModified).toEqual(new Date("2026-09-03T00:00:00+02:00"));
+    expect(sitemap().find(entry => entry.url.endsWith("/normativa-bolets"))?.lastModified).toEqual(editorialLastModified("normativa-bolets"));
   });
 
   it("provides local rules and keeps dated fees and unresolved permissions explicit", () => {

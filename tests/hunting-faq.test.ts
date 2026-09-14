@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import HuntingFaqPage, { metadata } from "@/app/preguntes-frequents-bolets/page";
 import GuidesPage from "@/app/guies/page";
-import { buildSitemap as sitemap } from "@/app/sitemap";
+import { buildSitemap as sitemap, editorialLastModified } from "@/app/sitemap";
 import { SiteFooter } from "@/components/site-footer";
 import { SeasonPageContent } from "@/components/season-page-content";
 import CollectingRulesGuidePage from "@/app/normativa-bolets/page";
@@ -106,7 +106,7 @@ describe("mushroom-hunting FAQ", () => {
     expect(graph.some((item: Record<string, unknown>) => item["@type"] === "BreadcrumbList")).toBe(true);
     expect(publicEditorialItems).toContain("preguntes-frequents-bolets");
     expect(sitemap().filter((entry) => entry.url.endsWith(path))).toEqual([
-      { url: `https://bolets.app${path}`, lastModified: new Date("2026-08-28T00:00:00+02:00") },
+      { url: `https://bolets.app${path}`, lastModified: editorialLastModified("preguntes-frequents-bolets") },
     ]);
   });
 

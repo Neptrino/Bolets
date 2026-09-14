@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import MushroomPartsGuidePage, { metadata } from "@/app/parts-dun-bolet/page";
-import { buildSitemap as sitemap } from "@/app/sitemap";
+import { buildSitemap as sitemap, editorialLastModified } from "@/app/sitemap";
 import { getEditorialMetadata } from "@/data/editorial";
 import { STATIC_MEDIA_VERSION } from "@/src/lib/static-media";
 
@@ -51,7 +51,7 @@ describe("mushroom parts guide", () => {
     expect(metadata.description?.length).toBeLessThanOrEqual(155);
 
     const sitemapEntry = sitemap().find((entry) => entry.url.endsWith("/parts-dun-bolet"));
-    expect(sitemapEntry?.lastModified).toEqual(new Date("2026-08-31T00:00:00+02:00"));
-    expect(getEditorialMetadata("parts-dun-bolet").updatedAt).toBe("2026-08-31");
+    expect(sitemapEntry?.lastModified).toEqual(editorialLastModified("parts-dun-bolet"));
+    expect(getEditorialMetadata("parts-dun-bolet").updatedAt >= "2026-08-31").toBe(true);
   });
 });

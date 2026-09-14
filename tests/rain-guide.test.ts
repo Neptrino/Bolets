@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import RainGuidePage from "@/app/quan-surten-els-bolets-despres-de-ploure/page";
-import { buildSitemap as sitemap } from "@/app/sitemap";
+import { buildSitemap as sitemap, editorialLastModified } from "@/app/sitemap";
 import { getEditorialMetadata, hydrothermalScientificSources } from "@/data/editorial";
 
 function articleFor(html: string, commonName: string) {
@@ -85,13 +85,13 @@ describe("rain response guide", () => {
     const faq = jsonLd["@graph"].find((entry) => entry["@type"] === "FAQPage");
     expect(article?.description).toContain("La pluja no activa un compte enrere");
     expect(article?.citation).toEqual(hydrothermalScientificSources.map((source) => source.url));
-    expect(article?.dateModified).toBe("2026-09-03");
+    expect(article?.dateModified).toBe(getEditorialMetadata("quan-surten-els-bolets-despres-de-ploure").updatedAt);
     expect(faq).toBeDefined();
-    expect(getEditorialMetadata("quan-surten-els-bolets-despres-de-ploure").updatedAt).toBe("2026-09-03");
+    expect(getEditorialMetadata("quan-surten-els-bolets-despres-de-ploure").updatedAt >= "2026-09-03").toBe(true);
 
     const sitemapEntry = sitemap().find((entry) =>
       entry.url.endsWith("/quan-surten-els-bolets-despres-de-ploure")
     );
-    expect(sitemapEntry?.lastModified).toEqual(new Date("2026-09-03T00:00:00+02:00"));
+    expect(sitemapEntry?.lastModified).toEqual(editorialLastModified("quan-surten-els-bolets-despres-de-ploure"));
   });
 });

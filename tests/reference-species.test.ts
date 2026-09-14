@@ -7,7 +7,7 @@ import SpeciesPage, { generateMetadata, generateStaticParams } from "@/app/bolet
 import SpeciesIndexPage from "@/app/bolets/page";
 import MushroomInfographicPage from "@/app/bolets/infografia/page";
 import ComparisonLandingPage from "@/app/compare/[slug]/page";
-import { buildSitemap as sitemap } from "@/app/sitemap";
+import { buildSitemap as sitemap, editorialLastModified } from "@/app/sitemap";
 import { catalogueSpecies } from "@/data/catalogue";
 import { getReferenceSpecies, getReferenceSpeciesByScientificName, referenceSpeciesProfiles } from "@/data/reference-species";
 import { getSpecies, speciesProfiles, speciesSelectItems } from "@/data/species";
@@ -74,7 +74,7 @@ describe("descriptive catalogue species", () => {
     expect(html).not.toContain('href="/fals-rossinyol"');
     expect(html).not.toContain("No es recomana consumir-lo");
     expect(html).not.toContain("/_next/image");
-    expect(sitemap().find(item => item.url.endsWith(`/bolets/${canonicalSlug}`))?.lastModified).toEqual(new Date("2026-09-02T00:00:00+02:00"));
+    expect(sitemap().find(item => item.url.endsWith(`/bolets/${canonicalSlug}`))?.lastModified).toEqual(editorialLastModified(`species:${id}`));
     if (["lycoperdon-perlatum", "calvatia-gigantea", "lycoperdon-utriforme"].includes(id)) {
       const puffballSlugs = ["pet-de-llop-perlat", "pet-de-llop-gegant", "pet-de-llop-gros"];
       for (const relatedSlug of puffballSlugs.filter(candidate => candidate !== canonicalSlug)) {
@@ -132,6 +132,10 @@ describe("descriptive catalogue species", () => {
     expect(infographicPage).toContain('id="infografia"');
     expect(infographicPage).toContain('/downloads/infografies/bolets-catalunya-infografia.png');
     expect(infographicPage).toContain(`Infografia vertical “Bolets de Catalunya” amb ${catalogueSpecies.length} espècies fotografiades`);
+    expect(infographicPage).toContain('id="infografia-especies"');
+    expect(infographicPage).toContain(`Els ${catalogueSpecies.length} bolets de la infografia`);
+    expect(infographicPage).toContain(`href="${speciesPath(species)}"`);
+    expect(infographicPage).toContain(`title="${species.identity.scientificName}"`);
     expect(sitemap().some(item => item.url.endsWith("/bolets/infografia"))).toBe(true);
 
     const fieldCard = toSpeciesFieldCardProfile(species);
@@ -176,13 +180,14 @@ describe("descriptive catalogue species", () => {
     expect(html).not.toContain("Mapa actual");
     expect(html).toContain('href="/fals-rossinyol"');
     expect(html).toContain('id="targeta-de-camp"');
+    expect(html).toContain('href="/bolets/infografia"');
     expect(html).toContain(`src="${speciesFieldCardPath(species)}?preview=384"`);
     expect(html).toContain(`href="${speciesFieldCardPath(species)}" target="_blank"`);
     expect(html).toContain("1080 × 1350 px · Format 4:5");
     expect(html).not.toContain("Instagram");
     expect(html).toContain("Infografia vertical del Fals rossinyol amb fotografia, comestibilitat, trets d’identificació, temporada, hàbitat i advertiment de confusió.");
     expect(sitemap().find(item => item.url.endsWith(speciesPath(species)))).toMatchObject({
-      lastModified: new Date("2026-08-27T00:00:00+02:00"),
+      lastModified: editorialLastModified("species:hygrophoropsis-aurantiaca"),
       images: ["https://bolets.app/media/wikimedia/hygrophoropsis-aurantiaca.webp"],
     });
   });

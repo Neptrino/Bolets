@@ -67,7 +67,7 @@ describe("contributor detailed-map access", () => {
     expect(rollout).toContain("ensure_local_status_secret ABUSE_RATE_LIMIT_SECRET");
     expect(rollout).toContain('openssl rand -hex 32');
     expect(rollout).toContain("CONTRIBUTOR_ACCESS_SECRET in the status environment file");
-    expect(sitemap).toContain('absoluteUrl("/col-labora")');
+    expect(sitemap).toContain('path: "/col-labora"');
     expect(adminContributions).toContain("<table");
     expect(adminContributionDialogs).toContain("Obrir la troballa vinculada");
     expect(adminContributionStyles).toContain('button[name="decision"][value="approved"]');

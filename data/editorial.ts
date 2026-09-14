@@ -13,7 +13,26 @@ export interface EditorialMetadata {
 }
 
 export const EDITORIAL_LAUNCH_DATE = "2026-08-13";
-export const LOCAL_GUIDES_UPDATED_AT = "2026-09-06";
+
+// Section-wide revision dates: bump one of these when the shared template of
+// a page family changes visibly (`tests/editorial-freshness.test.ts` names
+// the constant to bump). Per-item overrides below date content changes to a
+// single page; the later of the two wins.
+export const LOCAL_GUIDES_UPDATED_AT = "2026-09-14";
+export const SPECIES_PAGES_UPDATED_AT = "2026-09-14";
+export const ZONE_PAGES_UPDATED_AT = "2026-09-14";
+export const PLACE_PAGES_UPDATED_AT = "2026-09-06";
+export const COMPARISON_PAGES_UPDATED_AT = "2026-09-02";
+export const MAP_PAGES_UPDATED_AT = "2026-08-31";
+
+const sectionUpdatedAt: Record<string, string> = {
+  "guide:": LOCAL_GUIDES_UPDATED_AT,
+  "species:": SPECIES_PAGES_UPDATED_AT,
+  "zone:": ZONE_PAGES_UPDATED_AT,
+  "place:": PLACE_PAGES_UPDATED_AT,
+  "compare:": COMPARISON_PAGES_UPDATED_AT,
+  "map:": MAP_PAGES_UPDATED_AT,
+};
 
 export const editorialTeam = {
   id: "editorial-team" as const,
@@ -180,7 +199,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   },
   "preguntes-frequents-bolets": {
     publishedAt: "2026-08-27",
-    updatedAt: "2026-08-28",
+    updatedAt: "2026-09-14",
   },
   "species:hygrophoropsis-aurantiaca": {
     publishedAt: "2026-08-27",
@@ -192,30 +211,30 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   },
   "bolets-de-soca": {
     publishedAt: "2026-08-27",
-    updatedAt: "2026-08-27",
+    updatedAt: "2026-08-30",
   },
   "fals-rossinyol": {
     publishedAt: "2026-08-27",
-    updatedAt: "2026-08-27",
+    updatedAt: "2026-08-30",
   },
   "bolets": {
-    updatedAt: "2026-09-03",
+    updatedAt: "2026-09-06",
   },
   "noms-de-bolets-catala-castella": {
     publishedAt: "2026-09-03",
-    updatedAt: "2026-09-03",
-  },
-  "equip-editorial": {
-    updatedAt: "2026-08-27",
-  },
-  "bolets-comestibles": {
-    updatedAt: "2026-08-31",
-  },
-  "bolets-verinosos": {
     updatedAt: "2026-09-06",
   },
+  "equip-editorial": {
+    updatedAt: "2026-08-31",
+  },
+  "bolets-comestibles": {
+    updatedAt: "2026-09-14",
+  },
+  "bolets-verinosos": {
+    updatedAt: "2026-09-14",
+  },
   "bolets-de-primavera": {
-    updatedAt: "2026-09-03",
+    updatedAt: "2026-09-14",
   },
   "bolets-d-estiu": {
     updatedAt: "2026-09-03",
@@ -227,10 +246,10 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-03",
   },
   "temporada": {
-    updatedAt: "2026-08-31",
+    updatedAt: "2026-09-14",
   },
   "bolets-avui": {
-    updatedAt: "2026-09-12",
+    updatedAt: "2026-09-14",
   },
   "species:craterellus-lutescens": { updatedAt: "2026-09-06" },
   "species:boletus-edulis": { updatedAt: "2026-09-06" },
@@ -249,23 +268,35 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-03",
   },
   "quan-surten-els-bolets-despres-de-ploure": {
-    updatedAt: "2026-09-03",
+    updatedAt: "2026-09-14",
   },
   "parts-dun-bolet": {
-    updatedAt: "2026-08-31",
+    updatedAt: "2026-09-14",
   },
   "avis-legal": {
     publishedAt: "2026-08-17",
-    updatedAt: "2026-08-17",
+    updatedAt: "2026-09-02",
   },
+  home: { updatedAt: "2026-09-14" },
+  "bolets-infografia": { updatedAt: "2026-09-14" },
+  troballes: { updatedAt: "2026-09-02" },
+  compare: { updatedAt: "2026-09-02" },
+  joc: { updatedAt: "2026-09-01" },
+  metode: { updatedAt: "2026-09-14" },
+  "col-labora": { updatedAt: "2026-09-02" },
+  zones: { updatedAt: "2026-08-31" },
+  guies: { updatedAt: "2026-09-03" },
 };
 
 export function getEditorialMetadata(contentId: string): EditorialMetadata {
-  const sectionMetadata = contentId.startsWith("guide:")
-    ? { updatedAt: LOCAL_GUIDES_UPDATED_AT }
-    : {};
+  const override = metadataOverrides[contentId] ?? {};
+  const section = Object.entries(sectionUpdatedAt).find(([prefix]) => contentId.startsWith(prefix))?.[1];
+  const updatedAt = [defaultMetadata.updatedAt, section, override.updatedAt]
+    .filter((date): date is string => Boolean(date))
+    .sort()
+    .at(-1)!;
 
-  return { ...defaultMetadata, ...sectionMetadata, ...metadataOverrides[contentId] };
+  return { ...defaultMetadata, ...override, updatedAt };
 }
 
 export function editorialArticleFields(contentId: string) {
