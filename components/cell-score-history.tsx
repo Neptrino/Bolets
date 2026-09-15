@@ -36,27 +36,52 @@ function chartDayLabel(timestamp: number) {
   return chartDayFormatter.format(new Date(timestamp * 1000));
 }
 
-function chartDaySplits(chartWidth: number, total: number, boundaryIndex?: number) {
-  if (total <= 0) return [];
-  if (chartWidth >= 520) return Array.from({ length: total }, (_value, index) => index);
+const madridDayFormatter = new Intl.DateTimeFormat("en-CA", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  timeZone: "Europe/Madrid",
+});
 
-  const lastIndex = total - 1;
+/**
+ * Whole-day offset of a unix timestamp from a reference day, counted on the
+ * Europe/Madrid calendar so DST changes and provider publishing hours do not
+ * shift a value onto the wrong day.
+ */
+function madridDayOffset(timestamp: number, reference: number) {
+  const toUtcDay = (value: number) => {
+    const [year, month, day] = madridDayFormatter.format(new Date(value * 1000)).split("-").map(Number);
+    return Date.UTC(year!, month! - 1, day!) / 86_400_000;
+  };
+  return toUtcDay(timestamp) - toUtcDay(reference);
+}
+
+/**
+ * Picks which daily slots receive an axis label. Slots are calendar-day
+ * offsets, so gaps between points (the sparse 14-day outlook) stay visible;
+ * labels only land on days that actually hold a point.
+ */
+function chartDaySplits(chartWidth: number, slots: number[], boundarySlot?: number) {
+  if (!slots.length) return [];
+  const span = Math.max(slots[slots.length - 1]! - slots[0]!, 1);
+  if (chartWidth >= 520 && slots.length <= 16) return [...slots];
+
   const estimatedPlotWidth = Math.max(chartWidth - 56, 1);
-  const slotWidth = estimatedPlotWidth / Math.max(lastIndex, 1);
-  const minimumSlotGap = Math.max(1, Math.ceil(64 / slotWidth));
-  const selected = new Set([0, lastIndex]);
+  const dayWidth = estimatedPlotWidth / span;
+  const minimumDayGap = Math.max(1, Math.ceil(64 / dayWidth));
+  const selected = new Set([slots[0]!, slots[slots.length - 1]!]);
   const hasRoom = (candidate: number) => Array.from(selected).every(
-    (existing) => Math.abs(existing - candidate) >= minimumSlotGap,
+    (existing) => Math.abs(existing - candidate) >= minimumDayGap,
   );
 
-  if (boundaryIndex !== undefined && hasRoom(boundaryIndex)) selected.add(boundaryIndex);
-  for (let index = minimumSlotGap; index < lastIndex; index += minimumSlotGap) {
-    if (hasRoom(index)) selected.add(index);
+  if (boundarySlot !== undefined && hasRoom(boundarySlot)) selected.add(boundarySlot);
+  for (const slot of slots) {
+    if (hasRoom(slot)) selected.add(slot);
   }
   return Array.from(selected).sort((first, second) => first - second);
 }
 
-function scoreChartPlugin(boundaryIndex?: number): uPlot.Plugin {
+function scoreChartPlugin(boundaryIndex?: number, boundarySlot?: number): uPlot.Plugin {
   return {
     hooks: {
       draw: (chart) => {
@@ -67,8 +92,8 @@ function scoreChartPlugin(boundaryIndex?: number): uPlot.Plugin {
         context.textAlign = "center";
         context.textBaseline = "middle";
 
-        if (boundaryIndex !== undefined) {
-          const boundaryX = chart.valToPos(boundaryIndex, "x", true);
+        if (boundarySlot !== undefined) {
+          const boundaryX = chart.valToPos(boundarySlot, "x", true);
           context.strokeStyle = "rgba(117, 91, 67, 0.42)";
           context.lineWidth = ratio;
           context.setLineDash([4 * ratio, 5 * ratio]);
@@ -174,9 +199,11 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     ];
     if (!timestamps.length) return;
     // This is a daily summary. Historical and forecast providers can publish
-    // their daily values at different hours, so use ordinal daily slots rather
-    // than those raw hours to avoid visually compressing adjacent dates.
-    const dailySlots = timestamps.map((_timestamp, index) => index);
+    // their daily values at different hours, so place each point on its
+    // calendar-day offset rather than its raw hour. Unlike a plain ordinal
+    // index, day offsets keep the sparse outlook horizons (+7, +10, +12,
+    // +14 days) at their true spacing instead of one slot apart.
+    const dailySlots = timestamps.map((timestamp) => madridDayOffset(timestamp, timestamps[0]!));
     const observedScores = [
       ...observed.map((point) => point.score),
       ...Array(forecast?.points.length ?? 0).fill(null),
@@ -194,11 +221,15 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     const boundaryIndex = forecast && anchorObservedIndex >= 0
       ? anchorObservedIndex
       : undefined;
+    const boundarySlot = boundaryIndex === undefined ? undefined : dailySlots[boundaryIndex];
+    // The final day label is centred on the last point; on narrow charts the
+    // sparse outlook pushes that point close to the edge, so leave room for it.
+    const narrowChart = host.clientWidth < 520;
     const chart = new uPlot({
       width: Math.max(host.clientWidth, 1),
       height: 260,
-      padding: [18, 14, 0, 4],
-      plugins: [scoreChartPlugin(boundaryIndex)],
+      padding: [18, narrowChart ? 30 : 14, 0, 4],
+      plugins: [scoreChartPlugin(boundaryIndex, boundarySlot)],
       series: [
         {},
         {
@@ -242,13 +273,11 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
           font: "600 12px ui-sans-serif, system-ui, sans-serif",
           size: 34,
           gap: 9,
-          splits: (currentChart) => chartDaySplits(
-            currentChart.width,
-            dailySlots.length,
-            anchorObservedIndex >= 0 ? anchorObservedIndex : undefined,
-          ),
-          values: (_chart, values) => values.map((slot) =>
-            chartDayLabel(timestamps[Math.round(slot)] ?? timestamps[0]!)),
+          splits: (currentChart) => chartDaySplits(currentChart.width, dailySlots, boundarySlot),
+          values: (_chart, values) => values.map((slot) => {
+            const index = dailySlots.indexOf(Math.round(slot));
+            return index >= 0 ? chartDayLabel(timestamps[index]!) : "";
+          }),
           grid: { stroke: "rgba(105, 112, 99, 0.10)", width: 1 },
           ticks: { show: false },
           border: { show: false },

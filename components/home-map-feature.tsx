@@ -15,7 +15,7 @@ export function HomeMapFeature() {
         <ol className="home-map-steps">
           <li><span><strong>Tria una espècie</strong> o mira quina destaca a cada sector.</span></li>
           <li><span><strong>Compara zones</strong> i acosta’t al territori que t’interessa.</span></li>
-          <li><span><strong>Revisa el dia i la llegenda</strong> per saber com de recents són les dades.</span></li>
+          <li><span><strong>Obre el detall d’un sector</strong> per veure l’evolució recent i la projecció dels pròxims dies.</span></li>
         </ol>
         <UmamiEventLink href="/map" className="button" analyticsEvent={UMAMI_EVENTS.homepageMapSectionClick}>
           Obrir el mapa <Map size={18} aria-hidden="true" />
