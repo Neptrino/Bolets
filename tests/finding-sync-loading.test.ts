@@ -63,4 +63,36 @@ describe("finding sync loads only the services it needs", () => {
     expect(fetchMock).toHaveBeenLastCalledWith("/api/findings/finding-1/finalize", expect.objectContaining({ method: "POST" }));
     expect(mocks.remove).toHaveBeenCalledWith("draft-1");
   });
+
+  it("shares one run between overlapping sync triggers instead of finalizing the same draft twice", async () => {
+    mocks.list.mockResolvedValueOnce([record]).mockResolvedValue([]);
+    mocks.session.mockResolvedValue({ data: { session: { access_token: "test-token", user: { id: "test-owner" } } } });
+    mocks.previous.mockResolvedValue([]);
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(Response.json({ id: "finding-1", state: "pending" }))
+      .mockResolvedValueOnce(Response.json({ oneKmAccessUntil: "2026-09-20" }));
+    vi.stubGlobal("fetch", fetchMock);
+    const [first, second] = await Promise.all([syncFindingOutbox(), syncFindingOutbox()]);
+    expect(first).toBe(second);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(mocks.upload).toHaveBeenCalledOnce();
+    expect(await syncFindingOutbox()).toMatchObject({ synced: 0, pending: 0 });
+  });
+
+  it("queues a verified run behind an unverified one so the Turnstile token is not dropped", async () => {
+    mocks.list.mockResolvedValueOnce([record]).mockResolvedValueOnce([record]).mockResolvedValueOnce([record]).mockResolvedValue([]);
+    mocks.session.mockResolvedValue({ data: { session: { access_token: "test-token", user: { id: "test-owner" } } } });
+    mocks.previous.mockResolvedValue([]);
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(Response.json({ id: "finding-1", state: "pending" }))
+      .mockResolvedValueOnce(Response.json({ code: "turnstile_required", error: "verify" }, { status: 428 }))
+      .mockResolvedValueOnce(Response.json({ id: "finding-1", state: "pending" }))
+      .mockResolvedValueOnce(Response.json({ oneKmAccessUntil: "2026-09-20" }));
+    vi.stubGlobal("fetch", fetchMock);
+    const [unverified, verified] = await Promise.all([syncFindingOutbox(), syncFindingOutbox("token-1")]);
+    expect(unverified).toMatchObject({ turnstileRequired: true, synced: 0 });
+    expect(verified).toMatchObject({ turnstileRequired: false, synced: 1, oneKmAccessUntil: "2026-09-20" });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+    expect(JSON.parse(fetchMock.mock.calls[3][1].body)).toMatchObject({ turnstileToken: "token-1" });
+  });
 });

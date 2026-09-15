@@ -7,8 +7,22 @@ const removalMigration = readFileSync("supabase/migrations/20260828120000_remove
 const unifiedPhotoVisibilityMigration = readFileSync("supabase/migrations/20260829152554_unify_finding_photo_visibility.sql", "utf8");
 const photoRoute = readFileSync("app/api/findings/[id]/photo/[photoId]/route.ts", "utf8");
 const findingReads = readFileSync("src/lib/findings/reads.server.ts", "utf8");
+const retentionMigration = readFileSync("supabase/migrations/20260915074500_retain_finding_photos_for_recovery.sql", "utf8");
+const finalizeRoute = readFileSync("app/api/findings/[id]/finalize/route.ts", "utf8");
+const cleanupFunction = readFileSync("supabase/functions/cleanup-finding-photo-staging/index.ts", "utf8");
 
 describe("community findings database boundary", () => {
+  it("keeps publish-path photos for three days instead of deleting them immediately", () => {
+    expect(finalizeRoute).not.toContain('.from("finding-photos").remove(');
+    expect(finalizeRoute).not.toContain('.from("finding-photo-staging").remove(');
+    expect(retentionMigration).toContain("interval '72 hours'");
+    expect(retentionMigration).toContain("create or replace function public.read_orphaned_finding_photos");
+    expect(retentionMigration).toContain("not exists");
+    expect(retentionMigration).toContain("grant execute on function public.read_orphaned_finding_photos(integer) to service_role");
+    expect(cleanupFunction).toContain("read_orphaned_finding_photos");
+    expect(cleanupFunction).toContain('bucket: "finding-photos"');
+  });
+
   it("keeps exact locations in a separate service-only table", () => {
     expect(migration).toContain("create table public.user_finding_private_details");
     expect(migration).toContain("exact_location extensions.geography(Point, 4326)");

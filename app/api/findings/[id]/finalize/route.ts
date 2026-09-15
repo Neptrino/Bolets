@@ -82,10 +82,13 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       });
     }
     const oneKmAccessUntil = await publishFinding(id, user.id, processed);
-    if (parsed.data.photos.length) await admin.storage.from("finding-photo-staging").remove(parsed.data.photos.map((photo) => photo.stagingPath));
+    // Neither the staged originals nor a failed attempt's processed copies are
+    // deleted here. Two concurrent finalize requests write the same paths, and
+    // an immediate cleanup by the loser once destroyed the winner's only copy.
+    // The nightly cleanup-finding-photo-staging sweep removes leftovers after
+    // 72 hours, which keeps a recovery window instead.
     return Response.json({ id, state: "published", oneKmAccessUntil });
   } catch (error) {
-    if (processed.length) await admin.storage.from("finding-photos").remove(processed.map((photo) => photo.path));
     return Response.json({ error: error instanceof Error ? error.message : "No s’ha pogut publicar la troballa." }, { status: 400 });
   }
 }

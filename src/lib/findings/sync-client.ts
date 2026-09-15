@@ -58,7 +58,34 @@ async function syncRecord(record: FindingOutboxRecord, accessToken: string, user
   return finalizeBody.oneKmAccessUntil as string | null;
 }
 
-export async function syncFindingOutbox(turnstileToken?: string | null) {
+let inFlightSync: Promise<FindingSyncResult> | null = null;
+
+type FindingSyncResult = {
+  synced: number;
+  pending: number;
+  needsLogin: boolean;
+  turnstileRequired: boolean;
+  oneKmAccessUntil: string | null;
+};
+
+// The report form, the background sync agent (mount, "online", visibility
+// change) and the notebook page can all trigger a sync within the same second.
+// Two overlapping runs finalize the same finding twice: the loser's cleanup
+// removes the storage objects the winner just published, leaving a photo row
+// whose file no longer exists. Serialize them so only one run is ever active.
+export function syncFindingOutbox(turnstileToken?: string | null) {
+  // A run without a token cannot consume the verification the caller holds,
+  // so queue a fresh run behind it instead of handing back the shared result.
+  if (inFlightSync && !turnstileToken) return inFlightSync;
+  const previous = inFlightSync ?? Promise.resolve();
+  const next: Promise<FindingSyncResult> = previous
+    .then(() => runFindingOutboxSync(turnstileToken), () => runFindingOutboxSync(turnstileToken))
+    .finally(() => { if (inFlightSync === next) inFlightSync = null; });
+  inFlightSync = next;
+  return next;
+}
+
+async function runFindingOutboxSync(turnstileToken?: string | null): Promise<FindingSyncResult> {
   const records = await listOutboxFindings();
   // Most public visitors have no pending finding. They need neither an auth
   // client nor a resumable upload library just to read the atlas.
