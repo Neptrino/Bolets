@@ -38,10 +38,13 @@ function VisibleBanner() {
     <div className={styles.inner}>
       <div className={styles.message}>
         <span className={styles.label}><Sparkles size={14} aria-hidden="true" /> Enquesta · Ajuda’ns</span>
-        <strong>Mapa a 250 m i previsió a 14 dies. T’interessaria?</strong>
+        <strong className={styles.desktopMessage}>Mapa a 250 m i previsió a 14 dies. T’interessaria?</strong>
+        <strong className={styles.mobileMessage}>250 m + previsió a 14 dies</strong>
       </div>
       <IntentLink href={MAP_PRICE_SURVEY_PATH} className={styles.link} onClick={clickMapPriceSurveyBanner}>
-        Dona la teva opinió <ArrowUpRight size={16} aria-hidden="true" />
+        <span className={styles.desktopCta}>Dona la teva opinió</span>
+        <span className={styles.mobileCta}>Opina</span>
+        <ArrowUpRight size={16} aria-hidden="true" />
       </IntentLink>
       <button type="button" className={styles.close} onClick={dismissMapPriceSurveyBanner} aria-label="Amaga l’enquesta durant 1 dia">
         <X size={18} aria-hidden="true" />

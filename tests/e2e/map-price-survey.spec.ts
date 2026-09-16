@@ -30,7 +30,7 @@ for (const width of [1280, 390]) {
     await expect.poll(async () => (await page.locator(".map-stage").boundingBox())!.y +
       (await page.locator(".map-stage").boundingBox())!.height).toBeLessThanOrEqual(901);
     await page.screenshot({ path: test.info().outputPath(`banner-${width}.png`) });
-    await banner.getByRole("link", { name: "Dona la teva opinió" }).click();
+    await banner.getByRole("link", { name: width <= 620 ? "Opina" : "Dona la teva opinió" }).click();
     await expect(page).toHaveURL(/\/enquesta-mapa$/);
     await expect(banner).toHaveCount(0);
     await expect(page.locator("h1")).toContainText("Més dies per triar.");
