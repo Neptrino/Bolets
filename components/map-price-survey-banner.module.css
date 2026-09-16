@@ -5,9 +5,9 @@
 }
 
 .inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
-  justify-content: space-between;
   gap: 12px 20px;
   width: min(1280px, 100%);
   min-height: 64px;
