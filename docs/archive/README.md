@@ -6,6 +6,14 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [Cloudflare incident-window review — 16 September 2026](cloudflare-latency-review-2026-09-16.md)
+
+- [Navigation diagnostic follow-up — 16 September 2026](navigation-diagnostic-2026-09-16.md) · [synthetic measurements](navigation-diagnostic-2026-09-16.json)
+
+- [Evening visitor latency — 15 September 2026](evening-latency-2026-09-15.md)
+
+- [Live performance spot check — 15 September 2026](performance-spot-check-2026-09-15.md) · [measurements](performance-spot-check-2026-09-15.json)
+
 - [Map-search competitor review — 14 September 2026](map-search-competitors-2026-09-14.md) · [ranking evidence](map-search-competitors-2026-09-14.json)
 
 - [Map discovery diagnosis and local corrections — 14 September 2026](map-discovery-2026-09-14.md)

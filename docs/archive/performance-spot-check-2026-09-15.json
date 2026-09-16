@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-15",
+  "revision": "0655be72dfe1e6980be48ce55d400860298f0542",
+  "settings": {
+    "viewport": "390x844 DPR3",
+    "network": "Chrome DevTools Slow 4G",
+    "cpu": "4x",
+    "context": "separate fresh isolated browser context per route",
+    "dnt": true
+  },
+  "limitations": [
+    "One sample per route; no matched pre-change baseline",
+    "Observer long-task excess is not Lighthouse TBT; CLS is observed sum in short load window",
+    "No INP measurement or full prediction completion timing",
+    "No same-day SEO effect inferred"
+  ],
+  "home": {
+    "url": "https://bolets.app/",
+    "lcpMs": 3220,
+    "cls": 0,
+    "longTaskExcessMs": 2,
+    "ttfbMs": 141.80000019073486,
+    "resources": 25,
+    "resourceTransferBytes": 390133,
+    "failedResourceStatuses": [],
+    "hasMountedMap": false
+  },
+  "map": {
+    "url": "https://bolets.app/map",
+    "lcpMs": 3600,
+    "cls": 0.0070812132547000296,
+    "longTaskExcessMs": 6,
+    "ttfbMs": 171.40000009536743,
+    "resources": 86,
+    "resourceTransferBytes": 449801,
+    "failedResourceStatuses": [],
+    "hasMountedMap": true
+  },
+  "avui": {
+    "url": "https://bolets.app/bolets-avui",
+    "lcpMs": 2560,
+    "cls": 0,
+    "longTaskExcessMs": 1,
+    "ttfbMs": 158.90000009536743,
+    "resources": 20,
+    "resourceTransferBytes": 240500,
+    "failedResourceStatuses": [],
+    "hasMountedMap": false
+  }
+}

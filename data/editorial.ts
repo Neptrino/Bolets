@@ -275,7 +275,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   },
   "avis-legal": {
     publishedAt: "2026-08-17",
-    updatedAt: "2026-09-02",
+    updatedAt: "2026-09-16",
   },
   home: { updatedAt: "2026-09-14" },
   "bolets-infografia": { updatedAt: "2026-09-14" },

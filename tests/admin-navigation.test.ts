@@ -17,6 +17,7 @@ describe("administrator navigation", () => {
       "/admin/troballes",
       "/admin/avisos",
       "/admin/aportacions",
+      "/admin/enquesta",
       "/admin/publicacio",
       "/admin/operacions",
     ]) expect(html).toContain(`href="${href}"`);

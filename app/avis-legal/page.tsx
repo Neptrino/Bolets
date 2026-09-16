@@ -54,6 +54,13 @@ export default function LegalPage() {
         <p>Si detecteu un error, el <a href="/equip-editorial">procés públic de correccions</a> descriu com proposar una esmena.</p>
       </section>
 
+      <section className="seo-guide-section" id="enquesta">
+        <p className="eyebrow">Enquesta voluntària</p>
+        <h2>Com desem la teva opinió</h2>
+        <p>Quan respons l’enquesta del mapa, desem l’opció triada, la versió de la pregunta i la data. Una galeta pròpia, amb una durada màxima d’un any, permet reconèixer el navegador i evitar que una resposta es compti dues vegades. A la base de dades només desem una empremta d’aquest identificador aleatori; no el vinculem al compte, al correu ni a les troballes. També conservem una indicació local de resposta per amagar el bàner.</p>
+        <p>Les respostes són accessibles només a l’administració del projecte i es desen encara que bloquegis l’analítica. No creen una subscripció ni cap cobrament. La protecció contra enviaments massius fa servir temporalment una empremta de l’adreça IP, separada de les respostes. Esborrar les galetes o canviar de navegador pot permetre tornar a respondre.</p>
+      </section>
+
       <section className="seo-guide-section" id="privadesa">
         <p className="eyebrow">Privadesa</p>
         <h2>Quines dades tractem</h2>

@@ -3,6 +3,10 @@
   padding-bottom: var(--content-page-space-end);
 }
 
+.narrow {
+  max-width: 800px;
+}
+
 .pageHeader {
   --page-title-accent: var(--clay);
 

@@ -36,6 +36,23 @@ function installPrivacyGuard(pageUrl: string) {
 }
 
 describe("Umami analytics", () => {
+  it("strips map and identity context from every annual price survey event", () => {
+    const { window } = installPrivacyGuard("https://bolets.app/map?species=private#42,2");
+    const guard = (window as typeof window & {
+      boletsUmamiBeforeSend: (type: string, payload: Record<string, unknown>) => unknown;
+    }).boletsUmamiBeforeSend;
+    for (const name of Object.values(UMAMI_EVENTS).filter((event) => event.startsWith("map-price-v8-"))) {
+      expect(guard("event", {
+        website: "website-id", hostname: "bolets.app", name,
+        url: "https://bolets.app/map?species=private#42,2", referrer: "https://bolets.app/compte",
+        data: { account: "private", coordinates: [42, 2] },
+      })).toEqual({
+        website: "website-id", hostname: "bolets.app", name,
+        language: undefined, screen: undefined,
+        url: "https://bolets.app/analytics-event", title: "Analytics event",
+      });
+    }
+  });
   it("excludes private route families from page-view analytics", () => {
     expect(isUmamiBlockedPath("/compte")).toBe(true);
     expect(isUmamiBlockedPath("/compte/troballes/123")).toBe(true);

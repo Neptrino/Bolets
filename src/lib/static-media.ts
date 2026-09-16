@@ -1,6 +1,6 @@
 const STATIC_MEDIA_ROOT = "/media/";
 
-export const STATIC_MEDIA_VERSION = "v16";
+export const STATIC_MEDIA_VERSION = "v20";
 export const STATIC_MEDIA_WIDTHS = [64, 96, 192, 256, 384, 640, 960, 1280, 1920, 2560] as const;
 export const STATIC_MEDIA_FORMATS = ["webp", "avif"] as const;
 

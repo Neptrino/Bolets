@@ -198,6 +198,19 @@ do not wait for it.
 
 ## Verification
 
+For unexplained first-byte stalls, run `node scripts/diagnose-navigation.mjs`
+with the repository's Playwright browsers installed (`npx playwright install
+firefox chromium`). It makes bounded, sequential public requests in isolated
+Firefox and Chromium contexts, with DNT enabled, and saves navigation timing
+phases to `artifacts/navigation-diagnostic.json`. Returning visits wait up to
+15 seconds for normal service-worker activation and record whether it succeeded.
+It never attaches to a user's signed-in browser or exports HAR/cookies.
+Run it on the affected operating system/network where possible: a fast local
+run does not disprove a visitor incident. Browser timing precision and worker
+interception can produce zero, slightly negative or unavailable phase values;
+do not interpret them as exact network measurements. Preserve useful dated
+results in the documentation archive with the platform and limitations.
+
 Build production before checking prefetch or bundle behavior; development does
 not reproduce Next's automatic production prefetch. Compare like-for-like fresh
 browser contexts and device/network settings. Record transfer sizes as well as

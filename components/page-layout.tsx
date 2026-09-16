@@ -6,6 +6,7 @@ type PageShellProps = {
   as?: "div" | "section" | "article";
   children: ReactNode;
   className?: string;
+  width?: "default" | "narrow";
 };
 
 type PageHeaderProps = {
@@ -41,10 +42,11 @@ export function PageShell({
   as: Element = "div",
   children,
   className,
+  width = "default",
 }: PageShellProps) {
   return (
     <Element
-      className={joinClassNames("page-width", styles.pageShell, className)}
+      className={joinClassNames("page-width", styles.pageShell, width === "narrow" ? styles.narrow : undefined, className)}
       data-page-shell
     >
       {children}

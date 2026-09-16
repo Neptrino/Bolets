@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUpRight, LockKeyhole } from "lucide-react";
-import Link from "next/link";
+import { IntentLink } from "@/components/intent-link";
 import { useContributorMapAccess } from "@/components/use-contributor-map-access";
 import type { SpatialGridSizeM } from "@/src/lib/types";
 
@@ -29,9 +29,9 @@ export function MapDetailAccessNotice({
             : "Publica una troballa amb una foto pública i obriràs els sectors d’1 km durant 7 dies."}
         </span>
       </div>
-      <Link href={findingLevel ? "/compte/col-laboracio" : "/troballes/nova"} className="button">
+      <IntentLink href={findingLevel ? "/compte/col-laboracio" : "/troballes/nova"} className="button">
         {findingLevel ? "Proposar una aportació" : "Publicar una troballa"} <ArrowUpRight size={16} aria-hidden="true" />
-      </Link>
+      </IntentLink>
     </div>
   );
 }

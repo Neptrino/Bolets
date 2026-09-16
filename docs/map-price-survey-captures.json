@@ -1,0 +1,21 @@
+{
+  "capturedAt": "2026-09-16T06:31:00.144Z",
+  "origin": "http://localhost:3101",
+  "species": "boletus-edulis",
+  "description": "Map screenshots use synthetic illustrative data at matching camera, not current readings. Forecast chart uses the real product renderer with synthetic demonstration points through +14 days, not current readings.",
+  "baseline": "ICGC relief/reference; ICGC, OpenMapTiles and OpenStreetMap attribution appears below the comparison on the survey page",
+  "files": [
+    {
+      "path": "public/media/editorial/map-survey/public-2500m.webp",
+      "sha256": "d6770d6fc856e9d3105a9be8ee4530ba0d22b6af9fcde44c96fccc7e918e66f8"
+    },
+    {
+      "path": "public/media/editorial/map-survey/detail-250m.webp",
+      "sha256": "a1ef7a5bd5bfad52d961a77e56f1fed7a913686d8f31af65cac96bbfc93cee38"
+    },
+    {
+      "path": "public/media/editorial/map-survey/forecast-chart.webp",
+      "sha256": "5fd0fb74c4304f4ee4120d66de3322c7714e41a1798e38fe26c89abea99a3f1b"
+    }
+  ]
+}

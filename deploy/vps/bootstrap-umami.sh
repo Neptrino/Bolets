@@ -257,6 +257,18 @@ configure_goal_reports() {
     "App installed" \
     "app-installed" \
     "The browser confirmed installation or the installed app launched for the first time."
+  ensure_goal_report \
+    "Annual map survey: invitation" \
+    "map-price-v8-shown" \
+    "The invitation without a displayed price was seen, once per tab session."
+  ensure_goal_report \
+    "Annual map survey: banner click" \
+    "map-price-v8-clicked" \
+    "The global banner link to the annual survey was selected."
+  ensure_goal_report \
+    "Annual map survey: opened" \
+    "map-price-v8-opened" \
+    "The annual price question was visible on the dedicated survey page."
 }
 
 funnel_report_payload() {

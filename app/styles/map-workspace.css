@@ -334,7 +334,7 @@
 .map-stage {
   position: relative;
   width: 100%;
-  height: max(540px, calc(100dvh - 62px));
+  height: max(540px, calc(100dvh - 62px - var(--map-price-banner-height, 0px)));
   margin: 0 auto;
   overflow: hidden;
   overflow-anchor: none;
@@ -772,7 +772,7 @@
     min-height: 32px;
   }
   .map-stage {
-    height: max(520px, calc(100dvh - 58px));
+    height: max(520px, calc(100dvh - 58px - var(--map-price-banner-height, 0px)));
   }
   .map-page .map-data-state {
     top: auto;
