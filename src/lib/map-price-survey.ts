@@ -6,6 +6,7 @@ import {
 export { MAP_PRICE_SURVEY_PATH, MAP_PRICE_SURVEY_ANSWERS } from "./map-price-survey-config";
 
 export const MAP_PRICE_SURVEY_KEY = `bolets:${MAP_PRICE_SURVEY_VERSION}`;
+export const MAP_PRICE_SURVEY_SNOOZE_MS = 24 * 60 * 60 * 1_000;
 type SurveyState = "" | "opened" | MapPriceSurveyAnswer;
 const changeEvent = "bolets:map-price-survey";
 const memory = new Map<string, string>();
@@ -30,6 +31,29 @@ function write(key: string, value: string) {
   window.dispatchEvent(new Event(changeEvent));
 }
 
+function snoozeSurvey() {
+  try {
+    window.localStorage.setItem(
+      `${MAP_PRICE_SURVEY_KEY}:snoozed-until`,
+      String(Date.now() + MAP_PRICE_SURVEY_SNOOZE_MS),
+    );
+  } catch {
+    write(`${MAP_PRICE_SURVEY_KEY}:snoozed-until`, String(Date.now() + MAP_PRICE_SURVEY_SNOOZE_MS));
+    return;
+  }
+  window.dispatchEvent(new Event(changeEvent));
+}
+
+function isSurveySnoozed() {
+  try {
+    const until = Number(window.localStorage.getItem(`${MAP_PRICE_SURVEY_KEY}:snoozed-until`));
+    if (Number.isFinite(until) && until > Date.now()) return true;
+  } catch {
+    return Number(read(`${MAP_PRICE_SURVEY_KEY}:snoozed-until`)) > Date.now();
+  }
+  return false;
+}
+
 export function getMapPriceSurveyState(): SurveyState {
   const value = read(MAP_PRICE_SURVEY_KEY);
   return value === "opened" || isMapPriceSurveyAnswer(value)
@@ -40,11 +64,31 @@ export function isMapPriceSurveyBannerHidden() {
   const state = getMapPriceSurveyState();
   let answered = false;
   try { answered = isMapPriceSurveyAnswer(localStorage.getItem(`${MAP_PRICE_SURVEY_KEY}:receipt`)); } catch { /* Optional UI hint only. */ }
-  return answered || Boolean(read(`${MAP_PRICE_SURVEY_KEY}:dismissed`)) || (state !== "" && state !== "opened");
+  return answered || isSurveySnoozed() || (state !== "" && state !== "opened");
 }
 
 export function dismissMapPriceSurveyBanner() {
-  write(`${MAP_PRICE_SURVEY_KEY}:dismissed`, "1");
+  recordOnce(`${MAP_PRICE_SURVEY_KEY}:banner-snoozed`, UMAMI_EVENTS.mapPriceSurveyBannerSnoozed);
+  snoozeSurvey();
+}
+
+export function hasMapPriceSurveyPromptBeenShown() {
+  return Boolean(read(`${MAP_PRICE_SURVEY_KEY}:prompt:shown`));
+}
+
+export function showMapPriceSurveyPrompt() {
+  recordOnce(`${MAP_PRICE_SURVEY_KEY}:prompt:shown`, UMAMI_EVENTS.mapPriceSurveyPromptShown);
+}
+
+export function clickMapPriceSurveyPrompt() {
+  showMapPriceSurveyPrompt();
+  recordOnce(`${MAP_PRICE_SURVEY_KEY}:prompt:clicked`, UMAMI_EVENTS.mapPriceSurveyPromptClicked);
+}
+
+export function dismissMapPriceSurveyPrompt() {
+  showMapPriceSurveyPrompt();
+  recordOnce(`${MAP_PRICE_SURVEY_KEY}:prompt:dismissed`, UMAMI_EVENTS.mapPriceSurveyPromptDismissed);
+  snoozeSurvey();
 }
 
 export function subscribeMapPriceSurvey(listener: () => void) {

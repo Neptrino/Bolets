@@ -71,9 +71,7 @@
   color: inherit;
 }
 
-.close:hover {
-  background: #465e4d;
-}
+.close:hover { background: #465e4d; }
 
 .link:focus-visible,
 .close:focus-visible {
@@ -104,4 +102,5 @@
     grid-column: 2;
     grid-row: 1 / span 2;
   }
+
 }

@@ -4,6 +4,7 @@ import { useEffect, useRef, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, Sparkles, X } from "lucide-react";
 import { IntentLink } from "@/components/intent-link";
+import { MapPriceSurveyPrompt } from "@/components/map-price-survey-prompt";
 import { useMapPriceSurveyVisibility } from "@/components/use-map-price-survey-visibility";
 import {
   clickMapPriceSurveyBanner, dismissMapPriceSurveyBanner, isMapPriceSurveyBannerHidden,
@@ -42,7 +43,7 @@ function VisibleBanner() {
       <IntentLink href={MAP_PRICE_SURVEY_PATH} className={styles.link} onClick={clickMapPriceSurveyBanner}>
         Dona la teva opinió <ArrowUpRight size={16} aria-hidden="true" />
       </IntentLink>
-      <button type="button" className={styles.close} onClick={dismissMapPriceSurveyBanner} aria-label="Tanca el bàner de l’enquesta">
+      <button type="button" className={styles.close} onClick={dismissMapPriceSurveyBanner} aria-label="Amaga l’enquesta durant 1 dia">
         <X size={18} aria-hidden="true" />
       </button>
     </div>
@@ -54,5 +55,8 @@ export function MapPriceSurveyBanner() {
   const hidden = useSyncExternalStore(subscribeMapPriceSurvey, isMapPriceSurveyBannerHidden, serverHidden);
   if (hidden || pathname === MAP_PRICE_SURVEY_PATH || isUmamiBlockedPath(pathname) ||
     pathname.startsWith("/auth/") || pathname.startsWith("/api/")) return null;
-  return <VisibleBanner />;
+  return <>
+    <VisibleBanner />
+    <MapPriceSurveyPrompt />
+  </>;
 }

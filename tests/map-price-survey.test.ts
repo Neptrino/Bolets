@@ -96,7 +96,8 @@ describe("annual map price survey", () => {
     expect(survey.isMapPriceSurveyBannerHidden()).toBe(true);
   });
 
-  it("shows the public banner and retains dismissal without recording an answer", async () => {
+  it("shows the public banner and returns one day after a snooze without recording an answer", async () => {
+    const now = vi.spyOn(Date, "now").mockReturnValue(1_000);
     const { MapPriceSurveyBanner } = await import("@/components/map-price-survey-banner");
     await act(async () => root.render(createElement(MapPriceSurveyBanner)));
     expect(container.querySelector("a")?.getAttribute("href")).toBe("/enquesta-mapa");
@@ -113,7 +114,60 @@ describe("annual map price survey", () => {
     route.pathname = "/map";
     await act(async () => root.render(createElement(MapPriceSurveyBanner)));
     expect(container.querySelector("aside")).toBeNull();
-    expect(queue).toHaveBeenCalledOnce();
+    expect(queue.mock.calls.map(([event]) => event)).toEqual([
+      "map-price-v8-shown", "map-price-v8-banner-snoozed",
+    ]);
+
+    now.mockReturnValue(1_000 + survey.MAP_PRICE_SURVEY_SNOOZE_MS + 1);
+    await act(async () => root.render(null));
+    await act(async () => root.render(createElement(MapPriceSurveyBanner)));
+    expect(container.querySelector("aside")).not.toBeNull();
+  });
+
+  it("shows a global prompt after 30 visible seconds following real use and only once per session", async () => {
+    vi.useFakeTimers();
+    Object.defineProperties(HTMLDialogElement.prototype, {
+      showModal: {
+        configurable: true,
+        value(this: HTMLDialogElement) { this.setAttribute("open", ""); },
+      },
+      close: {
+        configurable: true,
+        value(this: HTMLDialogElement) { this.removeAttribute("open"); },
+      },
+    });
+    const { MapPriceSurveyBanner } = await import("@/components/map-price-survey-banner");
+    await act(async () => root.render(createElement(MapPriceSurveyBanner)));
+    const dialog = container.querySelector("dialog")!;
+    expect(dialog.open).toBe(false);
+    await act(async () => vi.advanceTimersByTime(60_000));
+    expect(dialog.open).toBe(false);
+
+    await act(async () => container.querySelector("aside")!.dispatchEvent(
+      new Event("pointerdown", { bubbles: true }),
+    ));
+    await act(async () => vi.advanceTimersByTime(29_999));
+    expect(dialog.open).toBe(false);
+    await act(async () => vi.advanceTimersByTime(1));
+    expect(dialog.open).toBe(true);
+    expect(queue).toHaveBeenCalledExactlyOnceWith("map-price-v8-prompt-shown");
+
+    const later = [...container.querySelectorAll("button")].find((button) => button.textContent === "Ara no")!;
+    await act(async () => later.click());
+    expect(container.querySelector("dialog")).toBeNull();
+    expect(queue.mock.calls.map(([event]) => event)).toEqual([
+      "map-price-v8-prompt-shown", "map-price-v8-prompt-dismissed",
+    ]);
+
+    await act(async () => root.render(null));
+    localStorage.removeItem(`${survey.MAP_PRICE_SURVEY_KEY}:snoozed-until`);
+    await act(async () => root.render(createElement(MapPriceSurveyBanner)));
+    await act(async () => container.querySelector("aside")!.dispatchEvent(
+      new Event("pointerdown", { bubbles: true }),
+    ));
+    await act(async () => vi.advanceTimersByTime(30_000));
+    expect(container.querySelector("dialog")!.open).toBe(false);
+    vi.useRealTimers();
   });
 
   it.each(["/admin", "/compte/bosc", "/acces", "/troballes/nova", "/moderacio", "/enquesta-mapa"])("omits the banner on %s", async (pathname) => {

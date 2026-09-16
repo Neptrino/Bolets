@@ -266,6 +266,22 @@ configure_goal_reports() {
     "map-price-v8-clicked" \
     "The global banner link to the annual survey was selected."
   ensure_goal_report \
+    "Annual map survey: banner snoozed" \
+    "map-price-v8-banner-snoozed" \
+    "The global survey banner was hidden for one day."
+  ensure_goal_report \
+    "Annual map survey: delayed prompt shown" \
+    "map-price-v8-prompt-shown" \
+    "The contextual survey prompt appeared after 30 visible seconds of active public-site use."
+  ensure_goal_report \
+    "Annual map survey: delayed prompt click" \
+    "map-price-v8-prompt-clicked" \
+    "The contextual survey prompt link was selected."
+  ensure_goal_report \
+    "Annual map survey: delayed prompt dismissed" \
+    "map-price-v8-prompt-dismissed" \
+    "The contextual survey prompt was dismissed without opening the survey."
+  ensure_goal_report \
     "Annual map survey: opened" \
     "map-price-v8-opened" \
     "The annual price question was visible on the dedicated survey page."

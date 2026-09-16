@@ -70,15 +70,47 @@ for (const width of [1280, 390]) {
   });
 }
 
-test("banner dismissal persists across public navigation and does not block a direct survey visit", async ({ page }) => {
+test("banner snooze lasts one day and does not block a direct survey visit", async ({ page }) => {
   await page.goto("/");
+  await page.clock.install();
   const banner = page.getByRole("complementary", { name: "Enquesta sobre el mapa detallat" });
   await expect(banner).toBeVisible();
-  await banner.getByRole("button", { name: "Tanca el bàner de l’enquesta" }).click();
+  await banner.getByRole("button", { name: "Amaga l’enquesta durant 1 dia" }).click();
   await page.goto("/map");
   await expect(banner).toHaveCount(0);
   await page.goto("/enquesta-mapa");
   await expect(page.getByRole("button", { name: "No m’interessa", exact: true })).toBeEnabled();
+  await page.clock.fastForward(24 * 60 * 60 * 1_000 + 1);
+  await page.goto("/map");
+  await expect(banner).toBeVisible();
+});
+
+test("delayed survey prompt follows active public-site use and stays dismissed for the session", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect(page.getByRole("complementary", { name: "Enquesta sobre el mapa detallat" })).toBeVisible();
+  await page.clock.install();
+  await page.locator("main").dispatchEvent("pointerdown");
+  await page.clock.fastForward(25_000);
+  expect(await page.locator("dialog[open]").count()).toBe(0);
+  await page.clock.fastForward(5_000);
+
+  const prompt = page.getByRole("dialog", { name: "T’ajudaria veure més detall?" });
+  await expect(prompt).toBeVisible();
+  await expect(prompt).toContainText("Mapa a 250 m");
+  await expect(prompt).toContainText("Previsió a 14 dies");
+  await expect(prompt).not.toContainText("4,99");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.clock.fastForward(250);
+  await page.screenshot({ path: test.info().outputPath("delayed-prompt-mobile.png") });
+
+  await prompt.getByRole("button", { name: "Ara no", exact: true }).click();
+  await expect(prompt).toBeHidden();
+  await expect(page.getByRole("complementary", { name: "Enquesta sobre el mapa detallat" })).toHaveCount(0);
+  await page.locator("main").dispatchEvent("pointerdown");
+  await page.clock.fastForward(30_000);
+  await expect(prompt).toBeHidden();
 });
 
 test("a failed save shows an error and remains retryable until a confirmed receipt", async ({ page }) => {
