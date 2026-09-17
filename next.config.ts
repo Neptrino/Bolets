@@ -33,6 +33,9 @@ const nextConfig: NextConfig = {
     return [
       // The zones index was folded into the guides index on 2026-09-15.
       { source: "/zones", destination: "/guies", permanent: true },
+      // The rain map was published at /pluja-i-bolets for an hour on 2026-09-17
+      // (and listed in the sitemap) before moving to /mapa-pluja.
+      { source: "/pluja-i-bolets", destination: "/mapa-pluja", permanent: true },
       {
         source: "/:path*",
         has: [
