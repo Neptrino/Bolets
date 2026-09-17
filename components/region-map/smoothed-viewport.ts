@@ -35,7 +35,7 @@ function pixelsPerMetre(map: MapProjection, longitude: number, latitude: number)
 }
 
 /** Project each sample independently of bucket arrival order and bounding-box size. */
-export function projectSmoothedCell(map: MapProjection, cell: PredictionMapCell) {
+export function projectSmoothedCell(map: MapProjection, cell: Pick<PredictionMapCell, "cellBounds" | "gridSizeM">) {
   const [[west, south], [east, north]] = cell.cellBounds;
   const longitude = (west + east) / 2;
   const latitude = (south + north) / 2;

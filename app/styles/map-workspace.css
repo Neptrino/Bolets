@@ -423,17 +423,12 @@
   display: none;
 }
 .map-page .map-cell-visibility {
-  top: 164px;
-  right: 12px;
+  right: 10px;
   width: 264px;
   max-height: calc(100% - 180px);
   overflow-y: auto;
   border-radius: 12px;
   backdrop-filter: blur(12px);
-}
-.map-stage:has(.map-detail-panel.is-open) .map-cell-visibility {
-  top: 164px;
-  right: 12px;
 }
 .map-page:has(.map-detail-panel.is-open) .map-page-heading {
   display: none;

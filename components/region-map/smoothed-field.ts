@@ -20,7 +20,7 @@ export type FieldSample = {
   y: number;
   /** Kernel standard deviation in raster pixels. */
   sigma: number;
-  /** Value carried by the cell (0-100). */
+  /** Value carried by the cell; the consumer owns its range and units. */
   score: number;
   /** Paint weight the cell carries, e.g. its habitat-coverage alpha (0-1). */
   alpha: number;

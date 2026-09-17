@@ -4,12 +4,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { ArrowLeft, ArrowUpRight, BookOpen, BookOpenText, MapPinned } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, BookOpen, BookOpenText, CalendarRange, CircleHelp, MapPinned, ShieldCheck, Trees } from "lucide-react";
 import { DataSourceCredits } from "@/components/editorial-attribution";
-import { HubFacts, HubSeasonMatrix, HubTodayPanel, hubSpeciesList, type HubReading } from "@/components/hub-sections";
+import { HubFacts, HubSeasonMatrix, HubTodayPanel, hubAltitudeBand, hubSeasonWindow, hubSpeciesList, type HubReading } from "@/components/hub-sections";
 import { HubMapPortrait } from "@/components/hub-map-portrait";
 import { JsonLd } from "@/components/json-ld";
 import { MediaImage } from "@/components/media-image";
+import { editorialArticleFields } from "@/data/editorial";
 import { regionLabels } from "@/data/regions";
 import { getSpecies } from "@/data/species";
 import {
@@ -27,6 +28,7 @@ import { areaMapPath, areaMapSpec } from "@/src/lib/place-map";
 import { getAreaPredictionSummaries } from "@/src/lib/predictions";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
+import { zoneHubFaqs, zoneHubSummary } from "@/src/lib/zone-hub-copy";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, pageTitle, speciesPath } from "@/src/lib/seo";
 import { territorialMapPath } from "@/src/lib/territorial-map";
 import type { AreaProfile } from "@/data/location-pages";
@@ -134,16 +136,25 @@ export default async function AreaPage({ params }: Props) {
       return guide ? [[guide.path, guide] as const] : [];
     }),
   ).values()];
+  const seasonWindow = hubSeasonWindow(species);
+  const speciesList = hubSpeciesList(species);
+  const summary = zoneHubSummary({ area, places, speciesList, speciesCount: species.length, seasonWindow, altitudeBand: hubAltitudeBand(species) });
+  const faqs = zoneHubFaqs({ area, places, speciesList, seasonWindow });
+  const pyrenean = area.regionId === "pirineus" || area.regionId === "prepirineus";
 
   return (
     <div className="location-hub">
-      <JsonLd data={{ "@context": "https://schema.org", "@type": "CollectionPage", name: `Bolets ${area.prepositionalName}`, url: absoluteUrl(areaPath(area)), inLanguage: "ca", about: { "@type": "Place", name: area.name }, mainEntity: { "@type": "ItemList", itemListElement: places.map((place, index) => ({ "@type": "ListItem", position: index + 1, name: place.name, url: absoluteUrl(placePath(place)) })) } }} />
+      <JsonLd data={{ "@context": "https://schema.org", "@graph": [
+        { "@type": "CollectionPage", "@id": `${absoluteUrl(areaPath(area))}#page`, name: `Bolets ${area.prepositionalName}`, description: summary, url: absoluteUrl(areaPath(area)), inLanguage: "ca", ...editorialArticleFields(`zone:${area.slug}`), about: { "@type": "Place", name: area.name }, mainEntity: { "@type": "ItemList", itemListElement: places.map((place, index) => ({ "@type": "ListItem", position: index + 1, name: place.name, url: absoluteUrl(placePath(place)) })) } },
+        { "@type": "FAQPage", "@id": `${absoluteUrl(areaPath(area))}#preguntes`, mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })) },
+      ] }} />
       <header className="location-hub-hero">
         <div className="page-width location-hub-hero-grid">
           <div className="location-hub-copy">
             <Link href="/guies" className="back-link location-back"><ArrowLeft size={15} /> Totes les guies</Link>
             <p className="eyebrow light"><MapPinned size={15} /> {area.typeLabel} · {regionLabels[area.regionId]}</p>
             <h1>Bolets<br /><i>{area.prepositionalName}.</i></h1>
+            <p className="location-hub-summary">{summary}</p>
             <p>{area.description} {area.landscape}</p>
           </div>
           <HubMapPortrait
@@ -163,6 +174,33 @@ export default async function AreaPage({ params }: Props) {
       <div className="page-width location-hub-body">
         <HubFacts species={species} />
 
+        <div className="location-hub-panels">
+          <section id="boscos" className="guide-panel" aria-labelledby="boscos-title">
+            <header className="guide-panel-head">
+              <div>
+                <p className="eyebrow"><Trees size={15} aria-hidden="true" /> Boscos</p>
+                <h2 id="boscos-title">Els boscos {area.prepositionalName}</h2>
+              </div>
+            </header>
+            <div className="guide-panel-body">
+              <p className="guide-panel-text">{area.forests}</p>
+              {pyrenean ? <p className="guide-panel-note"><MapPinned size={15} aria-hidden="true" /><span>Aquesta comarca forma part de la <Link href="/zones/pirineu">guia dels bolets al Pirineu</Link>.</span></p> : null}
+            </div>
+          </section>
+          <section id="temporada" className="guide-panel" aria-labelledby="temporada-title">
+            <header className="guide-panel-head">
+              <div>
+                <p className="eyebrow"><CalendarRange size={15} aria-hidden="true" /> Temporada</p>
+                <h2 id="temporada-title">Quan comença la temporada {area.prepositionalName}</h2>
+              </div>
+            </header>
+            <div className="guide-panel-body">
+              <p className="guide-panel-text">{area.seasonNotes}</p>
+              {area.regulationNote ? <p className="guide-panel-note"><ShieldCheck size={15} aria-hidden="true" /><span>{area.regulationNote} <Link href="/normativa-bolets">Guia de normativa</Link>.</span></p> : null}
+            </div>
+          </section>
+        </div>
+
         <Suspense fallback={<HubTodayPanel {...todayCopy(area, species)} liveMapHref={liveMapHref} readings={[]} state="loading" />}>
           <AreaConditionsBoard area={area} species={species} liveMapHref={liveMapHref} />
         </Suspense>
@@ -181,6 +219,21 @@ export default async function AreaPage({ params }: Props) {
                 </Link>
               );
             })}
+          </div>
+        </section>
+
+        <section id="preguntes" className="guide-panel location-hub-faq" aria-labelledby="preguntes-title">
+          <header className="guide-panel-head">
+            <div>
+              <p className="eyebrow"><CircleHelp size={15} aria-hidden="true" /> Preguntes</p>
+              <h2 id="preguntes-title">Preguntes sobre els bolets {area.prepositionalName}</h2>
+              <p className="guide-panel-lede">Respostes breus amb les dades d’aquesta guia; els detalls són a cada secció i a cada indret.</p>
+            </div>
+          </header>
+          <div className="guide-panel-body location-hub-faq-list">
+            {faqs.map((faq) => (
+              <article key={faq.question}><h3>{faq.question}</h3><p>{faq.answer}</p></article>
+            ))}
           </div>
         </section>
 

@@ -11,8 +11,11 @@ export const BACKLINK_SEARCH_DEMAND: Readonly<Record<string, readonly string[]>>
     "app bolets de catalunya",
     "bolets Catalunya",
     "bolets de Catalunya",
-    "bolets pirineu",
     "bolets a Catalunya"
+  ],
+  "/zones/pirineu": [
+    "bolets pirineu",
+    "bolets pirineus"
   ],
   "/bolets": [
     "bolets",

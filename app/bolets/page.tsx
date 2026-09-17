@@ -10,6 +10,7 @@ import { seasonGuides, type SeasonGuideId } from "@/src/lib/season-guides";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 import { catalogueSearchQuery } from "@/src/lib/catalogue-search";
+import { catalogueCounts, catalogueFaqs, catalogueListRows } from "@/src/lib/catalogue-list";
 
 export const metadata: Metadata = {
   title: "Tipus de bolets de Catalunya: guia d’espècies",
@@ -41,9 +42,13 @@ export default async function SpeciesIndexPage({ searchParams }: {
   searchParams: Promise<{ q?: string | string[] }>;
 }) {
   const initialQuery = catalogueSearchQuery((await searchParams).q);
+  const rows = catalogueListRows(speciesAlphabetical);
+  const counts = catalogueCounts(rows);
+  const faqs = catalogueFaqs(counts);
   return (
     <PageShell as="section">
       <JsonLd data={{ "@context": "https://schema.org", "@type": "CollectionPage", name: "Tipus de bolets de Catalunya", url: `${SITE_URL}/bolets`, inLanguage: "ca", mainEntity: { "@type": "ItemList", numberOfItems: speciesAlphabetical.length, itemListElement: speciesAlphabetical.map((species, index) => ({ "@type": "ListItem", position: index + 1, name: `${species.identity.commonName} (${species.identity.scientificName})`, url: `${SITE_URL}${speciesPath(species)}` })) } }} />
+      <JsonLd data={{ "@context": "https://schema.org", "@type": "FAQPage", "@id": `${SITE_URL}/bolets#preguntes`, mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })) }} />
       <PageHeader
         eyebrow="Guia d’espècies"
         title={<>Tipus de bolets<br />de Catalunya.</>}
@@ -52,7 +57,7 @@ export default async function SpeciesIndexPage({ searchParams }: {
             <Images size={18} aria-hidden="true" /> Veure la infografia <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         }
-        description={<>{speciesAlphabetical.length} fitxes de bolets comestibles, tòxics i no comestibles amb fotografies, noms, hàbitat, temporada i espècies semblants.</>}
+        description={<>{counts.total} fitxes: {counts.edible} bolets comestibles, {counts.toxic} tòxics o mortals i {counts.other} no comestibles o no recomanats, amb fotografies, noms en català, castellà i científic, hàbitat, temporada i espècies semblants.</>}
       />
       <SpeciesDirectory
         key={initialQuery}
@@ -65,6 +70,48 @@ export default async function SpeciesIndexPage({ searchParams }: {
           label: seasonShortcutLabels[guide.id],
         }))}
       />
+      <section className="catalogue-list" aria-labelledby="catalogue-list-title">
+        <SectionHeader
+          meta={`${counts.total} espècies`}
+          title="Llista de bolets de Catalunya: noms, comestibilitat i temporada"
+          titleId="catalogue-list-title"
+          description="Tots els tipus de bolets del catàleg en una taula: nom català, nom científic, nom en castellà, comestibilitat, estació i bosc habitual. Cada fila obre la fitxa completa."
+          actions={<Link href="/noms-de-bolets-catala-castella" className="text-link">Glossari de noms <ArrowUpRight size={16} aria-hidden="true" /></Link>}
+          size="compact"
+        />
+        <div className="catalogue-list-scroll" role="region" aria-label="Llista de bolets de Catalunya" tabIndex={0}>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Bolet</th>
+                <th scope="col">En castellà</th>
+                <th scope="col">Comestibilitat</th>
+                <th scope="col">Estació</th>
+                <th scope="col">Bosc habitual</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.speciesId} data-group={row.group}>
+                  <th scope="row"><Link href={row.href}>{row.name}</Link><small>{row.scientificName}</small></th>
+                  <td lang="es">{row.spanish || "—"}</td>
+                  <td><span className={`catalogue-list-edibility ${row.group}`}>{row.edibilityLabel}</span></td>
+                  <td>{row.season}</td>
+                  <td>{row.habitat}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section className="catalogue-faq" aria-labelledby="catalogue-faq-title">
+        <SectionHeader meta="Preguntes habituals" title="Preguntes sobre els bolets de Catalunya" titleId="catalogue-faq-title" size="compact" />
+        <div className="catalogue-faq-list">
+          {faqs.map((faq) => (
+            <article key={faq.question}><h3>{faq.question}</h3><p>{faq.answer}</p></article>
+          ))}
+        </div>
+      </section>
       <div className="species-catalogue-support">
         <section aria-labelledby="popular-species-title">
           <SectionHeader

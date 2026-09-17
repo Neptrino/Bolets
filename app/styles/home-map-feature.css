@@ -96,8 +96,12 @@
 .home-map-today h2 { margin: 0; font-size: var(--text-2xl); line-height: 1.1; letter-spacing: -.02em; }
 .home-map-today p:not(.eyebrow) { max-width: 40rem; margin: .5rem 0 0; color: var(--on-dark-muted); font-size: var(--text-base); line-height: 1.5; }
 .home-map-today .button { white-space: nowrap; }
+.home-map-today-actions { display: grid; gap: .6rem; justify-items: end; }
+.home-map-today-secondary { display: inline-flex; gap: .3rem; align-items: center; color: var(--on-dark-muted); font-size: var(--text-sm); font-weight: 700; }
+.home-map-today-secondary:hover, .home-map-today-secondary:focus-visible { color: #fffaf0; }
 
 @media (max-width: 1000px) {
   .home-map-today { grid-template-columns: 1fr; padding: 1.5rem; justify-items: start; }
   .home-map-today .button { white-space: normal; }
+  .home-map-today-actions { justify-items: start; }
 }

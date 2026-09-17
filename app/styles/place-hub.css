@@ -430,3 +430,29 @@
   .place-today-card { padding: 22px; }
   .place-nearby-grid { grid-template-columns: 1fr; }
 }
+
+/* Zone hub: answer-first summary in the hero, then two guide panels and a FAQ panel with the Today panel's chrome. */
+.location-hub-copy .location-hub-summary { margin: 0 0 12px; font-weight: 750; line-height: 1.55; }
+.location-hub-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin: 28px 0 var(--place-section-gap); }
+.location-hub-panels .guide-panel-head { padding-bottom: 6px; }
+.location-hub-panels .guide-panel-note a,
+.location-hub-faq .guide-panel-lede a { color: var(--moss); font-weight: 750; }
+.location-hub-faq { margin: var(--place-section-gap) 0 0; }
+.location-hub-faq-list.guide-panel-body { display: grid; gap: 0; padding-top: 6px; }
+.location-hub-faq-list article { padding: 16px 0; border-top: 1px solid var(--line); }
+.location-hub-faq-list article:first-child { border-top: 0; }
+.location-hub-faq-list h3 { margin: 0 0 6px; color: var(--forest-panel); font-size: var(--text-base); font-weight: 850; }
+.location-hub-faq-list p { margin: 0; color: var(--ink); font-size: var(--text-base); line-height: 1.65; }
+@media (max-width: 900px) {
+  .location-hub-panels { grid-template-columns: 1fr; }
+}
+
+/* Pyrenees editorial hub on the standard shell: one 56px rhythm between every section, matching the territory list. */
+.pirineu-hub .rovellons-hero { background: var(--forest-panel); }
+.pirineu-hub .pirineu-guide { --place-section-gap: 56px; padding-top: 70px; }
+.pirineu-guide > .guides-territories,
+.pirineu-guide > .location-hub-panels,
+.pirineu-guide > .catalogue-list,
+.pirineu-guide > .location-hub-faq { margin: 56px 0 0; }
+.pirineu-guide > .data-source-credits { margin-top: 56px; }
+.pirineu-hub .pirineu-guide > :first-child { margin-top: 0; }

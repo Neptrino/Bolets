@@ -24,6 +24,7 @@ import {
 } from "@/data/catalogue";
 import { getSpecies } from "@/data/species";
 import { speciesSlugForId } from "@/data/species-slugs";
+import { speciesSameAs } from "@/data/species-identifiers";
 import { getSpanishSpeciesNames } from "@/data/species-common-names";
 import { editorialArticleFields, getEditorialMetadata, officialSafetySource } from "@/data/editorial";
 import { isRegionId } from "@/data/regions";
@@ -202,6 +203,7 @@ export default async function SpeciesPage({
                   ...(spanishNames ? [spanishNames.primary, ...(spanishNames.alternatives ?? [])] : []),
                 ],
                 taxonRank: "species",
+                sameAs: speciesSameAs(species.speciesId),
                 parentTaxon: {
                   "@type": "Taxon",
                   name: species.identity.genus,
@@ -287,7 +289,7 @@ export default async function SpeciesPage({
           <SpeciesIdentificationSection species={species} />
           <SpeciesCulinarySection species={species} />
           <SpeciesEcologySection species={species} />
-          {scoredSpecies && region && <SpeciesDistributionSection autoGeolocate={!isRegionId(query.region)} region={region} species={scoredSpecies} />}
+          {scoredSpecies && region && <SpeciesDistributionSection region={region} species={scoredSpecies} />}
           <SpeciesFaqSection species={species} faqs={faqs} />
           <SpeciesFieldCardSection species={species} />
           <ProfileSection species={species} id="fonts" eyebrow="Referències" title="Fonts i autoria">

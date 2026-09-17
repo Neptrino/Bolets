@@ -60,7 +60,8 @@
     "weather:compare-arome-artifacts": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/compare-arome-point-artifacts.mjs",
     "findings:convert": "node scripts/convert-findings-spreadsheet.mjs",
     "findings:fetch-fungacat": "node scripts/fetch-fungacat-events.mjs",
-    "weather:evaluate-findings": "node scripts/evaluate-findings.mjs"
+    "weather:evaluate-findings": "node scripts/evaluate-findings.mjs",
+    "species:identifiers": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --import ./scripts/lib/register-alias.mjs scripts/build-species-identifiers.mts"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

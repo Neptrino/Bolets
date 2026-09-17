@@ -15,13 +15,14 @@ import { speciesMapHref } from "@/src/lib/species-map-pages";
 import type { RegionId, SpeciesProfile } from "@/src/lib/types";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
-/* Potential habitat and territorial guides, separate from seasonal conditions. */
+/* Potential habitat and territorial guides, separate from seasonal conditions.
+   The map frames the whole of Catalonia and never asks for the visitor's
+   location: it shows where the species could grow, not where the reader is.
+   The region only picks the territory the interactive-map link opens. */
 export function SpeciesDistributionSection({
-  autoGeolocate,
   region,
   species,
 }: {
-  autoGeolocate: boolean;
   region: RegionId;
   species: SpeciesProfile;
 }) {
@@ -58,9 +59,9 @@ export function SpeciesDistributionSection({
   <div className="profile-panel-body">
   <LazyHabitatMap
     activeRegions={species.ecologicalConfig.regions}
-    autoGeolocate={autoGeolocate}
+    autoGeolocate={false}
     compactLegend
-    selectedRegion={region}
+    geolocation={false}
     speciesId={species.speciesId}
   />
   <div className="region-pill-row habitat-evidence-row">

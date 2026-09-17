@@ -4,8 +4,7 @@ import type { Metadata } from "next";
 import { IntentLink as Link } from "@/components/intent-link";
 import { UmamiEventLink } from "@/components/umami-event-link";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
-import { connection } from "next/server";
-import { cache, Suspense } from "react";
+import { Suspense } from "react";
 import {
   ArrowUpRight,
   Clock3,
@@ -17,13 +16,10 @@ import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { PredictionMapLegend } from "@/components/prediction-map-legend";
 import { LazyCurrentMap } from "@/components/lazy-current-map";
-import { CurrentSearchAnswerLoading } from "@/components/current-search-answer-loading";
 import { editorialArticleFields } from "@/data/editorial";
 import { regionSelectItems } from "@/data/regions";
 import {
   isAreaOverviewItem,
-  loadCachedAreaOverview,
-  loadCachedCurrentOverview,
   rankOverviewItems,
   type RankedOverviewItem,
   type CurrentOverviewItem,
@@ -40,11 +36,14 @@ import {
 } from "@/src/lib/seo";
 import { speciesMapHref } from "@/src/lib/species-map-pages";
 import { territorialMapPath } from "@/src/lib/territorial-map";
-import { currentSearchReadings, overviewReadingExplanation, overviewExtent as extentMetric, overviewLimitingFactor as limitingFactor } from "@/src/lib/current-overview-copy";
+import { weekendWindow } from "@/src/lib/week-window";
+import { loadOverview, overviewLocationName, overviewMapPath } from "@/src/lib/current-overview-page";
+import { WeekendOutlook, WeekendOutlookLoading } from "@/components/weekend-outlook";
+import { currentSearchReadings, overviewReadingExplanation } from "@/src/lib/current-overview-copy";
 
 const overviewTitle = "On trobar bolets avui i aquesta setmana";
 const overviewDescription = metaDescription(
-  "Consulta on buscar bolets avui i aquesta setmana a Catalunya segons les condicions actuals de pluja, temperatura i hàbitat.",
+  "Consulta on buscar bolets avui, aquesta setmana i aquest cap de setmana a Catalunya segons les condicions actuals de pluja, temperatura i hàbitat.",
 );
 
 export const metadata: Metadata = {
@@ -110,46 +109,13 @@ function monthlyActivityLabel(activity: CurrentOverviewItem["seasonalActivity"])
   return activity === "peak" || activity === "inactive" ? label : `activitat ${label}`;
 }
 
-function overviewLocationName(item: RankedOverviewItem) {
-  return isAreaOverviewItem(item) ? item.areaName : item.regionName;
-}
-
 function catalanList(items: string[]) {
   if (items.length < 2) return items[0] ?? "";
   return `${items.slice(0, -1).join(", ")} i ${items.at(-1)}`;
 }
 
-function overviewMapPath(item: RankedOverviewItem) {
-  return isAreaOverviewItem(item)
-    ? territorialMapPath(item.speciesId, item.regionId, item.bounds)
-    : speciesMapHref(item.speciesId, { region: item.regionId });
-}
 
-function CurrentOverviewLoading() {
-  return (
-    <section className="current-board current-board-loading" aria-busy="true" aria-live="polite">
-      <Clock3 size={22} aria-hidden="true" />
-      <div>
-        <strong>Preparant la lectura d’avui…</strong>
-        <p>La pàgina ja és disponible mentre comprovem les condicions vigents de cada territori.</p>
-      </div>
-    </section>
-  );
-}
-
-const loadOverview = cache(async () => {
-  // VPS builds intentionally receive no database credentials. Wait for a real
-  // request so the runtime-only internal Supabase URL is available; the two
-  // overview loaders share one generation-bound data cache.
-  await connection();
-  const [loadedCurrentItems, loadedAreaItems] = await Promise.all([
-    loadCachedCurrentOverview(),
-    loadCachedAreaOverview(),
-  ]);
-  return { loadedCurrentItems, loadedAreaItems };
-});
-
-async function CurrentOverview({ simulate = false, section }: { simulate?: boolean; section: "answer" | "ranking" }) {
+async function CurrentOverview({ simulate = false, section }: { simulate?: boolean; section: "answer" | "ranking" | "notes" | "sources" }) {
   const { loadedCurrentItems, loadedAreaItems } = await loadOverview();
   const { currentItems: allItems, areaItems, simulated } = simulate
     ? developmentOverviewSimulation(loadedCurrentItems, loadedAreaItems)
@@ -174,6 +140,8 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
   const structuredItems = visibleItems.filter(
     (item) => item.status === "available" && item.summary,
   );
+  const now = new Date();
+  const weekend = weekendWindow(now);
 
   return (
     <>
@@ -220,6 +188,7 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
             : "Falten lectures recents i completes per comparar els territoris. Torna-ho a provar més tard."}
           </p>
           {availableCount > 0 && availableCount < items.length && <p>La comparació és parcial: alguns territoris o espècies no tenen lectures completes.</p>}
+          <p>Vols saber <a href="#cap-de-setmana">on trobar bolets aquest cap de setmana</a>, {weekend.label}? La predicció es calcula amb el temps previst, no amb les lectures d’avui.</p>
           {observedWindow && <p className="current-search-answer-updated"><Clock3 size={14} aria-hidden="true" /> {observedWindow}</p>}
         </section>
       </>}
@@ -234,7 +203,7 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
 
           {items.length > 0 ? <>
             <div className="current-board-columns" aria-hidden="true">
-              <span>Posició</span><span>Zona i bolet</span><span>Condicions</span><span>Abast</span><span>Mapa</span>
+              <span>Posició</span><span>Zona i bolet</span><span>Condicions</span><span>Mapa</span>
             </div>
             <ol className="current-overview-grid" aria-label="Condicions actuals per espècie i territori, de més a menys favorables">
               {visibleItems.map((item, index) => {
@@ -271,14 +240,6 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
                       <span>{item.status === "unavailable" ? "No hem rebut les lectures necessàries" : "Falten lectures recents o completes"}</span>
                     </div>
                   )}
-                  {summary ? (
-                    <dl className="current-row-signals">
-                      <div><dt>Abast dins la zona</dt><dd>{extentMetric(summary)}</dd></div>
-                      <div><dt>Principal fre</dt><dd>{limitingFactor(item)}</dd></div>
-                    </dl>
-                  ) : (
-                    <p className="current-row-signals-empty">—</p>
-                  )}
                   <UmamiEventLink href={mapPath} className="current-row-map" analyticsEvent={UMAMI_EVENTS.avuiMapOpen} aria-label={`Veure al mapa: ${locationName}, ${item.speciesName}`}>
                     <Map size={15} /><span>Veure mapa</span>
                   </UmamiEventLink>
@@ -288,11 +249,13 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
             </ol>
           </> : <div className="current-board-empty"><strong>Avui no hi ha dades suficients</strong><p>Torna-ho a provar més tard per comparar les zones.</p></div>}
         </section>
+      </>}
 
+      {section === "notes" && <>
         <section className="current-reading-notes" aria-labelledby="current-reading-notes-title">
           <div className="current-reading-notes-intro">
-            <h2 id="current-reading-notes-title">Com interpretar les dades</h2>
-            <p>La puntuació correspon al millor sector de cada territori; l’abast indica fins on s’estenen les condicions favorables. La comparació inclou espècies comestibles de temporada amb lectures completes.</p>
+            <h2 id="current-reading-notes-title">Com interpretar el comparador d’avui</h2>
+            <p>La puntuació correspon al millor sector de cada territori, sobre 100. La comparació inclou espècies comestibles de temporada amb lectures completes; el detall de cada zona, amb l’abast i el factor que la frena, és a sota.</p>
           </div>
           <div className="current-reading-notes-grid">
             {searchReadings.length > 0 && <div className="current-reading-notes-block">
@@ -310,24 +273,28 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
             </div>}
             <div className="current-reading-notes-block">
               <h3>Com preparar la sortida d’aquesta setmana?</h3>
-              <p>Revisa la data de les lectures i compara el millor sector amb l’abast de les condicions dins la zona. Un sector ben valorat no vol dir que tot el bosc estigui igual. Consulta la <Link href="/quan-surten-els-bolets-despres-de-ploure">guia dels bolets després de ploure</Link> per entendre per què una pluja recent no garanteix una brotada immediata.</p>
+              <p>Revisa la data de les lectures i compara el millor sector amb l’abast de les condicions dins la zona. Un sector ben valorat no vol dir que tot el bosc estigui igual. Consulta la <Link href="/quan-surten-els-bolets-despres-de-ploure">guia dels bolets després de ploure</Link> per entendre per què una pluja recent no garanteix una brotada immediata, i el <Link href="/pluja-i-bolets">mapa de la pluja dels últims dies</Link> per veure on n’ha caigut.</p>
               <p>Les condicions ambientals no confirmen presència de bolets i no són una previsió dels pròxims set dies. Revisa la lectura abans de sortir. <Link href="/metode">Consulta el mètode i els seus límits</Link>.</p>
             </div>
           </div>
-          {overviewSources.length > 0 ? (
-            <DataSourceCredits
-              sources={overviewSources}
-              label="Fonts de les dades"
-              description="Cartografia i lectures ambientals"
-              variant="panel"
-            />
-          ) : null}
+        </section>
+      </>}
+
+      {section === "sources" && overviewSources.length > 0 && <>
+        <section className="current-reading-sources" aria-label="Fonts de les dades">
+          <DataSourceCredits
+            sources={overviewSources}
+            label="Fonts de les dades"
+            description="Cartografia i lectures ambientals"
+            variant="panel"
+          />
         </section>
 
       </>}
     </>
   );
 }
+
 
 // Follow prompt placed right after the map, where most visitors stop scrolling:
 // on a phone the old position, after the twenty-row board, sat eight screens down.
@@ -362,9 +329,9 @@ function CurrentMap() {
     <section className="current-map-overview" aria-labelledby="current-map-title">
       <header className="current-map-heading">
         <div>
-          <p className="eyebrow"><Map size={14} aria-hidden="true" /> Mapa combinat</p>
-          <h2 id="current-map-title">Les condicions d’avui, sobre el territori</h2>
-          <p>El color mostra quina espècie comestible té les millors condicions a cada sector.</p>
+          <p className="eyebrow"><Map size={14} aria-hidden="true" /> Mapa de bolets · avui</p>
+          <h2 id="current-map-title">Mapa de bolets de Catalunya avui</h2>
+          <p>El mapa de predicció pinta cada sector amb l’espècie comestible que hi té avui les millors condicions; com més intens el color, més alta la puntuació. Si només vols veure l’aigua que ha caigut, mira el <Link href="/pluja-i-bolets">mapa de la pluja dels últims 7 dies</Link>.</p>
         </div>
         <UmamiEventLink href="/map" className="current-map-open" analyticsEvent={UMAMI_EVENTS.avuiMapOpen}>
           Obrir el mapa de bolets de Catalunya <ArrowUpRight size={16} aria-hidden="true" />
@@ -391,14 +358,21 @@ export default async function MushroomsTodayPage({ searchParams }: {
         description="Compara les espècies comestibles de temporada i descobreix quins territoris de Catalunya tenen ara les condicions més favorables."
         layout="split"
       />
-      <Suspense fallback={<CurrentSearchAnswerLoading />}>
-        <CurrentOverview simulate={simulate} section="answer" />
-      </Suspense>
+      {/* The answer, the comparator and their notes come from one cached
+          overview load and ship in the first HTML on purpose: crawlers that
+          do not run JavaScript, such as the AI answer engines, read them as
+          plain text instead of finding them in a hidden streamed chunk. Only
+          the weekend block streams, because its frames can be cold for a few
+          minutes after a new publication. */}
+      <CurrentOverview simulate={simulate} section="answer" />
       <CurrentMap />
       <CurrentInstagramCard />
-      <Suspense fallback={<CurrentOverviewLoading />}>
-        <CurrentOverview simulate={simulate} section="ranking" />
+      <CurrentOverview simulate={simulate} section="ranking" />
+      <CurrentOverview simulate={simulate} section="notes" />
+      <Suspense fallback={<WeekendOutlookLoading />}>
+        <WeekendOutlook />
       </Suspense>
+      <CurrentOverview simulate={simulate} section="sources" />
       <nav className="guide-reading-actions" aria-label="Guies relacionades amb les condicions actuals">
           <UmamiEventLink href="/map" analyticsEvent={UMAMI_EVENTS.avuiMapOpen}>Mapa de bolets de Catalunya <ArrowUpRight size={15} aria-hidden="true" /></UmamiEventLink>
           <Link href="/quan-surten-els-bolets-despres-de-ploure">Quan surten després de ploure <ArrowUpRight size={15} aria-hidden="true" /></Link>

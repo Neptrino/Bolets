@@ -24,6 +24,12 @@ export interface AreaProfile {
   bounds: SpatialBounds;
   description: string;
   landscape: string;
+  /** The forests and altitude bands behind the guides, written from the documented places. */
+  forests: string;
+  /** How the season moves across the area: where it starts, its peak and what closes it. */
+  seasonNotes: string;
+  /** One sentence when a park or paratge inside the area has its own collecting rules. */
+  regulationNote?: string;
   source: TerritorialSource;
 }
 
@@ -64,6 +70,8 @@ export const areaProfiles: AreaProfile[] = [
     bounds: { west: 1.95, south: 42.05, east: 2.5, north: 42.45 },
     description: "Comarca pirinenca de valls, boscos montans, prats i cursos d’aigua, amb una temporada molt condicionada per l’altitud.",
     landscape: "Els canvis ràpids de cota desplacen el calendari entre els fons de vall i l’alta muntanya. Camprodon, Setcases, Sant Pau de Segúries i les Lloses ofereixen quatre lectures forestals diferents dins la mateixa comarca.",
+    forests: "Del fons de la vall de Camprodon a les capçaleres del Ter, el Ripollès encadena rouredes i fagedes humides, com les del Capsacosta a Sant Pau de Segúries, pinedes de pi roig i, a Setcases, pinedes de pi negre d’alta muntanya. Al sud-oest, les Lloses combinen pinedes, alzinars i rouredes sobre relleus més suaus. Les guies de la comarca cobreixen ceps, ceps de pi, rossinyols, rovellons, pinetells i trompetes de la mort.",
+    seasonNotes: "El calendari es desplaça amb la cota: a l’alta muntanya de Setcases la resposta comença abans, a finals d’estiu, i avança vall avall durant la tardor. Les primeres gelades i el vent sec de muntanya poden tancar la temporada de cop a les cotes altes mentre les rouredes i fagedes baixes encara responen.",
     source: { title: "Turisme del Ripollès", url: "https://ripollesturisme.cat/" },
   },
   {
@@ -76,6 +84,9 @@ export const areaProfiles: AreaProfile[] = [
     bounds: { west: 1.6, south: 41.9, east: 2.1, north: 42.35 },
     description: "Comarca prepirinenca de gran tradició boletaire, amb pinedes, boscos mixtos i relleus que pugen cap al Cadí-Moixeró.",
     landscape: "La temporada de bolets forma part de la cultura gastronòmica local. El tipus de pi, el sòl, l’orientació i la persistència de la humitat canvien entre les valls i els relleus de l’Alt Berguedà.",
+    forests: "Les pinedes de muntanya dominen els sectors amb guia: pi roig i pi negre a Castellar de n’Hug, sota el Cadí-Moixeró, i boscos de coníferes amb clarianes als Rasos de Peguera, al nord de Berga. Entre la vall del Llobregat i l’Alt Berguedà el tipus de pi, el sòl i l’orientació canvien en pocs quilòmetres, i amb ells l’hàbitat de pinetells, ceps, camagrocs i fredolics.",
+    seasonNotes: "La temporada arrenca amb les pluges de finals d’estiu a les cotes altes i s’allarga cap a la tardor avançada als fons de vall, on els fredolics aguanten fins que arriben les gelades persistents. Als Rasos i a Castellar el temps canvia ràpid: una baixada brusca de temperatura o el vent poden escurçar una brotada que semblava assegurada.",
+    regulationNote: "Part de l’Alt Berguedà és dins el Parc Natural del Cadí-Moixeró, amb normes pròpies de recol·lecció i senyalització de finques.",
     source: { title: "Visit Pirineus — Berguedà", url: "https://visitpirineus.com/ca/destinations/bergueda" },
   },
   {
@@ -88,6 +99,8 @@ export const areaProfiles: AreaProfile[] = [
     bounds: { west: 2.25, south: 41.7, east: 2.55, north: 41.9 },
     description: "Massís amb un fort gradient climàtic, des de boscos mediterranis fins a fagedes i formacions humides de muntanya.",
     landscape: "La recol·lecció de bolets forma part del patrimoni cultural del massís. Santa Fe, el Brull i Viladrau representen ambients diferents, i la temporada pot variar notablement entre vessants.",
+    forests: "El massís puja des dels alzinars i les pinedes mediterrànies del Brull fins a les castanyedes i rouredes de Viladrau i la fageda de Santa Fe. Aquest gradient explica per què les guies del Montseny van dels ous de reig i els camagrocs dels vessants més càlids fins als ceps, rossinyols i trompetes de la mort de les obagues humides.",
+    seasonNotes: "Cada vessant té el seu ritme: la fageda i les obagues de Santa Fe i Viladrau responen més tard i durant més temps a les pluges de tardor, mentre que els sectors mediterranis del Brull s’assequen abans si el vent persisteix. Les trompetes i els camagrocs poden allargar-se fins ben entrat el desembre si no hi ha gelades fortes.",
     source: { title: "Patrimoni cultural immaterial del Montseny — recol·lecció de bolets", url: "https://parcs.diba.cat/es/web/el-patrimoni-cultural-immaterial-del-montseny/inventari/detall/-/contingut/29193465/sabers-relacionats-amb-l-alimentacio-recol-leccio-i-consum-de-bolets" },
   },
   {
@@ -100,6 +113,9 @@ export const areaProfiles: AreaProfile[] = [
     bounds: { west: 1.55, south: 42.25, east: 2.05, north: 42.5 },
     description: "Gran vall pirinenca envoltada de boscos submediterranis, pinedes montanes i prats alpins, amb un gradient altitudinal molt marcat.",
     landscape: "L’orientació est-oest de la vall crea contrastos entre solells, obagues i boscos de muntanya. Bellver permet llegir la transició entre el fons de vall i els vessants del Cadí-Moixeró.",
+    forests: "Bellver de Cerdanya resumeix la comarca: el fons de vall agrícola, les pinedes de pi roig dels vessants i, més amunt, el pi negre i les pastures del Cadí-Moixeró. Les orientacions fresques i els sòls àcids de les pinedes montanes són l’hàbitat que les guies descriuen per als ceps i els ceps de pi; els rovellons i els pinetells s’associen a les pinedes més obertes i assolellades.",
+    seasonNotes: "L’alçada de la vall, per sobre dels mil metres, avança el calendari respecte de la plana: els ceps de pi poden començar a finals d’agost després de tempestes d’estiu i la temporada principal es concentra al setembre i l’octubre. Les gelades d’octubre i el vent del nord tanquen sovint la temporada abans que a les comarques prepirinenques.",
+    regulationNote: "El vessant sud de la vall és dins el Parc Natural del Cadí-Moixeró, amb normes de recol·lecció pròpies.",
     source: { title: "Visit Pirineus — Cerdanya", url: "https://visitpirineus.com/en/destinations/cerdanya" },
   },
   {
@@ -112,6 +128,9 @@ export const areaProfiles: AreaProfile[] = [
     bounds: { west: 0.15, south: 40.7, east: 0.5, north: 41.05 },
     description: "Massís mediterrani de relleu calcari i fort gradient altitudinal, amb pinedes de pi blanc, pinassa i pi roig entre barrancs, cingles i sectors forestals.",
     landscape: "El canvi de cota separa les pinedes mediterrànies de les formacions montanes. Entorn d’Horta de Sant Joan, el tipus de pi, la reacció del sòl i la persistència de la humitat permeten distingir l’hàbitat del rovelló i el del pinetell.",
+    forests: "Als Ports el relleu calcari ordena els pins per cota: pi blanc als vessants baixos d’Horta de Sant Joan, pinassa als sectors intermedis i pi roig als més alts i frescos. Les guies del massís se centren en rovellons i pinetells, els dos lactaris dels pins, i insisteixen a distingir la simple presència de pineda de l’hàbitat realment compatible pel sòl i la humitat.",
+    seasonNotes: "És un dels territoris on la tardor arriba més tard: la calor mediterrània retarda la resposta fins que les pluges d’octubre i novembre rehidraten el sòl calcari, i les obagues i els barrancs són els primers a respondre. Els anys secs la temporada pot quedar reduïda a poques setmanes.",
+    regulationNote: "El Parc Natural dels Ports regula les visites de grups i l’accés amb vehicle.",
     source: { title: "Parc Natural dels Ports — ambients", url: "https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/ports/el-parc/patrimoni-natural-i-cultural/ambients/" },
   },
   {
@@ -124,6 +143,9 @@ export const areaProfiles: AreaProfile[] = [
     bounds: { west: 0.85, south: 41.22, east: 1.15, north: 41.42 },
     description: "Massís calcari elevat entre el Baix Camp, la Conca de Barberà i el Priorat, amb pinedes de pinassa i pi roig, rouredes i alzinars muntanyencs.",
     landscape: "És un dels territoris boletaires més coneguts del sud de Catalunya, amb el rovelló com a protagonista cultural. L’altiplà de Prades i els vessants del bosc de Poblet ofereixen lectures forestals diferents dins del mateix relleu.",
+    forests: "L’altiplà de Prades, entre 900 i 1.200 metres, és terra de pinedes de pi roig i pinassa, rouredes i pastures on el rovelló forma part de la identitat local. A l’obaga, el bosc de Poblet conserva rouredes, alzinars muntanyencs i l’única roureda de roure reboll de Catalunya, amb sòls profunds que retenen la humitat i encaixen amb ceps, camagrocs i trompetes de la mort.",
+    seasonNotes: "L’altiplà respon de pressa a les pluges de setembre i octubre, però el vent hi asseca la capa superficial del sòl en pocs dies; el bosc de Poblet, més ombrívol, allarga les finestres de tardor. Els carlets i els pinetells tanquen la temporada cap al novembre, quan les gelades arriben a l’altiplà.",
+    regulationNote: "El Paratge Natural de Poblet demana autorització prèvia, amb un mes d’antelació, per a les activitats organitzades i té normes pròpies de recol·lecció.",
     source: { title: "Muntanyes de la Costa Daurada", url: "https://www.muntanyescostadaurada.cat/" },
   },
   {
@@ -136,6 +158,8 @@ export const areaProfiles: AreaProfile[] = [
     bounds: { west: 1.3, south: 41.85, east: 1.75, north: 42.25 },
     description: "Comarca prepirinenca de boscos extensos i poc fragmentats, amb pinedes de pi roig i pinassa que pugen des de l’altiplà central fins al Port del Comte.",
     landscape: "La tradició boletaire hi és profunda i el mosaic de pinedes, rouredes i pastures canvia amb la cota. La vall de Lord i els vessants del Port del Comte concentren els gradients més marcats de la comarca.",
+    forests: "Les pinedes de pi roig i pinassa cobreixen el Solsonès des de l’altiplà central fins a la vall de Lord, i al Port del Comte deixen pas al pi negre a les cotes altes. És el paisatge de les llenegues, els pinetells i els fredolics de pineda calcària, i dels ceps a les obagues fresques de la capçalera de la vall.",
+    seasonNotes: "El Port del Comte comença abans, amb les pluges de finals d’estiu, i tanca d’un dia per l’altre amb les primeres nevades o el vent de la tardor avançada. La vall de Lord i l’altiplà allarguen la temporada: les llenegues i els fredolics hi aguanten fins al novembre o el desembre si no hi ha gelades persistents.",
     source: { title: "Turisme Solsonès", url: "https://turismesolsones.com/" },
   },
   {
@@ -148,6 +172,8 @@ export const areaProfiles: AreaProfile[] = [
     bounds: { west: 2.4, south: 41.85, east: 2.65, north: 42.05 },
     description: "Massís humit de la Serralada Transversal, entre Osona i la Selva, cobert de castanyedes, alzinars frescals, pinedes i clapes de fageda.",
     landscape: "És un dels territoris amb més cultura boletaire del país, amb Sant Hilari Sacalm com a capital de les Guilleries. La humitat persistent i el relleu enclotat mantenen actius els boscos quan altres sectors ja s’han assecat.",
+    forests: "Castanyedes, alzinars frescals, pinedes humides i clapes de fageda cobreixen les Guilleries sobre sòls granítics d’entre 600 i 1.000 metres. Sant Hilari Sacalm i Osor comparteixen els boscos enclotats i la fullaraca profunda que expliquen la fama boletaire del massís: ceps i rossinyols a les castanyedes i pinedes, camagrocs i trompetes de la mort a les fondalades més ombrívoles.",
+    seasonNotes: "La humitat persistent fa que les Guilleries continuïn actives quan altres sectors ja s’han assecat: les tardors regulars hi allarguen la temporada de l’octubre fins al desembre. Els camagrocs i les trompetes són els últims a aparèixer i els que més aguanten el fred, sempre que no hi hagi gelades fortes.",
     source: { title: "Espai Natural de les Guilleries-Savassona", url: "https://parcs.diba.cat/web/guilleries" },
   },
   {
@@ -160,6 +186,8 @@ export const areaProfiles: AreaProfile[] = [
     bounds: { west: 2.4, south: 41.55, east: 2.75, north: 41.75 },
     description: "Serralada litoral de boscos vora el mar, amb alzinars, suredes, pinedes i, als sectors culminants del Montnegre, rouredes i castanyedes humides.",
     landscape: "És el territori boletaire més proper a l’àrea metropolitana de Barcelona. El contrast entre el vessant marítim i l’interior, i entre cotes baixes i culminants, desplaça les condicions en pocs quilòmetres.",
+    forests: "Alzinars, suredes i pinedes cobreixen els vessants marítims del Montnegre i el Corredor; a les carenes del Montnegre apareixen rouredes i castanyedes humides. Les guies de Vallgorguina descriuen aquest contrast: rovellons a les pinedes, ceps negres i ous de reig als alzinars i les suredes més frescos.",
+    seasonNotes: "És un territori de tardor tardana: el bosc mediterrani necessita les pluges d’octubre per reaccionar, i les obagues del Montnegre conserven la humitat més temps que els vessants que miren al mar. Els ceps negres i els ous de reig responen a la calor humida de setembre i octubre; els rovellons s’allarguen fins al desembre.",
     source: { title: "Parc del Montnegre i el Corredor", url: "https://parcs.diba.cat/web/montnegre" },
   },
   {
@@ -172,6 +200,8 @@ export const areaProfiles: AreaProfile[] = [
     bounds: { west: 2.3, south: 42.05, east: 2.75, north: 42.35 },
     description: "Comarca volcànica i humida, amb fagedes sobre colades de lava, rouredes, alzinars i pinedes que pugen cap al Puigsacalm i l’Alta Garrotxa.",
     landscape: "El clima plujós i els sòls profunds mantenen boscos frescos bona part de la tardor. La fageda d’en Jordà i els vessants de la vall d’en Bas són dues lectures molt diferents de la mateixa comarca.",
+    forests: "Les fagedes sobre colades de lava de la zona volcànica, com la fageda d’en Jordà a Santa Pau, i les fagedes, rouredes i pinedes de pi roig que tanquen la vall d’en Bas sota el Puigsacalm són els boscos que les guies de la comarca descriuen per als ceps, rossinyols, camagrocs i trompetes de la mort. Els sòls volcànics profunds retenen la humitat de manera excepcional.",
+    seasonNotes: "La Garrotxa és de les comarques més plujoses del país i els seus boscos mantenen la frescor bona part de la tardor: la temporada principal va del setembre al novembre i resisteix millor els episodis secs curts que les comarques veïnes. Les trompetes de la mort de Santa Pau poden allargar-se fins al desembre.",
     source: { title: "OH! Garrotxa — turisme de la Garrotxa", url: "https://ohgarrotxa.com/" },
   },
 ];

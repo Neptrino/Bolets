@@ -18,6 +18,7 @@ import { SpeciesCard } from "@/components/species-card";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { regionLabels } from "@/data/regions";
 import { getSpecies } from "@/data/species";
+import { speciesSameAs } from "@/data/species-identifiers";
 import {
   cepSpeciesIds,
   cepTerritoryReadings,
@@ -136,6 +137,9 @@ export default function CepsTerritoryPage() {
               about: ceps.map((species) => ({
                 "@type": "Taxon",
                 name: species.identity.scientificName,
+                alternateName: species.identity.commonName,
+                taxonRank: "species",
+                sameAs: speciesSameAs(species.speciesId),
               })),
               ...editorialArticleFields("zones-ceps"),
             },

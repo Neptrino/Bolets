@@ -42,6 +42,7 @@ export function sitemapContentEntries(): SitemapContentEntry[] {
     { path: "/bolets-avui", contentId: "bolets-avui" },
     ...seasonGuides.map((guide) => ({ path: guide.path, contentId: guide.path.slice(1) })),
     { path: "/quan-surten-els-bolets-despres-de-ploure", contentId: "quan-surten-els-bolets-despres-de-ploure" },
+    { path: "/pluja-i-bolets", contentId: "pluja-i-bolets" },
     { path: "/conservar-bolets", contentId: "conservar-bolets" },
     { path: "/parts-dun-bolet", contentId: "parts-dun-bolet" },
     { path: "/bolets-de-soca", contentId: "bolets-de-soca" },
@@ -64,6 +65,7 @@ export function sitemapContentEntries(): SitemapContentEntry[] {
     { path: "/avis-legal", contentId: "avis-legal" },
     { path: "/guies", contentId: "guies" },
     ...speciesTerritoryGuides.map((guide) => ({ path: guide.path, contentId: guide.contentId })),
+    { path: "/zones/pirineu", contentId: "zones-pirineu" },
     ...areaProfiles.map((area) => ({ path: `/zones/${area.slug}`, contentId: `zone:${area.slug}` })),
     ...placeProfiles.map((place) => ({ path: placePath(place), contentId: `place:${place.areaSlug}:${place.slug}` })),
     ...speciesLocationPages.map((page) => {

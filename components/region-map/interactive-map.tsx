@@ -74,6 +74,7 @@ export type { PredictionCellDetailState, PredictionViewportStatus } from "@/comp
 export function RegionMap({
   activeRegions = [],
   autoGeolocate = true,
+  geolocation = true,
   compactLegend = false,
   initialCentre,
   initialZoom,
@@ -109,7 +110,8 @@ export function RegionMap({
   const geolocateControl = useRef<RegionGeolocateControl | null>(null);
   const initialSpeciesId = useRef(speciesId);
   const initialHabitat = useRef(habitat);
-  const initialAutoGeolocate = useRef(autoGeolocate);
+  const initialAutoGeolocate = useRef(autoGeolocate && geolocation);
+  const initialGeolocation = useRef(geolocation);
   const initialMapCentre = useRef(initialCentre);
   const initialMapZoom = useRef(initialZoom);
   const initialInteractive = useRef(interactive);
@@ -205,7 +207,7 @@ export function RegionMap({
       showFullscreen: initialInteractive.current,
       showNavigation: initialInteractive.current,
       style: basemapStyle(initialBasemapId),
-      useGeolocation: Boolean(initialSpeciesId.current) && initialInteractive.current,
+      useGeolocation: Boolean(initialSpeciesId.current) && initialInteractive.current && initialGeolocation.current,
       zoom,
     });
     map.current = localMap;

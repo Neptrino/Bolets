@@ -46,6 +46,7 @@ export function LazyHabitatMap({
   activeRegions,
   autoGeolocate = true,
   compactLegend = false,
+  geolocation = true,
   initialCentre,
   initialZoom,
   selectedRegion,
@@ -54,9 +55,10 @@ export function LazyHabitatMap({
   activeRegions: RegionId[];
   autoGeolocate?: boolean;
   compactLegend?: boolean;
+  geolocation?: boolean;
   initialCentre?: [number, number];
   initialZoom?: number;
-  selectedRegion: RegionId;
+  selectedRegion?: RegionId;
   speciesId: string;
 }) {
   const boundary = useRef<HTMLDivElement>(null);
@@ -94,6 +96,7 @@ export function LazyHabitatMap({
           activeRegions={activeRegions}
           autoGeolocate={autoGeolocate}
           compactLegend={compactLegend}
+          geolocation={geolocation}
           initialCentre={initialCentre}
           initialZoom={initialZoom}
           selectedRegion={selectedRegion}

@@ -120,6 +120,13 @@ const FIXED_CAMPAIGNS = [
     topicTerms: ["bolets", season, "espècies", "temporada", "catalunya"],
   })),
   campaign({
+    id: "rain-map", shortLabel: "Pluja acumulada", targetPath: "/pluja-i-bolets",
+    targetTitle: "Mapa de la pluja acumulada dels últims 7 dies",
+    fallbackQueries: ["pluja acumulada Catalunya mapa bolets"],
+    resourceSummary: "un mapa diari de la pluja acumulada de set dies a Catalunya, per comarques i massissos",
+    topicTerms: ["pluja", "acumulada", "mapa", "catalunya", "bolets"],
+  }),
+  campaign({
     id: "rain-explainer", shortLabel: "Després de ploure", targetPath: "/quan-surten-els-bolets-despres-de-ploure",
     targetTitle: "Quan surten els bolets després de ploure",
     fallbackQueries: ["quan surten bolets després ploure Catalunya"],
@@ -232,6 +239,14 @@ const TERRITORY_GUIDE_CAMPAIGNS = speciesTerritoryGuides.map((guide) => campaign
   topicTerms: [guide.profileLinkTitle, "hàbitat", "temporada", "zones", "catalunya"],
 }));
 
+const PIRINEU_CAMPAIGN = campaign({
+  id: "territory-guide:zones-pirineu", shortLabel: "Bolets al Pirineu",
+  targetPath: "/zones/pirineu", targetTitle: "Bolets al Pirineu: zones, espècies i temporada",
+  fallbackQueries: ["bolets al pirineu", "on buscar bolets al pirineu", "bolets pirineu català comarques temporada"],
+  resourceSummary: "una guia dels bolets al Pirineu amb les comarques documentades, les espècies de muntanya per cotes, la temporada i les normes dels parcs",
+  topicTerms: ["Pirineu", "bolets", "muntanya", "temporada", "comarques"],
+});
+
 const AREA_CAMPAIGNS = areaProfiles.map((area) => campaign({
   id: `area:${area.slug}`, shortLabel: `Zona · ${area.name}`,
   targetPath: `/zones/${area.slug}`, targetTitle: `Bolets ${area.prepositionalName}`,
@@ -280,6 +295,7 @@ export const BACKLINK_CAMPAIGNS: readonly BacklinkCampaign[] = [
   ...MAP_CAMPAIGNS,
   ...COMPARISON_CAMPAIGNS,
   ...TERRITORY_GUIDE_CAMPAIGNS,
+  PIRINEU_CAMPAIGN,
   ...AREA_CAMPAIGNS,
   ...PLACE_CAMPAIGNS,
   ...LOCATION_CAMPAIGNS,

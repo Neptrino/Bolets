@@ -10,6 +10,7 @@ import { MushroomHuntGame } from "@/components/mushroom-hunt-game";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { catalogueSpecies } from "@/data/catalogue";
 import { speciesProfiles } from "@/data/species";
+import { speciesSameAs } from "@/data/species-identifiers";
 import { getEdibilityPresentation } from "@/src/lib/edibility-presentation";
 import type { MushroomGameEntry, MushroomGameTone } from "@/src/lib/mushroom-game";
 import { SITE_URL, speciesPath } from "@/src/lib/seo";
@@ -127,6 +128,8 @@ export default function MushroomGamePage() {
               "@type": "Taxon",
               name: entry.scientificName,
               alternateName: entry.name,
+              taxonRank: "species",
+              sameAs: speciesSameAs(entry.id),
               url: `${SITE_URL}${speciesPath({ speciesId: entry.id })}`,
             })),
           },

@@ -37,7 +37,10 @@ export function HomeMapFeature() {
           <h2 id="home-today-title">On trobar bolets avui</h2>
           <p>Les zones que destaquen avui per a les espècies comestibles de temporada: la classificació per territori, el mapa combinat i l’evolució dels darrers dies.</p>
         </div>
-        <Link href="/bolets-avui" className="button light-button">Consulta on trobar bolets avui <ArrowUpRight size={18} aria-hidden="true" /></Link>
+        <div className="home-map-today-actions">
+          <Link href="/bolets-avui" className="button light-button">Consulta on trobar bolets avui <ArrowUpRight size={18} aria-hidden="true" /></Link>
+          <Link href="/pluja-i-bolets" className="home-map-today-secondary">Mira on ha plogut aquests dies <ArrowUpRight size={15} aria-hidden="true" /></Link>
+        </div>
       </section>
     </div>
   );

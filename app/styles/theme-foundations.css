@@ -305,7 +305,10 @@ body {
 }
 .map-cell-visibility {
   position: absolute;
-  top: 156px;
+  /* One control gap below the map's own top-right stack, measured at runtime
+     by the map frame; the fallback matches a zoom, fullscreen and geolocate
+     stack in case the measurement has not landed yet. */
+  top: calc(var(--map-control-stack, 146px) + 10px);
   right: 10px;
   z-index: 3;
   width: 236px;

@@ -22,6 +22,7 @@ import {
   speciesLocationPages,
 } from "@/data/location-pages";
 import { getSpecies } from "@/data/species";
+import { speciesSameAs } from "@/data/species-identifiers";
 import {
   monthInTimeZone,
   monthWithPreposition,
@@ -159,8 +160,8 @@ export default function RovellonsTerritoryPage() {
             description: "Guia dels tipus de rovellons, les diferències d’identificació, l’hàbitat, la temporada i les zones on el terreny pot ser adequat a Catalunya.",
             mainEntityOfPage: absoluteUrl("/zones/rovellons"),
             about: [
-              { "@type": "Taxon", name: rovello.identity.scientificName },
-              { "@type": "Taxon", name: pinetell.identity.scientificName },
+              { "@type": "Taxon", name: rovello.identity.scientificName, alternateName: rovello.identity.commonName, taxonRank: "species", sameAs: speciesSameAs(rovello.speciesId) },
+              { "@type": "Taxon", name: pinetell.identity.scientificName, alternateName: pinetell.identity.commonName, taxonRank: "species", sameAs: speciesSameAs(pinetell.speciesId) },
             ],
             ...editorialArticleFields("zones-rovellons"),
           },

@@ -59,6 +59,7 @@ export function SiteFooter() {
             <Link href="/map">Mapa de bolets de Catalunya</Link>
             <Link href="/bolets-avui">Bolets avui</Link>
             <Link href="/guies">Guies locals</Link>
+            <Link href="/pluja-i-bolets">Pluja acumulada</Link>
             <Link href="/quan-surten-els-bolets-despres-de-ploure">Després de ploure</Link>
             <Link href="/troballes">Troballes</Link>
             <Link href="/normativa-bolets">Permisos i recol·lecció</Link>

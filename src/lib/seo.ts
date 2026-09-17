@@ -5,6 +5,11 @@ import type { MediaAsset, SpeciesProfile } from "@/src/lib/types";
 export const SITE_NAME = "Bolets Atles";
 export const SITE_URL = "https://bolets.app";
 export const INSTAGRAM_PROFILE_URL = "https://www.instagram.com/bolets.app/";
+export const GITHUB_REPOSITORY_URL = "https://github.com/Neptrino/Bolets";
+/* The other ways people and AI answers name the site. One canonical name
+   (SITE_NAME) plus the forms that appear in queries and citations: the bare
+   "Bolets" the answers use, the domain, and the "app" people type. */
+export const SITE_ALTERNATE_NAMES = ["Bolets", "bolets.app", "Bolets app"] as const;
 export const DEFAULT_DESCRIPTION =
   "Descobreix els bolets de Catalunya: noms, fotografies, identificació, hàbitat i temporada. Guies per aprendre i un mapa per preparar la sortida.";
 export const DEFAULT_SOCIAL_IMAGE = `${SITE_URL}/opengraph-image`;

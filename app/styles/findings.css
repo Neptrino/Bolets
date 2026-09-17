@@ -227,8 +227,6 @@
 .finding-privacy-note svg { flex: 0 0 auto; margin-top: 2px; color: #efb98f; }
 
 .findings-region-map { height: min(56.25vw, 664px); min-height: 520px; border: 1px solid var(--line); border-radius: 24px; background: #dce2d8; }
-.findings-region-map .map-cell-visibility { top: 116px; }
-.personal-findings-region-map .map-cell-visibility { top: 156px; }
 .findings-map-toolbar { position: absolute; z-index: 2; top: 14px; left: 14px; right: 14px; display: flex; gap: 10px; justify-content: space-between; pointer-events: none; }
 .findings-map-toolbar > * { pointer-events: auto; }
 .findings-map-toolbar .form-select-trigger, .findings-map-status { min-height: 42px; max-width: min(370px, 75vw); border: 1px solid rgba(39, 60, 48, .25); border-radius: 12px; background: rgba(255, 250, 240, .94); padding: 9px 12px; color: var(--ink); font: inherit; font-size: var(--text-xs); font-weight: 800; box-shadow: 0 7px 22px rgba(39, 60, 48, .14); }

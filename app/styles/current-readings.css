@@ -3,12 +3,8 @@
 .current-search-answer .eyebrow { margin: 0 0 .35rem; }
 .current-search-answer h2 { margin: 0; color: #283d2e; font-size: var(--text-xl); }
 .current-search-answer > p:not(.eyebrow, .current-search-answer-updated) { max-width: 62rem; margin: .6rem 0 0; color: #485148; font-size: var(--text-base); line-height: 1.65; }
+.current-search-answer > p a { color: var(--clay); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .current-search-answer-updated { display: flex; gap: .4rem; align-items: center; margin: .65rem 0 0; color: #687067; font-size: var(--text-xs); }
-/* Reserve the usual summary size while its independent server stream resolves.
-   Longer readings remain free to expand, including at larger text sizes. */
-.current-search-answer { min-height: 15rem; }
-@media (max-width: 760px) { .current-search-answer { min-height: 28rem; } }
-@media (max-width: 374px) { .current-search-answer { min-height: 35rem; } }
 .current-leader { display: grid; grid-template-columns: minmax(0, 1.15fr) 9.5rem minmax(15rem, .85fr); gap: .9rem 2rem; align-items: center; margin: 1.4rem 0 .9rem; padding: 1.35rem 1.6rem; border-radius: 18px; background: #304839; color: #fffaf0; box-shadow: 0 18px 45px rgba(40, 54, 43, .12); }
 .current-leader-topline { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 1rem 2rem; align-items: center; padding-bottom: .7rem; border-bottom: 1px solid rgba(255, 255, 255, .15); }
 .current-leader-copy h2 { margin: 0 0 .3rem; color: #fffaf0; font-size: var(--display-sm); line-height: 1; letter-spacing: -.035em; }
@@ -38,7 +34,6 @@
 .current-board { margin: 0 0 1.5rem; }
 /* The streamed page contains a full map. Keep the footer below the first
    viewport while its route shell resolves, including on fast desktop loads. */
-.current-page-loading { min-height: 100svh; }
 .current-board-loading { display: flex; align-items: flex-start; gap: .8rem; color: #485148; }
 .current-board-loading svg { flex: 0 0 auto; margin-top: .15rem; color: #52664a; }
 .current-board-loading strong { display: block; color: #283d2e; font-size: var(--text-lg); }
@@ -52,7 +47,7 @@
 .current-board-updated { display: flex; gap: .4rem; align-items: center; margin: .7rem 0 0; color: #687067; font-size: var(--text-xs); line-height: 1.4; }
 .current-board-updated svg { flex: 0 0 auto; }
 .current-board-columns,
-.current-overview-card { display: grid; grid-template-columns: 3.7rem minmax(11rem, 1.35fr) minmax(10rem, 1fr) minmax(8rem, .85fr) minmax(7.2rem, auto); gap: 1rem; align-items: center; }
+.current-overview-card { display: grid; grid-template-columns: 3.7rem minmax(11rem, 1.4fr) minmax(12rem, 1fr) minmax(7.2rem, auto); gap: 1.25rem; align-items: center; }
 .current-board-columns { padding: 0 1rem .65rem; color: #687067; font-size: var(--text-xs); font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
 .current-board-columns span:last-child { text-align: right; }
 .current-overview-grid { margin: 0; padding: 0; border-top: 1px solid rgba(47, 65, 42, .22); list-style: none; }
@@ -74,12 +69,7 @@
 .current-score > div span { color: #596359; font-size: var(--text-xs); }
 .current-score-track { display: block; overflow: hidden; width: 100%; height: 5px; border-radius: 999px; background: #d8dbd2; }
 .current-score-track span { display: block; height: 100%; border-radius: inherit; background: #b85a2d; }
-.current-row-signals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; margin: 0; }
-.current-row-signals div { display: grid; gap: .1rem; }
-.current-row-signals dt { color: #747a72; font-size: var(--text-xs); letter-spacing: .04em; text-transform: uppercase; }
-.current-row-signals dd { margin: 0; color: #344338; font-size: var(--text-xs); font-weight: 800; }
 .current-row-coverage { margin: 0; color: #344338; font-size: var(--text-xs); font-weight: 800; line-height: 1.4; }
-.current-row-signals-empty { margin: 0; align-self: center; color: #747a72; font-size: var(--text-xs); }
 .current-row-map { display: inline-flex; gap: .4rem; align-items: center; justify-content: center; min-height: 2.75rem; justify-self: end; padding: .55rem .75rem; border: 1px solid rgba(47, 65, 42, .25); border-radius: 999px; color: #304839; font-size: var(--text-xs); font-weight: 850; line-height: 1; text-decoration: none; white-space: nowrap; }
 .current-row-map svg { flex: 0 0 auto; }
 .current-row-map:hover { border-color: #304839; background: #304839; color: #fffaf0; }
@@ -107,9 +97,7 @@
   .current-overview-card-heading { align-self: center; }
   .current-score,
 .current-unavailable,
-.current-row-coverage,
-.current-row-signals,
-.current-row-signals-empty { grid-column: 2 / -1; }
+.current-row-coverage { grid-column: 2 / -1; }
   .current-row-map { grid-column: 2; grid-row: auto; justify-self: start; }
 }
 
@@ -127,3 +115,19 @@
   .current-overview-method { margin-bottom: 2.4rem; }
   .current-overview-grid { grid-template-columns: 1fr; }
 }
+
+/* Weekend block, after the board: the map's forecast frame for the target day, one row per territory. */
+.current-reading-sources { margin: 0 0 2.4rem; }
+.current-weekend { margin: 0 0 2.4rem; padding: 1.25rem 1.4rem; scroll-margin-top: 6rem; border: 1px solid rgba(47, 65, 42, .16); border-radius: 14px; background: rgba(255, 252, 244, .58); }
+.current-weekend .eyebrow { display: inline-flex; gap: .35rem; align-items: center; margin: 0 0 .35rem; }
+.current-weekend h2 { margin: 0; color: #283d2e; font-size: var(--text-xl); }
+.current-weekend > p:not(.eyebrow, .current-weekend-note) { max-width: 62rem; margin: .6rem 0 0; color: #485148; font-size: var(--text-base); line-height: 1.65; }
+.current-weekend-empty { color: #687067; }
+.current-weekend-loading { min-height: 9rem; }
+/* One shared column grid for the rows, so the names and the detail line up across the list. */
+.current-weekend-list { display: grid; grid-template-columns: max-content max-content minmax(0, 1fr); gap: 0; margin: .8rem 0 0; padding: 0; list-style: none; }
+.current-weekend-list li { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; column-gap: 1rem; align-items: baseline; padding: .65rem 0; border-top: 1px solid rgba(47, 65, 42, .12); }
+.current-weekend-rank { color: #a95027; font-size: var(--text-xs); font-weight: 900; letter-spacing: .06em; }
+.current-weekend-list strong { color: #283d2e; }
+.current-weekend-list li > span:last-child { color: #485148; font-size: var(--text-xs); }
+.current-weekend-note { margin: .75rem 0 0; color: #687067; font-size: var(--text-xs); line-height: 1.5; }

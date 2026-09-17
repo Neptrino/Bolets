@@ -20,7 +20,7 @@ export const EDITORIAL_LAUNCH_DATE = "2026-08-13";
 // single page; the later of the two wins.
 export const LOCAL_GUIDES_UPDATED_AT = "2026-09-15";
 export const SPECIES_PAGES_UPDATED_AT = "2026-09-17";
-export const ZONE_PAGES_UPDATED_AT = "2026-09-15";
+export const ZONE_PAGES_UPDATED_AT = "2026-09-17";
 export const PLACE_PAGES_UPDATED_AT = "2026-09-15";
 export const COMPARISON_PAGES_UPDATED_AT = "2026-09-02";
 export const MAP_PAGES_UPDATED_AT = "2026-08-31";
@@ -198,6 +198,10 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "zones-ceps": {
     updatedAt: "2026-09-06",
   },
+  "zones-pirineu": {
+    publishedAt: "2026-09-17",
+    updatedAt: "2026-09-17",
+  },
   "preguntes-frequents-bolets": {
     publishedAt: "2026-08-27",
     updatedAt: "2026-09-15",
@@ -219,7 +223,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-08-30",
   },
   "bolets": {
-    updatedAt: "2026-09-06",
+    updatedAt: "2026-09-17",
   },
   "noms-de-bolets-catala-castella": {
     publishedAt: "2026-09-03",
@@ -229,10 +233,14 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-08-31",
   },
   "bolets-comestibles": {
-    updatedAt: "2026-09-14",
+    updatedAt: "2026-09-17",
   },
   "bolets-verinosos": {
     updatedAt: "2026-09-14",
+  },
+  "pluja-i-bolets": {
+    publishedAt: "2026-09-17",
+    updatedAt: "2026-09-17",
   },
   "bolets-de-primavera": {
     updatedAt: "2026-09-17",
@@ -250,7 +258,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-14",
   },
   "bolets-avui": {
-    updatedAt: "2026-09-14",
+    updatedAt: "2026-09-17",
   },
   "species:craterellus-lutescens": { updatedAt: "2026-09-06" },
   "species:boletus-edulis": { updatedAt: "2026-09-06" },
@@ -269,7 +277,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-03",
   },
   "quan-surten-els-bolets-despres-de-ploure": {
-    updatedAt: "2026-09-14",
+    updatedAt: "2026-09-17",
   },
   "parts-dun-bolet": {
     updatedAt: "2026-09-14",
@@ -278,14 +286,14 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     publishedAt: "2026-08-17",
     updatedAt: "2026-09-16",
   },
-  home: { updatedAt: "2026-09-14" },
+  home: { updatedAt: "2026-09-17" },
   "bolets-infografia": { updatedAt: "2026-09-14" },
   troballes: { updatedAt: "2026-09-02" },
   compare: { updatedAt: "2026-09-02" },
   joc: { updatedAt: "2026-09-01" },
   metode: { updatedAt: "2026-09-14" },
   "col-labora": { updatedAt: "2026-09-02" },
-  guies: { updatedAt: "2026-09-15" },
+  guies: { updatedAt: "2026-09-17" },
 };
 
 export function getEditorialMetadata(contentId: string): EditorialMetadata {
@@ -334,5 +342,6 @@ export const publicEditorialItems = [
   "preguntes-frequents-bolets",
   "zones-rovellons",
   "zones-ceps",
+  "zones-pirineu",
   "equip-editorial",
 ] as const;

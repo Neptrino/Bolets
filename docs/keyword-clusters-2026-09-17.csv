@@ -1,0 +1,804 @@
+cluster,keyword,scope,volume_db,gsc_impressions,gsc_clicks,gsc_avg_pos,tracked_pos,best_pos,aio_on_serp,status,landing_or_target,peak_month,action
+0 Head terms,bolets,ca,2900,231,4,27.9,13,13,False,striking (11-20),/,,"Refresh page: title/H1 match, add section, links from hubs"
+0 Head terms,bolets Catalunya,ca,390,199,14,19.3,1,1,False,owned (1-3),/,,"Defend: answer-first block, freshness, AIO citation check"
+0 Head terms,bolets de Catalunya,ca,320,129,8,22.3,1,1,False,owned (1-3),/,,"Defend: answer-first block, freshness, AIO citation check"
+0 Head terms,bolets a Catalunya,ca,50,64,1,44.7,3,3,False,owned (1-3),/,,"Defend: answer-first block, freshness, AIO citation check"
+0 Head terms,bolet,ca,,28,0,22.3,,22.3,False,weak (21-50),/ and /bolets,,Rework: dedicated page or template upgrade
+0 Head terms,bolets catalans,ca,,11,0,4.2,,4.2,False,page 1 (4-10),/ and /bolets,,"Push to top-3: internal links, snippet, answer-first block"
+0 Head terms,els bolets,ca,,3,0,64.3,,64.3,False,buried (>50),/ and /bolets,,New/rebuilt page
+A Where-now & map,pluges avui catalunya,es-wide,210,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",10,Create page (or add to tracking if page exists)
+A Where-now & map,mapa bolets catalunya,ca,170,84,0,42.5,29,29,False,weak (21-50),/,10,Rework: dedicated page or template upgrade
+A Where-now & map,on trobar bolets aquesta setmana,ca,140,83,1,37.2,17,17,False,striking (11-20),/bolets-avui,10,"Refresh page: title/H1 match, add section, links from hubs"
+A Where-now & map,boletaires,ca,140,1,0,64,,64,False,buried (>50),"/bolets-avui, / , /map",10,New/rebuilt page
+A Where-now & map,on trobar bolets avui,ca,0,144,9,28.9,9,9,True,page 1 (4-10),/,,"Push to top-3: internal links, snippet, answer-first block"
+A Where-now & map,on trobar bolets ara,ca,90,16,0,66.1,22,22,False,weak (21-50),/,10,Rework: dedicated page or template upgrade
+A Where-now & map,caçar bolets,ca,50,1,0,63,,63,False,buried (>50),"/bolets-avui, / , /map",10,New/rebuilt page
+A Where-now & map,on trobar bolets avui a catalunya,ca,0,53,0,55.6,13,13,False,striking (11-20),/,,"Refresh page: title/H1 match, add section, links from hubs"
+A Where-now & map,on trobar bolets aquest cap de setmana,ca,0,52,0,66.1,31,31,False,weak (21-50),/,,Rework: dedicated page or template upgrade
+A Where-now & map,mapa bolets avui,ca,0,51,1,27.7,6,6,False,page 1 (4-10),/,,"Push to top-3: internal links, snippet, answer-first block"
+A Where-now & map,bolets Catalunya mapa,ca,10,50,1,36.6,21,21,False,weak (21-50),/,,Rework: dedicated page or template upgrade
+A Where-now & map,on anar a buscar bolets,ca,40,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",10,Create page (or add to tracking if page exists)
+A Where-now & map,buscar bolets,ca,40,2,0,36.5,,36.5,False,weak (21-50),"/bolets-avui, / , /map",10,Rework: dedicated page or template upgrade
+A Where-now & map,on trobar rovellons,ca,20,40,0,41.2,51,41.2,False,weak (21-50),/,10,Rework: dedicated page or template upgrade
+A Where-now & map,mapa bolets catalunya 2026,ca,0,39,7,15.9,7,7,False,page 1 (4-10),/,,"Push to top-3: internal links, snippet, answer-first block"
+A Where-now & map,on trobar ceps a catalunya,ca,0,34,2,5.0,,5.0,False,page 1 (4-10),"/bolets-avui, / , /map",,"Push to top-3: internal links, snippet, answer-first block"
+A Where-now & map,mapa bolets catalunya 2025,ca,,34,0,59.4,,59.4,False,buried (>50),"/bolets-avui, / , /map",,New/rebuilt page
+A Where-now & map,on trobar ceps,ca,20,9,0,8.3,,8.3,False,page 1 (4-10),"/bolets-avui, / , /map",10,"Push to top-3: internal links, snippet, answer-first block"
+A Where-now & map,on trobar bolets,ca,20,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",10,Create page (or add to tracking if page exists)
+A Where-now & map,on trobar rossinyols,ca,10,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",10,Create page (or add to tracking if page exists)
+A Where-now & map,on trobar moixernons,ca,10,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",10,Create page (or add to tracking if page exists)
+A Where-now & map,on buscar bolets,ca,10,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",10,Create page (or add to tracking if page exists)
+A Where-now & map,on trobar bolets a catalunya,ca,10,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",10,Create page (or add to tracking if page exists)
+A Where-now & map,predicció bolets catalunya,ca,0,12,0,33.8,3,3,True,owned (1-3),/,,"Defend: answer-first block, freshness, AIO citation check"
+A Where-now & map,on buscar bolets aquest cap de setmana,ca,0,10,0,62.4,32,32,False,weak (21-50),/,,Rework: dedicated page or template upgrade
+A Where-now & map,on hi ha bolets avui,ca,0,8,0,17.9,6,6,True,page 1 (4-10),/,,"Push to top-3: internal links, snippet, answer-first block"
+A Where-now & map,bolets avui,ca,,7,1,3.6,,3.6,False,page 1 (4-10),"/bolets-avui, / , /map",,"Push to top-3: internal links, snippet, answer-first block"
+A Where-now & map,mapa rovellons catalunya,ca,0,6,0,36.5,23,23,False,weak (21-50),/,,Rework: dedicated page or template upgrade
+A Where-now & map,mapa predicció bolets catalunya,ca,0,6,0,40,2,2,True,owned (1-3),/,,"Defend: answer-first block, freshness, AIO citation check"
+A Where-now & map,condicions bolets catalunya,ca,0,4,0,2.5,1,1,True,owned (1-3),/,,"Defend: answer-first block, freshness, AIO citation check"
+A Where-now & map,trobar bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,sortida bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,previsió de bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,previsió bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,predicció de bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,on trobar tòfones,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,on trobar trompetes de la mort,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,on trobar ous de reig,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,on trobar múrgoles,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,on trobar llenegues,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,on trobar fredolics,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,on trobar camagrocs,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,on hi ha bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,mapa de ceps,ca,0,1,0,2,,2,False,owned (1-3),"/bolets-avui, / , /map",,"Defend: answer-first block, freshness, AIO citation check"
+A Where-now & map,mapa de bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,mapa ceps,ca,0,1,1,3,,3,False,owned (1-3),"/bolets-avui, / , /map",,"Defend: answer-first block, freshness, AIO citation check"
+A Where-now & map,mapa bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,mapa boletaire setmanal,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,mapa boletaire,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,hi ha bolets ara,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,boletaire,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,ceps mapa,ca,,1,1,2,,2,False,owned (1-3),"/bolets-avui, / , /map",,"Defend: answer-first block, freshness, AIO citation check"
+A Where-now & map,on trobar bolets aquesta setmana 2025,ca,,1,0,75,,75,False,buried (>50),"/bolets-avui, / , /map",,New/rebuilt page
+A Where-now & map,rutes bolets catalunya,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,millors zones bolets catalunya,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,millors llocs bolets catalunya,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,mapa de bolets de catalunya,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,boscos bolets catalunya,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+A Where-now & map,zones boletaires catalunya,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-avui, / , /map",,Create page (or add to tracking if page exists)
+B Castilian bridge,rovellons en castellano,ca,590,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,02,Create page (or add to tracking if page exists)
+B Castilian bridge,moixernó en castellano,ca,590,2,0,82,,82,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,07,New/rebuilt page
+B Castilian bridge,moixernons en castellano,ca,590,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,07,Create page (or add to tracking if page exists)
+B Castilian bridge,setas en catalan,ca,390,3,0,41.7,,41.7,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Rework: dedicated page or template upgrade
+B Castilian bridge,seta en catalan,ca,390,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,rovello en castellano,ca,320,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,donde hay setas ahora en cataluña,ca,320,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,ceps setas,ca,320,6,0,86.3,,86.3,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,cep seta,ca,320,4,0,62.8,,62.8,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,setas en cataluña,ca,260,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,setas catalunya,ca,260,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,rusiñol seta,ca,260,1,0,80,,80,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,rebozuelo en catalan,ca,260,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,02,Create page (or add to tracking if page exists)
+B Castilian bridge,fredolics en castellano,ca,260,1,0,66,,66,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,fredolic en castellano,ca,260,2,0,59,,59,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,rossinyol en castellano,ca,210,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,niscalo en catalan,ca,210,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,fredolic venenoso,ca,210,1,0,33,,33,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Rework: dedicated page or template upgrade
+B Castilian bridge,colmenillas en catalan,ca,210,1,0,67,,67,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,12,New/rebuilt page
+B Castilian bridge,boletus toxicos,es-wide,210,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,bolets en castellano,ca,210,6,0,6.8,,6.8,False,page 1 (4-10),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,12,"Push to top-3: internal links, snippet, answer-first block"
+B Castilian bridge,boletaire en castellano,ca,210,4,0,20,,20,False,striking (11-20),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,12,"Refresh page: title/H1 match, add section, links from hubs"
+B Castilian bridge,seta camagroc,ca,170,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,llanega en castellano,ca,170,1,0,89,,89,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,capuchina seta,es-wide,170,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,trufa en catalan,ca,140,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,04,Create page (or add to tracking if page exists)
+B Castilian bridge,setas comestibles en cataluña,ca,140,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,setas comestibles cataluña,ca,140,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,setas camagroc,ca,140,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,rossinyols en castellano,ca,140,1,0,42,,42,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Rework: dedicated page or template upgrade
+B Castilian bridge,pie violeta,es-wide,140,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,pie de rata,es-wide,140,9,0,63.6,,63.6,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,apagallums seta,ca,140,1,0,76,,76,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,12,New/rebuilt page
+B Castilian bridge,seta rusiñol,ca,110,2,0,80,,80,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,seta negrilla toxica,es-wide,110,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,ous de reig en castellano,ca,110,67,0,67.6,43,43,False,weak (21-50),/bolets/amanita-caesarea,10,Rework: dedicated page or template upgrade
+B Castilian bridge,ou de reig en castellano,ca,110,95,0,41.5,36,36,False,weak (21-50),/bolets/ou-de-reig,10,Rework: dedicated page or template upgrade
+B Castilian bridge,fredolic seta,ca,110,3,0,64.3,,64.3,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,camagrocs setas,ca,110,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,camagroc venenoso,ca,110,3,0,44.7,,44.7,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,12,Rework: dedicated page or template upgrade
+B Castilian bridge,camagroc seta,ca,110,1,0,62,,62,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,bolet en castellano,ca,110,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,07,Create page (or add to tracking if page exists)
+B Castilian bridge,ceps catalán,ca,0,103,0,22.8,15,15,False,striking (11-20),/zones/ceps,,"Refresh page: title/H1 match, add section, links from hubs"
+B Castilian bridge,setas fredolics,ca,90,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,llanega venenosa,ca,90,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,01,Create page (or add to tracking if page exists)
+B Castilian bridge,llanega blanca y negra,ca,90,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,bolet cep en castellano,ca,90,1,0,22,,22,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,12,Rework: dedicated page or template upgrade
+B Castilian bridge,seta pie violeta,ca,70,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,seta apagallums,ca,70,1,0,58,,58,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,mapa de setas en cataluña,ca,70,1,0,82,,82,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,boletus en catalan,ca,70,9,0,17.2,,17.2,False,striking (11-20),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,"Refresh page: title/H1 match, add section, links from hubs"
+B Castilian bridge,bolets venenosos,ca,40,76,1,15.7,9,9,False,page 1 (4-10),/bolets-verinosos,,"Push to top-3: internal links, snippet, answer-first block"
+B Castilian bridge,setas comestibles cataluña fotos,ca,50,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,que son los ceps,ca,50,1,0,63,,63,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,pinatell seta,ca,50,1,0,46,,46,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Rework: dedicated page or template upgrade
+B Castilian bridge,murgoles en castellano,ca,50,2,0,77.5,,77.5,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,06,New/rebuilt page
+B Castilian bridge,mapa de setas cataluña,ca,50,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,llanegas negras,ca,50,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,tipos de setas en cataluña,ca,40,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,setas de cataluña,ca,40,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,seta llanega negra,ca,40,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,setas venenosas cataluña,ca,30,3,0,57.7,,57.7,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,New/rebuilt page
+B Castilian bridge,donde buscar setas en cataluña,ca,30,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,donde buscar setas en el montseny,ca,20,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,cep bolet en castellano,ca,20,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,ceps en catalan,ca,,14,0,9.6,,9.6,False,page 1 (4-10),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,"Push to top-3: internal links, snippet, answer-first block"
+B Castilian bridge,tipos de setas cataluña,ca,10,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,seta pie de rata comestible,ca,10,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,nombres de setas en catalán,ca,10,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,donde buscar setas en girona,ca,10,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,ceps en castellano,ca,10,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,10,Create page (or add to tracking if page exists)
+B Castilian bridge,camagrocs en castellano,ca,10,1,0,62,,62,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,12,New/rebuilt page
+B Castilian bridge,camagroc en castellano,ca,10,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,12,Create page (or add to tracking if page exists)
+B Castilian bridge,bolet rossinyol en castellano,ca,,10,0,17.9,,17.9,False,striking (11-20),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,"Refresh page: title/H1 match, add section, links from hubs"
+B Castilian bridge,carlet seta,ca,,6,0,47.2,,47.2,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Rework: dedicated page or template upgrade
+B Castilian bridge,gírgoles en castellà,ca,,4,0,8.5,,8.5,False,page 1 (4-10),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,"Push to top-3: internal links, snippet, answer-first block"
+B Castilian bridge,rovellons en castella,ca,,4,0,26.5,,26.5,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Rework: dedicated page or template upgrade
+B Castilian bridge,seta fredolic,ca,,4,0,68.5,,68.5,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+B Castilian bridge,cep bolet en castellà,ca,,3,0,9.3,,9.3,False,page 1 (4-10),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,"Push to top-3: internal links, snippet, answer-first block"
+B Castilian bridge,cama seca seta,ca,,2,0,85,,85,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+B Castilian bridge,penellons en castellano,ca,,2,0,60.5,,60.5,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+B Castilian bridge,que es ceps en catalan,ca,,2,0,9.5,,9.5,False,page 1 (4-10),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,"Push to top-3: internal links, snippet, answer-first block"
+B Castilian bridge,seta carlet,ca,,2,0,50.5,,50.5,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+B Castilian bridge,setas ceps,ca,,2,0,88.5,,88.5,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+B Castilian bridge,temporada de setas cataluña,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,temporada de setas 2026,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,setas pirineos,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,setas pirineo catalan,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,setas montseny,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,setas de primavera cataluña,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,setas de otoño cataluña,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,setas cataluña,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,robellones cataluña,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,nombres de setas en catalan y castellano,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,niscalos cataluña,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,mapa setas,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,llenega en castellano,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,guía de setas cataluña,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,donde salen setas ahora,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,donde encontrar niscalos en cataluña,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,donde buscar setas en lleida,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,donde buscar setas en barcelona,ca,0,0,0,,,,False,not ranking / untracked,NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Create page (or add to tracking if page exists)
+B Castilian bridge,buscar setas,ca,,1,0,1,,1,False,owned (1-3),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,"Defend: answer-first block, freshness, AIO citation check"
+B Castilian bridge,cep en castellano,ca,,1,0,31,,31,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Rework: dedicated page or template upgrade
+B Castilian bridge,cep seta en castellano,ca,,1,0,75,,75,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+B Castilian bridge,cep setas,ca,,1,0,55,,55,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+B Castilian bridge,ceps bolets en castellano,ca,,1,0,28,,28,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Rework: dedicated page or template upgrade
+B Castilian bridge,ceps en castella,ca,,1,0,33,,33,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Rework: dedicated page or template upgrade
+B Castilian bridge,ceps seta,ca,,1,0,92,,92,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+B Castilian bridge,champiñon en catalan,ca,,1,0,38,,38,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Rework: dedicated page or template upgrade
+B Castilian bridge,lleterola en castellano,ca,,1,0,26,,26,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Rework: dedicated page or template upgrade
+B Castilian bridge,que son ceps en catalan,ca,,1,0,8,,8,False,page 1 (4-10),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,"Push to top-3: internal links, snippet, answer-first block"
+B Castilian bridge,rebozuelos en catalan,ca,,1,0,49,,49,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Rework: dedicated page or template upgrade
+B Castilian bridge,reig en castellano,ca,,1,0,23,,23,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Rework: dedicated page or template upgrade
+B Castilian bridge,rovello en castella,ca,,1,0,44,,44,False,weak (21-50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,Rework: dedicated page or template upgrade
+B Castilian bridge,seta cep,ca,,1,0,66,,66,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+B Castilian bridge,seta ceps,ca,,1,0,82,,82,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+B Castilian bridge,seta ou de reig,ca,,1,0,70,,70,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+B Castilian bridge,seta pie de rata,ca,,1,0,74,,74,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+B Castilian bridge,setas de verano,ca,,1,0,97,,97,False,buried (>50),NEW: Spanish bridge pages + 'en castellà' block on each fitxa,,New/rebuilt page
+C Species pages,carlet,noise,60500,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,01,Create page (or add to tracking if page exists)
+C Species pages,cep,noise,14800,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,ceps,es-wide,6600,21,0,6.0,,6.0,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,rossinyol,es-wide,2400,1,0,8,,8,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,12,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,rovellons,es-wide,1600,17,0,6,,6,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,08,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,camagroc,ca,880,95,0,25.1,17,17,False,striking (11-20),/map/camagroc,01,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,ceps bolets,ca,880,104,1,26.8,24,24,False,weak (21-50),/compare/cep-vs-cep-estiu,,Rework: dedicated page or template upgrade
+C Species pages,fredolic,ca,720,83,0,50.1,37,37,False,weak (21-50),/bolets/tricholoma-terreum,10,Rework: dedicated page or template upgrade
+C Species pages,moixernons,ca,660,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,peu de rata,ca,590,7,0,19.1,,19.1,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,08,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,cua de cavall,noise,590,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,camagrocs,ca,540,21,0,42.0,,42.0,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Rework: dedicated page or template upgrade
+C Species pages,pebrassos,ca,480,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,01,Create page (or add to tracking if page exists)
+C Species pages,carlet bolet,ca,480,68,0,34.8,25,25,False,weak (21-50),/bolets/carlet,02,Rework: dedicated page or template upgrade
+C Species pages,llanega,ca,440,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,molleric,ca,390,5,0,34.2,,34.2,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,01,Rework: dedicated page or template upgrade
+C Species pages,llenega,ca,390,70,0,60.6,13,13,False,striking (11-20),/bolets/hygrophorus-latitabundus,01,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,bolets de soca,ca,390,3,0,14.7,10,10,False,page 1 (4-10),/bolets-de-soca,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,bolet de soca,ca,390,53,0,19.5,14,14,False,striking (11-20),/bolets-de-soca,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,mataparents,ca,320,3,0,55.7,,55.7,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,New/rebuilt page
+C Species pages,farinera borda,ca,320,91,0,26.5,17,17,False,striking (11-20),/bolets/farinera-borda,12,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,carlets,ca,320,3,0,25.7,,25.7,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Rework: dedicated page or template upgrade
+C Species pages,cama de perdiu,ca,320,102,0,26.8,29,26.8,False,weak (21-50),/bolets/cama-de-perdiu,12,Rework: dedicated page or template upgrade
+C Species pages,apagallums,ca,320,69,0,57.8,38,38,False,weak (21-50),/bolets/apagallums,10,Rework: dedicated page or template upgrade
+C Species pages,tipus de ceps,ca,260,79,0,26.6,7,7,False,page 1 (4-10),/zones/ceps,10,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,sureny,ca,260,2,0,72.5,,72.5,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,New/rebuilt page
+C Species pages,pota de perdiu,ca,260,80,0,30.5,33,30.5,False,weak (21-50),/bolets/cama-de-perdiu,10,Rework: dedicated page or template upgrade
+C Species pages,fredolics toxics,ca,260,8,0,11.4,,11.4,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,01,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,fredolic toxic,ca,260,2,0,36,,36,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,01,Rework: dedicated page or template upgrade
+C Species pages,escarlet,ca,260,1,0,9,,9,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,carreretes,ca,260,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,bolet de tinta,ca,260,89,0,37.9,20,20,False,striking (11-20),/bolets/bolet-de-tinta,10,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,fredolic bolet,ca,260,54,0,43.3,27,27,False,weak (21-50),/bolets/tricholoma-terreum,,Rework: dedicated page or template upgrade
+C Species pages,bolets de tinta,ca,260,44,0,32.2,17,17,False,striking (11-20),/bolets/bolet-de-tinta,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,rossinyols,ca,250,2,0,81,,81,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,12,New/rebuilt page
+C Species pages,sabatera,ca,210,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,llenega negra,ca,210,2,0,34.5,,34.5,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Rework: dedicated page or template upgrade
+C Species pages,llanegues,ca,210,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,apagallums bolet toxic,ca,210,54,0,34.7,10,10,False,page 1 (4-10),/bolets/apagallums,10,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,pinatell bolet,ca,210,55,0,33,16,16,False,striking (11-20),/compare/rovello-vs-pinetell,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,ous de reig,ca,180,2,0,53.5,,53.5,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,12,New/rebuilt page
+C Species pages,ou de reig,ca,180,82,0,54.2,41,41,False,weak (21-50),/bolets/amanita-caesarea,12,Rework: dedicated page or template upgrade
+C Species pages,pebras,ca,170,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,ou de reig falso,ca,170,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,12,Create page (or add to tracking if page exists)
+C Species pages,llenega blanca,ca,170,90,0,45.6,24,24,False,weak (21-50),/bolets/llenega-blanca,10,Rework: dedicated page or template upgrade
+C Species pages,bolet de xop,ca,170,24,0,40.2,17,17,False,striking (11-20),/bolets/cyclocybe-cylindracea,10,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,bolet apagallums,ca,170,50,0,49.2,29,29,False,weak (21-50),/bolets/apagallums,,Rework: dedicated page or template upgrade
+C Species pages,bolets de xop,ca,170,20,0,74.5,39,39,False,weak (21-50),/bolets,,Rework: dedicated page or template upgrade
+C Species pages,sabatera bolet,ca,140,1,0,48,,48,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Rework: dedicated page or template upgrade
+C Species pages,reig bord,ca,140,69,0,32.9,7,7,False,page 1 (4-10),/bolets/amanita-muscaria,12,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,llengua de bou bolet,ca,140,67,0,47.1,72,47.1,False,weak (21-50),/bolets/hydnum-repandum,10,Rework: dedicated page or template upgrade
+C Species pages,fredolic bord,ca,140,73,0,36.7,21,21,False,weak (21-50),/bolets/tricholoma-pardinum,10,Rework: dedicated page or template upgrade
+C Species pages,bolet cep,ca,140,72,0,31.0,22,22,False,weak (21-50),/compare/cep-vs-cep-estiu,10,Rework: dedicated page or template upgrade
+C Species pages,bolet rossinyol,ca,140,62,0,24.0,16,16,False,striking (11-20),/compare/rossinyol-vs-bolet-olivera,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,camagroc bolet,ca,140,58,0,44.3,35,35,False,weak (21-50),/bolets/craterellus-lutescens,,Rework: dedicated page or template upgrade
+C Species pages,camagrocs bolets,ca,140,57,0,50.4,36,36,False,weak (21-50),/bolets/craterellus-lutescens,,Rework: dedicated page or template upgrade
+C Species pages,bolets ceps,ca,140,80,0,35.1,69,35.1,False,weak (21-50),/bolets/cep,,Rework: dedicated page or template upgrade
+C Species pages,cep bolet,ca,10,127,1,26.4,12,12,False,striking (11-20),/bolets/cep-negre,08,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,pinetells,ca,0,127,1,12.1,6,6,False,page 1 (4-10),/zones/solsones/port-del-comte/pinetells,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,cep d'estiu,ca,0,127,1,9.3,6,6,False,page 1 (4-10),/compare/cep-vs-cep-estiu,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,peu de rata toxic,ca,110,2,0,12.5,,12.5,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,12,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,ou de reig dolent,ca,110,94,0,46.5,76,46.5,False,weak (21-50),/bolets/amanita-caesarea,10,Rework: dedicated page or template upgrade
+C Species pages,mataparent,ca,110,2,0,35,,35,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,12,Rework: dedicated page or template upgrade
+C Species pages,lleterola bolet,ca,110,2,0,32,,32,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Rework: dedicated page or template upgrade
+C Species pages,rossinyols bolets,ca,110,89,0,31.4,25,25,False,weak (21-50),/compare/rossinyol-vs-bolet-olivera,,Rework: dedicated page or template upgrade
+C Species pages,moixernó de tardor,ca,110,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,tofones,ca,110,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,bolet de greix,ca,70,115,0,13.6,6,6,False,page 1 (4-10),/compare/murgola-vs-bolet-greix,10,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,candeleta de prat,ca,0,102,0,2.5,1,1,True,owned (1-3),/bolets/candeleta-de-vorada,,"Defend: answer-first block, freshness, AIO citation check"
+C Species pages,pimpinella morada,ca,90,2,0,20,,20,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,ou de reig bord,ca,90,5,0,56.4,,56.4,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,12,New/rebuilt page
+C Species pages,gita de bruixa,ca,90,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,carreretes bolet,ca,90,49,0,59.0,71,59.0,False,buried (>50),/bolets-d-estiu,12,New/rebuilt page
+C Species pages,bolet vermell,ca,90,3,0,58.3,,58.3,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,New/rebuilt page
+C Species pages,matagent,ca,0,101,0,9.8,5,5,True,page 1 (4-10),/compare/cep-vs-matagent,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,rovello bolet,ca,90,49,0,65.1,28,28,False,weak (21-50),/bolets/rovello,,Rework: dedicated page or template upgrade
+C Species pages,bolets carlets,ca,90,45,0,53.5,31,31,False,weak (21-50),/bolets-verinosos,,Rework: dedicated page or template upgrade
+C Species pages,camasec,ca,0,99,0,30.4,24,24,False,weak (21-50),/bolets/camasec,,Rework: dedicated page or template upgrade
+C Species pages,llora verda,ca,0,95,0,19.1,7,7,False,page 1 (4-10),/bolets/llora-verda,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,cortinari rogenc,ca,0,89,0,1.5,1,1,True,owned (1-3),/bolets/cortinari-mortal,,"Defend: answer-first block, freshness, AIO citation check"
+C Species pages,trompeta de la mort,ca,20,87,0,55.0,24,24,False,weak (21-50),/bolets/craterellus-cornucopioides,10,Rework: dedicated page or template upgrade
+C Species pages,peu de rata comestible,ca,0,87,0,50.5,34,34,False,weak (21-50),/bolets/peu-de-rata-daurat,,Rework: dedicated page or template upgrade
+C Species pages,cortinari metzinós,ca,0,85,0,8.8,1,1,True,owned (1-3),/bolets/cortinari-metzinos,,"Defend: answer-first block, freshness, AIO citation check"
+C Species pages,cep de pi,ca,0,85,0,11.7,4,4,False,page 1 (4-10),/zones/ceps,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,farinera pudent,ca,0,84,1,3.5,3,3,False,owned (1-3),/bolets/farinera-pudent,,"Defend: answer-first block, freshness, AIO citation check"
+C Species pages,rossinyol bolet,ca,10,84,0,19.6,14,14,False,striking (11-20),/compare/rossinyol-vs-bolet-olivera,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,cama de perdiu confusions,ca,70,83,0,21.4,14,14,False,striking (11-20),/bolets-verinosos,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,pollancró,ca,0,82,0,7.7,4,4,False,page 1 (4-10),/bolets/pollancro,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,carner bord,ca,0,79,0,5.1,3,3,False,owned (1-3),/bolets/carner-bord,,"Defend: answer-first block, freshness, AIO citation check"
+C Species pages,tipus de rovellons,ca,70,4,0,11.2,,11.2,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,peu de rata bord,ca,70,9,0,12.9,,12.9,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,fredolic gros,ca,50,78,0,49.8,64,49.8,False,weak (21-50),/bolets/fredolic,10,Rework: dedicated page or template upgrade
+C Species pages,fals rossinyol bolet,ca,70,65,0,11.2,6,6,False,page 1 (4-10),/fals-rossinyol,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,ou de reig bolet,ca,70,67,0,57.9,16,16,False,striking (11-20),/bolets/amanita-caesarea,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,carlets bolet,ca,70,53,0,60.6,38,38,False,weak (21-50),/bolets/carlet,,Rework: dedicated page or template upgrade
+C Species pages,fals cep,ca,20,78,2,16.7,2,2,True,owned (1-3),/compare/cep-vs-cep-estiu,,"Defend: answer-first block, freshness, AIO citation check"
+C Species pages,gírgola de panical,ca,50,76,0,31.6,15,15,False,striking (11-20),/bolets/pleurotus-eryngii,10,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,pixaca,ca,0,76,0,17.2,5,5,False,page 1 (4-10),/bolets/amanita-pantherina,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,rovello,es-wide,0,75,0,65.2,79,65.2,False,buried (>50),/compare/rovello-vs-rovello-de-cabra,,New/rebuilt page
+C Species pages,paxil·le involut,ca,0,73,1,16.8,1,1,False,owned (1-3),/bolets/paxille-toxic,,"Defend: answer-first block, freshness, AIO citation check"
+C Species pages,marçot,ca,0,70,0,27.6,,27.6,False,weak (21-50),/temporada/marc,,Rework: dedicated page or template upgrade
+C Species pages,llenegues,ca,0,71,0,51.7,14,14,False,striking (11-20),/zones/solsones/sant-llorenc-de-morunys/llenegues,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,pinatell de calceta,ca,50,71,0,26.7,18,18,False,striking (11-20),/bolets/molleric-de-calceta,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,molleric de calceta,ca,20,69,0,9.5,2,2,False,owned (1-3),/bolets/molleric-de-calceta,,"Defend: answer-first block, freshness, AIO citation check"
+C Species pages,cama sec bolet,ca,50,68,0,58.2,68,58.2,False,buried (>50),/bolets/camasec,,New/rebuilt page
+C Species pages,ous reig,ca,50,61,0,62.3,46,46,False,weak (21-50),/bolets/ou-de-reig,,Rework: dedicated page or template upgrade
+C Species pages,pinetell,ca,10,58,0,21.9,16,16,False,striking (11-20),/bolets/pinetell,10,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,molleric granellut,ca,10,58,0,15.4,7,7,False,page 1 (4-10),/bolets/molleric-granellut,10,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,cep negre,ca,20,57,0,8.7,6,6,False,page 1 (4-10),/bolets/cep-negre,10,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,rovelló vs pinetell,ca,0,57,0,13.4,6,6,True,page 1 (4-10),/compare/rovello-vs-pinetell,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,cogomassa,ca,0,57,0,10.7,4,4,False,page 1 (4-10),/bolets/amanita-verna,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,pinetell de calceta,ca,50,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,bolets blancs,ca,50,1,0,53,,53,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,New/rebuilt page
+C Species pages,bolet groc,ca,50,1,0,38,,38,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Rework: dedicated page or template upgrade
+C Species pages,bolet blanc,ca,50,1,0,31,,31,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Rework: dedicated page or template upgrade
+C Species pages,bec de perdiu,ca,50,1,0,35,,35,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Rework: dedicated page or template upgrade
+C Species pages,fals camagroc,ca,10,55,0,5.7,4,4,False,page 1 (4-10),/compare/camagroc-vs-fals-camagroc,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,camperol bolet,ca,0,53,0,21.2,10,10,False,page 1 (4-10),/bolets/agaricus-campestris,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,bolet d'olivera,ca,10,51,0,7.9,6,6,False,page 1 (4-10),/compare/girgola-vs-bolet-olivera,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,peu blau bolet,ca,10,48,0,23.6,54,23.6,False,weak (21-50),/bolets,10,Rework: dedicated page or template upgrade
+C Species pages,pinetell bord,ca,40,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,bolet lila,ca,40,5,0,21.6,,21.6,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Rework: dedicated page or template upgrade
+C Species pages,moixernó,ca,0,43,0,74.7,67,67,False,buried (>50),/bolets/moixero,,New/rebuilt page
+C Species pages,verderol bolet,ca,30,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,brumosa bolet,ca,30,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,ceps catala,ca,,28,0,5.6,,5.6,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,cep vermell,ca,0,27,0,32.2,,32.2,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,pollancrons,ca,20,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,llengua de bou,ca,20,7,0,53.6,,53.6,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,New/rebuilt page
+C Species pages,bolet negre,ca,20,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,tofona negra,ca,0,20,0,28.1,16,16,False,striking (11-20),/bolets/tofona-negra,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,cep groc,ca,0,21,1,22.2,,22.2,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,pinetell i rovello,ca,,16,0,46.8,,46.8,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,rovello pinetell,ca,,15,0,49.8,,49.8,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,fredolics,ca,0,14,0,54.9,43,43,False,weak (21-50),/bolets/fredolic,,Rework: dedicated page or template upgrade
+C Species pages,diferencia entre pinetell i rovello,ca,0,14,0,8,,8,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,camperol,ca,,13,0,11.2,,11.2,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,trompetes de la mort,ca,10,1,0,59,,59,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,New/rebuilt page
+C Species pages,pinatell,ca,10,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,pet de llop,ca,10,7,0,16.3,,16.3,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,05,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,lleterola,ca,10,1,0,11,,11,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,03,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,bolets taronges,ca,10,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,10,Create page (or add to tracking if page exists)
+C Species pages,bolets toxics cep bolet confusio,ca,,12,0,6,,6,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,peus de rata comestibles,ca,,9,0,55.3,,55.3,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,cep rogenc,ca,,8,1,3.6,,3.6,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,pinatells,ca,,8,0,70.2,,70.2,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,bolets de soca comestibles,ca,,7,1,9.6,,9.6,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,ceps bolet,ca,,7,0,56,,56,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,fals rossinyol,ca,,7,0,7.1,,7.1,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,rovello blanc,ca,,7,0,14.4,,14.4,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,ceps catalunya,ca,,6,0,12.3,,12.3,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,mare del rovello,ca,,6,0,82.8,,82.8,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,marçot bolet,ca,,6,0,51,,51,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,diferència rossinyol fals rossinyol,ca,0,5,0,5,3,3,False,owned (1-3),/fals-rossinyol,,"Defend: answer-first block, freshness, AIO citation check"
+C Species pages,bolet llengua de bou,ca,,5,0,47.2,,47.2,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,bolet peu de rata,ca,,5,0,61.4,,61.4,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,cep (bolet),ca,,5,0,6.6,,6.6,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,moixero bolet,ca,,5,0,15.8,,15.8,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,rovello de cabra,ca,,5,0,5,,5,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,siureny,ca,,5,0,9,,9,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,sep bolet,ca,,5,0,24.6,,24.6,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,fredolic metzinós diferències,ca,0,4,0,5.5,4,4,True,page 1 (4-10),/compare/fredolic-vs-fredolic-metzinos,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,rovelló de cabra comestible,ca,0,4,0,8.5,9,8.5,False,page 1 (4-10),/compare/rovello-vs-rovello-de-cabra,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,apagallums confusions,ca,,4,0,23.2,,23.2,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,bolet de bou,ca,,4,0,48.2,,48.2,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,bolet fredolic,ca,,4,0,53,,53,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,molleric bolet,ca,,4,0,28.5,,28.5,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,pet de llop bolet,ca,,4,0,10.5,,10.5,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,tipos de ceps,ca,,4,0,55,,55,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,girgola,ca,0,3,0,53.3,20,20,False,striking (11-20),/bolets/girgola,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,apagallums bolet comestible,ca,,3,0,54.3,,54.3,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,apagallums toxic,ca,,3,0,24.7,,24.7,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,carlet vermell,ca,,3,0,22,,22,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,carreretes bolets,ca,,3,0,57,,57,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,cep boletus,ca,,3,0,49.3,,49.3,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,fredolics bolets,ca,,3,0,22.7,,22.7,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,la llanega,ca,,3,0,74,,74,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,marçots,ca,,3,0,52,,52,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,moixerons,ca,,3,0,11,,11,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,pinetell bolet,ca,,3,0,13.3,,13.3,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,ramaria aurea,ca,,3,0,40,,40,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,rusiñol bolet,ca,,3,0,47,,47,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,murgoles,ca,0,2,0,91.5,,91.5,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,camasecs,ca,0,2,0,30.5,,30.5,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,bolets vermells,ca,0,2,0,50,,50,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,múrgola bolet de greix diferències,ca,0,2,0,4,2,2,True,owned (1-3),/compare/murgola-vs-bolet-greix,,"Defend: answer-first block, freshness, AIO citation check"
+C Species pages,bolet camagroc,ca,,2,0,9.5,,9.5,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,bolet mataparents,ca,,2,0,42,,42,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,bolet ou de reig,ca,,2,0,65,,65,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,bolet pet de llop,ca,,2,0,10,,10,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,bolets peus de rata,ca,,2,0,24,,24,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,boletus reticulado,ca,,2,0,71.5,,71.5,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,cep bolet confusio,ca,,2,0,21.5,,21.5,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,el pet de llop,ca,,2,0,10.5,,10.5,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,greixa bolet,ca,,2,0,6.5,,6.5,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,inocibe,ca,,2,0,10,,10,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,llora bolet,ca,,2,0,12,,12,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,parts del cep,ca,,2,0,20,,20,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,peu de rata bolet,ca,,2,0,49,,49,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,peus de rata,ca,,2,0,1,,1,False,owned (1-3),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Defend: answer-first block, freshness, AIO citation check"
+C Species pages,picornell bolet,ca,,2,0,35.5,,35.5,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,pimpinela morada,ca,,2,0,29,,29,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,pinetell molleric,ca,,2,0,44,,44,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,rossinyol de pi,ca,,2,0,82,,82,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,rovellat,ca,,2,0,55.5,,55.5,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,rovello de sang,ca,,2,0,24.5,,24.5,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,suillus granulatus comestible,ca,,2,0,81,,81,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,tipus de ceps comestibles,ca,,2,0,18,,18,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,moixernons de tardor,ca,,2,0,29,,29,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,seps bolet,ca,,2,0,59.5,,59.5,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,rovellons catalunya,ca,,1,0,8,,8,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,tofona,ca,0,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Create page (or add to tracking if page exists)
+C Species pages,murgola,ca,0,1,0,23,,23,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,sureny fosc,ca,0,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Create page (or add to tracking if page exists)
+C Species pages,pebrasso,ca,0,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Create page (or add to tracking if page exists)
+C Species pages,llora,ca,0,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Create page (or add to tracking if page exists)
+C Species pages,cigró bolet,ca,0,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Create page (or add to tracking if page exists)
+C Species pages,cama sec,ca,0,1,0,57,,57,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,inocibe de Patouillard,ca,0,0,0,,20,20,False,striking (11-20),/bolets/inocibe-de-patouillard,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,galerina marginada,ca,0,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Create page (or add to tracking if page exists)
+C Species pages,lepiota mortal,ca,0,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Create page (or add to tracking if page exists)
+C Species pages,adaptació de ceps segons el terreny,ca,,1,0,11,,11,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,bolet blanc comestible,ca,,1,0,62,,62,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,bolet carlet,ca,,1,0,43,,43,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,bolet greixa,ca,,1,0,49,,49,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,bolet pebras,ca,,1,0,75,,75,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,bolet sabatera,ca,,1,0,46,,46,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,bolets blancs comestibles,ca,,1,0,89,,89,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,bolets camagrocs,ca,,1,0,45,,45,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,bolets llengua de bou,ca,,1,0,34,,34,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,cal carlets,ca,,1,0,72,,72,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,cama secs,ca,,1,0,11,,11,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,cep azul,ca,,1,0,13,,13,False,striking (11-20),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Refresh page: title/H1 match, add section, links from hubs"
+C Species pages,cep foto,ca,,1,0,9,,9,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,cep habitat,ca,,1,0,3,,3,False,owned (1-3),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Defend: answer-first block, freshness, AIO citation check"
+C Species pages,cepes mushrooms,ca,,1,0,70,,70,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,ceps boletus,ca,,1,0,72,,72,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,ceps mushroom,ca,,1,0,68,,68,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,cualbra llora,ca,,1,0,34,,34,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,escarlet bolet,ca,,1,0,49,,49,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,galerinas,ca,,1,0,62,,62,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,inocybe patouillardii,ca,,1,0,69,,69,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,l ou de reig,ca,,1,0,73,,73,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,l'apagallums,ca,,1,0,10,,10,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,llanega blanca confusión,ca,,1,0,73,,73,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,llengua de gat bolet,ca,,1,0,98,,98,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,lleterola que es,ca,,1,0,31,,31,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,mataparents bolet,ca,,1,0,32,,32,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,moixernons de sant miquel,ca,,1,0,76,,76,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,pet de llop es comestible,ca,,1,0,21,,21,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,pet de monja bolet,ca,,1,0,48,,48,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,peu de perdiu,ca,,1,0,43,,43,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,peus de rata bolets,ca,,1,0,9,,9,False,page 1 (4-10),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,"Push to top-3: internal links, snippet, answer-first block"
+C Species pages,pota de perdiu bolet,ca,,1,0,33,,33,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,reig bolet,ca,,1,0,50,,50,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,rossinyols de pi,ca,,1,0,87,,87,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,rovell,ca,,1,0,80,,80,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,sureny bolet,ca,,1,0,62,,62,False,buried (>50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,New/rebuilt page
+C Species pages,trompeta da morte,ca,,1,0,50,,50,False,weak (21-50),/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Rework: dedicated page or template upgrade
+C Species pages,moixernons de primavera,ca,0,0,0,,,,False,not ranking / untracked,/bolets/<slug>: upgrade compact fitxes; NEW fitxes for missing species,,Create page (or add to tracking if page exists)
+C2 Scientific names,boletus edulis,es-wide,3200,1,0,17,,17,False,striking (11-20),/bolets/<slug> (scientific name in title/H1 alt),10,"Refresh page: title/H1 match, add section, links from hubs"
+C2 Scientific names,amanita phalloides,es-wide,3200,0,0,,,,False,not ranking / untracked,/bolets/<slug> (scientific name in title/H1 alt),10,Create page (or add to tracking if page exists)
+C2 Scientific names,craterellus cornucopioides,es-wide,590,0,0,,,,False,not ranking / untracked,/bolets/<slug> (scientific name in title/H1 alt),02,Create page (or add to tracking if page exists)
+C2 Scientific names,cantharellus lutescens,es-wide,590,0,0,,,,False,not ranking / untracked,/bolets/<slug> (scientific name in title/H1 alt),05,Create page (or add to tracking if page exists)
+C2 Scientific names,tricholoma portentosum,es-wide,480,0,0,,,,False,not ranking / untracked,/bolets/<slug> (scientific name in title/H1 alt),04,Create page (or add to tracking if page exists)
+C2 Scientific names,russula virescens,es-wide,480,2,0,85,,85,False,buried (>50),/bolets/<slug> (scientific name in title/H1 alt),01,New/rebuilt page
+C2 Scientific names,tricholoma pardinum,es-wide,390,0,0,,,,False,not ranking / untracked,/bolets/<slug> (scientific name in title/H1 alt),12,Create page (or add to tracking if page exists)
+C2 Scientific names,lepiota brunneoincarnata,es-wide,390,1,0,66,,66,False,buried (>50),/bolets/<slug> (scientific name in title/H1 alt),10,New/rebuilt page
+C2 Scientific names,hygrophorus latitabundus,es-wide,320,3,0,75.7,,75.7,False,buried (>50),/bolets/<slug> (scientific name in title/H1 alt),10,New/rebuilt page
+C2 Scientific names,boletus edulis en catalan,ca,40,1,0,49,,49,False,weak (21-50),/bolets/<slug> (scientific name in title/H1 alt),10,Rework: dedicated page or template upgrade
+C2 Scientific names,inocybe de patouillard,ca,,38,0,42.8,,42.8,False,weak (21-50),/bolets/<slug> (scientific name in title/H1 alt),,Rework: dedicated page or template upgrade
+C2 Scientific names,lactarius sanguifluus,es-wide,10,0,0,,,,False,not ranking / untracked,/bolets/<slug> (scientific name in title/H1 alt),10,Create page (or add to tracking if page exists)
+C2 Scientific names,lactarius deliciosus,es-wide,10,0,0,,,,False,not ranking / untracked,/bolets/<slug> (scientific name in title/H1 alt),10,Create page (or add to tracking if page exists)
+C2 Scientific names,cantharellus cibarius,es-wide,10,0,0,,,,False,not ranking / untracked,/bolets/<slug> (scientific name in title/H1 alt),10,Create page (or add to tracking if page exists)
+C2 Scientific names,boletus reticulatus,es-wide,10,5,0,82.6,,82.6,False,buried (>50),/bolets/<slug> (scientific name in title/H1 alt),10,New/rebuilt page
+C2 Scientific names,amanita verna,es-wide,10,1,0,93,,93,False,buried (>50),/bolets/<slug> (scientific name in title/H1 alt),10,New/rebuilt page
+C2 Scientific names,hygrophorus russula,ca,,1,0,44,,44,False,weak (21-50),/bolets/<slug> (scientific name in title/H1 alt),,Rework: dedicated page or template upgrade
+D Weather & timing,radar meteocat,noise,673000,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,03,Create page (or add to tracking if page exists)
+D Weather & timing,meteocat radar,noise,550000,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,03,Create page (or add to tracking if page exists)
+D Weather & timing,radar pluja,noise,5400,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,09,Create page (or add to tracking if page exists)
+D Weather & timing,on plou ara a catalunya,es-wide,590,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,08,Create page (or add to tracking if page exists)
+D Weather & timing,mapa precipitacions catalunya,es-wide,390,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,10,Create page (or add to tracking if page exists)
+D Weather & timing,mapa pluja catalunya,es-wide,170,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,12,Create page (or add to tracking if page exists)
+D Weather & timing,quants dies després de ploure surten els bolets,ca,0,54,0,50.1,8,8,True,page 1 (4-10),/quan-surten-els-bolets-despres-de-ploure,,"Push to top-3: internal links, snippet, answer-first block"
+D Weather & timing,quan surten els rovellons,ca,0,33,0,62.9,,62.9,False,buried (>50),/,,New/rebuilt page
+D Weather & timing,temps de bolets,ca,20,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,10,Create page (or add to tracking if page exists)
+D Weather & timing,radar pluja catalunya,es-wide,10,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,10,Create page (or add to tracking if page exists)
+D Weather & timing,bolets després de ploure,ca,0,5,0,12.2,6,6,True,page 1 (4-10),/quan-surten-els-bolets-despres-de-ploure,,"Push to top-3: internal links, snippet, answer-first block"
+D Weather & timing,quan surten els bolets després de ploure,ca,0,2,0,6,10,6,True,page 1 (4-10),/quan-surten-els-bolets-despres-de-ploure,,"Push to top-3: internal links, snippet, answer-first block"
+D Weather & timing,temperatura bolets,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+D Weather & timing,quan surten les múrgoles,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+D Weather & timing,quan surten les llenegues,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+D Weather & timing,quan surten els moixernons,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+D Weather & timing,quan surten els fredolics,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+D Weather & timing,quan surten els ceps,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+D Weather & timing,quan surten els camagrocs,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+D Weather & timing,quan surten els bolets,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+D Weather & timing,lluna i bolets,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+D Weather & timing,humitat bolets,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+D Weather & timing,gelada bolets,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+D Weather & timing,bolets sequera,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+D Weather & timing,bolets lluna plena,ca,0,0,0,,,,False,not ranking / untracked,NEW /pluja-i-bolets + /quan-surten-els-bolets-despres-de-ploure,,Create page (or add to tracking if page exists)
+E Season & calendar,temporada de bolets,ca,50,86,2,24.5,6,6,True,page 1 (4-10),/temporada/febrer,10,"Push to top-3: internal links, snippet, answer-first block"
+E Season & calendar,bolets de primavera,ca,0,81,1,32.3,7,7,False,page 1 (4-10),/bolets-de-primavera,,"Push to top-3: internal links, snippet, answer-first block"
+E Season & calendar,temporada de bolets catalunya,ca,0,56,1,19.6,2,2,True,owned (1-3),/temporada,,"Defend: answer-first block, freshness, AIO citation check"
+E Season & calendar,temporada rovellons,ca,30,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",12,Create page (or add to tracking if page exists)
+E Season & calendar,temporada de rovellons,ca,20,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",10,Create page (or add to tracking if page exists)
+E Season & calendar,temporada bolets,ca,20,15,0,6.8,,6.8,False,page 1 (4-10),"/temporada, /temporada/<mes>, season guides",10,"Push to top-3: internal links, snippet, answer-first block"
+E Season & calendar,bolets catalunya 2026,ca,0,21,2,9.2,,9.2,False,page 1 (4-10),"/temporada, /temporada/<mes>, season guides",,"Push to top-3: internal links, snippet, answer-first block"
+E Season & calendar,rovellons temporada,ca,,13,0,12.9,,12.9,False,striking (11-20),"/temporada, /temporada/<mes>, season guides",,"Refresh page: title/H1 match, add section, links from hubs"
+E Season & calendar,bolets d'estiu catalunya,ca,0,10,0,3.4,4,3.4,True,page 1 (4-10),/bolets-d-estiu,,"Push to top-3: internal links, snippet, answer-first block"
+E Season & calendar,temporada de bolets a catalunya,ca,,5,0,3.2,,3.2,False,page 1 (4-10),"/temporada, /temporada/<mes>, season guides",,"Push to top-3: internal links, snippet, answer-first block"
+E Season & calendar,bolets de primavera catalunya,ca,0,3,0,12.7,5,5,True,page 1 (4-10),/bolets-de-primavera,,"Push to top-3: internal links, snippet, answer-first block"
+E Season & calendar,bolets d'hivern catalunya,ca,0,2,0,14,12,12,False,striking (11-20),/bolets-d-hivern,,"Refresh page: title/H1 match, add section, links from hubs"
+E Season & calendar,calendari boletaire,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets de tardor catalunya,ca,0,0,0,,4,4,True,page 1 (4-10),/bolets-de-tardor,,"Push to top-3: internal links, snippet, answer-first block"
+E Season & calendar,temporada de bolets 2026,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,temporada ceps,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,quan és temporada de bolets,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,ja hi ha bolets,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,hi ha bolets,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,com està la temporada de bolets,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,calendari de bolets,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,calendari bolets,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets setembre,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets octubre,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets novembre,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets març,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets maig,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets juny,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets juliol,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets gener,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets febrer,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets desembre,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets de tardor,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets d'hivern,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets d'estiu,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets agost,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets abril,ca,0,0,0,,,,False,not ranking / untracked,"/temporada, /temporada/<mes>, season guides",,Create page (or add to tracking if page exists)
+E Season & calendar,bolets 2026,ca,0,1,0,1,,1,False,owned (1-3),"/temporada, /temporada/<mes>, season guides",,"Defend: answer-first block, freshness, AIO citation check"
+E Season & calendar,temporada de boletus,ca,,1,0,55,,55,False,buried (>50),"/temporada, /temporada/<mes>, season guides",,New/rebuilt page
+F Geo hubs,bolets port del comte,ca,10,117,6,7.4,6,6,True,page 1 (4-10),/zones/solsones/port-del-comte,10,"Push to top-3: internal links, snippet, answer-first block"
+F Geo hubs,bolets guilleries,ca,0,109,0,7.2,6,6,True,page 1 (4-10),/zones/guilleries,,"Push to top-3: internal links, snippet, answer-first block"
+F Geo hubs,bolets prades,ca,70,106,0,13.1,12,12,False,striking (11-20),/zones/prades/prades,10,"Refresh page: title/H1 match, add section, links from hubs"
+F Geo hubs,bolets garrotxa,ca,0,97,0,17.9,9,9,False,page 1 (4-10),/zones/garrotxa/vall-den-bas,,"Push to top-3: internal links, snippet, answer-first block"
+F Geo hubs,bolets rasos de peguera,ca,10,83,0,10.2,6,6,True,page 1 (4-10),/zones/bergueda/rasos-de-peguera,10,"Push to top-3: internal links, snippet, answer-first block"
+F Geo hubs,bolets solsonès,ca,0,78,0,22.8,15,15,False,striking (11-20),/zones/solsones,,"Refresh page: title/H1 match, add section, links from hubs"
+F Geo hubs,bolets sant hilari sacalm,ca,0,78,0,7.5,6,6,True,page 1 (4-10),/zones/guilleries/sant-hilari-sacalm,,"Push to top-3: internal links, snippet, answer-first block"
+F Geo hubs,bolets muntanyes de prades,ca,0,78,1,14.1,7,7,False,page 1 (4-10),/zones/prades/prades,,"Push to top-3: internal links, snippet, answer-first block"
+F Geo hubs,bolets montnegre,ca,0,75,0,16.5,14,14,False,striking (11-20),/zones/montnegre-corredor,,"Refresh page: title/H1 match, add section, links from hubs"
+F Geo hubs,bolets vall d'en bas,ca,0,74,0,5.7,3,3,True,owned (1-3),/zones/garrotxa/vall-den-bas/ceps,,"Defend: answer-first block, freshness, AIO citation check"
+F Geo hubs,bolets pirineu,ca,50,68,0,44.0,26,26,False,weak (21-50),/,10,Rework: dedicated page or template upgrade
+F Geo hubs,rovellons prades,ca,0,67,0,9.8,6,6,True,page 1 (4-10),/zones/prades,,"Push to top-3: internal links, snippet, answer-first block"
+F Geo hubs,bolets montseny,ca,50,66,0,35.0,20,20,False,striking (11-20),/zones/montseny,10,"Refresh page: title/H1 match, add section, links from hubs"
+F Geo hubs,bolets pirineus,ca,50,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,10,Create page (or add to tracking if page exists)
+F Geo hubs,bolets ripollès,ca,0,50,2,18.8,12,12,False,striking (11-20),/zones/ripolles,,"Refresh page: title/H1 match, add section, links from hubs"
+F Geo hubs,bolets cerdanya,ca,0,51,1,69.2,55,55,False,buried (>50),/zones/cerdanya,,New/rebuilt page
+F Geo hubs,bolets bosc de poblet,ca,0,41,0,19.2,,19.2,False,striking (11-20),/zones/prades/bosc-de-poblet,,"Refresh page: title/H1 match, add section, links from hubs"
+F Geo hubs,bolets berguedà,ca,0,40,0,78.3,21,21,False,weak (21-50),/zones/bergueda/rasos-de-peguera,,Rework: dedicated page or template upgrade
+F Geo hubs,ou de reig montseny,ca,30,1,0,49,,49,False,weak (21-50),/zones/<area>; NEW /zones/pirineu,10,Rework: dedicated page or template upgrade
+F Geo hubs,bolets els ports,ca,0,31,0,18.2,16,16,False,striking (11-20),/zones/ports,,"Refresh page: title/H1 match, add section, links from hubs"
+F Geo hubs,bolets viladrau,ca,10,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,10,Create page (or add to tracking if page exists)
+F Geo hubs,bolets collserola,ca,10,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,10,Create page (or add to tracking if page exists)
+F Geo hubs,setcases bolets,ca,,8,1,6.5,,6.5,False,page 1 (4-10),/zones/<area>; NEW /zones/pirineu,,"Push to top-3: internal links, snippet, answer-first block"
+F Geo hubs,bolets al montseny,ca,,5,3,4,,4,False,page 1 (4-10),/zones/<area>; NEW /zones/pirineu,,"Push to top-3: internal links, snippet, answer-first block"
+F Geo hubs,bolets de girona,ca,,4,0,85.8,,85.8,False,buried (>50),/zones/<area>; NEW /zones/pirineu,,New/rebuilt page
+F Geo hubs,ceps cerdanya,ca,0,3,1,10.3,,10.3,False,striking (11-20),/zones/<area>; NEW /zones/pirineu,,"Refresh page: title/H1 match, add section, links from hubs"
+F Geo hubs,bolets del montseny,ca,,2,0,3,,3,False,owned (1-3),/zones/<area>; NEW /zones/pirineu,,"Defend: answer-first block, freshness, AIO citation check"
+F Geo hubs,rasos de peguera bolets,ca,,2,0,22.5,,22.5,False,weak (21-50),/zones/<area>; NEW /zones/pirineu,,Rework: dedicated page or template upgrade
+F Geo hubs,ceps pirineu,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,ceps montseny,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,ceps al pirineu,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets vidrà,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets vic,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets vallès oriental,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets vallès,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets vall de núria,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets vall de boí,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets vall d'aran,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets tuixent,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets terra alta,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets tarragona,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets sort,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets solsona,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets setcases,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets serra del cadí,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets segarra,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets santa fe del montseny,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets sant llorenç del munt,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets sant joan de les abadesses,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets ribes de freser,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets queralbs,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets puigcerdà,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets prop de barcelona,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets priorat,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets planoles,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets pla de l'estany,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets pallars sobirà,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets pallars jussà,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets pallars,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets osona,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets olot,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets montserrat,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets moianès,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets maresme,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets lleida,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets les llosses,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets la seu d'urgell,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets la selva,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets la molina,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets gósol,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets girona,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets espinelves,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets empordà,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets conca de barberà,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets castellar de n'hug,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets camprodon,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets cadí,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets berga,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets bellver de cerdanya,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets barcelona,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets bages,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets arbúcies,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets anoia,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets andorra,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets alt urgell,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets alt pirineu,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets alt empordà,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,bolets aigüestortes,ca,0,0,0,,,,False,not ranking / untracked,/zones/<area>; NEW /zones/pirineu,,Create page (or add to tracking if page exists)
+F Geo hubs,ceps a la cerdanya,ca,,1,0,10,,10,False,page 1 (4-10),/zones/<area>; NEW /zones/pirineu,,"Push to top-3: internal links, snippet, answer-first block"
+F Geo hubs,ruta de la cerdanya,ca,,1,0,2,,2,False,owned (1-3),/zones/<area>; NEW /zones/pirineu,,"Defend: answer-first block, freshness, AIO citation check"
+G Identification & safety,radar pluges catalunya,es-wide,590,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",10,Create page (or add to tracking if page exists)
+G Identification & safety,bolets comestibles,ca,590,77,0,56.9,42,42,False,weak (21-50),/bolets-comestibles,04,Rework: dedicated page or template upgrade
+G Identification & safety,bolets comestible,ca,590,42,0,61.8,50,50,False,weak (21-50),/bolets-comestibles,,Rework: dedicated page or template upgrade
+G Identification & safety,bolets comestibles catalunya,ca,390,72,0,48.5,10,10,False,page 1 (4-10),/,01,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,bolet dibuix,ca,260,4,0,30,,30,False,weak (21-50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",10,Rework: dedicated page or template upgrade
+G Identification & safety,tipus de bolets,ca,210,88,0,45.1,5,5,False,page 1 (4-10),/,10,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,bolets verinosos,ca,140,97,0,13.8,7,7,True,page 1 (4-10),/bolets-verinosos,10,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,bolets no comestibles,ca,140,57,0,29.8,11,11,False,striking (11-20),/bolets-verinosos,10,"Refresh page: title/H1 match, add section, links from hubs"
+G Identification & safety,tipus de bolets comestibles,ca,110,65,0,67.5,21,21,False,weak (21-50),/bolets-comestibles,10,Rework: dedicated page or template upgrade
+G Identification & safety,parts d'un bolet,ca,110,65,1,6.8,4,4,True,page 1 (4-10),/parts-dun-bolet,10,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,noms de bolets,ca,110,71,0,50.8,19,19,False,striking (11-20),/bolets,10,"Refresh page: title/H1 match, add section, links from hubs"
+G Identification & safety,guia de bolets,ca,110,68,0,63.7,15,15,False,striking (11-20),/,10,"Refresh page: title/H1 match, add section, links from hubs"
+G Identification & safety,dibuix bolet,ca,90,1,0,29,,29,False,weak (21-50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",12,Rework: dedicated page or template upgrade
+G Identification & safety,bolets verinosos de catalunya,ca,0,83,0,14.4,7,7,False,page 1 (4-10),/bolets-verinosos,,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,guia bolets catalunya,ca,40,71,0,34.6,7,7,False,page 1 (4-10),/,10,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,tipus de bolets a catalunya,ca,0,70,2,25.3,3,3,False,owned (1-3),/,,"Defend: answer-first block, freshness, AIO citation check"
+G Identification & safety,guia de bolets pdf,ca,50,1,0,66,,66,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",10,New/rebuilt page
+G Identification & safety,bolets toxics,ca,0,55,0,23.7,10,10,False,page 1 (4-10),/bolets-verinosos,,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,fotos de bolets,ca,40,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",10,Create page (or add to tracking if page exists)
+G Identification & safety,bolets toxics catalunya,ca,30,41,0,13.0,7,7,False,page 1 (4-10),/bolets/apagallums,10,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,guia bolets,ca,30,2,0,76.5,,76.5,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",10,New/rebuilt page
+G Identification & safety,burger bolets,noise,,34,0,46.7,,46.7,False,weak (21-50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Rework: dedicated page or template upgrade
+G Identification & safety,identificador de bolets,ca,20,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",10,Create page (or add to tracking if page exists)
+G Identification & safety,com identificar bolets comestibles,ca,0,17,0,41.8,28,28,False,weak (21-50),/bolets-comestibles,,Rework: dedicated page or template upgrade
+G Identification & safety,identificar bolets,ca,10,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",10,Create page (or add to tracking if page exists)
+G Identification & safety,fotos bolets comestibles,ca,10,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",10,Create page (or add to tracking if page exists)
+G Identification & safety,bolets comestibles fotos,ca,10,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",10,Create page (or add to tracking if page exists)
+G Identification & safety,parts del bolet,ca,0,8,0,13.4,,13.4,False,striking (11-20),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,"Refresh page: title/H1 match, add section, links from hubs"
+G Identification & safety,borlets,ca,,6,0,3.8,,3.8,False,page 1 (4-10),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,noms de bolets en català,ca,0,4,0,24,,24,False,weak (21-50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Rework: dedicated page or template upgrade
+G Identification & safety,barlets,ca,,4,1,8.2,,8.2,False,page 1 (4-10),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,cama groc,ca,,4,0,10,,10,False,page 1 (4-10),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,las llosas,ca,,4,0,40.5,,40.5,False,weak (21-50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Rework: dedicated page or template upgrade
+G Identification & safety,tipos de bolets,ca,,4,0,66.5,,66.5,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+G Identification & safety,puig bolets,noise,,3,0,43.3,,43.3,False,weak (21-50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Rework: dedicated page or template upgrade
+G Identification & safety,bolets facebook,noise,,2,0,39.5,,39.5,False,weak (21-50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Rework: dedicated page or template upgrade
+G Identification & safety,facebook bolets,noise,,2,0,41.5,,41.5,False,weak (21-50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Rework: dedicated page or template upgrade
+G Identification & safety,ou reig,ca,,2,0,60,,60,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+G Identification & safety,pets de llop,ca,,2,0,1,,1,False,owned (1-3),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,"Defend: answer-first block, freshness, AIO citation check"
+G Identification & safety,bolets mortals catalunya,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,bolets comestibles de catalunya,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,el brull montseny,ca,,1,0,33,,33,False,weak (21-50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Rework: dedicated page or template upgrade
+G Identification & safety,què és un bolet,ca,0,1,0,65,,65,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+G Identification & safety,murgules,ca,0,1,0,65,,65,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+G Identification & safety,llista de bolets comestibles,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,llista de bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,intoxicació per bolets símptomes,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,intoxicació per bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,intoxicació bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,identificar bolets per foto,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,identificació de bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,els bolets més comuns,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,confusions de bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,confusions bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,com identificar bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,com guardar bolets,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,bolets que es confonen,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,bolets més comuns,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,bolets més buscats,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,bolets mortals,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,bolets al·lucinògens,ca,0,0,0,,,,False,not ranking / untracked,"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Create page (or add to tracking if page exists)
+G Identification & safety,bolet comestible,ca,,1,0,44,,44,False,weak (21-50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Rework: dedicated page or template upgrade
+G Identification & safety,boleto granulado,ca,,1,0,88,,88,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+G Identification & safety,bolets dibuix,ca,,1,0,13,,13,False,striking (11-20),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,"Refresh page: title/H1 match, add section, links from hubs"
+G Identification & safety,bolets points,ca,,1,0,7,,7,False,page 1 (4-10),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,bolets toxiques,ca,,1,0,9,,9,False,page 1 (4-10),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,c e p s,ca,,1,0,15,,15,False,striking (11-20),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,"Refresh page: title/H1 match, add section, links from hubs"
+G Identification & safety,camagrog,ca,,1,0,6,,6,False,page 1 (4-10),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,"Push to top-3: internal links, snippet, answer-first block"
+G Identification & safety,camagros,ca,,1,0,98,,98,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+G Identification & safety,carreroles,ca,,1,0,78,,78,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+G Identification & safety,cualbra bolet,ca,,1,0,59,,59,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+G Identification & safety,lleteroles,ca,,1,0,28,,28,False,weak (21-50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,Rework: dedicated page or template upgrade
+G Identification & safety,lloses,ca,,1,0,15,,15,False,striking (11-20),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,"Refresh page: title/H1 match, add section, links from hubs"
+G Identification & safety,menjar bolets,ca,,1,0,72,,72,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+G Identification & safety,panellons,ca,,1,0,63,,63,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+G Identification & safety,rogenc,ca,,1,0,67,,67,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+G Identification & safety,rosinyols,ca,,1,0,92,,92,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+G Identification & safety,tipos de bolets comestibles,ca,,1,0,58,,58,False,buried (>50),"/bolets-comestibles, /bolets-verinosos, /bolets, /guies",,New/rebuilt page
+"H How-to, rules, gear",ou de reig precio,ca,90,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",10,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",cistell de bolets,ca,70,1,0,29,,29,False,weak (21-50),"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",10,Rework: dedicated page or template upgrade
+"H How-to, rules, gear",conservar rovellons,ca,50,5,0,50.8,40,40,False,weak (21-50),/conservar-bolets,10,Rework: dedicated page or template upgrade
+"H How-to, rules, gear",festa del bolet,ca,40,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",01,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",congelar camagrocs,ca,40,6,0,19.3,16,16,False,striking (11-20),/conservar-bolets,10,"Refresh page: title/H1 match, add section, links from hubs"
+"H How-to, rules, gear",como congelar boletus,ca,40,1,0,91,,91,False,buried (>50),"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",10,New/rebuilt page
+"H How-to, rules, gear",com netejar rovellons,ca,40,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",10,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",com conservar els ceps,ca,40,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",12,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",congelar bolets,ca,20,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",10,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",bolets en conserva,ca,20,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",05,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",conservar ceps,ca,20,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",permiso setas cataluña,ca,10,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",12,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",com congelar bolets,ca,10,4,0,38,29,29,False,weak (21-50),/conservar-bolets,10,Rework: dedicated page or template upgrade
+"H How-to, rules, gear",carnet recolector de setas cataluña,ca,10,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",10,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",carnet boletaire catalunya,ca,10,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",10,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",normativa collir bolets catalunya,ca,0,8,0,15.8,10,10,False,page 1 (4-10),/normativa-bolets,,"Push to top-3: internal links, snippet, answer-first block"
+"H How-to, rules, gear",permís collir bolets catalunya,ca,0,6,0,5.7,6,5.7,False,page 1 (4-10),/normativa-bolets,,"Push to top-3: internal links, snippet, answer-first block"
+"H How-to, rules, gear",què portar per anar a buscar bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",quants bolets es poden collir,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",quant duren els bolets a la nevera,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",permís collir bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",normativa bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",navalla bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",multa collir bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",fira del bolet 2026,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",fira del bolet,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",fira de bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",equip boletaire,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",curs micologia barcelona,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",curs de bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",conservar bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",congelar ceps,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",com netejar bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",com conservar bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",com collir bolets correctament,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",com collir bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",com assecar bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",collir bolets parc natural,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",carnet boletaire,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",bolets amb nens,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",assecar bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",equip per anar a buscar bolets,ca,0,0,0,,,,False,not ranking / untracked,"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Create page (or add to tracking if page exists)
+"H How-to, rules, gear",com conservar rovellons,ca,,1,0,48,,48,False,weak (21-50),"/conservar-bolets, /normativa-bolets, FAQ; NEW /equip-boletaire",,Rework: dedicated page or template upgrade
+I Recipes,vedella amb bolets de la iaia,ca,590,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,estofat de vedella amb bolets,ca,320,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,crema de ceps,ca,320,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),12,Create page (or add to tracking if page exists)
+I Recipes,sopa de fredolics,ca,260,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,mandonguilles amb bolets,ca,260,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,camagrocs recetas,ca,260,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),01,Create page (or add to tracking if page exists)
+I Recipes,camagroc recetas,ca,260,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),01,Create page (or add to tracking if page exists)
+I Recipes,rovellons al forn,ca,210,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,receptes amb camagrocs,ca,210,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),12,Create page (or add to tracking if page exists)
+I Recipes,conill amb bolets,ca,210,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,canelons de bolets,ca,210,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,truita de camagrocs,ca,170,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,carpaccio de ceps,ca,170,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),12,Create page (or add to tracking if page exists)
+I Recipes,vedella amb bolets,ca,120,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,receptes amb ceps,ca,110,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),12,Create page (or add to tracking if page exists)
+I Recipes,pasta amb camagrocs,ca,110,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,rovellons a la brasa,ca,70,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,receptes amb rovellons,ca,70,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,receptes amb bolets,ca,70,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,receptes amb trompetes de la mort,ca,50,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,com cuinar ceps,ca,50,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),12,Create page (or add to tracking if page exists)
+I Recipes,com cuinar camagrocs,ca,50,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),01,Create page (or add to tracking if page exists)
+I Recipes,receptes amb ous de reig,ca,30,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),12,Create page (or add to tracking if page exists)
+I Recipes,receptes amb llenegues,ca,30,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,receptes de bolets,ca,20,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,receptes bolets,ca,20,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),12,Create page (or add to tracking if page exists)
+I Recipes,risotto de ceps,ca,10,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),10,Create page (or add to tracking if page exists)
+I Recipes,rovellons a la paella,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,receptes amb moixernons,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,receptes amb fredolics,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,llibrets d'apagallums,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,fricandó amb moixernons,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,com cuinar rovellons,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,com cuinar llenegues,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,com cuinar bolets,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,carpaccio d'ous de reig,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,bolets saltejats,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,bolets confitats,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,bolets al forn,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,bolets a la brasa,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,arròs de bolets,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+I Recipes,arròs amb bolets,ca,0,0,0,,,,False,not ranking / untracked,NEW /receptes/<plat> (decision pending),,Create page (or add to tracking if page exists)
+J Brand & app,app bolets de catalunya,ca,30,137,9,11.6,4,4,True,page 1 (4-10),/,,"Push to top-3: internal links, snippet, answer-first block"
+J Brand & app,bolet radar,ca,0,94,5,7.5,,7.5,False,page 1 (4-10),/ (brand entity + alternateName),,"Push to top-3: internal links, snippet, answer-first block"
+J Brand & app,bolets app,ca,0,34,27,1.6,,1.6,False,owned (1-3),/ (brand entity + alternateName),,"Defend: answer-first block, freshness, AIO citation check"
+J Brand & app,cercador de bolets,ca,10,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),10,Create page (or add to tracking if page exists)
+J Brand & app,buscador de bolets,ca,10,6,3,1,,1,False,owned (1-3),/ (brand entity + alternateName),10,"Defend: answer-first block, freshness, AIO citation check"
+J Brand & app,boletaires cat,ca,,3,0,17,,17,False,striking (11-20),/ (brand entity + alternateName),,"Refresh page: title/H1 match, add section, links from hubs"
+J Brand & app,va de bolets,ca,0,2,0,6,,6,False,page 1 (4-10),/ (brand entity + alternateName),,"Push to top-3: internal links, snippet, answer-first block"
+J Brand & app,vadebolets,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,trobarbolets,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,bolets.com,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,bolets info,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,bolets atles,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,boletradar,ca,0,1,0,9,,9,False,page 1 (4-10),/ (brand entity + alternateName),,"Push to top-3: internal links, snippet, answer-first block"
+J Brand & app,boletada,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,app setas cataluña,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,app per trobar bolets,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,app per identificar bolets,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,app para buscar setas,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,app identificar bolets,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,app bolets catalunya,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,app bolets,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,aplicació bolets,ca,0,0,0,,,,False,not ranking / untracked,/ (brand entity + alternateName),,Create page (or add to tracking if page exists)
+J Brand & app,bolet radar.cat,ca,,1,0,4,,4,False,page 1 (4-10),/ (brand entity + alternateName),,"Push to top-3: internal links, snippet, answer-first block"

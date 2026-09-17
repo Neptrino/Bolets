@@ -266,6 +266,7 @@ export default function MushroomsAfterRainPage() {
       </section>
 
       <nav className="rain-guide-actions" aria-label="Continuar explorant les condicions dels bolets">
+        <Link href="/pluja-i-bolets">Quanta pluja ha caigut aquests dies <ArrowUpRight size={16} /></Link>
         <Link href="/map">Mapa de bolets de Catalunya <ArrowUpRight size={16} /></Link>
         <Link href="/bolets-avui">On buscar bolets avui segons les condicions actuals <ArrowUpRight size={16} /></Link>
         <Link href="/metode#prediccio">Llegir el mètode complet <ArrowUpRight size={16} /></Link>

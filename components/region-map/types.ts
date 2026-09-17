@@ -29,6 +29,8 @@ export type RegionMapProps = {
   interactive?: boolean;
   focusBounds?: SpatialBounds;
   selectedRegion?: RegionId;
+  /** Offer the locate-me control and allow automatic geolocation; off for maps that only frame a territory. */
+  geolocation?: boolean;
   speciesId?: string;
   habitat?: boolean;
   mode?: MapViewMode;

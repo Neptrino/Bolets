@@ -161,7 +161,7 @@ export default function GuidesPage() {
           title="Guies per territori"
           titleId="guides-territories-title"
           description="Cada comarca o massís agrupa els seus indrets documentats i les guies d’espècie que hi encaixen."
-          actions={<Link href="/bolets-avui" className="text-link">Condicions d’avui per zona <ArrowUpRight size={16} aria-hidden="true" /></Link>}
+          actions={<><Link href="/zones/pirineu" className="text-link">Guia del Pirineu <ArrowUpRight size={16} aria-hidden="true" /></Link><Link href="/bolets-avui" className="text-link">Condicions d’avui per zona <ArrowUpRight size={16} aria-hidden="true" /></Link></>}
           size="compact"
         />
         <ul className="guides-territory-list" data-guides-territory-list>
