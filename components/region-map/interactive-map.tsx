@@ -9,6 +9,7 @@ import { createRasterRegionMap as createRegionMap } from "./raster-map-instance"
 import { fetchPredictionCellDetail } from "@/components/region-map/prediction-detail";
 import { predictionQueryBounds } from "@/components/region-map/smoothed-viewport";
 import { createPredictionPainter } from "@/components/region-map/prediction-painter";
+import { createViewportGesture } from "@/components/region-map/viewport-gesture";
 import { predictionRenderingForGrid } from "@/components/region-map/prediction-view";
 import {
   basemapStyle,
@@ -286,6 +287,11 @@ export function RegionMap({
     let locationFallback: number | undefined;
     let historicalEvidencePattern: CanvasPattern | null = null;
     let initialViewLoaded = false;
+    const gesture = createViewportGesture({
+      map: localMap,
+      canvases: () => [cellCanvas.current, historicalEvidenceCanvas.current],
+      repaint: () => scheduleDrawHabitat(),
+    });
 
     const drawHabitat = () => {
       const canvas = cellCanvas.current;
@@ -335,10 +341,12 @@ export function RegionMap({
         }
       });
       drawTerritorialWindow(context, localMap, initialFocusBounds.current);
+      gesture.painted();
     };
 
     const scheduleDrawHabitat = () => {
-      if (drawFrame !== undefined) return;
+      // Mid-gesture frames carry the last habitat paint with a transform.
+      if (drawFrame !== undefined || gesture.transform()) return;
       drawFrame = window.requestAnimationFrame(() => {
         drawFrame = undefined;
         drawHabitat();
@@ -608,6 +616,7 @@ export function RegionMap({
       if (locationFallback !== undefined)
         window.clearTimeout(locationFallback);
       if (drawFrame !== undefined) window.cancelAnimationFrame(drawFrame);
+      gesture.dispose();
       localMap.off("load", activate);
       localMap.off("moveend", loadHabitat);
       localMap.off("move", scheduleDrawHabitat);

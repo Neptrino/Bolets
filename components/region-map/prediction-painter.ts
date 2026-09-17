@@ -5,6 +5,10 @@ import { createRasterWorkerClient } from "./raster-worker-client";
 import { drawPredictionSurface, type PredictionRendering } from "./prediction-surface";
 import { predictionRenderingForGrid } from "./prediction-view";
 import { drawTerritorialWindow, prepareCanvas, withCataloniaLandClip } from "./support";
+import { createViewportGesture } from "./viewport-gesture";
+
+/** Let the frame that follows a gesture or click be presented before heavier work. */
+const yieldToInput = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 
 export function samePredictionCells(left: ReadonlyMap<string, PredictionMapCell>, right: ReadonlyMap<string, PredictionMapCell>) {
   if (left === right) return true;
@@ -27,8 +31,10 @@ export function createPredictionPainter({ map, canvas, cells, selectedCellId, re
   territory: () => SpatialBounds | undefined;
 }) {
   const worker = createRasterWorkerClient();
+  const gesture = createViewportGesture({ map, canvases: () => [canvas()], repaint: () => { draw(); } });
   let sequence = 0;
   let disposed = false;
+  let carriedCells: ReadonlyMap<string, PredictionMapCell> | undefined;
   let lastPaint: { cells: ReadonlyMap<string, PredictionMapCell>; raster: PredictionHeatRaster;
     origin: { x: number; y: number }; zoom: number } | undefined;
   let cached: {
@@ -40,8 +46,11 @@ export function createPredictionPainter({ map, canvas, cells, selectedCellId, re
   const paintFrame = async () => {
     const output = canvas();
     if (!output || disposed) return;
-    const id = ++sequence;
     const currentCells = cells();
+    // A pan or pinch in progress carries the last frame of this same cell
+    // snapshot; a replaced snapshot (species change, new buckets) paints.
+    if (carriedCells === currentCells && gesture.transform()) return;
+    const id = ++sequence;
     const display = predictionRenderingForGrid(rendering, currentCells.values().next().value?.gridSizeM, interactive);
     const paint = (raster?: PredictionHeatRaster | null) => {
       const context = prepareCanvas(output, currentCells.size === 0 && !territory());
@@ -51,6 +60,8 @@ export function createPredictionPainter({ map, canvas, cells, selectedCellId, re
           rendering: display, selectedCellId: selectedCellId(), raster });
       });
       drawTerritorialWindow(context, map, territory());
+      carriedCells = currentCells;
+      gesture.painted();
     };
     let raster: PredictionHeatRaster | null | undefined;
     if (display === "heatmap") {
@@ -70,6 +81,10 @@ export function createPredictionPainter({ map, canvas, cells, selectedCellId, re
             left: origin.x + (lastPaint.raster.left - lastPaint.origin.x) * factor,
             top: origin.y + (lastPaint.raster.top - lastPaint.origin.y) * factor,
             scale: lastPaint.raster.scale * factor });
+          // The carried frame is on screen; projecting every cell for the
+          // worker can wait until the interaction's frame has been presented.
+          await yieldToInput();
+          if (disposed || id !== sequence) return;
         }
         const prepared = preparePredictionHeatRaster(map, currentCells.values(), width, height);
         cached = { cells: currentCells, view, result: prepared ? worker.render(prepared) : Promise.resolve(null) };
@@ -88,6 +103,9 @@ export function createPredictionPainter({ map, canvas, cells, selectedCellId, re
       let observed;
       do { observed = latest; await observed; } while (observed !== latest);
     },
-    dispose() { disposed = true; sequence++; cached = undefined; lastPaint = undefined; worker.dispose(); },
+    dispose() {
+      disposed = true; sequence++; cached = undefined; lastPaint = undefined;
+      gesture.dispose(); worker.dispose();
+    },
   });
 }

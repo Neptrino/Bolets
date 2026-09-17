@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import type { PredictionMapCell } from "@/src/lib/types";
 import { createPredictionPainter } from "@/components/region-map/prediction-painter";
@@ -12,11 +12,14 @@ vi.mock("@/components/region-map/support", () => ({
   withCataloniaLandClip: (_context: unknown, _map: unknown, draw: () => void) => draw(),
 }));
 
+const nextTask = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+
 function setup() {
   const cell = { cellId: "one", gridSizeM: 2500, score: 50, habitatCoverage: 0.6,
     cellBounds: [[1.98, 41.98], [2.02, 42.02]] } as PredictionMapCell;
-  let cells = new Map([[cell.cellId, cell]]), selected: string | null = null, pan = 0;
+  let cells = new Map([[cell.cellId, cell]]), selected: string | null = null, pan = 0, moving = false;
   const jobs: Array<() => void> = [];
+  const listeners = new Map<string, Set<() => void>>();
   mocks.render.mockImplementation((prepared: PreparedHeatRaster) => new Promise<PredictionHeatRaster>(resolve => {
     jobs.push(() => resolve(rasterizePreparedHeatRaster(prepared)));
   }));
@@ -24,14 +27,21 @@ function setup() {
     project: ([x, y]: number[]) => ({ x: (x - 2) * 1000 + 20 + pan, y: (42 - y) * 1000 + 20 }),
     getCenter: () => ({ lng: 2 - pan / 1000, lat: 42 }), getZoom: () => 8,
     getBearing: () => 0, getPitch: () => 0, getPadding: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+    isMoving: () => moving,
+    on: (type: string, listener: () => void) => { listeners.set(type, (listeners.get(type) ?? new Set()).add(listener)); },
+    off: (type: string, listener: () => void) => { listeners.get(type)?.delete(listener); },
   } as unknown as MapLibreMap;
-  const draw = createPredictionPainter({ map, canvas: () => ({ clientWidth: 40, clientHeight: 40 }) as HTMLCanvasElement,
+  const canvas = { clientWidth: 40, clientHeight: 40, style: {} as CSSStyleDeclaration } as HTMLCanvasElement;
+  const draw = createPredictionPainter({ map, canvas: () => canvas,
     cells: () => cells, selectedCellId: () => selected, rendering: "heatmap", interactive: false, territory: () => undefined });
-  return { draw, jobs, replace: (next: Map<string, PredictionMapCell>) => { cells = next; },
-    cells, select: () => { selected = "one"; }, pan: () => { pan = 10; } };
+  const emit = (type: string) => { for (const listener of listeners.get(type) ?? []) listener(); };
+  return { draw, jobs, canvas, replace: (next: Map<string, PredictionMapCell>) => { cells = next; },
+    cells, select: () => { selected = "one"; }, pan: () => { pan = 10; },
+    startGesture: () => { moving = true; emit("movestart"); }, endGesture: () => { moving = false; emit("moveend"); } };
 }
 
 beforeEach(() => vi.clearAllMocks());
+afterEach(() => vi.unstubAllGlobals());
 describe("asynchronous prediction painting", () => {
   it("reuses raster pixels on selection and unchanged bucket publication", async () => {
     const fixture = setup();
@@ -59,8 +69,48 @@ describe("asynchronous prediction painting", () => {
     const interim = mocks.draw.mock.calls.at(-1)?.[0].raster;
     expect(interim.left).toBeCloseTo(before.left + 10);
     expect(interim.pixels).toBe(before.pixels);
+    // The carried frame is presented before every cell is projected again.
+    expect(mocks.render).toHaveBeenCalledOnce();
+    await nextTask();
     expect(mocks.render).toHaveBeenCalledTimes(2);
     fixture.jobs[1](); await next;
+    fixture.draw.dispose();
+  });
+  it("carries the painted frame through a gesture with a transform instead of repainting", async () => {
+    const frames: FrameRequestCallback[] = [];
+    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => frames.push(callback));
+    const fixture = setup();
+    const first = fixture.draw(); fixture.jobs[0](); await first;
+    fixture.startGesture();
+    expect(fixture.canvas.style.willChange).toBe("transform");
+    fixture.pan(); await fixture.draw();
+    expect(fixture.canvas.style.transform).toBe("translate(10px, 0px) scale(1)");
+    expect(mocks.draw).toHaveBeenCalledOnce();
+    expect(mocks.render).toHaveBeenCalledOnce();
+    // Nothing else repainted after the gesture, so the fallback frame does.
+    fixture.endGesture();
+    expect(frames).toHaveLength(1);
+    frames[0](0);
+    expect(fixture.canvas.style.transform).toBe("");
+    expect(fixture.canvas.style.willChange).toBe("");
+    expect(mocks.draw).toHaveBeenCalledTimes(2);
+    await nextTask();
+    expect(mocks.render).toHaveBeenCalledTimes(2);
+    fixture.jobs[1]();
+    await fixture.draw.settled();
+    fixture.draw.dispose();
+  });
+  it("paints a replaced cell snapshot during a gesture instead of carrying the old one", async () => {
+    vi.stubGlobal("requestAnimationFrame", () => 1);
+    const fixture = setup();
+    const first = fixture.draw(); fixture.jobs[0](); await first;
+    fixture.startGesture(); fixture.pan(); await fixture.draw();
+    expect(fixture.canvas.style.transform).toBe("translate(10px, 0px) scale(1)");
+    // A species change clears the map at once, even mid-animation.
+    fixture.replace(new Map()); await fixture.draw();
+    expect(mocks.draw).toHaveBeenCalledTimes(2);
+    expect(mocks.draw.mock.calls.at(-1)?.[0].raster).toBeNull();
+    expect(fixture.canvas.style.transform).toBe("");
     fixture.draw.dispose();
   });
   it("never paints after the map is disposed", async () => {

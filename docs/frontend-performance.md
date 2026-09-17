@@ -121,6 +121,22 @@ This prevents wheel/keyboard zoom from flashing the empty background while new
 tiles load. Test delayed zoom-in and zoom-out responses, replacement pruning and
 camera alignment when changing this behavior.
 
+Between `movestart` and `moveend` the prediction and habitat canvases are not
+repainted: `viewport-gesture.ts` carries the last painted frame with a CSS
+translate/scale computed from one shared anchor coordinate, which is exact for a
+north-up Mercator view, and the owner repaints once the gesture settles (its
+own moveend work, or the helper's next-frame fallback). Repainting a
+viewport-sized canvas on every pan/pinch frame had kept the main thread busy for
+the whole gesture and about 1.5 s after it, and taps arriving in that window
+were where the map's Interaction to Next Paint accumulated. The Catalonia land
+clip is traced once per map into a `Path2D` and moved with the same
+translate/scale; rotated or tilted views and browsers without `Path2D` project
+every vertex as before. Overlay canvases cap their backing store at 2× device
+pixels, and the heat painter yields one task after presenting the carried frame
+before it projects every cell for the worker. Measure gestures with the
+Event Timing and Long Tasks observers on a CPU-throttled mobile emulation, not
+only Lighthouse: page-load audits report no blocking time for these maps.
+
 Map readiness does not wait for remote tiles. Keep the tile pane below the
 independent canvases and control corners at z-index 2, below site panels.
 Geolocation watches remain local to each mounted map; manual panning stops

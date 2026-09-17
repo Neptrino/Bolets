@@ -34,6 +34,7 @@ import type {
 } from "@/src/lib/types";
 import type { PredictionRendering } from "./prediction-surface";
 import { predictionRenderingForGrid } from "./prediction-view";
+import { VIEWPORT_ANCHOR } from "./viewport-gesture";
 
 const cataloniaSpatialBounds = {
   west: cataloniaBounds[0][0],
@@ -281,13 +282,20 @@ function findCell(cells: Iterable<PredictionMapCell>, longitude: number, latitud
 
 const initializedCanvases = new WeakSet<HTMLCanvasElement>();
 
+/**
+ * Overlay paint above 2× is not distinguishable on a phone, while a 3× backing
+ * store more than doubles the pixels every repaint fills and hands to the
+ * compositor.
+ */
+const MAX_CANVAS_PIXEL_RATIO = 2;
+
 function prepareCanvas(canvas: HTMLCanvasElement, existingOnly = false) {
   // A new canvas is already transparent. Avoid initializing the graphics
   // backend for the empty loading frame, before any cells are available.
   if (existingOnly && !initializedCanvases.has(canvas)) return null;
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
-  const pixelRatio = window.devicePixelRatio || 1;
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_CANVAS_PIXEL_RATIO);
   if (
     canvas.width !== Math.round(width * pixelRatio) ||
     canvas.height !== Math.round(height * pixelRatio)
@@ -320,22 +328,53 @@ function createHistoricalEvidencePattern(context: CanvasRenderingContext2D) {
   return context.createPattern(tile, "repeat");
 }
 
+type LandClipPath = { zoom: number; anchor: { x: number; y: number }; path: Path2D };
+const landClipPaths = new WeakMap<RegionMapAdapter, LandClipPath>();
+
+function traceLandRings(
+  target: Pick<CanvasRenderingContext2D, "moveTo" | "lineTo" | "closePath">,
+  localMap: RegionMapAdapter,
+) {
+  for (const ring of cataloniaLandRings) {
+    ring.forEach(([longitude, latitude], index) => {
+      const point = localMap.project([longitude, latitude]);
+      if (index === 0) target.moveTo(point.x, point.y);
+      else target.lineTo(point.x, point.y);
+    });
+    target.closePath();
+  }
+}
+
 function withCataloniaLandClip(
   context: CanvasRenderingContext2D,
   localMap: RegionMapAdapter,
   draw: () => void,
 ) {
   context.save();
-  context.beginPath();
-  for (const ring of cataloniaLandRings) {
-    ring.forEach(([longitude, latitude], index) => {
-      const point = localMap.project([longitude, latitude]);
-      if (index === 0) context.moveTo(point.x, point.y);
-      else context.lineTo(point.x, point.y);
-    });
-    context.closePath();
+  const northUp = localMap.getBearing() === 0 && localMap.getPitch() === 0;
+  if (northUp && typeof Path2D === "function" && typeof context.getTransform === "function") {
+    // The boundary has thousands of vertices. Trace it once per map, then move
+    // and scale that path with the view: a north-up Mercator pan or zoom is
+    // exactly a translation and a scale of every projected point.
+    let cached = landClipPaths.get(localMap);
+    if (!cached) {
+      const path = new Path2D();
+      traceLandRings(path, localMap);
+      cached = { zoom: localMap.getZoom(), anchor: localMap.project(VIEWPORT_ANCHOR), path };
+      landClipPaths.set(localMap, cached);
+    }
+    const scale = 2 ** (localMap.getZoom() - cached.zoom);
+    const anchor = localMap.project(VIEWPORT_ANCHOR);
+    const transform = context.getTransform();
+    context.translate(anchor.x - cached.anchor.x * scale, anchor.y - cached.anchor.y * scale);
+    context.scale(scale, scale);
+    context.clip(cached.path);
+    context.setTransform(transform);
+  } else {
+    context.beginPath();
+    traceLandRings(context, localMap);
+    context.clip();
   }
-  context.clip();
   draw();
   context.restore();
 }
