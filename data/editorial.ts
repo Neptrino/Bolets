@@ -18,7 +18,7 @@ export const EDITORIAL_LAUNCH_DATE = "2026-08-13";
 // a page family changes visibly (`tests/editorial-freshness.test.ts` names
 // the constant to bump). Per-item overrides below date content changes to a
 // single page; the later of the two wins.
-export const LOCAL_GUIDES_UPDATED_AT = "2026-09-15";
+export const LOCAL_GUIDES_UPDATED_AT = "2026-09-17";
 export const SPECIES_PAGES_UPDATED_AT = "2026-09-17";
 export const ZONE_PAGES_UPDATED_AT = "2026-09-17";
 export const PLACE_PAGES_UPDATED_AT = "2026-09-15";
@@ -193,10 +193,10 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "compare:rovello-vs-rovello-de-cabra": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
   "compare:moixero-vs-inocibe-patouillard": { updatedAt: "2026-09-17" },
   "zones-rovellons": {
-    updatedAt: "2026-08-31",
+    updatedAt: "2026-09-17",
   },
   "zones-ceps": {
-    updatedAt: "2026-09-06",
+    updatedAt: "2026-09-17",
   },
   "zones-pirineu": {
     publishedAt: "2026-09-17",
@@ -290,7 +290,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "bolets-infografia": { updatedAt: "2026-09-14" },
   troballes: { updatedAt: "2026-09-02" },
   compare: { updatedAt: "2026-09-02" },
-  joc: { updatedAt: "2026-09-01" },
+  joc: { updatedAt: "2026-09-17" },
   metode: { updatedAt: "2026-09-14" },
   "col-labora": { updatedAt: "2026-09-02" },
   guies: { updatedAt: "2026-09-17" },
