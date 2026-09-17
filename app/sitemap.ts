@@ -42,7 +42,7 @@ export function sitemapContentEntries(): SitemapContentEntry[] {
     { path: "/bolets-avui", contentId: "bolets-avui" },
     ...seasonGuides.map((guide) => ({ path: guide.path, contentId: guide.path.slice(1) })),
     { path: "/quan-surten-els-bolets-despres-de-ploure", contentId: "quan-surten-els-bolets-despres-de-ploure" },
-    { path: "/pluja-i-bolets", contentId: "pluja-i-bolets" },
+    { path: "/mapa-pluja", contentId: "mapa-pluja" },
     { path: "/conservar-bolets", contentId: "conservar-bolets" },
     { path: "/parts-dun-bolet", contentId: "parts-dun-bolet" },
     { path: "/bolets-de-soca", contentId: "bolets-de-soca" },

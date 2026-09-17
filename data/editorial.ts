@@ -238,7 +238,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "bolets-verinosos": {
     updatedAt: "2026-09-14",
   },
-  "pluja-i-bolets": {
+  "mapa-pluja": {
     publishedAt: "2026-09-17",
     updatedAt: "2026-09-17",
   },

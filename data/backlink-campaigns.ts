@@ -120,7 +120,7 @@ const FIXED_CAMPAIGNS = [
     topicTerms: ["bolets", season, "espècies", "temporada", "catalunya"],
   })),
   campaign({
-    id: "rain-map", shortLabel: "Pluja acumulada", targetPath: "/pluja-i-bolets",
+    id: "rain-map", shortLabel: "Pluja acumulada", targetPath: "/mapa-pluja",
     targetTitle: "Mapa de la pluja acumulada dels últims 7 dies",
     fallbackQueries: ["pluja acumulada Catalunya mapa bolets"],
     resourceSummary: "un mapa diari de la pluja acumulada de set dies a Catalunya, per comarques i massissos",

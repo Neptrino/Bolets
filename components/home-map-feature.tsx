@@ -39,7 +39,7 @@ export function HomeMapFeature() {
         </div>
         <div className="home-map-today-actions">
           <Link href="/bolets-avui" className="button light-button">Consulta on trobar bolets avui <ArrowUpRight size={18} aria-hidden="true" /></Link>
-          <Link href="/pluja-i-bolets" className="home-map-today-secondary">Mira on ha plogut aquests dies <ArrowUpRight size={15} aria-hidden="true" /></Link>
+          <Link href="/mapa-pluja" className="home-map-today-secondary">Mira on ha plogut aquests dies <ArrowUpRight size={15} aria-hidden="true" /></Link>
         </div>
       </section>
     </div>

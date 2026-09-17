@@ -97,8 +97,8 @@ const STATIC_PAGES: Record<string, ContentSource[]> = {
   "normativa-bolets": [file("app/normativa-bolets/page.tsx")],
   "preguntes-frequents-bolets": [file("app/preguntes-frequents-bolets/page.tsx")],
   "bolets-comestibles": [file("app/bolets-comestibles/page.tsx"), file("src/lib/species-collections.ts"), file("src/lib/catalogue-list.ts")],
-  "pluja-i-bolets": [
-    file("app/pluja-i-bolets/page.tsx"),
+  "mapa-pluja": [
+    file("app/mapa-pluja/page.tsx"),
     file("src/lib/rain-map.ts"),
     file("src/lib/rain-overview.ts"),
     file("src/lib/rainfall-scale.ts"),

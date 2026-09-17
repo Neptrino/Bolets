@@ -42,9 +42,9 @@ const description = metaDescription(
 export const metadata: Metadata = {
   title: pageTitle(title),
   description,
-  alternates: { canonical: "/pluja-i-bolets" },
+  alternates: { canonical: "/mapa-pluja" },
   openGraph: {
-    url: "/pluja-i-bolets",
+    url: "/mapa-pluja",
     title,
     description,
     images: [{ url: DEFAULT_SOCIAL_IMAGE, width: 1200, height: 630 }],
@@ -244,10 +244,10 @@ export default function RainAndMushroomsPage() {
             "@type": "Article",
             headline: title,
             description,
-            url: absoluteUrl("/pluja-i-bolets"),
+            url: absoluteUrl("/mapa-pluja"),
             inLanguage: "ca",
             publisher: { "@id": `${SITE_URL}/#organization` },
-            ...editorialArticleFields("pluja-i-bolets"),
+            ...editorialArticleFields("mapa-pluja"),
           },
           {
             "@type": "FAQPage",
@@ -281,7 +281,7 @@ export default function RainAndMushroomsPage() {
         <figure className="rain-map-figure">
           {/* eslint-disable-next-line @next/next/no-img-element -- generated map, not a catalogue asset */}
           <img
-            src="/pluja-i-bolets/mapa"
+            src="/mapa-pluja/imatge"
             width={RAIN_MAP_WIDTH}
             height={RAIN_MAP_HEIGHT}
             decoding="async"
@@ -370,7 +370,7 @@ export default function RainAndMushroomsPage() {
         description={`Pluja dels últims ${RAIN_MAP_WINDOW_DAYS} dies, en quadrats de ${RAIN_MAP_GRID_SIZE_M / 1000} km, llegida dels pluviòmetres de la XEMA i del model de precipitació.`}
         sources={environmentalSources}
       />
-      <EditorialAttribution contentId="pluja-i-bolets" sources={environmentalSources} variant="compact" />
+      <EditorialAttribution contentId="mapa-pluja" sources={environmentalSources} variant="compact" />
     </PageShell>
   );
 }
