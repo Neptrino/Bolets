@@ -52,6 +52,7 @@ const SPECIES_TEMPLATE = [
   file("components/species-profile/culinary-section.tsx"),
   file("components/species-profile/distribution-section.tsx"),
   file("components/species-profile/ecology-section.tsx"),
+  file("components/species-profile/faq-section.tsx"),
   file("components/species-profile/field-card-section.tsx"),
   file("components/species-profile/identification-section.tsx"),
   file("components/species-profile/profile-section.tsx"),

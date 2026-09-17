@@ -19,7 +19,7 @@ export const EDITORIAL_LAUNCH_DATE = "2026-08-13";
 // the constant to bump). Per-item overrides below date content changes to a
 // single page; the later of the two wins.
 export const LOCAL_GUIDES_UPDATED_AT = "2026-09-15";
-export const SPECIES_PAGES_UPDATED_AT = "2026-09-14";
+export const SPECIES_PAGES_UPDATED_AT = "2026-09-17";
 export const ZONE_PAGES_UPDATED_AT = "2026-09-15";
 export const PLACE_PAGES_UPDATED_AT = "2026-09-15";
 export const COMPARISON_PAGES_UPDATED_AT = "2026-09-02";
@@ -191,6 +191,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "species:lactifluus-rugatus": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
   "species:leccinellum-lepidum": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
   "compare:rovello-vs-rovello-de-cabra": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
+  "compare:moixero-vs-inocibe-patouillard": { updatedAt: "2026-09-17" },
   "zones-rovellons": {
     updatedAt: "2026-08-31",
   },
@@ -234,7 +235,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-14",
   },
   "bolets-de-primavera": {
-    updatedAt: "2026-09-14",
+    updatedAt: "2026-09-17",
   },
   "bolets-d-estiu": {
     updatedAt: "2026-09-03",

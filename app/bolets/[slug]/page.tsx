@@ -11,6 +11,7 @@ import { JsonLd } from "@/components/json-ld";
 import { SpeciesCulinarySection } from "@/components/species-profile/culinary-section";
 import { SpeciesDistributionSection } from "@/components/species-profile/distribution-section";
 import { SpeciesEcologySection } from "@/components/species-profile/ecology-section";
+import { SpeciesFaqSection } from "@/components/species-profile/faq-section";
 import { SpeciesFieldCardSection } from "@/components/species-profile/field-card-section";
 import { SpeciesIdentificationSection } from "@/components/species-profile/identification-section";
 import { SpeciesSectionTracker } from "@/components/species-profile/section-tracker";
@@ -24,16 +25,15 @@ import {
 import { getSpecies } from "@/data/species";
 import { speciesSlugForId } from "@/data/species-slugs";
 import { getSpanishSpeciesNames } from "@/data/species-common-names";
-import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
+import { editorialArticleFields, getEditorialMetadata, officialSafetySource } from "@/data/editorial";
 import { isRegionId } from "@/data/regions";
 import {
   SITE_URL,
-  pageTitle,
-  speciesDescription,
   speciesImage,
   speciesPath,
 } from "@/src/lib/seo";
 import { speciesMapHref } from "@/src/lib/species-map-pages";
+import { speciesFaqs, speciesLead, speciesMetaDescription, speciesPageTitle } from "@/src/lib/species-summary";
 import type { Month, RegionId, SeasonalActivity } from "@/src/lib/types";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
@@ -41,6 +41,8 @@ const catalanList = new Intl.ListFormat("ca-ES", {
   style: "long",
   type: "conjunction",
 });
+
+const catalanDate = new Intl.DateTimeFormat("ca-ES", { dateStyle: "long", timeZone: "Europe/Madrid" });
 
 const monthLabels: Record<Month, string> = {
   gen: "gen.",
@@ -84,10 +86,10 @@ export async function generateMetadata({
   if (!species) notFound();
 
   const path = speciesPath(species);
-  const description = species.seo?.description ?? speciesDescription(species);
-  const image = speciesImage(species);
-  const title = species.seo?.title ?? pageTitle(`${species.identity.commonName}: identificació, hàbitat i temporada`);
   const spanishNames = getSpanishSpeciesNames(species.speciesId);
+  const description = species.seo?.description ?? speciesMetaDescription(species, spanishNames);
+  const image = speciesImage(species);
+  const title = speciesPageTitle(species);
 
   return {
     title,
@@ -98,6 +100,8 @@ export async function generateMetadata({
       species.identity.scientificName,
       ...species.identity.alternateNames,
       ...(spanishNames ? [spanishNames.primary, ...(spanishNames.alternatives ?? [])] : []),
+      `${species.identity.commonName} en castellà`,
+      `${species.identity.commonName} en castellano`,
       ...(species.seo?.keywords ?? []),
       `hàbitat ${species.identity.commonName}`,
       `temporada ${species.identity.commonName}`,
@@ -160,6 +164,11 @@ export default async function SpeciesPage({
   const canonicalUrl = `${SITE_URL}${speciesPath(species)}`;
   const image = speciesImage(species);
   const spanishNames = getSpanishSpeciesNames(species.speciesId);
+  const lead = speciesLead(species, spanishNames);
+  const description = species.seo?.description ?? speciesMetaDescription(species, spanishNames);
+  const faqs = speciesFaqs(species, spanishNames);
+  const editorial = getEditorialMetadata(`species:${species.speciesId}`);
+  const updatedLabel = catalanDate.format(new Date(`${editorial.updatedAt}T12:00:00+02:00`));
   const primaryLookalike = species.similarSpecies.find((item) => item.warning || item.edibility.includes("toxic"))
     ?? species.similarSpecies[0];
   const visibleSections = speciesProfileSections(species);
@@ -177,7 +186,7 @@ export default async function SpeciesPage({
               "@type": "Article",
               "@id": `${canonicalUrl}#article`,
               headline: `${species.identity.commonName} (${species.identity.scientificName})`,
-              description: speciesDescription(species),
+              description,
               url: canonicalUrl,
               inLanguage: "ca",
               image,
@@ -224,10 +233,10 @@ export default async function SpeciesPage({
                 },
               ],
             },
-            ...(species.seo?.faqs?.length ? [{
+            ...(faqs.length > 0 ? [{
               "@type": "FAQPage",
               "@id": `${canonicalUrl}#preguntes`,
-              mainEntity: species.seo.faqs.map((faq) => ({
+              mainEntity: faqs.map((faq) => ({
                 "@type": "Question",
                 name: faq.question,
                 acceptedAnswer: {
@@ -245,6 +254,9 @@ export default async function SpeciesPage({
         altitudeLabel={scoredSpecies ? `${scoredSpecies.ecologicalConfig.habitat.altitude[0]}–${scoredSpecies.ecologicalConfig.habitat.altitude[1]} m` : undefined}
         seasonLabel={season}
         lookalike={primaryLookalike ? { name: primaryLookalike.commonName, edibility: primaryLookalike.edibility, href: "#confusions" } : undefined}
+        lead={lead}
+        spanishNames={spanishNames ? [spanishNames.primary, ...(spanishNames.alternatives ?? [])] : undefined}
+        updatedLabel={updatedLabel}
       />
 
       <div className="page-width species-content">
@@ -276,6 +288,7 @@ export default async function SpeciesPage({
           <SpeciesCulinarySection species={species} />
           <SpeciesEcologySection species={species} />
           {scoredSpecies && region && <SpeciesDistributionSection autoGeolocate={!isRegionId(query.region)} region={region} species={scoredSpecies} />}
+          <SpeciesFaqSection species={species} faqs={faqs} />
           <SpeciesFieldCardSection species={species} />
           <ProfileSection species={species} id="fonts" eyebrow="Referències" title="Fonts i autoria">
           <EditorialAttribution

@@ -235,7 +235,7 @@ export const culinaryProfiles: Record<string, CulinaryProfile> = {
   "calocybe-gambosa": culinary({
     rating: 3,
     ratingRationale: "Figura entre els comestibles excel·lents segons la Societat Catalana de Micologia.",
-    summary: "Moixeró primaveral carnós, amb una olor farinosa característica i molt marcada.",
+    summary: "Moixernó primaveral carnós, amb una olor farinosa característica i molt marcada.",
     flavour: "Farinós, intens i lleugerament dolç.",
     texture: "Compacta, ferma i sucosa.",
     bestUses: ["Truites", "Remenats", "Guisats", "Salses"],

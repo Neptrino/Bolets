@@ -13,7 +13,7 @@ import { seasonGuidesById } from "@/src/lib/season-guides";
 
 export const metadata: Metadata = {
   title: "Bolets de primavera a Catalunya",
-  description: "Guia de bolets de primavera a Catalunya, derivada del calendari de març a juny: múrgola, moixeró, cama-sec i totes les espècies actives.",
+  description: "Guia de bolets de primavera a Catalunya, derivada del calendari de març a juny: múrgola, moixernó, cama-sec i totes les espècies actives.",
   alternates: { canonical: "/bolets-de-primavera" },
   openGraph: {
     url: "/bolets-de-primavera",
@@ -58,7 +58,7 @@ export default function SpringMushroomsPage() {
       <PageHeader
         eyebrow={<><Sprout size={15} /> Calendari de març a juny</>}
         title={<>Bolets<br /><PageTitleAccent>de primavera.</PageTitleAccent></>}
-        description="La selecció inclou totes les espècies del catàleg amb activitat possible o superior entre març i juny. La múrgola, el moixeró i el cama-sec encapçalen la guia, però el calendari real depèn d’altitud, pluja i temperatura."
+        description="La selecció inclou totes les espècies del catàleg amb activitat possible o superior entre març i juny. La múrgola, el moixernó i el cama-sec encapçalen la guia, però el calendari real depèn d’altitud, pluja i temperatura."
         layout="split"
       />
 

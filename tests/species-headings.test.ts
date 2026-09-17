@@ -34,12 +34,14 @@ describe("species headings", () => {
   });
 });
 
-it("numbers every visible profile section consecutively, including optional FAQs", () => {
+it("numbers every visible profile section consecutively, including the FAQ section", () => {
   for (const species of catalogueSpecies) {
     const sections = speciesProfileSections(species);
     expect(sections.map(section => section.number)).toEqual(sections.map((_, i) => String(i + 1).padStart(2, "0")));
     expect(new Set(sections.map(section => section.id)).size).toBe(sections.length);
-    expect(sections.some(section => section.id === "preguntes")).toBe(Boolean(species.seo?.faqs?.length));
+    const ids = sections.map(section => section.id);
+    expect(ids.indexOf("preguntes")).toBeGreaterThan(ids.indexOf("ecologia"));
+    expect(ids.indexOf("preguntes")).toBe(ids.indexOf("targeta-de-camp") - 1);
     expect(sections.some(section => section.id === "distribució")).toBe(!("scope" in species));
     expect(sections.at(-1)?.id).toBe("fonts");
   }

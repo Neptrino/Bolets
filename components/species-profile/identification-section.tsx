@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   ArrowRightLeft,
   ArrowUpRight,
-  CircleHelp,
   FlaskConical,
   Languages,
   Palette,
@@ -160,19 +159,6 @@ export function SpeciesIdentificationSection({
         {speciesComparisons.map((comparison) => <Link key={comparison.slug} href={`/compare/${comparison.slug}`} className="text-link">{comparison.shortTitle} <ArrowUpRight size={15} aria-hidden="true" /></Link>)}
       </nav>}
 </ProfileSection>
-
-    {species.seo?.faqs?.length ? (
-      <ProfileSection species={species} id="preguntes" eyebrow="Preguntes habituals" title={headings.faq}>
-        <div className="profile-faq">
-          {species.seo.faqs.map((faq) => (
-            <article key={faq.question}>
-              <h3><CircleHelp size={16} aria-hidden="true" /> {faq.question}</h3>
-              <p>{faq.answer}</p>
-            </article>
-          ))}
-        </div>
-      </ProfileSection>
-    ) : null}
 
     <ProfileSection species={species} id="noms" eyebrow="Noms" title={headings.names}>
       <ProfileFacts

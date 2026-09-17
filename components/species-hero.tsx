@@ -15,13 +15,20 @@ const camagrocCaptions: Record<string, string> = {
   "wikimedia-craterellus-lutescens-gallery-3": "Cara inferior del barret: observa les arrugues irregulars i com baixen cap al peu groc. Aquesta fotografia de detall no substitueix la comparació de l’exemplar complet.",
 };
 
-export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel, lookalike }: {
+export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel, lookalike, lead, spanishNames, updatedLabel }: {
   species: Pick<SpeciesProfile, "identity" | "culinaryProfile" | "media">;
   habitatLabel: string;
   altitudeLabel?: string;
   seasonLabel: string;
   lookalike?: HeroLookalike;
+  /** Answer-first opening sentence; the short description follows it. */
+  lead?: string;
+  spanishNames?: readonly string[];
+  /** Formatted editorial update date shown under the facts. */
+  updatedLabel?: string;
 }) {
+  const hasSpanishNames = Boolean(spanishNames && spanishNames.length > 0);
+  const hasAlternateNames = species.identity.alternateNames.length > 0;
   return (
     <div className="species-hero">
       <div className="page-width">
@@ -41,7 +48,7 @@ export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel,
             )}
           </div>
           <div className="species-hero-details">
-            <p className="species-dek">{species.identity.shortDescription}</p>
+            <p className="species-dek">{lead ? `${lead} ` : ""}{species.identity.shortDescription}</p>
             <div className="species-hero-status">
               <CulinaryRating profile={species.culinaryProfile} status={species.identity.edibility} />
               {lookalike && (
@@ -52,8 +59,16 @@ export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel,
                 </UmamiEventLink>
               )}
             </div>
-            {species.identity.alternateNames.length > 0 && (
-              <p className="species-alternate-names"><span>Altres noms catalans:</span>{" "}{species.identity.alternateNames.join(", ")}</p>
+            {(hasAlternateNames || hasSpanishNames) && (
+              <p className="species-alternate-names">
+                {hasAlternateNames && (
+                  <><span className="species-names-label">Altres noms catalans:</span>{" "}{species.identity.alternateNames.join(", ")}</>
+                )}
+                {hasAlternateNames && hasSpanishNames ? " · " : null}
+                {hasSpanishNames && (
+                  <><span className="species-names-label">En castellà:</span>{" "}<span lang="es">{spanishNames!.join(", ")}</span></>
+                )}
+              </p>
             )}
             <div className="species-hero-facts" aria-label="Dades principals">
               <div className="species-hero-habitats"><Trees size={16} aria-hidden="true" /><span>Hàbitat</span><strong><a href="#ecologia">{habitatLabel}</a></strong></div>
@@ -63,6 +78,7 @@ export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel,
               <div><CalendarDays size={16} aria-hidden="true" /><span>Temporada</span><strong>{seasonLabel}</strong></div>
               <div><ScanLine size={16} aria-hidden="true" /><span>Identificació</span><strong>{identificationDifficultyLabel(species.identity.identificationDifficulty)}</strong></div>
             </div>
+            {updatedLabel && <p className="species-updated">Fitxa actualitzada el {updatedLabel}.</p>}
           </div>
         </div>
       </div>
