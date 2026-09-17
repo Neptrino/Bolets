@@ -89,7 +89,6 @@
 .current-reading-notes-intro { max-width: 62rem; margin-bottom: 24px; }
 .current-reading-notes h2 { margin: 0 0 8px; font-size: var(--text-xl); color: var(--forest-panel); }
 .current-reading-notes p { margin: 0; line-height: 1.65; }
-.current-reading-notes a { color: var(--clay); }
 .current-reading-notes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
@@ -129,6 +128,7 @@
 .current-reading-highlights p { color: #485148; font-size: var(--text-base); line-height: 1.55; }
 .current-reading-highlights a {
   display: inline-flex;
+  color: var(--clay);
   gap: 4px;
   align-items: center;
   justify-self: start;

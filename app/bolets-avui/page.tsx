@@ -188,7 +188,7 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
             : "Falten lectures recents i completes per comparar els territoris. Torna-ho a provar més tard."}
           </p>
           {availableCount > 0 && availableCount < items.length && <p>La comparació és parcial: alguns territoris o espècies no tenen lectures completes.</p>}
-          <p>Vols saber <a href="#cap-de-setmana">on trobar bolets aquest cap de setmana</a>, {weekend.label}? La predicció es calcula amb el temps previst, no amb les lectures d’avui.</p>
+          <p>Vols saber <a className="inline-link" href="#cap-de-setmana">on trobar bolets aquest cap de setmana</a>, {weekend.label}? La predicció es calcula amb el temps previst, no amb les lectures d’avui.</p>
           {observedWindow && <p className="current-search-answer-updated"><Clock3 size={14} aria-hidden="true" /> {observedWindow}</p>}
         </section>
       </>}
@@ -273,8 +273,8 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
             </div>}
             <div className="current-reading-notes-block">
               <h3>Com preparar la sortida d’aquesta setmana?</h3>
-              <p>Revisa la data de les lectures i compara el millor sector amb l’abast de les condicions dins la zona. Un sector ben valorat no vol dir que tot el bosc estigui igual. Consulta la <Link href="/quan-surten-els-bolets-despres-de-ploure">guia dels bolets després de ploure</Link> per entendre per què una pluja recent no garanteix una brotada immediata, i el <Link href="/pluja-i-bolets">mapa de la pluja dels últims dies</Link> per veure on n’ha caigut.</p>
-              <p>Les condicions ambientals no confirmen presència de bolets i no són una previsió dels pròxims set dies. Revisa la lectura abans de sortir. <Link href="/metode">Consulta el mètode i els seus límits</Link>.</p>
+              <p>Revisa la data de les lectures i compara el millor sector amb l’abast de les condicions dins la zona. Un sector ben valorat no vol dir que tot el bosc estigui igual. Consulta la <Link className="inline-link" href="/quan-surten-els-bolets-despres-de-ploure">guia dels bolets després de ploure</Link> per entendre per què una pluja recent no garanteix una brotada immediata, i el <Link className="inline-link" href="/pluja-i-bolets">mapa de la pluja dels últims dies</Link> per veure on n’ha caigut.</p>
+              <p>Les condicions ambientals no confirmen presència de bolets i no són una previsió dels pròxims set dies. Revisa la lectura abans de sortir. <Link className="inline-link" href="/metode">Consulta el mètode i els seus límits</Link>.</p>
             </div>
           </div>
         </section>
@@ -331,7 +331,7 @@ function CurrentMap() {
         <div>
           <p className="eyebrow"><Map size={14} aria-hidden="true" /> Mapa de bolets · avui</p>
           <h2 id="current-map-title">Mapa de bolets de Catalunya avui</h2>
-          <p>El mapa de predicció pinta cada sector amb l’espècie comestible que hi té avui les millors condicions; com més intens el color, més alta la puntuació. Si només vols veure l’aigua que ha caigut, mira el <Link href="/pluja-i-bolets">mapa de la pluja dels últims 7 dies</Link>.</p>
+          <p>El mapa de predicció pinta cada sector amb l’espècie comestible que hi té avui les millors condicions; com més intens el color, més alta la puntuació. Si només vols veure l’aigua que ha caigut, mira el <Link className="inline-link" href="/pluja-i-bolets">mapa de la pluja dels últims 7 dies</Link>.</p>
         </div>
         <UmamiEventLink href="/map" className="current-map-open" analyticsEvent={UMAMI_EVENTS.avuiMapOpen}>
           Obrir el mapa de bolets de Catalunya <ArrowUpRight size={16} aria-hidden="true" />

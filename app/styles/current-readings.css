@@ -3,7 +3,6 @@
 .current-search-answer .eyebrow { margin: 0 0 .35rem; }
 .current-search-answer h2 { margin: 0; color: #283d2e; font-size: var(--text-xl); }
 .current-search-answer > p:not(.eyebrow, .current-search-answer-updated) { max-width: 62rem; margin: .6rem 0 0; color: #485148; font-size: var(--text-base); line-height: 1.65; }
-.current-search-answer > p a { color: var(--clay); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .current-search-answer-updated { display: flex; gap: .4rem; align-items: center; margin: .65rem 0 0; color: #687067; font-size: var(--text-xs); }
 .current-leader { display: grid; grid-template-columns: minmax(0, 1.15fr) 9.5rem minmax(15rem, .85fr); gap: .9rem 2rem; align-items: center; margin: 1.4rem 0 .9rem; padding: 1.35rem 1.6rem; border-radius: 18px; background: #304839; color: #fffaf0; box-shadow: 0 18px 45px rgba(40, 54, 43, .12); }
 .current-leader-topline { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 1rem 2rem; align-items: center; padding-bottom: .7rem; border-bottom: 1px solid rgba(255, 255, 255, .15); }

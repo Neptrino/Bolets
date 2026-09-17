@@ -286,6 +286,19 @@ h3 {
 .text-link:hover {
   gap: 11px;
 }
+/* Links inside running body copy, as opposed to `.text-link`, which is a
+   standalone call to action. Clay and a touch heavier than the text around
+   them; the underline is kept for hover and keyboard focus so a paragraph
+   with several links still reads as a paragraph. */
+.inline-link {
+  color: var(--clay);
+  font-weight: 750;
+}
+.inline-link:hover,
+.inline-link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .hero {
   min-height: 690px;
   position: relative;
