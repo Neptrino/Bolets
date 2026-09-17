@@ -1,4 +1,6 @@
 .home-showcase-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 760px;
   margin-block: 5.5rem;
   scroll-margin-top: 6rem;
 }

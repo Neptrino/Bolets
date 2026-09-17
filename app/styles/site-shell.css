@@ -105,6 +105,8 @@ h3 {
   background: none;
 }
 .site-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 620px;
   border-top: 5px solid var(--pumpkin);
   background: var(--ink);
   color: var(--paper);

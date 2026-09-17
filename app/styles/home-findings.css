@@ -1,4 +1,6 @@
 .home-findings {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1100px;
   position: relative;
   overflow: hidden;
   padding: 105px 0 115px;

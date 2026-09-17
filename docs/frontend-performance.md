@@ -45,6 +45,23 @@ Its independent server-rendered summary reserves the usual content height while
 streaming; longer text can expand. Keep the map's timeline and full-map link,
 without making initialization depend on the summary or a click.
 
+Lighthouse's simulated LCP (the PageSpeed lab score) treats every request that
+started before the hero painted as blocking it, so the homepage score is set by
+the bytes in flight before first paint: the async JavaScript chunks, the CSS,
+the preloaded font and the hero. On a fast lab connection the browser also
+starts lazy images up to ~3000 px below the fold before that paint, which put
+the featured species photos on the hero's critical path. The homepage sections
+below the fold (`.home-reference`, `.home-showcase-section`, `.home-findings`,
+`.home-editorial-note`) and the footer use `content-visibility: auto` with a
+`contain-intrinsic-size` estimate: their layout and paint are skipped until the
+reader nears them, their lazy images no longer download ahead of the hero
+(23 instead of 31 requests before LCP, 150 ms lower simulated LCP), and the
+document height is unchanged. Full-page screenshots leave these sections blank
+by design; compare viewport screenshots at scroll positions instead. Real-user
+field LCP is unaffected by the lab simulation; the largest remaining lab and
+field lever is time to first byte, which edge caching of the public HTML would
+cut, but that is a Cloudflare policy decision (`deploy/vps/cloudflare.md`).
+
 Keep the homepage hero eager with high fetch priority and responsive `sizes`.
 The server-rendered HTML already emits its responsive image preload; do not add
 a second fixed-width preload. Leave the map preview and lower-page imagery lazy

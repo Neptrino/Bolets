@@ -10,6 +10,10 @@
 }
 .hero-season-link svg { flex-shrink: 0; }
 .home-reference {
+  /* Off-screen on arrival: skip its layout and paint, and keep its card
+     photos from downloading ahead of the hero. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1400px;
   margin-top: 3rem;
   padding: 2.5rem;
   border: 1px solid var(--line);
@@ -59,7 +63,7 @@
 .home-reference-tiles a svg { margin-bottom: .45rem; color: var(--clay); }
 .home-reference-tiles a strong { font-size: var(--text-base); font-weight: 750; line-height: 1.25; }
 .home-reference-tiles a small { color: var(--muted); font-size: var(--text-xs); line-height: 1.4; }
-.home-editorial-note { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1.5rem; padding-block: 3rem; border-top: 1px solid var(--line); }
+.home-editorial-note { content-visibility: auto; contain-intrinsic-size: auto 320px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1.5rem; padding-block: 3rem; border-top: 1px solid var(--line); }
 .home-editorial-note > svg { color: var(--clay); }
 .home-editorial-note .eyebrow { margin: 0 0 .65rem; }
 .home-editorial-note h2 { margin: 0; font-size: var(--text-2xl); }
