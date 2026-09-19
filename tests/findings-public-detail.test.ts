@@ -30,6 +30,17 @@ describe("public finding detail", () => {
     expect(detailPage).toContain('href={profileHref}');
   });
 
+  it("explains a finding shared without photographs instead of leaving the gallery empty", () => {
+    expect(detailPage).toContain('<div className="finding-gallery-empty">');
+    expect(detailPage).toContain("<strong>Compartida sense fotografia</strong>");
+    expect(detailPage).toContain("no aquesta troballa");
+    expect(detailPage).toContain("const drawing = speciesDrawing(finding.reportedSpeciesId);");
+    expect(detailPage).not.toContain("MushroomSpecimen");
+    expect(detailPage).toContain("{drawing.credit.text}");
+    expect(overviewPage).toContain("finding-drawing-credits");
+    expect(detailPage).not.toContain("Aquesta troballa no té cap fotografia pública.");
+  });
+
   it("explains the catalogue collaboration distinction beside the new finding form", () => {
     expect(overviewPage).not.toContain("Les fotos no passen al catàleg automàticament");
     expect(newFindingPage).toContain("Les fotos no entren al catàleg");

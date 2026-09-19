@@ -11,6 +11,7 @@ import { catalogueSpecies, getCatalogueSpecies } from "@/data/catalogue";
 import { summarizePublicFindings } from "@/src/lib/findings/public-summary";
 import { readPublicFindings } from "@/src/lib/findings/reads.server";
 import { absoluteUrl, speciesPath } from "@/src/lib/seo";
+import { speciesDrawing } from "@/src/lib/species-illustrations";
 
 const baseMetadata: Metadata = {
   title: "Troballes de bolets a Catalunya",
@@ -31,6 +32,13 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
   const findings = findingResult ?? [];
   const findingsAvailable = findingResult !== null;
   const summary = summarizePublicFindings(findings);
+  // Cards for findings without a photo show the species drawing. The drawings
+  // adapted from Creative Commons photographs must be credited wherever they
+  // appear, and a card has no room for it.
+  const drawingCredits = [...new Map(findings.flatMap((finding) => {
+    const credit = finding.photos.length ? undefined : speciesDrawing(finding.reportedSpeciesId)?.credit;
+    return credit ? [[finding.reportedSpeciesId, credit] as const] : [];
+  })).values()];
   const speciesSummaries = summary.species.flatMap((item) => {
     const species = getCatalogueSpecies(item.speciesId);
     return species ? [{ ...item, href: speciesPath(species) }] : [];
@@ -87,6 +95,7 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
     </section> : null}
     <section className="finding-section"><SectionHeader meta={safeCell ? "Zona seleccionada" : "Publicacions recents"} title={safeCell ? "Troballes d’aquesta zona aproximada de 10 km" : "Últimes troballes compartides"} description="El nom de cada troballa és la identificació indicada per qui l’ha publicada; no ha estat verificat." actions={safeCell ? <Link className="finding-button-secondary" href="/troballes">Veure totes</Link> : null} />
       {findings.length ? <div className="finding-grid">{findings.map((finding) => <FindingCard finding={finding} key={finding.id} />)}</div> : <p className="finding-notice">Encara no hi ha troballes públiques en aquesta selecció, o el servei no està disponible ara mateix.</p>}
+      {drawingCredits.length ? <p className="finding-drawing-credits">Dibuixos de les troballes sense fotografia: {drawingCredits.map((credit, index) => <span key={credit.url + index}>{index ? " · " : ""}<a href={credit.url} rel="noreferrer" target="_blank">{credit.text}</a> ({credit.license})</span>)}</p> : null}
     </section>
   </PageShell>;
 }

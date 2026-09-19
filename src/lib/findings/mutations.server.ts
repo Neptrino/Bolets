@@ -56,6 +56,12 @@ export async function publishFinding(findingId: string, ownerId: string, photos:
   const owned = await assertFindingOwner(findingId, ownerId);
   if (!owned || owned.publication_state !== "draft") throw new Error("Finding is not an editable draft");
   if (photos.length) {
+    // An attempt whose response was lost can leave its rows behind on a still
+    // draft finding, and the retry reuses the same photo identifiers. Clearing
+    // them within this finding keeps the retry working without an upsert,
+    // which would let a photo identifier taken from a public URL move another
+    // finding's row.
+    await admin.from("user_finding_photos").delete().eq("finding_id", findingId).in("id", photos.map((photo) => photo.id));
     const { error: photoError } = await admin.from("user_finding_photos").insert(photos.map((photo) => ({
       id: photo.id, finding_id: findingId, storage_path: photo.path,
       position: photo.position, width: photo.width, height: photo.height, byte_size: photo.byteSize,
@@ -70,7 +76,15 @@ export async function publishFinding(findingId: string, ownerId: string, photos:
     p_owner_id: ownerId,
   });
   if (error) {
-    if (photos.length) await admin.from("user_finding_photos").delete().in("id", photos.map((photo) => photo.id));
+    // The publish transaction can commit and still answer with an error when
+    // the response is lost on the way back. Rolling back then strips a live
+    // finding of the photos it has just published, so read the state back and
+    // only delete once the finding is confirmed to be an unpublished draft.
+    const settled = await assertFindingOwner(findingId, ownerId);
+    if (settled?.publication_state === "published") return grantFindingMapAccess(findingId, ownerId);
+    if (photos.length && settled?.publication_state === "draft") {
+      await admin.from("user_finding_photos").delete().eq("finding_id", findingId).in("id", photos.map((photo) => photo.id));
+    }
     if (error.message.includes("Daily public finding limit reached")) {
       throw new Error("Has arribat al límit de publicacions públiques d’avui. Les troballes privades continuen disponibles.");
     }

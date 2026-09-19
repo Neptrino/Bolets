@@ -1,6 +1,6 @@
 import "@/app/styles/findings.css";
 import type { Metadata } from "next";
-import { ArrowUpRight, CalendarDays, Map, UserRound } from "lucide-react";
+import { ArrowUpRight, CalendarDays, CameraOff, Map, UserRound } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,6 +11,7 @@ import { PageHeader, PageShell } from "@/components/page-layout";
 import { getCatalogueSpecies } from "@/data/catalogue";
 import { readPublicFinding } from "@/src/lib/findings/reads.server";
 import { speciesPath } from "@/src/lib/seo";
+import { speciesDrawing } from "@/src/lib/species-illustrations";
 
 export const dynamic = "force-dynamic";
 const getPublicFinding = cache((id: string) => readPublicFinding(id).catch(() => null));
@@ -30,6 +31,7 @@ export default async function FindingPage({ params }: { params: Promise<{ id: st
   if (!finding) notFound();
   const species = getCatalogueSpecies(finding.reportedSpeciesId);
   const profileHref = species ? speciesPath(species) : "/bolets";
+  const drawing = speciesDrawing(finding.reportedSpeciesId);
   const date = new Date(`${finding.observedOn}T12:00:00`);
   const observedDate = new Intl.DateTimeFormat("ca-ES", { dateStyle: "long" }).format(date);
   const observedDay = new Intl.DateTimeFormat("ca-ES", { day: "numeric" }).format(date);
@@ -45,7 +47,14 @@ export default async function FindingPage({ params }: { params: Promise<{ id: st
       <div className="finding-gallery">
         {finding.photos.length
           ? finding.photos.map((photo, index) => <Image key={photo.id} src={photo.url} alt={`Fotografia pública ${index + 1} de la troballa`} width={photo.width} height={photo.height} unoptimized />)
-          : <p className="finding-notice">Aquesta troballa no té cap fotografia pública.</p>}
+          : <div className="finding-gallery-empty">
+              {drawing ? <Image src={drawing.src} alt="" width={480} height={354} sizes="220px" unoptimized /> : <CameraOff size={38} aria-hidden="true" />}
+              <div>
+                <strong>Compartida sense fotografia</strong>
+                <p>Qui l’ha publicada no hi ha afegit cap imatge{drawing ? `, i el dibuix mostra ${finding.reportedSpeciesName} en general, no aquesta troballa` : ""}. Sense foto no se’n pot contrastar la identificació: els trets per fer-ho són a la fitxa de l’espècie.</p>
+                {drawing?.credit ? <small className="finding-gallery-empty-credit"><a href={drawing.credit.url} rel="noreferrer" target="_blank">{drawing.credit.text}</a> · {drawing.credit.license}</small> : null}
+              </div>
+            </div>}
       </div>
       <div className="finding-detail-sidebar">
         <aside className="finding-detail-panel">

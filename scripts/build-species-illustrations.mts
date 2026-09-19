@@ -26,6 +26,10 @@ async function cutout(input: Buffer) {
   const queue: number[] = [];
   const isPage = (index: number) => {
     const offset = index * channels;
+    // Transparent margins have to be traversable. A source exported with the
+    // page already cut away at its border would otherwise block the fill
+    // before it reaches the white the drawing still sits on.
+    if (data[offset + 3] < 8) return true;
     return data[offset] >= WHITE_THRESHOLD && data[offset + 1] >= WHITE_THRESHOLD && data[offset + 2] >= WHITE_THRESHOLD;
   };
   const push = (index: number) => { if (!seen[index] && isPage(index)) { seen[index] = 1; queue.push(index); } };

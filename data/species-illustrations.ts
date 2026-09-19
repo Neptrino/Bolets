@@ -30,7 +30,7 @@ export const speciesIllustrationAssets: Record<string, SpeciesIllustrationAsset>
   "russula-cyanoxantha": { source: "social/illustration-catalogue/previews/russula-cyanoxantha.webp", cutout: true },
   "suillus-luteus": { source: "social/illustration-catalogue/previews/suillus-luteus.webp", cutout: true },
   "lactarius-deliciosus": { source: "social/asset-library/illustrations/species-additions/2026-09-10/photo-derived/lactarius-deliciosus/illustration.png" },
-  "macrolepiota-procera": { source: "social/asset-library/illustrations/species-additions/2026-09-10/macrolepiota-procera/illustration.png" },
+  "macrolepiota-procera": { source: "social/asset-library/illustrations/species-additions/2026-09-10/macrolepiota-procera/illustration.png", cutout: true },
   "amanita-phalloides": { source: "social/asset-library/illustrations/species-additions/2026-09-10/amanita-phalloides/illustration.png" },
   "calocybe-gambosa": { source: "social/asset-library/illustrations/species-additions/2026-09-10/calocybe-gambosa/illustration.png" },
   "hydnum-repandum": { source: "social/asset-library/illustrations/species-additions/2026-09-10/photo-derived/hydnum-repandum/illustration.png", credit: { text: "Il·lustració adaptada d’una fotografia amb llicència Creative Commons", url: "https://creativecommons.org/licenses/by/4.0/", license: "CC BY 4.0" } },

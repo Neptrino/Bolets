@@ -18,6 +18,15 @@ describe("public finding card interactions", () => {
     expect(findingCard).not.toContain("<p>{finding.alias");
   });
 
+  it("gives a finding published without photos a labelled species drawing instead of an empty block", () => {
+    expect(findingCard).toContain("const drawing = speciesDrawing(finding.reportedSpeciesId);");
+    expect(findingCard).toContain('<Image className="finding-card-drawing" src={drawing.src}');
+    expect(findingCard).not.toContain("MushroomSpecimen");
+    expect(findingCard).toContain("<strong>Sense fotografia</strong>");
+    expect(findingCard).toContain("Dibuix de l’espècie indicada");
+    expect(findingCard).not.toContain("Sense foto pública");
+  });
+
   it("keeps generic location privacy copy out of each card", () => {
     expect(findingCard).toContain("<time dateTime={finding.observedOn}");
     expect(findingCard).not.toContain("Casella de 10 × 10 km");
