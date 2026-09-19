@@ -6,6 +6,8 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [Field-card illustration review — 20 September 2026](field-card-illustration-review-2026-09-20.md) · [source hashes and inventory](field-card-illustration-review-2026-09-20.json)
+
 - [Cloudflare incident-window review — 16 September 2026](cloudflare-latency-review-2026-09-16.md)
 
 - [Navigation diagnostic follow-up — 16 September 2026](navigation-diagnostic-2026-09-16.md) · [synthetic measurements](navigation-diagnostic-2026-09-16.json)

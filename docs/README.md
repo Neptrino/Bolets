@@ -33,8 +33,8 @@ Use this index for current guidance and open plans. Dated research and completed
 | [Analytics review — 14 September](archive/analytics-review-2026-09-14.md) | Dated search, website and Instagram evidence with proposed optimization priorities |
 | [Backlink campaign](backlink-outreach-campaign.md) | Editorial pitch material; recheck targets and campaign eligibility before contact |
 | [Optional mycological review](mycological-review-checklist.md) | Future review checklist; no reviewer appointed or review planned |
-
 | [Species field cards](species-field-cards.md) | Illustrated card assets, provenance, previews and downloads |
+| [Illustration audit — 20 September](archive/field-card-illustration-review-2026-09-20.md) | Dated screening of all 62 cards; correction priorities and limits |
 
 ## Instagram
 

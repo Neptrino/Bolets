@@ -1,0 +1,508 @@
+{
+  "date": "2026-09-20",
+  "scope": "Editorial visual screening; not independent mycological review",
+  "counts": {
+    "P2": 19,
+    "Screened": 30,
+    "Check": 9,
+    "P1": 4
+  },
+  "cards": [
+    {
+      "id": "agaricus-campestris",
+      "name": "Camperol",
+      "status": "P2",
+      "observation": "Ring looks substantial for the labelled thin, fleeting ring; reduce its visual permanence.",
+      "inspection": "contact sheet screening",
+      "sha256": "ebd56f7317260ec6831c93962a10765b150fa9be0ad115eb2ea4030ff1e1ccab"
+    },
+    {
+      "id": "amanita-caesarea",
+      "name": "Ou de reig",
+      "status": "P2",
+      "observation": "Expose the free white sac edge more clearly; soil and basal swelling obscure the volva.",
+      "inspection": "contact sheet screening",
+      "sha256": "0975dab9bde16c70adfdd1dad97e4530fc3215347b23d315f1faa3e308c78f02"
+    },
+    {
+      "id": "amanita-muscaria",
+      "name": "Reig bord",
+      "status": "Screened",
+      "observation": "Red cap, white warts and basal veil remnants read consistently at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "11eb7b3f46d7801d80c02058ff42360073afb6ace616c9b66b16f4ed18b1d4f6"
+    },
+    {
+      "id": "amanita-pantherina",
+      "name": "Pixacà",
+      "status": "Screened",
+      "observation": "Brown cap, white warts and basal bands are distinguishable; no conspicuous overview mismatch.",
+      "inspection": "contact sheet screening",
+      "sha256": "9db8dce7c0a731da3c3dbb9f88eec9581297755adee12db59cfc9be2700fa5d5"
+    },
+    {
+      "id": "amanita-phalloides",
+      "name": "Farinera borda",
+      "status": "P2",
+      "observation": "Sac rim is present, but dirt and swelling dominate the volva close-up. Clarify the separate membrane and bulb; do not claim the volva is absent.",
+      "inspection": "contact sheet and enlarged card",
+      "sha256": "98c4b86441f7e73372f70042bee7518c3397d10444aa09e04415bc85d7f4a3b4"
+    },
+    {
+      "id": "amanita-verna",
+      "name": "Cogomassa",
+      "status": "P2",
+      "observation": "Improve separation of saclike volva from the swollen base; confirm in a full-size reference comparison before redrawing.",
+      "inspection": "contact sheet screening",
+      "sha256": "ac913020c8328dbc1e757cb8fb3a047da4a1033db28c12203474c68ef9997d40"
+    },
+    {
+      "id": "amanita-virosa",
+      "name": "Farinera pudent",
+      "status": "P2",
+      "observation": "Conical white cap is recognizable; clarify the basal sac in a full-size comparison.",
+      "inspection": "contact sheet screening",
+      "sha256": "18571a9c6f98b67bd60fb842af99cc8acf5549d4696a71e57d548bc96d24c8fb"
+    },
+    {
+      "id": "boletus-aereus",
+      "name": "Cep negre",
+      "status": "P2",
+      "observation": "Stem netting and cap relief look overemphasized; compare with photographed European specimens before reducing detail.",
+      "inspection": "contact sheet screening",
+      "sha256": "f4e50617d3e4d12a495be1024792ba343efdf78adb172c0f60aed1105b316666"
+    },
+    {
+      "id": "boletus-edulis",
+      "name": "Cep",
+      "status": "P2",
+      "observation": "Raised coarse white net contradicts the visual impression of the labelled fine net. Make it finer, especially in panel 2; soften cap relief.",
+      "inspection": "contact sheet and enlarged card",
+      "sha256": "9e500386d3d843a2d0e8f2355265b970a04ffacb889e288e550f2af201c2278a"
+    },
+    {
+      "id": "boletus-pinophilus",
+      "name": "Cep rogenc",
+      "status": "P2",
+      "observation": "Coarse netting and cap texture repeat the same bolete template; check species-specific texture against European references.",
+      "inspection": "contact sheet screening",
+      "sha256": "48c930fd713ce11afc89dea277e04e7130764540db1c2ba8a4cdb67fd95ae1bc"
+    },
+    {
+      "id": "boletus-reticulatus",
+      "name": "Cep d’estiu",
+      "status": "P2",
+      "observation": "Full-stem netting is appropriate to the concept, but its relief is exaggerated; distinguish it from the other cep cards.",
+      "inspection": "contact sheet screening",
+      "sha256": "53e1e5f0e9e7f2856d80e467b9e2685f8b34c4820a56b599094f3f569262d79c"
+    },
+    {
+      "id": "calocybe-gambosa",
+      "name": "Moixernó",
+      "status": "Check",
+      "observation": "Gill blades appear thick at overview scale; inspect blade spacing and attachment against references before deciding on a redraw.",
+      "inspection": "contact sheet screening",
+      "sha256": "88f295a8334135c8ec5944a5d877b1740a9d11410795abfed56b49291ff17d46"
+    },
+    {
+      "id": "calvatia-gigantea",
+      "name": "Pet de llop gegant",
+      "status": "Screened",
+      "observation": "Ball-shaped fruitbody and white young interior are mutually consistent at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "6940aed9a95586d74031a73133c7711be243a3ab6d2267194e0dd6d2fcc39214"
+    },
+    {
+      "id": "cantharellus-cibarius",
+      "name": "Rossinyol",
+      "status": "Screened",
+      "observation": "Earlier taper correction is visible. Blunt descending folds remain distinguishable; retain them when adjusting other gilled species.",
+      "inspection": "contact sheet screening",
+      "sha256": "6cab6ee6d21ff6757d64523eea797c3d91bbdb681a66d1eb201f32879a2414ec"
+    },
+    {
+      "id": "chroogomphus-rutilus",
+      "name": "Cama de perdiu",
+      "status": "Screened",
+      "observation": "Copper cap, dark descending gills and stem colours are mutually consistent at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "3e870774db3b87fbe7734cfd7f3cfa64287c25969e51673841f20fb6c2a88ce3"
+    },
+    {
+      "id": "clitocybe-rivulosa",
+      "name": "Candeleta de vorada",
+      "status": "Screened",
+      "observation": "Pale zoned cap and fine gills show no conspicuous overview contradiction.",
+      "inspection": "contact sheet screening",
+      "sha256": "49c7b9201880fd5e6fa7eee1ae985b13e2eaf287fca21853cf3164c1e30fee59"
+    },
+    {
+      "id": "coprinus-comatus",
+      "name": "Bolet de tinta",
+      "status": "Check",
+      "observation": "Compare the cut specimen's cap shape with its intended age; do not mix a young closed cylinder with a mature expanded section without a label.",
+      "inspection": "contact sheet screening",
+      "sha256": "0d64865c08489bd5a40caa2bb27f18b5dff0b475f8d4e9fe111567e9969be9a5"
+    },
+    {
+      "id": "cortinarius-orellanus",
+      "name": "Cortinari metzinós",
+      "status": "P2",
+      "observation": "Panel 3 shows fuzzy stem fibres but makes veil remnants hard to distinguish from ordinary surface texture. Use a clearer age-labelled veil detail, without inventing a persistent ring.",
+      "inspection": "contact sheet and enlarged card",
+      "sha256": "580fe137f29bac61582682af6d802ea0f54a29d6de340e85b5ab2213dd7b3172"
+    },
+    {
+      "id": "cortinarius-rubellus",
+      "name": "Cortinari mortal",
+      "status": "P2",
+      "observation": "Veil remnant reads like a fringed collar. Clarify fine cobwebby remnants and soften cap relief; absence of a conspicuous veil in a mature specimen is not itself an error.",
+      "inspection": "contact sheet and enlarged card",
+      "sha256": "8e7603215851a978037a3f6a8c2eb16360486d4a3c36893f0dce4d1b24038978"
+    },
+    {
+      "id": "craterellus-cornucopioides",
+      "name": "Trompeta de la mort",
+      "status": "Screened",
+      "observation": "Hollow trumpet and longitudinal section are consistent at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "8f4f67b9c152efea8b26426bf89a31ea61a0f73d3b817e22b6ee4f167775717a"
+    },
+    {
+      "id": "craterellus-lutescens",
+      "name": "Camagroc",
+      "status": "Screened",
+      "observation": "Yellow hollow stem and relatively smooth underside are consistent at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "4d153e36f4926348e046ed7a6ee3bcdb9b2984d33fc2d68a654bf941c1cb8404"
+    },
+    {
+      "id": "craterellus-tubaeformis",
+      "name": "Fals camagroc",
+      "status": "Check",
+      "observation": "Underside folds look strongly sculpted; compare their relief with references before further smoothing.",
+      "inspection": "contact sheet screening",
+      "sha256": "8a102f6df821fb9b7ee1505184b6829a30276bee2a3f9ae28e2cafcb13b9c73f"
+    },
+    {
+      "id": "cyclocybe-cylindracea",
+      "name": "Pollancró",
+      "status": "Screened",
+      "observation": "Wood substrate, clustering and ring read consistently at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "88a0dd6e107337111fbaa0cbaf4f8afa01f26d8776d4e7037fa1adf23e6ba278"
+    },
+    {
+      "id": "entoloma-sinuatum",
+      "name": "Carner bord",
+      "status": "P2",
+      "observation": "Notched attachment is not clearly demonstrated by the selected view. Add a view that actually shows the notch; a labelled young yellow-gill stage would clarify the stated colour transition.",
+      "inspection": "contact sheet screening",
+      "sha256": "d2da90b85f0470b1639099fd3ac0ad3333e377dcbdb7c75e04c3d362abd5ddfe"
+    },
+    {
+      "id": "galerina-marginata",
+      "name": "Galerina metzinosa",
+      "status": "Screened",
+      "observation": "Wood substrate, rusty gills and ring remnant are recognizable; no conspicuous overview contradiction.",
+      "inspection": "contact sheet screening",
+      "sha256": "e090f3fa0cee34b468e35305834aed757827f43ab6b747b3d5e5c8762dd9314e"
+    },
+    {
+      "id": "gyromitra-esculenta",
+      "name": "Bolet de greix",
+      "status": "Check",
+      "observation": "Brainlike folds and chambered cutaway are highly stylized; validate the section against an actual longitudinal specimen before changing it.",
+      "inspection": "contact sheet screening",
+      "sha256": "d60b697f3949a13639fa2f08cc6bec63352878e7fd12cee477ef59d3ce3f5d8c"
+    },
+    {
+      "id": "hydnum-repandum",
+      "name": "Llengua de bou",
+      "status": "Screened",
+      "observation": "Revised flatter cap and smaller teeth improve the earlier issue. No new conspicuous structural contradiction in the enlarged card.",
+      "inspection": "contact sheet and enlarged card",
+      "sha256": "45e9dc13d9c55ec848d045ff5a747f793e8369f306b45baca49f5ee6fa840dd4"
+    },
+    {
+      "id": "hygrophoropsis-aurantiaca",
+      "name": "Fals rossinyol",
+      "status": "Screened",
+      "observation": "Orange funnel and fine forked gill concept read consistently at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "119f2da51f963392fb4b517ae36d1244b8d90bb889e3b5001ff90fba70a5ca6b"
+    },
+    {
+      "id": "hygrophorus-eburneus",
+      "name": "Llenega blanca",
+      "status": "Screened",
+      "observation": "Pale cap and broad waxy descending gills are consistent at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "5acee814978187e6aa79f63da38e980351a17b30435e5841ff998cb11ea9ca68"
+    },
+    {
+      "id": "hygrophorus-latitabundus",
+      "name": "Llenega",
+      "status": "Screened",
+      "observation": "Viscous dark cap and pale gills are consistent at overview scale; a still image cannot prove viscosity.",
+      "inspection": "contact sheet screening",
+      "sha256": "fc043ba4f926d915a4cd78b1841bb304c10a8d94220355551c669ee5cadd727c"
+    },
+    {
+      "id": "hygrophorus-marzuolus",
+      "name": "Marçot",
+      "status": "Screened",
+      "observation": "Grey cap and robust pale body show no conspicuous overview contradiction.",
+      "inspection": "contact sheet screening",
+      "sha256": "cbaa570dbe564255c1b96393c1ebbb0e1a0af6682fd4364068cbd424bcaeda2c"
+    },
+    {
+      "id": "hygrophorus-russula",
+      "name": "Carlet",
+      "status": "Check",
+      "observation": "Gill spacing appears unusually open in the overview; check against species reference before requesting a denser redraw.",
+      "inspection": "contact sheet screening",
+      "sha256": "a5136e13e4453f4d0bc660ded22f07af5f9a6c7ddba2132ce04c2136c92d711c"
+    },
+    {
+      "id": "inocybe-erubescens",
+      "name": "Inocibe de Patouillard",
+      "status": "Screened",
+      "observation": "Fibrous pointed cap and reddish staining are consistently represented at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "bdca780693ede89ee0b86076f1cd43f6c22e515a595109774a5dfc9b085a2ab6"
+    },
+    {
+      "id": "lactarius-chrysorrheus",
+      "name": "Pinetell bord",
+      "status": "Check",
+      "observation": "White and yellow latex should be explicitly presented as a change over time, rather than unexplained simultaneous colours.",
+      "inspection": "contact sheet screening",
+      "sha256": "e73f95b6b16a51199a963dadcf082f07f4377cde702012979f1b9dbf3459c90c"
+    },
+    {
+      "id": "lactarius-deliciosus",
+      "name": "Pinetell",
+      "status": "P2",
+      "observation": "Latex drops and surface relief are excessively glossy/sculpted. Keep diagnostic orange latex but make the depiction more natural.",
+      "inspection": "contact sheet screening",
+      "sha256": "61a38ca6a4273b0ad7c421a655b576d20fa43a5ffe74824180d4041f3bb29f87"
+    },
+    {
+      "id": "lactarius-sanguifluus",
+      "name": "Rovelló",
+      "status": "P2",
+      "observation": "Wine-red latex drops look like thick syrup. Reduce drop volume and gloss without changing the diagnostic colour.",
+      "inspection": "contact sheet screening",
+      "sha256": "84fb51fc06e7f21229abbefc78ae0d80af2c23bdd1a73ae0ee9b9d2d74adea40"
+    },
+    {
+      "id": "lactarius-torminosus",
+      "name": "Rovelló de cabra",
+      "status": "P2",
+      "observation": "Hair is rendered as long stiff strands; make the woolly margin softer and less uniformly spiky. This is a naturalism correction, not a claim that a hairy cap is impossible.",
+      "inspection": "contact sheet and enlarged card",
+      "sha256": "79a3343d51560658b64f30bce9dad6470b6bea7026bd593f1c4ecef9fe21fee4"
+    },
+    {
+      "id": "lactifluus-rugatus",
+      "name": "Lleterola roja",
+      "status": "Screened",
+      "observation": "Wrinkled orange cap and white latex are internally consistent at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "8b9316c391f836e92b9526735c8aae234b07d689e71c4dfe0d1c067e75670f5a"
+    },
+    {
+      "id": "leccinellum-lepidum",
+      "name": "Cigró",
+      "status": "Check",
+      "observation": "Clarify the timing of the pinkish cut-flesh colour so the panel does not imply an immediate uniform change.",
+      "inspection": "contact sheet screening",
+      "sha256": "5ba61c44cb36a34ddd63c415c19fa8da5b4cb942f64b435332d08a88fc3e7477"
+    },
+    {
+      "id": "lepiota-brunneoincarnata",
+      "name": "Palometa metzinosa",
+      "status": "Screened",
+      "observation": "Revised compact form and size cue distinguish it better from Apagallums. No new conspicuous overview mismatch; this is not identification approval.",
+      "inspection": "contact sheet screening",
+      "sha256": "495cdff6759436f92d111eaeff8197e0f79b1747630b695e7592394c6519411b"
+    },
+    {
+      "id": "lepista-nuda",
+      "name": "Pimpinella morada",
+      "status": "Screened",
+      "observation": "Violet tones and ringless stem are consistent at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "83061d1e86eeed9ac46d87d62bf677795dc424a68a5dafb4037224572ef407fe"
+    },
+    {
+      "id": "lycoperdon-perlatum",
+      "name": "Pet de llop perlat",
+      "status": "Screened",
+      "observation": "Pear shape, spines and apical opening read consistently at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "3d8abd1b2810d2779421a01c10561c364714c230bc965cc0af1cfec437208ce7"
+    },
+    {
+      "id": "lycoperdon-utriforme",
+      "name": "Pet de llop gros",
+      "status": "P1",
+      "observation": "Panel 3 divides one cut body sharply into white and brown halves to illustrate maturation. Replace with two separately labelled ages; the current composition implies a misleading internal arrangement.",
+      "inspection": "contact sheet and enlarged card",
+      "sha256": "e5bf9a3579d727a55b88cd209708f644c3fbc98facaef77d31063b5e6425b053"
+    },
+    {
+      "id": "macrolepiota-procera",
+      "name": "Apagallums",
+      "status": "P1",
+      "observation": "Double-edged ring reads as two independent stacked frilly rings in the main specimen and panel 1. Redraw one coherent double-edged ring and keep all specimens consistent.",
+      "inspection": "contact sheet and enlarged card",
+      "sha256": "f63b1913bbed32d0d6be0948fa2d7a1335600fd2bdde49852f5efb859dd8a879"
+    },
+    {
+      "id": "marasmius-oreades",
+      "name": "Camasec",
+      "status": "Screened",
+      "observation": "Slender grassland form and spaced gills are consistent at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "8ec453809c52dedd321385149802ddcf3c7e5906148691f0031ab66ffd23400a"
+    },
+    {
+      "id": "morchella-esculenta",
+      "name": "Múrgola",
+      "status": "Screened",
+      "observation": "Pitted cap and continuous hollow longitudinal section are consistent at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "abf266dd77a097e07fd358ad101fa3f2a466f69975241f1ba4adcf0473b5a4e2"
+    },
+    {
+      "id": "omphalotus-olearius",
+      "name": "Bolet d’olivera",
+      "status": "Screened",
+      "observation": "Clustered wood-associated orange fruitbodies and descending gills are consistent at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "fdb8503aaefe75300ce56f93cb9e231f1d747cd9153d06532328d0c9c6e739fd"
+    },
+    {
+      "id": "paxillus-involutus",
+      "name": "Paxil·le tòxic",
+      "status": "Screened",
+      "observation": "Rolled margin and darkening areas are visible; no conspicuous overview contradiction.",
+      "inspection": "contact sheet screening",
+      "sha256": "81c28078f63d78c0490f0739622c674bb67bd3c1025dd88289d34a691a1bc06c"
+    },
+    {
+      "id": "pleurotus-eryngii",
+      "name": "Gírgola de panical",
+      "status": "Screened",
+      "observation": "Robust form and descending gills are consistent at overview scale; host plant identity was not independently checked.",
+      "inspection": "contact sheet screening",
+      "sha256": "0fe3f924fab661898d9c321316eaf2484ab24608c3b1294cbd964c64fdb38243"
+    },
+    {
+      "id": "pleurotus-ostreatus",
+      "name": "Gírgola",
+      "status": "Screened",
+      "observation": "Overlapping wood-associated fans and short lateral stems are consistent at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "4ccbebc8f2533853eb0d600ff5d894f785b08a55f7029deb1e184f2e63851b43"
+    },
+    {
+      "id": "ramaria-aurea",
+      "name": "Peu de rata daurat",
+      "status": "Screened",
+      "observation": "Golden branching coral form reads consistently; the drawing alone cannot establish the species.",
+      "inspection": "contact sheet screening",
+      "sha256": "59254cdf90cc582e2b062d08636b1e60235b82c439da18855733f91d0ecb61b3"
+    },
+    {
+      "id": "ramaria-formosa",
+      "name": "Peu de rata bord",
+      "status": "Screened",
+      "observation": "Salmon branches and yellow tips are represented consistently at overview scale.",
+      "inspection": "contact sheet screening",
+      "sha256": "a4814a7d108d0999c43e0445dad6ca60e8282690e53b1beada78f92433a26f65"
+    },
+    {
+      "id": "rubroboletus-satanas",
+      "name": "Matagent",
+      "status": "Check",
+      "observation": "Verify the intensity and timing of blue staining against a photographed cut specimen before changing it; do not infer an exact reaction speed from a still image.",
+      "inspection": "contact sheet screening",
+      "sha256": "a84cbc645166b44aa0e7048d341c124db3843faf10f7785f08910a80f5d293ac"
+    },
+    {
+      "id": "russula-cyanoxantha",
+      "name": "Llora aspra",
+      "status": "Screened",
+      "observation": "Mixed cap colours and white gills are consistent. Flexibility requires an explanatory demonstration, not merely a still close-up.",
+      "inspection": "contact sheet screening",
+      "sha256": "992b3417f42941db13af0ee58ee0505b556923bb08285ccfa6a5fee1617f7d6f"
+    },
+    {
+      "id": "russula-virescens",
+      "name": "Llora verda",
+      "status": "Screened",
+      "observation": "Earlier flatter mosaic correction is visible; no new conspicuous overview contradiction.",
+      "inspection": "contact sheet screening",
+      "sha256": "a1f2fd68f18eae909b525b9a68e70757ad57a0ee09bf1e244ef086278587e0d8"
+    },
+    {
+      "id": "suillus-granulatus",
+      "name": "Molleric granellut",
+      "status": "P2",
+      "observation": "Stem dots look like recessed pores rather than surface granules. Clarify the small glandular dots and soften the cap relief.",
+      "inspection": "contact sheet screening",
+      "sha256": "ca3c1225b0b3684026d3f16fc198ba8bbd272b7ff44c59e3f4cdac06867607f7"
+    },
+    {
+      "id": "suillus-luteus",
+      "name": "Molleric de calceta",
+      "status": "Check",
+      "observation": "Ring and pore textures are heavily stylized; compare a full-size reference before declaring an anatomical error.",
+      "inspection": "contact sheet screening",
+      "sha256": "b2d5a2abb138b204c14ddd883ea7d2bc8a2dbc86c571c2329ffb4a2b7a6fc39c"
+    },
+    {
+      "id": "tricholoma-pardinum",
+      "name": "Fredolic metzinós",
+      "status": "P2",
+      "observation": "White robust stem is improved. Flatten the lifted cap scales and choose a gill view that visibly demonstrates the labelled notch.",
+      "inspection": "contact sheet and enlarged card",
+      "sha256": "ad61c3a99d0afd9269de068e6ab3f600d6bf7d9d20c8940b919bd4df2db6eae6"
+    },
+    {
+      "id": "tricholoma-portentosum",
+      "name": "Fredolic gros",
+      "status": "P1",
+      "observation": "Main underside and panel 3 depict thick blunt folds flowing into the stem, despite the label for notched gills. Redraw distinct true blades with the attachment clearly visible, consistently in the cutaway too.",
+      "inspection": "contact sheet and enlarged card",
+      "sha256": "b0a892bfbe4723aa2e1f417edef3b0ced4b0e3e18d67e0c27ff4f0f672e987d5"
+    },
+    {
+      "id": "tricholoma-terreum",
+      "name": "Fredolic",
+      "status": "P2",
+      "observation": "Main and cut stems look robust despite the repeated thin-stem label. Use a more slender representative form and finer cap fibres; natural variation prevents a precise ratio claim.",
+      "inspection": "contact sheet and enlarged card",
+      "sha256": "876f1e8b6834f60a2fa00c276b0c30bc8dcb6d14ef763a84d8e764ebabea17ab"
+    },
+    {
+      "id": "tuber-melanosporum",
+      "name": "Tòfona negra",
+      "status": "P2",
+      "observation": "White gleba veins form a regular crack-like mesh. Make the marbling finer and irregularly branching, following the versioned profile.",
+      "inspection": "contact sheet screening",
+      "sha256": "c97a6380ade986968e154a5078f05c94908f3974a413de48fe2c9e24f89c6633"
+    },
+    {
+      "id": "tylopilus-felleus",
+      "name": "Mataparent",
+      "status": "P1",
+      "observation": "Pink underside reads as elongated maze-like grooves, especially in panel 1. Redraw distinct small pores. Cap relief is also overdone; cracking can occur, so do not treat every crack as an error.",
+      "inspection": "contact sheet and enlarged card",
+      "sha256": "148cad9bf326fb2446fcfe3795749325cdde8f7bf8b7235512ef4e78c44e40ca"
+    }
+  ]
+}
