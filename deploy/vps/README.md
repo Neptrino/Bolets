@@ -70,9 +70,11 @@ Create `analytics.bolets.app` only after the first rollout has changed Umami's
 default administrator password. Keep it DNS-only when Cloudflare proxy IPs are
 not suitable for the site's network path.
 
-The public website now uses Cloudflare proxying and scoped static caching.
-See [Cloudflare website proxy](cloudflare.md) for the exact rules, verification,
-metrics interpretation and rollback.
+The public website is served directly from the VPS: its `bolets.app` and
+`www.bolets.app` records are DNS-only, because Spanish ISPs intercept
+Cloudflare's address ranges during football matches. See
+[Cloudflare zone](cloudflare.md) for the measurements behind that, what stays
+configured in the zone, and how to re-proxy during an attack.
 
 ## 2. Install a pinned Supabase release
 
@@ -169,7 +171,7 @@ contains the operations page:
 
 ```bash
 cp deploy/vps/status.env.example /opt/bolets/secrets/status.env
-docker run --rm caddy:2.10.2-alpine \
+docker run --rm caddy:2.11.4-alpine \
   caddy hash-password --plaintext 'A-NEW-LONG-PASSWORD'
 openssl rand -hex 32
 ```
@@ -846,10 +848,14 @@ Each rollout exports only optimized media, Next.js static files and icons from
 its built image into `<release>/.static`, then mounts that directory read-only
 in Caddy. These requests bypass Node.js. Versioned media and build chunks keep
 immutable one-year headers; unversioned icons use one hour. Missing files return
-404 without falling through to application rendering. Caddy 2.10.2 has a
-precompressed-sidecar 206 regression, so compression remains in the existing
-`encode` handler. `scripts/verify-caddy-performance.mjs` exercises these paths,
-HTTP 200 responses and privacy filters in an isolated Docker container in CI.
+404 without falling through to application rendering. The export also writes
+Brotli sidecars (`<file>.br`, quality 11) next to scripts, styles and other
+text assets, which Caddy serves with `precompressed br`; other encodings come
+from the `encode` handler. This needs Caddy 2.11 or later, because 2.10 served
+sidecars as 206 partial responses (caddyserver/caddy#7250).
+`scripts/verify-caddy-performance.mjs` exercises these paths, the sidecars,
+client addressing in both DNS-only and proxied states, and privacy filters in
+an isolated Docker container in CI, using the image pinned in `compose.yaml`.
 
 Species field cards are rendered once per content identity into the app's
 `.next/cache/field-cards` directory. Each species occupies one file, writes are

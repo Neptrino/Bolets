@@ -4,9 +4,12 @@ import { createHmac } from "node:crypto";
 import { createSupabaseAdminClient } from "@/src/lib/supabase/admin";
 import { serviceSupabaseConfig } from "@/src/lib/supabase/config";
 
+// Caddy always sets X-Real-IP from its own verdict (the TCP peer, or
+// CF-Connecting-IP when the peer is a trusted Cloudflare edge) and strips any
+// client copy, so it is the only header worth reading in production; the
+// X-Forwarded-For fallback serves local development without the proxy.
 export function requestIp(request: Request) {
-  return request.headers.get("cf-connecting-ip")?.trim()
-    || request.headers.get("x-real-ip")?.trim()
+  return request.headers.get("x-real-ip")?.trim()
     || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
     || "unknown";
 }

@@ -120,7 +120,9 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    image: caddy:2.10.2-alpine
+    # 2.11+ is required: 2.10 served precompressed sidecars as 206 partial
+    # responses (caddyserver/caddy#7250).
+    image: caddy:2.11.4-alpine
     restart: unless-stopped
     environment:
       APP_DOMAIN: ${APP_DOMAIN:?Set APP_DOMAIN}

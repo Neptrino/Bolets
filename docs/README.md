@@ -11,7 +11,7 @@ Use this index for current guidance and open plans. Dated research and completed
 | [Repository guidance](../AGENTS.md) | Engineering conventions and required safeguards |
 | [Supabase runbook](../supabase/README.md) | Environmental pipelines, imports and database operations |
 | [VPS runbook](../deploy/vps/README.md) | Deployment, backups, monitoring and rollback |
-| [Cloudflare edge configuration](../deploy/vps/cloudflare.md) | TLS, caching rules and rollback |
+| [Cloudflare zone](../deploy/vps/cloudflare.md) | DNS-only website, why the proxy is off, re-proxying during an attack |
 | [Data licences](data-licenses.md) | Source provenance and reuse requirements |
 | [Fruiting-model diagnosis](fruiting-model-diagnosis.md) | Historical calibration evidence and replay procedure; current constants remain in code |
 | [Findings evaluation](findings-evaluation.md) | Recorded-taxon grouping, ambiguous reports, unsuccessful visits and legacy replay migration |
