@@ -34,6 +34,8 @@ Use this index for current guidance and open plans. Dated research and completed
 | [Backlink campaign](backlink-outreach-campaign.md) | Editorial pitch material; recheck targets and campaign eligibility before contact |
 | [Optional mycological review](mycological-review-checklist.md) | Future review checklist; no reviewer appointed or review planned |
 
+| [Species field cards](species-field-cards.md) | Illustrated card assets, provenance, previews and downloads |
+
 ## Instagram
 
 | Document | Use it for |

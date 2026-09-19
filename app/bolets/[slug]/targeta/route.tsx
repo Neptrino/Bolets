@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { speciesFieldCardArtwork } from "@/data/species-field-card-artwork";
 import { cachedFieldCard } from "@/src/lib/field-card-cache";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -206,9 +207,12 @@ export async function GET(
     return new Response("Invalid preview size", { status: 400 });
   }
   const card = toSpeciesFieldCardProfile(species);
-  const image = await readFile(join(process.cwd(), "public", card.imagePath.slice(1)));
-  const identity = `field-card-v1:${JSON.stringify(card)}:${createHash("sha256").update(image).digest("hex")}`;
+  const artwork = speciesFieldCardArtwork[species.speciesId];
+  const image = await readFile(join(process.cwd(), "public", (artwork ?? card.imagePath).slice(1)));
+  const identity = `field-card-v3:${artwork ?? JSON.stringify(card)}:${createHash("sha256").update(image).digest("hex")}`;
   const png = await cachedFieldCard(species.speciesId, identity, async () => {
+    // Compact WebP sources keep releases small; PNG encoding adds no further loss.
+    if (artwork) return sharp(image).png().toBuffer();
     // ImageResponse cannot decode WebP; resize before embedding to avoid
     // decoding a full camera photograph for a 1080 × 500 display area.
     const jpeg = await sharp(image).resize({ width: 1080, withoutEnlargement: true })

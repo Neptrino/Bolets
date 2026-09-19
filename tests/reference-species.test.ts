@@ -185,7 +185,7 @@ describe("descriptive catalogue species", () => {
     expect(html).toContain(`href="${speciesFieldCardPath(species)}" target="_blank"`);
     expect(html).toContain("Fitxa visual 4:5 amb els trets principals");
     expect(html).not.toContain("Instagram");
-    expect(html).toContain("Targeta de camp del Fals rossinyol amb fotografia, comestibilitat, trets d’identificació, temporada, hàbitat i advertiment de confusió.");
+    expect(html).toContain("Targeta de camp del Fals rossinyol amb il·lustracions, comestibilitat, trets d’identificació, temporada, hàbitat i advertiment de seguretat.");
     expect(sitemap().find(item => item.url.endsWith(speciesPath(species)))).toMatchObject({
       lastModified: editorialLastModified("species:hygrophoropsis-aurantiaca"),
       images: ["https://bolets.app/media/wikimedia/hygrophoropsis-aurantiaca.webp"],

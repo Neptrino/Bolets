@@ -1,4 +1,5 @@
 import { ProfileSection } from "@/components/species-profile/profile-section";
+import { speciesFieldCardArtwork } from "@/data/species-field-card-artwork";
 import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
 import { SpeciesFieldCardActions } from "@/components/species-field-card-actions";
@@ -28,13 +29,13 @@ export function SpeciesFieldCardSection({
                 height="480"
                 loading="lazy"
                 decoding="async"
-                alt={`Targeta de camp del ${species.identity.commonName} amb fotografia, comestibilitat, trets d’identificació, temporada, hàbitat i advertiment de confusió.`}
+                alt={`Targeta de camp del ${species.identity.commonName} amb ${speciesFieldCardArtwork[species.speciesId] ? "il·lustracions" : "fotografia"}, comestibilitat, trets d’identificació, temporada, hàbitat i advertiment de seguretat.`}
               />
             </a>
           </figure>
           <div className="species-field-card-copy">
             <p>
-              Fitxa visual 4:5 amb els trets principals, la temporada, l’hàbitat i la confusió més rellevant, a punt per guardar al mòbil o compartir.
+              Fitxa visual 4:5 amb els trets principals, la temporada, l’hàbitat i advertiments de seguretat, a punt per guardar al mòbil o compartir.
             </p>
             <p className="species-field-card-safety">
               <ShieldAlert size={16} aria-hidden="true" />

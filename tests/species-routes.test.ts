@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import sharp from "sharp";
+import { readFile } from "node:fs/promises";
+import { speciesFieldCardArtwork } from "@/data/species-field-card-artwork";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { SpeciesFieldCardSection } from "@/components/species-profile/field-card-section";
@@ -63,7 +65,7 @@ describe("species routes", () => {
       { params: Promise.resolve({ slug: "apagallums" }) },
     );
     const original = Buffer.from(await (await load()).arrayBuffer());
-    expect(await sharp(original).metadata()).toMatchObject({ format: "png", width: 1080, height: 1350 });
+    expect(await sharp(original).metadata()).toMatchObject({ format: "png", width: 1122, height: 1402 });
     for (const width of [384, 768]) {
       const response = await load(`?preview=${width}`);
       expect(response.status).toBe(200);
@@ -92,7 +94,25 @@ describe("species routes", () => {
     expect(html).toContain('src="/bolets/apagallums/targeta?preview=384"');
     expect(html).toContain('srcSet="/bolets/apagallums/targeta?preview=384 384w, /bolets/apagallums/targeta?preview=768 768w"');
     expect(html).toContain('loading="lazy"');
+    expect(html).toContain("amb il·lustracions");
     expect(html).toContain('href="/bolets/apagallums/targeta"');
     expect(html).not.toContain('src="/bolets/apagallums/targeta"');
+  });
+
+  it.each(Object.keys(speciesFieldCardArtwork))("preserves every approved artwork pixel in PNG downloads for %s", async (speciesId) => {
+    const slug = speciesSlugForId(speciesId);
+    const response = await fieldCardImage(
+      new Request(`https://bolets.app/bolets/${slug}/targeta`),
+      { params: Promise.resolve({ slug }) },
+    );
+    expect(response.headers.get("content-type")).toBe("image/png");
+    const downloaded = Buffer.from(await response.arrayBuffer());
+    const source = await readFile(`public${speciesFieldCardArtwork[speciesId]}`);
+    expect((await sharp(downloaded).metadata()).format).toBe("png");
+    const [actual, expected] = await Promise.all([
+      sharp(downloaded).ensureAlpha().raw().toBuffer(),
+      sharp(source).ensureAlpha().raw().toBuffer(),
+    ]);
+    expect(actual.equals(expected)).toBe(true);
   });
 });
