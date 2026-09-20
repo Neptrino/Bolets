@@ -1,8 +1,10 @@
 /**
- * Convert the editorial species drawings from the creative archive into the
+ * Convert the species illustrations from the creative archive into the
  * committed app assets: transparent WebP, at most 480 px on the long side.
- * Sheet crops come on a white page, so near-white pixels connected to the
- * edge are made transparent (the drawings themselves keep their whites).
+ * Main drawings land in public/media/illustrations/<speciesId>.webp, stock
+ * illustrations in public/media/illustrations/stock/<speciesId>.webp. Sheet
+ * crops come on a white page, so near-white pixels connected to the edge are
+ * made transparent (the drawings themselves keep their whites).
  *
  *   npm run illustrations:species -- [--force] [speciesId ...]
  */
@@ -10,7 +12,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import sharp from "sharp";
-import { speciesIllustrationAssets } from "../data/species-illustrations.ts";
+import { speciesIllustrationAssets, speciesIllustrationOutputPath, type SpeciesIllustrationKind } from "../data/species-illustrations.ts";
 
 const OUTPUT_DIRECTORY = "public/media/illustrations";
 const MAX_SIDE = 480;
@@ -52,22 +54,25 @@ async function cutout(input: Buffer) {
   return sharp(data, { raw: { width, height, channels } }).png().toBuffer();
 }
 
-await mkdir(OUTPUT_DIRECTORY, { recursive: true });
+await mkdir(join(OUTPUT_DIRECTORY, "stock"), { recursive: true });
 let failures = 0;
-for (const [speciesId, asset] of Object.entries(speciesIllustrationAssets)) {
+const jobs = (Object.keys(speciesIllustrationAssets) as SpeciesIllustrationKind[])
+  .flatMap((kind) => Object.entries(speciesIllustrationAssets[kind]).map(([speciesId, asset]) => ({ kind, speciesId, asset })));
+for (const { kind, speciesId, asset } of jobs) {
   if (only.size && !only.has(speciesId)) continue;
-  const output = join(OUTPUT_DIRECTORY, `${speciesId}.webp`);
-  if (!force && existsSync(output)) { console.log(`${speciesId}: kept`); continue; }
+  const output = join("public", speciesIllustrationOutputPath(kind, speciesId));
+  const label = `${speciesId} (${kind})`;
+  if (!force && existsSync(output)) { console.log(`${label}: kept`); continue; }
   try {
     if (!existsSync(asset.source)) throw new Error(`missing source ${asset.source}`);
     let image = sharp(asset.source).toBuffer();
     if (asset.cutout) image = image.then(cutout);
     const trimmed = await sharp(await image).trim({ threshold: 8 }).resize({ width: MAX_SIDE, height: MAX_SIDE, fit: "inside", withoutEnlargement: true }).webp({ quality: 88, alphaQuality: 90, effort: 6 }).toBuffer();
     await writeFile(output, trimmed);
-    console.log(`${speciesId}: ${(trimmed.byteLength / 1024).toFixed(0)} KB`);
+    console.log(`${label}: ${(trimmed.byteLength / 1024).toFixed(0)} KB`);
   } catch (error) {
     failures += 1;
-    console.error(`${speciesId}: ${error instanceof Error ? error.message : String(error)}`);
+    console.error(`${label}: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 if (failures) process.exit(1);

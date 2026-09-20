@@ -1,5 +1,5 @@
 import type { MushroomGameEntry } from "@/src/lib/mushroom-game";
-import { speciesIllustrationAssets, speciesIllustrationPath } from "@/data/species-illustrations";
+import { speciesDrawingAssets, speciesIllustrationPath, speciesStockIllustrationAssets, speciesStockIllustrationPath } from "@/data/species-illustrations";
 
 export type SpeciesIllustration = MushroomGameEntry["specimen"];
 
@@ -32,8 +32,19 @@ export function speciesIllustration(speciesId: string): SpeciesIllustration | un
   return SPECIES_ILLUSTRATIONS[speciesId];
 }
 
-/** The editorial drawing for a species (public/media/illustrations), with its credit when one is due. */
+/**
+ * The drawing shown for a species: our main drawing (public/media/illustrations)
+ * or, for a species without one, its stock illustration. Comes with its credit
+ * when one is due.
+ */
 export function speciesDrawing(speciesId: string) {
   const src = speciesIllustrationPath(speciesId);
-  return src ? { src, credit: speciesIllustrationAssets[speciesId]?.credit } : undefined;
+  if (src) return { src, credit: speciesDrawingAssets[speciesId]?.credit };
+  return speciesStockIllustration(speciesId);
+}
+
+/** The stock illustration for a species (public/media/illustrations/stock), for social and print reuse. */
+export function speciesStockIllustration(speciesId: string) {
+  const src = speciesStockIllustrationPath(speciesId);
+  return src ? { src, credit: speciesStockIllustrationAssets[speciesId]?.credit } : undefined;
 }
