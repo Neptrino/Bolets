@@ -29,6 +29,14 @@ export const SEASONAL_ACTIVITY_LABELS: Record<SeasonalActivity, string> = {
   peak: "pic de temporada",
 };
 
+/* "moderada" alone is an adjective with no subject. In a month strip or a
+   table cell the column supplies one; standing on its own it needs the noun.
+   "pic de temporada" and "fora de temporada" already carry theirs. */
+export function monthlyActivityLabel(activity: SeasonalActivity) {
+  const label = SEASONAL_ACTIVITY_LABELS[activity];
+  return activity === "peak" || activity === "inactive" ? label : `activitat ${label}`;
+}
+
 export function monthInTimeZone(
   date = new Date(),
   timeZone = "Europe/Madrid",
@@ -42,11 +50,26 @@ export function monthInTimeZone(
   return month;
 }
 
-export function monthWithPreposition(month: Month) {
+/* Catalan contracts the article before a vowel: "a l’octubre" but "al
+   novembre". The same three months drive both prepositions, so they share one
+   list. */
+const VOWEL_INITIAL_MONTHS: Month[] = ["abr", "ago", "oct"];
+
+function monthLabel(month: Month) {
   const label = SEASON_MONTHS.find((item) => item.key === month)?.label;
   if (!label) throw new RangeError(`Unknown month: ${month}`);
+  return label;
+}
 
-  return ["abr", "ago", "oct"].includes(month) ? `a l’${label}` : `al ${label}`;
+export function monthWithPreposition(month: Month) {
+  const label = monthLabel(month);
+  return VOWEL_INITIAL_MONTHS.includes(month) ? `a l’${label}` : `al ${label}`;
+}
+
+/** The opening half of a season range: "del setembre", "de l’octubre". */
+export function monthWithFromPreposition(month: Month) {
+  const label = monthLabel(month);
+  return VOWEL_INITIAL_MONTHS.includes(month) ? `de l’${label}` : `del ${label}`;
 }
 
 export function monthFromSeasonSlug(slug: string): Month | undefined {

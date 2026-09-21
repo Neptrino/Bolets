@@ -97,6 +97,7 @@
 .rovellons-definition h2,
 .guide-types h2,
 .rovellons-territories h2,
+.rovellons-lookalike-species h2,
 .rovellons-published h2,
 .rovellons-signals h2,
 .rovellons-faq h2 {
@@ -133,7 +134,6 @@
 .guide-types > header > p:last-child {
   grid-column: 1;
   grid-row: 3;
-  max-width: 72ch;
   margin: 0;
   color: var(--muted);
   font-size: var(--text-base);
@@ -147,6 +147,9 @@
 }
 .guide-types-scroll-hint {
   display: none;
+}
+.guide-types-footnote {
+  margin: 16px 0 0;
 }
 .guide-types-table {
   width: 100%;
@@ -180,6 +183,30 @@
   width: 18%;
   color: var(--ink);
   font-size: var(--text-base);
+}
+/* The drawn icon rides alongside the name, not above it: the row stays one
+   line tall and the table keeps its scanning rhythm. */
+.guide-types-species {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.guide-types-species .species-icon {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  object-fit: contain;
+}
+.rovellons-now-grid article > span {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.rovellons-now-grid .species-icon.on-dark {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  object-fit: contain;
 }
 .guide-types-table tbody th a {
   color: var(--forest-panel);
@@ -231,15 +258,25 @@
   color: var(--on-dark);
   font-size: var(--display-sm);
 }
-.rovellons-now-heading > span {
-  color: var(--apricot);
-  font-family: var(--font-nunito-sans), sans-serif;
-  font-size: var(--text-2xl);
-  font-style: italic;
+.rovellons-now-lead {
+  margin: 0;
+  padding: 22px 31px 0;
+  color: var(--on-dark);
+  font-size: var(--text-lg);
+  line-height: 1.55;
+  opacity: 0.86;
 }
 .rovellons-now-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(250px, 0.85fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+/* The weather note is a full-width row under the species, not a squeezed
+   third column: at 250px it broke "Per saber si hi ha condicions ara" over
+   two lines and the link over three. The ceps hub already did this. */
+.rovellons-now-grid aside {
+  grid-column: 1 / -1;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 0;
 }
 .rovellons-now-grid > * {
   padding: 25px 29px;
@@ -279,29 +316,34 @@
   margin-top: 11px;
   color: var(--on-dark);
 }
-.rovellons-territories {
+.rovellons-territories,
+.rovellons-lookalike-species {
   margin-bottom: 86px;
 }
-.rovellons-territories > header {
+.rovellons-territories > header,
+.rovellons-lookalike-species > header {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   row-gap: 12px;
   align-items: start;
   margin-bottom: 27px;
 }
-.rovellons-territories > header .eyebrow {
+.rovellons-territories > header .eyebrow,
+.rovellons-lookalike-species > header .eyebrow {
   grid-column: 1;
   grid-row: 1;
 }
-.rovellons-territories > header h2 {
+.rovellons-territories > header h2,
+.rovellons-lookalike-species > header h2 {
   grid-column: 1;
   grid-row: 2;
   margin-top: 0;
 }
-.rovellons-territories > header > p:last-child {
+.rovellons-territories > header > p:last-child,
+.rovellons-lookalike-species > header > p:last-child,
+.rovellons-signals > header > p:last-child {
   grid-column: 1;
   grid-row: 3;
-  max-width: 72ch;
   margin: 0;
   color: var(--muted);
   line-height: 1.65;
@@ -326,15 +368,14 @@
   text-decoration: none;
   transition: background 160ms ease, transform 160ms ease;
 }
-.rovellons-territory-grid > a:nth-child(3) {
+/* Three per row. The old rule widened everything after the third card to half
+   a row, which laid six cards out as 3/2/1. Counting back from the end keeps
+   the last row's bottom border off whatever the card count becomes. */
+.rovellons-territory-grid > a:nth-child(3n) {
   border-right: 0;
 }
-.rovellons-territory-grid > a:nth-child(n + 4) {
-  grid-column: span 3;
+.rovellons-territory-grid > a:nth-last-child(-n + 3) {
   border-bottom: 0;
-}
-.rovellons-territory-grid > a:last-child {
-  border-right: 0;
 }
 .rovellons-territory-grid > a:hover {
   background: #fffdf8;
@@ -378,7 +419,6 @@
   background: var(--surface-muted);
 }
 .rovellons-published > div:first-child > p:last-child {
-  max-width: 72ch;
   color: var(--muted);
   line-height: 1.65;
 }
@@ -413,8 +453,10 @@
 .rovellons-signals > div {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: rgba(255, 253, 247, 0.68);
 }
 .rovellons-signals article {
   min-height: 225px;

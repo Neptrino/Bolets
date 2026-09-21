@@ -15,6 +15,9 @@ import { CepsLocalGuides } from "@/components/ceps-local-guides";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { SpeciesCard } from "@/components/species-card";
+import { SpeciesIcon } from "@/components/species-icon";
+import { SpeciesHandlingBlock } from "@/components/species-handling-block";
+import { SpeciesNamesTable } from "@/components/species-names-table";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { regionLabels } from "@/data/regions";
 import { getSpecies } from "@/data/species";
@@ -27,7 +30,7 @@ import {
 import {
   monthInTimeZone,
   monthWithPreposition,
-  SEASONAL_ACTIVITY_LABELS,
+  monthlyActivityLabel,
   SEASON_MONTHS,
 } from "@/src/lib/seasonality";
 import {
@@ -62,6 +65,11 @@ function requiredSpecies(speciesId: CepSpeciesId) {
 }
 
 const ceps = cepSpeciesIds.map(requiredSpecies);
+/* The two bolets people bring home thinking they are ceps. Both are full
+   profiles with photographs, so they render as cards like the ceps do. */
+const cepLookalikes = ["tylopilus-felleus", "rubroboletus-satanas"]
+  .map((speciesId) => getSpecies(speciesId))
+  .filter((species): species is NonNullable<typeof species> => Boolean(species));
 const comparisonLinks = [
   { href: "/compare/cep-vs-cep-estiu", label: "Cep vs. cep d’estiu" },
   { href: "/compare/cep-vs-cep-negre", label: "Cep vs. cep negre" },
@@ -85,7 +93,15 @@ const faqs = [
       "No hi ha un nombre fix aplicable a tots els boscos. Els perfils indiquen una resposta de dies a setmanes, condicionada per la humitat prèvia del sòl, la temperatura posterior, el vent i el retorn de la calor o la sequera.",
   },
   {
-    question: "En quins boscos convé mirar l’hàbitat potencial?",
+    question: "Com es conserven els ceps?",
+    answer: "Nets, sense remull i descartant les parts toves o parasitades. A partir d’aquí hi ha dues vies: assecar els exemplars sans tallats a làmines, que és la manera clàssica de tenir-ne tot l’any, o fer-los una cocció breu i congelar-los en porcions etiquetades. A la nevera en fresc aguanten pocs dies.",
+  },
+  {
+    question: "Com es diuen els ceps en castellà?",
+    answer: "El cep (Boletus edulis) és el «boleto» o «hongo blanco»; el cep negre (Boletus aereus) és el «boleto negro». En castellà, però, molta gent en diu simplement «boletus», fent servir el nom del gènere. En català el cep també s’anomena surenc, sureny o siureny segons la comarca.",
+  },
+  {
+    question: "En quins boscos surten els ceps?",
     answer:
       "El cep comú i el rogenc tenen perfils de boscos frescos de muntanya, especialment fagedes, avetoses, rouredes o pinedes segons l’espècie. El cep negre s’associa a alzinars, suredes i rouredes mediterrànies, i el cep d’estiu a rouredes, fagedes, castanyedes i altres boscos de planifolis.",
   },
@@ -106,6 +122,16 @@ const faqs = [
   },
 ] as const;
 
+/** The months the catalogue marks as active, e.g. "setembre–desembre". */
+function seasonRange(species: SpeciesProfile) {
+  const activeMonths = SEASON_MONTHS.filter(
+    ({ key }) => species.ecologicalConfig.seasonality[key] !== "inactive",
+  );
+  const first = activeMonths[0]?.label;
+  const last = activeMonths.at(-1)?.label;
+  return first && last ? `${first}–${last}` : "Calendari no disponible";
+}
+
 function peakMonths(species: SpeciesProfile) {
   return SEASON_MONTHS
     .filter(({ key }) => species.ecologicalConfig.seasonality[key] === "peak")
@@ -115,9 +141,6 @@ function peakMonths(species: SpeciesProfile) {
 
 export default function CepsTerritoryPage() {
   const currentMonth = monthInTimeZone();
-  const currentMonthLabel = SEASON_MONTHS.find(
-    ({ key }) => key === currentMonth,
-  )!.label;
 
   return (
     <div className="rovellons-hub ceps-hub">
@@ -187,14 +210,15 @@ export default function CepsTerritoryPage() {
             <div>
               <p className="eyebrow light"><MapPinned size={15} /> Tipus, diferències i temporada</p>
               <h1>
-                Ceps
+                Ceps{" "}
                 <br />
                 <i>de Catalunya.</i>
               </h1>
               <p>
-                Compara el cep, el cep rogenc, el cep negre i el cep d’estiu: en
-                quins boscos encaixen, quan és temporada i quines guies locals
-                permeten consultar les condicions actuals.
+                Sota el nom de cep hi ha quatre bolets diferents: el cep, el cep
+                rogenc, el cep negre i el cep d’estiu. Cadascun vol el seu bosc i
+                té el seu moment. Aquí tens en què es diferencien, en quines
+                zones mirar i com està el bosc avui.
               </p>
             </div>
             <aside>
@@ -205,7 +229,7 @@ export default function CepsTerritoryPage() {
                 mediterranis o planifolis temperats per al negre i el d’estiu.
               </strong>
               <small>
-                Hàbitat potencial; no confirma presència ni abundància.
+                És el bosc on en poden sortir. No vol dir que avui n’hi hagi.
               </small>
             </aside>
           </div>
@@ -220,7 +244,7 @@ export default function CepsTerritoryPage() {
           <div>
             <p className="eyebrow">Què són els ceps?</p>
             <h2 id="ceps-definition-title">
-              Quatre espècies del gènere Boletus al catàleg.
+              Què són els ceps i quins tipus hi ha
             </h2>
           </div>
           <div>
@@ -241,13 +265,11 @@ export default function CepsTerritoryPage() {
           </div>
         </section>
 
-        <CepsLocalGuides />
-
         <section className="guide-types" aria-labelledby="ceps-types-title">
           <header>
             <p className="eyebrow">Tipus de ceps</p>
-            <h2 id="ceps-types-title">Els quatre ceps de Catalunya representats al catàleg.</h2>
-            <p>Aquesta comparació surt de les mateixes fitxes ecològiques i d’identificació que alimenten els perfils individuals i els mapes.</p>
+            <h2 id="ceps-types-title">Tipus de ceps a Catalunya</h2>
+            <p>La taula surt de les mateixes fitxes que alimenten els perfils de cada espècie i el mapa.</p>
           </header>
           <p className="guide-types-scroll-hint">Fes lliscar la taula per veure totes les columnes.</p>
           <div className="guide-types-table-scroll">
@@ -259,7 +281,7 @@ export default function CepsTerritoryPage() {
               <tbody>
                 {ceps.map((species) => (
                   <tr key={species.speciesId}>
-                    <th scope="row"><Link href={speciesPath(species)}>{species.identity.commonName}</Link><i>{species.identity.scientificName}</i></th>
+                    <th scope="row"><span className="guide-types-species"><SpeciesIcon speciesId={species.speciesId} /><Link href={speciesPath(species)}>{species.identity.commonName}</Link></span><i>{species.identity.scientificName}</i></th>
                     <td>{species.morphology.cap}</td>
                     <td>{species.morphology.stem}</td>
                     <td><span>{species.ecologicalConfig.habitat.forestTypes.join("; ")}</span><small>Pic habitual: {peakMonths(species)}</small></td>
@@ -281,23 +303,48 @@ export default function CepsTerritoryPage() {
           ))}
         </div>
 
+        <section className="rovellons-lookalike-species" aria-labelledby="ceps-lookalikes-species-title">
+          <header>
+            <p className="eyebrow"><ShieldAlert size={15} /> Noms que enganyen</p>
+            <h2 id="ceps-lookalikes-species-title">Ceps que no es mengen</h2>
+            <p>Dos bolets de porus que es troben als mateixos boscos i que la gent recull per error. Cap dels dos es menja: el mataparent perquè amarga fins a fer impossible el plat, el matagent perquè és tòxic.</p>
+          </header>
+          <div className="species-grid rovellons-species-grid">
+            {cepLookalikes.map((species, index) => (
+              <SpeciesCard
+                key={species.speciesId}
+                species={species}
+                index={index + 4}
+                currentMonth={currentMonth}
+              />
+            ))}
+          </div>
+        </section>
+
+        <SpeciesNamesTable
+          titleId="ceps-names-title"
+          title="Els ceps en castellà: boletus i hongos"
+          intro="Si has arribat buscant «boletus», «setas» o «hongo blanco», són aquests mateixos bolets. En català el cep també rep noms propis segons la comarca —surenc, sureny, siureny— i el nom llatí és el que veuràs a les guies i als mercats."
+          species={ceps}
+        />
+
         <section
           className="rovellons-signals ceps-lookalikes guide-lookalikes"
           aria-labelledby="ceps-lookalikes-title"
         >
           <header>
             <p className="eyebrow"><ShieldAlert size={15} /> Confusions importants</p>
-            <h2 id="ceps-lookalikes-title">Porus rosats o vermells obliguen a aturar la identificació.</h2>
+            <h2 id="ceps-lookalikes-title">Com distingir un cep dels seus semblants</h2>
           </header>
           <div>
             <article>
-              <span>01</span><h3>Mataparent</h3>
-              <p>Té porus que es tornen rosats i un reticle bru fosc. És incomestible pel gust amarg; no el tastis per confirmar-ne la identitat.</p>
+              <span>01</span><h3>Mira els porus, no el barret</h3>
+              <p>El barret enganya: el color varia molt amb l’edat i la pluja. Els porus no. Blancs o olivacis, és un cep; rosats, és un mataparent; vermells, és un matagent.</p>
               <Link href="/compare/cep-vs-mataparent" className="text-link">Comparar amb el cep <ArrowUpRight size={15} /></Link>
             </article>
             <article>
-              <span>02</span><h3>Matagent</h3>
-              <p>Presenta porus vermells, peu groc i vermell i carn que blaveja. És tòxic i no s’ha de consumir.</p>
+              <span>02</span><h3>Si la carn blaveja al tall, atura’t</h3>
+              <p>La carn del cep no canvia de color quan la talles. Si blaveja, no tens un cep a la mà, i no és una diferència que es pugui discutir.</p>
               <Link href="/compare/cep-vs-matagent" className="text-link">Comparar amb el cep <ArrowUpRight size={15} /></Link>
             </article>
           </div>
@@ -310,25 +357,32 @@ export default function CepsTerritoryPage() {
                 <CalendarDays size={15} /> Calendari dels ceps
               </p>
               <h2 id="ceps-now-title">
-                Lectura estacional {monthWithPreposition(currentMonth)}
+                Quan surten els ceps
               </h2>
             </div>
-            <span>{currentMonthLabel}</span>
           </div>
+          <p className="rovellons-now-lead">
+            Cada cep té els seus mesos. Aquests són els habituals de cada
+            espècie, i com està cadascuna ara mateix,{" "}
+            {monthWithPreposition(currentMonth)}. Els mesos diuen quan és
+            normal que en surtin; si avui n’hi ha depèn de la pluja dels
+            últims dies.
+          </p>
           <div className="rovellons-now-grid ceps-now-grid">
             {ceps.map((species) => {
               const activity = species.ecologicalConfig.seasonality[currentMonth];
               return (
                 <article key={species.speciesId}>
                   <span>
+                    <SpeciesIcon speciesId={species.speciesId} size={28} className="species-icon on-dark" />
                     <Link href={speciesPath(species)}>
                       {species.identity.commonName}
                     </Link>
                   </span>
-                  <strong>{SEASONAL_ACTIVITY_LABELS[activity]}</strong>
+                  <strong>{seasonRange(species)}</strong>
                   <p>
-                    Pic habitual: {peakMonths(species)}. El calendari no confirma
-                    fructificació avui.
+                    Millor moment: {peakMonths(species)}. Ara:{" "}
+                    {monthlyActivityLabel(activity)}.
                   </p>
                   <Link
                     href={speciesMapHref(species.speciesId, { region: species.ecologicalConfig.regions[0] })}
@@ -343,11 +397,13 @@ export default function CepsTerritoryPage() {
               <CloudRain size={20} aria-hidden="true" />
               <strong>Per saber si hi ha condicions ara</strong>
               <p>
-                El mapa combina temporada, pluja acumulada, humitat del sòl,
-                temperatura i cobertura compatible quan les dades són prou
-                completes. No mostra troballes. <Link href="/bolets-avui">Compara
-                on trobar bolets avui i aquesta setmana.</Link>
+                El mapa creua l’època, la pluja dels últims dies, la humitat del
+                sòl, la temperatura i el tipus de bosc, sempre que hi hagi prou
+                dades. No mostra on ha trobat bolets ningú.
               </p>
+              <Link href="/bolets-avui" className="text-link">
+                On trobar bolets avui i aquesta setmana <ArrowUpRight size={15} />
+              </Link>
             </aside>
           </div>
         </section>
@@ -361,12 +417,12 @@ export default function CepsTerritoryPage() {
               <MapPinned size={15} /> Nou zones generals
             </p>
             <h2 id="ceps-territories-title">
-              Una regió compatible no és un bosc homogeni.
+              Millors zones on trobar ceps a Catalunya
             </h2>
             <p>
-              Cada targeta associa la regió a un dels quatre perfils que la
-              inclou explícitament. La descripció parla d’aquell cep, no de
-              presència o abundància a tota la regió.
+              Cada targeta et porta al cep que millor encaixa en aquella zona.
+              Parla d’aquell cep en concret, no de tota la regió: dins d’una
+              mateixa comarca hi ha boscos que van bé i boscos que no.
             </p>
           </header>
           <div
@@ -387,13 +443,15 @@ export default function CepsTerritoryPage() {
                   <h3>{regionLabels[territory.region]}</h3>
                   <p>{territory.description}</p>
                   <strong>
-                    Veure la lectura al mapa <ArrowUpRight size={15} />
+                    Veure-ho al mapa <ArrowUpRight size={15} />
                   </strong>
                 </Link>
               );
             })}
           </div>
         </section>
+
+        <CepsLocalGuides />
 
         <section
           className="rovellons-signals"
@@ -404,44 +462,60 @@ export default function CepsTerritoryPage() {
               <Sprout size={15} /> Com llegir el bosc
             </p>
             <h2 id="ceps-signals-title">
-              Quatre filtres abans d’obrir el mapa.
+              Com saber si hi ha ceps després de ploure
             </h2>
           </header>
           <div>
             <article>
               <span>01</span>
-              <h3>L’arbre correcte</h3>
+              <h3>Que hi hagi l’arbre adequat</h3>
               <p>
-                Pins, faigs, avets, roures, alzines o sureres segons l’espècie:
-                “cep” no implica una única associació forestal.
+                Pins, faigs, avets, roures, alzines o sureres, segons quin cep
+                busquis. Dir “cep” no vol dir un sol tipus de bosc: cadascun viu
+                enganxat a les arrels d’uns arbres concrets.
               </p>
             </article>
             <article>
               <span>02</span>
-              <h3>Sòl rehidratat</h3>
+              <h3>Que el terra s’hagi tornat a mullar</h3>
               <p>
-                Una pluja curta no basta si el sòl continua sec. Cal humitat
-                sostinguda i, alhora, un drenatge que eviti l’entollament.
+                Un ruixat curt no serveix si a sota el terra segueix sec. Ha de
+                mantenir-se humit uns quants dies, però sense que s’hi facin
+                bassals.
               </p>
             </article>
             <article>
               <span>03</span>
-              <h3>Temperatura coherent</h3>
+              <h3>Que la temperatura acompanyi</h3>
               <p>
-                Els ceps de muntanya prefereixen més frescor; el cep negre i el
-                d’estiu toleren ambients més càlids si el sòl conserva aigua.
+                Els ceps de muntanya volen fresca. El cep negre i el d’estiu
+                aguanten més calor, sempre que el terra mantingui l’aigua.
               </p>
             </article>
             <article>
               <span>04</span>
-              <h3>Sense retorn sec</h3>
+              <h3>Que no torni a assecar-se</h3>
               <p>
-                El vent, la calor o una nova sequera poden tallar la finestra
-                abans que la rehidratació del sòl es tradueixi en fructificació.
+                El vent, una revifada de calor o una nova sequera poden aturar-ho
+                tot, encara que hagi plogut fa pocs dies. La pluja obre la porta;
+                el que ve després decideix.
               </p>
             </article>
           </div>
         </section>
+
+        <SpeciesHandlingBlock
+          titleId="ceps-handling-title"
+          title="Com netejar, assecar i congelar els ceps"
+          intro="Un cop els tens a casa. La conserva no arregla mai una identificació dubtosa: si no estàs segur de l’espècie, no la posis a la cistella de consum."
+          moreHref="/conservar-bolets#conservar-ceps"
+          steps={[
+            { title: "Netejar-los", body: "Raspalla la terra i passa’ls un drap humit, sense remull. Descarta les parts toves o parasitades abans de guardar res: un tros picat espatlla la resta." },
+            { title: "Guardar-los uns dies", body: "A la nevera aguanten poc. Val més tenir-los en un recipient obert o en un cistell que en una bossa tancada, que els fa suar." },
+            { title: "Assecar-los", body: "Talla els exemplars sans a làmines i asseca’ls ben estesos. És la manera clàssica de guardar ceps tot l’any." },
+            { title: "Congelar-los", body: "Fes-los una cocció breu abans de congelar-los, separa les porcions i etiqueta-les amb la data." },
+          ]}
+        />
 
         <section
           className="rovellons-faq"
@@ -449,7 +523,7 @@ export default function CepsTerritoryPage() {
         >
           <header>
             <p className="eyebrow">Preguntes freqüents</p>
-            <h2 id="ceps-faq-title">Ceps, boscos i temporada.</h2>
+            <h2 id="ceps-faq-title">Preguntes freqüents sobre els ceps</h2>
           </header>
           <div>
             {faqs.map((faq) => (

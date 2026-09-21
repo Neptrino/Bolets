@@ -11,19 +11,19 @@ export const speciesTerritoryGuides = [
   {
     contentId: "zones-rovellons",
     path: "/zones/rovellons",
-    title: "Rovellons a Catalunya: tipus, hàbitat i temporada",
+    title: "Rovellons: quan surten i on trobar-ne a Catalunya",
     description:
-      "Tipus de rovellons, diferències entre rovelló i pinetell, hàbitat, temporada, zones i condicions actuals.",
-    profileLinkTitle: "Rovellons: tipus, hàbitat i temporada",
+      "Quan surten els rovellons, on trobar-ne, quins tipus hi ha i com distingir el rovelló del pinetell.",
+    profileLinkTitle: "On trobar rovellons i quan surten",
     speciesIds: ["lactarius-sanguifluus", "lactarius-deliciosus"],
   },
   {
     contentId: "zones-ceps",
     path: "/zones/ceps",
-    title: "Ceps de Catalunya: tipus, diferències i temporada",
+    title: "Ceps de Catalunya: tipus, temporada i zones",
     description:
-      "Quatre tipus de ceps, diferències d’identificació, hàbitats, temporada, zones i condicions actuals.",
-    profileLinkTitle: "Ceps: tipus, diferències i temporada",
+      "Quatre tipus de ceps, com distingir-los, quan surten i en quines zones mirar a Catalunya.",
+    profileLinkTitle: "On trobar ceps i quan surten",
     speciesIds: [
       "boletus-edulis",
       "boletus-pinophilus",

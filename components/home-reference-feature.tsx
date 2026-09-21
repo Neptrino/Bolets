@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, BookOpenText, CalendarDays, CloudRain, Gamepad2, Languages, Leaf, MapPinned, Microscope, Refrigerator, Scale, Search, ShieldCheck, Snowflake, Sun, Trees, type LucideIcon } from "lucide-react";
+import { ArrowUpRight, BookOpenText, CalendarDays, CloudRain, Gamepad2, Languages, Leaf, MapPinned, Microscope, Refrigerator, Scale, Search, ShieldCheck, Snowflake, Sprout, Sun, TreePine, Trees, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import type { SeasonGuideId } from "@/src/lib/season-guides";
 import { SectionHeader } from "@/components/page-layout";
@@ -14,6 +14,8 @@ export function HomeReferenceFeature({ speciesCount, seasonGuide, children }: {
   children: ReactNode;
 }) {
   const links: HomeReferenceLink[] = [
+    { href: "/zones/ceps", label: "Ceps", note: "Quatre tipus, quan surten i on trobar-ne", icon: TreePine },
+    { href: "/zones/rovellons", label: "Rovellons", note: "Rovelló i pinetell, temporada i zones", icon: Sprout },
     { href: "/compare", label: "Comparador d’espècies", note: "Distingeix les confusions habituals", icon: Scale },
     { href: "/noms-de-bolets-catala-castella", label: "Noms en català i castellà", note: "El nom que has sentit a casa", icon: Languages },
     { href: seasonGuide.path, label: seasonGuide.cardTitle, note: `Espècies actives ${seasonGuide.rangeSentence}`, icon: seasonIcons[seasonGuide.id] },

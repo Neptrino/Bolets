@@ -39,15 +39,22 @@ describe("species territory guide registry", () => {
 
   it("gives each intent hub its own editorial revision date in the sitemap", () => {
     const entries = sitemap();
+    // Pinned per hub so that changing a hub's content has to bump its own date:
+    // the sitemap lastmod is the crawl signal. Both hubs were rewritten on
+    // 21 September around the questions people actually search — "quan surten"
+    // and "on trobar" — and had their house jargon removed.
+    const expectedRevisions: Record<string, string> = {
+      "zones-rovellons": "2026-09-21",
+      "zones-ceps": "2026-09-21",
+    };
 
     for (const guide of speciesTerritoryGuides) {
       const editorial = getEditorialMetadata(guide.contentId);
-      // Both hubs gained Taxon sameAs links in their structured data on 17 September.
-      expect(editorial.updatedAt, guide.contentId).toBe("2026-09-17");
+      expect(editorial.updatedAt, guide.contentId).toBe(expectedRevisions[guide.contentId]);
       expect(
         entries.find((entry) => entry.url.endsWith(guide.path))?.lastModified,
         guide.path,
-      ).toEqual(new Date(`${editorial.updatedAt}T00:00:00+02:00`));
+      ).toEqual(new Date(`${editorial.updatedAt}T00:00:00Z`));
     }
   });
 

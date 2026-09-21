@@ -143,17 +143,6 @@ body {
   height: 142px;
   isolation: isolate;
 }
-.species-card-illustration.has-photo::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(
-    125deg,
-    rgba(38, 25, 18, 0.02) 35%,
-    rgba(38, 25, 18, 0.68) 100%
-  );
-}
 .species-card-photo {
   object-fit: cover;
   object-position: center 45%;

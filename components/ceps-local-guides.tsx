@@ -25,9 +25,9 @@ export function CepsLocalGuides() {
   return (
     <section className="guide-types ceps-local-guides" aria-labelledby="ceps-published-title">
       <header>
-        <p className="eyebrow">On buscar ceps</p>
-        <h2 id="ceps-published-title">Tria el bosc i consulta la lectura local.</h2>
-        <p>Les {guides.length} guies expliquen l’hàbitat al voltant de cada lloc. Els mesos són orientatius; obre la guia per consultar les condicions actuals i el mapa.</p>
+        <p className="eyebrow">On trobar ceps</p>
+        <h2 id="ceps-published-title">Guies locals de ceps, bosc a bosc</h2>
+        <p>Les {guides.length} guies expliquen quin bosc hi ha al voltant de cada poble. Els mesos són orientatius: obre la guia per veure com està la zona ara i el mapa.</p>
       </header>
       <p className="guide-types-scroll-hint">Fes lliscar la taula per comparar els boscos i la temporada.</p>
       <div className="guide-types-table-scroll" role="region" aria-label="Comparació de guies locals de ceps" tabIndex={0}>

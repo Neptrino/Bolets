@@ -188,9 +188,6 @@
 .species-card-illustration::before {
   display: none;
 }
-.species-card-illustration.has-photo::after {
-  background: linear-gradient(180deg, rgba(21, 20, 15, 0.02) 47%, rgba(21, 20, 15, 0.28) 100%);
-}
 .species-card-illustration .culinary-rating,
 .species-card-illustration.has-photo .culinary-rating {
   position: absolute;
@@ -257,16 +254,17 @@
   font-family: var(--font-nunito-sans), sans-serif;
   font-size: var(--text-base);
 }
+/* No line clamp: the description takes the lines it needs. A clamp counts
+   lines, but a line holds less text on a narrow screen, so any fixed number
+   reads whole on a laptop and cuts mid-sentence on a phone. The facts block
+   below keeps its `margin-top: auto`, so cards in a row still line up at the
+   bottom however tall the text runs. */
 .species-card .species-card-description {
-  display: -webkit-box;
   min-height: 42px;
   margin: 14px 0 16px;
-  overflow: hidden;
   color: #625f58;
   font-size: var(--text-base);
   line-height: 1.55;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
 }
 .species-card-facts {
   display: grid;

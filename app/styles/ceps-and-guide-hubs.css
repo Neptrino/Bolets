@@ -33,11 +33,6 @@
   outline: 2px solid var(--apricot);
   outline-offset: 3px;
 }
-.ceps-now-grid aside {
-  grid-column: 1 / -1;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-  border-left: 0;
-}
 .ceps-territory-grid > a:nth-child(n) {
   grid-column: span 2;
   border-right: 1px solid var(--line);
@@ -547,11 +542,6 @@
   }
   .rovellons-now-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .rovellons-now-grid aside {
-    grid-column: 1 / -1;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    border-left: 0;
   }
   .rovellons-signals > div {
     grid-template-columns: repeat(2, minmax(0, 1fr));
