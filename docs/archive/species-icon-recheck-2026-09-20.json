@@ -1,0 +1,441 @@
+{
+  "date": "2026-09-20",
+  "source": "assets/illustrations/generated/species-icons/",
+  "scope": "62 PNG files / 62 species. 14 new or changed images inspected, 48 unchanged hashes verified. No image or prompt edits.",
+  "items": [
+    {
+      "file": "01-Macrolepiota_procera.png",
+      "sha256": "ff307d50532737ed91f7424616895d2e76a6667eb798fe82bf1f09f82177e3a7",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "02-Omphalotus_olearius.png",
+      "sha256": "4ef4d218101d18a46f1f482e34d2ae7a538032f22c327f7bca6c7ae0a06d6a55",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "03-Gyromitra_esculenta.png",
+      "sha256": "bdd66de18f1e615d6fc81b7d80190b834763d74245b466848dc492afba022091",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "04-Coprinus_comatus.png",
+      "sha256": "35e7e3d1cf7d431eb6973020b4e62f745eb2b4db3d5e9aa40e7c8b60d1923e24",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "05-Chroogomphus_rutilus.png",
+      "sha256": "ae96a5e6c49b3016731275cbe0d999c01aec09f212b18193b116943ee133199a",
+      "status": "Screened new",
+      "note": "Copper-red caps, dark broad descending gills and yellowish lower stems now communicate the intended Chroogomphus form. No conspicuous mismatch at screening scale.",
+      "inspection": "540px contact-sheet frame"
+    },
+    {
+      "file": "06-Craterellus_lutescens.png",
+      "sha256": "3aba1998b6614f8909600c1b6ae822778d04ab4b18cd11cdef0d42b438f26d09",
+      "status": "Improved",
+      "note": "Former raised ribs are replaced by much shallower tonal undulations. The nearly smooth underside is now clearly distinct from tubaeformis. No further priority correction.",
+      "inspection": "540px contact-sheet frame plus individual original"
+    },
+    {
+      "file": "07-Marasmius_oreades.png",
+      "sha256": "6c9bb5f0057c029d6fa2387f9b742be1b6c104f1e20f215044ce44bc665a95a7",
+      "status": "Screened new",
+      "note": "Tan umbonate caps, slender pale ringless stems and widely spaced pale non-decurrent gills are suitable representative cues.",
+      "inspection": "540px contact-sheet frame"
+    },
+    {
+      "file": "08-Agaricus_campestris.png",
+      "sha256": "e56194301a6e3ab3e7d2ebb5c5d783edec7701c154c9802c50567b6fd70e972f",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "09-Collybia_rivulosa.png",
+      "sha256": "c33f02102c3600b9c2ac4cd2414476f0834c242ddc9522f437ffea17c632889d",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "10-Hygrophorus_russula.png",
+      "sha256": "7d5d01f74c35eef323a4643a08ffec5fb21f49ae4f59c91ec11a1296cbbcd021",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "11-Entoloma_sinuatum.png",
+      "sha256": "d8af6d3445c8c3c6b873a3617541318f732d536b1f48ce6c5dd5804809387055",
+      "status": "Improved",
+      "note": "Cream-yellow young and salmon mature gills are clear; the former long descending transition has gone. The repeated rounded scallops at the stem are still stylized: for an enlarged anatomy lesson, use a side view showing the notch within each blade rather than treating the scalloped stem outline as a literal model.",
+      "inspection": "540px contact-sheet frame plus individual original"
+    },
+    {
+      "file": "12-Boletus_edulis.png",
+      "sha256": "476cde18d4c939312fc52bc4b40553005405c366dad8bd16b11725fcb1b728b2",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "13-Boletus_reticulatus.png",
+      "sha256": "b5ee109534d8b4bf369923928c2efdb6ef9abde99ff299ab7bc4053834220f23",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "14-Boletus_aereus.png",
+      "sha256": "6e124cee8a8c6f18535593c1f2f4a9e4592de50d7d4cdaaba59b00b229142f22",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "15-Boletus_pinophilus.png",
+      "sha256": "1d7adcfae7a44ee823b6de7fe4e7b4f4dc0e663a0ab0ed953c80c44eda5e8c83",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "16-Leccinellum_lepidum.png",
+      "sha256": "eaf7b8864dfb550e9b4c0b91ae3efd68fe20effb44af46c348adccd57b1ac782",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "17-Amanita_verna.png",
+      "sha256": "cea721a3038649e0e74d6070ca591732d8ca3b13bbdd5e83eb4e3e4cf4b65e88",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "18-Cortinarius_orellanus.png",
+      "sha256": "693ac00817cd67aeffffc7f13bab8ad01d0360d072dfc44f7dffc774eace0164",
+      "status": "Improved",
+      "note": "The hanging skirt is gone; fine rusty fibrous traces replace it. The original priority concern is addressed.",
+      "inspection": "540px contact-sheet frame"
+    },
+    {
+      "file": "19-Cortinarius_rubellus.png",
+      "sha256": "7e1fb6cecf555814ecbf15b1be2f2de057d11589e8afad2ee22fdbd73ec48be6",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "20-Craterellus_tubaeformis.png",
+      "sha256": "b26cebe6eb556cd7f36f4061b5996b9c4ae977c54c35105e09c8de42178a08a8",
+      "status": "Improved",
+      "note": "Grey-beige mature folds branch and cross-connect, contrasting with the yellow stem and the much smoother lutescens icon.",
+      "inspection": "540px contact-sheet frame"
+    },
+    {
+      "file": "21-Hygrophoropsis_aurantiaca.png",
+      "sha256": "37c04a89be63b3bb658dcfc9fa0e2234aec4f1c445e8b783b36e3e36e1418292",
+      "status": "Refine",
+      "note": "Forking and blade density have improved, but thick highlighted edges still read as rounded fleshy ribs in places. Thin and flatten the blade edges further to distinguish true gills from Cantharellus folds. This is a remaining fidelity refinement, not a claim that the whole icon depicts another species.",
+      "inspection": "540px contact-sheet frame plus individual original"
+    },
+    {
+      "file": "22-Amanita_phalloides.png",
+      "sha256": "2eb926ba6865fff13eb5e418d6c0ffafe07d093847d95f08b1d5ed6e878eda9b",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "23-Amanita_virosa.png",
+      "sha256": "847afb814079598a0f28e79f10cdd908d4c776d377a0945ce51491facb52f230",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "24-Tricholoma_terreum.png",
+      "sha256": "35c867d7635bfd854b4bb965fcfaefe4575e012d59f7fa1f78d70f77176fff77",
+      "status": "Improved",
+      "note": "The adult cap is less sharply pointed and has a visibly fibrillose surface. Pale flecks are somewhat decorative; the original smooth-cap problem is addressed.",
+      "inspection": "540px contact-sheet frame plus individual original"
+    },
+    {
+      "file": "25-Tricholoma_portentosum.png",
+      "sha256": "4702eb8973dcfe4fa44e364988fbf5e4631629a1d2919bac0c3427bec5e87544",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "26-Tricholoma_pardinum.png",
+      "sha256": "a90661c638212194aea62b180a980de32216e0867e992e40a526f7f05fb076a5",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "27-Galerina_marginata.png",
+      "sha256": "8b1f581f0a77845b22e8121d57dd3f7a38627c05c1cf5ae4611ed95b25e9e04d",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "28-Pleurotus_ostreatus.png",
+      "sha256": "61f566a09b9e2a8efe102fd540b39a650a58aa5bb50b8732142b99d8fe7d9e09",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "29-Pleurotus_eryngii.png",
+      "sha256": "44ff48c885b59f827bc5fff28dcecd59dee686a602a944c6b0daac78fef66bfb",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "30-Inosperma_erubescens.png",
+      "sha256": "bb6a8140df129806ee0c8bfe8fdeb144d19587ea46b1e233e5c7700d3eccfc59",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "31-Hygrophorus_latitabundus.png",
+      "sha256": "c02b83891a058871af5ba4179a80931966e3023955979f267ec7f53c015d5456",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "32-Hygrophorus_eburneus.png",
+      "sha256": "fac38cd05159acf73a0e2443907a46532e0e598785af5fa893e9fb498b2e0cfd",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "33-Hydnum_repandum.png",
+      "sha256": "388ed6e186dbf877a4947497dd69d9b29392b7699ea674877fd0125ab1144249",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "34-Lactifluus_rugatus.png",
+      "sha256": "3e89edf5b099d44970dde981ce2b1a59054ef4dffa93f5efe8e9768cad2a6637",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "35-Russula_cyanoxantha.png",
+      "sha256": "ed0f5de7c5c7d30ecc0a37f2cea66a2c6ddfdc7c99fa0bbb5c79f46f1f960909",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "36-Russula_virescens.png",
+      "sha256": "48966eaec5493a23f1b63d39f616c5062db79bc127fb19cd230c71587bcec276",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "37-Hygrophorus_marzuolus.png",
+      "sha256": "f9a22a51549fdfd07e9daca6b73c76a073194d7378ae303b4f21965574ebeab1",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "38-Rubroboletus_satanas.png",
+      "sha256": "1e3e7e25aee55825e065b4f631720a21995240200da4cbddde6b1b221bd9520e",
+      "status": "Improved",
+      "note": "Fine red stem netting is now visible together with red pores, pale cap and swollen stem.",
+      "inspection": "540px contact-sheet frame"
+    },
+    {
+      "file": "39-Tylopilus_felleus.png",
+      "sha256": "a5fb9cae0142a575d208114f8ecda700e0819ec460bcb32f370f8c8b535848a3",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "40-Calocybe_gambosa.png",
+      "sha256": "74b91c3eee2f010910e3227202d30f4ef736441dd2d3381ea175b3b1c95af08c",
+      "status": "Improved",
+      "note": "Close pale blades now stop near the cap-stem junction on both exposed specimens. The rounded scalloped junction is a stylized cue rather than a precise anatomical section; prefer a clear side-view notch if reused to teach attachment.",
+      "inspection": "540px contact-sheet frame plus individual original"
+    },
+    {
+      "file": "41-Suillus_luteus.png",
+      "sha256": "bb33633c22d78cbb8c140ea9e5a22a6e6132ca8efd1e9910858986cdc8c1e8cc",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "42-Suillus_granulatus.png",
+      "sha256": "918cab8def14694d5d9f6974aea81926a4ce928c6e0b2137b8fb5a8079097f7e",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "43-Morchella_esculenta.png",
+      "sha256": "af35fd5313cb1b482d4607db9c0c154fc67ad90a17d905304ffce8bc9b42e7f6",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "44-Amanita_caesarea.png",
+      "sha256": "3da16072d3520f4f4a58001a3ff304893b74a4b17585e7613708143e3dce69a6",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "45-Lepiota_brunneoincarnata.png",
+      "sha256": "7ced41e76b8426edb32e3509b8df7f43ff25a369800bd8d9f0e28fd4048b3fe9",
+      "status": "Correct",
+      "note": "Ring reduced appropriately and gill density improved. However, gill ends still appear to join the scalloped stem edge, like the notched-gill icons. Show a clear narrow annular separation between gill ends and stem on both specimens: these gills must be free, not notched or attached. Preserve the improved faint ring zone and scaled pinkish lower stem.",
+      "inspection": "540px contact-sheet frame plus individual original"
+    },
+    {
+      "file": "46-Paxillus_involutus.png",
+      "sha256": "cd164940daa0d17f50ddff05fe7febc215b2d41b1a3f1625281e5413ced789e4",
+      "status": "Improved",
+      "note": "Numerous narrow descending blades and branching near the stem replace the sparse broad ribs. Rolled margin retained.",
+      "inspection": "540px contact-sheet frame"
+    },
+    {
+      "file": "47-Calvatia_gigantea.png",
+      "sha256": "8a56f863106c9d50aa6b30ea40a22db66dba91a968295fa509570b22c5b9b840",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "48-Lycoperdon_utriforme.png",
+      "sha256": "6f8befb29666f861e5e24c190434d1f7898f1b01aaacf71959ea30a7dc518d8a",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "49-Lycoperdon_perlatum.png",
+      "sha256": "c5a48377194f641edb009d7f145fc224fc0f16963f177cf6558642f57be16b21",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "50-Ramaria_formosa.png",
+      "sha256": "77f0cc8164e91112bf0372628d7718bb4716712c59fd925e9fe8d2ce9f1c08fd",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "51-Ramaria_aurea.png",
+      "sha256": "20304bc3dc645ee506229700cdeca80ef9db47ee5a00601bec03f174fe43a4e1",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "52-Lepista_nuda.png",
+      "sha256": "b8ff2f9d2065ff1671e126beae2f53e455ed8962fc45b42235f1d7a3a8e6e873",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "53-Lactarius_deliciosus.png",
+      "sha256": "f435b6321fb4b02d4cf619811b7bfb2b8f67cca2b4796c95bad0d2ef762c9669",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "54-Lactarius_chrysorrheus.png",
+      "sha256": "d220935947a139f8fd53db2faa34545ec23fef351e2696bb569e23757a1bcfd3",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "55-Amanita_pantherina.png",
+      "sha256": "387554bc94fc3474690a1ecaf90898d0b6834f33282e997ba486c8d4388e7f5d",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "56-Cyclocybe_cylindracea.png",
+      "sha256": "d20a4bc802de98e2e468a2ef1b5e2be780996369c5d1d99e6825c3482c5a989c",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "57-Amanita_muscaria.png",
+      "sha256": "a72effa002264db0a0c796165b1013363c3aa739dfa164e3a0f897e8624148b4",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "58-Cantharellus_cibarius.png",
+      "sha256": "96704c9bec4a9f5969f0d702768b4aee0d4a3cfdabcc96f5385cf90aa9e57116",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "59-Lactarius_sanguifluus.png",
+      "sha256": "ea08a01a166e7728ad69f3367238d20585d8742ff4f1fce7395f8035eadabfe6",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "60-Lactarius_torminosus.png",
+      "sha256": "685eb22c31b2ff127b55478fb3f4f3fa7cb296454044cc41dd4768e76fcec196",
+      "status": "Prior screening retained",
+      "note": "SHA-256 unchanged from the first numbered-file review; no new visual inspection this pass.",
+      "inspection": "Prior 410px screening; unchanged hash verified"
+    },
+    {
+      "file": "61-Tuber_melanosporum.png",
+      "sha256": "6bb8df50dc3ad3307134ef84ab635e364c81c6272dcdc8ccf4efb210df29bd0e",
+      "status": "Improved",
+      "note": "Dark interior now has fine numerous branching pale veins; exterior remains warty.",
+      "inspection": "540px contact-sheet frame"
+    },
+    {
+      "file": "62-Craterellus_cornucopioides.png",
+      "sha256": "2cff494fbfc81c3bf7194f429f20a3f539feffb097c261f12e5a915b3847e8a4",
+      "status": "Improved",
+      "note": "Exterior has low irregular shading/wrinkles rather than strong parallel ribs; dark hollow trumpet form retained.",
+      "inspection": "540px contact-sheet frame"
+    }
+  ]
+}

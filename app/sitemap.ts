@@ -30,7 +30,7 @@ export interface SitemapContentEntry {
 }
 
 export function editorialLastModified(contentId: string) {
-  return new Date(`${getEditorialMetadata(contentId).updatedAt}T00:00:00+02:00`);
+  return new Date(`${getEditorialMetadata(contentId).updatedAt}T00:00:00Z`);
 }
 
 export function sitemapContentEntries(): SitemapContentEntry[] {

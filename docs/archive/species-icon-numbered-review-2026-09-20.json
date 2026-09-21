@@ -1,0 +1,439 @@
+{
+  "date": "2026-09-20",
+  "source": "assets/illustrations/generated/species-icons/",
+  "scope": "Current numbered PNG masters, 61 images / 60 species. No image edits. Previous differently named inventory was not reused as evidence.",
+  "counts": {
+    "Screened": 48,
+    "Correct": 4,
+    "Refine": 9
+  },
+  "items": [
+    {
+      "file": "01-Macrolepiota_procera.png",
+      "sha256": "ff307d50532737ed91f7424616895d2e76a6667eb798fe82bf1f09f82177e3a7",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "02-Omphalotus_olearius.png",
+      "sha256": "4ef4d218101d18a46f1f482e34d2ae7a538032f22c327f7bca6c7ae0a06d6a55",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "03-Gyromitra_esculenta.png",
+      "sha256": "bdd66de18f1e615d6fc81b7d80190b834763d74245b466848dc492afba022091",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "04-Coprinus_comatus.png",
+      "sha256": "35e7e3d1cf7d431eb6973020b4e62f745eb2b4db3d5e9aa40e7c8b60d1923e24",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "06-Craterellus_lutescens.png",
+      "sha256": "f5dd8418fdacd3b6440620c2941c0c9b945806b08125cb90085fbc0c2acb11c9",
+      "status": "Correct",
+      "inspection": "410px contact sheet and individual original",
+      "note": "Deep, strongly raised underside ribs obscure the defining nearly smooth or lightly wrinkled surface. Flatten the ribs; retain brown funnel and yellow-orange hollow stem."
+    },
+    {
+      "file": "08-Agaricus_campestris.png",
+      "sha256": "e56194301a6e3ab3e7d2ebb5c5d783edec7701c154c9802c50567b6fd70e972f",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "09-Collybia_rivulosa.png",
+      "sha256": "c33f02102c3600b9c2ac4cd2414476f0834c242ddc9522f437ffea17c632889d",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "10-Hygrophorus_russula.png",
+      "sha256": "7d5d01f74c35eef323a4643a08ffec5fb21f49ae4f59c91ec11a1296cbbcd021",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "11-Entoloma_sinuatum.png",
+      "sha256": "f884afb2f5b6c0c1443367ccc7b30b41cb6d785fcbde171db20b41cae47bffc1",
+      "status": "Correct",
+      "inspection": "410px contact sheet and individual original",
+      "note": "Pink gills flow continuously down the stem. Draw a clear sinuate/notched attachment and separate blades; preserve cream-grey cap and salmon mature gills."
+    },
+    {
+      "file": "12-Boletus_edulis.png",
+      "sha256": "476cde18d4c939312fc52bc4b40553005405c366dad8bd16b11725fcb1b728b2",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "13-Boletus_reticulatus.png",
+      "sha256": "b5ee109534d8b4bf369923928c2efdb6ef9abde99ff299ab7bc4053834220f23",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "14-Boletus_aereus.png",
+      "sha256": "6e124cee8a8c6f18535593c1f2f4a9e4592de50d7d4cdaaba59b00b229142f22",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "15-Boletus_pinophilus.png",
+      "sha256": "1d7adcfae7a44ee823b6de7fe4e7b4f4dc0e663a0ab0ed953c80c44eda5e8c83",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "16-Leccinellum_lepidum.png",
+      "sha256": "eaf7b8864dfb550e9b4c0b91ae3efd68fe20effb44af46c348adccd57b1ac782",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "17-Amanita_verna.png",
+      "sha256": "cea721a3038649e0e74d6070ca591732d8ca3b13bbdd5e83eb4e3e4cf4b65e88",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "18-Cortinarius_orellanus.png",
+      "sha256": "8a6c85171d6e2789b6c03e6474c2da4b2c2bbe4d425566e25712b919806acd56",
+      "status": "Correct",
+      "inspection": "410px contact sheet and individual original",
+      "note": "Both specimens carry a substantial hanging skirt-like veil. Replace it with sparse ephemeral cobweb fibres or faint rusty remnants, without a solid ring."
+    },
+    {
+      "file": "19-Cortinarius_rubellus.png",
+      "sha256": "7e1fb6cecf555814ecbf15b1be2f2de057d11589e8afad2ee22fdbd73ec48be6",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "20-Craterellus_tubaeformis.png",
+      "sha256": "113da0aa7e17de36b99efd57134037eec032706ced03b53bf5f5e2152f2a4190",
+      "status": "Refine",
+      "inspection": "410px labelled contact sheet",
+      "note": "Use greyer/beige mature underside folds and clearer branching/cross-veins to distinguish it from lutescens. Yellowish undersides occur, so colour alone is not an error."
+    },
+    {
+      "file": "21-Hygrophoropsis_aurantiaca.png",
+      "sha256": "cde72ea0afab16606ef9ebfc16480e9ecc33c799edbfcf2586c82ea3e8aa6e9a",
+      "status": "Refine",
+      "inspection": "410px contact sheet and individual original",
+      "note": "Forking is now visible, but blade edges remain thick and the silhouette very chanterelle-like. Make true gills thinner and more crowded; retain forked orange blades and darker stem base."
+    },
+    {
+      "file": "22-Amanita_phalloides.png",
+      "sha256": "2eb926ba6865fff13eb5e418d6c0ffafe07d093847d95f08b1d5ed6e878eda9b",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "23-Amanita_virosa.png",
+      "sha256": "847afb814079598a0f28e79f10cdd908d4c776d377a0945ce51491facb52f230",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "24-Tricholoma_terreum_v1.png",
+      "sha256": "bc28b6627547b1e5f9edd1f0a6841601616b443d44b1d241213cf010eecce5eb",
+      "status": "Refine",
+      "inspection": "410px labelled contact sheet",
+      "note": "Both versions have very smooth, sharply pointed caps. A more finely felted/scaly surface and less exaggerated adult peak would be more representative. Neither version clearly resolves this; v2 is only a modest visual preference."
+    },
+    {
+      "file": "24-Tricholoma_terreum_v2.png",
+      "sha256": "3bbd84f6cd05da336303f7602475ef2a1b7b2aa0d26c1516c234e011421ee473",
+      "status": "Refine",
+      "inspection": "410px labelled contact sheet",
+      "note": "Both versions have very smooth, sharply pointed caps. A more finely felted/scaly surface and less exaggerated adult peak would be more representative. Neither version clearly resolves this; v2 is only a modest visual preference."
+    },
+    {
+      "file": "25-Tricholoma_portentosum.png",
+      "sha256": "4702eb8973dcfe4fa44e364988fbf5e4631629a1d2919bac0c3427bec5e87544",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "26-Tricholoma_pardinum.png",
+      "sha256": "a90661c638212194aea62b180a980de32216e0867e992e40a526f7f05fb076a5",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "27-Galerina_marginata.png",
+      "sha256": "8b1f581f0a77845b22e8121d57dd3f7a38627c05c1cf5ae4611ed95b25e9e04d",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "28-Pleurotus_ostreatus.png",
+      "sha256": "61f566a09b9e2a8efe102fd540b39a650a58aa5bb50b8732142b99d8fe7d9e09",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "29-Pleurotus_eryngii.png",
+      "sha256": "44ff48c885b59f827bc5fff28dcecd59dee686a602a944c6b0daac78fef66bfb",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "30-Inosperma_erubescens.png",
+      "sha256": "bb6a8140df129806ee0c8bfe8fdeb144d19587ea46b1e233e5c7700d3eccfc59",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "31-Hygrophorus_latitabundus.png",
+      "sha256": "c02b83891a058871af5ba4179a80931966e3023955979f267ec7f53c015d5456",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "32-Hygrophorus_eburneus.png",
+      "sha256": "fac38cd05159acf73a0e2443907a46532e0e598785af5fa893e9fb498b2e0cfd",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "33-Hydnum_repandum.png",
+      "sha256": "388ed6e186dbf877a4947497dd69d9b29392b7699ea674877fd0125ab1144249",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "34-Lactifluus_rugatus.png",
+      "sha256": "3e89edf5b099d44970dde981ce2b1a59054ef4dffa93f5efe8e9768cad2a6637",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "35-Russula_cyanoxantha.png",
+      "sha256": "ed0f5de7c5c7d30ecc0a37f2cea66a2c6ddfdc7c99fa0bbb5c79f46f1f960909",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "36-Russula_virescens.png",
+      "sha256": "48966eaec5493a23f1b63d39f616c5062db79bc127fb19cd230c71587bcec276",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "37-Hygrophorus_marzuolus.png",
+      "sha256": "f9a22a51549fdfd07e9daca6b73c76a073194d7378ae303b4f21965574ebeab1",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "38-Rubroboletus_satanas.png",
+      "sha256": "d02d93204a8deeb7beb4183bd5017f55686e244c29c93bf3b192a4d1efbf92e7",
+      "status": "Refine",
+      "inspection": "410px labelled contact sheet",
+      "note": "Pale cap, red pores and swollen red/yellow stem are clear. Fine red stem reticulation is not visible; add it if the icon will be enlarged."
+    },
+    {
+      "file": "39-Tylopilus_felleus.png",
+      "sha256": "a5fb9cae0142a575d208114f8ecda700e0819ec460bcb32f370f8c8b535848a3",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "40-Calocybe_gambosa.png",
+      "sha256": "a79b1e2849e17b176759113f4b76632b3d89a88a183c4084bbb0dd98d3fa55a3",
+      "status": "Refine",
+      "inspection": "410px contact sheet and individual original",
+      "note": "Gill density is improved, but the notched attachment is unclear, especially on the tilted specimen. Clarify the notch and narrow close blades."
+    },
+    {
+      "file": "41-Suillus_luteus.png",
+      "sha256": "bb33633c22d78cbb8c140ea9e5a22a6e6132ca8efd1e9910858986cdc8c1e8cc",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "42-Suillus_granulatus.png",
+      "sha256": "918cab8def14694d5d9f6974aea81926a4ce928c6e0b2137b8fb5a8079097f7e",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "43-Morchella_esculenta.png",
+      "sha256": "af35fd5313cb1b482d4607db9c0c154fc67ad90a17d905304ffce8bc9b42e7f6",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "44-Amanita_caesarea.png",
+      "sha256": "3da16072d3520f4f4a58001a3ff304893b74a4b17585e7613708143e3dce69a6",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "45-Lepiota_brunneoincarnata.png",
+      "sha256": "62179338c1c57a2b8593b2164367e8188e588574e5af61802c31a0bfe42aedbd",
+      "status": "Correct",
+      "inspection": "410px contact sheet and individual original",
+      "note": "Persistent flared skirt ring and sparse broad gills remain overemphasized. Use a fragile low-profile annular zone and closer free gills; preserve pink-brown concentric scales and scales below the ring zone."
+    },
+    {
+      "file": "46-Paxillus_involutus.png",
+      "sha256": "1624f09243fb3f002ab4241ba850f5b1b66b69e8f1303c1cd16dc153517b8855",
+      "status": "Refine",
+      "inspection": "410px labelled contact sheet",
+      "note": "Inrolled brown margin reads well. Underside remains a few thick descending ribs; make crowded thin true gills, with branching near the stem."
+    },
+    {
+      "file": "47-Calvatia_gigantea.png",
+      "sha256": "8a56f863106c9d50aa6b30ea40a22db66dba91a968295fa509570b22c5b9b840",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "48-Lycoperdon_utriforme.png",
+      "sha256": "6f8befb29666f861e5e24c190434d1f7898f1b01aaacf71959ea30a7dc518d8a",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "49-Lycoperdon_perlatum.png",
+      "sha256": "c5a48377194f641edb009d7f145fc224fc0f16963f177cf6558642f57be16b21",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "50-Ramaria_formosa.png",
+      "sha256": "77f0cc8164e91112bf0372628d7718bb4716712c59fd925e9fe8d2ce9f1c08fd",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "51-Ramaria_aurea.png",
+      "sha256": "20304bc3dc645ee506229700cdeca80ef9db47ee5a00601bec03f174fe43a4e1",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "52-Lepista_nuda.png",
+      "sha256": "b8ff2f9d2065ff1671e126beae2f53e455ed8962fc45b42235f1d7a3a8e6e873",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "53-Lactarius_deliciosus.png",
+      "sha256": "f435b6321fb4b02d4cf619811b7bfb2b8f67cca2b4796c95bad0d2ef762c9669",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "54-Lactarius_chrysorrheus.png",
+      "sha256": "d220935947a139f8fd53db2faa34545ec23fef351e2696bb569e23757a1bcfd3",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "55-Amanita_pantherina.png",
+      "sha256": "387554bc94fc3474690a1ecaf90898d0b6834f33282e997ba486c8d4388e7f5d",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "56-Cyclocybe_cylindracea.png",
+      "sha256": "d20a4bc802de98e2e468a2ef1b5e2be780996369c5d1d99e6825c3482c5a989c",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "57-Amanita_muscaria.png",
+      "sha256": "a72effa002264db0a0c796165b1013363c3aa739dfa164e3a0f897e8624148b4",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "58-Cantharellus_cibarius.png",
+      "sha256": "96704c9bec4a9f5969f0d702768b4aee0d4a3cfdabcc96f5385cf90aa9e57116",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "59-Lactarius_sanguifluus.png",
+      "sha256": "ea08a01a166e7728ad69f3367238d20585d8742ff4f1fce7395f8035eadabfe6",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "60-Lactarius_torminosus.png",
+      "sha256": "685eb22c31b2ff127b55478fb3f4f3fa7cb296454044cc41dd4768e76fcec196",
+      "status": "Screened",
+      "inspection": "410px labelled contact sheet",
+      "note": "No conspicuous contradiction found in visible colour, silhouette and major structures at screening scale. Not exhaustive species validation."
+    },
+    {
+      "file": "61-Tuber_melanosporum.png",
+      "sha256": "d4273415097c5aaf9f739bf3d26ee0d2c64620cd0d76c79548051983ae0bcc0a",
+      "status": "Refine",
+      "inspection": "410px labelled contact sheet",
+      "note": "Dark warty exterior and pale internal marbling read correctly at icon scale. Finer more numerous branching veins would improve an enlarged educational depiction."
+    },
+    {
+      "file": "62-Craterellus_cornucopioides.png",
+      "sha256": "70692561865d5eb6c4960a34c8bc5f36e8a423396bc9efba6a05d63584a1c1c7",
+      "status": "Refine",
+      "inspection": "410px labelled contact sheet",
+      "note": "Dark hollow trumpet reads correctly. Soften the long high-contrast outer ribs into low irregular wrinkles so they do not suggest true gills."
+    }
+  ]
+}

@@ -5,3 +5,5 @@
 /social export-ignore
 /.codex-tmp export-ignore
 /video/assets export-ignore
+
+/assets export-ignore

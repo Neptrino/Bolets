@@ -8,15 +8,30 @@ This is the entry point for visual production. Use the [operating playbook](inst
 
 | Content to create | Approved reference / reusable resources |
 | --- | --- |
-| Photographic celebration or editorial Story | [Approved Diada](../social/asset-library/style-references/photographic-story/approved-diada/README.md) and [renderer](../social/asset-library/templates/diada/README.md) |
-| Illustrated field lesson | [Approved litter carousel](../social/asset-library/style-references/illustrated-field-guide/approved-litter/contact-sheet.jpg), [Magnific prompt](../social/asset-library/style-references/illustrated-field-guide/prompt-template.md), [responsible-forest template](../social/asset-library/templates/responsible-forest/) |
-| «Quin arbre?» and mushroom close-ups | [Forest discoveries templates](../social/asset-library/templates/forest-discoveries/README.md); whole-tree covers and checked mushrooms for tree lessons, real photographs for close-ups |
-| Mushroom or botanical artwork | [Visual catalogue](../social/illustration-catalogue/index.html), [extracted stock](../social/asset-library/illustrations/by-species/README.md), [photo-derived additions](../social/asset-library/illustrations/species-additions/2026-09-10/) |
-| Story following a carousel | [Story-frame wrapper](../social/asset-library/templates/story-frame/README.md); fit the complete slide instead of cropping it |
-| Cinematic Reel | [Autumn Reel sources](../social/asset-library/templates/autumn-reels-v2/README.md) and existing campaign compositions |
+| Photographic celebration or editorial Story | [Approved Diada](../assets/style-references/photographic-story/approved-diada/README.md) and [renderer](../assets/templates/diada/README.md) |
+| Illustrated field lesson | [Approved litter carousel](../assets/style-references/illustrated-field-guide/approved-litter/contact-sheet.jpg), [Magnific prompt](../assets/style-references/illustrated-field-guide/prompt-template.md), [responsible-forest template](../assets/templates/responsible-forest/) |
+| «Quin arbre?» and mushroom close-ups | [Forest discoveries templates](../assets/templates/forest-discoveries/README.md); whole-tree covers and checked mushrooms for tree lessons, real photographs for close-ups |
+| Mushroom or botanical artwork | [Visual catalogue](../social/illustration-catalogue/index.html), [extracted stock](../assets/illustrations/by-species/README.md), [photo-derived additions](../assets/illustrations/species-additions/2026-09-10/) |
+| Story following a carousel | [Story-frame wrapper](../assets/templates/story-frame/README.md); fit the complete slide instead of cropping it |
+| Cinematic Reel | [Autumn Reel sources](../assets/templates/autumn-reels-v2/README.md) and existing campaign compositions |
 | Verified conditions | Signed daily/weekend workflow in the operating playbook; never recreate live readings manually |
 
-The [asset library](../social/asset-library/README.md) owns resource locations, provenance and checksums. Its files are local and Git-ignored; these links require the local library and do not imply a backup.
+The [asset library](../assets/README.md) owns resource locations, provenance and checksums. Its files are local and Git-ignored; these links require the local library and do not imply a backup.
+
+## Editorial branding update · 18 September 2026
+
+For new manual editorial posts and Reels, omit the logo and small account wordmark: Instagram already displays the account. Keep recognition through the shared typography and palette. Include a website address only when it serves the call to action. This supersedes logo requirements below for new manual editorial work; frozen references and signed automated condition cards remain unchanged.
+
+## Manual product Reels · working preset, 18 September 2026
+
+Use this preset for the current 15-Reel campaign. It incorporates the user's request for smaller text and more transparent backing; it is a review draft, not a newly approved frozen reference. The source renderer is `assets/templates/product-reels-balanced/render.mjs`.
+
+- At 1080 × 1920, use Avenir Next Heavy headlines at 82 px (78 px for longer copy), 60 px beside a product capture, and 35 px supporting text. Aim for two headline lines; shorten copy before adding a third. These are export-space measurements, not website UI type sizes.
+- Use one measured flat dark backing per text group at **60% opacity / 40% transparency**, with 16 px vertical padding. Apply it once: exclude it from the lettering shadow pass. Keep the fine letter contour and shadow separate. Avoid a box around every line and large opaque slabs.
+- Preserve natural footage colour and sharpness. Keep any global neutral contrast adjustment modest (current preset: 12% black); never add a pale colour wash to imply a cinematic style. Animate still photos with restrained pan/zoom and product screenshots with short eased entrances. Keep UI text readable after the motion settles.
+- Use varied, current app captures matched to each Reel's species and subject. Preserve the selected Cep photo and the seven-species spread. Include some full-screen app sequences; edited tap/scroll demonstrations must not be described as newly recorded live interactions.
+- Do not add an example label, capture date or credit footer to the video composition. Keep reference dates, authorship, licence and generation provenance in captions and internal records; preserve the app's native UI and source attributions.
+- Check the rain and yellow-mushroom scenes as contrast stress cases at phone size, and check every scene for wrapping. Retain the previous export until the new version is reviewed. A darker panel alone is not evidence of better design.
 
 ## Creative direction
 
@@ -28,7 +43,7 @@ Use the shared palette, type and margins from [`src/lib/instagram-design.ts`](..
 
 ## Format-specific rules
 
-Automatic image follow-up Stories must have their own 1080 × 1920 export. Never attach a 4:5 carousel cover directly or crop it to fill the screen. Fit the complete artwork, including its credits and logo, inside the shared Story safe area on a solid forest background. The reusable local wrapper is `social/asset-library/templates/story-frame/render.mjs`; it reads dimensions, margins and colour from the shared design module. Verify the actual uploaded dimensions and saved Story media, not just the source file. Existing 9:16 videos require a separate visual check.
+Automatic image follow-up Stories must have their own 1080 × 1920 export. Never attach a 4:5 carousel cover directly or crop it to fill the screen. Fit the complete artwork, including its credits and logo, inside the shared Story safe area on a solid forest background. The reusable local wrapper is `assets/templates/story-frame/render.mjs`; it reads dimensions, margins and colour from the shared design module. Verify the actual uploaded dimensions and saved Story media, not just the source file. Existing 9:16 videos require a separate visual check.
 
 | Format | Composition | Boundary |
 | --- | --- | --- |
@@ -46,7 +61,7 @@ For the manual illustrated series, use the full [soil/ground logo](../public/bra
 
 ## Photographic editorial Stories
 
-The [approved Diada Story](../social/asset-library/style-references/photographic-story/approved-diada/README.md) is the reference for this treatment. Keep the picture full-frame and recognisable. Place text in its quieter areas, aligned to one left edge, with a small full-soil logo and wordmark, a short date/topic label, a heavy cream headline and at most one supporting sentence. Orange is an accent, not a second headline colour by default.
+The [approved Diada Story](../assets/style-references/photographic-story/approved-diada/README.md) is the reference for this treatment. Keep the picture full-frame and recognisable. Place text in its quieter areas, aligned to one left edge, with a small full-soil logo and wordmark, a short date/topic label, a heavy cream headline and at most one supporting sentence. Orange is an accent, not a second headline colour by default.
 
 For contrast, start with a subtle uniform translucent forest overlay and a soft dark shadow behind the editable text. The approved reference uses a 28% overlay, 5 px shadow blur and 3 px vertical shadow offset. These are a starting point, not a guarantee of contrast on another image. Inspect at phone size against the actual light and dark details behind each line; reposition or shorten text if it remains difficult to read. Do not solve contrast by covering a large part of the photograph with an opaque panel. Avoid pale glows around letters. Keep the basket, mushroom subject and meaningful flag details visible.
 
@@ -67,7 +82,7 @@ Write clear, natural Catalan with one useful action. Identification education mu
 
 ## Rendering and source ownership
 
-Reusable originals, provenance and manual templates live in [the asset library](../social/asset-library/README.md). Campaign exports live under `social/`, indexed in [social/README.md](../social/README.md). These local resources are ignored by Git except for that index; do not assume that their presence means they are committed or backed up. Keep runtime renderers and canonical brand resources in their existing source locations.
+Reusable originals, provenance and manual templates live in [the asset library](../assets/README.md). Campaign exports live under `social/`, indexed in [social/README.md](../social/README.md). These local resources are ignored by Git except for that index; do not assume that their presence means they are committed or backed up. Keep runtime renderers and canonical brand resources in their existing source locations.
 
 | Task | Entry point |
 | --- | --- |
@@ -76,7 +91,7 @@ Reusable originals, provenance and manual templates live in [the asset library](
 | Simulated daily preview | `npx tsx scripts/preview-instagram-daily.tsx` → `social/daily-style-preview/` |
 | Simulated weekend preview | `npx tsx scripts/preview-instagram-weekend.tsx [map-image-path]` → `social/weekend-redesign/` |
 | Generic JSON cover draft / profile kit | [Template commands](../templates/instagram/README.md) |
-| Manual illustrated carousel / Reel | [Asset-library render commands](../social/asset-library/README.md#render-from-the-library) |
+| Manual illustrated carousel / Reel | [Asset-library render commands](../assets/README.md#render-from-the-library) |
 
 The photo editor offers Fotografia, Titular and Peu de camp presets, branding choices and top/bottom text placement. Photos stay in browser memory; downloads and publishing are separate actions. Prefer clean photographs, reserving full text panels for short educational headlines.
 

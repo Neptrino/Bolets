@@ -13,7 +13,7 @@ describe("map discovery metadata", () => {
     const updatedAt = getEditorialMetadata("map").updatedAt;
     expect(updatedAt).toBe("2026-09-14");
     expect(buildSitemap().filter(({ url }) => url === "https://bolets.app/map"))
-      .toEqual([{ url: "https://bolets.app/map", lastModified: new Date(`${updatedAt}T00:00:00+02:00`) }]);
+      .toEqual([{ url: "https://bolets.app/map", lastModified: new Date(`${updatedAt}T00:00:00Z`) }]);
     expect(editorialArticleFields("map").dateModified).toContain(updatedAt);
   });
 });

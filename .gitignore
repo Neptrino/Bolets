@@ -34,6 +34,9 @@ build-config.json
 # Stock footage staged for Instagram renders (source: ~/Desktop/Bolets/Resources)
 video/assets/stock/
 
-# All social-media content (Instagram renders, campaign packs, asset library) lives here; only the index is tracked
+# Local social-media renders and campaign packs; only the index is tracked
 social/*
 !social/README.md
+
+# Reusable local creative library; not automatically backed up.
+/assets/

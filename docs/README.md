@@ -35,6 +35,9 @@ Use this index for current guidance and open plans. Dated research and completed
 | [Optional mycological review](mycological-review-checklist.md) | Future review checklist; no reviewer appointed or review planned |
 | [Species field cards](species-field-cards.md) | Illustrated card assets, provenance, previews and downloads |
 | [Illustration audit — 20 September](archive/field-card-illustration-review-2026-09-20.md) | Dated screening of all 62 cards; correction priorities and limits |
+| [Species icon audit — 20 September](archive/species-icon-review-2026-09-20.md) | Dated raw-icon screening; eight priority corrections |
+| [Numbered species icon review — 20 September](archive/species-icon-numbered-review-2026-09-20.md) | Current 61 PNGs: four corrections and nine refinements |
+| [Regenerated species icons — 20 September](archive/species-icon-recheck-2026-09-20.md) | 62 species present; remaining free-gill correction and blade refinement |
 
 ## Instagram
 
@@ -45,7 +48,7 @@ Use this index for current guidance and open plans. Dated research and completed
 | [Next content plan](instagram-content-plan-september-october-2026.md) | Proposed 21 September–4 October calendar, live September 8 performance and production briefs |
 | [Visual style](instagram-style-guide.md) | Start here for production: formats, approved visual references, typography, contrast and reusable assets |
 | [Illustrated carousels](instagram-illustrated-carousel-style.md) | Approved manual field-guide illustration style |
-| [Asset library](../social/asset-library/README.md) | Reusable creative sources, provenance and templates |
+| [Asset library](../assets/README.md) | Reusable creative sources, provenance and templates |
 
 ## Keeping this folder useful
 

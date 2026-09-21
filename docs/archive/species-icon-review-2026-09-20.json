@@ -1,0 +1,502 @@
+{
+  "date": "2026-09-20",
+  "scope": "62 raw PNG species icons; 8 priority cases enlarged plus Lactarius torminosus follow-up; no image edits",
+  "items": [
+    {
+      "file": "agaricus-campestris.png",
+      "sha256": "b7bc49d813ae6a6f0ee773bdc0697dadcae1e10a8d2c0106dde50c7fbc617575",
+      "status": "Refine",
+      "note": "Pink/brown gills and lack of a volva are useful. Ring looks like a substantial fixed collar; make it more delicate if refining this icon.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "amanita-caesarea.png",
+      "sha256": "30de2ec0aa5149f2573ea6e9e0f1b6ca187921e532ba18ee818e4dd36b5b6986",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "amanita-muscaria.png",
+      "sha256": "0499ccd5be6ad623ce3ccf7bb7199ab78c2ea663237b316a1c670b1acd349239",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "amanita-pantherina.png",
+      "sha256": "0fc133e2caa30f6506a39218dd7561d89e4a835d38b577940e25a291d31bed03",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "amanita-phalloides.png",
+      "sha256": "f3922944758740b2a82eee054f1856bcc4490e64ef9dd441568d43302784ee34",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "amanita-verna.png",
+      "sha256": "963262db8a5557f69dea49630e7dd0ecaffb5cc418bc6d740487361f4aef0bf9",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "amanita-virosa.png",
+      "sha256": "c73a31771cc67bd0b25873f75ba0b7023b1f6bfcca5db59d7dd9bec1159f2143",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "boletus-aereus.png",
+      "sha256": "55f7fc1e6d517dd27ae29e33df8cab3b7cb91616a98bcd61bf87acda3cbf2f1a",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "boletus-edulis.png",
+      "sha256": "293f2322935abad0a765f2dcff088e614a3a50dd7820279a4aa54145760ac328",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "boletus-pinophilus.png",
+      "sha256": "774f9213b555b5ae02272089e3ee70cc54d94d9c516499c2b2b4c5732591b630",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "boletus-reticulatus.png",
+      "sha256": "eb7e509941d22ab49bdf8799ea415da7620617f896715e6c01974010ec32a5e5",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "calocybe-gambosa.png",
+      "sha256": "adccbd423ea397f04547af04420f9a62a28f9131d9470a3b945388424862f1d2",
+      "status": "Correct",
+      "note": "Only a few broad underside spokes are visible. Make the gills numerous, narrow and close, with an appropriate notched attachment; the present icon resembles a waxcap underside.",
+      "reference": "https://www.aranzadi.eus/buscador-micologico/ficha/1-1-003.02.27.00.01.00?from=gallery&limit=25",
+      "inspection": "390px labelled sheet; also 800px individual view"
+    },
+    {
+      "file": "calvatia-gigantea.png",
+      "sha256": "a2723e8535f45fee23d1fa874f51585a74da73ea3da3933d98f10ff9d2155fb9",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "cantharellus-cibarius.png",
+      "sha256": "7f8ae4e9b8e10db8af7b973c33752c56a7919dc31e659ca4d7455c8d904b05f2",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "chroogomphus-rutilus.png",
+      "sha256": "c9ff389ada66ccad151df88bd73eb460b252f039e1fdf3e4d5166421fd737158",
+      "status": "Correct",
+      "note": "The dark underside is almost a solid plate with a few diagonal marks ending at the cap/stem boundary. Make distinct broad spaced gills run visibly down the stem. Do not treat olive shades alone as proof of a wrong species.",
+      "reference": "https://asmicas.org/es/2016/08/04/chroogomphus-rutilus/",
+      "inspection": "390px labelled sheet; also 800px individual view"
+    },
+    {
+      "file": "collybia-rivulosa.png",
+      "sha256": "8d440fe08236ef6e6bc171bb45cfb59e381d03394c81d4f39ed5e062526b600b",
+      "status": "Refine",
+      "note": "Underside is too schematic to clearly separate its attachment from Marasmius. Clarify slightly descending blades and cap surface zoning. Sources vary on gill spacing; do not make spacing alone a categorical error.",
+      "reference": "https://micologica-barakaldo.org/clitocybe-rivulosa/",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "coprinus-comatus.png",
+      "sha256": "8eee02739b7124c2b3787a92a2d62317db2cda2814fda284c9d734ecf46c3781",
+      "status": "Refine",
+      "note": "Deliquescent black edge and cylindrical cap are clear. White cap decoration reads as scalloped tiers; a few irregular shaggy flakes would convey the species more clearly.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "cortinarius-orellanus.png",
+      "sha256": "812f93a048d217da7a7394c8b7d8259f22a516bfcce86ff0dde27757ae06ab6b",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "cortinarius-rubellus.png",
+      "sha256": "3d8dd19ff85100cff8d3c2abcb52fd9ebc24795ce22e12ff7ce823497cb76cef",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "craterellus-cornucopioides.png",
+      "sha256": "3e1a99362f8662d5b17f35d6f1b6f8651d09e49674fa0fd0ae4c3335da0ad67b",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "craterellus-lutescens.png",
+      "sha256": "792a2c115dc9b145cb51a0db0f9c8ec7b43d0eb016e268a5fd9482ed0900e15b",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "craterellus-tubaeformis.png",
+      "sha256": "fceeac9a72afad4fd7b3f881c5bda05daa2c34f4d0b5e32da1d436c0e00a0561",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "cyclocybe-cylindracea.png",
+      "sha256": "8787e702d7acf14916f6fe48405f447e927369aec12c7a39b8a9f9c17103fe28",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "entoloma-sinuatum.png",
+      "sha256": "86f664cd34bd77d1b35400796b0db8bf00dfa6c2a60e33f7b5272253d7afe91b",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "galerina-marginata.png",
+      "sha256": "b75f9eb2f386c11e9c7b08bb5983e7f7ed713db6d1095ededbb66eeaedbf06ee",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "gyromitra-esculenta.png",
+      "sha256": "d7ee25744867ee795d6f578f921720881336e1c5d7d271e85875d3a4d5e0fe32",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "hydnum-repandum.png",
+      "sha256": "1c8eb61b4f41ac61433a4d7475f25e55388ea85e6581d61a4c5f62c898b1857f",
+      "status": "Refine",
+      "note": "Teeth are visible, but arranged like a fringe of long drops mainly at the rim. Distribute shorter teeth across the underside while retaining the irregular cream cap.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "hygrophoropsis-aurantiaca.png",
+      "sha256": "877999c376641ec4c638aee11492ce41f15c317005bff69160270475db04d5ed",
+      "status": "Correct",
+      "note": "Underside drawn as a few forked ridges on a chanterelle-shaped trumpet. Show thin, crowded, repeatedly forked true gills and a clearer distinction from Cantharellus.",
+      "reference": "https://www.mushroomexpert.com/hygrophoropsis_aurantiaca.html",
+      "inspection": "390px labelled sheet; also 800px individual view"
+    },
+    {
+      "file": "hygrophorus-eburneus.png",
+      "sha256": "ee03e0a499671860e27d5fa0f6f3d7e90c5714117a38f96f13fb83f09aca038d",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "hygrophorus-latitabundus.png",
+      "sha256": "488114468deb979ada911596c154a621618c7e9a2cc78fb5e320e3a0786684fd",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "hygrophorus-marzuolus.png",
+      "sha256": "2390e429dd616942cd632358bc0b9558dad40cedcdb4ba783e0b8a9d3387af73",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "hygrophorus-russula.png",
+      "sha256": "951b1707eeec58913e44e20cce71c800a1ca2335b29defeb5c3da80d4408955c",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "inosperma-erubescens.png",
+      "sha256": "f177bacae424fa32a7357f0184dfa342770ee8624141de468b75a237a9eed996",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "lactarius-chrysorrheus.png",
+      "sha256": "3fdcc9fa24fa4465a2ad6d25749af7cb09dbd6ebce6085eed7b0cdfc8ff73c31",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "lactarius-deliciosus.png",
+      "sha256": "78192a9ed1782c3b1f74dcca145af6d5b95bde8cb17412af7e75844e8f1b6d0a",
+      "status": "Correct",
+      "note": "Underside appears as sparse broad folds merging into the stem. Use numerous distinct close gill blades. Keep orange latex, zoning and green staining; these cues are useful.",
+      "reference": "https://micoex.org/2016/09/17/lactarius-deliciosus/",
+      "inspection": "390px labelled sheet; also 800px individual view"
+    },
+    {
+      "file": "lactarius-sanguifluus.png",
+      "sha256": "9779d84379fb21ac989368751994c661a50a83af001b0fe133d0471a578c918a",
+      "status": "Correct",
+      "note": "Same sparse-fold problem as Pinetell. Use close narrow true gills, with appropriate pale/vinaceous tones. Keep the wine-red latex distinction.",
+      "reference": "https://micologica-barakaldo.org/lactarius-sanguifluus/",
+      "inspection": "390px labelled sheet; also 800px individual view"
+    },
+    {
+      "file": "lactarius-torminosus.png",
+      "sha256": "4c7a8b8e3369180c1dbedd3ed94b0f0f8092101fa9c4b157097f4537038e9fb0",
+      "status": "Refine",
+      "note": "Recognizable salmon-pink zoned milkcap, but the margin looks like a thick scalloped cotton trim rather than shaggy fibres on an inrolled cap edge. Replace rounded lobes with irregular fine tufts; draw thinner closer cream gills. Keep pink zoning and white latex. This is a fidelity refinement, not a claim that the species is wholly wrong.",
+      "reference": "https://www.aranzadi.eus/assets/files/urola-kosta-bailarako-perretxikoak-espanol.pdf",
+      "inspection": "390px labelled sheet and individual 2048px source (displayed at 1600px)"
+    },
+    {
+      "file": "lactifluus-rugatus.png",
+      "sha256": "dba8faa1898ae6dc05422f1de3db7be70b4c056a34a0f5b81a65762bcf19c784",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "leccinellum-lepidum.png",
+      "sha256": "c2053796e18bce7aa0f959d32b6b0017dc600e413aee20c1add537b658ca2a0b",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "lepiota-brunneoincarnata.png",
+      "sha256": "87b6ef082afd07831428df421ede3108d5b5aea5cefc73327d92f7d1b24565dc",
+      "status": "Correct",
+      "note": "Conspicuous hanging skirt ring, tall parasol habit and a handful of large brown spots make this read like a miniature Macrolepiota. Use a compact representative silhouette, fine concentric brown/purplish scales and a faint collar-like ring zone. No absolute size can be inferred from this unscaled icon.",
+      "reference": "https://www.ambbresadola.it/lepiota-brunneoincarnata/",
+      "inspection": "390px labelled sheet; also 800px individual view"
+    },
+    {
+      "file": "lepista-nuda.png",
+      "sha256": "c4f0ff003949da0b5e05be84b5c0ccc59ada26226c0e181aa281fb124f3f65fb",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "lycoperdon-perlatum.png",
+      "sha256": "ce80d8b2e55935a920a879aee8b2fa7186f63a88d176111833dd90c65e3c2004",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "lycoperdon-utriforme.png",
+      "sha256": "0b2be1a7c2815752ad25c2d28b2ba34e3554f7c56da8c880b92ee46fac280d2c",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "macrolepiota-procera.png",
+      "sha256": "92547f982bff1dc4402f25f035bbda73059847d84a1c5e256c811211fc1cb639",
+      "status": "Refine",
+      "note": "Tall parasol silhouette and snakeskin stem are useful. The ring is simplified to a small single collar; a coherent double-edged ring would strengthen it without adding a second separate ring.",
+      "reference": "https://www.mushroomexpert.com/macrolepiota_procera.html",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "marasmius-oreades.png",
+      "sha256": "e8bc1ec44a33b2706058a9675d6c8801236dea5502c6271fe5aca043edeb1aa0",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "morchella-esculenta.png",
+      "sha256": "0ef30d6eee645a3b09d31f6b5b6c9650a697767ddcc6d8f2175300e994ae2bb4",
+      "status": "Refine",
+      "note": "Cap reads as isolated dark holes in a solid surface. Connected irregular honeycomb ridges would communicate the intended structure better; broad silhouette remains recognizable.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "omphalotus-olearius.png",
+      "sha256": "0cf150f4fd1d43a65dddc12020f7cfbcd7b6937644d2118660d5983f057c88c8",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "paxillus-involutus.png",
+      "sha256": "119f8f28bfefbd82be7e9fcec44fc03ecfcc322861955e8a475f95d1f3ab1e52",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "pleurotus-eryngii.png",
+      "sha256": "b130a71751c4031e2294a7fff47f32fd5c57179a1fef7e853d922f11aa333efa",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "pleurotus-ostreatus.png",
+      "sha256": "ccbd1f3fe4054a4b5daa19c98d8ed5dee3785d1be0e4d7b665ce7942bfed9874",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "ramaria-aurea.png",
+      "sha256": "b44b4931cd60e84c9714dc27c716e266ae71927eb1611e49cfbb377387c84fe5",
+      "status": "Refine",
+      "note": "Colour and coral concept read correctly, but rounded finger-like branches are very sparse. A denser repeatedly branched silhouette would be more representative.",
+      "reference": "https://www.aranzadi.eus/buscador-micologico/ficha/1-2-005.24.03.00.64.00?from=gallery",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "ramaria-formosa.png",
+      "sha256": "846b0681d9e6b1201903fb97d3e9d421d817282b9a2edcf94dada0ef2f4ac054",
+      "status": "Refine",
+      "note": "Pale base, salmon branches and yellow tips are useful. Add finer repeated branching; current outline looks like a few blunt fingers.",
+      "reference": "https://www.mushroomexpert.com/ramaria_formosa.html",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "rubroboletus-satanas.png",
+      "sha256": "7117daead79fbc2545bc7a30a235eb4fcb56bb5cba503264c4cd47c5617f50e0",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "russula-cyanoxantha.png",
+      "sha256": "d297f2cb534e6318cffadd7df0df94dc178921fe02aef007fb36af291d289543",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "russula-virescens.png",
+      "sha256": "60feae050abb92df99ab9ca8b47c7567150d1f2a1982469f8591976cb700410b",
+      "status": "Correct",
+      "note": "Large smooth green camouflage patches replace the characteristic cracked surface. Show a connected field of small irregular angular green patches separated by pale cracks; retain the robust white stem.",
+      "reference": "https://www.aranzadi.eus/buscador-micologico/ficha/1-1-004.01.01.05.02.00?from=gallery",
+      "inspection": "390px labelled sheet; also 800px individual view"
+    },
+    {
+      "file": "suillus-granulatus.png",
+      "sha256": "052bc93e04f222e973728fe4b0f7c02534ccde3933e3da9af9766e773f1b2af7",
+      "status": "Correct",
+      "note": "Drops are amber/orange and read as resin. For the intended young exudation feature make them pale, milky droplets. Ringless stem and glandular dots are useful existing cues.",
+      "reference": "https://www.mushroomexpert.com/suillus_granulatus",
+      "inspection": "390px labelled sheet; also 800px individual view"
+    },
+    {
+      "file": "suillus-luteus.png",
+      "sha256": "91eb4a145e71a581d034b655d29a33d53cd3a58d8b72b0bf703b3c19dfdd0075",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "tricholoma-pardinum.png",
+      "sha256": "e99ab40ae18f51c9d02c60a5c2d3a99f7cee2292d6b560c97307fb47d582c227",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "tricholoma-portentosum.png",
+      "sha256": "997cd4266cf1c90124ef925828259a7cfe80d70332f2ae8df10653d879e54d98",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "tricholoma-terreum.png",
+      "sha256": "15a1a9d7a1a63990576ed98306f585b914cfe5d79340ab58ad4b0bbe6394e193",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "tuber-melanosporum.png",
+      "sha256": "ff2713a63a83a0bf35d607656e9aa71e376b78c57f34ad8d24e411b89aa1d201",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    },
+    {
+      "file": "tylopilus-felleus.png",
+      "sha256": "b4dcc006b7c634d5b358da8e65ba406582ebe0488e3f003612508dae7bd31369",
+      "status": "Screened",
+      "note": "No conspicuous species-level contradiction found in overview screening; not an exhaustive validation.",
+      "reference": "",
+      "inspection": "390px labelled sheet"
+    }
+  ]
+}

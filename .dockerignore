@@ -26,3 +26,6 @@ outputs
 .claude
 .DS_Store
 **/.DS_Store
+
+# Root-level creative source library.
+assets

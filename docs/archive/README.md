@@ -6,6 +6,12 @@ The older SEO/species gap lists predate later catalogue additions; reconcile can
 
 ## Reports and receipts
 
+- [Species icons — regenerated-set recheck, 20 September 2026](species-icon-recheck-2026-09-20.md) · [62-file inventory](species-icon-recheck-2026-09-20.json)
+
+- [Numbered species icons — current-folder review, 20 September 2026](species-icon-numbered-review-2026-09-20.md) · [61-file inventory](species-icon-numbered-review-2026-09-20.json)
+
+- [Species icon review — 20 September 2026](species-icon-review-2026-09-20.md) · [62-file inventory](species-icon-review-2026-09-20.json)
+
 - [Field-card illustration review — 20 September 2026](field-card-illustration-review-2026-09-20.md) · [source hashes and inventory](field-card-illustration-review-2026-09-20.json)
 
 - [Cloudflare incident-window review — 16 September 2026](cloudflare-latency-review-2026-09-16.md)

@@ -24,7 +24,8 @@ Start with the [documentation index](docs/README.md) and [repository guidance](A
 | `tools/` | Standalone local tools, including Photo Studio |
 | `docs/` | Active guidance and explicitly open plans |
 | `docs/archive/` | Dated research, receipts and historical source bundles |
-| [social/](social/README.md) | Local social campaigns, exports and reusable creative sources; only its index is tracked |
+| [assets/](assets/README.md) | Local reusable creative sources, provenance and templates; Git-ignored |
+| [social/](social/README.md) | Local social campaigns and exports; only its index is tracked |
 | `artifacts/` | Ignored generated captures, previews and diagnostic material used by scripts |
 | `output/` | Ad-hoc local deliverables or in-progress work; review files before committing |
 | `.codex-tmp/` | Ignored session scratch files and temporary tooling; retained research belongs in the archive |
