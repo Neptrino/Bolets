@@ -384,6 +384,6 @@ test("safety-sensitive pages show editorial status and official escalation", asy
   await expect(page.getByText(/061 Salut Respon/).first()).toBeVisible();
 
   await page.goto("/bolets/farinera-borda");
-  await expect(page.locator(".species-official-safety")).toContainText("061 Salut Respon");
+  await expect(page.getByRole("link", { name: "061 Salut Respon" }).first()).toBeVisible();
   await expect(page.locator(".editorial-panel--compact")).toContainText("Editorial, no micològica");
 });

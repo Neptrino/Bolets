@@ -159,7 +159,7 @@ try {
       await page.waitForTimeout(900);
       await smoothScroll(page, ".home-today-feature", 2_000);
       await page.waitForTimeout(1_100);
-      await smoothScroll(page, ".home-intro", 1_500);
+      await smoothScroll(page, ".home-reference", 1_500);
     },
   });
 
