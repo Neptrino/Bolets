@@ -1,19 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowUpRight, CookingPot, Leaf, Search, ShieldAlert, Snowflake, Sprout, Sun, X, type LucideIcon } from "lucide-react";
 import { SpeciesCollection } from "@/components/species-collection";
 import type { CatalogueGroup } from "@/src/lib/catalogue-list";
 import type { SeasonGuideId } from "@/src/lib/season-guides";
 import type { Month } from "@/src/lib/types";
-import { filterCatalogue } from "@/src/lib/catalogue-search";
+import { catalogueSearchQuery, filterCatalogue } from "@/src/lib/catalogue-search";
 import {
   catalogueFilterSearch,
   catalogueGroupOptions,
   catalogueSeasonOptions,
   emptyCatalogueFilters,
   matchesCatalogueFilters,
+  parseCatalogueFilters,
   type CatalogueDirectoryEntry,
   type CatalogueFilters,
 } from "@/src/lib/catalogue-filters";
@@ -52,6 +53,15 @@ function FilterChip({ pressed, count, icon: Icon, label, onToggle }: {
   );
 }
 
+function addressState() {
+  if (typeof window === "undefined") return null;
+  const params = new URLSearchParams(window.location.search);
+  return {
+    query: catalogueSearchQuery(params.get("q") ?? undefined),
+    filters: parseCatalogueFilters({ tipus: params.get("tipus") ?? undefined, estacio: params.get("estacio") ?? undefined }),
+  };
+}
+
 export function SpeciesDirectory({
   species,
   currentMonth,
@@ -65,8 +75,11 @@ export function SpeciesDirectory({
   initialQuery?: string;
   initialFilters?: CatalogueFilters;
 }) {
-  const [query, setQuery] = useState(initialQuery);
-  const [filters, setFilters] = useState(initialFilters);
+  // A back navigation re-renders this page from the router cache with the props of its first
+  // render, not of the filtered address, so the address decides. On a server render and on
+  // hydration both agree, because the server read the same query string.
+  const [query, setQuery] = useState(() => addressState()?.query ?? initialQuery);
+  const [filters, setFilters] = useState(() => addressState()?.filters ?? initialFilters);
   const searched = useMemo(() => filterCatalogue(species, query), [query, species]);
   const matches = useMemo(() => searched.filter((item) => matchesCatalogueFilters(item, filters)), [searched, filters]);
   const filtered = Boolean(query.trim() || filters.group || filters.season);
@@ -74,11 +87,10 @@ export function SpeciesDirectory({
   const toggle = (key: keyof CatalogueFilters, value: CatalogueFilters[typeof key]) =>
     setFilters((current) => ({ ...current, [key]: current[key] === value ? null : value }));
 
-  // Mirror the state in the address so a filtered view can be shared or reloaded.
-  const synced = useRef(false);
+  // Mirror the state in the address so a filtered view can be shared, reloaded or returned to.
   useEffect(() => {
-    if (!synced.current) { synced.current = true; return; }
-    window.history.replaceState(null, "", `/bolets${catalogueFilterSearch(query, filters)}`);
+    const next = `/bolets${catalogueFilterSearch(query, filters)}`;
+    if (`${window.location.pathname}${window.location.search}` !== next) window.history.replaceState(null, "", next);
   }, [query, filters]);
 
   const activeGuides = [
