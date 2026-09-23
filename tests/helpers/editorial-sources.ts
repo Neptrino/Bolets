@@ -30,6 +30,7 @@ export const NON_CONTENT_COMMITS: readonly string[] = [
   "c454c9d", // Warm local guide caches through their production page routes
   "430d7ea", // Extract shared card, panel, pill, label and icon primitives
   "cf653bd", // Share one notice primitive for caveats and safety notes
+  "a20bfad", // Render editorial notes with one Notice component
 ];
 
 const file = (name: string): ContentSource => ({ kind: "file", file: name });
