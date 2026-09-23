@@ -1,0 +1,224 @@
+/* Catalogue layout switch: cards (default), compact grid and list rows. */
+.directory-results-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin: 23px 2px 16px;
+}
+.directory-results-bar .directory-count {
+  margin: 0;
+}
+.directory-layout-control {
+  display: inline-grid;
+  grid-auto-flow: column;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #efe9da;
+}
+.directory-layout-option {
+  position: relative;
+  cursor: pointer;
+}
+.directory-layout-option input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.directory-layout-option span {
+  display: flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: #665d52;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+.directory-layout-option span svg {
+  flex: 0 0 auto;
+  color: var(--clay);
+}
+.directory-layout-option:hover span {
+  background: #f8f3e9;
+  color: var(--bark);
+}
+.directory-layout-option input:checked + span {
+  border-color: rgba(169, 80, 39, 0.34);
+  background: #f2d6b5;
+  color: #5f321f;
+}
+.directory-layout-option input:focus-visible + span {
+  outline: 3px solid var(--pumpkin);
+  outline-offset: 1px;
+}
+
+/* Compact grid: photo, name and edibility only. */
+.species-grid[data-layout="compact"] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.species-grid[data-layout="compact"] .species-card {
+  min-height: 0;
+  justify-content: flex-start;
+  border-radius: 16px;
+}
+.species-grid[data-layout="compact"] .species-card:hover {
+  transform: translateY(-3px);
+}
+.species-grid[data-layout="compact"] .species-card-illustration {
+  height: 168px;
+  border-radius: 15px 15px 0 0;
+}
+.species-grid[data-layout="compact"] .species-card-content {
+  gap: 4px;
+  padding: 12px 14px 14px;
+}
+.species-grid[data-layout="compact"] .species-card h3 {
+  font-size: var(--text-lg);
+}
+.species-grid[data-layout="compact"] .species-card em {
+  font-size: var(--text-xs);
+}
+.species-grid[data-layout="compact"] :is(.species-card-genus, .species-card-description, .species-card-facts, .card-season, .card-link) {
+  display: none;
+}
+
+/* List: one row per species with a thumbnail and the key facts. */
+.species-grid[data-layout="list"] {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+.species-grid[data-layout="list"] .species-card {
+  min-height: 0;
+  flex-direction: row;
+  justify-content: flex-start;
+  border-radius: 14px;
+}
+.species-grid[data-layout="list"] .species-card:hover {
+  transform: translateX(3px);
+}
+.species-grid[data-layout="list"] .species-card-illustration {
+  flex: 0 0 160px;
+  height: auto;
+  min-height: 124px;
+  border-radius: 13px 0 0 13px;
+}
+.species-grid[data-layout="list"] .species-card-illustration .culinary-rating {
+  top: 8px;
+  right: auto;
+  left: 8px;
+  white-space: nowrap;
+}
+.species-grid[data-layout="list"] .species-card-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  grid-template-areas:
+    "genus facts"
+    "heading facts"
+    "description season";
+  align-content: center;
+  gap: 4px 28px;
+  padding: 14px 20px;
+}
+.species-grid[data-layout="list"] .species-card-genus { grid-area: genus; }
+.species-grid[data-layout="list"] .species-card-heading { grid-area: heading; }
+.species-grid[data-layout="list"] .species-card-description {
+  grid-area: description;
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 2px 0 0;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.species-grid[data-layout="list"] .species-card-facts {
+  grid-area: facts;
+  align-self: start;
+  margin: 0;
+}
+.species-grid[data-layout="list"] .card-season {
+  grid-area: season;
+  align-self: end;
+  margin: 0;
+}
+.species-grid[data-layout="list"] .species-card h3 {
+  margin-top: 0;
+  font-size: var(--text-xl);
+}
+.species-grid[data-layout="list"] .card-link {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .species-grid[data-layout="compact"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .species-grid[data-layout="list"] .species-card-content {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "genus"
+      "heading"
+      "description";
+    padding: 12px 14px;
+  }
+  .species-grid[data-layout="list"] :is(.species-card-facts, .card-season) {
+    display: none;
+  }
+}
+
+@media (max-width: 580px) {
+  .directory-layout-control {
+    width: 100%;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+  .directory-layout-option span {
+    justify-content: center;
+  }
+  .species-grid[data-layout="compact"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .species-grid[data-layout="compact"] .species-card {
+    min-height: 0;
+  }
+  .species-grid[data-layout="compact"] .species-card-illustration {
+    height: 132px;
+  }
+  .species-grid[data-layout="compact"] .species-card h3 {
+    font-size: var(--text-base);
+  }
+  .species-grid[data-layout="list"] .species-card-illustration {
+    flex-basis: 116px;
+    min-height: 112px;
+  }
+  .species-grid[data-layout="list"] .species-card-illustration .culinary-rating {
+    top: auto;
+    right: 6px;
+    bottom: 6px;
+    left: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    white-space: normal;
+    text-align: center;
+  }
+  .species-grid[data-layout="list"] .species-card-description {
+    display: none;
+  }
+}

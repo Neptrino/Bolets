@@ -8,6 +8,8 @@ import type { SpeciesCardProfile } from "@/src/lib/species-card-profile";
 import type { SeasonGuideId } from "@/src/lib/season-guides";
 import type { Month } from "@/src/lib/types";
 import { filterCatalogue } from "@/src/lib/catalogue-search";
+import { SpeciesDirectoryLayoutControl, useSpeciesDirectoryLayout } from "@/components/species-directory-layout";
+import "@/app/styles/species-directory-layouts.css";
 
 const seasonShortcutIcons = {
   primavera: Sprout,
@@ -29,6 +31,7 @@ export function SpeciesDirectory({
 }) {
   const [query, setQuery] = useState(initialQuery);
   const matches = useMemo(() => filterCatalogue(species, query), [query, species]);
+  const [layout, setLayout] = useSpeciesDirectoryLayout();
   return (
     <section className="directory-shell">
       <div className="directory-controls">
@@ -70,10 +73,13 @@ export function SpeciesDirectory({
           </div>
         </div>
       </nav>
-      <p className="directory-count" aria-live="polite">
-        {query ? `${matches.length} ${matches.length === 1 ? "resultat" : "resultats"} per “${query}”` : "Ordenades alfabèticament pel nom català"}
-      </p>
-      <div className="species-grid">{matches.map((item, index) => <SpeciesCard key={item.speciesId} species={item} index={index} currentMonth={currentMonth} />)}</div>
+      <div className="directory-results-bar">
+        <p className="directory-count" aria-live="polite">
+          {query ? `${matches.length} ${matches.length === 1 ? "resultat" : "resultats"} per “${query}”` : "Ordenades alfabèticament pel nom català"}
+        </p>
+        <SpeciesDirectoryLayoutControl layout={layout} onChange={setLayout} />
+      </div>
+      <div className="species-grid" data-layout={layout}>{matches.map((item, index) => <SpeciesCard key={item.speciesId} species={item} index={index} currentMonth={currentMonth} sizes={layout === "cards" ? undefined : layout === "list" ? "160px" : "(max-width: 580px) calc(50vw - 30px), (max-width: 1000px) calc(33.333vw - 30px), 280px"} />)}</div>
       {!matches.length && <div className="empty-state"><p>No hem trobat cap espècie amb aquests criteris. Prova un altre nom o consulta el glossari.</p><Link href="/bolets" className="text-link">Veure tot el catàleg</Link></div>}
     </section>
   );
