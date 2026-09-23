@@ -58,7 +58,7 @@ export default async function SpeciesIndexPage({ searchParams }: {
         eyebrow="Guia d’espècies"
         title={<>Tipus de bolets<br />de Catalunya.</>}
         actions={
-          <Link href="/bolets/infografia" className="button catalogue-title-infographic-link">
+          <Link href="/bolets/infografia" className="button panel-dark catalogue-title-infographic-link">
             <Images size={18} aria-hidden="true" /> Veure la infografia <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         }
@@ -81,7 +81,7 @@ export default async function SpeciesIndexPage({ searchParams }: {
           actions={<Link href="/noms-de-bolets-catala-castella" className="text-link">Glossari de noms <ArrowUpRight size={16} aria-hidden="true" /></Link>}
           size="compact"
         />
-        <div className="catalogue-list-scroll" role="region" aria-label="Llista de bolets de Catalunya" tabIndex={0}>
+        <div className="card catalogue-list-scroll" role="region" aria-label="Llista de bolets de Catalunya" tabIndex={0}>
           <table>
             <thead>
               <tr>

@@ -5,6 +5,7 @@
    map component lets the prediction canvas cover its controls and gestures. */
 @import "maplibre-gl/dist/maplibre-gl.css";
 @import "./styles/tokens.css";
+@import "./styles/primitives.css";
 @import "./styles/today-map.css";
 @import "./styles/site-shell.css";
 @import "./styles/site-components.css";

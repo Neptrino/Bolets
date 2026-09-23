@@ -34,7 +34,7 @@ export function BacklinkDomainControl({
         : null;
 
   return (
-    <section className={styles.domainControl} aria-labelledby={`prospect-domain-${prospect.id}`}>
+    <section className={`card ${styles.domainControl}`} aria-labelledby={`prospect-domain-${prospect.id}`}>
       <div>
         {prospect.domainSuppressed ? <LockKeyhole aria-hidden="true" /> : <LockKeyholeOpen aria-hidden="true" />}
         <div>

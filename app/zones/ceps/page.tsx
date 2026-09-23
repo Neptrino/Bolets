@@ -196,7 +196,7 @@ export default function CepsTerritoryPage() {
         }}
       />
 
-      <header className="rovellons-hero">
+      <header className="panel-dark rovellons-hero">
         <div className="page-width rovellons-hero-inner">
           <Link href="/guies" className="back-link">
             ← Totes les guies
@@ -267,7 +267,7 @@ export default function CepsTerritoryPage() {
             <p>La taula surt de les mateixes fitxes que alimenten els perfils de cada espècie i el mapa.</p>
           </header>
           <p className="guide-types-scroll-hint">Fes lliscar la taula per veure totes les columnes.</p>
-          <div className="guide-types-table-scroll">
+          <div className="card guide-types-table-scroll">
             <table className="guide-types-table" data-ceps-types-table>
               <caption className="sr-only">Comparació dels quatre tipus de ceps representats al catàleg</caption>
               <thead>
@@ -345,7 +345,7 @@ export default function CepsTerritoryPage() {
           </div>
         </section>
 
-        <section className="rovellons-now" aria-labelledby="ceps-now-title">
+        <section className="panel-dark rovellons-now" aria-labelledby="ceps-now-title">
           <div className="rovellons-now-heading">
             <div>
               <p className="eyebrow light">
@@ -421,7 +421,7 @@ export default function CepsTerritoryPage() {
             </p>
           </header>
           <div
-            className="rovellons-territory-grid ceps-territory-grid"
+            className="card rovellons-territory-grid ceps-territory-grid"
             data-cep-region-list
           >
             {cepTerritoryReadings.map((territory) => {

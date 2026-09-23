@@ -114,7 +114,7 @@ export default async function AdminReportsPage({
           Mostrant només els avisos de la troballa seleccionada. <Link href="/admin/avisos?status=open">Veure tots els avisos oberts</Link>
         </p>
       ) : null}
-      <nav className={styles.filterBar} aria-label="Filtres d’avisos">
+      <nav className={`card ${styles.filterBar}`} aria-label="Filtres d’avisos">
         {presets.map((preset) => (
           <Link href={preset.href} aria-current={status === preset.status ? "page" : undefined} key={preset.href}>
             {preset.label}
@@ -130,7 +130,7 @@ export default async function AdminReportsPage({
       {result.items.length > 0 ? (
         <ol className={styles.detailList}>
           {result.items.map((report) => (
-            <li className={styles.detailCard} data-alert={report.status === "open"} key={report.id}>
+            <li className={`card ${styles.detailCard}`} data-alert={report.status === "open"} key={report.id}>
               <div className={styles.identity}>
                 <span>{reasonLabel(report.reason)}</span>
                 <strong>
@@ -140,8 +140,8 @@ export default async function AdminReportsPage({
                 </strong>
                 <small>Comunicada per {report.reporterLabel}</small>
                 <div className={styles.badgeRow}>
-                  <span className={styles.badge} data-tone={statusTone(report.status)}>{statusLabel(report.status)}</span>
-                  <span className={styles.badge} data-tone={report.findingVisibility === "public" ? "blue" : undefined}>
+                  <span className={`pill ${styles.badge}`} data-tone={statusTone(report.status)}>{statusLabel(report.status)}</span>
+                  <span className={`pill ${styles.badge}`} data-tone={report.findingVisibility === "public" ? "blue" : undefined}>
                     Troballa {report.findingVisibility === "public" ? "pública" : "privada"}
                   </span>
                 </div>

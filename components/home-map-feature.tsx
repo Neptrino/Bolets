@@ -7,7 +7,7 @@ import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 
 export function HomeMapFeature() {
   return (
-    <div className="home-map-feature page-width">
+    <div className="card home-map-feature page-width">
       <section className="home-map-feature-copy" aria-labelledby="home-map-title">
         <p className="eyebrow"><Map size={16} aria-hidden="true" /> Prepara la sortida</p>
         <h2 id="home-map-title">Mapa de bolets de Catalunya</h2>
@@ -29,9 +29,9 @@ export function HomeMapFeature() {
           height={800}
           sizes="(max-width: 1000px) calc(100vw - 48px), (max-width: 1228px) calc((100vw - 48px) / 2), 590px"
         />
-        <span className="home-map-preview-label">Exemple simulat</span>
+        <span className="card home-map-preview-label">Exemple simulat</span>
       </UmamiEventLink>
-      <section className="home-map-today" aria-labelledby="home-today-title">
+      <section className="panel-dark home-map-today" aria-labelledby="home-today-title">
         <div>
           <p className="eyebrow light">Resum diari</p>
           <h2 id="home-today-title">On trobar bolets avui</h2>

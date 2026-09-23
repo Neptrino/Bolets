@@ -66,7 +66,7 @@ export default async function AdminContributionsPage({
       <section className={styles.section}>
         <h2>Cua de revisió</h2>
         {pending.length ? (
-          <div className={styles.tableFrame} tabIndex={0} role="region" aria-label="Taula d’aportacions pendents">
+          <div className={`card ${styles.tableFrame}`} tabIndex={0} role="region" aria-label="Taula d’aportacions pendents">
             <table className={styles.table}>
               <caption className="visually-hidden">Aportacions pendents de revisió</caption>
               <thead><tr><th scope="col">Aportació</th><th scope="col">Compte</th><th scope="col">Enviada</th><th scope="col">Material</th><th scope="col"><span className="visually-hidden">Accions</span></th></tr></thead>
@@ -89,7 +89,7 @@ export default async function AdminContributionsPage({
       <section className={styles.section}>
         <h2>Accessos actius</h2>
         {active.length ? (
-          <div className={styles.tableFrame} tabIndex={0} role="region" aria-label="Taula d’accessos actius">
+          <div className={`card ${styles.tableFrame}`} tabIndex={0} role="region" aria-label="Taula d’accessos actius">
             <table className={styles.table}>
               <caption className="visually-hidden">Accessos temporals actius al mapa detallat</caption>
               <thead><tr><th scope="col">Compte</th><th scope="col">Accés</th><th scope="col">Caduca</th><th scope="col"><span className="visually-hidden">Accions</span></th></tr></thead>
@@ -110,7 +110,7 @@ export default async function AdminContributionsPage({
 
       <section className={styles.section}>
         <h2>Revisions recents</h2>
-        {recent.length ? <div className={styles.tableFrame} tabIndex={0} role="region" aria-label="Taula de revisions recents">
+        {recent.length ? <div className={`card ${styles.tableFrame}`} tabIndex={0} role="region" aria-label="Taula de revisions recents">
           <table className={styles.table}>
             <caption className="visually-hidden">Aportacions revisades recentment</caption>
             <thead><tr><th scope="col">Aportació</th><th scope="col">Compte</th><th scope="col">Resultat</th><th scope="col">Revisada</th><th scope="col">Material</th><th scope="col"><span className="visually-hidden">Accions</span></th></tr></thead>
@@ -119,7 +119,7 @@ export default async function AdminContributionsPage({
             <tr key={request.id}>
               <th scope="row">{CONTRIBUTION_KIND_LABELS[request.kind]}</th>
               <td>{request.userEmail}</td>
-              <td><span className={styles.statusBadge} data-status={request.status}>{request.status === "approved" ? "Aprovada" : "No aprovada"}</span></td>
+              <td><span className={`pill ${styles.statusBadge}`} data-status={request.status}>{request.status === "approved" ? "Aprovada" : "No aprovada"}</span></td>
               <td>{request.reviewedAt ? <time dateTime={request.reviewedAt}>{dateFormatter.format(new Date(request.reviewedAt))}</time> : "—"}</td>
               <td>{request.mediaCount > 0 ? `${request.mediaCount} foto${request.mediaCount === 1 ? "" : "s"}` : "—"}</td>
               <td><ContributionDetailsDialog request={request} /></td>

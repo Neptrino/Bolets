@@ -20,7 +20,7 @@ export function CulinaryRatingHelp() {
       </Tooltip.Trigger>
       <Tooltip.Portal>
         <Tooltip.Positioner side="top" align="center" sideOffset={8} collisionPadding={16} className="culinary-tooltip-positioner">
-          <Tooltip.Popup id={tooltipId} role="tooltip" className="culinary-rating-tooltip">
+          <Tooltip.Popup id={tooltipId} role="tooltip" className="card culinary-rating-tooltip">
             Les estrelles valoren l’interès gastronòmic; la classificació de consum indica si calen condicions de seguretat.
           </Tooltip.Popup>
         </Tooltip.Positioner>

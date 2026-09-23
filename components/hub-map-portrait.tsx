@@ -55,7 +55,7 @@ export function HubMapPortrait({
           <small>{countLabel}</small>
         </div>
         {liveMapHref ? (
-          <Link href={liveMapHref} className="place-map-live">Mapa en viu <ArrowUpRight size={15} aria-hidden="true" /></Link>
+          <Link href={liveMapHref} className="panel-dark place-map-live">Mapa en viu <ArrowUpRight size={15} aria-hidden="true" /></Link>
         ) : null}
         <small className="place-map-credit">Base topogràfica © ICGC</small>
       </figcaption>

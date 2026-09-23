@@ -369,7 +369,7 @@ export function ConditionComparison({
           <ol className="score-calculation" aria-label="Resum de la valoració del sector">
             <li>
               <div className="score-calculation-heading">
-                <span className="score-calculation-step">1 · Condicions del moment</span>
+                <span className="label-caps score-calculation-step">1 · Condicions del moment</span>
                 <ScoreCalculationHelp label="Explica les condicions del moment">
                   Valorem si coincideixen la temporada habitual, l’aigua disponible, la temperatura i els episodis extrems.
                 </ScoreCalculationHelp>
@@ -378,7 +378,7 @@ export function ConditionComparison({
             </li>
             <li>
               <div className="score-calculation-heading">
-                <span className="score-calculation-step">2 · Terreny adequat</span>
+                <span className="label-caps score-calculation-step">2 · Terreny adequat</span>
                 <ScoreCalculationHelp label="Explica el terreny adequat">
                   Indica quina part del sector té un tipus de bosc, un sòl i una altitud adequats per a l’espècie.
                 </ScoreCalculationHelp>
@@ -387,7 +387,7 @@ export function ConditionComparison({
             </li>
             <li className="score-calculation-result">
               <div className="score-calculation-heading">
-                <span className="score-calculation-step">3 · Valoració final</span>
+                <span className="label-caps score-calculation-step">3 · Valoració final</span>
                 <ScoreCalculationHelp label="Explica la valoració final">
                   Resumeix si el lloc i el moment coincideixen. No és una probabilitat de trobar bolets.
                 </ScoreCalculationHelp>
@@ -451,7 +451,7 @@ export function ConditionComparison({
                 <span className="factor-bar-reading">
                   <strong>{entry.score}%</strong>
                 </span>
-                {limiting && <small className="factor-bar-note">Més restrictiu</small>}
+                {limiting && <small className="label-caps factor-bar-note">Més restrictiu</small>}
                 <span
                   className="factor-bar-meter"
                   role="meter"

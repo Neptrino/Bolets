@@ -15,7 +15,7 @@ describe("editorial attribution hierarchy", () => {
       sources: coreEditorialSources,
     }));
 
-    expect(html).toContain('class="editorial-panel"');
+    expect(html).toMatch(/class="[^"]*\beditorial-panel"/);
     expect(html).not.toContain("editorial-panel--compact");
     expect(html).toContain("Autoria");
     expect(html).toContain("Editorial, no micològica");

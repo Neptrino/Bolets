@@ -16,7 +16,7 @@ export function FindingCard({ finding }: { finding: PublicFinding }) {
   const profileHref = species ? speciesPath(species) : "/bolets";
   const observedDate = new Intl.DateTimeFormat("ca-ES", { dateStyle: "medium" })
     .format(new Date(`${finding.observedOn}T12:00:00`));
-  return <article className="finding-card">
+  return <article className="card finding-card">
     <Link className="finding-card-media-link" href={`/troballes/${finding.id}`} aria-label={`Obrir la troballa de ${finding.reportedSpeciesName}`}>
       {photo ? <Image className="finding-card-image" src={photo.url} alt={`Troballa proposada com a ${finding.reportedSpeciesName}`} width={photo.width} height={photo.height} unoptimized /> : <div className="finding-card-placeholder">
         {drawing ? <Image className="finding-card-drawing" src={drawing.src} alt="" width={480} height={354} sizes="(max-width: 700px) 60vw, 200px" unoptimized /> : <CameraOff size={30} aria-hidden="true" />}

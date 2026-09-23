@@ -102,7 +102,7 @@ function GuideFacts({ label, items }: { label: string; items: GuideFact[] }) {
     <dl className="guide-facts" aria-label={label}>
       {items.map((item) => (
         <div key={item.key} className={item.wide ? "is-wide" : undefined}>
-          <dt><span className="guide-fact-icon" aria-hidden="true">{item.icon}</span>{item.term}</dt>
+          <dt><span className="icon-tile guide-fact-icon" aria-hidden="true">{item.icon}</span>{item.term}</dt>
           <dd>{item.value ? <strong>{item.value}</strong> : null}<span>{item.detail}</span></dd>
         </div>
       ))}
@@ -148,7 +148,7 @@ function GuideSection({ id, icon: Icon, eyebrow, title, lede, action, flush, chi
   children: ReactNode;
 }) {
   return (
-    <section id={id} className="guide-panel" aria-labelledby={`${id}-title`}>
+    <section id={id} className="card guide-panel" aria-labelledby={`${id}-title`}>
       <header className="guide-panel-head">
         <div>
           <p className="eyebrow"><Icon size={15} aria-hidden="true" /> {eyebrow}</p>
@@ -291,7 +291,7 @@ export default async function SpeciesLocationPage({ params }: Props) {
           <Image src={placeMapPath(location, "banner")} alt="" width={banner.width} height={banner.height} unoptimized priority style={{ objectPosition: `${banner.focus.x * 100}% ${banner.focus.y * 100}%` }} />
         </div>
         <div className="guide-hero-pin" style={{ "--pin-x": `${banner.focus.x * 100}%`, "--pin-y": `${banner.focus.y * 100}%` } as CSSProperties}>
-          <span className={`guide-hero-pin-badge${drawing ? " has-drawing" : illustration ? "" : " has-photo"}`}>
+          <span className={`icon-tile guide-hero-pin-badge${drawing ? " has-drawing" : illustration ? "" : " has-photo"}`}>
             {drawing
               ? <Image src={drawing.src} alt={species.identity.commonName} width={240} height={240} unoptimized />
               : illustration
@@ -315,7 +315,7 @@ export default async function SpeciesLocationPage({ params }: Props) {
         </div>
       </header>
       <div className="page-width local-species-content">
-        <section className="local-species-summary" aria-label="Resum ecològic">
+        <section className="card local-species-summary" aria-label="Resum ecològic">
           <div><Trees size={19} /><span>Bosc habitual</span><strong>{habitat.forestTypes.slice(0, 2).join(" i ")}</strong></div>
           <div><Mountain size={19} /><span>Altitud habitual</span><strong>{habitat.altitude[0]}–{habitat.altitude[1]} m</strong></div>
           <div><CalendarDays size={19} /><span>Millors mesos</span><strong>{peakMonths.join(" i ") || "Sense un pic clar"}</strong></div>

@@ -316,7 +316,7 @@ export default async function OperationalStatusPage() {
           </article>
         </div>
 
-        <details className={styles.memoryDisclosure}>
+        <details className={`card ${styles.memoryDisclosure}`}>
           <summary>
             <Activity aria-hidden="true" />
             <span><strong>Memòria tècnica de les fonts</strong> · no és un producte publicat</span>
@@ -364,7 +364,7 @@ export default async function OperationalStatusPage() {
             description="Els fragments comparteixen un únic pressupost, encara que surtin pel VPS, Cloudflare o AWS."
           />
           <div className={styles.progressGrid}>
-            <article className={styles.progressCard}>
+            <article className={`card ${styles.progressCard}`}>
               <CloudCog aria-hidden="true" />
               <div>
                 <span>Pluja de reserva</span>
@@ -373,7 +373,7 @@ export default async function OperationalStatusPage() {
               <progress max="100" value={precipitationProgress.percent}>{precipitationProgress.percent}%</progress>
               <small>{precipitationProgress.percent}% completat</small>
             </article>
-            <article className={styles.progressCard}>
+            <article className={`card ${styles.progressCard}`}>
               <ServerCog aria-hidden="true" />
               <div>
                 <span>Atmosfera AROME</span>
@@ -383,7 +383,7 @@ export default async function OperationalStatusPage() {
               <small>{atmosphereProgress.percent}% completat</small>
             </article>
           </div>
-          <div className={styles.laneStrip}>
+          <div className={`card ${styles.laneStrip}`}>
             {(["direct", "cloudflare", "aws"] as const).map((lane) => {
               const laneJobs = todayJobs.filter((job) => job.egressLane === lane);
               const shards = laneJobs.reduce((sum, job) => sum + job.shards, 0);
@@ -409,7 +409,7 @@ export default async function OperationalStatusPage() {
             titleId="provider-usage"
             description="Estimació conservadora per entendre el consum. No s'aplica cap límit local: cada sortida continua fins que el proveïdor respon amb 429."
           />
-          <div className={styles.budgetPanel}>
+          <div className={`panel-dark ${styles.budgetPanel}`}>
             <CircleGauge aria-hidden="true" />
             <div className={styles.budgetReading}>
               <span>Ús estimat avui</span>
@@ -460,7 +460,7 @@ export default async function OperationalStatusPage() {
             titleId="pipeline-cursors"
             description="Un cursor complet marca la generació que poden consumir les memòries cau espacials."
           />
-          <div className={styles.tableFrame}>
+          <div className={`card ${styles.tableFrame}`}>
             <table>
               <thead><tr><th>Pipeline</th><th>Snapshot</th><th>Posició</th><th>Actualitzat</th></tr></thead>
               <tbody>
@@ -484,7 +484,7 @@ export default async function OperationalStatusPage() {
             titleId="recent-runs"
             description="Errors sanejats i resultats de les últimes ingestes auditades; els secrets i la metadata interna no arriben a aquesta pàgina."
           />
-          <ol className={styles.runList}>
+          <ol className={`card ${styles.runList}`}>
             {recentRuns.map((run) => (
               <li key={run.id} data-status={run.status}>
                 <span className={styles.runMarker} aria-hidden="true" />

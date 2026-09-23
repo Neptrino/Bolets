@@ -40,7 +40,7 @@ export function hubSpeciesList(species: SpeciesProfile[]) {
 
 export function HubFacts({ species }: { species: SpeciesProfile[] }) {
   return (
-    <section className="location-hub-facts" aria-label="Resum">
+    <section className="card location-hub-facts" aria-label="Resum">
       <div><BookOpen size={19} /><span>Bolets amb guia</span><strong>{species.map((entry) => entry.identity.commonName).join(", ")}</strong></div>
       <div><CalendarRange size={19} /><span>Temporada habitual</span><strong>{hubSeasonWindow(species)}</strong></div>
       <div><Mountain size={19} /><span>Altitud dels boscos</span><strong>{hubAltitudeBand(species)}</strong></div>
@@ -83,7 +83,7 @@ export function HubTodayPanel({
   return (
     <section
       id={id}
-      className={className ? `place-today ${className}` : "place-today"}
+      className={className ? `card place-today ${className}` : "card place-today"}
       aria-labelledby="place-today-title"
       aria-busy={state === "loading" ? true : undefined}
       aria-live={state === "loading" ? "polite" : undefined}
@@ -147,7 +147,7 @@ export function HubSeasonMatrix({
         <div><p className="eyebrow"><CalendarRange size={15} aria-hidden="true" /> Calendari</p><h2 id="local-species-comparison-title">{title}</h2></div>
         <p>Activitat habitual de cada espècie mes a mes, amb el mes actual destacat. És el calendari típic: l’any real depèn de la pluja i la temperatura.</p>
       </header>
-      <div className="place-season-table-scroll" role="region" aria-label="Calendari per espècie" tabIndex={0}>
+      <div className="card place-season-table-scroll" role="region" aria-label="Calendari per espècie" tabIndex={0}>
         <table className="place-season-table">
           <caption className="sr-only">Activitat mensual de les espècies amb guia</caption>
           <thead>

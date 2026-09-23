@@ -36,7 +36,7 @@ export function RainWindowTrack({ window, compact = false }: { window: ScoredRai
           {compact ? "" : "encara no"}
         </span>
       )}
-      <span className="rain-timeline-bar" style={{ "--from": percent(start), "--to": percent(end) } as CSSProperties}>
+      <span className="panel-dark rain-timeline-bar" style={{ "--from": percent(start), "--to": percent(end) } as CSSProperties}>
         {label}
       </span>
     </div>
@@ -59,7 +59,7 @@ export function RainTimeline({
   speciesIdByName: ReadonlyMap<string, string>;
 }) {
   return (
-    <figure className="rain-timeline">
+    <figure className="card rain-timeline">
       <figcaption>
         <strong>Si plou avui, quins dies comptarà aquesta pluja?</strong>
         <span>Cada barra marca els dies en què el mapa encara suma la pluja d’avui per a aquell grup d’espècies.</span>
@@ -115,7 +115,7 @@ export function RainResponseCurve({ window, appliesToAll }: { window: ScoredRain
   ];
   const lossMm = Math.round(window.typicalLossMm);
   return (
-    <figure className="rain-curve">
+    <figure className="card rain-curve">
       <div
         className="rain-curve-plot"
         role="img"

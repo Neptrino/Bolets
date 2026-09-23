@@ -121,7 +121,7 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
         ))}
       </div>
 
-      <aside className="comparison-answer">
+      <aside className="panel-dark comparison-answer">
         <CircleAlert size={22} aria-hidden="true" />
         <div><span>Diferència clau</span><strong>{page.decisiveDifference}</strong></div>
       </aside>
@@ -129,7 +129,7 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
       {page.diagnosticTraits && page.diagnosticTraits.length > 0 && (
         <section className="comparison-facts" aria-labelledby="comparison-traits-title">
           <h2 id="comparison-traits-title">Trets decisius</h2>
-          <div className="comparison-facts-table">
+          <div className="card comparison-facts-table">
             <header><span>Tret</span><strong>{left.identity.commonName}</strong><strong>{right.identity.commonName}</strong></header>
             {page.diagnosticTraits.map((trait) => (
               <div key={trait.label}><span>{trait.label}</span><p>{trait.left}</p><p>{trait.right}</p></div>
@@ -158,7 +158,7 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
 
       <section className="comparison-facts" aria-labelledby="comparison-facts-title">
         <h2 id="comparison-facts-title">Diferències entre {left.identity.commonName.toLocaleLowerCase("ca")} i {right.identity.commonName.toLocaleLowerCase("ca")}</h2>
-        <div className="comparison-facts-table">
+        <div className="card comparison-facts-table">
           <header><span>Criteri</span><strong>{left.identity.commonName}</strong><strong>{right.identity.commonName}</strong></header>
           {rows.map(([label, leftValue, rightValue]) => <div key={label}><span>{label}</span><p>{leftValue}</p><p>{rightValue}</p></div>)}
         </div>

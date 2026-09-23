@@ -57,7 +57,7 @@ export default async function AdminFindingDetailPage({ params }: PageProps<"/adm
         tone="forest"
       />
 
-      <section className={styles.record} aria-labelledby="record-title">
+      <section className={`card ${styles.record}`} aria-labelledby="record-title">
         <header className={styles.recordHeader}>
           <h2 id="record-title">Registre de la troballa</h2>
           <code>{finding.id}</code>

@@ -104,7 +104,7 @@ export default async function PlacePage({ params }: Props) {
   return (
     <div className="location-hub">
       <JsonLd data={{ "@context": "https://schema.org", "@type": "CollectionPage", name: `Bolets ${location.prepositionalName}`, url: absoluteUrl(placePath(location)), inLanguage: "ca", about: { "@type": "Place", name: location.name, containedInPlace: { "@type": "Place", name: area.name }, geo: { "@type": "GeoCoordinates", latitude: location.mapCentre[1], longitude: location.mapCentre[0] } }, mainEntity: { "@type": "ItemList", itemListElement: pages.map((page, index) => ({ "@type": "ListItem", position: index + 1, name: page.titlePhrase, url: absoluteUrl(locationPagePath(page)) })) } }} />
-      <header className="location-hub-hero"><div className="page-width location-hub-hero-grid">
+      <header className="panel-dark location-hub-hero"><div className="page-width location-hub-hero-grid">
         <div className="location-hub-copy"><Link href={areaPath(area)} className="back-link location-back"><ArrowLeft size={15} /> Bolets {area.prepositionalName}</Link><p className="eyebrow light"><MapPinned size={15} /> {location.typeLabel} · {area.name}</p><h1>Bolets<br /><i>{location.prepositionalName}.</i></h1><p>{location.description} {location.landscape}</p></div>
         <HubMapPortrait
           src={placeMapPath(location)}
@@ -127,7 +127,7 @@ export default async function PlacePage({ params }: Props) {
         <HubSeasonMatrix title={`Quan és temporada ${location.prepositionalName}`} rows={guides.map(({ page, species }) => ({ species, href: locationPagePath(page) }))} month={month} />
 
         <section className="location-guide-gallery" aria-labelledby="guides-title"><header><div><p className="eyebrow">Guies</p><h2 id="guides-title">Els bolets de {location.nameWithArticle}</h2></div><p>Una guia per espècie: en quin bosc creix, a quina altitud i què cal saber abans de sortir.</p></header><div className="location-guide-grid">
-          {guides.map(({ page, species }, index) => { const image = species.media.find((asset) => asset.identificationReference) ?? species.media[0]; const habitat = species.ecologicalConfig.habitat; return <Link href={locationPagePath(page)} className="location-guide-card" key={page.speciesSlug}><div className={`location-guide-card-media${image ? " has-image" : ""}`}>{image && <MediaImage asset={image} alt={image.alt} fill preload={index === 0} sizes="(max-width: 760px) calc(100vw - 48px), 50vw" />}<span>{species.identity.scientificName}</span></div><div className="location-guide-card-copy"><div className="location-guide-card-title"><h3>{page.titlePhrase}</h3><ArrowUpRight size={20} /></div><p>{page.habitatNote}</p><div className="location-guide-card-facts"><span><Trees size={15} /> {habitat.forestTypes[0]}</span><span><Mountain size={15} /> {habitat.altitude[0]}–{habitat.altitude[1]} m</span></div></div></Link>; })}
+          {guides.map(({ page, species }, index) => { const image = species.media.find((asset) => asset.identificationReference) ?? species.media[0]; const habitat = species.ecologicalConfig.habitat; return <Link href={locationPagePath(page)} className="card location-guide-card" key={page.speciesSlug}><div className={`location-guide-card-media${image ? " has-image" : ""}`}>{image && <MediaImage asset={image} alt={image.alt} fill preload={index === 0} sizes="(max-width: 760px) calc(100vw - 48px), 50vw" />}<span>{species.identity.scientificName}</span></div><div className="location-guide-card-copy"><div className="location-guide-card-title"><h3>{page.titlePhrase}</h3><ArrowUpRight size={20} /></div><p>{page.habitatNote}</p><div className="location-guide-card-facts"><span><Trees size={15} /> {habitat.forestTypes[0]}</span><span><Mountain size={15} /> {habitat.altitude[0]}–{habitat.altitude[1]} m</span></div></div></Link>; })}
         </div></section>
 
         <LocalResources location={location} />
@@ -139,7 +139,7 @@ export default async function PlacePage({ params }: Props) {
               {nearby.map(({ place, distanceKm }) => {
                 const placePages = locationPagesForPlace(place.areaSlug, place.slug);
                 return (
-                  <Link href={placePath(place)} className="place-nearby-card" key={`${place.areaSlug}/${place.slug}`}>
+                  <Link href={placePath(place)} className="card place-nearby-card" key={`${place.areaSlug}/${place.slug}`}>
                     <span>{place.typeLabel} · {areasBySlug[place.areaSlug]?.name ?? place.areaSlug}</span>
                     <strong>{place.name} <em>{Math.round(distanceKm)} km</em></strong>
                     <small>{placePages.length} {placePages.length === 1 ? "guia" : "guies"} · {placePages.map((page) => displaySearchName(page.searchName)).join(", ")}</small>

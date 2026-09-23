@@ -51,7 +51,7 @@ export function BacklinkManualControls({
     : manualUpdate ? updatedMessages[manualUpdate] : null;
 
   return (
-    <section className={styles.manualControl} aria-labelledby={`prospect-manual-${prospect.id}`}>
+    <section className={`card ${styles.manualControl}`} aria-labelledby={`prospect-manual-${prospect.id}`}>
       <header>
         <div>
           <span>Control humà</span>

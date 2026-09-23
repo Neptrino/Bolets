@@ -90,11 +90,9 @@ h3 {
 }
 .header-map-link,
 .header-account-link {
-  display: inline-flex;
   align-items: center;
   gap: 7px;
   padding: 9px 13px;
-  border-radius: var(--radius-pill);
   font-size: var(--text-xs);
   font-weight: 700;
   white-space: nowrap;
@@ -481,11 +479,9 @@ h3 {
 }
 .edibility-badge {
   width: fit-content;
-  display: inline-flex;
   align-items: center;
   gap: 5px;
   padding: 5px 8px;
-  border-radius: var(--radius-pill);
   font-size: var(--text-xs);
   font-weight: 750;
   line-height: 1;

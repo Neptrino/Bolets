@@ -214,7 +214,7 @@ export function PublicFindingsMap({ species }: { species: CatalogueSpecies[] }) 
       ariaBusy={loading}
       ariaLabel="Mapa de troballes públiques generalitzades en caselles de 10 quilòmetres"
       basemapId={selectedBasemapId}
-      className="findings-region-map"
+      className="card findings-region-map"
       map={map}
       mapMode="findings"
       node={node}

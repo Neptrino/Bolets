@@ -107,7 +107,7 @@ export function MushroomPartsExplorer() {
         description="Selecciona els punts de la il·lustració per saber què és cada estructura i què convé observar-ne."
       />
 
-      <div className="mushroom-parts-explorer-layout">
+      <div className="card mushroom-parts-explorer-layout">
         <figure className="mushroom-parts-figure">
           <div className="mushroom-parts-canvas" role="group" aria-label="Parts assenyalades del bolet">
             <StaticMediaImage

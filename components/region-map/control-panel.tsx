@@ -21,7 +21,7 @@ export function RegionMapControlPanel({
   return (
     <div className={`map-cell-visibility${expanded ? "" : " is-collapsed"}`}>
       <div className="map-cell-visibility-header">
-        <strong className="map-cell-visibility-title">Capes del mapa</strong>
+        <strong className="label-caps map-cell-visibility-title">Capes del mapa</strong>
         <button
           type="button"
           className="map-cell-visibility-panel-toggle"

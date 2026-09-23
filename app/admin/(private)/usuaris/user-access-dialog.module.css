@@ -3,8 +3,6 @@
   padding: 4px 9px;
   border: 1px solid var(--forest-panel);
   border-radius: var(--radius-pill);
-  background: var(--forest-panel);
-  color: var(--on-dark);
   font: inherit;
   font-size: var(--text-xs);
   font-weight: 900;
@@ -80,7 +78,6 @@
 .actions button:disabled { cursor: wait; opacity: .64; }
 
 @media (max-width: 560px) {
-  .card { padding: 20px; }
   .fieldGrid { grid-template-columns: 1fr; }
   .actions button { width: 100%; }
 }

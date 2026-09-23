@@ -145,11 +145,7 @@
 .score-calculation-step {
   min-height: 32px;
   color: var(--line);
-  font-size: var(--text-xs);
-  font-weight: 800;
-  letter-spacing: 0.075em;
   line-height: 1.35;
-  text-transform: uppercase;
 }
 .score-calculation > li > strong {
   display: flex;
@@ -313,10 +309,6 @@
   margin-top: -6px;
   white-space: nowrap;
   color: var(--apricot);
-  font-size: var(--text-xs);
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 .factor-bar-meter {
   display: block;
@@ -558,9 +550,6 @@
 .cell-score-history {
   margin: 1.25rem 0;
   padding: 1.2rem 1.3rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: var(--surface);
 }
 
 .cell-score-history > p {
@@ -592,12 +581,10 @@
 }
 
 .cell-score-history-simulation {
-  display: inline-flex;
   min-height: 24px;
   align-items: center;
   padding: 3px 8px;
   border: 1px solid color-mix(in srgb, var(--clay) 30%, transparent);
-  border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--warning-surface) 50%, transparent);
   color: var(--moss);
   font-size: var(--text-xs);
@@ -868,8 +855,6 @@
   margin-bottom: 60px;
   padding: 25px 28px;
   border-radius: var(--radius-md);
-  background: var(--forest-panel);
-  color: var(--on-dark);
 }
 .comparison-answer svg {
   flex: 0 0 auto;

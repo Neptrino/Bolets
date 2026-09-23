@@ -34,10 +34,10 @@ function VisibleBanner() {
     };
   }, []);
 
-  return <aside ref={banner} className={styles.banner} aria-label="Enquesta sobre el mapa detallat">
+  return <aside ref={banner} className={`panel-dark ${styles.banner}`} aria-label="Enquesta sobre el mapa detallat">
     <div className={styles.inner}>
       <div className={styles.message}>
-        <span className={styles.label}><Sparkles size={14} aria-hidden="true" /> Enquesta · Ajuda’ns</span>
+        <span className={`label-caps ${styles.label}`}><Sparkles size={14} aria-hidden="true" /> Enquesta · Ajuda’ns</span>
         <strong className={styles.desktopMessage}>Mapa a 250 m i previsió a 14 dies. T’interessaria?</strong>
         <strong className={styles.mobileMessage}>250 m + previsió a 14 dies</strong>
       </div>
@@ -46,7 +46,7 @@ function VisibleBanner() {
         <span className={styles.mobileCta}>Opina</span>
         <ArrowUpRight size={16} aria-hidden="true" />
       </IntentLink>
-      <button type="button" className={styles.close} onClick={dismissMapPriceSurveyBanner} aria-label="Amaga l’enquesta durant 1 dia">
+      <button type="button" className={`icon-tile ${styles.close}`} onClick={dismissMapPriceSurveyBanner} aria-label="Amaga l’enquesta durant 1 dia">
         <X size={18} aria-hidden="true" />
       </button>
     </div>

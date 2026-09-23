@@ -372,7 +372,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
       onFocusCapture={trackFormStart}
       onSubmit={submit}
     >
-      <div className="finding-field-card">
+      <div className="card finding-field-card">
         <section className="finding-step">
           <h2>1. Què has trobat?</h2>
           <div className="finding-field">
@@ -398,7 +398,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
               <small>Si les trobem, omplirem els camps automàticament perquè els puguis revisar. La lectura es fa en aquest dispositiu i les metadades no es guarden a la còpia preparada.</small>
             </div>
           </div>
-          <label className="finding-button-secondary finding-detect-button">
+          <label className="pill finding-button-secondary finding-detect-button">
             <Camera size={18} aria-hidden="true" /> Afegir fotos i detectar dades
             <input hidden type="file" accept="image/*" multiple onChange={(event) => { void addPhotos(event.currentTarget.files); event.currentTarget.value = ""; }} disabled={busy || photos.length >= 4} />
           </label>
@@ -407,8 +407,8 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={photo.preview} alt={`Fotografia ${index + 1}`} />
             <span className="finding-photo-index">Foto {index + 1}</span>
-            <button className="finding-photo-remove" type="button" aria-label={`Eliminar la fotografia ${index + 1}`} title="Eliminar fotografia" disabled={busy} onClick={() => removePhoto(photo.id)}><X size={18} aria-hidden="true" /></button>
-          </div>)}</div> : <p className="finding-notice">Pots continuar sense fotos. Si publiques la troballa, es mostrarà sense cap imatge.</p>}
+            <button className="icon-tile finding-photo-remove" type="button" aria-label={`Eliminar la fotografia ${index + 1}`} title="Eliminar fotografia" disabled={busy} onClick={() => removePhoto(photo.id)}><X size={18} aria-hidden="true" /></button>
+          </div>)}</div> : <p className="card finding-notice">Pots continuar sense fotos. Si publiques la troballa, es mostrarà sense cap imatge.</p>}
         </section>
 
         <section className="finding-step">
@@ -422,8 +422,8 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
             </ul>
             <small>En públic, la ubicació continuarà sent només una zona aproximada de 10 × 10 km.</small>
           </div> : null}
-          {photoLocationNotice ? <p className="finding-notice">{photoLocationNotice}</p> : null}
-          {photoDateTimeNotice ? <p className="finding-notice">{photoDateTimeNotice}</p> : null}
+          {photoLocationNotice ? <p className="card finding-notice">{photoLocationNotice}</p> : null}
+          {photoDateTimeNotice ? <p className="card finding-notice">{photoDateTimeNotice}</p> : null}
           {latitude !== null && longitude !== null ? <FindingLocationPreview latitude={latitude} longitude={longitude} onLocationChange={(nextLatitude, nextLongitude) => {
             setLatitude(nextLatitude);
             setLongitude(nextLongitude);
@@ -432,11 +432,11 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
             setPhotoLocation(null);
             setPhotoLocationNotice(null);
           }} /> : null}
-          <button className="finding-button-secondary" type="button" onClick={locate} disabled={locating}>
+          <button className="pill finding-button-secondary" type="button" onClick={locate} disabled={locating}>
             <LocateFixed size={18} aria-hidden="true" /> {locating ? "Buscant la posició…" : locationSource === "device" ? "Actualitzar la ubicació del dispositiu" : "Utilitzar la ubicació del dispositiu"}
           </button>
           {latitude !== null && longitude !== null ? <p className="finding-location-readout">{locationSource === "photo" ? "Ubicació extreta de la foto" : locationSource === "map" ? "Ubicació ajustada al mapa" : locationSource === "manual" ? "Ubicació introduïda manualment" : "Ubicació detectada pel dispositiu"}{accuracyM ? ` · precisió aproximada ${Math.round(accuracyM)} m` : ""}</p> : null}
-          <details className="finding-coordinate-details">
+          <details className="card finding-coordinate-details">
             <summary>Introduir coordenades manualment</summary>
             <div className="finding-field-row">
               <label className="finding-field">Latitud<input type="number" inputMode="decimal" step="any" min="40.45" max="42.95" value={latitude ?? ""} onChange={(event) => { setLatitude(event.target.value ? Number(event.target.value) : null); setAccuracyM(null); setLocationSource("manual"); setPhotoLocation(null); setPhotoLocationNotice(null); }} /></label>
@@ -444,7 +444,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
             </div>
           </details>
           <label className="finding-field">Data i hora<input type="datetime-local" step="1" required value={observedAtValue} max={latestObservedAtValue || undefined} onFocus={() => setLatestObservedAt(localDateTimeValue())} onChange={(event) => { setObservedAt(event.target.value); setDateTimeSource("manual"); }} /><small>{dateTimeSource === "photo" ? "Extretes de la foto. Encara les pots canviar." : "Hi posem l’hora actual per defecte. Canvia-la si cal."}</small></label>
-          <label className="finding-choice">
+          <label className="card finding-choice">
             <input type="checkbox" checked={keepExact} onChange={(event) => setKeepExact(event.target.checked)} />
             <span>Guardar la posició exacta només per a mi<small>Si ho desactives, ni tan sols nosaltres en conservarem les coordenades exactes. En públic sempre es mostra només una zona aproximada de 10 × 10 km.</small></span>
           </label>
@@ -458,8 +458,8 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
 
         <section className="finding-step">
           <h2>5. Publicació</h2>
-          <label className="finding-choice"><input type="checkbox" checked={publish} onChange={(event) => setPublish(event.target.checked)} /><span>Compartir la troballa a l’atles públic<small>Es publiquen totes les fotos, el dia i una zona aproximada de 10 × 10 km, mai el punt exacte ni les notes. Aquesta versió generalitzada es pot utilitzar per avaluar i millorar futures versions del model.</small></span></label>
-          <label className="finding-choice"><input type="checkbox" checked={showAlias} onChange={(event) => rememberShowAliasPreference(event.target.checked)} /><span>Mostrar el meu àlies públic<small>La publicació és anònima si no l’actives. Recordarem aquesta elecció en aquest dispositiu.</small></span></label>
+          <label className="card finding-choice"><input type="checkbox" checked={publish} onChange={(event) => setPublish(event.target.checked)} /><span>Compartir la troballa a l’atles públic<small>Es publiquen totes les fotos, el dia i una zona aproximada de 10 × 10 km, mai el punt exacte ni les notes. Aquesta versió generalitzada es pot utilitzar per avaluar i millorar futures versions del model.</small></span></label>
+          <label className="card finding-choice"><input type="checkbox" checked={showAlias} onChange={(event) => rememberShowAliasPreference(event.target.checked)} /><span>Mostrar el meu àlies públic<small>La publicació és anònima si no l’actives. Recordarem aquesta elecció en aquest dispositiu.</small></span></label>
           {publish && online && turnstileRequired ? <div className="finding-verification-card">
             <strong>Comprovació anti-brossa</strong>
             <small>La demanem a la primera publicació o quan detectem activitat poc habitual.</small>
@@ -472,12 +472,12 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
               <p>Pots anotar una altra troballa ara mateix o revisar les que ja has desat.</p>
             </div>
             <div className="finding-save-success-actions">
-              <button className="finding-button" type="button" onClick={startAnotherFinding}><Plus size={18} aria-hidden="true" /> Anotar-ne una altra</button>
-              <Link className="finding-button-secondary" href="/compte/troballes"><BookOpen size={18} aria-hidden="true" /> Obrir el meu quadern</Link>
+              <button className="pill finding-button" type="button" onClick={startAnotherFinding}><Plus size={18} aria-hidden="true" /> Anotar-ne una altra</button>
+              <Link className="pill finding-button-secondary" href="/compte/troballes"><BookOpen size={18} aria-hidden="true" /> Obrir el meu quadern</Link>
             </div>
           </div> : <>
-            {message ? <p className="finding-notice" data-tone={message.tone}>{message.text}</p> : null}
-            <button className="finding-button" type="submit" disabled={busy}><Save size={18} aria-hidden="true" /> {busy ? "Desant…" : online ? "Desar i sincronitzar" : "Desar sense cobertura"}</button>
+            {message ? <p className="card finding-notice" data-tone={message.tone}>{message.text}</p> : null}
+            <button className="pill finding-button" type="submit" disabled={busy}><Save size={18} aria-hidden="true" /> {busy ? "Desant…" : online ? "Desar i sincronitzar" : "Desar sense cobertura"}</button>
           </>}
         </section>
       </div>

@@ -12,7 +12,7 @@ describe("culinary section badges", () => {
     for (const item of species) {
       const html = renderToStaticMarkup(createElement(SpeciesCulinarySection, { species: item }));
       expect(html).toContain('class="culinary-stars"');
-      expect(html).not.toContain('class="edibility-badge');
+      expect(html).not.toMatch(/class="[^"]*\bedibility-badge\b/);
     }
   });
 
@@ -21,7 +21,7 @@ describe("culinary section badges", () => {
     expect(species.length).toBeGreaterThan(0);
     for (const item of species) {
       const html = renderToStaticMarkup(createElement(SpeciesCulinarySection, { species: item }));
-      expect(html).toContain('class="edibility-badge edible_with_conditions');
+      expect(html).toMatch(/class="[^"]*\bedibility-badge edible_with_conditions/);
       expect(html).toContain("Comestible amb condicions");
     }
   });
@@ -32,7 +32,7 @@ describe("culinary section badges", () => {
     for (const item of species) {
       const html = renderToStaticMarkup(createElement(SpeciesCulinarySection, { species: item }));
       expect(html).toContain(`Advertiment de consum: ${getEdibilityPresentation(item.identity.edibility).label}`);
-      expect(html).not.toContain('class="edibility-badge');
+      expect(html).not.toMatch(/class="[^"]*\bedibility-badge\b/);
     }
   });
 });

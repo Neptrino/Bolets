@@ -303,10 +303,10 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
   }, [state]);
 
   if (state.kind === "loading") {
-    return <section className="cell-score-history" aria-busy="true"><p>Carregant l’evolució i la projecció…</p></section>;
+    return <section className="card cell-score-history" aria-busy="true"><p>Carregant l’evolució i la projecció…</p></section>;
   }
   if (state.kind === "unavailable") {
-    return <section className="cell-score-history"><p>No s’ha pogut carregar l’evolució d’aquest sector.</p></section>;
+    return <section className="card cell-score-history"><p>No s’ha pogut carregar l’evolució d’aquest sector.</p></section>;
   }
 
   const { observed, forecast } = state.timeline;
@@ -316,7 +316,7 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     (point): point is PredictionForecastPoint & { score: number } => point.score !== null,
   ) ?? [];
   if (!observedAvailable.length && !projectedAvailable.length) {
-    return <section className="cell-score-history"><p>No hi ha prou dades per mostrar l’evolució recent d’aquest sector.</p></section>;
+    return <section className="card cell-score-history"><p>No hi ha prou dades per mostrar l’evolució recent d’aquest sector.</p></section>;
   }
   const latestObserved = observedAvailable.at(-1);
   const latestProjected = projectedAvailable.at(-1);
@@ -352,14 +352,14 @@ export function CellScoreHistory({ speciesId, cell }: { speciesId: string; cell:
     : "Cada punt compara les condicions ambientals disponibles d’aquell dia.";
 
   return (
-    <section className="cell-score-history" aria-labelledby={titleId}>
+    <section className="card cell-score-history" aria-labelledby={titleId}>
       <div className="cell-score-history-heading">
         <div>
           <p className="eyebrow">Evolució de les condicions</p>
           <div className="cell-score-history-title-row">
             <h4 id={titleId}>{title}</h4>
             {simulatedForecast ? (
-              <span className="cell-score-history-simulation">Simulació local</span>
+              <span className="pill cell-score-history-simulation">Simulació local</span>
             ) : null}
             <button
               type="button"

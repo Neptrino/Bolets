@@ -81,7 +81,7 @@ export function RegisterServiceWorker() {
   if (!waiting) return null;
 
   return (
-    <div role="status" className="update-banner">
+    <div role="status" className="pill update-banner">
       <span>Hi ha una versió nova del mapa.</span>
       <button
         type="button"

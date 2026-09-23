@@ -117,7 +117,7 @@ export function InstallApp() {
       {installPrompt ? (
         <button
           type="button"
-          className="install-app-button"
+          className="pill install-app-button"
           onClick={async () => {
             queueUmamiEvent(UMAMI_EVENTS.appInstallStarted);
             try {
@@ -137,7 +137,7 @@ export function InstallApp() {
       ) : (
         <button
           type="button"
-          className="install-app-button"
+          className="pill install-app-button"
           aria-expanded={appleInstructions}
           onClick={() => {
             if (!appleInstructions) {

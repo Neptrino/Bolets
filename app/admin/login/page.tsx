@@ -34,8 +34,8 @@ export default async function OperationalLoginPage() {
         tone="forest"
       />
 
-      <section className={styles.loginPanel} aria-labelledby="login-title">
-        <div className={styles.icon} aria-hidden="true"><LockKeyhole /></div>
+      <section className={`card ${styles.loginPanel}`} aria-labelledby="login-title">
+        <div className={`panel-dark ${styles.icon}`} aria-hidden="true"><LockKeyhole /></div>
         <div className={styles.intro}>
           <p>Tauler privat</p>
           <h2 id="login-title">Aquest compte no té accés</h2>

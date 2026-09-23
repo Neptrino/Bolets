@@ -129,7 +129,7 @@ export function PreferenceManager({
   };
 
   return (
-    <div className="forest-preference-card">
+    <div className="card forest-preference-card">
       <PreferencePicker
         label="Espècies preferides"
         placeholder="Afegeix una espècie"

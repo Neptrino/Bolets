@@ -13,7 +13,7 @@ const formatLabels: Record<string, string> = {
 
 export function InstagramPerformancePosts({ posts }: { posts: InstagramTopPost[] }) {
   return (
-    <ol className={styles.list}>
+    <ol className={`card ${styles.list}`}>
       {posts.map((post, index) => (
         <li className={styles.post} key={post.id}>
           <span className={styles.rank} aria-label={`Posició ${index + 1}`}>

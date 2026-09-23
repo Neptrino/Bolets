@@ -80,7 +80,7 @@ export function PublicFindingLocationMap({ bounds }: { bounds: SpatialBounds }) 
         <RegionMapFrame
           ariaLabel="Mapa estàtic de la zona pública aproximada de 10 per 10 quilòmetres"
           basemapId="icgc-muted"
-          className="finding-public-location-map"
+          className="card finding-public-location-map"
           map={map}
           mapMode="public-finding-location"
           node={node}

@@ -14,7 +14,7 @@ export function FindingAccessCta({ secondaryHref, secondaryLabel }: {
         <span>La foto i el dia poden ser públics; el punt exacte i les notes continuen sent privats.</span>
       </div>
       <div className="findings-publish-cta-actions">
-        <Link className="finding-button" href="/troballes/nova">Afegir una troballa <ArrowUpRight size={17} aria-hidden="true" /></Link>
+        <Link className="pill finding-button" href="/troballes/nova">Afegir una troballa <ArrowUpRight size={17} aria-hidden="true" /></Link>
         <Link href={secondaryHref}>{secondaryLabel}</Link>
       </div>
     </aside>

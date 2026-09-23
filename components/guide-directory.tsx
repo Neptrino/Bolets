@@ -51,7 +51,7 @@ export function GuideDirectory({ items }: { items: GuideDirectoryItem[] }) {
 
   return (
     <div className="guide-browser" data-local-guide-list>
-      <div className="guide-browser-controls" aria-label="Filtres de les guies locals">
+      <div className="card guide-browser-controls" aria-label="Filtres de les guies locals">
         <label className="guide-browser-search">
           <span>Cerca una guia</span>
           <span className="guide-browser-input"><Search size={17} aria-hidden="true" /><input value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder="Espècie, indret o territori" /></span>
@@ -70,8 +70,8 @@ export function GuideDirectory({ items }: { items: GuideDirectoryItem[] }) {
         <ol className="guide-browser-results">
           {filteredItems.map((item, index) => (
             <li key={item.href} hidden={index >= visibleCount}>
-              <Link href={item.href} className="guide-browser-card">
-                <span className="guide-browser-card-kicker"><MapPinned size={14} aria-hidden="true" /> {item.placeType} · {item.areaName}</span>
+              <Link href={item.href} className="card guide-browser-card">
+                <span className="label-caps guide-browser-card-kicker"><MapPinned size={14} aria-hidden="true" /> {item.placeType} · {item.areaName}</span>
                 <div><h3>{item.title}</h3><ArrowUpRight size={19} aria-hidden="true" /></div>
                 <p>{item.introduction}</p>
                 <dl>

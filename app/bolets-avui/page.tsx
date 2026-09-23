@@ -202,7 +202,7 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
           </header>
 
           {items.length > 0 ? <>
-            <div className="current-board-columns" aria-hidden="true">
+            <div className="label-caps current-board-columns" aria-hidden="true">
               <span>Posició</span><span>Zona i bolet</span><span>Condicions</span><span>Mapa</span>
             </div>
             <ol className="current-overview-grid" aria-label="Condicions actuals per espècie i territori, de més a menys favorables">
@@ -240,7 +240,7 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
                       <span>{item.status === "unavailable" ? "No hem rebut les lectures necessàries" : "Falten lectures recents o completes"}</span>
                     </div>
                   )}
-                  <UmamiEventLink href={mapPath} className="current-row-map" analyticsEvent={UMAMI_EVENTS.avuiMapOpen} aria-label={`Veure al mapa: ${locationName}, ${item.speciesName}`}>
+                  <UmamiEventLink href={mapPath} className="pill current-row-map" analyticsEvent={UMAMI_EVENTS.avuiMapOpen} aria-label={`Veure al mapa: ${locationName}, ${item.speciesName}`}>
                     <Map size={15} /><span>Veure mapa</span>
                   </UmamiEventLink>
                 </li>
@@ -313,7 +313,7 @@ function CurrentInstagramCard() {
           </p>
         </div>
         <Link
-          className="current-instagram-link"
+          className="pill current-instagram-link"
           href="/instagram"
           rel="me noopener noreferrer"
           target="_blank"
@@ -333,7 +333,7 @@ function CurrentMap() {
           <h2 id="current-map-title">Mapa de bolets de Catalunya avui</h2>
           <p>El mapa de predicció pinta cada sector amb l’espècie comestible que hi té avui les millors condicions; com més intens el color, més alta la puntuació. Si només vols veure l’aigua que ha caigut, mira el <Link className="inline-link" href="/mapa-pluja">mapa de la pluja dels últims 7 dies</Link>.</p>
         </div>
-        <UmamiEventLink href="/map" className="current-map-open" analyticsEvent={UMAMI_EVENTS.avuiMapOpen}>
+        <UmamiEventLink href="/map" className="pill current-map-open" analyticsEvent={UMAMI_EVENTS.avuiMapOpen}>
           Obrir el mapa de bolets de Catalunya <ArrowUpRight size={16} aria-hidden="true" />
         </UmamiEventLink>
       </header>

@@ -185,7 +185,7 @@ export default function MushroomsAfterRainPage() {
         layout="split"
       />
 
-      <aside className="guide-answer" aria-labelledby="rain-direct-answer-title">
+      <aside className="panel-dark guide-answer" aria-labelledby="rain-direct-answer-title">
         <Clock3 size={24} aria-hidden="true" />
         <div>
           <p className="eyebrow">Resposta curta</p>
@@ -212,7 +212,7 @@ export default function MushroomsAfterRainPage() {
           description="Cada espècie suma la pluja d’una finestra de dies fixa. Les espècies lentes no compten la darrera setmana o quinzena: els bolets d’avui van créixer abans, i el miceli triga."
         />
         <RainTimeline groups={rainWindowGroups} speciesIdByName={speciesIdByCommonName} />
-        <div className="rain-window-table-wrap">
+        <div className="card rain-window-table-wrap">
           <table className="rain-window-table">
             <thead>
               <tr>
@@ -278,7 +278,7 @@ export default function MushroomsAfterRainPage() {
                 <div><h3>{species.identity.commonName}</h3><em>{species.identity.scientificName}</em></div>
               </div>
               {window ? <div className="rain-species-rain">
-                <p className="rain-species-rain-label">Pluja que compta</p>
+                <p className="label-caps rain-species-rain-label">Pluja que compta</p>
                 <RainWindowTrack window={window} compact />
                 <div className="rain-species-rain-axis" aria-hidden="true"><span>Plou</span><span>30 dies</span></div>
                 {!sharedThresholds && <dl className="rain-species-thresholds">
@@ -334,7 +334,7 @@ export default function MushroomsAfterRainPage() {
           <article><span aria-hidden="true">2</span><Gauge size={20} /><h3>Moment favorable</h3><p>Combina la temporada, l’aigua disponible i la temperatura recent.</p></article>
           <article><span aria-hidden="true">3</span><CloudRain size={20} /><h3>Resultat conjunt</h3><p>Un bon moment no compensa un bosc inadequat, ni al revés.</p></article>
         </div>
-        <div className="guide-summary-panel">
+        <div className="panel-dark guide-summary-panel">
           <div><span>Primer</span><strong>Valorem com són les condicions per fructificar dins de l’hàbitat adequat.</strong></div>
           <div><span>Després</span><strong>La valoració baixa si hi ha poc terreny adequat o si una condició clau és desfavorable.</strong></div>
           <p><ShieldCheck size={17} aria-hidden="true" /> Les valoracions serveixen per comparar zones de 0 a 100. No indiquen probabilitat de presència, abundància ni data de sortida. El càlcul complet es pot consultar a la pàgina del mètode.</p>
@@ -356,7 +356,7 @@ export default function MushroomsAfterRainPage() {
             <a href={source.url} target="_blank" rel="noreferrer" aria-label={`Consultar l’estudi: ${source.title}`}>Consultar l’estudi <ArrowUpRight size={14} /></a>
           </article>)}
         </div>
-        <aside className="guide-caveat"><ShieldCheck size={21} aria-hidden="true" /><p><strong>Límit important.</strong> Les valoracions permeten comparar condicions, però encara no les hem contrastat amb prou observacions de camp a Catalunya. No són una probabilitat de trobar bolets.</p></aside>
+        <aside className="card guide-caveat"><ShieldCheck size={21} aria-hidden="true" /><p><strong>Límit important.</strong> Les valoracions permeten comparar condicions, però encara no les hem contrastat amb prou observacions de camp a Catalunya. No són una probabilitat de trobar bolets.</p></aside>
       </section>
 
       <FaqSection faqs={rainFaqs} title="Pluja, espera i condicions actuals" titleId="rain-faq-title" />

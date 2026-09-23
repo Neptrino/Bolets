@@ -16,15 +16,12 @@
   contain-intrinsic-size: auto 1400px;
   margin-top: 3rem;
   padding: 2.5rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: var(--surface);
   box-shadow: var(--shadow-lg);
 }
 .home-reference-season { margin-top: 2.25rem; }
 .home-reference-season .section-topline { margin-bottom: 1.25rem; }
 .home-reference-season h3 { margin: .2rem 0 0; font-size: var(--text-2xl); line-height: 1.1; letter-spacing: -.02em; }
-.home-reference-tiles-title { margin: 2.5rem 0 0; color: var(--clay); font-size: var(--text-xs); font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.home-reference-tiles-title { margin: 2.5rem 0 0; color: var(--clay); font-weight: 750; }
 .home-reference-searchbar {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -74,7 +71,7 @@
 .directory-search-submit { flex-shrink: 0; }
 /* Search results should be ready to open as soon as they appear. */
 .directory-shell .species-card { animation: none; }
-.directory-clear { display: grid; place-items: center; flex: 0 0 auto; width: 36px; height: 36px; color: var(--bark); border-radius: 50%; background: var(--paper); }
+.directory-clear { flex: 0 0 auto; width: 36px; height: 36px; color: var(--bark); background: var(--paper); }
 .directory-help { margin: 0 0 1.25rem; color: var(--muted); font-size: var(--text-xs); line-height: 1.6; }
 .directory-help a { color: var(--moss); text-underline-offset: 3px; }
 .species-season-links { display: flex; flex-wrap: wrap; gap: .6rem 1.25rem; margin-block: 1.25rem; }

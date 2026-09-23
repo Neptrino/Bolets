@@ -94,7 +94,7 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
         actions={<a href="#calendari-anual" className="text-link">Veure el calendari anual ↓</a>}
       />
 
-      <section className="season-now-panel">
+      <section className="panel-dark season-now-panel">
         <div className="season-now-number">{selectedMonth.shortLabel}</div>
         <div>
           <span>{overview ? "Lectura del mes actual" : "Lectura del mes seleccionat"}</span>
@@ -105,14 +105,14 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
       </section>
 
       {!overview && leadingSpecies.length > 0 ? (
-        <section className="season-search-answer" aria-labelledby="season-search-answer-title">
+        <section className="card season-search-answer" aria-labelledby="season-search-answer-title">
           <p className="eyebrow">Resposta del calendari</p>
           <h2 id="season-search-answer-title">Quins bolets poden sortir {monthWithPreposition(month)}?</h2>
           <p>Entre les espècies amb una activitat estacional bona o màxima aquest mes hi ha <strong>{leadingSpeciesNames}</strong>. El calendari indica una finestra habitual, no presència confirmada: contrasta-la amb les <Link href="/bolets-avui">condicions actuals dels bolets avui</Link>.</p>
         </section>
       ) : null}
 
-      <nav className="season-year" aria-label="Calendari anual de la temporada de bolets">
+      <nav className="card season-year" aria-label="Calendari anual de la temporada de bolets">
         {/* Next 16 retains the overview canonical during a soft navigation to
             the dynamic month page. A document navigation keeps one canonical. */}
         {SEASON_MONTHS.map((item) => {

@@ -57,7 +57,7 @@ export function FindingFlagButton({ findingId }: { findingId: string }) {
   };
 
   return <div className="finding-stack">
-    <button className="finding-button-secondary" type="button" onClick={() => { setError(null); setMessage(null); setOpen(true); }}>Avisar d’un problema</button>
+    <button className="pill finding-button-secondary" type="button" onClick={() => { setError(null); setMessage(null); setOpen(true); }}>Avisar d’un problema</button>
     {message ? <small aria-live="polite">{message}</small> : null}
     <dialog
       ref={dialog}
@@ -74,10 +74,10 @@ export function FindingFlagButton({ findingId }: { findingId: string }) {
       }}
     >
       <form className="site-dialog-card" onSubmit={flag}>
-        <button type="button" className="site-dialog-close" onClick={close} disabled={busy} aria-label="Tancar">
+        <button type="button" className="icon-tile site-dialog-close" onClick={close} disabled={busy} aria-label="Tancar">
           <X size={20} aria-hidden="true" />
         </button>
-        <span className="site-dialog-icon" aria-hidden="true"><CircleAlert size={24} /></span>
+        <span className="icon-tile site-dialog-icon" aria-hidden="true"><CircleAlert size={24} /></span>
         <div className="site-dialog-copy">
           <h2 id={titleId}>Avisar d’un problema</h2>
           <p id={descriptionId}>Explica’ns què cal revisar. No hi incloguis dades personals ni sensibles.</p>
@@ -89,10 +89,10 @@ export function FindingFlagButton({ findingId }: { findingId: string }) {
           <textarea value={detail} maxLength={500} onChange={(event) => setDetail(event.target.value)} placeholder="Què hauríem de revisar?" />
           <small>{detail.length}/500</small>
         </label>
-        {error ? <p className="finding-notice site-dialog-full" data-tone="danger" aria-live="polite">{error}</p> : null}
+        {error ? <p className="card finding-notice site-dialog-full" data-tone="danger" aria-live="polite">{error}</p> : null}
         <div className="site-dialog-actions">
-          <button type="button" className="finding-button-secondary" onClick={close} disabled={busy}>Cancel·lar</button>
-          <button type="submit" className="finding-button" disabled={busy}><Send size={17} aria-hidden="true" /> {busy ? "Enviant…" : "Enviar l’avís"}</button>
+          <button type="button" className="pill finding-button-secondary" onClick={close} disabled={busy}>Cancel·lar</button>
+          <button type="submit" className="pill finding-button" disabled={busy}><Send size={17} aria-hidden="true" /> {busy ? "Enviant…" : "Enviar l’avís"}</button>
         </div>
       </form>
     </dialog>

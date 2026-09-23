@@ -45,7 +45,7 @@ describe("rain response guide", () => {
   });
 
   it("answers the question first with the scored windows and shared thresholds", () => {
-    const answer = html.slice(html.indexOf('class="guide-answer"'), html.indexOf("</aside>"));
+    const answer = html.slice(html.search(/class="[^"]*\bguide-answer"/), html.indexOf("</aside>"));
     expect(answer).toMatch(/<h2[^>]*>Els bolets surten entre \d+ i \d+ dies després de ploure, segons l’espècie\.<\/h2>/);
     expect(answer.match(/<li>/g)?.length).toBeGreaterThanOrEqual(3);
     expect(answer).toMatch(/Dies \d+–\d+/);
@@ -57,7 +57,7 @@ describe("rain response guide", () => {
       const card = articleFor(html, species);
       // The strip is derived from the shipped model parameters
       // (rain-response-summary), so it always prints the scored window.
-      expect(card).toContain('class="rain-timeline-bar"');
+      expect(card).toMatch(/class="[^"]*\brain-timeline-bar"/);
       expect(card).toMatch(/dies \d+–\d+/);
       // Every species shares the rain thresholds today, so the cards leave
       // them to the short answer instead of repeating the same millimetres.

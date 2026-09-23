@@ -65,7 +65,7 @@ export function ContributionHistory({
               <div className="contribution-history-body">
                 <div className="contribution-history-heading">
                   <strong>{CONTRIBUTION_KIND_LABELS[request.kind]}</strong>
-                  <span className="contribution-history-status">
+                  <span className="pill contribution-history-status">
                     <ContributionStatusIcon status={request.status} />
                     {statusLabel[request.status]}
                   </span>
@@ -240,7 +240,7 @@ export function ContributionPanel({
                 <span>D’1 a {CONTRIBUTION_MEDIA_LIMIT}. Queden privades mentre les revisem.</span>
               </div>
             </div>
-            <label className="contribution-media-picker">
+            <label className="pill contribution-media-picker">
               <ImagePlus size={19} aria-hidden="true" />
               <span>{media.length ? "Afegir-ne més" : "Triar fotografies"}</span>
               <input
@@ -335,13 +335,13 @@ export function ContributionPanel({
           />
           <small>Pot ser una fotografia, una font o una prova de l’acció.</small>
         </label>
-        <button className="finding-button" disabled={busy || pending}>
+        <button className="pill finding-button" disabled={busy || pending}>
           <Send size={17} aria-hidden="true" />
           {busy ? "Enviant…" : pending ? "Ja tens una aportació pendent" : "Enviar per revisar"}
         </button>
       </form>
 
-      {message ? <p className="finding-notice" role="status">{message}</p> : null}
+      {message ? <p className="card finding-notice" role="status">{message}</p> : null}
     </section>
   );
 }

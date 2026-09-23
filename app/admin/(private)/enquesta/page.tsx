@@ -26,7 +26,7 @@ export default async function AdminSurveyPage({ searchParams }: {
       <section className={styles.section}>
         <SectionHeader title={`${result.total} respostes desades`} meta={MAP_PRICE_SURVEY_VERSION}
           description="Una resposta per navegador i versió. No equival necessàriament a una persona única." />
-        <div className={styles.tableFrame} role="region" aria-label="Resultats de l’enquesta" tabIndex={0}>
+        <div className={`card ${styles.tableFrame}`} role="region" aria-label="Resultats de l’enquesta" tabIndex={0}>
           <table><caption className="visually-hidden">Distribució de totes les respostes</caption>
             <thead><tr><th scope="col">Resposta</th><th scope="col">Total</th><th scope="col">Percentatge</th></tr></thead>
             <tbody>{result.options.map((option) => <tr key={option.value}>
@@ -38,7 +38,7 @@ export default async function AdminSurveyPage({ searchParams }: {
       </section>
       <section className={styles.section}>
         <SectionHeader title="Totes les respostes" description="De més recent a més antiga. Hora de Catalunya. Sense dades del compte ni adreces IP." />
-        <div className={styles.tableFrame} role="region" aria-label="Respostes individuals" tabIndex={0}>
+        <div className={`card ${styles.tableFrame}`} role="region" aria-label="Respostes individuals" tabIndex={0}>
           <table><caption className="visually-hidden">Rebuts de l’enquesta, pàgina {page}</caption>
             <thead><tr><th scope="col">Data</th><th scope="col">Resposta</th><th scope="col">Rebut</th></tr></thead>
             <tbody>{result.receipts.map((receipt) => <tr key={receipt.id}>

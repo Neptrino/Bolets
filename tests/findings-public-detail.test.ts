@@ -31,7 +31,7 @@ describe("public finding detail", () => {
   });
 
   it("explains a finding shared without photographs instead of leaving the gallery empty", () => {
-    expect(detailPage).toContain('<div className="finding-gallery-empty">');
+    expect(detailPage).toMatch(/<div className="[^"]*\bfinding-gallery-empty">/);
     expect(detailPage).toContain("<strong>Compartida sense fotografia</strong>");
     expect(detailPage).toContain("no aquesta troballa");
     expect(detailPage).toContain("const drawing = speciesDrawing(finding.reportedSpeciesId);");
@@ -81,7 +81,7 @@ describe("public finding detail", () => {
   });
 
   it("groups the public data and map in one side pane, with reporting below", () => {
-    expect(detailPage).toContain('className="finding-detail-panel"');
+    expect(detailPage).toMatch(/className="[^"]*\bfinding-detail-panel"/);
     expect(detailPage).toContain("<PublicFindingLocationMap bounds={finding.cellBounds} />");
     expect(detailPage).toContain('className="finding-detail-report"');
     expect(detailPage.indexOf('className="finding-detail-report"')).toBeGreaterThan(detailPage.indexOf("</aside>"));

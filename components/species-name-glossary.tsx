@@ -36,7 +36,7 @@ export function SpeciesNameGlossary({ rows }: { rows: readonly SpeciesNameGlossa
     <div className="species-name-glossary">
       <label className="species-name-search">
         <span>Busca un nom català, castellà o científic</span>
-        <span className="species-name-search-control">
+        <span className="card species-name-search-control">
           <Search size={18} aria-hidden="true" />
           <input
             type="search"

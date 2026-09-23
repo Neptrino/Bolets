@@ -49,10 +49,10 @@ export function MapModeControl({
       aria-labelledby={labelId}
       aria-busy={isPending}
     >
-      <span id={labelId} className="map-mode-control-label">
+      <span id={labelId} className="label-caps map-mode-control-label">
         Vista
       </span>
-      <div className="map-mode-options">
+      <div className="card map-mode-options">
         {mapModeOptions
           .filter((option) => predictionAvailable || option.value !== "prediction")
           .map((option) => {

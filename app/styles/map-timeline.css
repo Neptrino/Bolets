@@ -78,14 +78,11 @@
 }
 
 .prediction-timeline-play {
-  display: grid;
   width: 42px;
   height: 42px;
   flex: 0 0 auto;
   padding: 0;
-  place-items: center;
   border: 1px solid color-mix(in srgb, var(--paper) 30%, transparent);
-  border-radius: 50%;
   background: var(--warning-surface);
   color: var(--forest-panel);
   cursor: pointer;

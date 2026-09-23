@@ -363,7 +363,6 @@
 .culinary-rating-tooltip {
   width: min(290px, calc(100vw - 32px));
   padding: 12px 14px;
-  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--forest-panel);
   box-shadow: var(--shadow-md);

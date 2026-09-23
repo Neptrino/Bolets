@@ -52,7 +52,7 @@ export function SpeciesHero({ species, habitatLabel, altitudeLabel, seasonLabel,
             <div className="species-hero-status">
               <CulinaryRating profile={species.culinaryProfile} status={species.identity.edibility} />
               {lookalike && (
-                <UmamiEventLink href={lookalike.href} className="species-hero-lookalike" analyticsEvent={UMAMI_EVENTS.speciesLookalikeClick}>
+                <UmamiEventLink href={lookalike.href} className="pill species-hero-lookalike" analyticsEvent={UMAMI_EVENTS.speciesLookalikeClick}>
                   <ShieldAlert size={15} aria-hidden="true" />
                   <span>No el confonguis amb <strong>{lookalike.name}</strong></span>
                   <EdibilityBadge status={lookalike.edibility} compact />

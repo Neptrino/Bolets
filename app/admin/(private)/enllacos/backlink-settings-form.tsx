@@ -77,7 +77,7 @@ export function BacklinkSettingsForm({ settings, configured }: BacklinkSettingsF
   return (
     <form
       action={formAction}
-      className={styles.settingsForm}
+      className={`card ${styles.settingsForm}`}
       ref={formRef}
       onChange={(event) => {
         const control = event.target;
@@ -94,11 +94,11 @@ export function BacklinkSettingsForm({ settings, configured }: BacklinkSettingsF
       <fieldset className={styles.settingsGroup}>
         <legend>Execució</legend>
         <div className={styles.settingsGroupBody}>
-          <label className={styles.checkControl}>
+          <label className={`card ${styles.checkControl}`}>
             <input type="checkbox" name="enabled" defaultChecked={settings.enabled} />
             <span><strong>Descobriment i verificació</strong><small>Executa {BACKLINK_SEARCHES_PER_RUN} consultes diferents i inspecciona fins a {BACKLINK_INSPECTIONS_PER_RUN} pàgines noves per cicle ({BACKLINK_INSPECTIONS_PER_SEARCH} per consulta); desa el progrés després de cada consulta.</small></span>
           </label>
-          <label className={styles.checkControl}>
+          <label className={`card ${styles.checkControl}`}>
             <input type="checkbox" name="autoSend" defaultChecked={settings.autoSend} />
             <span><strong>Enviament automàtic</strong><small>Envia les preparades sense revisió manual, sempre amb límits i exclusions.</small></span>
           </label>
@@ -107,12 +107,12 @@ export function BacklinkSettingsForm({ settings, configured }: BacklinkSettingsF
       <fieldset className={styles.settingsGroup}>
         <legend>Criteris d’enviament</legend>
         <div className={`${styles.settingsGroupBody} ${styles.limitControls}`}>
-          <label className={styles.fieldControl}>
+          <label className={`card ${styles.fieldControl}`}>
             <span>Màxim per 24 hores</span>
             <input type="number" name="dailySendLimit" min="1" max="25" defaultValue={settings.dailySendLimit} />
             <small>Compta tots els correus enviats durant les últimes 24 hores.</small>
           </label>
-          <label className={styles.fieldControl}>
+          <label className={`card ${styles.fieldControl}`}>
             <span>Puntuació mínima</span>
             <input type="number" name="minimumScore" min="60" max="100" defaultValue={settings.minimumScore} />
             <small>Per sota d’aquest valor, l’oportunitat no queda preparada.</small>

@@ -182,7 +182,7 @@ export default function PreserveMushroomsPage() {
         layout="split"
       />
 
-      <aside className="guide-answer" aria-labelledby="preservation-answer-title">
+      <aside className="panel-dark guide-answer" aria-labelledby="preservation-answer-title">
         <Snowflake size={24} aria-hidden="true" />
         <div>
           <p className="eyebrow">Resposta curta</p>
@@ -251,7 +251,7 @@ export default function PreserveMushroomsPage() {
           <li><span aria-hidden="true">2</span><Package size={20} /><h3>Refreda i porciona</h3><p>Escorre’ls, deixa’ls refredar i reparteix-los en porcions dins de recipients o embolcalls tancats.</p></li>
           <li><span aria-hidden="true">3</span><Tag size={20} /><h3>Etiqueta i congela</h3><p>Indica el bolet, la preparació, la data i les racions. Mantén el congelador a −18 °C.</p></li>
         </ol>
-        <div className="guide-summary-panel">
+        <div className="panel-dark guide-summary-panel">
           <div><span>Temps</span><strong>L’ACSA recomana un màxim de dos mesos per als productes congelats a casa.</strong></div>
           <div><span>Descongelar</span><strong>A la nevera, en un recipient que reculli els líquids; al microones, cuina’ls immediatament.</strong></div>
           <p><ShieldCheck size={17} aria-hidden="true" /> Congelar és una pausa, no una desinfecció. No tornis a congelar un aliment descongelat si abans no l’has cuinat.</p>
@@ -270,7 +270,7 @@ export default function PreserveMushroomsPage() {
           <li><span aria-hidden="true">2</span><Sun size={20} /><h3>Asseca</h3><p>Estén-los sense que es toquin en un lloc sec i ventilat o en un deshidratador, on necessiten unes 8–10 hores.</p></li>
           <li><span aria-hidden="true">3</span><Archive size={20} /><h3>Guarda en pots hermètics</h3><p>Tanca’ls només quan estiguin completament secs i etiqueta cada pot amb el bolet i la data.</p></li>
         </ol>
-        <div className="guide-summary-panel">
+        <div className="panel-dark guide-summary-panel">
           <div><span>Rehidratar</span><strong>Deixa’ls en aigua fins que recuperin la textura abans de cuinar-los.</strong></div>
           <div><span>Pols</span><strong>Ben secs, es poden moldre per obtenir pols de bolet.</strong></div>
           <p><ShieldCheck size={17} aria-hidden="true" /> L’assecat no substitueix la cocció: un cop rehidratats, cuina’ls completament.</p>
@@ -289,7 +289,7 @@ export default function PreserveMushroomsPage() {
           <li><span aria-hidden="true">2</span><FlaskConical size={20} /><h3>Cobreix d’escabetx</h3><p>Bull 2 minuts 2 gots de vinagre de vi blanc, ½ got d’aigua, 1 culleradeta de sucre, 1 de sal i una branca de farigola. Cobreix els bolets i afegeix un rajolí d’oli per sobre.</p></li>
           <li><span aria-hidden="true">3</span><Flame size={20} /><h3>Esterilitza</h3><p>Tapa els pots i bull-los a foc lent, ben coberts d’aigua, un mínim de 30 minuts. Deixa’ls refredar dins la mateixa aigua i guarda’ls en un lloc fresc.</p></li>
         </ol>
-        <aside className="guide-caveat">
+        <aside className="card guide-caveat">
           <TriangleAlert size={21} aria-hidden="true" />
           <p><strong>No improvisis la proporció de vinagre.</strong> Llença qualsevol pot amb la tapa inflada, rovellada, amb pèrdues de líquid o que faci una olor estranya en obrir-lo. La toxina botulínica no es detecta a simple vista. Etiqueta cada pot amb el contingut i la data.</p>
         </aside>

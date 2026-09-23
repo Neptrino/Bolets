@@ -204,7 +204,7 @@ export default async function AdminBacklinksPage({
       />
 
       <div className={styles.automationOverview}>
-        <section className={styles.statusBand} data-enabled={dashboard.settings.enabled} aria-live="polite">
+        <section className={`card ${styles.statusBand}`} data-enabled={dashboard.settings.enabled} aria-live="polite">
           {dashboard.settings.enabled ? <ShieldCheck aria-hidden="true" /> : <PauseCircle aria-hidden="true" />}
           <div>
             <span>Automatització</span>
@@ -221,7 +221,7 @@ export default async function AdminBacklinksPage({
             <span>{runNotice.detail}</span>
           </div>
         ) : null}
-        <section className={styles.searchSchedule} aria-label="Darrera cerca i cerca programada">
+        <section className={`card ${styles.searchSchedule}`} aria-label="Darrera cerca i cerca programada">
           <article>
             <History aria-hidden="true" />
             <div><span>Darrera cerca</span><strong title={dashboard.recentRun?.searches.map((search) => search.query).join(" · ")}>{dashboard.recentRun?.searches.length ? dashboard.recentRun.searches.map((search) => search.label).join(" · ") : "Encara no registrada"}</strong><small>{dashboard.recentRun?.searches.length ? `${braveBatchLabel(dashboard.recentRun.searches)} · ${dashboard.recentRun.addedCount} ${dashboard.recentRun.addedCount === 1 ? "oportunitat afegida" : "oportunitats afegides"} · ${formatDate(dashboard.recentRun.startedAt)}${dashboard.recentRun.searchInferred ? " · inferida del cicle anterior" : ""}` : "La propera execució guardarà les consultes exactes."}</small></div>
@@ -274,7 +274,7 @@ export default async function AdminBacklinksPage({
           titleId="backlink-prospects"
           description="Cerca, ordena i filtra el registre; obre cada oportunitat per consultar el correu i l’auditoria completa."
         />
-        <div className={styles.collectionTools}>
+        <div className={`card ${styles.collectionTools}`}>
           <form className={styles.searchForm} role="search" method="get">
             <label htmlFor="backlink-search">Cerca al registre</label>
             <div>
@@ -310,7 +310,7 @@ export default async function AdminBacklinksPage({
           <span>Mostrant {firstResult}–{lastResult}</span>
         </div>
         {page.items.length ? (
-          <div className={styles.tableFrame} role="region" aria-label="Taula d’oportunitats d’enllaç">
+          <div className={`card ${styles.tableFrame}`} role="region" aria-label="Taula d’oportunitats d’enllaç">
             <table>
               <thead>
                 <tr>
@@ -337,7 +337,7 @@ export default async function AdminBacklinksPage({
                       <small>{prospect.domain} · {prospect.organization}</small>
                     </th>
                     <td>
-                      <span className={styles.badge} data-status={prospect.status}>{statusLabels[prospect.status]}</span>
+                      <span className={`pill ${styles.badge}`} data-status={prospect.status}>{statusLabels[prospect.status]}</span>
                       {prospect.manualDecision ? <span className={styles.manualMarker} data-decision={prospect.manualDecision}>{prospect.manualDecision === "approved" ? "Manual · aprovada" : "Manual · no enviar"}</span> : null}
                       <small>{prospect.statusReason}</small>
                     </td>

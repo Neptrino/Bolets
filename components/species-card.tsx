@@ -45,7 +45,7 @@ export function SpeciesCard({
         />
       </div>
       <div className="species-card-content">
-        <span className="species-card-genus">{species.identity.genus}</span>
+        <span className="label-caps species-card-genus">{species.identity.genus}</span>
         <div className="species-card-heading">
           <h3>{species.identity.commonName}</h3>
           <em>{species.identity.scientificName}</em>

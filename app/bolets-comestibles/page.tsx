@@ -76,7 +76,7 @@ export default function EdibleMushroomsPage() {
           title="Com triar entre els tipus de bolets comestibles"
           titleId="edible-reading-title"
         />
-        <div className="intent-reading-grid">
+        <div className="card intent-reading-grid">
           <div>
             <p>Els bolets comestibles de Catalunya no formen un grup uniforme. Algunes espècies tenen un valor culinari alt; d’altres només es consideren comestibles amb condicions concretes de cocció, preparació o quantitat. Cada fitxa explica aquesta diferència i assenyala les confusions rellevants.</p>
             <p>Tria primer una espècie que encaixi amb el bosc i la temporada. Després consulta els <Link href="/bolets-avui">bolets avui a Catalunya</Link> i el <Link href="/map">mapa de bolets de Catalunya</Link>. Cap d’aquests passos substitueix una identificació experta de l’exemplar complet.</p>
@@ -108,7 +108,7 @@ export default function EdibleMushroomsPage() {
           <div className="catalogue-list-group" key={group.id}>
             <h3><span className="catalogue-list-group-mark" aria-hidden="true">{group.id === "conditions" ? <TriangleAlert size={18} /> : <CulinaryStars rating={group.id === "excellent" ? 3 : 2} size={17} />}</span>{group.title} <small>{group.rows.length}</small></h3>
             <p>{group.description}</p>
-            <div className="catalogue-list-scroll" role="region" aria-label={group.title} tabIndex={0}>
+            <div className="card catalogue-list-scroll" role="region" aria-label={group.title} tabIndex={0}>
               <table>
                 <thead>
                   <tr>

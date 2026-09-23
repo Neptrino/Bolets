@@ -44,7 +44,7 @@ function FilterChip({ pressed, count, icon: Icon, label, onToggle }: {
   onToggle: () => void;
 }) {
   return (
-    <button type="button" className="directory-filter" aria-pressed={pressed} disabled={!pressed && count === 0} onClick={onToggle}>
+    <button type="button" className="pill directory-filter" aria-pressed={pressed} disabled={!pressed && count === 0} onClick={onToggle}>
       <Icon size={16} aria-hidden="true" />
       <span>{label}</span>
       <span className="directory-filter-count" aria-label={`${count} espècies`}>{count}</span>
@@ -100,7 +100,7 @@ export function SpeciesDirectory({
             <label className="visually-hidden" htmlFor="catalogue-query">Cerca espècies</label>
             <input id="catalogue-query" name="q" maxLength={120} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Nom català, castellà o científic" />
             {query && (
-              <Link href="/bolets" onClick={(event) => { event.preventDefault(); setQuery(""); }} aria-label="Neteja la cerca" className="directory-clear">
+              <Link href="/bolets" onClick={(event) => { event.preventDefault(); setQuery(""); }} aria-label="Neteja la cerca" className="icon-tile directory-clear">
                 <X size={16} aria-hidden="true" />
               </Link>
             )}
@@ -113,7 +113,7 @@ export function SpeciesDirectory({
       <p className="directory-help">Un mateix bolet pot tenir diversos noms. <Link href="/noms-de-bolets-catala-castella">Consulta el glossari</Link> o <Link href="/parts-dun-bolet">aprèn a observar-ne les parts</Link>.</p>
       <div className="directory-filters" role="group" aria-label="Filtra el catàleg">
         <div className="directory-filter-group" role="group" aria-labelledby="directory-filter-group">
-          <span className="directory-filter-label" id="directory-filter-group">Comestibilitat</span>
+          <span className="label-caps directory-filter-label" id="directory-filter-group">Comestibilitat</span>
           <div className="directory-filter-items">
             {catalogueGroupOptions.map((option) => (
               <FilterChip
@@ -128,7 +128,7 @@ export function SpeciesDirectory({
           </div>
         </div>
         <div className="directory-filter-group" role="group" aria-labelledby="directory-filter-season">
-          <span className="directory-filter-label" id="directory-filter-season">Estació</span>
+          <span className="label-caps directory-filter-label" id="directory-filter-season">Estació</span>
           <div className="directory-filter-items">
             {catalogueSeasonOptions.map((option) => (
               <FilterChip
@@ -147,7 +147,7 @@ export function SpeciesDirectory({
         species={matches}
         currentMonth={currentMonth}
         toolbar={<>
-          <p className="directory-count" aria-live="polite">
+          <p className="label-caps directory-count" aria-live="polite">
             {filtered
               ? `${matches.length} ${matches.length === 1 ? "resultat" : "resultats"}${query.trim() ? ` per “${query.trim()}”` : ""}`
               : "Ordenades alfabèticament pel nom català"}

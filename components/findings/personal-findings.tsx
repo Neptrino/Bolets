@@ -52,7 +52,7 @@ function FindingActionsMenu({ children, label }: { children: ReactNode; label: s
 
   return <details ref={details} className="finding-personal-menu">
     <summary aria-label={label} title="Accions"><Ellipsis size={20} aria-hidden="true" /></summary>
-    <div className="finding-personal-menu-panel" onClick={() => details.current?.removeAttribute("open")}>
+    <div className="card finding-personal-menu-panel" onClick={() => details.current?.removeAttribute("open")}>
       {children}
     </div>
   </details>;
@@ -214,23 +214,23 @@ export function PersonalFindings() {
   const filtersActive = Boolean(query.trim()) || visibility !== "all";
 
   return <div className="finding-stack">
-    {outbox.length ? <div className="finding-account-card finding-stack"><h2>{outbox.length} {outbox.length === 1 ? "troballa pendent" : "troballes pendents"} al dispositiu</h2>{outbox.map((record) => <div className="finding-inline-actions" key={record.draft.clientReportId}><span>{record.draft.speciesId} · {new Intl.DateTimeFormat("ca-ES", { dateStyle: "medium" }).format(new Date(record.draft.observedAt))}</span><button className="finding-button-secondary" onClick={() => { setDeleteError(null); setDeleteTarget({ kind: "pending", record }); }}>Eliminar del dispositiu</button></div>)}<button className="finding-button" onClick={() => void sync()}>Sincronitzar ara</button></div> : null}
-    {message ? <p className="finding-notice">{message}</p> : null}
-    {mapLoading ? <p className="finding-notice">Preparant el mapa privat…</p> : mapFindings.length ? <PersonalFindingsMap findings={mapFindings} /> : null}
+    {outbox.length ? <div className="card finding-account-card finding-stack"><h2>{outbox.length} {outbox.length === 1 ? "troballa pendent" : "troballes pendents"} al dispositiu</h2>{outbox.map((record) => <div className="finding-inline-actions" key={record.draft.clientReportId}><span>{record.draft.speciesId} · {new Intl.DateTimeFormat("ca-ES", { dateStyle: "medium" }).format(new Date(record.draft.observedAt))}</span><button className="pill finding-button-secondary" onClick={() => { setDeleteError(null); setDeleteTarget({ kind: "pending", record }); }}>Eliminar del dispositiu</button></div>)}<button className="pill finding-button" onClick={() => void sync()}>Sincronitzar ara</button></div> : null}
+    {message ? <p className="card finding-notice">{message}</p> : null}
+    {mapLoading ? <p className="card finding-notice">Preparant el mapa privat…</p> : mapFindings.length ? <PersonalFindingsMap findings={mapFindings} /> : null}
 
     <section className="finding-library" aria-labelledby="finding-library-title">
       <div className="finding-library-heading">
         <div><p>Arxiu del quadern</p><h2 id="finding-library-title">Troballes desades</h2></div>
         <strong>{total} {total === 1 ? "resultat" : "resultats"}</strong>
       </div>
-      <div className="finding-library-toolbar" role="search">
+      <div className="card finding-library-toolbar" role="search">
         <label className="finding-search-field">
           <span>Cercar per espècie</span>
-          <span className="finding-search-control"><Search size={18} aria-hidden="true" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cep, rossinyol, Boletus…" />{query ? <button type="button" aria-label="Esborrar la cerca" onClick={() => setQuery("")}><X size={17} aria-hidden="true" /></button> : null}</span>
+          <span className="card finding-search-control"><Search size={18} aria-hidden="true" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cep, rossinyol, Boletus…" />{query ? <button type="button" aria-label="Esborrar la cerca" onClick={() => setQuery("")}><X size={17} aria-hidden="true" /></button> : null}</span>
         </label>
         <div className="finding-filter-field"><span>Visibilitat</span><FormSelect aria-label="Visibilitat" value={visibility} onValueChange={(value) => setVisibility(value as VisibilityFilter)} options={[{ value: "all", label: "Totes" }, { value: "public", label: "Publicades" }, { value: "private", label: "Privades" }]} /></div>
       </div>
-      {loading ? <p className="finding-notice" aria-live="polite">Buscant al quadern…</p> : findings.length ? <>
+      {loading ? <p className="card finding-notice" aria-live="polite">Buscant al quadern…</p> : findings.length ? <>
         <div className="finding-personal-list" aria-busy={loadingMore}>{findings.map((finding) => {
           const photo = finding.photos[0];
           const viewHref = finding.visibility === "public" && finding.publicationState === "published" ? `/troballes/${finding.id}` : null;
@@ -238,9 +238,9 @@ export function PersonalFindings() {
             {photo ? <Image src={photo.url} alt="" width={photo.width} height={photo.height} unoptimized /> : <div className="finding-personal-thumb" />}
             <div className="finding-personal-copy"><h3>{finding.reportedSpeciesName}</h3><p>{new Intl.DateTimeFormat("ca-ES", { dateStyle: "medium", timeStyle: "short" }).format(new Date(finding.observedAt))} · {finding.exactLocation ? "punt exacte guardat" : "només zona aproximada de 10 × 10 km"}</p>{finding.privateNotes ? <p className="finding-personal-notes">{finding.privateNotes}</p> : null}</div>
           </>;
-          return <article className="finding-personal-row" key={finding.id}>
+          return <article className="card finding-personal-row" key={finding.id}>
             {viewHref ? <Link className="finding-personal-entry" href={viewHref} aria-label={`Obrir la troballa de ${finding.reportedSpeciesName}`}>{summary}</Link> : <div className="finding-personal-entry">{summary}</div>}
-            <span className="finding-visibility-badge" data-visibility={finding.visibility}>{finding.visibility === "public" ? <MapPinned size={17} aria-hidden="true" /> : <LockKeyhole size={17} aria-hidden="true" />}{finding.visibility === "public" ? "Publicada" : "Privada"}</span>
+            <span className="pill finding-visibility-badge" data-visibility={finding.visibility}>{finding.visibility === "public" ? <MapPinned size={17} aria-hidden="true" /> : <LockKeyhole size={17} aria-hidden="true" />}{finding.visibility === "public" ? "Publicada" : "Privada"}</span>
             <FindingActionsMenu label={`Accions per a ${finding.reportedSpeciesName}`}>
               {finding.visibility === "public" ? <button type="button" onClick={() => void changeAliasVisibility(finding)}>{finding.showAlias ? "Amagar el meu àlies" : "Mostrar el meu àlies"}</button> : null}
               <button type="button" onClick={() => void changePrivacy(finding)}>{finding.visibility === "public" ? "Retirar de l’atles" : "Publicar a l’atles"}</button>
@@ -250,9 +250,9 @@ export function PersonalFindings() {
         })}</div>
         <div className="finding-pagination">
           <p>Mostrant {findings.length} de {total}</p>
-          {hasMore ? <button className="finding-button-secondary" type="button" disabled={loadingMore} onClick={() => void loadMore()}>{loadingMore ? "Carregant…" : "Carregar-ne 20 més"}</button> : null}
+          {hasMore ? <button className="pill finding-button-secondary" type="button" disabled={loadingMore} onClick={() => void loadMore()}>{loadingMore ? "Carregant…" : "Carregar-ne 20 més"}</button> : null}
         </div>
-      </> : filtersActive ? <div className="finding-account-card finding-stack"><h2>Cap resultat</h2><p>Prova una altra espècie o mostra totes les visibilitats.</p><button className="finding-button-secondary" type="button" onClick={() => { setQuery(""); setVisibility("all"); }}>Netejar els filtres</button></div> : <div className="finding-account-card finding-stack"><h2>El quadern és buit</h2><p>Les troballes que desis al camp apareixeran aquí, incloses les privades.</p><Link className="finding-button" href="/troballes/nova">Anotar una troballa</Link></div>}
+      </> : filtersActive ? <div className="card finding-account-card finding-stack"><h2>Cap resultat</h2><p>Prova una altra espècie o mostra totes les visibilitats.</p><button className="pill finding-button-secondary" type="button" onClick={() => { setQuery(""); setVisibility("all"); }}>Netejar els filtres</button></div> : <div className="card finding-account-card finding-stack"><h2>El quadern és buit</h2><p>Les troballes que desis al camp apareixeran aquí, incloses les privades.</p><Link className="pill finding-button" href="/troballes/nova">Anotar una troballa</Link></div>}
       <p className="finding-library-privacy">La comunitat veu totes les fotos, el dia i una zona aproximada de 10 × 10 km de les troballes publicades. El punt exacte i les notes continuen sent només teus.</p>
     </section>
 

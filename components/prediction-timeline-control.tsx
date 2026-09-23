@@ -79,7 +79,7 @@ export function PredictionTimelineControl({
       <div className="prediction-timeline-controls">
         <button
           type="button"
-          className="prediction-timeline-play"
+          className="icon-tile prediction-timeline-play"
           onClick={() => {
             trackTimelineUsage();
             setPlaying((current) => !current);

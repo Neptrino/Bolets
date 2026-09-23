@@ -63,7 +63,7 @@ export function SeasonalGuidePage({ guide }: { guide: SeasonGuide }) {
           title={guide.reading.title}
           titleId={`${guide.id}-reading-title`}
         />
-        <div className="intent-reading-grid">
+        <div className="card intent-reading-grid">
           <div>
             <p>{guide.reading.summary}</p>
             <p>{guide.reading.detail}</p>

@@ -217,11 +217,8 @@
   z-index: 3;
   width: 52px;
   height: 52px;
-  display: grid;
-  place-items: center;
   justify-self: center;
   border: 1px solid color-mix(in srgb, var(--on-dark) 50%, transparent);
-  border-radius: 50%;
   background: var(--clay);
   color: white;
   box-shadow:
@@ -632,10 +629,6 @@
   background: var(--paper);
   box-shadow: inset 4px 0 var(--pumpkin);
   color: var(--sand-600);
-  font-size: var(--text-xs);
-  font-weight: 850;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
 }
 .compare-matrix-species {
   min-width: 0;
@@ -705,10 +698,6 @@
   display: none;
   margin-bottom: 5px;
   color: var(--sand-600);
-  font-size: var(--text-xs);
-  font-weight: 850;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 .compare-matrix-row-season .compare-matrix-cell {
   padding-block: 16px 18px;

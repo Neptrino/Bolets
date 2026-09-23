@@ -175,7 +175,7 @@ export default function GuidesPage() {
                 <Image src={hubRegionMapPath(PIRINEU_MAP_SLUG)} alt="" width={650} height={812} unoptimized sizes="400px" />
                 <span className="guides-territory-species" role="img" aria-label={`Espècies: ${pirineuSpecies.names.join(", ")}`}>
                   {pirineuSpecies.icons.slice(0, 4).map(({ key, drawing, illustration, label }) => (
-                    <span key={key} className="guides-territory-species-icon" data-tooltip={label}>
+                    <span key={key} className="card guides-territory-species-icon" data-tooltip={label}>
                       {drawing
                         ? <Image src={drawing} alt="" width={64} height={64} unoptimized />
                         : illustration ? <MushroomSpecimen kind={illustration} /> : <i>{label.charAt(0)}</i>}
@@ -184,7 +184,7 @@ export default function GuidesPage() {
                 </span>
               </span>
               <span className="guides-territory-copy">
-                <span className="guides-territory-type">Regió</span>
+                <span className="label-caps guides-territory-type">Regió</span>
                 <strong>Pirineu</strong>
                 <small>{PIRINEU_AREA_SLUGS.length} comarques · {pirineuGuideCount} guies</small>
                 <ArrowUpRight size={16} aria-hidden="true" />
@@ -202,7 +202,7 @@ export default function GuidesPage() {
                     <Image src={areaMapPath(area)} alt="" width={650} height={812} unoptimized sizes="400px" />
                     <span className="guides-territory-species" role="img" aria-label={`Espècies: ${areaSpecies.names.join(", ")}`}>
                       {areaSpecies.icons.map(({ key, drawing, illustration, label }) => (
-                        <span key={key} className="guides-territory-species-icon" data-tooltip={label}>
+                        <span key={key} className="card guides-territory-species-icon" data-tooltip={label}>
                           {drawing
                             ? <Image src={drawing} alt="" width={64} height={64} unoptimized />
                             : illustration ? <MushroomSpecimen kind={illustration} /> : <i>{label.charAt(0)}</i>}
@@ -211,7 +211,7 @@ export default function GuidesPage() {
                     </span>
                   </span>
                   <span className="guides-territory-copy">
-                    <span className="guides-territory-type">{area.typeLabel}</span>
+                    <span className="label-caps guides-territory-type">{area.typeLabel}</span>
                     <strong>{area.name}</strong>
                     <small>{guideCount} {guideCount === 1 ? "guia" : "guies"} · {placeCount} {placeCount === 1 ? "indret" : "indrets"}</small>
                     <ArrowUpRight size={16} aria-hidden="true" />
@@ -224,11 +224,11 @@ export default function GuidesPage() {
       </section>
 
       <section
-        className="guides-species-module"
+        className="panel-dark guides-species-module"
         aria-labelledby="guides-species-module-title"
         data-species-guide-list
       >
-        <p className="guides-species-module-label" id="guides-species-module-title">
+        <p className="label-caps guides-species-module-label" id="guides-species-module-title">
           <Trees size={18} aria-hidden="true" /> Guies d’espècie i territori
         </p>
         <div className="guides-species-module-list">

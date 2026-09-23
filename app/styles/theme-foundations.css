@@ -314,10 +314,6 @@ body {
   display: block;
   flex: 1;
   color: var(--sand-600);
-  font-size: var(--text-xs);
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 .map-cell-visibility-panel-toggle {
   display: inline-grid;

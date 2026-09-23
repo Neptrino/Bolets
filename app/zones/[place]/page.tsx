@@ -150,7 +150,7 @@ export default async function AreaPage({ params }: Props) {
         { "@type": "CollectionPage", "@id": `${absoluteUrl(areaPath(area))}#page`, name: `Bolets ${area.prepositionalName}`, description: summary, url: absoluteUrl(areaPath(area)), inLanguage: "ca", ...editorialArticleFields(`zone:${area.slug}`), about: { "@type": "Place", name: area.name }, mainEntity: { "@type": "ItemList", itemListElement: places.map((place, index) => ({ "@type": "ListItem", position: index + 1, name: place.name, url: absoluteUrl(placePath(place)) })) } },
         faqPageSchema(faqs, `${absoluteUrl(areaPath(area))}#preguntes`),
       ] }} />
-      <header className="location-hub-hero">
+      <header className="panel-dark location-hub-hero">
         <div className="page-width location-hub-hero-grid">
           <div className="location-hub-copy">
             <Link href="/guies" className="back-link location-back"><ArrowLeft size={15} /> Totes les guies</Link>
@@ -177,7 +177,7 @@ export default async function AreaPage({ params }: Props) {
         <HubFacts species={species} />
 
         <div className="location-hub-panels">
-          <section id="boscos" className="guide-panel" aria-labelledby="boscos-title">
+          <section id="boscos" className="card guide-panel" aria-labelledby="boscos-title">
             <header className="guide-panel-head">
               <div>
                 <p className="eyebrow"><Trees size={15} aria-hidden="true" /> Boscos</p>
@@ -189,7 +189,7 @@ export default async function AreaPage({ params }: Props) {
               {pyrenean ? <p className="guide-panel-note"><MapPinned size={15} aria-hidden="true" /><span>Aquesta comarca forma part de la <Link href="/zones/pirineu">guia dels bolets al Pirineu</Link>.</span></p> : null}
             </div>
           </section>
-          <section id="temporada" className="guide-panel" aria-labelledby="temporada-title">
+          <section id="temporada" className="card guide-panel" aria-labelledby="temporada-title">
             <header className="guide-panel-head">
               <div>
                 <p className="eyebrow"><CalendarRange size={15} aria-hidden="true" /> Temporada</p>
@@ -215,7 +215,7 @@ export default async function AreaPage({ params }: Props) {
             {cards.map(({ place, pages, species }, index) => {
               const image = species?.media.find((asset) => asset.identificationReference) ?? species?.media[0];
               return (
-                <Link href={placePath(place)} className="location-guide-card" key={place.slug}>
+                <Link href={placePath(place)} className="card location-guide-card" key={place.slug}>
                   <div className={`location-guide-card-media${image ? " has-image" : ""}`}>{image && <MediaImage asset={image} alt={image.alt} fill preload={index === 0} sizes="(max-width: 760px) calc(100vw - 48px), 50vw" />}<span>{place.typeLabel} · {pages.length} {pages.length === 1 ? "guia" : "guies"}</span></div>
                   <div className="location-guide-card-copy"><div className="location-guide-card-title"><h3>{place.name}</h3><ArrowUpRight size={20} /></div><p>{place.description} {place.landscape}</p><div className="location-guide-card-facts"><span><MapPinned size={15} /> {area.name}</span><span><BookOpen size={15} /> {pages.map((page) => displaySearchName(page.searchName)).join(", ")}</span></div></div>
                 </Link>
@@ -224,7 +224,7 @@ export default async function AreaPage({ params }: Props) {
           </div>
         </section>
 
-        <section id="preguntes" className="guide-panel location-hub-faq" aria-labelledby="preguntes-title">
+        <section id="preguntes" className="card guide-panel location-hub-faq" aria-labelledby="preguntes-title">
           <header className="guide-panel-head">
             <div>
               <p className="eyebrow"><CircleHelp size={15} aria-hidden="true" /> Preguntes freqüents</p>
@@ -239,11 +239,11 @@ export default async function AreaPage({ params }: Props) {
 
         {territoryGuides.length > 0 ? (
           <section
-            className="guides-species-module"
+            className="panel-dark guides-species-module"
             aria-labelledby="area-species-guides-title"
             data-species-guide-list
           >
-            <p className="guides-species-module-label" id="area-species-guides-title">
+            <p className="label-caps guides-species-module-label" id="area-species-guides-title">
               <BookOpenText size={18} aria-hidden="true" /> Guies d’espècie i territori
             </p>
             <div className="guides-species-module-list">

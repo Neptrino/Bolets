@@ -23,7 +23,7 @@ export function BacklinkRescanControl({
   return (
     <div className={styles.scoreRescan}>
       {notice ? <p className={styles.manualNotice} data-error={error === "rescan-failed"} role={error === "rescan-failed" ? "alert" : "status"}>{notice}</p> : null}
-      <div className={styles.rescanControl}>
+      <div className={`card ${styles.rescanControl}`}>
         <div>
           <strong>Actualitza les dades de la pàgina</strong>
           <span>Recalcula la puntuació, els enllaços externs i el contacte detectat. No envia cap correu.</span>

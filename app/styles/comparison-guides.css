@@ -41,8 +41,6 @@
 }
 .comparison-facts-table {
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
 }
 .comparison-facts-table > header,
@@ -155,11 +153,7 @@
   border: 1px solid color-mix(in srgb, var(--danger-ink) 20%, transparent);
   border-radius: var(--radius-pill);
   color: var(--clay);
-  font-size: var(--text-xs);
-  font-weight: 900;
-  letter-spacing: 0.05em;
   line-height: 1;
-  text-transform: uppercase;
   white-space: nowrap;
 }
 .comparison-risk-label.inedible,

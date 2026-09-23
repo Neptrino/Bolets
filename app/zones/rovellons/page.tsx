@@ -240,7 +240,7 @@ export default function RovellonsTerritoryPage() {
         ],
       }} />
 
-      <header className="rovellons-hero">
+      <header className="panel-dark rovellons-hero">
         <div className="page-width rovellons-hero-inner">
           <Link href="/guies" className="back-link">← Totes les guies</Link>
           <div className="rovellons-hero-grid">
@@ -278,7 +278,7 @@ export default function RovellonsTerritoryPage() {
             <p>La taula resumeix dades de les fitxes documentades; no és una llista exhaustiva de tots els lactaris que poden rebre noms populars semblants.</p>
           </header>
           <p className="guide-types-scroll-hint">Fes lliscar la taula per veure totes les columnes.</p>
-          <div className="guide-types-table-scroll">
+          <div className="card guide-types-table-scroll">
             <table className="guide-types-table" data-rovellons-types-table>
               <caption className="sr-only">Comparació dels dos tipus de rovellons comestibles representats al catàleg</caption>
               <thead>
@@ -338,7 +338,7 @@ export default function RovellonsTerritoryPage() {
           </div>
         </section>
 
-        <section className="rovellons-now" aria-labelledby="rovellons-now-title">
+        <section className="panel-dark rovellons-now" aria-labelledby="rovellons-now-title">
           <div className="rovellons-now-heading">
             <div>
               <p className="eyebrow light"><CalendarDays size={15} /> Temporada de rovellons</p>
@@ -373,7 +373,7 @@ export default function RovellonsTerritoryPage() {
             <h2 id="rovellons-territories-title">Millors zones on trobar rovellons a Catalunya</h2>
             <p>Cada resum explica quin terreny va bé per a cada espècie. Dins d’una mateixa zona hi ha molta diferència entre un bosc i un altre, i entre un vessant assolellat i un d’ombrívol. Cap d’aquestes pàgines assenyala un lloc concret per anar a collir.</p>
           </header>
-          <div className="rovellons-territory-grid">
+          <div className="card rovellons-territory-grid">
             {territoryReadings.map((territory) => (
               <Link href={speciesMapHref(territory.speciesId, { region: territory.region })} key={`${territory.region}-${territory.speciesId}`}>
                 <span><MapPinned size={15} /> Zona</span>
@@ -385,7 +385,7 @@ export default function RovellonsTerritoryPage() {
           </div>
         </section>
 
-        <section className="rovellons-published" aria-labelledby="rovellons-published-title">
+        <section className="card rovellons-published" aria-labelledby="rovellons-published-title">
           <div>
             <p className="eyebrow">Guies locals publicades</p>
             <h2 id="rovellons-published-title">Guies locals de rovellons, del Pirineu als Ports</h2>

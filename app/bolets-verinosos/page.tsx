@@ -69,7 +69,7 @@ export default function PoisonousMushroomsPage() {
           title="Bolets tòxics, verinosos i no comestibles"
           titleId="poisonous-reading-title"
         />
-        <div className="intent-reading-grid">
+        <div className="card intent-reading-grid">
           <div>
             <p>“Tòxic” i “verinós” descriuen espècies que poden causar una intoxicació. “No comestible” és més ampli: també inclou bolets que es desaconsellen per l’amargor, la textura, la preparació exigent o el risc de confusió. Aquesta pàgina prioritza les espècies tòxiques; el <Link href="/bolets">catàleg complet</Link> també recull les altres categories.</p>
             <p>Una fotografia, el color o el lloc on creix no basten per decidir que un bolet és segur. Contrasta l’exemplar complet amb la fitxa, revisa els semblants i, davant de qualsevol dubte, demana una identificació experta.</p>

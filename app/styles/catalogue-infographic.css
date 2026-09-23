@@ -7,8 +7,6 @@
   padding: clamp(1.4rem, 3vw, 2.6rem);
   overflow: hidden;
   border-radius: var(--radius-lg);
-  background: var(--forest-panel);
-  color: var(--on-dark);
   box-shadow: var(--shadow-lg);
   scroll-margin-top: 96px;
 }
@@ -167,8 +165,6 @@
 .catalogue-title-infographic-link {
   display: inline-flex;
   border-color: color-mix(in srgb, var(--forest-panel) 20%, transparent);
-  background: var(--forest-panel);
-  color: var(--on-dark);
   white-space: nowrap;
 }
 
@@ -218,7 +214,7 @@
 
 /* Clickable poster: the image itself opens the full-size sheet. */
 .catalogue-infographic-zoom { position: relative; display: block; border-radius: var(--radius-md); outline-offset: 4px; }
-.catalogue-infographic-zoom-hint { position: absolute; right: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: var(--radius-pill); background: color-mix(in srgb, var(--forest-panel) 90%, transparent); color: var(--on-dark); font-size: var(--text-xs); font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.92; transition: opacity 160ms ease, transform 160ms ease; pointer-events: none; }
+.catalogue-infographic-zoom-hint { position: absolute; right: 12px; bottom: 12px; align-items: center; gap: 6px; padding: 6px 11px; background: color-mix(in srgb, var(--forest-panel) 90%, transparent); color: var(--on-dark); font-size: var(--text-xs); font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.92; transition: opacity 160ms ease, transform 160ms ease; pointer-events: none; }
 .catalogue-infographic-zoom:hover .catalogue-infographic-zoom-hint,
 .catalogue-infographic-zoom:focus-visible .catalogue-infographic-zoom-hint { opacity: 1; transform: translateY(-2px); }
 .catalogue-infographic-zoom:hover img { filter: brightness(1.04); }

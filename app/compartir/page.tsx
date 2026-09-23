@@ -131,7 +131,7 @@ export default function ShareDailyConditionsPage({ searchParams }: { searchParam
         tone="forest"
       />
 
-      <aside className="daily-share-intro">
+      <aside className="card daily-share-intro">
         <ShieldCheck size={21} aria-hidden="true" />
         <p><strong>Una targeta no és un mapa de recol·lecció.</strong> Només mostrem resultats publicables: les dades incompletes, antigues o sense verificar es mantenen com a no disponibles.</p>
       </aside>

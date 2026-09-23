@@ -174,12 +174,9 @@
   position: absolute;
   top: 0;
   right: 0;
-  display: grid;
   width: 25px;
   height: 25px;
-  place-items: center;
   border: 2px solid var(--forest-100);
-  border-radius: 50%;
   color: var(--forest-900);
   background: var(--forest-100);
   opacity: 0;
@@ -254,21 +251,16 @@
   gap: 7px;
   margin: 0;
   color: var(--amber-150);
-  font-size: var(--text-xs);
-  font-weight: 900;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
 }
 
 .mushroom-game-primary {
-  display: inline-flex;
   min-height: 48px;
   align-items: center;
   justify-content: center;
   gap: 10px;
   padding: 11px 20px;
   border: 0;
-  border-radius: var(--radius-pill);
   color: var(--forest-900);
   background: var(--amber-150);
   box-shadow: var(--shadow-md);
@@ -315,12 +307,9 @@
   z-index: 3;
   top: 14px;
   right: 14px;
-  display: grid;
   width: 42px;
   height: 42px;
-  place-items: center;
   border: 1px solid color-mix(in srgb, var(--white) 20%, transparent);
-  border-radius: 50%;
   color: white;
   background: color-mix(in srgb, var(--forest-900) 70%, transparent);
   cursor: pointer;
@@ -480,12 +469,10 @@
 }
 
 .mushroom-game-status {
-  display: inline-flex;
   align-items: center;
   gap: 8px;
   margin: 18px 0 2px;
   padding: 7px 11px;
-  border-radius: var(--radius-pill);
   font-size: var(--text-xs);
   font-weight: 900;
 }
@@ -538,12 +525,9 @@
 }
 
 .mushroom-game-complete-icon {
-  display: grid;
   width: 60px;
   height: 60px;
-  place-items: center;
   margin: 0 auto 18px;
-  border-radius: 50%;
   color: var(--forest-900);
   background: var(--amber-150);
   box-shadow: 0 0 0 10px color-mix(in srgb, var(--amber-150) 10%, transparent);

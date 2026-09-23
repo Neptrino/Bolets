@@ -123,7 +123,7 @@ export default async function AdminFindingsPage({
       {updated === "hidden" ? (
         <p className={styles.actionNotice}>Troballa retirada del públic correctament.</p>
       ) : null}
-      <nav className={styles.filterBar} aria-label="Filtres de troballes">
+      <nav className={`card ${styles.filterBar}`} aria-label="Filtres de troballes">
         {presets.map((preset) => (
           <Link href={preset.href} aria-current={isPreset(filters, preset.filters) ? "page" : undefined} key={preset.href}>
             {preset.label}
@@ -137,7 +137,7 @@ export default async function AdminFindingsPage({
       </div>
 
       {result.items.length > 0 ? (
-        <div className={styles.adminTableFrame} tabIndex={0} role="region" aria-label="Taula de troballes comunicades">
+        <div className={`card ${styles.adminTableFrame}`} tabIndex={0} role="region" aria-label="Taula de troballes comunicades">
           <table className={`${styles.adminTable} ${styles.findingsTable}`}>
             <caption className="visually-hidden">
               Troballes comunicades, publicació, visibilitat, data observada, validació comunitària i avisos
@@ -173,12 +173,12 @@ export default async function AdminFindingsPage({
                     </time>
                   </th>
                   <td>
-                    <span className={styles.badge} data-tone={finding.publicationState === "published" ? "green" : finding.publicationState === "draft" ? "amber" : "red"}>
+                    <span className={`pill ${styles.badge}`} data-tone={finding.publicationState === "published" ? "green" : finding.publicationState === "draft" ? "amber" : "red"}>
                       {stateLabel(finding.publicationState)}
                     </span>
                   </td>
                   <td>
-                    <span className={styles.badge} data-tone={finding.visibility === "public" ? "blue" : "neutral"}>
+                    <span className={`pill ${styles.badge}`} data-tone={finding.visibility === "public" ? "blue" : "neutral"}>
                       {finding.visibility === "public" ? "Pública" : "Privada"}
                     </span>
                   </td>
@@ -186,7 +186,7 @@ export default async function AdminFindingsPage({
                     <time dateTime={finding.observedOn}>{formatDetailDate(finding.observedOn)}</time>
                   </td>
                   <td>
-                    <span className={styles.badge} data-tone={finding.verificationStatus === "contested" ? "red" : finding.verificationStatus === "community_supported" ? "green" : "neutral"}>
+                    <span className={`pill ${styles.badge}`} data-tone={finding.verificationStatus === "contested" ? "red" : finding.verificationStatus === "community_supported" ? "green" : "neutral"}>
                       {verificationLabel(finding.verificationStatus)}
                     </span>
                     {finding.consensusSpeciesName ? (
@@ -201,7 +201,7 @@ export default async function AdminFindingsPage({
                   </td>
                   <td>
                     {finding.openFlagCount > 0 ? (
-                      <span className={styles.badge} data-tone="red">
+                      <span className={`pill ${styles.badge}`} data-tone="red">
                         {numberFormatter.format(finding.openFlagCount)} oberts
                       </span>
                     ) : (

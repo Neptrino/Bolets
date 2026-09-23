@@ -73,7 +73,7 @@ export function EditorialAttribution({
 
   if (variant === "compact") {
     return (
-      <aside id={id} className="editorial-panel editorial-panel--compact" aria-label="Autoria, revisió i fonts">
+      <aside id={id} className="card editorial-panel editorial-panel--compact" aria-label="Autoria, revisió i fonts">
         <div className="editorial-compact-summary">
           <BookOpenCheck size={17} aria-hidden="true" />
           <p>
@@ -102,7 +102,7 @@ export function EditorialAttribution({
   }
 
   return (
-    <aside id={id} className="editorial-panel" aria-label="Autoria, revisió i fonts">
+    <aside id={id} className="card editorial-panel" aria-label="Autoria, revisió i fonts">
       <div className="editorial-summary">
         <div className="editorial-panel-heading">
           <BookOpenCheck size={18} aria-hidden="true" />
@@ -158,9 +158,9 @@ export function DataSourceCredits({
 
   if (variant === "panel") {
     return (
-      <aside className="data-source-credits data-source-credits--panel" aria-label={label}>
+      <aside className="data-source-credits card data-source-credits--panel" aria-label={label}>
         <div className="data-source-credits-heading">
-          <span className="data-source-credits-icon">
+          <span className="panel-dark data-source-credits-icon">
             <Database size={17} aria-hidden="true" />
           </span>
           <div>

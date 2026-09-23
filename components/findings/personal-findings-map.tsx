@@ -169,7 +169,7 @@ export function PersonalFindingsMap({ findings }: { findings: OwnerFindingMapIte
     <RegionMapFrame
       ariaLabel="Mapa privat de les meves troballes. Els punts exactes només són visibles en aquest compte."
       basemapId={selectedBasemapId}
-      className="findings-region-map personal-findings-region-map"
+      className="card findings-region-map personal-findings-region-map"
       map={map}
       mapMode="personal-findings"
       node={node}

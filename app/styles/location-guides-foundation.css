@@ -46,8 +46,6 @@
 }
 .location-hub-hero {
   overflow: hidden;
-  background: var(--forest-panel);
-  color: var(--on-dark);
 }
 .location-hub-hero-grid {
   display: grid;
@@ -82,10 +80,8 @@
 .location-hub-facts {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: 1px solid var(--line);
   border-top: 0;
   border-radius: 0 0 var(--radius-md) var(--radius-md);
-  background: var(--surface);
 }
 .location-hub-facts > div {
   display: grid;
@@ -127,9 +123,6 @@
   grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.18fr);
   min-height: 360px;
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: var(--surface);
   box-shadow: var(--shadow-lg);
 }
 .location-guide-card-media {
@@ -215,10 +208,8 @@
 .local-species-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: 1px solid var(--line);
   border-top: 0;
   border-radius: 0 0 var(--radius-md) var(--radius-md);
-  background: var(--surface);
 }
 .local-species-summary > div { display: grid; gap: 3px; padding: 21px 24px; }
 .local-species-summary > div + div { border-left: 1px solid var(--line); }

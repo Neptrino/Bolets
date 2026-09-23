@@ -8,8 +8,6 @@
   gap: 30px;
   align-items: start;
   padding: 22px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
   box-shadow: var(--shadow-xl);
 }

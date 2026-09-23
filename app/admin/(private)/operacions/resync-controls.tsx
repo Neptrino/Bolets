@@ -211,7 +211,7 @@ export function ResyncControls() {
               }}
               type="button"
             >
-              <span className={styles.commandIcon}><Icon aria-hidden="true" /></span>
+              <span className={`icon-tile ${styles.commandIcon}`}><Icon aria-hidden="true" /></span>
               <span className={styles.commandCopy}>
                 <span>{eyebrow}</span>
                 <strong>{title}</strong>

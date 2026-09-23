@@ -20,7 +20,7 @@ export default function OfflinePage() {
         tone="forest"
       />
 
-      <aside className="offline-note">
+      <aside className="card offline-note">
         <CloudOff size={21} aria-hidden="true" />
         <p>
           <strong>El mapa sí que funciona sense cobertura</strong> a les zones que hagis
@@ -30,7 +30,7 @@ export default function OfflinePage() {
       </aside>
 
       <p className="offline-actions">
-        <Link href="/map" className="header-map-link">
+        <Link href="/map" className="pill header-map-link">
           <MapPinned size={15} aria-hidden="true" /> Obre el mapa de bolets
         </Link>
       </p>

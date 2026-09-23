@@ -59,7 +59,7 @@ function AvailableReadingGroups({
     <div className="forest-reading-groups">
       {[...groups.entries()].map(([slug, group]) => {
         const observedAt = group.readings[0]?.summary?.snapshot.observedAt;
-        return <section className="forest-reading-group" aria-labelledby={`reading-${slug}`} key={slug}>
+        return <section className="card forest-reading-group" aria-labelledby={`reading-${slug}`} key={slug}>
           <header>
             <div>
               <p><MapPinned size={14} aria-hidden="true" /> {group.type}</p>
@@ -68,7 +68,7 @@ function AvailableReadingGroups({
             <p className="forest-reading-updated"><Clock3 size={14} aria-hidden="true" /> {simulation
               ? "Dades simulades"
               : observedAt ? `Dades de ${dateTimeFormat.format(new Date(observedAt))}` : "Dades actuals"}</p>
-            {simulation ? <span className="forest-simulation-badge">Simulació</span> : null}
+            {simulation ? <span className="label-caps forest-simulation-badge">Simulació</span> : null}
           </header>
           <div className="forest-reading-columns" aria-hidden="true">
             <span>Espècie</span><span>Millor sector</span><span>Extensió del territori</span><span />
@@ -133,7 +133,7 @@ function CompactReadingGroups({ readings }: { readings: SavedForestReading[] }) 
   return (
     <div className="forest-compact-groups">
       {[...groups.entries()].map(([slug, group]) => (
-        <section className="forest-compact-group" aria-labelledby={`compact-${slug}`} key={slug}>
+        <section className="card forest-compact-group" aria-labelledby={`compact-${slug}`} key={slug}>
           <header>
             <p><MapPinned size={14} aria-hidden="true" /> {group.type}</p>
             <h3 id={`compact-${slug}`}><Link href={group.path}>{group.name}</Link></h3>
@@ -237,7 +237,7 @@ export function JournalSummary({ summary }: { summary: JournalSeasonSummary }) {
         description="Resum privat de les troballes del teu compte. Les coordenades, les notes i les fotos privades no formen part d’aquest resum."
       />
       {summary.total ? (
-        <div className="forest-journal-card">
+        <div className="panel-dark forest-journal-card">
           <div className="forest-journal-total"><NotebookPen size={22} aria-hidden="true" /><span><strong>{summary.total}</strong><small>{summary.total === 1 ? "troballa" : "troballes"}</small></span></div>
           <dl>
             <div><dt>Espècies registrades</dt><dd>{summary.speciesCount}</dd></div>

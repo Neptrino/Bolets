@@ -112,9 +112,9 @@ export function BacklinkDetailContent({
 }) {
   return (
     <>
-      <section className={styles.detailLead}>
+      <section className={`card ${styles.detailLead}`}>
         <div>
-          <span className={styles.badge} data-status={prospect.status}>{statusLabels[prospect.status]}</span>
+          <span className={`pill ${styles.badge}`} data-status={prospect.status}>{statusLabels[prospect.status]}</span>
           <strong>{prospect.score}/100</strong>
           <small>{prospect.statusReason ?? "Sense motiu addicional"}</small>
         </div>
@@ -127,7 +127,7 @@ export function BacklinkDetailContent({
       <section className={styles.detailSection} aria-labelledby={`prospect-score-${prospect.id}`}>
         <SectionHeader meta="Puntuació" title="Per què té aquesta nota?" titleId={`prospect-score-${prospect.id}`} description="Desglossament exacte guardat durant l’últim escaneig; les decisions manuals no alteren la nota." />
         {prospect.scoreExplanation ? (
-          <div className={styles.scoreExplanation}>
+          <div className={`card ${styles.scoreExplanation}`}>
             <header>
               <Calculator aria-hidden="true" />
               <div>
@@ -163,7 +163,7 @@ export function BacklinkDetailContent({
 
       <section className={styles.detailSection} aria-labelledby={`prospect-context-${prospect.id}`}>
         <SectionHeader meta="Origen i decisió" title="Context de l’oportunitat" titleId={`prospect-context-${prospect.id}`} description="Dades de la pàgina pública i decisió de la política automàtica." />
-        <dl className={styles.detailFacts}>
+        <dl className={`card ${styles.detailFacts}`}>
           <Fact label="Organització" value={prospect.organization} />
           <Fact label="Domini" value={prospect.domain} />
           <Fact label="Campanya i consulta" value={`${prospect.campaignId} · ${prospect.searchQuery}`} />
@@ -180,13 +180,13 @@ export function BacklinkDetailContent({
       <section className={styles.detailSection} aria-labelledby={`prospect-email-${prospect.id}`}>
         <SectionHeader meta="Comunicació" title="Correu editorial" titleId={`prospect-email-${prospect.id}`} description="Contingut exacte; el token signat de baixa es genera just abans de l’enviament." />
         {prospect.emailPreview ? (
-          <article className={styles.messageCard}>
+          <article className={`card ${styles.messageCard}`}>
             <Mail aria-hidden="true" />
             <div>
               <span><strong>A:</strong> {prospect.emailPreview.recipient}</span>
               <span><strong>Assumpte:</strong> {prospect.emailPreview.subject}</span>
               <iframe
-                className={styles.messagePreviewFrame}
+                className={`card ${styles.messagePreviewFrame}`}
                 sandbox=""
                 srcDoc={emailPreviewDocument(prospect.emailPreview.html)}
                 title={`Previsualització del correu per a ${prospect.emailPreview.recipient}`}

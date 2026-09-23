@@ -69,7 +69,7 @@ export function SpeciesDirectoryLayoutControl({
   const choiceName = useId();
   const labelId = useId();
   return (
-    <div className="directory-layout-control" role="radiogroup" aria-labelledby={labelId}>
+    <div className="card directory-layout-control" role="radiogroup" aria-labelledby={labelId}>
       <span id={labelId} className="visually-hidden">Disposició del catàleg</span>
       {layoutOptions.map((option) => {
         const Icon = option.icon;

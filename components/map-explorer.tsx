@@ -258,7 +258,7 @@ export function MapExplorer({
               </div>
               {isLoadingCell || isLoadedCell || hasCellLoadError ? (
                 <span
-                  className={`map-floating-card-status ${isLoadingCell ? "is-loading" : hasCellLoadError ? "is-error" : "is-ready"}`}
+                  className={`pill map-floating-card-status ${isLoadingCell ? "is-loading" : hasCellLoadError ? "is-error" : "is-ready"}`}
                   role="status"
                   aria-live="polite"
                 >

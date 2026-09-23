@@ -122,13 +122,13 @@ export function AccessForm({ googleEnabled }: { googleEnabled: boolean }) {
   };
 
   return (
-    <div className="finding-account-card finding-stack">
+    <div className="card finding-account-card finding-stack">
       {step === "email" ? (
         <>
           <div className="finding-auth-options" aria-label="Opcions d’accés">
             {googleEnabled ? (
               <button
-                className="finding-button-secondary finding-auth-option"
+                className="pill finding-button-secondary finding-auth-option"
                 type="button"
                 disabled={busy !== null}
                 onClick={() => void signInWithGoogle()}
@@ -138,7 +138,7 @@ export function AccessForm({ googleEnabled }: { googleEnabled: boolean }) {
               </button>
             ) : null}
             <button
-              className="finding-button-secondary finding-auth-option"
+              className="pill finding-button-secondary finding-auth-option"
               type="button"
               disabled={busy !== null}
               onClick={() => void signInWithPasskey()}
@@ -164,9 +164,9 @@ export function AccessForm({ googleEnabled }: { googleEnabled: boolean }) {
                 placeholder="tu@exemple.cat"
               />
             </label>
-            <p className="finding-notice">No cal crear ni recordar cap contrasenya.</p>
-            {message ? <p className="finding-notice" data-tone="danger" aria-live="polite">{message}</p> : null}
-            <button className="finding-button" type="submit" disabled={busy !== null}>
+            <p className="card finding-notice">No cal crear ni recordar cap contrasenya.</p>
+            {message ? <p className="card finding-notice" data-tone="danger" aria-live="polite">{message}</p> : null}
+            <button className="pill finding-button" type="submit" disabled={busy !== null}>
               <Mail size={18} aria-hidden="true" />
               {busy === "email" ? "Enviant…" : "Enviar-me el codi"}
             </button>
@@ -189,12 +189,12 @@ export function AccessForm({ googleEnabled }: { googleEnabled: boolean }) {
               onChange={(event) => setCode(event.target.value)}
             />
           </label>
-          {message ? <p className="finding-notice" data-tone="danger" aria-live="polite">{message}</p> : null}
-          <button className="finding-button" type="submit" disabled={busy !== null}>
+          {message ? <p className="card finding-notice" data-tone="danger" aria-live="polite">{message}</p> : null}
+          <button className="pill finding-button" type="submit" disabled={busy !== null}>
             {busy === "code" ? "Comprovant…" : "Entrar"}
           </button>
           <button
-            className="finding-button-secondary"
+            className="pill finding-button-secondary"
             type="button"
             disabled={busy !== null}
             onClick={() => {

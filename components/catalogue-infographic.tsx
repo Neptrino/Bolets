@@ -12,7 +12,7 @@ export function CatalogueInfographic({ speciesCount }: { speciesCount: number })
   return (
     <section
       id="infografia"
-      className="catalogue-infographic"
+      className="panel-dark catalogue-infographic"
       aria-labelledby="catalogue-infographic-title"
     >
       <figure className="catalogue-infographic-preview">
@@ -30,7 +30,7 @@ export function CatalogueInfographic({ speciesCount }: { speciesCount: number })
             height={4961}
             sizes="(max-width: 900px) calc(100vw - 64px), 430px"
           />
-          <span className="catalogue-infographic-zoom-hint" aria-hidden="true">
+          <span className="pill catalogue-infographic-zoom-hint" aria-hidden="true">
             <Expand size={15} /> Amplia
           </span>
         </a>

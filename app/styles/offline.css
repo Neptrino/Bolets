@@ -5,12 +5,10 @@
   bottom: 18px;
   transform: translateX(-50%);
   z-index: 60;
-  display: inline-flex;
   align-items: center;
   gap: 12px;
   max-width: calc(100vw - 32px);
   padding: 10px 12px 10px 16px;
-  border-radius: var(--radius-pill);
   background: var(--ink);
   color: var(--on-dark);
   font-size: var(--text-base);
@@ -35,8 +33,6 @@
   align-items: flex-start;
   margin: 0 0 32px;
   padding: 21px 24px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
   background: var(--surface-warm);
 }
 .offline-note svg { flex: 0 0 auto; color: var(--clay); }
@@ -64,14 +60,12 @@
 .install-app-reason strong { color: var(--on-dark); font-size: var(--text-base); }
 .install-app-reason span { color: var(--on-dark-muted); font-size: var(--text-base); line-height: 1.5; }
 .install-app-button {
-  display: inline-flex;
   align-items: center;
   gap: 7px;
   margin-left: auto;
   min-height: 40px;
   padding: 0 16px;
   border: 0;
-  border-radius: var(--radius-pill);
   background: var(--pumpkin);
   color: var(--ink);
   font: inherit;

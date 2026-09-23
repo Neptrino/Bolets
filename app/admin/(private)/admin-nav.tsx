@@ -37,7 +37,7 @@ export function AdminNav() {
   const pathname = usePathname();
 
   return (
-    <nav className={styles.adminNav} aria-label="Seccions de l’administració">
+    <nav className={`card ${styles.adminNav}`} aria-label="Seccions de l’administració">
       <div className={styles.adminLinks}>
         {sections.map(({ href, label, icon: Icon, exact }) => {
           const current = exact ? pathname === href : pathname.startsWith(href);

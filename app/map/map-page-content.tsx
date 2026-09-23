@@ -157,14 +157,14 @@ export async function MapPageContent({ query, mapPage }: MapPageContentProps) {
             ? `Compara on l’hàbitat i el temps recent són més favorables ${mapPage.dativeName}.`
             : "Compara on l’hàbitat i el temps recent són més favorables per a aquesta espècie."}</p>
         </div>
-        <span className="map-page-panel-toggle" aria-hidden="true">
+        <span className="icon-tile map-page-panel-toggle" aria-hidden="true">
           <ChevronDown className="map-page-panel-toggle-desktop" size={20} />
           <ChevronDown className="map-page-panel-toggle-mobile" size={20} />
         </span>
       </summary>
       <div className="map-controls">
         <div className="map-species-picker">
-          <span className="map-species-picker-label"><Trees size={17} aria-hidden="true" /> Espècie</span>
+          <span className="label-caps map-species-picker-label"><Trees size={17} aria-hidden="true" /> Espècie</span>
           <VisibleQuerySelect
             value={species?.speciesId ?? GLOBAL_SPECIES_ID}
             items={mapSpeciesSelectItems}
@@ -209,7 +209,7 @@ export async function MapPageContent({ query, mapPage }: MapPageContentProps) {
         <>
           <aside
             key="map-info"
-            className={isCompatibility ? "map-reading-guide" : "map-reading-guide map-reading-guide-prediction"}
+            className={isCompatibility ? "card map-reading-guide" : "card map-reading-guide map-reading-guide-prediction"}
           >
             <div className="map-reading-heading">
               <Info size={22} aria-hidden="true" />

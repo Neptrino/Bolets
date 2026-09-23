@@ -7,7 +7,7 @@ import styles from "./admin-loading.module.css";
 export default function AdminLoading() {
   return (
     <PageShell as="div" className={`admin-page ${styles.loadingShell}`}>
-      <div className={styles.loadingPanel} role="status" aria-live="polite">
+      <div className={`card ${styles.loadingPanel}`} role="status" aria-live="polite">
         <LoaderCircle aria-hidden="true" />
         <div>
           <strong>Carregant la secció</strong>

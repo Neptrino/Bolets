@@ -1,0 +1,37 @@
+/* Shared UI primitives. Loaded right after the tokens so any feature rule can
+   override them; add the class in markup and keep only what differs in the
+   feature stylesheet. */
+
+/* Surface card: line border, rounded corners and the card background. */
+.card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+/* Dark forest panel with light text. */
+.panel-dark {
+  background: var(--forest-panel);
+  color: var(--on-dark);
+}
+
+/* Inline pill for badges, chips and pill buttons. */
+.pill {
+  display: inline-flex;
+  border-radius: var(--radius-pill);
+}
+
+/* Small uppercase label for kickers, metadata and counts. */
+.label-caps {
+  font-size: var(--text-xs);
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Round icon holder. */
+.icon-tile {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}

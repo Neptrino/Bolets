@@ -28,7 +28,7 @@ export function SpeciesNamesTable({
         <p>{intro}</p>
       </header>
       <p className="guide-types-scroll-hint">Fes lliscar la taula per veure totes les columnes.</p>
-      <div className="guide-types-table-scroll">
+      <div className="card guide-types-table-scroll">
         <table className="guide-types-table">
           <caption className="sr-only">{title}</caption>
           <thead>

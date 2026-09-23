@@ -38,7 +38,7 @@ export function FindingSyncAgent() {
     </div>
     <TurnstileWidget action={FINDING_TURNSTILE_ACTION} onToken={setToken} />
     <button
-      className="finding-button"
+      className="pill finding-button"
       type="button"
       disabled={!token || busy}
       onClick={() => {

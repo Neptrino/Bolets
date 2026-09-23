@@ -205,7 +205,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
       <div className="compare-stage">
         <ComparisonProfileCard species={left} side="left" />
         <Link
-          className="compare-swap"
+          className="icon-tile compare-swap"
           href={`/compare?left=${right.speciesId}&right=${left.speciesId}`}
           aria-label="Intercanvia les espècies"
           title="Intercanvia les espècies"
@@ -227,7 +227,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
           aria-labelledby="compare-matrix-title"
         >
           <header className="compare-matrix-heading" role="row">
-            <div className="compare-matrix-criterion" role="columnheader">
+            <div className="label-caps compare-matrix-criterion" role="columnheader">
               Criteri
             </div>
             <div
@@ -263,7 +263,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                   role="cell"
                   aria-label={`${left.identity.commonName}: ${row.left}`}
                 >
-                  <span className="compare-matrix-cell-key" aria-hidden="true">A · {left.identity.commonName}</span>
+                  <span className="label-caps compare-matrix-cell-key" aria-hidden="true">A · {left.identity.commonName}</span>
                   <p>{row.left}</p>
                 </div>
                 <div
@@ -271,7 +271,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                   role="cell"
                   aria-label={`${right.identity.commonName}: ${row.right}`}
                 >
-                  <span className="compare-matrix-cell-key" aria-hidden="true">B · {right.identity.commonName}</span>
+                  <span className="label-caps compare-matrix-cell-key" aria-hidden="true">B · {right.identity.commonName}</span>
                   <p>{row.right}</p>
                 </div>
               </article>
@@ -283,11 +283,11 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
               <span>Temporada</span>
             </div>
             <div className="compare-matrix-cell compare-matrix-cell-left" role="cell">
-              <span className="compare-matrix-cell-key" aria-hidden="true">A · {left.identity.commonName}</span>
+              <span className="label-caps compare-matrix-cell-key" aria-hidden="true">A · {left.identity.commonName}</span>
               <ComparisonSeason species={left} currentMonth={currentMonth} />
             </div>
             <div className="compare-matrix-cell compare-matrix-cell-right" role="cell">
-              <span className="compare-matrix-cell-key" aria-hidden="true">B · {right.identity.commonName}</span>
+              <span className="label-caps compare-matrix-cell-key" aria-hidden="true">B · {right.identity.commonName}</span>
               <ComparisonSeason species={right} currentMonth={currentMonth} />
             </div>
           </article>
@@ -305,7 +305,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
             {riskComparisons.map(({ page, status }) => (
               <Link href={`/compare/${page.slug}`} key={page.slug}>
                 <span>{page.shortTitle}</span>
-                <small className={`comparison-risk-label ${status}`}>
+                <small className={`label-caps comparison-risk-label ${status}`}>
                   {getEdibilityPresentation(status).label}
                 </small>
                 <ArrowUpRight size={16} aria-hidden="true" />

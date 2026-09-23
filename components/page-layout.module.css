@@ -95,10 +95,7 @@
 .sectionMeta {
   display: block;
   color: var(--clay);
-  font-size: var(--text-xs);
-  font-weight: 900;
   letter-spacing: 0.13em;
-  text-transform: uppercase;
 }
 
 .sectionTitle {

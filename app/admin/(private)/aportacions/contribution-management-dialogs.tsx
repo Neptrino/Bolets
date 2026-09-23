@@ -64,7 +64,7 @@ export function ContributionReviewDialog({ request }: { request: AdminContributi
 
   return (
     <>
-      <button className={styles.tableAction} type="button" onClick={() => dialog.current?.showModal()}>
+      <button className={`panel-dark ${styles.tableAction}`} type="button" onClick={() => dialog.current?.showModal()}>
         Revisar
       </button>
       <dialog
@@ -78,7 +78,7 @@ export function ContributionReviewDialog({ request }: { request: AdminContributi
       >
         <form action={reviewContributionAction} className={`site-dialog-panel ${styles.reviewDialogCard}`}>
           <input type="hidden" name="requestId" value={request.id} />
-          <button type="button" className="site-dialog-close" onClick={() => dialog.current?.close()} aria-label="Tancar">
+          <button type="button" className="icon-tile site-dialog-close" onClick={() => dialog.current?.close()} aria-label="Tancar">
             <X size={20} aria-hidden="true" />
           </button>
           <header className={styles.dialogHeader}>
@@ -112,7 +112,7 @@ export function ContributionDetailsDialog({ request }: { request: AdminContribut
 
   return (
     <>
-      <button className={styles.tableAction} type="button" data-tone="neutral" onClick={() => dialog.current?.showModal()}>
+      <button className={`panel-dark ${styles.tableAction}`} type="button" data-tone="neutral" onClick={() => dialog.current?.showModal()}>
         Veure
       </button>
       <dialog
@@ -124,7 +124,7 @@ export function ContributionDetailsDialog({ request }: { request: AdminContribut
         }}
       >
         <div className={`site-dialog-panel ${styles.reviewDialogCard}`}>
-          <button type="button" className="site-dialog-close" onClick={() => dialog.current?.close()} aria-label="Tancar">
+          <button type="button" className="icon-tile site-dialog-close" onClick={() => dialog.current?.close()} aria-label="Tancar">
             <X size={20} aria-hidden="true" />
           </button>
           <header className={styles.dialogHeader}>
@@ -136,7 +136,7 @@ export function ContributionDetailsDialog({ request }: { request: AdminContribut
             </div>
           </header>
           <ContributionEvidence request={request} />
-          <section className={styles.reviewOutcome} aria-label="Resultat de la revisió">
+          <section className={`card ${styles.reviewOutcome}`} aria-label="Resultat de la revisió">
             <strong>{approved ? "Aprovada" : "No aprovada"}</strong>
             <span>{request.reviewNote || "Sense nota de revisió."}</span>
           </section>
@@ -155,7 +155,7 @@ export function RevokeAccessDialog({ userId, userEmail }: { userId: string; user
 
   return (
     <>
-      <button className={styles.tableAction} type="button" data-tone="danger" onClick={() => dialog.current?.showModal()}>
+      <button className={`panel-dark ${styles.tableAction}`} type="button" data-tone="danger" onClick={() => dialog.current?.showModal()}>
         Revocar
       </button>
       <dialog
@@ -168,7 +168,7 @@ export function RevokeAccessDialog({ userId, userEmail }: { userId: string; user
       >
         <form action={revokeContributorAction} className={`site-dialog-panel ${styles.reviewDialogCard}`}>
           <input type="hidden" name="userId" value={userId} />
-          <button type="button" className="site-dialog-close" onClick={() => dialog.current?.close()} aria-label="Tancar">
+          <button type="button" className="icon-tile site-dialog-close" onClick={() => dialog.current?.close()} aria-label="Tancar">
             <X size={20} aria-hidden="true" />
           </button>
           <header className={styles.dialogHeader} data-tone="danger">

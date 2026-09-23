@@ -29,14 +29,14 @@ export default async function UnsubscribePage({
         tone="forest"
       />
       {!done && params.token ? (
-        <form action={suppressBacklinkAction} className={styles.panel}>
+        <form action={suppressBacklinkAction} className={`card ${styles.panel}`}>
           <input type="hidden" name="token" value={params.token} />
           <p>La baixa bloqueja qualsevol comunicació editorial futura amb aquesta adreça.</p>
           <button type="submit">Confirma la baixa</button>
         </form>
       ) : null}
       {!done && (!params.token || params.error) ? (
-        <p className={styles.error}>L’enllaç no és vàlid o ja no es pot verificar.</p>
+        <p className={`card ${styles.error}`}>L’enllaç no és vàlid o ja no es pot verificar.</p>
       ) : null}
     </PageShell>
   );

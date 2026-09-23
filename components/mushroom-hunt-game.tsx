@@ -256,7 +256,7 @@ export function MushroomHuntGame({ entries }: MushroomHuntGameProps) {
               >
                 <span className="mushroom-game-pulse" aria-hidden="true" />
                 <MushroomSpecimen kind={entry.specimen} />
-                <span className="mushroom-game-found-mark" aria-hidden="true"><Check size={14} /></span>
+                <span className="icon-tile mushroom-game-found-mark" aria-hidden="true"><Check size={14} /></span>
               </button>
             );
           })}
@@ -264,7 +264,7 @@ export function MushroomHuntGame({ entries }: MushroomHuntGameProps) {
 
         {!started ? (
           <div className="mushroom-game-briefing">
-            <p className="mushroom-game-kicker"><Sparkles size={15} aria-hidden="true" /> Missió de camp</p>
+            <p className="label-caps mushroom-game-kicker"><Sparkles size={15} aria-hidden="true" /> Missió de camp</p>
             <h2>El bosc amaga<br /><em>sis mirades.</em></h2>
             <p>Troba els bolets entre la molsa, fotografia’ls i identifica’ls a partir dels detalls de la guia.</p>
             <ul>
@@ -272,7 +272,7 @@ export function MushroomHuntGame({ entries }: MushroomHuntGameProps) {
               <li><Camera size={17} aria-hidden="true" /> Fotografia sense collir</li>
               <li><BookOpen size={17} aria-hidden="true" /> Completa el quadern</li>
             </ul>
-            <button type="button" className="mushroom-game-primary" onClick={startGame}>
+            <button type="button" className="pill mushroom-game-primary" onClick={startGame}>
               {isComplete ? "Veure el resultat" : identified.length > 0 ? "Reprendre la ruta" : "Entrar al bosc"} <Leaf size={18} aria-hidden="true" />
             </button>
           </div>
@@ -290,7 +290,7 @@ export function MushroomHuntGame({ entries }: MushroomHuntGameProps) {
               aria-labelledby="mushroom-observation-title"
               tabIndex={-1}
             >
-              <button type="button" className="mushroom-game-close" onClick={closeObservation} aria-label="Tancar l’observació">
+              <button type="button" className="icon-tile mushroom-game-close" onClick={closeObservation} aria-label="Tancar l’observació">
                 <X size={20} aria-hidden="true" />
               </button>
               <div className="mushroom-game-photo">
@@ -306,22 +306,22 @@ export function MushroomHuntGame({ entries }: MushroomHuntGameProps) {
               <div className="mushroom-game-observation-copy">
                 {identified.includes(activeEntry.id) ? (
                   <>
-                    <p className="mushroom-game-kicker"><Check size={15} aria-hidden="true" /> Al quadern</p>
+                    <p className="label-caps mushroom-game-kicker"><Check size={15} aria-hidden="true" /> Al quadern</p>
                     <h2 id="mushroom-observation-title">{activeEntry.name}</h2>
                     <p className="mushroom-game-scientific">{activeEntry.scientificName}</p>
                     <p>{activeEntry.description}</p>
-                    <div className={`mushroom-game-status status-${activeEntry.statusTone}`}>
+                    <div className={`pill mushroom-game-status status-${activeEntry.statusTone}`}>
                       <TriangleAlert size={17} aria-hidden="true" /> {activeEntry.statusLabel}
                     </div>
                     <dl className="mushroom-game-field-notes">
                       <div><dt>Hàbitat</dt><dd>{activeEntry.habitat}</dd></div>
                       <div><dt>Clau</dt><dd>{activeEntry.features[0]}</dd></div>
                     </dl>
-                    <button type="button" className="mushroom-game-primary" onClick={closeObservation}>Continuar explorant <Search size={17} aria-hidden="true" /></button>
+                    <button type="button" className="pill mushroom-game-primary" onClick={closeObservation}>Continuar explorant <Search size={17} aria-hidden="true" /></button>
                   </>
                 ) : (
                   <>
-                    <p className="mushroom-game-kicker"><Search size={15} aria-hidden="true" /> Mira de prop</p>
+                    <p className="label-caps mushroom-game-kicker"><Search size={15} aria-hidden="true" /> Mira de prop</p>
                     <h2 id="mushroom-observation-title">Quin bolet és?</h2>
                     <p>Contrasta tots els indicis abans de decidir.</p>
                     <ul className="mushroom-game-clues">
@@ -366,11 +366,11 @@ export function MushroomHuntGame({ entries }: MushroomHuntGameProps) {
               <div className="mushroom-game-fireflies"><i /><i /><i /><i /><i /><i /><i /><i /></div>
             </div>
             <div className="mushroom-game-complete" role="status">
-              <span className="mushroom-game-complete-icon"><Sparkles size={25} aria-hidden="true" /></span>
-              <p className="mushroom-game-kicker">Quadern complet</p>
+              <span className="icon-tile mushroom-game-complete-icon"><Sparkles size={25} aria-hidden="true" /></span>
+              <p className="label-caps mushroom-game-kicker">Quadern complet</p>
               <h2>{rankForScore(score, MUSHROOM_GAME_SIZE)}</h2>
               <p>Has fotografiat les {MUSHROOM_GAME_SIZE} espècies i has acabat amb <strong>{score} punts</strong>.</p>
-              <button type="button" className="mushroom-game-primary" onClick={resetGame}>Tornar-hi <RotateCcw size={17} aria-hidden="true" /></button>
+              <button type="button" className="pill mushroom-game-primary" onClick={resetGame}>Tornar-hi <RotateCcw size={17} aria-hidden="true" /></button>
             </div>
           </>
         ) : null}

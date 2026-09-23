@@ -22,7 +22,7 @@ export function CulinaryRating({
 
   return (
     <span
-      className={`culinary-rating ${status}${isSafetyWarning ? " safety-warning" : ""}${compact ? " compact" : ""}`}
+      className={`pill culinary-rating ${status}${isSafetyWarning ? " safety-warning" : ""}${compact ? " compact" : ""}`}
       aria-label={ariaLabel}
       title={isSafetyWarning ? "Advertiment de seguretat" : "Valor culinari orientatiu; no substitueix una identificació experta"}
     >

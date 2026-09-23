@@ -111,7 +111,7 @@ export function SectionHeader({
     >
       <div className={styles.sectionHeading}>
         {meta !== undefined && meta !== null ? (
-          <div className={styles.sectionMeta}>{meta}</div>
+          <div className={`label-caps ${styles.sectionMeta}`}>{meta}</div>
         ) : null}
         <h2 className={styles.sectionTitle} id={titleId}>{title}</h2>
         {description !== undefined && description !== null ? (

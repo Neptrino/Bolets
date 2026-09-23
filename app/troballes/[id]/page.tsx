@@ -41,13 +41,13 @@ export default async function FindingPage({ params }: { params: Promise<{ id: st
     <PageHeader
       eyebrow="Troballa compartida"
       title={finding.reportedSpeciesName}
-      actions={<div className="findings-actions"><Link className="finding-button" href={profileHref}>Fitxa de l’espècie <ArrowUpRight size={15} aria-hidden="true" /></Link><Link className="finding-button-secondary" href="/troballes">Tornar al mapa</Link></div>}
+      actions={<div className="findings-actions"><Link className="pill finding-button" href={profileHref}>Fitxa de l’espècie <ArrowUpRight size={15} aria-hidden="true" /></Link><Link className="pill finding-button-secondary" href="/troballes">Tornar al mapa</Link></div>}
     />
     <div className="finding-detail-grid">
       <div className="finding-gallery">
         {finding.photos.length
           ? finding.photos.map((photo, index) => <Image key={photo.id} src={photo.url} alt={`Fotografia pública ${index + 1} de la troballa`} width={photo.width} height={photo.height} unoptimized />)
-          : <div className="finding-gallery-empty">
+          : <div className="card finding-gallery-empty">
               {drawing ? <Image src={drawing.src} alt="" width={480} height={354} sizes="220px" unoptimized /> : <CameraOff size={38} aria-hidden="true" />}
               <div>
                 <strong>Compartida sense fotografia</strong>
@@ -57,7 +57,7 @@ export default async function FindingPage({ params }: { params: Promise<{ id: st
             </div>}
       </div>
       <div className="finding-detail-sidebar">
-        <aside className="finding-detail-panel">
+        <aside className="card finding-detail-panel">
           <div className="finding-detail-panel-heading">
             <span>Fitxa pública</span>
             <h2>Detalls de la troballa</h2>

@@ -87,9 +87,9 @@ export function PasskeySettings() {
   };
 
   return (
-    <section className="finding-account-card finding-stack">
+    <section className="card finding-account-card finding-stack">
       <div className="finding-account-section-heading">
-        <span className="finding-account-section-icon" aria-hidden="true"><KeyRound size={21} /></span>
+        <span className="icon-tile finding-account-section-icon" aria-hidden="true"><KeyRound size={21} /></span>
         <div>
           <h2>Claus d’accés <small>en proves</small></h2>
           <p>Entra amb l’empremta, la cara o el codi del dispositiu. El correu continua disponible com a recuperació.</p>
@@ -97,9 +97,9 @@ export function PasskeySettings() {
       </div>
 
       {supported === false ? (
-        <p className="finding-notice">Aquest navegador o aquesta connexió no admet claus d’accés.</p>
+        <p className="card finding-notice">Aquest navegador o aquesta connexió no admet claus d’accés.</p>
       ) : null}
-      {loading ? <p className="finding-notice">Carregant les claus d’accés…</p> : null}
+      {loading ? <p className="card finding-notice">Carregant les claus d’accés…</p> : null}
 
       {!loading && supported ? (
         <>
@@ -107,7 +107,7 @@ export function PasskeySettings() {
             <ul className="finding-passkey-list">
               {passkeys.map((passkey) => (
                 <li key={passkey.id}>
-                  <span className="finding-account-section-icon" aria-hidden="true"><KeyRound size={18} /></span>
+                  <span className="icon-tile finding-account-section-icon" aria-hidden="true"><KeyRound size={18} /></span>
                   <span>
                     <strong>{passkeyName(passkey)}</strong>
                     <small>
@@ -119,7 +119,7 @@ export function PasskeySettings() {
                   </span>
                   <button
                     type="button"
-                    className="finding-button-secondary finding-passkey-remove"
+                    className="pill finding-button-secondary finding-passkey-remove"
                     onClick={() => setDeleteTarget(passkey)}
                     disabled={busy !== null}
                     aria-label={`Eliminar ${passkeyName(passkey)}`}
@@ -131,11 +131,11 @@ export function PasskeySettings() {
               ))}
             </ul>
           ) : (
-            <p className="finding-notice">Encara no has afegit cap clau d’accés.</p>
+            <p className="card finding-notice">Encara no has afegit cap clau d’accés.</p>
           )}
           <button
             type="button"
-            className="finding-button-secondary"
+            className="pill finding-button-secondary"
             onClick={() => void register()}
             disabled={busy !== null}
           >
@@ -145,7 +145,7 @@ export function PasskeySettings() {
         </>
       ) : null}
 
-      {message ? <p className="finding-notice" aria-live="polite">{message}</p> : null}
+      {message ? <p className="card finding-notice" aria-live="polite">{message}</p> : null}
 
       <FindingDeleteDialog
         busy={busy === "delete"}

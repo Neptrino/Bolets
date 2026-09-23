@@ -7,9 +7,6 @@
 .panel,
 .error {
   padding: 22px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: var(--surface);
 }
 
 .panel p {

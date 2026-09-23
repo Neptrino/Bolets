@@ -43,7 +43,7 @@ const accountSections = [
 
 export function AccountNav({ current }: { current: AccountSection }) {
   return (
-    <nav className="account-nav" aria-label="Seccions del compte">
+    <nav className="card account-nav" aria-label="Seccions del compte">
       {accountSections.map(({ id, href, label, description, icon: Icon }) => (
         <Link
           href={href}

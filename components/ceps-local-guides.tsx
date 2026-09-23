@@ -30,7 +30,7 @@ export function CepsLocalGuides() {
         <p>Les {guides.length} guies expliquen quin bosc hi ha al voltant de cada poble. Els mesos són orientatius: obre la guia per veure com està la zona ara i el mapa.</p>
       </header>
       <p className="guide-types-scroll-hint">Fes lliscar la taula per comparar els boscos i la temporada.</p>
-      <div className="guide-types-table-scroll" role="region" aria-label="Comparació de guies locals de ceps" tabIndex={0}>
+      <div className="card guide-types-table-scroll" role="region" aria-label="Comparació de guies locals de ceps" tabIndex={0}>
         <table className="guide-types-table" data-cep-local-guides>
           <caption className="sr-only">Guies locals de ceps: lloc, espècie, bosc i pic habitual</caption>
           <thead><tr><th scope="col">Guia local</th><th scope="col">Tipus de cep</th><th scope="col">Bosc compatible</th><th scope="col">Pic habitual</th></tr></thead>

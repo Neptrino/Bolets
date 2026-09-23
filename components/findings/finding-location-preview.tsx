@@ -91,13 +91,13 @@ export function FindingLocationPreview({
       <RegionMapFrame
         ariaLabel="Mapa editable de la ubicació privada de la troballa"
         basemapId="icgc-muted"
-        className="finding-location-preview-map"
+        className="card finding-location-preview-map"
         map={map}
         mapMode="private-location-preview"
         node={node}
         showResetButton={false}
       >
-        <p className="finding-location-preview-hint"><MousePointerClick size={16} aria-hidden="true" /> Fes clic o toca el mapa per moure el punt</p>
+        <p className="pill finding-location-preview-hint"><MousePointerClick size={16} aria-hidden="true" /> Fes clic o toca el mapa per moure el punt</p>
       </RegionMapFrame>
       <figcaption>
         <span><MousePointerClick size={15} aria-hidden="true" /><span><strong>Corregeix el punt directament al mapa.</strong> Pots ampliar, desplaçar el mapa o arrossegar el marcador.</span></span>

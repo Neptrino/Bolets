@@ -92,7 +92,7 @@ export default function PirineuGuidePage() {
           faqPageSchema(faqs, `${url}#preguntes`),
         ],
       }} />
-      <header className="rovellons-hero">
+      <header className="panel-dark rovellons-hero">
         <div className="page-width rovellons-hero-inner">
           <Link href="/guies" className="back-link"><ArrowLeft size={15} /> Totes les guies</Link>
           <div className="rovellons-hero-grid">
@@ -113,14 +113,14 @@ export default function PirineuGuidePage() {
 
       <PageShell className="pirineu-guide">
       <div className="location-hub-panels">
-        <section id="boscos" className="guide-panel" aria-labelledby="pirineu-forests-title">
+        <section id="boscos" className="card guide-panel" aria-labelledby="pirineu-forests-title">
           <header className="guide-panel-head"><div><p className="eyebrow"><Trees size={15} aria-hidden="true" /> Boscos</p><h2 id="pirineu-forests-title">Els boscos del Pirineu, per cotes</h2></div></header>
           <div className="guide-panel-body">
           <p className="guide-panel-text">Al Pirineu català els boscos s’ordenen per altitud: rouredes i fagedes aproximadament entre 600 i 1.400 metres, pinedes de pi roig entre 900 i 1.700, i pinedes de pi negre i avetoses fins al límit del bosc, cap als 2.300 metres. Les fitxes d’aquesta guia situen els ceps de pi i els ceps als boscos de coníferes de muntanya, els rossinyols i les trompetes de la mort a les fagedes i rouredes humides, i els rovellons, pinetells, llenegues i fredolics a les pinedes.</p>
           <p className="guide-panel-text">La cota importa més que la comarca: una pineda de pi roig a 1.000 metres i una de pi negre a 1.900 responen a la mateixa pluja amb setmanes de diferència. Per això les guies del Ripollès, la Cerdanya, el Berguedà i el Solsonès descriuen l’hàbitat per indret i cota, no per comarca sencera.</p>
           </div>
         </section>
-        <section id="temporada" className="guide-panel" aria-labelledby="pirineu-season-title">
+        <section id="temporada" className="card guide-panel" aria-labelledby="pirineu-season-title">
           <header className="guide-panel-head"><div><p className="eyebrow"><CalendarRange size={15} aria-hidden="true" /> Temporada</p><h2 id="pirineu-season-title">Quan comença la temporada al Pirineu</h2></div></header>
           <div className="guide-panel-body">
           <p className="guide-panel-text">La temporada s’avança respecte de la plana. A les cotes altes els primers ceps de pi poden aparèixer a finals d’agost, després de les tempestes d’estiu, i el gruix de la temporada es concentra al setembre i l’octubre. Les primeres gelades i les nevades de la tardor avançada tanquen el bosc de dalt a baix: quan el pi negre ja ha acabat, les rouredes i les pinedes baixes del Prepirineu encara poden respondre fins al novembre.</p>
@@ -146,7 +146,7 @@ export default function PirineuGuidePage() {
                   <Image src={areaMapPath(area)} alt="" width={650} height={812} unoptimized sizes="400px" />
                 </span>
                 <span className="guides-territory-copy">
-                  <span className="guides-territory-type">{area.typeLabel} · {regionLabels[area.regionId]}</span>
+                  <span className="label-caps guides-territory-type">{area.typeLabel} · {regionLabels[area.regionId]}</span>
                   <strong>{area.name}</strong>
                   <small>{guideCount} {guideCount === 1 ? "guia" : "guies"} · {placeCount} {placeCount === 1 ? "indret" : "indrets"} · {hubSpeciesList(species)}</small>
                   <ArrowUpRight size={16} aria-hidden="true" />
@@ -165,7 +165,7 @@ export default function PirineuGuidePage() {
           description="Ordenades pel límit superior dels boscos on les situa la seva fitxa. L’altitud és la del perfil ecològic, no una promesa per a cap indret."
           size="compact"
         />
-        <div className="catalogue-list-scroll" role="region" aria-label="Espècies amb guia al Pirineu" tabIndex={0}>
+        <div className="card catalogue-list-scroll" role="region" aria-label="Espècies amb guia al Pirineu" tabIndex={0}>
           <table>
             <thead>
               <tr>
@@ -195,7 +195,7 @@ export default function PirineuGuidePage() {
       </section>
 
       <div className="location-hub-panels">
-        <section id="avui" className="guide-panel" aria-labelledby="pirineu-today-title">
+        <section id="avui" className="card guide-panel" aria-labelledby="pirineu-today-title">
           <header className="guide-panel-head">
             <div><p className="eyebrow"><CloudRain size={15} aria-hidden="true" /> Avui</p><h2 id="pirineu-today-title">Condicions actuals al Pirineu</h2></div>
             {liveSpecies ? <Link href={territorialMapPath(liveSpecies.speciesId, "pirineus", regionBounds.pirineus)} className="button">Mapa en viu del Pirineu <ArrowUpRight size={16} aria-hidden="true" /></Link> : null}
@@ -205,7 +205,7 @@ export default function PirineuGuidePage() {
             <p className="guide-panel-note"><MapPinned size={15} aria-hidden="true" /><span>{liveSpecies ? <><Link href={territorialMapPath(liveSpecies.speciesId, "prepirineus", regionBounds.prepirineus)}>Mapa del Prepirineu</Link> · </> : null}<Link href="/bolets-avui">Totes les zones, avui</Link>.</span></p>
           </div>
         </section>
-        <section id="guies" className="guide-panel" aria-labelledby="pirineu-guides-title">
+        <section id="guies" className="card guide-panel" aria-labelledby="pirineu-guides-title">
           <header className="guide-panel-head"><div><p className="eyebrow"><Mountain size={15} aria-hidden="true" /> Guies</p><h2 id="pirineu-guides-title">Guies d’espècie i territori</h2></div></header>
           <div className="guide-panel-body">
             <p className="guide-panel-text">Els ceps i els rovellons tenen guies pròpies amb tipus, diferències i zones; les quatre comarques del Pirineu hi apareixen amb les seves condicions.</p>
@@ -214,7 +214,7 @@ export default function PirineuGuidePage() {
         </section>
       </div>
 
-      <section id="preguntes" className="guide-panel location-hub-faq" aria-labelledby="pirineu-faq-title">
+      <section id="preguntes" className="card guide-panel location-hub-faq" aria-labelledby="pirineu-faq-title">
         <header className="guide-panel-head">
           <div>
             <p className="eyebrow"><CircleHelp size={15} aria-hidden="true" /> Preguntes freqüents</p>

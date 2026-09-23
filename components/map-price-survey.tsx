@@ -48,7 +48,7 @@ export function MapPriceSurvey() {
   }
 
   return <section className={styles.survey} aria-labelledby="map-price-question">
-    <div className={styles.offer}>
+    <div className={`panel-dark ${styles.offer}`}>
       <ul>
         <li><Map size={20} aria-hidden="true" /> Sectors de 250 m</li>
         <li><CalendarDays size={20} aria-hidden="true" /> Previsió a 14 dies</li>

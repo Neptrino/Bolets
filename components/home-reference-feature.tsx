@@ -28,7 +28,7 @@ export function HomeReferenceFeature({ speciesCount, seasonGuide, children }: {
     { href: "/joc", label: "Joc del bosc", note: "Posa’t a prova", icon: Gamepad2 },
   ];
   return (
-    <section className="home-reference page-width" aria-labelledby="home-reference-title">
+    <section className="card home-reference page-width" aria-labelledby="home-reference-title">
       <SectionHeader meta={<span className="home-reference-meta"><BookOpenText size={16} aria-hidden="true" />Cada bolet, una descoberta</span>} title="Guia d’espècies de bolets de Catalunya" titleId="home-reference-title" description={`Del nom que has sentit a casa als detalls que observes al bosc: ${speciesCount} fitxes amb fotografies, trets, hàbitat i temporada, incloses les espècies tòxiques.`} />
       <form action="/bolets" method="get" role="search" aria-label="Cerca un bolet" className="home-reference-searchbar">
         <label htmlFor="home-species-search">Quin bolet busques?</label>
@@ -39,7 +39,7 @@ export function HomeReferenceFeature({ speciesCount, seasonGuide, children }: {
         <div className="section-topline"><div><p className="eyebrow">Comença aquí</p><h3>Espècies de temporada</h3></div><Link href="/bolets" className="text-link">Veure les {speciesCount} fitxes <ArrowUpRight size={16} aria-hidden="true" /></Link></div>
         {children}
       </div>
-      <p className="home-reference-tiles-title">Consulta també</p>
+      <p className="label-caps home-reference-tiles-title">Consulta també</p>
       <nav className="home-reference-tiles" aria-label="Guies i eines de consulta">
         {links.map(({ href, label, note, icon: Icon }) => (
           <Link href={href} key={href}><Icon size={22} aria-hidden="true" /><strong>{label}</strong><small>{note}</small></Link>

@@ -84,7 +84,7 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
         </div>
         <div className="finding-community-species">
           <div><Sprout size={20} aria-hidden="true" /><div><h3>Espècies comunicades recentment</h3><p>El recompte resumeix les publicacions visibles en aquesta pàgina, no tot el bosc.</p></div></div>
-          {speciesSummaries.length ? <nav aria-label="Fitxes de les espècies comunicades">{speciesSummaries.map((item) => <Link href={item.href} key={item.speciesId}><span>{item.speciesName}</span><small>{item.findingCount} {item.findingCount === 1 ? "troballa" : "troballes"}</small><ArrowUpRight size={15} aria-hidden="true" /></Link>)}</nav> : <p className="finding-community-empty">Encara no hi ha espècies públiques per resumir.</p>}
+          {speciesSummaries.length ? <nav aria-label="Fitxes de les espècies comunicades">{speciesSummaries.map((item) => <Link href={item.href} key={item.speciesId}><span>{item.speciesName}</span><small>{item.findingCount} {item.findingCount === 1 ? "troballa" : "troballes"}</small><ArrowUpRight size={15} aria-hidden="true" /></Link>)}</nav> : <p className="card finding-community-empty">Encara no hi ha espècies públiques per resumir.</p>}
         </div>
       </div>
       <ul className="finding-community-limits">
@@ -93,8 +93,8 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
         <li><FlaskConical size={19} aria-hidden="true" /><span><strong>Poden millorar el model</strong><small>No canvien el mapa immediatament. Les observacions generalitzades es poden utilitzar per avaluar i ajustar futures versions del model.</small></span></li>
       </ul>
     </section> : null}
-    <section className="finding-section"><SectionHeader meta={safeCell ? "Zona seleccionada" : "Publicacions recents"} title={safeCell ? "Troballes d’aquesta zona aproximada de 10 km" : "Últimes troballes compartides"} description="El nom de cada troballa és la identificació indicada per qui l’ha publicada; no ha estat verificat." actions={safeCell ? <Link className="finding-button-secondary" href="/troballes">Veure totes</Link> : null} />
-      {findings.length ? <div className="finding-grid">{findings.map((finding) => <FindingCard finding={finding} key={finding.id} />)}</div> : <p className="finding-notice">Encara no hi ha troballes públiques en aquesta selecció, o el servei no està disponible ara mateix.</p>}
+    <section className="finding-section"><SectionHeader meta={safeCell ? "Zona seleccionada" : "Publicacions recents"} title={safeCell ? "Troballes d’aquesta zona aproximada de 10 km" : "Últimes troballes compartides"} description="El nom de cada troballa és la identificació indicada per qui l’ha publicada; no ha estat verificat." actions={safeCell ? <Link className="pill finding-button-secondary" href="/troballes">Veure totes</Link> : null} />
+      {findings.length ? <div className="finding-grid">{findings.map((finding) => <FindingCard finding={finding} key={finding.id} />)}</div> : <p className="card finding-notice">Encara no hi ha troballes públiques en aquesta selecció, o el servei no està disponible ara mateix.</p>}
       {drawingCredits.length ? <p className="finding-drawing-credits">Dibuixos de les troballes sense fotografia: {drawingCredits.map((credit, index) => <span key={credit.url + index}>{index ? " · " : ""}<a href={credit.url} rel="noreferrer" target="_blank">{credit.text}</a> ({credit.license})</span>)}</p> : null}
     </section>
   </PageShell>;

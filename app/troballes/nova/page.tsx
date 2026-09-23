@@ -23,7 +23,7 @@ export default function NewFindingPage() {
           <h2 id="findings-contribution-title">Publica una troballa amb foto: 1 km durant 7 dies</h2>
           <span>Les fotos no entren al catàleg. Si després les proposes i les aprovem, obrim també 250 m durant 30 dies.</span>
         </div>
-        <Link className="finding-button-secondary findings-contribution-link" href="/compte/col-laboracio">
+        <Link className="pill finding-button-secondary findings-contribution-link" href="/compte/col-laboracio">
           Proposar fotos <ArrowUpRight size={16} aria-hidden="true" />
         </Link>
       </aside>

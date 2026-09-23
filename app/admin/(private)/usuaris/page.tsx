@@ -91,7 +91,7 @@ export default async function AdminUsersPage({
       </div>
 
       {result.items.length > 0 ? (
-        <div className={styles.adminTableFrame} tabIndex={0} role="region" aria-label="Taula d’usuaris registrats">
+        <div className={`card ${styles.adminTableFrame}`} tabIndex={0} role="region" aria-label="Taula d’usuaris registrats">
           <table className={styles.adminTable}>
             <caption className="visually-hidden">Usuaris registrats, rol, accés al mapa, aportacions i activitat</caption>
             <thead>
@@ -123,12 +123,12 @@ export default async function AdminUsersPage({
                       </span>
                     </th>
                     <td>
-                      <span className={styles.badge} data-tone={user.role === "admin" ? "blue" : "neutral"}>
+                      <span className={`pill ${styles.badge}`} data-tone={user.role === "admin" ? "blue" : "neutral"}>
                         {user.role === "admin" ? "Administració" : "Usuari"}
                       </span>
                     </td>
                     <td>
-                      <span className={styles.badge} data-tone={accessTone}>
+                      <span className={`pill ${styles.badge}`} data-tone={accessTone}>
                         {user.mapAccess.revokedAt ? "Revocat" : accessLabels[user.mapAccess.level]}
                       </span>
                       <small className={styles.tableMeta}>

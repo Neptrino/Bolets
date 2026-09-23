@@ -50,7 +50,7 @@ export function UserAccessDialog({
 
   return (
     <>
-      <button className={styles.trigger} type="button" onClick={() => dialog.current?.showModal()}>
+      <button className={`panel-dark ${styles.trigger}`} type="button" onClick={() => dialog.current?.showModal()}>
         Gestionar accés
       </button>
       <dialog
@@ -62,7 +62,7 @@ export function UserAccessDialog({
         }}
       >
         <div className="site-dialog-panel">
-          <button type="button" className="site-dialog-close" onClick={() => dialog.current?.close()} aria-label="Tancar">
+          <button type="button" className="icon-tile site-dialog-close" onClick={() => dialog.current?.close()} aria-label="Tancar">
             <X size={20} aria-hidden="true" />
           </button>
           <header className={styles.header}>

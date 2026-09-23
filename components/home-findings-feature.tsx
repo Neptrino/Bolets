@@ -5,7 +5,7 @@ import { StaticMediaImage } from "@/components/static-media-image";
 
 export function HomeFindingsFeature() {
   return (
-    <section className="home-findings page-width" aria-labelledby="home-findings-title">
+    <section className="card home-findings page-width" aria-labelledby="home-findings-title">
       <div className="home-findings-copy">
         <p className="eyebrow"><NotebookPen size={15} /> El teu quadern de camp</p>
         <h2 id="home-findings-title">L’app per anotar les teves troballes de bolets</h2>
@@ -29,10 +29,10 @@ export function HomeFindingsFeature() {
             fill
             sizes="(max-width: 760px) 88vw, 35vw"
           />
-          <span className="home-findings-offline"><WifiOff size={15} /> Desada sense connexió</span>
+          <span className="pill home-findings-offline"><WifiOff size={15} /> Desada sense connexió</span>
         </div>
         <div className="home-findings-preview-data">
-          <p className="home-findings-preview-kicker"><MapPinned size={18} /> Troballa nova</p>
+          <p className="label-caps home-findings-preview-kicker"><MapPinned size={18} /> Troballa nova</p>
           <strong>La foto ja ens ha ajudat.</strong>
           <dl>
             <div><dt>Espècie</dt><dd><Link href="/bolets/apagallums">Apagallums</Link></dd></div>

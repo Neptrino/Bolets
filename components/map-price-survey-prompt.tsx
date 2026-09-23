@@ -98,7 +98,7 @@ export function MapPriceSurveyPrompt() {
     }}
   >
     <div className={styles.card}>
-      <button type="button" className={styles.close} onClick={dismiss} aria-label="Ara no; tanca l’enquesta">
+      <button type="button" className={`icon-tile ${styles.close}`} onClick={dismiss} aria-label="Ara no; tanca l’enquesta">
         <X size={20} aria-hidden="true" />
       </button>
       <div className={styles.heading}>
@@ -117,8 +117,8 @@ export function MapPriceSurveyPrompt() {
       </div>
       <p className={styles.note}>És una enquesta d’1 pregunta. Sense compte ni cobrament.</p>
       <div className={styles.actions}>
-        <button type="button" className={styles.later} onClick={dismiss}>Ara no</button>
-        <IntentLink href={MAP_PRICE_SURVEY_PATH} className={styles.cta} onClick={clickMapPriceSurveyPrompt}>
+        <button type="button" className={`pill ${styles.later}`} onClick={dismiss}>Ara no</button>
+        <IntentLink href={MAP_PRICE_SURVEY_PATH} className={`pill panel-dark ${styles.cta}`} onClick={clickMapPriceSurveyPrompt}>
           Dona la teva opinió <ArrowUpRight size={17} aria-hidden="true" />
         </IntentLink>
       </div>
