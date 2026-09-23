@@ -408,7 +408,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
             <img src={photo.preview} alt={`Fotografia ${index + 1}`} />
             <span className="finding-photo-index">Foto {index + 1}</span>
             <button className="icon-tile finding-photo-remove" type="button" aria-label={`Eliminar la fotografia ${index + 1}`} title="Eliminar fotografia" disabled={busy} onClick={() => removePhoto(photo.id)}><X size={18} aria-hidden="true" /></button>
-          </div>)}</div> : <p className="card finding-notice">Pots continuar sense fotos. Si publiques la troballa, es mostrarà sense cap imatge.</p>}
+          </div>)}</div> : <p className="notice finding-notice">Pots continuar sense fotos. Si publiques la troballa, es mostrarà sense cap imatge.</p>}
         </section>
 
         <section className="finding-step">
@@ -422,8 +422,8 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
             </ul>
             <small>En públic, la ubicació continuarà sent només una zona aproximada de 10 × 10 km.</small>
           </div> : null}
-          {photoLocationNotice ? <p className="card finding-notice">{photoLocationNotice}</p> : null}
-          {photoDateTimeNotice ? <p className="card finding-notice">{photoDateTimeNotice}</p> : null}
+          {photoLocationNotice ? <p className="notice finding-notice">{photoLocationNotice}</p> : null}
+          {photoDateTimeNotice ? <p className="notice finding-notice">{photoDateTimeNotice}</p> : null}
           {latitude !== null && longitude !== null ? <FindingLocationPreview latitude={latitude} longitude={longitude} onLocationChange={(nextLatitude, nextLongitude) => {
             setLatitude(nextLatitude);
             setLongitude(nextLongitude);
@@ -476,7 +476,7 @@ export function FindingReportForm({ species }: { species: CatalogueSpecies[] }) 
               <Link className="pill finding-button-secondary" href="/compte/troballes"><BookOpen size={18} aria-hidden="true" /> Obrir el meu quadern</Link>
             </div>
           </div> : <>
-            {message ? <p className="card finding-notice" data-tone={message.tone}>{message.text}</p> : null}
+            {message ? <p className="notice finding-notice" data-tone={message.tone}>{message.text}</p> : null}
             <button className="pill finding-button" type="submit" disabled={busy}><Save size={18} aria-hidden="true" /> {busy ? "Desant…" : online ? "Desar i sincronitzar" : "Desar sense cobertura"}</button>
           </>}
         </section>

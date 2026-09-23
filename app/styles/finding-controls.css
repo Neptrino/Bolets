@@ -23,8 +23,7 @@
 
 .finding-notice {
   padding: 16px 18px;
-  border-left: 5px solid var(--clay);
-  background: var(--surface-warm);
+  --notice-accent: var(--clay);
   color: var(--muted);
   font-size: var(--text-xs);
   line-height: 1.55;

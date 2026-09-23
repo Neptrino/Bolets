@@ -215,8 +215,8 @@ export function PersonalFindings() {
 
   return <div className="finding-stack">
     {outbox.length ? <div className="card finding-account-card finding-stack"><h2>{outbox.length} {outbox.length === 1 ? "troballa pendent" : "troballes pendents"} al dispositiu</h2>{outbox.map((record) => <div className="finding-inline-actions" key={record.draft.clientReportId}><span>{record.draft.speciesId} · {new Intl.DateTimeFormat("ca-ES", { dateStyle: "medium" }).format(new Date(record.draft.observedAt))}</span><button className="pill finding-button-secondary" onClick={() => { setDeleteError(null); setDeleteTarget({ kind: "pending", record }); }}>Eliminar del dispositiu</button></div>)}<button className="pill finding-button" onClick={() => void sync()}>Sincronitzar ara</button></div> : null}
-    {message ? <p className="card finding-notice">{message}</p> : null}
-    {mapLoading ? <p className="card finding-notice">Preparant el mapa privat…</p> : mapFindings.length ? <PersonalFindingsMap findings={mapFindings} /> : null}
+    {message ? <p className="notice finding-notice">{message}</p> : null}
+    {mapLoading ? <p className="notice finding-notice">Preparant el mapa privat…</p> : mapFindings.length ? <PersonalFindingsMap findings={mapFindings} /> : null}
 
     <section className="finding-library" aria-labelledby="finding-library-title">
       <div className="finding-library-heading">
@@ -230,7 +230,7 @@ export function PersonalFindings() {
         </label>
         <div className="finding-filter-field"><span>Visibilitat</span><FormSelect aria-label="Visibilitat" value={visibility} onValueChange={(value) => setVisibility(value as VisibilityFilter)} options={[{ value: "all", label: "Totes" }, { value: "public", label: "Publicades" }, { value: "private", label: "Privades" }]} /></div>
       </div>
-      {loading ? <p className="card finding-notice" aria-live="polite">Buscant al quadern…</p> : findings.length ? <>
+      {loading ? <p className="notice finding-notice" aria-live="polite">Buscant al quadern…</p> : findings.length ? <>
         <div className="finding-personal-list" aria-busy={loadingMore}>{findings.map((finding) => {
           const photo = finding.photos[0];
           const viewHref = finding.visibility === "public" && finding.publicationState === "published" ? `/troballes/${finding.id}` : null;

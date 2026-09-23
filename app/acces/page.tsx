@@ -23,5 +23,5 @@ export default async function AccessPage({
   ]);
   if (user) redirect(resolveAccessDestination(query.retorn));
 
-  return <PageShell className="findings-page finding-auth-wrap"><PageHeader eyebrow="Compte personal" title={<>El teu <PageTitleAccent>bosc</PageTitleAccent></>} description="Entra per desar espècies i territoris, veure el resum privat de la temporada i sincronitzar troballes. La captura al camp continua funcionant sense connexió." /><Suspense fallback={<p className="card finding-notice">Preparant l’accés…</p>}><AccessForm googleEnabled={auth.google} /></Suspense></PageShell>;
+  return <PageShell className="findings-page finding-auth-wrap"><PageHeader eyebrow="Compte personal" title={<>El teu <PageTitleAccent>bosc</PageTitleAccent></>} description="Entra per desar espècies i territoris, veure el resum privat de la temporada i sincronitzar troballes. La captura al camp continua funcionant sense connexió." /><Suspense fallback={<p className="notice finding-notice">Preparant l’accés…</p>}><AccessForm googleEnabled={auth.google} /></Suspense></PageShell>;
 }

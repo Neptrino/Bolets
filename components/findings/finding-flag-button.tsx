@@ -89,7 +89,7 @@ export function FindingFlagButton({ findingId }: { findingId: string }) {
           <textarea value={detail} maxLength={500} onChange={(event) => setDetail(event.target.value)} placeholder="Què hauríem de revisar?" />
           <small>{detail.length}/500</small>
         </label>
-        {error ? <p className="card finding-notice site-dialog-full" data-tone="danger" aria-live="polite">{error}</p> : null}
+        {error ? <p className="notice finding-notice site-dialog-full" data-tone="danger" aria-live="polite">{error}</p> : null}
         <div className="site-dialog-actions">
           <button type="button" className="pill finding-button-secondary" onClick={close} disabled={busy}>Cancel·lar</button>
           <button type="submit" className="pill finding-button" disabled={busy}><Send size={17} aria-hidden="true" /> {busy ? "Enviant…" : "Enviar l’avís"}</button>

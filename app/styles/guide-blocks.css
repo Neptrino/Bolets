@@ -34,7 +34,7 @@
 .guide-summary-panel p > span { color: inherit; font-size: inherit; font-weight: inherit; letter-spacing: normal; text-transform: none; }
 .guide-summary-panel a { color: var(--on-dark); text-decoration: underline; text-underline-offset: .2em; }
 
-.guide-caveat { display: flex; gap: .75rem; align-items: flex-start; margin-top: 1rem; padding: 1rem 1.15rem; border-left: 4px solid var(--gold); background: var(--surface-warm); }
+.guide-caveat { display: flex; gap: .75rem; align-items: flex-start; margin-top: 1rem; padding: 1rem 1.15rem; }
 .guide-caveat svg { flex: 0 0 auto; margin-top: .18rem; color: var(--gold); }
 .guide-caveat p { margin: 0; color: var(--muted); line-height: 1.6; }
 

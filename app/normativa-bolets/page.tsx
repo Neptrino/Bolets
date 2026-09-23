@@ -78,7 +78,7 @@ export default function CollectingRulesGuidePage() {
       <section className="guide-section" aria-labelledby="collecting-permit">
         <SectionHeader title="Cal un permís per collir bolets?" titleId="collecting-permit" meta="La resposta depèn del lloc" />
         <p className="guide-prose"><strong>No hi ha un carnet únic que t’autoritzi a collir bolets a tot Catalunya.</strong> Els Agents Rurals expliquen que hi ha excepcions en espais protegits i que ajuntaments i propietaris poden establir limitacions. Per això, cal concretar el bosc i l’activitat: visitar un parc, circular per una pista i recol·lectar-hi són coses diferents. <a href={collectingSources.ruralAgents.url}>Consulta les preguntes freqüents dels Agents Rurals.</a></p>
-        <aside className="card guide-caveat">
+        <aside className="notice guide-caveat">
           <ShieldAlert size={21} aria-hidden="true" />
           <p><strong>Una guia de consulta, no una autorització.</strong> Fonts consultades el <time dateTime="2026-08-27">27 d’agost de 2026</time>. Aquesta pàgina no substitueix la normativa aplicable ni els avisos vigents. Confirma sempre la situació amb el gestor de l’espai.</p>
         </aside>
@@ -153,7 +153,7 @@ export default function CollectingRulesGuidePage() {
           <article><Users size={22} /><span>Els Ports</span><h3>Persones i vehicles</h3><p>El parc fixa autorització prèvia per a visites de més de 40 persones, més de 4 vehicles o més de 7 motocicletes o ciclomotors. No cal superar tots tres llindars. <a href={collectingSources.ports.url}>Consulta les condicions dels Ports.</a></p></article>
         </div>
         <p className="guide-prose"><a href={collectingSources.authorisation.url}>Obre el tràmit oficial d’autorització d’activitats en espais naturals protegits.</a> Descriu l’activitat, el lloc, la data i els participants; presentar una sol·licitud no equival a tenir-la aprovada. El gestor pot establir condicions.</p>
-        <aside className="card guide-caveat">
+        <aside className="notice guide-caveat">
           <ShieldAlert size={21} aria-hidden="true" />
           <p><strong>Recol·lecció comercial.</strong> Si la finalitat és comercial, no donis per fet que les condicions d’una sortida recreativa hi serveixen. Aquesta guia no cobreix els requisits de comercialització: concreta l’aprofitament amb el titular o gestor i consulta l’autoritat competent abans de vendre.</p>
         </aside>

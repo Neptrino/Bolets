@@ -49,7 +49,7 @@ export default function EditorialTeamPage() {
         <section><ShieldCheck size={22} /><h2>Fonts i seguretat</h2><p>La cartografia prové d’organismes públics i altres fonts identificades als crèdits. Les advertències de consum prioritzen les indicacions oficials de l’Agència Catalana de Seguretat Alimentària. Aquesta web és educativa i no presta un servei d’identificació.</p></section>
       </div>
 
-      <aside className="intent-emergency-note">
+      <aside className="notice intent-emergency-note">
         <CircleAlert size={23} aria-hidden="true" />
         <div><strong>Sense revisió micològica independent.</strong><p>El contingut actual ha passat revisió editorial, però no té revisió científica o micològica externa i ara mateix no n’hi ha cap de prevista. Ho indiquem a cada pàgina sensible: les fonts citades no són una validació experta d’aquesta web.</p></div>
       </aside>

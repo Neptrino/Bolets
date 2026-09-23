@@ -65,7 +65,7 @@ export default function EdibleMushroomsPage() {
         tone="forest"
       />
 
-      <aside className="intent-safety-note">
+      <aside className="notice intent-safety-note">
         <CircleAlert size={22} aria-hidden="true" />
         <div><strong>Comestible no vol dir identificat.</strong><p>Una fotografia, un nom popular o aquesta web no són suficients per decidir si un bolet es pot consumir. Confirma sempre l’espècie amb una persona experta.</p></div>
       </aside>

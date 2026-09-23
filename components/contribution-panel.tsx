@@ -341,7 +341,7 @@ export function ContributionPanel({
         </button>
       </form>
 
-      {message ? <p className="card finding-notice" role="status">{message}</p> : null}
+      {message ? <p className="notice finding-notice" role="status">{message}</p> : null}
     </section>
   );
 }

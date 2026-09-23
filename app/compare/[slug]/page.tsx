@@ -172,7 +172,7 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
         <Link href={speciesPath(right)} className="text-link">Guia principal: {right.identity.commonName} <ArrowUpRight size={16} /></Link>
       </div>
 
-      <aside className="intent-emergency-note comparison-warning">
+      <aside className="notice intent-emergency-note comparison-warning">
         <CircleAlert size={22} /><div><strong>{page.confusionRisk ? "Què hi ha en joc" : "No decideixis el consum amb una taula."}</strong><p>{page.confusionRisk ?? "La variació natural, l’edat i l’estat del bolet poden alterar-ne l’aspecte. Confirma qualsevol identificació amb una persona experta."}</p></div>
       </aside>
       <EditorialAttribution contentId={`compare:${page.slug}`} sources={[officialSafetySource, ...left.references, ...right.references]} />

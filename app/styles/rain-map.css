@@ -30,7 +30,7 @@
 .rain-map-legend li { display: inline-flex; gap: .45rem; align-items: center; color: var(--forest-550); font-size: var(--text-sm); font-weight: 650; }
 .rain-map-swatch { width: 1.15rem; height: .7rem; border: 1px solid color-mix(in srgb, var(--forest-panel) 20%, transparent); border-radius: var(--radius-sm); }
 
-.rain-map-note { display: flex; gap: .65rem; align-items: flex-start; margin: 1.35rem 0 0; padding: 1rem 1.15rem; border: 1px solid color-mix(in srgb, var(--forest-panel) 15%, transparent); border-left: 3px solid var(--forest-550); border-radius: var(--radius-md); background: color-mix(in srgb, var(--surface-muted) 50%, transparent); color: var(--forest-550); line-height: 1.6; }
+.rain-map-note { display: flex; gap: .65rem; align-items: flex-start; margin: 1.35rem 0 0; padding: 1rem 1.15rem; border: 1px solid color-mix(in srgb, var(--forest-panel) 15%, transparent); --notice-accent: var(--forest-550); background: color-mix(in srgb, var(--surface-muted) 50%, transparent); color: var(--forest-550); line-height: 1.6; }
 .rain-map-note svg { flex: 0 0 auto; margin-top: .18rem; color: var(--forest-650); }
 .rain-map-note > span { flex: 1 1 auto; }
 .rain-map-note a { display: inline; color: var(--gold); font-weight: 750; }

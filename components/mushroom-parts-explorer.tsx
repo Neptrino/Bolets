@@ -181,7 +181,7 @@ export function MushroomPartsExplorer() {
             ))}
           </ol>
 
-          <div className="mushroom-parts-explorer-safety">
+          <div className="notice mushroom-parts-explorer-safety">
             <ShieldAlert size={18} aria-hidden="true" />
             <p>Cap d’aquests trets, per si sol, confirma l’espècie ni la comestibilitat.</p>
           </div>

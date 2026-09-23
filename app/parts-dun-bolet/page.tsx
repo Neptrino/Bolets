@@ -172,7 +172,7 @@ export default function MushroomPartsGuidePage() {
         </nav>
       </section>
 
-      <aside className="intent-safety-note">
+      <aside className="notice intent-safety-note">
         <ShieldAlert size={22} aria-hidden="true" />
         <div><strong>Cap part, per si sola, confirma l’espècie.</strong><p>Color, forma i mida canvien amb l’edat, la humitat i el lloc. Per a una identificació responsable cal contrastar diversos trets, incloses les confusions possibles, amb una persona experta.</p></div>
       </aside>

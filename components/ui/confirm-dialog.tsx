@@ -61,7 +61,7 @@ export function ConfirmDialog({
       <button type="button" className="icon-tile site-dialog-close" onClick={onCancel} disabled={busy} aria-label="Tancar"><X size={20} aria-hidden="true" /></button>
       <span className="icon-tile site-dialog-icon" aria-hidden="true">{icon ?? <CircleAlert size={24} />}</span>
       <div className="site-dialog-copy"><h2 id={titleId}>{title}</h2><p id={descriptionId}>{description}</p></div>
-      {error ? <p className="site-dialog-error" aria-live="polite">{error}</p> : null}
+      {error ? <p className="notice site-dialog-error" aria-live="polite">{error}</p> : null}
       <div className="site-dialog-actions">
         <button type="button" className="card site-dialog-button" onClick={onCancel} disabled={busy}>{cancelLabel}</button>
         <button type="button" className="card site-dialog-button" data-tone={tone} onClick={onConfirm} disabled={busy}>{busy ? busyLabel : confirmLabel}</button>

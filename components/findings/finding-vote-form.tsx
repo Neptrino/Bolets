@@ -40,7 +40,7 @@ export function FindingVoteForm({ findingId, species, initialSpeciesId, signedIn
   return <form className="finding-stack" onSubmit={vote}>
     <div className="finding-field"><span>La teva identificació</span><FormSelect aria-label="La teva identificació" value={speciesId} onValueChange={setSpeciesId} options={species.map((item) => ({ value: item.speciesId, label: `${item.identity.commonName} · ${item.identity.scientificName}` }))} /></div>
     <button className="pill finding-button" disabled={busy}>{busy ? "Desant…" : "Validar identificació"}</button>
-    {message ? <p className="card finding-notice">{message}</p> : null}
+    {message ? <p className="notice finding-notice">{message}</p> : null}
     <small>Els vots revisen només el nom proposat. No confirmen que el bolet sigui comestible ni que la ubicació sigui autèntica.</small>
   </form>;
 }

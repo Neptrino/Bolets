@@ -35,3 +35,12 @@
   place-items: center;
   border-radius: 50%;
 }
+
+/* Notice: a warm note with a coloured left edge. Set --notice-accent for the
+   tone (gold by default). */
+.notice {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--notice-accent, var(--gold));
+  border-radius: var(--radius-md);
+  background: var(--surface-warm);
+}

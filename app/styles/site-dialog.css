@@ -15,7 +15,7 @@
 .site-dialog-close:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; }
 .site-dialog-card > .site-dialog-full,
 .site-dialog-error { grid-column: 1 / -1; }
-.site-dialog-error { margin: 0; padding: 12px 14px; border-left: 4px solid var(--danger-ink); border-radius: var(--radius-md); background: var(--danger-surface); color: var(--danger-ink); font-size: var(--text-xs); line-height: 1.5; }
+.site-dialog-error { margin: 0; padding: 12px 14px; --notice-accent: var(--danger-ink); background: var(--danger-surface); color: var(--danger-ink); font-size: var(--text-xs); line-height: 1.5; }
 .site-dialog-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; padding-top: 4px; }
 .site-dialog-button { min-height: 46px; padding: 10px 18px; border-radius: var(--radius-pill); color: var(--ink); font: inherit; font-size: var(--text-xs); font-weight: 900; cursor: pointer; }
 .site-dialog-button:hover { border-color: var(--forest-panel); background: var(--surface-warm); }

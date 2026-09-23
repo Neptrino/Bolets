@@ -2,7 +2,7 @@ import { ShieldAlert } from "lucide-react";
 
 export function EditorialSafetyNotice() {
   return (
-    <aside className="intent-safety-note" aria-label="Abast de la guia">
+    <aside className="notice intent-safety-note" aria-label="Abast de la guia">
       <ShieldAlert size={22} aria-hidden="true" />
       <div>
         <strong>Informació editorial, sense revisió micològica independent.</strong>

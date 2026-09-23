@@ -169,7 +169,7 @@ async function RainReadingDate() {
 
 function RainTablePlaceholder() {
   return (
-    <p className="rain-map-note" aria-busy="true" aria-live="polite">
+    <p className="notice rain-map-note" aria-busy="true" aria-live="polite">
       <Droplets size={16} aria-hidden="true" />
       <span>Calculant la pluja de cada zona…</span>
     </p>
@@ -180,7 +180,7 @@ async function RainTable() {
   const data = await loadRainfall();
   if (!data || data.readings.length === 0) {
     return (
-      <p className="rain-map-note">
+      <p className="notice rain-map-note">
         <TriangleAlert size={16} aria-hidden="true" />
         <span>Ara mateix no podem mostrar la pluja per zones.</span>
       </p>
@@ -228,7 +228,7 @@ async function RainTable() {
           </tbody>
         </table>
       </div>
-      <p className="rain-map-note">
+      <p className="notice rain-map-note">
         <Droplets size={16} aria-hidden="true" />
         <span>El punt més plujós és el quadrat que més aigua ha rebut dins la zona: una tempesta local pot deixar-hi una xifra alta encara que a la resta no hi hagi plogut gairebé gens. Les dues columnes de dies compten coses diferents. «Dies de pluja» són quants dels últims set dies van deixar 1 mm o més. «Dies seguits sense ploure» són els dies que fa que no cau aquest mil·límetre, comptant enrere fins a un màxim de 30: per això una zona pot tenir 0 dies de pluja i 16 dies seguits sense ploure.</span>
       </p>
@@ -298,7 +298,7 @@ export default function RainAndMushroomsPage() {
           ))}
         </ul>
 
-        <p className="rain-map-note">
+        <p className="notice rain-map-note">
           <TriangleAlert size={16} aria-hidden="true" />
           <span>
             Això no és un radar. Un radar mostra on plou ara mateix; aquí veus quanta aigua ha caigut en tota una setmana, que és el que fa moure els bolets sota terra. Si vols saber si plou ara, mira el <a href="https://www.meteo.cat/observacions/radar" target="_blank" rel="noreferrer">radar del Meteocat</a>.

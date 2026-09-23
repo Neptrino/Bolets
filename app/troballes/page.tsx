@@ -94,7 +94,7 @@ export default async function FindingsPage({ searchParams }: { searchParams: Pro
       </ul>
     </section> : null}
     <section className="finding-section"><SectionHeader meta={safeCell ? "Zona seleccionada" : "Publicacions recents"} title={safeCell ? "Troballes d’aquesta zona aproximada de 10 km" : "Últimes troballes compartides"} description="El nom de cada troballa és la identificació indicada per qui l’ha publicada; no ha estat verificat." actions={safeCell ? <Link className="pill finding-button-secondary" href="/troballes">Veure totes</Link> : null} />
-      {findings.length ? <div className="finding-grid">{findings.map((finding) => <FindingCard finding={finding} key={finding.id} />)}</div> : <p className="card finding-notice">Encara no hi ha troballes públiques en aquesta selecció, o el servei no està disponible ara mateix.</p>}
+      {findings.length ? <div className="finding-grid">{findings.map((finding) => <FindingCard finding={finding} key={finding.id} />)}</div> : <p className="notice finding-notice">Encara no hi ha troballes públiques en aquesta selecció, o el servei no està disponible ara mateix.</p>}
       {drawingCredits.length ? <p className="finding-drawing-credits">Dibuixos de les troballes sense fotografia: {drawingCredits.map((credit, index) => <span key={credit.url + index}>{index ? " · " : ""}<a href={credit.url} rel="noreferrer" target="_blank">{credit.text}</a> ({credit.license})</span>)}</p> : null}
     </section>
   </PageShell>;

@@ -105,7 +105,7 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
       </section>
 
       {!overview && leadingSpecies.length > 0 ? (
-        <section className="card season-search-answer" aria-labelledby="season-search-answer-title">
+        <section className="notice season-search-answer" aria-labelledby="season-search-answer-title">
           <p className="eyebrow">Resposta del calendari</p>
           <h2 id="season-search-answer-title">Quins bolets poden sortir {monthWithPreposition(month)}?</h2>
           <p>Entre les espècies amb una activitat estacional bona o màxima aquest mes hi ha <strong>{leadingSpeciesNames}</strong>. El calendari indica una finestra habitual, no presència confirmada: contrasta-la amb les <Link href="/bolets-avui">condicions actuals dels bolets avui</Link>.</p>
@@ -140,7 +140,7 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
 
       <AnnualSeasonCalendar currentMonth={currentMonth} selectedMonth={month} />
 
-      <aside className="intent-safety-note season-explainer">
+      <aside className="notice intent-safety-note season-explainer">
         <CloudRain size={22} aria-hidden="true" />
         <div><strong>Calendari i condicions no són el mateix.</strong><p>La temporada indica quan una espècie pot fructificar habitualment. Per valorar el moment actual també cal llegir la pluja acumulada, la humitat, la temperatura i si el terreny és adequat. <Link href="/preguntes-frequents-bolets#quan-anar-hi" className="text-link">Resolem els dubtes sobre temporada i pluja.</Link></p></div>
       </aside>

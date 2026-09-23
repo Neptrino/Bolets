@@ -146,7 +146,7 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
   return (
     <>
       {section === "answer" && <>
-        {simulated && <aside className="intent-safety-note" role="status">
+        {simulated && <aside className="notice intent-safety-note" role="status">
           <p><strong>Simulació local · dades fictícies.</strong> Només simula el resum i el comparador. El mapa conserva les seves pròpies dades. <Link href="/bolets-avui">Torna a les lectures reals</Link>.</p>
         </aside>}
         {!simulated && <JsonLd data={{
@@ -176,7 +176,7 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
           },
         }} />}
 
-        <section className="current-search-answer" aria-labelledby="current-search-answer-title">
+        <section className="notice current-search-answer" aria-labelledby="current-search-answer-title">
           <p className="eyebrow">Resposta actualitzada</p>
           <h2 id="current-search-answer-title">On trobar bolets avui a Catalunya?</h2>
           <p>{topLocations.length > 0 ? <>
@@ -247,7 +247,7 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
               );
               })}
             </ol>
-          </> : <div className="current-board-empty"><strong>Avui no hi ha dades suficients</strong><p>Torna-ho a provar més tard per comparar les zones.</p></div>}
+          </> : <div className="notice current-board-empty"><strong>Avui no hi ha dades suficients</strong><p>Torna-ho a provar més tard per comparar les zones.</p></div>}
         </section>
       </>}
 

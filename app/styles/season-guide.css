@@ -3,7 +3,7 @@
 .season-related-links { display: flex; flex-wrap: wrap; gap: .65rem 1.2rem; }
 .season-overview-back { display: inline-flex; margin-bottom: 1.25rem; }
 
-.season-search-answer { margin: 1rem 0 2.2rem; padding: 1.2rem 1.35rem; border-left: 4px solid var(--gold); background: var(--surface-warm); }
+.season-search-answer { margin: 1rem 0 2.2rem; padding: 1.2rem 1.35rem; }
 .season-search-answer .eyebrow { margin: 0 0 .35rem; }
 .season-search-answer h2 { margin: 0; color: var(--forest-panel); font-size: var(--text-xl); }
 .season-search-answer p:last-child { margin: .55rem 0 0; color: var(--muted); line-height: 1.65; }

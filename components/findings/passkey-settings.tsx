@@ -97,9 +97,9 @@ export function PasskeySettings() {
       </div>
 
       {supported === false ? (
-        <p className="card finding-notice">Aquest navegador o aquesta connexió no admet claus d’accés.</p>
+        <p className="notice finding-notice">Aquest navegador o aquesta connexió no admet claus d’accés.</p>
       ) : null}
-      {loading ? <p className="card finding-notice">Carregant les claus d’accés…</p> : null}
+      {loading ? <p className="notice finding-notice">Carregant les claus d’accés…</p> : null}
 
       {!loading && supported ? (
         <>
@@ -131,7 +131,7 @@ export function PasskeySettings() {
               ))}
             </ul>
           ) : (
-            <p className="card finding-notice">Encara no has afegit cap clau d’accés.</p>
+            <p className="notice finding-notice">Encara no has afegit cap clau d’accés.</p>
           )}
           <button
             type="button"
@@ -145,7 +145,7 @@ export function PasskeySettings() {
         </>
       ) : null}
 
-      {message ? <p className="card finding-notice" aria-live="polite">{message}</p> : null}
+      {message ? <p className="notice finding-notice" aria-live="polite">{message}</p> : null}
 
       <FindingDeleteDialog
         busy={busy === "delete"}

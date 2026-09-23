@@ -289,7 +289,7 @@ export default function PreserveMushroomsPage() {
           <li><span aria-hidden="true">2</span><FlaskConical size={20} /><h3>Cobreix d’escabetx</h3><p>Bull 2 minuts 2 gots de vinagre de vi blanc, ½ got d’aigua, 1 culleradeta de sucre, 1 de sal i una branca de farigola. Cobreix els bolets i afegeix un rajolí d’oli per sobre.</p></li>
           <li><span aria-hidden="true">3</span><Flame size={20} /><h3>Esterilitza</h3><p>Tapa els pots i bull-los a foc lent, ben coberts d’aigua, un mínim de 30 minuts. Deixa’ls refredar dins la mateixa aigua i guarda’ls en un lloc fresc.</p></li>
         </ol>
-        <aside className="card guide-caveat">
+        <aside className="notice guide-caveat">
           <TriangleAlert size={21} aria-hidden="true" />
           <p><strong>No improvisis la proporció de vinagre.</strong> Llença qualsevol pot amb la tapa inflada, rovellada, amb pèrdues de líquid o que faci una olor estranya en obrir-lo. La toxina botulínica no es detecta a simple vista. Etiqueta cada pot amb el contingut i la data.</p>
         </aside>

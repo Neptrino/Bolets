@@ -45,7 +45,7 @@ export function TurnstileWidget({
     };
   }, [render]);
 
-  if (!siteKey) return <p className="card finding-notice" data-tone="danger">La verificació anti-brossa no està configurada.</p>;
+  if (!siteKey) return <p className="notice finding-notice" data-tone="danger">La verificació anti-brossa no està configurada.</p>;
   return <>
     <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" onReady={render} />
     <div ref={containerRef} className="finding-turnstile" aria-label="Verificació anti-brossa" />
