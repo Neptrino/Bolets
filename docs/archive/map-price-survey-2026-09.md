@@ -1,6 +1,6 @@
 # Annual detailed-map interest survey
 
-Status: banner, survey and response storage activated in production on 16 September 2026. A delayed contextual prompt is implemented locally for testing and is not deployed.
+Historical status: **closed on 22 September 2026**. The public banner was removed, the public page no longer accepts responses, and the API returns `410 Gone` for both reads and submissions. Historical response records remain available only through the protected admin view.
 
 ## Offer and placement
 
@@ -44,4 +44,4 @@ Verify banner navigation/dismissal on desktop and mobile, private-route exclusio
 
 Run `node scripts/capture-map-survey.mjs` against the local development server to reproduce the three WebP illustrations in `public/media/editorial/map-survey/`. The script requires a loopback origin, intercepts prediction and access responses in isolated browser contexts, and does not grant real account privileges or request protected live cells. Scores and habitat coverage are synthetic illustration fixtures; they never enter the scoring model. Both comparison screenshots use the same camera, species and fine illustrative field, averaged for the coarser view. They are labelled as demonstration data in both artwork and page captions. A single linked line below the comparison credits ICGC under CC BY 4.0, OpenMapTiles and OpenStreetMap without covering the images. The forecast image captures the real `CellScoreHistory` line chart with deterministic synthetic observations and projections through +14 days. It is labelled “Dades de demostració”; these are not current readings. The capture helper adjusts the screenshot heading to the demonstrated horizon and uses a wide presentation frame to keep date labels readable. It does not change the live chart, grant access or request protected data. Run with `--forecast-only` to update just this chart screenshot.
 
-The [capture receipt](map-price-survey-captures.json) records the source checksums, and disposable PNG previews remain in `artifacts/map-survey-captures/`. Serve the images through `StaticMediaImage`; source changes use static-media version `v20` and regenerate all responsive AVIF/WebP variants with `npm run media:build`.
+The [capture receipt](map-price-survey-captures-2026-09.json) records the source checksums, and disposable PNG previews remain in `artifacts/map-survey-captures/`. Serve the images through `StaticMediaImage`; source changes use static-media version `v20` and regenerate all responsive AVIF/WebP variants with `npm run media:build`.
