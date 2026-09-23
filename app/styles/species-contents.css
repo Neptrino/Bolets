@@ -10,7 +10,7 @@
     margin: 0 0 20px;
     padding: 0 16px;
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     background: var(--surface-warm);
   }
   .species-aside .species-contents-toggle {

@@ -13,7 +13,7 @@
 .item {
   padding: 0.95rem 1rem;
   border: 1px solid var(--line);
-  border-radius: 11px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-muted) 50%, transparent);
 }
 
@@ -27,7 +27,7 @@
 .item summary:focus-visible {
   outline: 2px solid var(--forest-panel);
   outline-offset: 4px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .answer {
@@ -51,5 +51,5 @@
 .answer a:focus-visible {
   outline: 2px solid var(--forest-panel);
   outline-offset: 4px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }

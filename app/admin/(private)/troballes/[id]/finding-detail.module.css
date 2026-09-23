@@ -36,9 +36,9 @@
 .record {
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface);
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-md);
 }
 
 .recordHeader {

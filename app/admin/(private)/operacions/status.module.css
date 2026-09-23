@@ -14,9 +14,9 @@
   padding: 24px 28px;
   border: 1px solid color-mix(in srgb, var(--state-color) 38%, var(--line));
   border-left: 7px solid var(--state-color);
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--state-color) 6%, var(--surface));
-  box-shadow: 0 18px 45px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 
 .statePanel > svg {
@@ -127,17 +127,17 @@
   min-height: 154px;
   padding: 20px;
   border: 1px solid color-mix(in srgb, var(--community-color) 30%, var(--line));
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--community-color) 4%, var(--surface));
   color: var(--ink);
-  box-shadow: 0 14px 30px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-md);
   text-decoration: none;
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
 .communityCard:hover {
   border-color: color-mix(in srgb, var(--community-color) 62%, var(--line));
-  box-shadow: 0 18px 36px color-mix(in srgb, var(--bark-800) 10%, transparent);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
@@ -200,7 +200,7 @@
   align-items: flex-start;
   padding: 18px 20px;
   border: 1px solid color-mix(in srgb, var(--status-amber) 35%, var(--line));
-  border-radius: 15px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--status-amber) 7%, var(--surface));
 }
 
@@ -224,9 +224,9 @@
 .commandPanel {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--forest-panel) 68%, var(--line));
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background: var(--forest-panel);
-  box-shadow: 0 22px 52px color-mix(in srgb, var(--forest-900) 15%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 
 .commandGrid {
@@ -406,9 +406,9 @@
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--publication-color) 36%, var(--line));
   border-top: 5px solid var(--publication-color);
-  border-radius: 17px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--publication-color) 5%, var(--surface));
-  box-shadow: 0 15px 34px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 
 .publicationCard[data-complete="true"] {
@@ -482,7 +482,7 @@
   margin-top: 14px;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 15px;
+  border-radius: var(--radius-md);
   background: var(--surface-muted);
 }
 
@@ -551,7 +551,7 @@
   gap: 3px 11px;
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 
@@ -584,7 +584,7 @@
   column-gap: 17px;
   padding: 22px 24px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 
@@ -621,7 +621,7 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 14px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: var(--surface-muted);
 }
 
@@ -645,7 +645,7 @@
   gap: 20px;
   align-items: center;
   padding: 26px 28px;
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   background: var(--forest-panel);
   color: var(--on-dark);
 }
@@ -687,7 +687,7 @@
   padding: 19px 20px;
   border: 1px solid var(--line);
   border-top: 4px solid var(--status-green);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 
@@ -722,7 +722,7 @@
 .tableFrame {
   overflow-x: auto;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 
@@ -739,7 +739,7 @@
   margin: 0;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--surface);
   list-style: none;
@@ -803,7 +803,7 @@
   margin: 0.9rem 1.4rem 0;
   padding: 0.65rem 0.9rem;
   border: 1px solid color-mix(in srgb, var(--amber-650) 20%, transparent);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-warm) 60%, transparent);
   font-size: 0.86rem;
 }
@@ -833,7 +833,7 @@
 .technicalDetails {
   margin-top: 1.6rem;
   border: 1px solid color-mix(in srgb, var(--amber-650) 20%, transparent);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-warm) 40%, transparent);
 }
 

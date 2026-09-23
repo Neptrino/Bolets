@@ -9,7 +9,7 @@
   margin: 0 0 36px;
   padding: 7px;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--surface-warm) 70%, transparent);
 }
 
@@ -20,7 +20,7 @@
   align-items: center;
   min-height: 66px;
   padding: 11px 13px;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   color: var(--muted);
   text-decoration: none;
   transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
@@ -100,9 +100,9 @@
   gap: 0;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--forest-650) 20%, transparent);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background: var(--surface-muted);
-  box-shadow: 0 14px 34px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 
 .account-contribution-layout .contribution-way-grid article {
@@ -135,9 +135,9 @@
   gap: 0;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background: var(--surface);
-  box-shadow: 0 14px 34px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 
 .account-contribution-layout .contribution-steps > div {

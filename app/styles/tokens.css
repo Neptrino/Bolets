@@ -107,7 +107,17 @@
   --danger-ink: var(--red-650);
   --on-dark: var(--cream-100);
   --on-dark-muted: var(--forest-200);
+  /* Radii and elevation: the only corner and shadow values stylesheets use.
+     Percentages stay for circles and illustration shapes; inset lines,
+     0 0 0 focus rings and glows are not elevation and stay literal. */
+  --radius-sm: 6px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
   --radius-pill: 999px;
+  --shadow-sm: 0 4px 12px color-mix(in srgb, var(--forest-900) 12%, transparent);
+  --shadow-md: 0 12px 28px color-mix(in srgb, var(--bark-800) 8%, transparent);
+  --shadow-lg: 0 18px 46px color-mix(in srgb, var(--bark-800) 10%, transparent);
+  --shadow-xl: 0 28px 80px color-mix(in srgb, var(--forest-900) 28%, transparent);
   --layout-max: 1180px;
   --layout-gutter: 24px;
 

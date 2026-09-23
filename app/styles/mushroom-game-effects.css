@@ -42,10 +42,10 @@
   justify-items: center;
   padding: 23px 30px 20px;
   border: 1px solid color-mix(in srgb, var(--warning-surface) 60%, transparent);
-  border-radius: 24px;
+  border-radius: var(--radius-lg);
   color: var(--paper);
   background: color-mix(in srgb, var(--forest-900) 90%, transparent);
-  box-shadow: 0 24px 80px color-mix(in srgb, var(--black) 40%, transparent), 0 0 0 10px color-mix(in srgb, var(--amber-150) 10%, transparent), inset 0 1px color-mix(in srgb, var(--white) 15%, transparent);
+  box-shadow: var(--shadow-xl), 0 0 0 10px color-mix(in srgb, var(--amber-150) 10%, transparent), inset 0 1px color-mix(in srgb, var(--white) 15%, transparent);
   backdrop-filter: blur(12px);
   animation: mushroom-correct-emblem 1.55s cubic-bezier(0.2, 1.45, 0.32, 1) both;
 }
@@ -70,7 +70,7 @@
 .mushroom-game-complete {
   border-color: color-mix(in srgb, var(--amber-150) 40%, transparent);
   background: color-mix(in srgb, var(--forest-panel) 95%, transparent);
-  box-shadow: 0 32px 100px color-mix(in srgb, var(--black) 50%, transparent), 0 0 0 1px color-mix(in srgb, var(--warning-surface) 15%, transparent), 0 0 80px color-mix(in srgb, var(--amber-150) 15%, transparent);
+  box-shadow: var(--shadow-xl), 0 0 0 1px color-mix(in srgb, var(--warning-surface) 15%, transparent), 0 0 80px color-mix(in srgb, var(--amber-150) 15%, transparent);
   animation: mushroom-finale-card 1s cubic-bezier(0.16, 1.18, 0.3, 1) 0.3s both;
 }
 
@@ -80,7 +80,7 @@
   inset: -16px;
   content: "";
   border: 1px solid color-mix(in srgb, var(--amber-150) 20%, transparent);
-  border-radius: 34px;
+  border-radius: var(--radius-lg);
   pointer-events: none;
   animation: mushroom-finale-ring 2.4s ease-out 0.6s infinite;
 }

@@ -49,9 +49,9 @@
   position: relative;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: var(--radius-lg);
   background: var(--surface);
-  box-shadow: 0 18px 50px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 
 .previewHeader {
@@ -99,9 +99,9 @@
   overflow: hidden;
   margin: 0;
   border: 8px solid var(--forest-900);
-  border-radius: 21px;
+  border-radius: var(--radius-lg);
   background: var(--forest-900);
-  box-shadow: 0 16px 40px color-mix(in srgb, var(--forest-900) 20%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 
 .storyFrame img,
@@ -134,7 +134,7 @@
 .captionPreview {
   align-self: start;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: var(--surface-muted);
 }
 
@@ -360,9 +360,9 @@
 .bufferComposer {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--forest-panel) 24%, var(--line));
-  border-radius: 22px;
+  border-radius: var(--radius-lg);
   background: var(--surface);
-  box-shadow: 0 18px 50px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 
 .bufferComposerHeader {
@@ -481,7 +481,7 @@
   padding: 11px 13px;
   resize: vertical;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface-muted);
   color: var(--ink);
   font: inherit;

@@ -33,7 +33,7 @@
   min-width: 0;
   margin: 0;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--surface);
 }
@@ -90,7 +90,7 @@
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 
@@ -139,7 +139,7 @@
   gap: 3px;
   padding: 14px 16px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--surface-warm);
 }
 
@@ -164,7 +164,7 @@
 .community {
   padding: 32px;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background: var(--surface);
 }
 

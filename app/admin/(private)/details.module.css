@@ -49,7 +49,7 @@
   margin-bottom: 18px;
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface-muted);
 }
 
@@ -78,9 +78,9 @@
   padding: 19px 20px;
   border: 1px solid var(--line);
   border-left: 5px solid var(--detail-green);
-  border-radius: 15px;
+  border-radius: var(--radius-md);
   background: var(--surface);
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-md);
 }
 
 .detailCard[data-state="draft"] { border-left-color: var(--detail-amber); }
@@ -141,9 +141,9 @@
 .adminTableFrame {
   overflow-x: auto;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface);
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-md);
 }
 
 .adminTableFrame:focus-visible {
@@ -284,7 +284,7 @@
   margin: 0;
   padding: 13px 15px;
   border-left: 3px solid var(--detail-amber);
-  border-radius: 0 10px 10px 0;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
   background: var(--surface-muted);
   color: var(--muted);
   font-size: var(--text-sm);
@@ -295,7 +295,7 @@
   margin: 0 0 18px;
   padding: 12px 14px;
   border: 1px solid color-mix(in srgb, var(--detail-green) 32%, var(--line));
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--detail-green) 9%, var(--surface));
   color: var(--detail-green);
   font-size: var(--text-sm);
@@ -323,7 +323,7 @@
 .emptyState {
   padding: 34px;
   border: 1px dashed var(--line-strong);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface-muted);
   color: var(--muted);
   text-align: center;
@@ -369,7 +369,7 @@
 .metricGrid > div {
   padding: 18px;
   border: 1px solid var(--line);
-  border-radius: 15px;
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 

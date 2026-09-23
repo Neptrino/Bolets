@@ -17,9 +17,9 @@
   margin-top: 3rem;
   padding: 2.5rem;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   background: var(--surface);
-  box-shadow: 0 18px 44px color-mix(in srgb, var(--forest-panel) 10%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 .home-reference-season { margin-top: 2.25rem; }
 .home-reference-season .section-topline { margin-bottom: 1.25rem; }
@@ -33,7 +33,7 @@
   margin-top: 1.75rem;
 }
 .home-reference-searchbar label { font-weight: 750; font-size: var(--text-lg); white-space: nowrap; }
-.home-reference-input { display: flex; align-items: center; gap: .65rem; min-height: 52px; padding: .6rem 1rem; border: 1.5px solid color-mix(in srgb, var(--bark) 30%, transparent); background: var(--white); border-radius: 999px; box-shadow: inset 0 1px 2px color-mix(in srgb, var(--forest-panel) 5%, transparent); }
+.home-reference-input { display: flex; align-items: center; gap: .65rem; min-height: 52px; padding: .6rem 1rem; border: 1.5px solid color-mix(in srgb, var(--bark) 30%, transparent); background: var(--white); border-radius: var(--radius-pill); box-shadow: inset 0 1px 2px color-mix(in srgb, var(--forest-panel) 5%, transparent); }
 .home-reference-input:hover { border-color: color-mix(in srgb, var(--bark) 50%, transparent); }
 .home-reference-input input::placeholder { color: var(--muted); }
 .home-reference-input:focus-within { outline: 2px solid var(--moss); outline-offset: 3px; }
@@ -54,13 +54,13 @@
   min-width: 0;
   padding: 1.1rem 1.1rem 1.2rem;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--paper);
   color: var(--ink);
   text-decoration: none;
   transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
 }
-.home-reference-tiles a:hover, .home-reference-tiles a:focus-visible { transform: translateY(-3px); border-color: var(--moss); box-shadow: 0 12px 28px color-mix(in srgb, var(--forest-panel) 10%, transparent); }
+.home-reference-tiles a:hover, .home-reference-tiles a:focus-visible { transform: translateY(-3px); border-color: var(--moss); box-shadow: var(--shadow-md); }
 .home-reference-tiles a svg { margin-bottom: .45rem; color: var(--clay); }
 .home-reference-tiles a strong { font-size: var(--text-base); font-weight: 750; line-height: 1.25; }
 .home-reference-tiles a small { color: var(--muted); font-size: var(--text-xs); line-height: 1.4; }
@@ -87,7 +87,7 @@
   .home-editorial-note > a { grid-column: 2; }
 }
 @media (max-width: 680px) {
-  .home-reference { margin-top: 2rem; padding: 1.1rem; border-radius: 14px; }
+  .home-reference { margin-top: 2rem; padding: 1.1rem; border-radius: var(--radius-md); }
   /* Inside the card the species cards are narrower than in the catalogue: stack the fact chips. */
   .home-reference .species-card-facts { grid-template-columns: 1fr; }
   .home-reference-searchbar { grid-template-columns: 1fr; gap: .75rem; }

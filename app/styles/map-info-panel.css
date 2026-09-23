@@ -13,7 +13,7 @@ body:has(.map-page) .site-footer {
   gap: 7px;
   padding: 7px 11px;
   border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--surface) 70%, transparent);
   color: var(--bark);
   font-size: var(--text-xs);
@@ -42,9 +42,9 @@ body:has(.map-page) .site-footer {
   overflow: hidden;
   border: 0;
   border-top: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
-  border-radius: 16px 16px 0 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
   background: color-mix(in srgb, var(--surface) 90%, transparent);
-  box-shadow: 0 -16px 44px color-mix(in srgb, var(--black) 30%, transparent);
+  box-shadow: var(--shadow-lg);
   backdrop-filter: blur(14px);
 }
 .map-info-panel > header {
@@ -186,7 +186,7 @@ body:has(.map-page) .site-footer {
     left: 0;
     width: 100%;
     max-height: min(78%, 640px);
-    border-radius: 14px 14px 0 0;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
   }
   .map-info-panel-content {
     padding: 16px 14px;

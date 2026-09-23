@@ -30,11 +30,11 @@
   padding: 22px;
   border: 1px solid color-mix(in srgb, var(--card-tone) 35%, var(--line));
   border-top: 5px solid var(--card-tone);
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--ink);
   text-decoration: none;
-  box-shadow: 0 14px 34px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 
 .priorityGrid > a[data-tone="clay"],
@@ -96,7 +96,7 @@
   align-items: start;
   padding: 20px;
   border: 1px solid color-mix(in srgb, var(--forest-650) 20%, transparent);
-  border-radius: 17px;
+  border-radius: var(--radius-md);
   background: var(--surface-muted);
   color: var(--ink);
   text-decoration: none;
@@ -138,7 +138,7 @@
   align-items: center;
   padding: 20px;
   border: 1px solid color-mix(in srgb, var(--danger-ink) 20%, transparent);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--danger-surface);
   color: var(--danger-ink);
 }

@@ -40,7 +40,7 @@
   min-height: 100%;
   padding: 15px 16px 17px;
   border: 1px solid var(--line);
-  border-radius: 11px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--forest-panel);
   text-decoration: none;
@@ -68,7 +68,7 @@
 .local-resource-shelf a:hover {
   transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--clay) 40%, transparent);
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--bark-800) 10%, transparent);
+  box-shadow: var(--shadow-md);
 }
 .local-resource-shelf a:focus-visible {
   outline: 2px solid var(--clay);
@@ -112,7 +112,7 @@
 .local-related-guides > div > section {
   padding: 25px;
   border: 1px solid var(--line);
-  border-radius: 15px;
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 .local-related-guides h3 {
@@ -128,7 +128,7 @@
   align-items: center;
   min-height: 44px;
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   color: var(--bark);
   font-size: var(--text-base);
   font-weight: 800;
@@ -148,7 +148,7 @@
   margin-top: 18px;
   padding: 16px;
   border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 .species-local-guides-heading {
@@ -183,7 +183,7 @@
   min-width: 0;
   padding: 9px 11px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
   transition:
     border-color 160ms ease,

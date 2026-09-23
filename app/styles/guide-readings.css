@@ -14,7 +14,7 @@
   min-height: 44px;
   padding: 10px 15px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--forest-panel);
   font-size: var(--text-base);
@@ -100,7 +100,7 @@
   gap: 14px;
   padding: 20px 22px;
   border: 1px solid color-mix(in srgb, var(--forest-panel) 15%, transparent);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-muted) 60%, transparent);
 }
 .current-reading-notes-block h3 {
@@ -148,7 +148,7 @@
 .poisonous-comparison-grid article {
   padding: 20px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 .poisonous-comparison-grid h3 { margin: 0 0 16px; font-size: var(--text-xl); }
@@ -157,7 +157,7 @@
 .poisonous-comparison-grid p { line-height: 1.65; }
 .poisonous-photo-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .poisonous-photo-pair figure { margin: 0; min-width: 0; }
-.poisonous-photo-pair figure > div { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 8px; }
+.poisonous-photo-pair figure > div { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--radius-sm); }
 .poisonous-photo-pair img { object-fit: cover; }
 .poisonous-photo-pair figcaption { display: grid; gap: 5px; margin-top: 8px; font-size: var(--text-xs); }
 .poisonous-photo-pair figcaption strong { font-size: var(--text-base); }

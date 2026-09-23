@@ -1,7 +1,12 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { findGradients, findHardcodedColours } from "@/scripts/hardcoded-colours.mjs";
+import {
+  findGradients,
+  findHardcodedColours,
+  findUntokenisedRadii,
+  findUntokenisedShadows,
+} from "@/scripts/css-design-rules.mjs";
 
 const minimumFontSize = 12;
 
@@ -54,6 +59,12 @@ describe("shared styles", () => {
   it("uses solid backgrounds outside the map legend", () => {
     // Put text on a solid, possibly translucent, band instead of a scrim.
     expect(findGradients()).toEqual([]);
+  });
+
+  it("uses the radius and shadow tokens", () => {
+    // Use --radius-* for corners and --shadow-* for elevation.
+    expect(findUntokenisedRadii()).toEqual([]);
+    expect(findUntokenisedShadows()).toEqual([]);
   });
 
   it("keeps the species profile on shared palette tokens", () => {

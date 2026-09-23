@@ -7,9 +7,9 @@
   margin-bottom: 3rem;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   background: var(--surface);
-  box-shadow: 0 18px 44px color-mix(in srgb, var(--forest-panel) 10%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 .home-findings > * { min-width: 0; }
 
@@ -47,7 +47,7 @@
   border-left: 1px solid var(--line);
   background: var(--forest-panel);
 }
-.home-findings-photo { position: relative; min-height: 440px; overflow: hidden; border-radius: 12px; }
+.home-findings-photo { position: relative; min-height: 440px; overflow: hidden; border-radius: var(--radius-md); }
 .home-findings-photo img { object-fit: cover; }
 .home-findings-offline {
   position: absolute;
@@ -58,7 +58,7 @@
   gap: 7px;
   align-items: center;
   padding: 9px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--paper);
   color: var(--forest-panel);
   font-size: var(--text-xs);
@@ -74,7 +74,7 @@
 .home-findings-preview-data dd a { color: inherit; text-underline-offset: 3px; }
 .home-findings-preview-data dd a:hover, .home-findings-preview-data dd a:focus-visible { color: var(--apricot); }
 .home-findings-public-area { display: grid; grid-template-columns: 55px 1fr; gap: 13px; align-items: center; margin-top: auto; padding-top: 20px; border-top: 1px solid color-mix(in srgb, var(--surface) 15%, transparent); }
-.home-findings-public-area > span { display: grid; grid-template-columns: repeat(2, 1fr); width: 55px; height: 55px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--surface) 60%, transparent); border-radius: 8px; }
+.home-findings-public-area > span { display: grid; grid-template-columns: repeat(2, 1fr); width: 55px; height: 55px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--surface) 60%, transparent); border-radius: var(--radius-sm); }
 .home-findings-public-area i { border: 1px solid color-mix(in srgb, var(--surface) 20%, transparent); }
 .home-findings-public-area i:nth-child(3) { background: var(--clay); }
 .home-findings-public-area p { display: grid; gap: 3px; margin: 0; }
@@ -88,7 +88,7 @@
 }
 
 @media (max-width: 680px) {
-  .home-findings { margin-top: 2rem; border-radius: 14px; }
+  .home-findings { margin-top: 2rem; border-radius: var(--radius-md); }
   .home-findings-actions { align-items: flex-start; }
   .home-findings-preview { grid-template-columns: 1fr; padding: 11px; }
   .home-findings-photo { min-height: 340px; }

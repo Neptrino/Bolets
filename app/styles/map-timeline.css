@@ -8,9 +8,9 @@
   gap: 6px;
   padding: 10px 13px 8px;
   border: 1px solid color-mix(in srgb, var(--paper) 30%, transparent);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--forest-panel) 90%, transparent);
-  box-shadow: 0 16px 38px color-mix(in srgb, var(--forest-900) 30%, transparent);
+  box-shadow: var(--shadow-lg);
   color: var(--on-dark);
   transform: translateX(50%);
   backdrop-filter: blur(14px);
@@ -23,14 +23,14 @@
 .current-map-overview .prediction-timeline {
   bottom: -1px;
   border-bottom: 0;
-  border-radius: 16px 16px 0 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 @media (min-width: 681px) {
   .current-map-overview .prediction-timeline {
     right: -1px;
     border-right: 0;
-    border-radius: 16px 0 0;
+    border-radius: var(--radius-md) 0 0;
     transform: none;
   }
 
@@ -50,7 +50,7 @@
 
 .prediction-timeline-heading span {
   padding: 3px 7px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--paper) 15%, transparent);
   color: var(--apricot);
   font-weight: 900;

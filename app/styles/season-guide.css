@@ -3,7 +3,7 @@
 .season-related-links { display: flex; flex-wrap: wrap; gap: .65rem 1.2rem; }
 .season-overview-back { display: inline-flex; margin-bottom: 1.25rem; }
 
-.season-search-answer { margin: 1rem 0 2.2rem; padding: 1.2rem 1.35rem; border: 1px solid var(--line); border-left: 4px solid var(--gold); border-radius: 13px; background: var(--surface-warm); }
+.season-search-answer { margin: 1rem 0 2.2rem; padding: 1.2rem 1.35rem; border: 1px solid var(--line); border-left: 4px solid var(--gold); border-radius: var(--radius-md); background: var(--surface-warm); }
 .season-search-answer .eyebrow { margin: 0 0 .35rem; }
 .season-search-answer h2 { margin: 0; color: var(--forest-panel); font-size: var(--text-xl); }
 .season-search-answer p:last-child { margin: .55rem 0 0; color: var(--muted); line-height: 1.65; }
@@ -12,7 +12,7 @@
 /* Season guide opening: answer, protagonist icon tiles and a one-line safety note. */
 .season-protagonists { margin: 2.6rem 0 0; }
 .season-protagonist-list { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .9rem; margin: 0; padding: 0; list-style: none; }
-.season-protagonist-list a { height: 100%; display: grid; justify-items: center; align-content: start; gap: .3rem; padding: 1.1rem .7rem 1rem; border: 1px solid var(--line); border-radius: 18px; background: var(--surface-warm); color: var(--ink); text-align: center; text-decoration: none; transition: border-color 160ms ease, transform 160ms ease; }
+.season-protagonist-list a { height: 100%; display: grid; justify-items: center; align-content: start; gap: .3rem; padding: 1.1rem .7rem 1rem; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-warm); color: var(--ink); text-align: center; text-decoration: none; transition: border-color 160ms ease, transform 160ms ease; }
 .season-protagonist-list a:hover { border-color: var(--gold); transform: translateY(-2px); }
 .season-protagonist-list a:focus-visible { outline: 3px solid var(--pumpkin); outline-offset: 2px; }
 .season-protagonist-list .species-icon { width: 72px; height: 72px; margin-bottom: .35rem; object-fit: contain; }
@@ -22,7 +22,7 @@
 /* Month columns: the edibles at their best in each month of the season. */
 .season-months { margin: 3.5rem 0 0; }
 .season-month-grid { display: grid; grid-template-columns: repeat(var(--season-months, 3), minmax(0, 1fr)); gap: 1rem; margin: 0; padding: 0; list-style: none; }
-.season-month-grid > li { padding: 1.15rem 1.2rem 1.2rem; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
+.season-month-grid > li { padding: 1.15rem 1.2rem 1.2rem; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
 .season-month-grid h3 { margin: 0 0 .75rem; padding-bottom: .6rem; border-bottom: 1px solid var(--line); font-size: var(--text-xl); text-transform: capitalize; }
 .season-month-grid h3 a { color: var(--forest-panel); text-decoration: none; }
 .season-month-grid h3 a:hover { color: var(--gold); }
@@ -47,7 +47,7 @@
 
 @media (max-width: 640px) {
   .season-protagonist-list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
-  .season-protagonist-list a { gap: .15rem; padding: .7rem .35rem .65rem; border-radius: 14px; }
+  .season-protagonist-list a { gap: .15rem; padding: .7rem .35rem .65rem; border-radius: var(--radius-md); }
   .season-protagonist-list .species-icon { width: 52px; height: 52px; margin-bottom: .2rem; }
   .season-protagonist-list strong { font-size: var(--text-xs); }
   .season-month-grid { grid-template-columns: 1fr; }
@@ -57,7 +57,7 @@
 /* Closing links to the other season guides. */
 .other-season-guides { margin: 56px 0 0; }
 .other-season-guides ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin: 0; padding: 0; list-style: none; }
-.other-season-guides a { position: relative; height: 100%; display: grid; gap: .2rem; padding: 1.1rem 1.2rem; border: 1px solid var(--line); border-radius: 18px; background: var(--surface-warm); color: var(--ink); text-decoration: none; transition: border-color 160ms ease, transform 160ms ease; }
+.other-season-guides a { position: relative; height: 100%; display: grid; gap: .2rem; padding: 1.1rem 1.2rem; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-warm); color: var(--ink); text-decoration: none; transition: border-color 160ms ease, transform 160ms ease; }
 .other-season-guides a:hover { border-color: var(--gold); transform: translateY(-2px); }
 .other-season-guides a:focus-visible { outline: 3px solid var(--pumpkin); outline-offset: 2px; }
 .other-season-icons { display: flex; gap: .3rem; margin-bottom: .5rem; }
@@ -80,7 +80,7 @@
 .season-tabs > * { padding-bottom: .2rem; border-bottom: 2px solid transparent; }
 .season-tabs a { color: var(--muted); text-decoration: none; transition: color 150ms ease, border-color 150ms ease; }
 .season-tabs a:hover { border-bottom-color: var(--line); color: var(--ink); }
-.season-tabs a:focus-visible { outline: 2px solid var(--pumpkin); outline-offset: 3px; border-radius: 2px; }
+.season-tabs a:focus-visible { outline: 2px solid var(--pumpkin); outline-offset: 3px; border-radius: var(--radius-sm); }
 .season-tabs .is-current { border-bottom-color: currentColor; }
 .season-tabs .is-current small { margin-left: .3rem; font-size: inherit; font-weight: 700; opacity: .75; }
 @media (max-width: 640px) {

@@ -94,7 +94,7 @@
   }
   .compact-species-page .specimen-panel.has-photos {
     min-height: 325px;
-    border-radius: 17px;
+    border-radius: var(--radius-md);
   }
   .species-gallery-thumbnails {
     min-height: 72px;
@@ -211,7 +211,7 @@
     margin: 0;
     padding: .5rem .75rem;
     border: 1px solid var(--line);
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     background: var(--surface);
     font-size: var(--text-xs);
     white-space: nowrap;

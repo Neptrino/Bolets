@@ -29,7 +29,7 @@
   color: var(--on-dark);
 }
 .ceps-now-grid article > span a:focus-visible {
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   outline: 2px solid var(--apricot);
   outline-offset: 3px;
 }
@@ -90,7 +90,7 @@
 .guides-species-module {
   margin-bottom: 56px;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--forest-panel);
   color: var(--on-dark);
 }
@@ -161,7 +161,7 @@
   gap: 10px;
   padding: 18px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface-warm);
 }
 .guide-browser-controls label,
@@ -180,7 +180,7 @@
   min-height: 48px;
   box-sizing: border-box;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--ink);
   font: inherit;
@@ -257,15 +257,15 @@
   flex-direction: column;
   padding: 25px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface);
-  box-shadow: 0 16px 45px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-lg);
   transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
 }
 .guide-browser-card:hover {
   transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--bark) 30%, transparent);
-  box-shadow: 0 20px 55px color-mix(in srgb, var(--bark-800) 10%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 .guide-browser-card-kicker {
   display: flex;
@@ -334,7 +334,7 @@
   align-items: center;
   padding: 30px;
   border: 1px dashed var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface-muted);
   color: var(--muted);
 }
@@ -389,7 +389,7 @@
   height: 100%;
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--ink);
   text-decoration: none;
@@ -398,7 +398,7 @@
 .guides-reading-links a:hover {
   transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--bark) 30%, transparent);
-  box-shadow: 0 16px 45px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 .guides-reading-links a:focus-visible {
   outline: 2px solid var(--forest-panel);
@@ -437,7 +437,7 @@
   box-sizing: border-box;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--ink);
   text-decoration: none;
@@ -452,7 +452,7 @@
 .guides-territory-list a:hover {
   transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--bark) 30%, transparent);
-  box-shadow: 0 16px 45px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 .guides-territory-list a:focus-visible {
   outline: 2px solid var(--forest-panel);
@@ -477,7 +477,7 @@
 /* One disc per species with a guide in the territory; the game's drawings, or an initial when there is none. */
 /* Species with a guide in the territory, pinned over the bottom of the map. */
 .guides-territory-species { position: absolute; right: 12px; bottom: 10px; left: 12px; z-index: 1; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
-.guides-territory-species-icon { position: relative; display: grid; place-items: center; width: 48px; height: 48px; overflow: visible; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--black) 40%, transparent); }
+.guides-territory-species-icon { position: relative; display: grid; place-items: center; width: 48px; height: 48px; overflow: visible; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); box-shadow: var(--shadow-sm); }
 .guides-territory-species-icon img { display: block; width: 30px; height: 30px; object-fit: contain; }
 /* Tooltip with the species behind the icon, shown above it on hover. */
 .guides-territory-species-icon::after {
@@ -487,7 +487,7 @@
   left: 50%;
   z-index: 2;
   padding: 5px 9px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--forest-panel);
   color: var(--on-dark);
   font-size: var(--text-xs);

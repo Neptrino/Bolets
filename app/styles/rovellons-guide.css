@@ -57,7 +57,7 @@
   gap: 9px;
   padding: 25px;
   border: 1px solid color-mix(in srgb, var(--on-dark) 20%, transparent);
-  border-radius: 17px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--forest-900) 20%, transparent);
   backdrop-filter: blur(8px);
 }
@@ -139,7 +139,7 @@
 .guide-types-table-scroll {
   overflow-x: auto;
   border: 1px solid var(--line);
-  border-radius: 17px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
 }
 .guide-types-scroll-hint {
@@ -237,10 +237,10 @@
 .rovellons-now {
   margin-bottom: 86px;
   overflow: hidden;
-  border-radius: 19px;
+  border-radius: var(--radius-lg);
   background: var(--forest-panel);
   color: var(--on-dark);
-  box-shadow: 0 24px 60px color-mix(in srgb, var(--forest-panel) 15%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 .rovellons-now-heading {
   display: grid;
@@ -350,7 +350,7 @@
   grid-template-columns: repeat(6, minmax(0, 1fr));
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 17px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
 }
 .rovellons-territory-grid > a {
@@ -412,7 +412,7 @@
   margin-bottom: 90px;
   padding: 40px;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   background: var(--surface-muted);
 }
 .rovellons-published > div:first-child > p:last-child {
@@ -452,7 +452,7 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 17px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
 }
 .rovellons-signals article {
@@ -499,7 +499,7 @@
   gap: 15px;
   padding: 20px 22px;
   border: 1px solid var(--danger-ink);
-  border-radius: 13px;
+  border-radius: var(--radius-md);
   background: var(--danger-surface);
   color: var(--danger-ink);
 }

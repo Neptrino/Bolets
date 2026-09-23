@@ -5,7 +5,7 @@
   padding: 0;
   overflow: visible;
   border: 0;
-  border-radius: 22px;
+  border-radius: var(--radius-lg);
   background: transparent;
   color: var(--ink);
 }
@@ -21,9 +21,9 @@
   padding: 28px;
   border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
   border-top: 5px solid var(--clay);
-  border-radius: 22px;
+  border-radius: var(--radius-lg);
   background: var(--surface);
-  box-shadow: 0 28px 80px color-mix(in srgb, var(--forest-900) 30%, transparent);
+  box-shadow: var(--shadow-xl);
 }
 
 .close {
@@ -57,7 +57,7 @@
   place-items: center;
   width: 50px;
   height: 50px;
-  border-radius: 15px;
+  border-radius: var(--radius-md);
   background: var(--forest-panel);
   color: var(--surface-warm);
 }
@@ -97,7 +97,7 @@
   min-height: 54px;
   padding: 10px 12px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface-warm);
   color: var(--forest-panel);
   font-size: var(--text-sm);
@@ -146,9 +146,9 @@
     margin: auto auto 10px;
   }
 
-  .card { gap: 15px; padding: 22px 18px 18px; border-radius: 18px; }
+  .card { gap: 15px; padding: 22px 18px 18px; border-radius: var(--radius-md); }
   .heading { gap: 11px; padding-right: 28px; }
-  .icon { width: 44px; height: 44px; border-radius: 13px; }
+  .icon { width: 44px; height: 44px; border-radius: var(--radius-md); }
   .heading h2 { font-size: var(--text-xl); }
   .benefits { grid-template-columns: 1fr; gap: 8px; }
   .benefits span { min-height: 48px; }

@@ -14,9 +14,9 @@
   margin-top: 12px;
   padding: 12px 14px;
   border: 1px solid color-mix(in srgb, var(--sand-550) 15%, transparent);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--paper);
-  box-shadow: 0 8px 22px color-mix(in srgb, var(--bark) 5%, transparent);
+  box-shadow: var(--shadow-md);
 }
 .ecology-section .season-calendar-label {
   margin-bottom: 10px;

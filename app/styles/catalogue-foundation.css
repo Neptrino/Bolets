@@ -19,7 +19,7 @@
 .culinary-rating.compact {
   gap: 5px;
   padding: 6px 9px;
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--forest-900) 15%, transparent);
+  box-shadow: var(--shadow-md);
 }
 .culinary-stars {
   display: inline-flex;
@@ -66,9 +66,9 @@
   min-height: 76px;
   padding: 11px 13px 11px 20px;
   border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
-  box-shadow: 0 10px 32px color-mix(in srgb, var(--bark) 5%, transparent);
+  box-shadow: var(--shadow-md);
 }
 .directory-summary {
   display: flex;
@@ -116,7 +116,7 @@
   gap: 7px;
   padding: 6px 8px 6px 12px;
   border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--surface-muted);
   color: var(--forest-panel);
   font: inherit;
@@ -133,7 +133,7 @@
 .directory-filter-count {
   min-width: 24px;
   padding: 2px 7px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--paper);
   color: var(--sand-600);
   font-weight: 800;
@@ -206,20 +206,20 @@
   padding: 0;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background: var(--surface-muted);
-  box-shadow: 0 8px 26px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-md);
 }
 .species-card:hover {
   transform: translateY(-6px);
   border-color: color-mix(in srgb, var(--bark) 20%, transparent);
-  box-shadow: 0 20px 46px color-mix(in srgb, var(--bark-800) 15%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 .species-card-illustration,
 .species-card-illustration.has-photo {
   height: 226px;
   padding: 0;
-  border-radius: 19px 19px 0 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 .species-card-illustration::before {
   display: none;
@@ -309,7 +309,7 @@
   margin: auto 0 0;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
-  border-radius: 11px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--bark) 10%, transparent);
 }
 .species-card-facts div {
@@ -365,7 +365,7 @@
   gap: 3px;
   padding: 3px 2px 4px;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 .card-season-month.is-current {
   border-color: color-mix(in srgb, var(--gold) 50%, transparent);
@@ -393,7 +393,7 @@
   height: 4px;
   display: block;
   align-self: end;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--data-sand-150);
 }
 .card-season-level.possible {
@@ -516,7 +516,7 @@
   min-height: 30px;
   padding: 3px 8px 3px 10px;
   border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
   color: var(--ink);
   font-size: var(--text-xs);
@@ -545,7 +545,7 @@
   margin-top: 24px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--bark) 10%, transparent);
 }
 .species-hero-facts div {
@@ -588,9 +588,9 @@
   min-height: 410px;
   overflow: hidden;
   border: 0;
-  border-radius: 22px;
+  border-radius: var(--radius-lg);
   background: var(--grey-850);
-  box-shadow: 0 24px 54px color-mix(in srgb, var(--bark-800) 20%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 .species-gallery {
   position: absolute;
@@ -640,7 +640,7 @@
   gap: 7px;
   padding: 0 12px;
   border: 1px solid color-mix(in srgb, var(--white) 20%, transparent);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--grey-850) 70%, transparent);
   color: var(--surface-warm);
   font-size: var(--text-xs);
@@ -695,7 +695,7 @@
   z-index: 2;
   min-width: 0;
   padding: 9px 13px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--grey-850) 70%, transparent);
   pointer-events: none;
 }
@@ -743,7 +743,7 @@
   min-width: 72px;
   overflow: hidden;
   border: 2px solid transparent;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   background: var(--black);
   opacity: 0.58;
   cursor: pointer;

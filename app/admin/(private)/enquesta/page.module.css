@@ -1,6 +1,6 @@
 .results { display: grid; gap: 40px; }
 .section { display: grid; gap: 20px; }
-.tableFrame { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.tableFrame { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
 .tableFrame table { width: 100%; border-collapse: collapse; text-align: left; font-size: var(--text-sm); }
 .tableFrame th, .tableFrame td { padding: 12px 16px; border-bottom: 1px solid var(--line); }
 .tableFrame thead { background: var(--surface-warm); }

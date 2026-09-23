@@ -14,7 +14,7 @@
   background: var(--ink);
   color: var(--on-dark);
   font-size: var(--text-base);
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--forest-900) 30%, transparent);
+  box-shadow: var(--shadow-md);
 }
 .update-banner button {
   min-height: 34px;
@@ -36,7 +36,7 @@
   margin: 0 0 32px;
   padding: 21px 24px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface-warm);
 }
 .offline-note svg { flex: 0 0 auto; color: var(--clay); }

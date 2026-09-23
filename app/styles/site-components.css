@@ -56,7 +56,7 @@
   height: 99px;
   top: 87px;
   left: 67px;
-  border-radius: 20px 20px 8px 8px;
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-sm);
 }
 .drawing-lines {
   position: absolute;
@@ -67,8 +67,7 @@
   top: -42px;
   left: -20px;
   box-shadow:
-    0 0 0 18px transparent,
-    0 0 0 19px color-mix(in srgb, var(--paper) 15%, transparent);
+    0 0 0 18px transparent, 0 0 0 19px color-mix(in srgb, var(--paper) 15%, transparent);
 }
 .warning-callout {
   display: grid;
@@ -271,8 +270,7 @@
   color: var(--bark);
   outline: none;
   box-shadow:
-    0 18px 42px color-mix(in srgb, var(--bark) 20%, transparent),
-    0 2px 5px color-mix(in srgb, var(--ink) 10%, transparent);
+    var(--shadow-lg), var(--shadow-sm);
   transform-origin: var(--transform-origin);
   transition:
     opacity 120ms ease,
@@ -411,7 +409,7 @@
   min-width: 0;
   padding: 4px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--paper) 50%, transparent);
   box-shadow: inset 0 1px 2px color-mix(in srgb, var(--bark) 5%, transparent);
 }
@@ -441,7 +439,7 @@
   gap: 7px;
   padding: 9px 12px;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   color: var(--sand-600);
   font-size: var(--text-xs);
   font-weight: 800;
@@ -463,7 +461,7 @@
   border-color: color-mix(in srgb, var(--gold) 30%, transparent);
   background: var(--warning-surface);
   color: var(--bark);
-  box-shadow: 0 3px 9px color-mix(in srgb, var(--bark) 15%, transparent);
+  box-shadow: var(--shadow-sm);
   transform: translateY(-1px);
 }
 .map-mode-option input:checked + span svg {
@@ -489,9 +487,9 @@
   align-items: center;
   padding: 30px 34px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface) 50%, transparent);
-  box-shadow: 0 14px 38px color-mix(in srgb, var(--bark) 10%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 .map-reading-heading {
   display: flex;
@@ -605,7 +603,7 @@
   gap: 9px;
   padding: 9px 13px;
   border: 1px solid var(--line);
-  border-radius: 11px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface) 50%, transparent);
   font-size: var(--text-base);
   counter-increment: species-rank;
@@ -622,7 +620,7 @@
   flex: 0 0 auto;
   width: 12px;
   height: 12px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
 }
 .map-global-species-list a {

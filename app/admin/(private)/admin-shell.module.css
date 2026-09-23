@@ -15,9 +15,9 @@
   align-items: center;
   padding: 8px;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--surface-warm) 80%, transparent);
-  box-shadow: 0 12px 32px color-mix(in srgb, var(--bark-800) 5%, transparent);
+  box-shadow: var(--shadow-md);
 }
 
 .adminLinks {
@@ -42,7 +42,7 @@
   min-height: 42px;
   padding: 8px 11px;
   border: 1px solid transparent;
-  border-radius: 13px;
+  border-radius: var(--radius-md);
   background: transparent;
   color: var(--muted);
   font: inherit;

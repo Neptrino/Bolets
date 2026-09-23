@@ -233,7 +233,7 @@
   }
   .map-reading-guide {
     padding: 24px 20px;
-    border-radius: 13px;
+    border-radius: var(--radius-md);
   }
   .map-reading-heading h2 {
     font-size: var(--text-2xl);

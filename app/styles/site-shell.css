@@ -358,7 +358,7 @@ h3 {
   border-color: color-mix(in srgb, var(--paper) 30%, transparent);
   background: var(--apricot);
   color: var(--ink);
-  box-shadow: 0 12px 30px color-mix(in srgb, var(--black) 20%, transparent);
+  box-shadow: var(--shadow-md);
 }
 .hero-actions .hero-guide-button:hover {
   background: var(--apricot);
@@ -600,7 +600,7 @@ h3 {
   min-height: 50px;
   padding: 0 14px;
   border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
-  border-radius: 13px;
+  border-radius: var(--radius-md);
   background: var(--surface-muted);
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
