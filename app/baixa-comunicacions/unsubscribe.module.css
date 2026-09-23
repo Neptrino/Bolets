@@ -1,12 +1,12 @@
 .shell {
   display: grid;
-  gap: 26px;
+  gap: 28px;
   max-width: 820px;
 }
 
 .panel,
 .error {
-  padding: 22px;
+  padding: 24px;
 }
 
 .panel p {
@@ -18,7 +18,7 @@
 
 .panel button {
   min-height: 44px;
-  padding: 9px 16px;
+  padding: 8px 16px;
   border: 0;
   border-radius: var(--radius-pill);
   background: var(--forest-panel);

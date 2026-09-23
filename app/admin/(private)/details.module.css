@@ -29,10 +29,10 @@
 .overviewLine {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 18px;
+  gap: 12px 20px;
   align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   color: var(--muted);
   font-size: var(--text-xs);
 }
@@ -46,13 +46,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 18px;
-  padding: 14px;
+  margin-bottom: 20px;
+  padding: 16px;
   background: var(--surface-muted);
 }
 
 .filterBar a {
-  padding: 7px 12px;
+  padding: 8px 12px;
 }
 
 .filterBar a[aria-current="page"] {
@@ -63,7 +63,7 @@
 
 .detailList {
   display: grid;
-  gap: 11px;
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -72,8 +72,8 @@
 .detailCard {
   display: grid;
   grid-template-columns: minmax(220px, 1.2fr) minmax(0, 2fr);
-  gap: 22px;
-  padding: 19px 20px;
+  gap: 24px;
+  padding: 20px 20px;
   border-left: 5px solid var(--detail-green);
   box-shadow: var(--shadow-md);
 }
@@ -104,7 +104,7 @@
 }
 
 .identity small {
-  margin-top: 6px;
+  margin-top: 8px;
   color: var(--muted);
   font-size: var(--text-xs);
 }
@@ -112,7 +112,7 @@
 .badgeRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   margin-top: 12px;
 }
 
@@ -149,14 +149,14 @@
 
 .adminTable th,
 .adminTable td {
-  padding: 10px 12px;
+  padding: 12px 12px;
   border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: middle;
 }
 
 .adminTable thead th {
-  padding-block: 9px;
+  padding-block: 8px;
   background: var(--surface-muted);
   color: var(--muted);
   font-size: var(--text-xs);
@@ -203,7 +203,7 @@
 }
 
 .tableMeta {
-  margin-top: 3px;
+  margin-top: 4px;
   line-height: 1.2;
 }
 
@@ -212,7 +212,7 @@
 }
 
 .adminTable .badge {
-  padding: 3px 7px;
+  padding: 4px 8px;
 }
 
 .findingsTable tbody tr > :first-child {
@@ -266,13 +266,13 @@
 
 .reportBody {
   display: grid;
-  gap: 18px;
+  gap: 20px;
   align-content: center;
 }
 
 .reportBody > p {
   margin: 0;
-  padding: 13px 15px;
+  padding: 12px 16px;
   border-left: 3px solid var(--detail-amber);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   background: var(--surface-muted);
@@ -282,8 +282,8 @@
 }
 
 .actionNotice {
-  margin: 0 0 18px;
-  padding: 12px 14px;
+  margin: 0 0 20px;
+  padding: 12px 16px;
   border: 1px solid color-mix(in srgb, var(--detail-green) 32%, var(--line));
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--detail-green) 9%, var(--surface));
@@ -299,7 +299,7 @@
 }
 
 .filterContext {
-  margin: 0 0 18px;
+  margin: 0 0 20px;
   color: var(--muted);
   font-size: var(--text-xs);
 }
@@ -311,7 +311,7 @@
 }
 
 .emptyState {
-  padding: 34px;
+  padding: 36px;
   border: 1px dashed var(--line-strong);
   border-radius: var(--radius-md);
   background: var(--surface-muted);
@@ -326,20 +326,20 @@
 }
 
 .emptyState p {
-  margin: 7px 0 0;
+  margin: 8px 0 0;
   font-size: var(--text-sm);
 }
 
 .pager {
   display: flex;
-  gap: 14px;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
-  margin-top: 22px;
+  margin-top: 24px;
 }
 
 .pager a {
-  padding: 8px 14px;
+  padding: 8px 16px;
   color: var(--clay);
 }
 
@@ -352,12 +352,12 @@
 .metricGrid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
-  margin: 0 0 34px;
+  gap: 12px;
+  margin: 0 0 36px;
 }
 
 .metricGrid > div {
-  padding: 18px;
+  padding: 20px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface);
@@ -370,7 +370,7 @@
 }
 
 .metricGrid dd {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   color: var(--ink);
   font-size: var(--text-xl);
   font-weight: 900;
@@ -392,8 +392,8 @@
 }
 
 @media (max-width: 560px) {
-  .detailNav { margin-top: -18px; }
-  .detailCard { padding: 17px; }
+  .detailNav { margin-top: -20px; }
+  .detailCard { padding: 16px; }
   .facts { grid-template-columns: 1fr; }
   .metricGrid { grid-template-columns: 1fr; }
   .pager { align-items: stretch; flex-direction: column; }

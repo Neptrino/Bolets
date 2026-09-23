@@ -1,6 +1,6 @@
 .trigger {
   min-height: 30px;
-  padding: 4px 9px;
+  padding: 4px 8px;
   border: 1px solid var(--forest-panel);
   border-radius: var(--radius-pill);
   font: inherit;
@@ -43,24 +43,24 @@
 
 .form fieldset {
   display: grid;
-  gap: 13px;
+  gap: 12px;
   margin: 0;
-  padding: 17px;
+  padding: 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface-muted);
 }
 
 .form[data-tone="danger"] fieldset { border-color: color-mix(in srgb, var(--danger-ink) 35%, var(--line)); }
-.form legend { padding: 0 6px; color: var(--ink); font-size: var(--text-sm); font-weight: 900; }
-.form legend svg { margin-right: 5px; vertical-align: -4px; color: var(--danger-ink); }
-.fieldGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.form label { display: grid; gap: 6px; color: var(--ink); font-size: var(--text-xs); font-weight: 850; }
+.form legend { padding: 0 8px; color: var(--ink); font-size: var(--text-sm); font-weight: 900; }
+.form legend svg { margin-right: 4px; vertical-align: -4px; color: var(--danger-ink); }
+.fieldGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.form label { display: grid; gap: 8px; color: var(--ink); font-size: var(--text-xs); font-weight: 850; }
 
 .form input {
   width: 100%;
   min-height: 44px;
-  padding: 9px 11px;
+  padding: 8px 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface);
@@ -72,7 +72,7 @@
 .form input:focus-visible { outline: 3px solid color-mix(in srgb, var(--forest-650) 15%, transparent); border-color: var(--forest-panel); }
 .form p { margin: 0; color: var(--muted); font-size: var(--text-xs); line-height: 1.45; }
 .actions { display: flex; justify-content: flex-end; }
-.actions button { min-height: 38px; padding: 8px 13px; border: 1px solid var(--forest-panel); border-radius: var(--radius-pill); background: var(--forest-panel); color: var(--on-dark); font: inherit; font-size: var(--text-xs); font-weight: 900; cursor: pointer; }
+.actions button { min-height: 38px; padding: 8px 12px; border: 1px solid var(--forest-panel); border-radius: var(--radius-pill); background: var(--forest-panel); color: var(--on-dark); font: inherit; font-size: var(--text-xs); font-weight: 900; cursor: pointer; }
 .actions button[data-tone="danger"] { border-color: var(--danger-ink); background: var(--danger-surface); color: var(--danger-ink); }
 .actions button:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; }
 .actions button:disabled { cursor: wait; opacity: .64; }

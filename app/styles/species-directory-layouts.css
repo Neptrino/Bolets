@@ -4,8 +4,8 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px 16px;
-  margin: 23px 2px 16px;
+  gap: 12px 16px;
+  margin: 24px 2px 16px;
 }
 .directory-results-bar .directory-count {
   margin: 0;
@@ -37,8 +37,8 @@
   display: flex;
   min-height: 36px;
   align-items: center;
-  gap: 6px;
-  padding: 7px 11px;
+  gap: 8px;
+  padding: 8px 12px;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   color: var(--sand-600);
@@ -85,7 +85,7 @@
 }
 .species-grid[data-layout="compact"] .species-card-content {
   gap: 4px;
-  padding: 12px 14px 14px;
+  padding: 12px 16px 16px;
 }
 .species-grid[data-layout="compact"] .species-card h3 {
   font-size: var(--text-lg);
@@ -100,7 +100,7 @@
 /* List: one row per species with a thumbnail and the key facts. */
 .species-grid[data-layout="list"] {
   grid-template-columns: minmax(0, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 .species-grid[data-layout="list"] .species-card {
   min-height: 0;
@@ -134,7 +134,7 @@
     "description season";
   align-content: center;
   gap: 4px 28px;
-  padding: 14px 20px;
+  padding: 16px 20px;
 }
 .species-grid[data-layout="list"] .species-card-genus { grid-area: genus; }
 .species-grid[data-layout="list"] .species-card-heading { grid-area: heading; }
@@ -177,7 +177,7 @@
       "genus"
       "heading"
       "description";
-    padding: 12px 14px;
+    padding: 12px 16px;
   }
   .species-grid[data-layout="list"] :is(.species-card-facts, .card-season) {
     display: none;

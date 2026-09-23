@@ -40,7 +40,7 @@
   display: grid;
   min-width: 240px;
   justify-items: center;
-  padding: 23px 30px 20px;
+  padding: 24px 32px 20px;
   border: 1px solid color-mix(in srgb, var(--warning-surface) 60%, transparent);
   border-radius: var(--radius-lg);
   color: var(--paper);
@@ -55,7 +55,7 @@
   width: 54px;
   height: 54px;
   place-items: center;
-  margin-top: -49px;
+  margin-top: -48px;
   border: 5px solid var(--forest-panel);
   border-radius: 50%;
   color: var(--forest-panel);
@@ -63,9 +63,9 @@
   box-shadow: 0 0 0 6px color-mix(in srgb, var(--amber-150) 15%, transparent);
 }
 
-.mushroom-game-correct-emblem strong { margin-top: 10px; font-size: var(--text-2xl); line-height: 1; letter-spacing: -0.03em; }
-.mushroom-game-correct-emblem small { margin-top: 6px; color: var(--forest-100); font-size: var(--text-xs); font-weight: 800; }
-.mushroom-game-correct-emblem b { margin-top: 13px; color: var(--amber-150); font-size: var(--text-xl); line-height: 1; }
+.mushroom-game-correct-emblem strong { margin-top: 12px; font-size: var(--text-2xl); line-height: 1; letter-spacing: -0.03em; }
+.mushroom-game-correct-emblem small { margin-top: 8px; color: var(--forest-100); font-size: var(--text-xs); font-weight: 800; }
+.mushroom-game-correct-emblem b { margin-top: 12px; color: var(--amber-150); font-size: var(--text-xl); line-height: 1; }
 
 .mushroom-game-complete {
   border-color: color-mix(in srgb, var(--amber-150) 40%, transparent);

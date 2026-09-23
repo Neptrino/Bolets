@@ -6,7 +6,7 @@
 .season-calendar .season-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 14px;
+  gap: 8px 16px;
 }
 .season-calendar .season-legend .card-season-level {
   width: 16px;

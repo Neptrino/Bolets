@@ -17,19 +17,19 @@
   font-size: var(--display-md);
 }
 .conditions-panel-expanded .suitability-score span {
-  margin-top: 5px;
+  margin-top: 4px;
   font-size: var(--text-base);
 }
 .conditions-panel-expanded .data-note {
-  margin-top: 18px;
+  margin-top: 20px;
   padding: 12px 0;
   font-size: var(--text-base);
   line-height: 1.55;
 }
 .conditions-panel-expanded .condition-window-note {
   gap: 12px;
-  margin-top: 22px;
-  padding: 15px 17px;
+  margin-top: 24px;
+  padding: 16px 16px;
   font-size: var(--text-base);
   line-height: 1.6;
 }
@@ -38,15 +38,15 @@
   height: 18px;
 }
 .conditions-panel-expanded .condition-list {
-  margin-top: 14px;
+  margin-top: 16px;
 }
 .conditions-panel-expanded .condition-list article {
   min-height: 205px;
-  padding: 21px;
+  padding: 20px;
 }
 .conditions-panel-expanded .condition-list article > .condition-card-heading {
-  gap: 9px;
-  margin-bottom: 17px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 .conditions-panel-expanded .condition-card-heading svg {
   width: 21px;
@@ -59,7 +59,7 @@
   font-size: var(--text-3xl);
 }
 .conditions-panel-expanded .condition-stats div {
-  padding: 11px 8px;
+  padding: 12px 8px;
 }
 .conditions-panel-expanded .condition-stats dt {
   font-size: var(--text-base);
@@ -78,7 +78,7 @@
   font-size: var(--text-base);
 }
 .conditions-panel-expanded .factor-chart-explanation {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
   font-size: var(--text-base);
 }
 .conditions-panel-expanded .factor-bar-label {
@@ -103,7 +103,7 @@
   }
   .factor-bars li {
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 7px 12px;
+    gap: 8px 12px;
     min-height: 30px;
   }
   .factor-bar-reading {
@@ -130,7 +130,7 @@
   .conditions-heading.score-withheld .suitability-score {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     max-width: none;
     text-align: left;
   }
@@ -162,7 +162,7 @@
 @media (max-width: 900px) {
   .similar-list article {
     grid-template-columns: 1fr;
-    gap: 7px;
+    gap: 8px;
   }
   .condition-list article,
   .condition-list article:nth-child(-n + 2) {
@@ -173,7 +173,7 @@
   }
   .map-reading-guide {
     grid-template-columns: 1fr;
-    gap: 22px;
+    gap: 24px;
     padding: 28px;
   }
   .map-reading-copy {
@@ -189,7 +189,7 @@
 
 @media (max-width: 680px) {
   .season-calendar {
-    padding: 18px 12px;
+    padding: 20px 12px;
   }
   .factor-bar-label,
   .conditions-panel-expanded .factor-bar-label {
@@ -207,13 +207,13 @@
   }
   .unavailable-factor-list div {
     grid-template-columns: 1fr;
-    gap: 3px;
+    gap: 4px;
   }
   .unavailable-factor-list dd {
     text-align: left;
   }
   .conditions-panel-expanded {
-    padding: 22px 18px;
+    padding: 24px 20px;
   }
   .conditions-panel-expanded .conditions-heading {
     align-items: flex-start;
@@ -229,7 +229,7 @@
   }
   .conditions-panel-expanded .condition-list article {
     min-height: 0;
-    padding: 18px;
+    padding: 20px;
   }
   .map-reading-guide {
     padding: 24px 20px;
@@ -294,7 +294,7 @@
   .site-footer-links {
     grid-template-columns: repeat(3, max-content);
     justify-content: start;
-    padding-top: 18px;
+    padding-top: 20px;
     border-top: 1px solid color-mix(in srgb, var(--on-dark) 15%, transparent);
   }
   .hero::after {
@@ -322,7 +322,7 @@
 @media (max-width: 680px) {
   .site-header {
     height: 64px;
-    gap: 13px;
+    gap: 12px;
   }
   .primary-nav,
   .header-map-link {
@@ -334,20 +334,20 @@
   }
   .site-footer-inner {
     grid-template-columns: minmax(0, 1fr);
-    gap: 22px;
+    gap: 24px;
     min-height: 0;
-    padding: 30px 0 34px;
+    padding: 32px 0 36px;
   }
   .site-footer-links {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-content: start;
-    row-gap: 26px;
-    padding-top: 18px;
+    row-gap: 28px;
+    padding-top: 20px;
     border-top: 1px solid color-mix(in srgb, var(--on-dark) 15%, transparent);
   }
   .hero {
     min-height: 650px;
-    padding-top: 75px;
+    padding-top: 76px;
   }
   .hero::after {
     background: color-mix(in srgb, var(--forest-900) 75%, transparent);
@@ -364,10 +364,10 @@
   .hero-actions {
     display: grid;
     justify-items: start;
-    gap: 15px;
+    gap: 16px;
   }
   .home-intro {
-    padding: 75px 0;
+    padding: 76px 0;
     grid-template-columns: 1fr;
     gap: 24px;
   }
@@ -394,7 +394,7 @@
     min-height: 160px;
   }
   .specimen-panel p {
-    margin-top: 87px;
+    margin-top: 88px;
   }
   .specimen-drawing {
     transform: scale(0.75);
@@ -405,7 +405,7 @@
     gap: 8px;
   }
   .season-grid {
-    gap: 3px;
+    gap: 4px;
   }
   .season-month span {
     font-size: var(--text-xs);
@@ -429,7 +429,7 @@
 @media (max-width: 380px) {
   .conditions-panel-expanded .conditions-heading {
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
   }
   .conditions-panel-expanded .suitability-score {
     justify-items: start;
@@ -438,7 +438,7 @@
   .site-footer-links {
     width: 100%;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 18px;
+    column-gap: 20px;
   }
   .site-footer-links a {
     min-width: 0;

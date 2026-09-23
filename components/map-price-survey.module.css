@@ -18,7 +18,7 @@
 .offer li {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin: 0;
   font-size: var(--text-base);
   font-weight: 700;
@@ -45,7 +45,7 @@
 .answers button {
   grid-column: span 2;
   min-height: 56px;
-  padding: 14px;
+  padding: 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface-warm);

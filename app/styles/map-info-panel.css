@@ -10,8 +10,8 @@ body:has(.map-page) .site-footer {
   width: auto;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  padding: 7px 11px;
+  gap: 8px;
+  padding: 8px 12px;
   border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
   border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--surface) 70%, transparent);
@@ -53,7 +53,7 @@ body:has(.map-page) .site-footer {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 10px 12px 10px 18px;
+  padding: 12px 12px 12px 20px;
   border-bottom: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
 }
 .map-info-panel > header div {
@@ -102,7 +102,7 @@ body:has(.map-page) .site-footer {
     "copy"
     "link";
   grid-template-columns: minmax(0, 1fr);
-  gap: 18px;
+  gap: 20px;
   padding: 0 0 20px;
   border: 0;
   border-bottom: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
@@ -120,7 +120,7 @@ body:has(.map-page) .site-footer {
 .map-info-panel .map-reading-guide-prediction .map-reading-copy {
   grid-area: copy;
   grid-template-columns: minmax(0, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 .map-info-panel .map-reading-copy p {
   font-size: var(--text-sm);
@@ -165,7 +165,7 @@ body:has(.map-page) .site-footer {
   .map-info-panel-content {
     grid-template-columns: minmax(0, 1fr);
     gap: 20px;
-    padding: 18px;
+    padding: 20px;
   }
   .map-info-panel .map-reading-guide,
   .map-info-panel .map-reading-guide-prediction,
@@ -189,6 +189,6 @@ body:has(.map-page) .site-footer {
     border-radius: var(--radius-md) var(--radius-md) 0 0;
   }
   .map-info-panel-content {
-    padding: 16px 14px;
+    padding: 16px 16px;
   }
 }

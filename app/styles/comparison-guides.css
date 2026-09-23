@@ -3,8 +3,8 @@
    the visual hierarchy. */
 .comparison-field-checks {
   display: grid;
-  gap: 14px;
-  margin: 1.4rem 0 0;
+  gap: 16px;
+  margin: 1.5rem 0 0;
   padding: 0;
   list-style: none;
   counter-reset: field-check;
@@ -12,7 +12,7 @@
 .comparison-field-checks > li {
   counter-increment: field-check;
   position: relative;
-  padding: 17px 21px 17px 62px;
+  padding: 16px 20px 16px 64px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
@@ -55,7 +55,7 @@
 .comparison-facts-table > header > *,
 .comparison-facts-table > div > * {
   margin: 0;
-  padding: 17px 19px;
+  padding: 16px 20px;
   border-right: 1px solid var(--line);
 }
 .comparison-facts-table > header > * {
@@ -85,7 +85,7 @@
   grid-template-columns: 1fr auto 1fr;
   gap: 20px;
   align-items: center;
-  margin: 29px 0 50px;
+  margin: 28px 0 52px;
 }
 .comparison-actions > :last-child {
   justify-self: end;
@@ -96,17 +96,17 @@
 .comparison-guides {
   display: grid;
   grid-template-columns: minmax(220px, 0.6fr) minmax(0, 1.4fr);
-  gap: 50px;
-  margin-top: 70px;
-  padding-top: 35px;
+  gap: 52px;
+  margin-top: 72px;
+  padding-top: 36px;
   border-top: 1px solid var(--line);
 }
 .comparison-guides h2 {
-  margin: 5px 0 0;
+  margin: 4px 0 0;
   font-size: var(--text-3xl);
 }
 .comparison-guides-intro > p:last-child {
-  margin: 14px 0 0;
+  margin: 16px 0 0;
   color: var(--muted);
   font-size: var(--text-base);
   line-height: 1.55;
@@ -139,7 +139,7 @@
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 20px;
-  padding: 17px 4px;
+  padding: 16px 4px;
   border-bottom: 1px solid var(--line);
   color: var(--ink);
   font-weight: 850;
@@ -149,7 +149,7 @@
   min-width: 0;
 }
 .comparison-risk-label {
-  padding: 4px 7px;
+  padding: 4px 8px;
   border: 1px solid color-mix(in srgb, var(--danger-ink) 20%, transparent);
   border-radius: var(--radius-pill);
   color: var(--clay);
@@ -176,16 +176,16 @@
     border-right: 0;
   }
   .comparison-facts-table > div > span {
-    padding-bottom: 5px;
+    padding-bottom: 4px;
   }
   .comparison-facts-table > div > p {
-    padding-top: 7px;
-    padding-bottom: 13px;
+    padding-top: 8px;
+    padding-bottom: 12px;
   }
   .comparison-facts-table > div > p:first-of-type::before,
   .comparison-facts-table > div > p:last-child::before {
     display: block;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
     color: var(--ink);
     font-size: var(--text-xs);
     font-weight: 900;
@@ -210,14 +210,14 @@
   }
   .comparison-guide-groups {
     grid-template-columns: 1fr;
-    gap: 26px;
+    gap: 28px;
   }
 }
 
 @media (max-width: 500px) {
   .comparison-guide-list > a {
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 9px 14px;
+    gap: 8px 16px;
   }
   .comparison-guide-list > a > span {
     grid-column: 1;

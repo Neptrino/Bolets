@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   findGradients,
   findHardcodedColours,
+  findOffGridSpacing,
   findUntokenisedRadii,
   findUntokenisedShadows,
 } from "@/scripts/css-design-rules.mjs";
@@ -65,6 +66,11 @@ describe("shared styles", () => {
     // Use --radius-* for corners and --shadow-* for elevation.
     expect(findUntokenisedRadii()).toEqual([]);
     expect(findUntokenisedShadows()).toEqual([]);
+  });
+
+  it("keeps spacing on the 4px grid", () => {
+    // Use multiples of 4px (0.25rem) for gap, padding and margin.
+    expect(findOffGridSpacing()).toEqual([]);
   });
 
   it("keeps the species profile on shared palette tokens", () => {

@@ -4,10 +4,10 @@
   grid-template-columns: minmax(210px, 0.56fr) minmax(0, 1.44fr);
   gap: 28px;
   align-items: start;
-  padding-top: 23px;
+  padding-top: 24px;
   border-top: 1px solid var(--line);
 }
-.local-resource-shelf > header .eyebrow { margin-bottom: 5px; }
+.local-resource-shelf > header .eyebrow { margin-bottom: 4px; }
 .local-resource-shelf > header h3 {
   margin: 0;
   color: var(--forest-panel);
@@ -25,7 +25,7 @@
 .local-resource-shelf ul {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -35,10 +35,10 @@
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 7px 10px;
+  gap: 8px 12px;
   align-content: start;
   min-height: 100%;
-  padding: 15px 16px 17px;
+  padding: 16px 16px 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface);
@@ -95,39 +95,39 @@
   padding-top: var(--place-section-gap);
 }
 .local-related-guides > header h2 {
-  margin: 5px 0 25px;
+  margin: 4px 0 24px;
   color: var(--forest-panel);
   font-size: var(--text-3xl);
 }
 .local-related-guides > header .eyebrow {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 .local-related-guides > div {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 20px;
 }
 .local-related-guides > div > section {
-  padding: 25px;
+  padding: 24px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface);
 }
 .local-related-guides h3 {
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   color: var(--forest-panel);
   font-size: var(--text-lg);
 }
-.local-related-guides ul { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.local-related-guides ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .local-related-guides a {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
   min-height: 44px;
-  padding: 8px 10px;
+  padding: 8px 12px;
   border-radius: var(--radius-sm);
   color: var(--bark);
   font-size: var(--text-base);
@@ -144,8 +144,8 @@
 }
 .species-local-guides {
   display: grid;
-  gap: 14px;
-  margin-top: 18px;
+  gap: 16px;
+  margin-top: 20px;
   padding: 16px;
   border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   border-radius: var(--radius-md);
@@ -155,14 +155,14 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 18px;
+  gap: 20px;
 }
 .species-local-guides .species-local-guides-heading .eyebrow {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 6px;
-  margin: 0 0 10px;
+  gap: 8px;
+  margin: 0 0 12px;
   font-size: var(--text-xs);
 }
 .species-local-guides h3 {
@@ -174,14 +174,14 @@
 .species-local-guide-links {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
+  gap: 8px;
 }
 .species-local-guide-links a {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   min-width: 0;
-  padding: 9px 11px;
+  padding: 8px 12px;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
@@ -231,14 +231,14 @@
     grid-template-columns: 1fr;
   }
   .location-hub-copy { padding-bottom: 0; }
-  .location-hub-copy .location-back { margin-bottom: 50px; }
+  .location-hub-copy .location-back { margin-bottom: 52px; }
   .location-area-grid { grid-template-columns: 1fr; }
-  .local-resource-shelf { grid-template-columns: 1fr; gap: 14px; }
+  .local-resource-shelf { grid-template-columns: 1fr; gap: 16px; }
   .local-resource-shelf > header > p:last-child { max-width: none; }
 }
 @media (max-width: 680px) {
   .species-local-guides {
-    gap: 11px;
+    gap: 12px;
     padding: 12px;
   }
   .species-local-guides-heading {
@@ -260,13 +260,13 @@
   .location-hub-copy > p:last-child { font-size: var(--text-base); }
   .location-hub-facts { grid-template-columns: 1fr; }
   .location-hub-facts > div + div { border-top: 1px solid var(--line); border-left: 0; }
-  .location-guide-gallery { padding: 58px 0; }
+  .location-guide-gallery { padding: 60px 0; }
   .location-guide-gallery > header { gap: 16px; }
   .location-guide-card { min-height: 0; }
   .location-guide-card-media { min-height: 260px; }
-  .location-guide-card-copy { padding: 26px 24px; }
+  .location-guide-card-copy { padding: 28px 24px; }
   .location-guide-card-copy > p { font-size: var(--text-base); }
-  .local-species-breadcrumbs { margin-bottom: 38px; }
+  .local-species-breadcrumbs { margin-bottom: 40px; }
   .local-species-summary > div + div { border-top: 1px solid var(--line); border-left: 0; }
   .local-resource-shelf ul { grid-template-columns: 1fr; }
   .local-related-guides > div { grid-template-columns: 1fr; }

@@ -47,7 +47,7 @@
   display: flex;
   flex: 0 0 auto;
   align-items: center;
-  padding-bottom: 5px;
+  padding-bottom: 4px;
 }
 
 .pageHeader .eyebrow {
@@ -70,22 +70,22 @@
 }
 
 .pageDescription {
-  margin: 18px 0 0;
+  margin: 20px 0 0;
   color: var(--muted);
   font-size: var(--text-base);
   line-height: 1.7;
 }
 
 .split .pageDescription {
-  margin: 0 0 5px;
+  margin: 0 0 4px;
 }
 
 .sectionHeader {
   display: flex;
   justify-content: space-between;
-  gap: 25px;
+  gap: 24px;
   align-items: end;
-  margin-bottom: 19px;
+  margin-bottom: 20px;
 }
 
 .sectionHeading {
@@ -99,14 +99,14 @@
 }
 
 .sectionTitle {
-  margin: 5px 0 0;
+  margin: 4px 0 0;
   font-size: var(--display-sm);
   line-height: 1.05;
   letter-spacing: -0.025em;
 }
 
 .sectionDescription {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
   color: var(--muted);
   font-size: var(--text-base);
   line-height: 1.65;
@@ -123,7 +123,7 @@
 }
 
 .compact .sectionDescription {
-  margin-top: 7px;
+  margin-top: 8px;
   font-size: var(--text-sm);
   line-height: 1.5;
 }
@@ -138,13 +138,13 @@
 @media (max-width: 900px) {
   .split {
     grid-template-columns: 1fr;
-    gap: 22px;
+    gap: 24px;
   }
 }
 
 @media (max-width: 680px) {
   .pageShell {
-    padding-top: 42px;
+    padding-top: 44px;
     padding-bottom: 80px;
   }
 
@@ -154,7 +154,7 @@
 
   .pageTitleRow {
     display: grid;
-    gap: 18px;
+    gap: 20px;
     justify-items: start;
   }
 
@@ -169,7 +169,7 @@
   .sectionHeader {
     display: grid;
     align-items: start;
-    gap: 13px;
+    gap: 12px;
   }
 
   .sectionActions {

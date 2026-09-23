@@ -1,28 +1,28 @@
 /* Compact species guide: keep field essentials visible and progressively
    disclose the denser ecological and prediction reference material. */
 .content-subsection {
-  margin-top: 22px;
-  padding-top: 19px;
+  margin-top: 24px;
+  padding-top: 20px;
   border-top: 1px solid var(--line);
 }
 .content-subsection .subsection-title {
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   font-size: var(--text-2xl);
   line-height: 1.08;
 }
 .ecology-section .season-calendar {
   margin-top: 12px;
-  padding: 12px 14px;
+  padding: 12px 16px;
   border: 1px solid color-mix(in srgb, var(--sand-550) 15%, transparent);
   border-radius: var(--radius-md);
   background: var(--paper);
   box-shadow: var(--shadow-md);
 }
 .ecology-section .season-calendar-label {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .ecology-section .season-legend {
-  margin-top: 7px;
+  margin-top: 8px;
 }
 .ecology-section .season-level {
   height: 25px;
@@ -33,28 +33,28 @@
 .compact-species-page .distribution-section .habitat-map-legend,
 .local-species-page .region-map-habitat .habitat-map-legend {
   grid-template-columns: minmax(230px, 0.85fr) minmax(0, 1.65fr);
-  gap: 8px 14px;
-  padding: 11px 13px;
+  gap: 8px 16px;
+  padding: 12px 12px;
 }
 .compact-species-page .distribution-section .habitat-map-legend-heading,
 .local-species-page .region-map-habitat .habitat-map-legend-heading {
-  padding-right: 14px;
+  padding-right: 16px;
   border-right: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
 }
 .compact-species-page .distribution-section .habitat-map-legend-items,
 .local-species-page .region-map-habitat .habitat-map-legend-items {
-  gap: 10px;
+  gap: 12px;
   padding-top: 0;
   border-top: 0;
 }
 .compact-species-page .distribution-section .habitat-map-legend-item,
 .local-species-page .region-map-habitat .habitat-map-legend-item {
   grid-template-columns: 22px minmax(0, 1fr);
-  gap: 7px;
+  gap: 8px;
 }
 .compact-species-page .distribution-section .habitat-map-legend-item + .habitat-map-legend-item,
 .local-species-page .region-map-habitat .habitat-map-legend-item + .habitat-map-legend-item {
-  padding-left: 10px;
+  padding-left: 12px;
 }
 .compact-species-page .distribution-section .habitat-map-legend-item > i,
 .local-species-page .region-map-habitat .habitat-map-legend-item > i {
@@ -64,14 +64,14 @@
 .compact-species-page .distribution-section .habitat-map-legend-note,
 .local-species-page .region-map-habitat .habitat-map-legend-note {
   grid-column: 1 / -1;
-  padding-top: 7px;
+  padding-top: 8px;
 }
 .compact-species-page .distribution-section .region-pill-row {
-  gap: 6px;
+  gap: 8px;
   padding-top: 12px;
 }
 .compact-species-page .distribution-section .region-pill-row span {
-  padding: 6px 9px;
+  padding: 8px 8px;
   font-size: var(--text-xs);
 }
 @media (max-width: 900px) {

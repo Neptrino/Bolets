@@ -7,7 +7,7 @@
 @media (max-width: 680px) {
   .compact-species-page .species-content {
     display: block;
-    padding-bottom: 50px;
+    padding-bottom: 52px;
   }
   .compact-species-page .species-aside {
     display: none;
@@ -18,42 +18,42 @@
     align-items: center;
   }
   .content-subsection {
-    margin-top: 17px;
-    padding-top: 15px;
+    margin-top: 16px;
+    padding-top: 16px;
   }
   .content-subsection .subsection-title {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-size: var(--text-xl);
   }
   .ecology-section .season-calendar {
-    padding: 10px 8px;
+    padding: 12px 8px;
   }
   .ecology-section .season-calendar-label {
-    margin-bottom: 7px;
+    margin-bottom: 8px;
   }
   .ecology-section .season-level {
     height: 21px;
   }
   .ecology-section .season-legend {
-    margin-top: 5px;
+    margin-top: 4px;
   }
   .compact-species-page .habitat-map-link {
-    padding: 8px 10px;
+    padding: 8px 12px;
   }
   .compact-species-page .distribution-section .region-map-habitat .region-map-viewport {
     height: 340px;
   }
   .compact-species-page .distribution-section .habitat-map-legend {
-    padding: 10px;
+    padding: 12px;
   }
   .compact-species-page .distribution-section .habitat-map-legend-items {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 7px;
-    padding-top: 7px;
+    gap: 8px;
+    padding-top: 8px;
   }
   .compact-species-page .distribution-section .habitat-map-legend-item + .habitat-map-legend-item {
     padding-top: 0;
-    padding-left: 7px;
+    padding-left: 8px;
     border-top: 0;
     border-left: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   }
@@ -80,10 +80,10 @@
     height: 220px;
   }
   .compact-species-page .species-hero {
-    padding-bottom: 30px;
+    padding-bottom: 32px;
   }
   .compact-species-page .species-hero-grid {
-    gap: 26px;
+    gap: 28px;
     padding-top: 28px;
   }
   .compact-species-page .species-hero h1 {
@@ -98,7 +98,7 @@
   }
   .species-gallery-thumbnails {
     min-height: 72px;
-    padding: 9px 12px;
+    padding: 8px 12px;
   }
   .species-gallery-thumbnails button {
     width: 62px;
@@ -136,14 +136,14 @@
     display: block;
   }
   .species-lightbox-caption p {
-    margin-bottom: 5px;
+    margin-bottom: 4px;
   }
   .species-lightbox-arrow {
     width: 46px;
     height: 46px;
   }
   .compact-species-page .species-content {
-    padding-top: 34px;
+    padding-top: 36px;
   }
   .compact-species-page .content-section {
     display: block;
@@ -164,7 +164,7 @@
   }
   .compact-species-page .species-hero-facts > div {
     grid-template-columns: 16px minmax(0, 1fr);
-    column-gap: 5px;
+    column-gap: 4px;
     padding-inline: 8px;
   }
 }
@@ -186,10 +186,10 @@
     position: static;
     width: 100%;
     max-width: 100%;
-    gap: .5rem;
+    gap: 0.5rem;
     overflow-x: auto;
     margin: 0 0 1.5rem;
-    padding: .5rem 0 .75rem;
+    padding: 0.5rem 0 0.75rem;
     border: 0;
     border-radius: 0;
     box-shadow: none;
@@ -209,7 +209,7 @@
     flex: 0 0 auto;
     min-height: 44px;
     margin: 0;
-    padding: .5rem .75rem;
+    padding: 0.5rem 0.75rem;
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
     background: var(--surface);

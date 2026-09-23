@@ -17,7 +17,7 @@
 .card {
   position: relative;
   display: grid;
-  gap: 18px;
+  gap: 20px;
   padding: 28px;
   border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
   border-top: 5px solid var(--clay);
@@ -45,8 +45,8 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 14px;
-  padding-right: 34px;
+  gap: 16px;
+  padding-right: 36px;
 }
 
 .icon {
@@ -60,7 +60,7 @@
 }
 
 .eyebrow {
-  margin: 0 0 3px;
+  margin: 0 0 4px;
   color: var(--clay);
   font-size: var(--text-xs);
   font-weight: 900;
@@ -84,15 +84,15 @@
 .benefits {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .benefits span {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   min-height: 54px;
-  padding: 10px 12px;
+  padding: 12px 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface-warm);
@@ -110,7 +110,7 @@
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
 }
 
 .later,
@@ -118,7 +118,7 @@
   align-items: center;
   justify-content: center;
   min-height: 46px;
-  padding: 10px 18px;
+  padding: 12px 20px;
   border: 1px solid var(--line);
   font: inherit;
   font-size: var(--text-xs);
@@ -129,7 +129,7 @@
 
 .later { background: var(--surface); color: var(--ink); }
 .later:hover { background: var(--surface-warm); border-color: var(--forest-panel); }
-.cta { gap: 7px; border-color: var(--forest-panel); }
+.cta { gap: 8px; border-color: var(--forest-panel); }
 .cta:hover { border-color: var(--clay); background: var(--clay); }
 .close:focus-visible,
 .later:focus-visible,
@@ -138,11 +138,11 @@
 @media (max-width: 560px) {
   .dialog {
     width: calc(100% - 20px);
-    margin: auto auto 10px;
+    margin: auto auto 12px;
   }
 
-  .card { gap: 15px; padding: 22px 18px 18px; border-radius: var(--radius-md); }
-  .heading { gap: 11px; padding-right: 28px; }
+  .card { gap: 16px; padding: 24px 20px 20px; border-radius: var(--radius-md); }
+  .heading { gap: 12px; padding-right: 28px; }
   .icon { width: 44px; height: 44px; border-radius: var(--radius-md); }
   .heading h2 { font-size: var(--text-xl); }
   .benefits { grid-template-columns: 1fr; gap: 8px; }

@@ -3,7 +3,7 @@
 .species-search-summary nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   margin: 20px 0;
 }
 .guide-reading-actions a,
@@ -12,7 +12,7 @@
   align-items: center;
   gap: 8px;
   min-height: 44px;
-  padding: 10px 15px;
+  padding: 12px 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface);
@@ -45,7 +45,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px 28px;
-  padding-left: 22px;
+  padding-left: 24px;
 }
 .ceps-other-guides a { color: var(--clay); }
 .place-species-comparison { margin: 32px 0 48px; }
@@ -73,12 +73,12 @@
   position: static;
   display: grid;
   gap: 8px;
-  padding: 18px;
+  padding: 20px;
   background: var(--black);
 }
 .specimen-panel .species-photo-reading {
   margin: 0;
-  padding: 14px 18px;
+  padding: 16px 20px;
   background: var(--forest-panel);
   color: var(--on-dark);
   font-size: var(--text-base);
@@ -97,15 +97,15 @@
 .current-reading-notes-block {
   display: grid;
   align-content: start;
-  gap: 14px;
-  padding: 20px 22px;
+  gap: 16px;
+  padding: 20px 24px;
   border: 1px solid color-mix(in srgb, var(--forest-panel) 15%, transparent);
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-muted) 60%, transparent);
 }
 .current-reading-notes-block h3 {
   margin: 0;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
   border-bottom: 1px solid color-mix(in srgb, var(--forest-panel) 15%, transparent);
   color: var(--forest-panel);
   font-size: var(--text-lg);
@@ -113,7 +113,7 @@
 .current-reading-notes-block > p { color: var(--forest-panel); }
 .current-reading-highlights {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -121,7 +121,7 @@
 .current-reading-highlights li {
   display: grid;
   gap: 4px;
-  padding-left: 14px;
+  padding-left: 16px;
   border-left: 3px solid var(--forest-550);
 }
 .current-reading-highlights strong { color: var(--forest-panel); font-size: var(--text-base); }
@@ -159,7 +159,7 @@
 .poisonous-photo-pair figure { margin: 0; min-width: 0; }
 .poisonous-photo-pair figure > div { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--radius-sm); }
 .poisonous-photo-pair img { object-fit: cover; }
-.poisonous-photo-pair figcaption { display: grid; gap: 5px; margin-top: 8px; font-size: var(--text-xs); }
+.poisonous-photo-pair figcaption { display: grid; gap: 4px; margin-top: 8px; font-size: var(--text-xs); }
 .poisonous-photo-pair figcaption strong { font-size: var(--text-base); }
 .poisonous-photo-pair figcaption a { color: var(--muted); overflow-wrap: anywhere; }
 #local-current,

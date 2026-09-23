@@ -1,11 +1,11 @@
 @media (max-width: 780px) {
   .method-hero {
     min-height: 760px;
-    padding-top: 62px;
+    padding-top: 64px;
   }
   .method-hero-grid {
     grid-template-columns: 1fr;
-    gap: 45px;
+    gap: 44px;
   }
   .method-hero-copy h1 {
     font-size: var(--display-xl);
@@ -16,7 +16,7 @@
   }
   .method-hero-equation {
     max-width: 520px;
-    padding: 19px;
+    padding: 20px;
     box-shadow: 14px 14px 0 color-mix(in srgb, var(--apricot) 10%, transparent);
   }
   .method-equation-main {
@@ -33,7 +33,7 @@
   }
   .method-principle,
   .method-band {
-    padding-block: 78px;
+    padding-block: 80px;
   }
   .method-section-heading,
   .method-chapter-header,
@@ -74,8 +74,8 @@
     transform: none;
   }
   .method-chapter-header {
-    gap: 22px;
-    margin-bottom: 42px;
+    gap: 24px;
+    margin-bottom: 44px;
   }
   .method-chapter-header h2 {
     font-size: var(--display-xl);
@@ -91,7 +91,7 @@
     min-height: 210px;
   }
   .method-gates article > svg {
-    margin-bottom: 35px;
+    margin-bottom: 36px;
   }
   .method-static-formulas {
     gap: 1px;
@@ -117,12 +117,12 @@
     gap: 20px;
   }
   .method-score-equation > p {
-    padding: 18px 0 0;
+    padding: 20px 0 0;
     border-top: 1px solid color-mix(in srgb, var(--apricot) 20%, transparent);
     border-left: 0;
   }
   .method-subscore-heading {
-    gap: 14px;
+    gap: 16px;
     margin-top: 72px;
   }
   .method-subscore-rain {
@@ -132,12 +132,12 @@
     grid-template-columns: 0.45fr 0.2fr 0.15fr 0.2fr;
   }
   .method-cta .page-width {
-    gap: 35px;
+    gap: 36px;
   }
   .method-source-lanes {
     grid-template-columns: 1fr;
     gap: 8px;
-    margin-bottom: 58px;
+    margin-bottom: 60px;
   }
   .method-source-lanes span {
     white-space: normal;
@@ -185,7 +185,7 @@
     width: fit-content;
   }
   .method-equation-main {
-    gap: 11px;
+    gap: 12px;
   }
   .method-equation-main > svg {
     width: 20px;
@@ -223,7 +223,7 @@
   .method-subscore,
   .method-score-equation,
   .method-publish-card {
-    padding: 22px;
+    padding: 24px;
   }
   .method-formula {
     font-size: var(--text-lg);
@@ -232,7 +232,7 @@
   .method-occurrence-note,
   .method-resolution-note {
     grid-template-columns: 1fr;
-    padding: 22px;
+    padding: 24px;
   }
   .method-occurrence-note > strong {
     grid-column: auto;
@@ -255,7 +255,7 @@
     gap: 28px;
   }
   .method-stress > .method-formula {
-    padding: 23px;
+    padding: 24px;
   }
   .method-label-ranges {
     grid-template-columns: 1fr 1fr;
@@ -280,7 +280,7 @@
   }
   .method-source-card {
     min-height: 405px;
-    padding: 23px;
+    padding: 24px;
   }
   .method-source-card dl,
   .method-source-evidence dl {
@@ -289,8 +289,8 @@
   }
   .method-source-evidence {
     grid-template-columns: 1fr;
-    gap: 22px;
-    padding: 23px;
+    gap: 24px;
+    padding: 24px;
   }
   .method-source-evidence dl,
   .method-source-evidence > a {

@@ -5,9 +5,9 @@
 .account-nav {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 7px;
+  gap: 8px;
   margin: 0 0 36px;
-  padding: 7px;
+  padding: 8px;
   border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--surface-warm) 70%, transparent);
 }
@@ -15,10 +15,10 @@
 .account-nav a {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 2px 10px;
+  gap: 2px 12px;
   align-items: center;
   min-height: 66px;
-  padding: 11px 13px;
+  padding: 12px 12px;
   border-radius: var(--radius-md);
   color: var(--muted);
   text-decoration: none;
@@ -63,7 +63,7 @@
 
 .account-journal-layout {
   display: grid;
-  gap: 58px;
+  gap: 60px;
 }
 
 .account-contribution-layout {
@@ -116,7 +116,7 @@
 
 .account-contribution-layout .contribution-resolution-grid {
   grid-template-columns: 1fr;
-  gap: 30px;
+  gap: 32px;
 }
 
 .account-contribution-layout .contribution-resolution-arrow {
@@ -153,7 +153,7 @@
 @media (max-width: 1050px) {
   .account-contribution-layout {
     grid-template-columns: 1fr;
-    gap: 58px;
+    gap: 60px;
   }
 
   .account-contribution-layout .account-content {
@@ -179,7 +179,7 @@
 
   .account-nav a {
     min-height: 54px;
-    padding: 10px;
+    padding: 12px;
   }
 
   .account-nav small {

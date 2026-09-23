@@ -1,7 +1,7 @@
 .topics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 24px;
 }
 
@@ -50,7 +50,7 @@
 .sources {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 20px;
+  gap: 8px 20px;
   margin: 12px 0 0;
   padding: 0;
   list-style: none;

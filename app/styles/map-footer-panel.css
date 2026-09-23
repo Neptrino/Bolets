@@ -40,7 +40,7 @@
   max-width: min(720px, calc(100% - 32px));
   align-items: center;
   gap: 20px;
-  padding: 16px 18px;
+  padding: 16px 20px;
   transform: translateX(-50%);
   border: 1px solid color-mix(in srgb, var(--forest-panel) 20%, transparent);
   border-radius: var(--radius-md);
@@ -50,7 +50,7 @@
 }
 .map-detail-access-copy {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   font-size: var(--text-xs);
   line-height: 1.5;
 }
@@ -87,7 +87,7 @@
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
-    padding: 14px;
+    padding: 16px;
   }
 }
 .map-floating-card {
@@ -96,7 +96,7 @@
   width: 100%;
   grid-template-columns: minmax(300px, 0.9fr) auto minmax(280px, 1.5fr) auto;
   grid-template-rows: auto;
-  gap: 3px 18px;
+  gap: 4px 20px;
   align-items: center;
   padding: 10px max(18px, calc((100vw - 1380px) / 2));
   border: 0;
@@ -147,9 +147,9 @@
   flex: 0 0 auto;
   justify-self: start;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   margin-top: 0;
-  padding: 4px 7px;
+  padding: 4px 8px;
   font-size: var(--text-xs);
   font-weight: 800;
   line-height: 1.2;
@@ -173,7 +173,7 @@
   display: grid;
   grid-column: 2;
   grid-row: 1;
-  gap: 7px;
+  gap: 8px;
   min-width: 92px;
 }
 .map-score-reading > strong {
@@ -215,7 +215,7 @@
 .map-condition-summary {
   display: grid;
   grid-column: 3;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
 }
 .map-condition-summary > strong {
@@ -238,14 +238,14 @@
 .map-condition-metrics {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
 }
 .map-condition-metrics > span {
   display: inline-flex;
   min-height: 28px;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   padding: 4px 8px;
   border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   border-radius: var(--radius-pill);
@@ -268,9 +268,9 @@
   width: auto;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 8px;
   margin: 0;
-  padding: 7px 11px;
+  padding: 8px 12px;
   border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
   border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--warning-surface) 70%, transparent);
@@ -304,7 +304,7 @@
 .map-detail-panel .conditions-panel-expanded {
   display: flex;
   flex-direction: column;
-  padding: 22px;
+  padding: 24px;
   background: transparent;
   color: var(--forest-panel);
   box-shadow: none;
@@ -350,7 +350,7 @@
 }
 .map-detail-panel .conditions-panel-expanded .condition-list {
   grid-template-columns: minmax(0, 1fr);
-  gap: 10px;
+  gap: 12px;
   background: transparent;
 }
 .map-detail-panel .conditions-panel-expanded .condition-list article,
@@ -358,7 +358,7 @@
 .map-detail-panel .conditions-panel-expanded .condition-list article:last-child {
   grid-column: auto;
   min-height: 0;
-  padding: 17px;
+  padding: 16px;
   border: 1px solid color-mix(in srgb, var(--apricot) 30%, transparent);
   border-radius: var(--radius-md);
   background: var(--ink);
@@ -380,7 +380,7 @@
   background: color-mix(in srgb, var(--grey-850) 30%, transparent);
 }
 .map-detail-panel .conditions-panel-expanded .cell-static-factors {
-  padding: 18px 0 0;
+  padding: 20px 0 0;
   border: 0;
   border-top: 1px solid var(--line);
   border-radius: 0;
@@ -396,7 +396,7 @@
   background: transparent;
 }
 .map-detail-panel .conditions-panel-expanded .cell-static-factor-list > div {
-  padding: 14px 0;
+  padding: 16px 0;
   border-bottom: 1px solid var(--line);
   background: transparent;
 }
@@ -415,7 +415,7 @@
   order: 4;
 }
 .map-detail-panel .conditions-panel-expanded .conditions-heading {
-  gap: 18px;
+  gap: 20px;
 }
 .map-detail-panel .conditions-panel-expanded .conditions-heading h3 {
   font-size: var(--text-xl);
@@ -434,8 +434,8 @@
 }
 .map-detail-panel .map-global-top-species {
   display: grid;
-  gap: 18px;
-  padding: 22px;
+  gap: 20px;
+  padding: 24px;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -482,8 +482,8 @@
 
 .map-alternative-species {
   display: grid;
-  gap: 7px;
-  margin: 3px 0 0;
+  gap: 8px;
+  margin: 4px 0 0;
   padding: 8px 0 0;
   border-top: 1px solid var(--line);
   list-style: none;
@@ -492,7 +492,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 52px auto;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: var(--ink);
   font-size: var(--text-xs);
   line-height: 1.3;

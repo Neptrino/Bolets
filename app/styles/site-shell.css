@@ -45,7 +45,7 @@ h3 {
   display: flex;
   align-items: center;
   padding: 0 max(var(--layout-gutter), calc((100vw - var(--layout-max)) / 2));
-  gap: 34px;
+  gap: 36px;
   border-bottom: 1px solid color-mix(in srgb, var(--forest-900) 10%, transparent);
   position: relative;
   z-index: 20;
@@ -54,7 +54,7 @@ h3 {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
-  gap: 11px;
+  gap: 12px;
   white-space: nowrap;
 }
 .brand-mark {
@@ -64,7 +64,7 @@ h3 {
 }
 .brand-lockup {
   display: grid;
-  gap: 3px;
+  gap: 4px;
   line-height: 1;
 }
 .brand-lockup strong {
@@ -91,8 +91,8 @@ h3 {
 .header-map-link,
 .header-account-link {
   align-items: center;
-  gap: 7px;
-  padding: 9px 13px;
+  gap: 8px;
+  padding: 8px 12px;
   font-size: var(--text-xs);
   font-weight: 700;
   white-space: nowrap;
@@ -129,7 +129,7 @@ h3 {
   width: fit-content;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: var(--on-dark);
   font-size: var(--text-base);
   font-weight: 900;
@@ -170,7 +170,7 @@ h3 {
   display: grid;
   justify-items: start;
   gap: 8px;
-  padding-top: 3px;
+  padding-top: 4px;
 }
 .site-footer-support p {
   max-width: 32ch;
@@ -184,7 +184,7 @@ h3 {
   align-items: center;
   gap: 8px;
   min-height: 40px;
-  padding: 0 15px;
+  padding: 0 16px;
   border: 1px solid color-mix(in srgb, var(--on-dark) 20%, transparent);
   border-radius: var(--radius-pill);
   background: var(--pumpkin);
@@ -217,7 +217,7 @@ h3 {
   gap: 2px;
 }
 .site-footer-group h2 {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   color: var(--apricot);
   font-size: var(--text-xs);
   font-weight: 850;
@@ -246,7 +246,7 @@ h3 {
 .eyebrow {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   margin: 0 0 12px;
   text-transform: uppercase;
   letter-spacing: 0.14em;
@@ -260,10 +260,10 @@ h3 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 8px;
   border: 1px solid transparent;
   border-radius: var(--radius-pill);
-  padding: 13px 19px;
+  padding: 12px 20px;
   font-size: var(--text-base);
   font-weight: 700;
   transition:
@@ -282,7 +282,7 @@ h3 {
   color: var(--moss);
 }
 .text-link:hover {
-  gap: 11px;
+  gap: 12px;
 }
 /* Links inside running body copy, as opposed to `.text-link`, which is a
    standalone call to action. Clay and a touch heavier than the text around
@@ -339,7 +339,7 @@ h3 {
 }
 .hero-lede {
   max-width: 65ch;
-  margin: 29px 0;
+  margin: 28px 0;
   color: var(--on-dark-muted);
   font-size: var(--text-base);
   line-height: 1.65;
@@ -375,7 +375,7 @@ h3 {
   color: color-mix(in srgb, var(--paper) 60%, transparent);
 }
 .home-intro {
-  padding: 125px 0 64px;
+  padding: 124px 0 64px;
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
   gap: 80px;
@@ -394,7 +394,7 @@ h3 {
   margin: 0;
 }
 .home-cards {
-  padding-bottom: 130px;
+  padding-bottom: 132px;
 }
 .section-topline {
   display: flex;
@@ -405,13 +405,13 @@ h3 {
 .species-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  gap: 20px;
 }
 .species-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 19px;
+  padding: 20px;
   border: 1px solid var(--line);
   background: var(--surface-muted);
   color: var(--ink);
@@ -429,7 +429,7 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px;
+  padding: 16px;
   background: var(--tone-a);
   color: color-mix(in srgb, var(--white) 90%, transparent);
   overflow: hidden;
@@ -455,7 +455,7 @@ h3 {
   gap: 8px;
 }
 .species-card h3 {
-  margin: 5px 0 0;
+  margin: 4px 0 0;
   font-size: var(--text-2xl);
   line-height: 0.96;
 }
@@ -467,12 +467,12 @@ h3 {
   color: var(--forest-550);
   font-size: var(--text-base);
   line-height: 1.5;
-  margin: 2px 0 7px;
+  margin: 2px 0 8px;
 }
 .card-link {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   color: var(--moss);
   font-size: var(--text-xs);
   font-weight: 800;
@@ -480,15 +480,15 @@ h3 {
 .edibility-badge {
   width: fit-content;
   align-items: center;
-  gap: 5px;
-  padding: 5px 8px;
+  gap: 4px;
+  padding: 4px 8px;
   font-size: var(--text-xs);
   font-weight: 750;
   line-height: 1;
 }
 .edibility-badge.compact {
   font-size: var(--text-xs);
-  padding: 5px 7px;
+  padding: 4px 8px;
 }
 .edibility-badge.toxic,
 .edibility-badge.dangerously_toxic {
@@ -523,8 +523,8 @@ h3 {
   justify-self: end;
 }
 .home-map-callout-action .button {
-  gap: 11px;
-  padding: 17px 27px;
+  gap: 12px;
+  padding: 16px 28px;
   font-size: var(--text-base);
 }
 .home-map-callout-art {
@@ -541,27 +541,27 @@ h3 {
 .home-map-callout h2 {
   font-size: var(--display-md);
   line-height: 0.93;
-  margin: 0 0 19px;
+  margin: 0 0 20px;
 }
 .home-map-callout p {
   line-height: 1.7;
 }
 .directory-shell {
   border-top: 1px solid var(--line);
-  padding-top: 21px;
+  padding-top: 20px;
 }
 .directory-controls {
   display: flex;
   justify-content: space-between;
-  gap: 22px;
+  gap: 24px;
   align-items: center;
 }
 .search-field {
   width: min(420px, 100%);
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  padding: 11px 13px;
+  padding: 12px 12px;
   border-bottom: 1px solid var(--ink);
 }
 .search-field input {
@@ -575,7 +575,7 @@ h3 {
 .directory-count {
   color: var(--forest-450);
   font-size: var(--text-xs);
-  margin: 27px 0 14px;
+  margin: 28px 0 16px;
 }
 
 /* Shared accessibility and search controls also used outside the catalogue. */
@@ -594,7 +594,7 @@ h3 {
 .search-field {
   width: min(470px, 100%);
   min-height: 50px;
-  padding: 0 14px;
+  padding: 0 16px;
   border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   border-radius: var(--radius-md);
   background: var(--surface-muted);

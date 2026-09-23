@@ -3,8 +3,8 @@
 .culinary-rating {
   width: fit-content;
   align-items: center;
-  gap: 7px;
-  padding: 7px 10px;
+  gap: 8px;
+  padding: 8px 12px;
   border: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   background: var(--paper);
   color: var(--forest-panel);
@@ -15,8 +15,8 @@
   text-transform: uppercase;
 }
 .culinary-rating.compact {
-  gap: 5px;
-  padding: 6px 9px;
+  gap: 4px;
+  padding: 8px 8px;
   box-shadow: var(--shadow-md);
 }
 .culinary-stars {
@@ -45,7 +45,7 @@
   color: var(--danger-ink);
 }
 .culinary-rating.safety-warning {
-  gap: 6px;
+  gap: 8px;
   border-color: color-mix(in srgb, var(--danger-ink) 20%, transparent);
   background: var(--danger-surface);
   color: var(--danger-ink);
@@ -62,7 +62,7 @@
 }
 .directory-controls {
   min-height: 76px;
-  padding: 11px 13px 11px 20px;
+  padding: 12px 12px 12px 20px;
   border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
@@ -86,13 +86,13 @@
 .directory-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px 28px;
+  gap: 16px 28px;
   margin-top: 12px;
 }
 .directory-filter-group {
   min-width: 0;
   display: grid;
-  gap: 7px;
+  gap: 8px;
 }
 .directory-filter-label {
   color: var(--muted);
@@ -101,13 +101,13 @@
 .directory-filter-items {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 .directory-filter {
   min-height: 38px;
   align-items: center;
-  gap: 7px;
-  padding: 6px 8px 6px 12px;
+  gap: 8px;
+  padding: 8px 8px 8px 12px;
   border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   background: var(--surface-muted);
   color: var(--forest-panel);
@@ -124,7 +124,7 @@
 }
 .directory-filter-count {
   min-width: 24px;
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: var(--radius-pill);
   background: var(--paper);
   color: var(--sand-600);
@@ -162,7 +162,7 @@
 .directory-reset {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   margin-right: auto;
   padding: 4px 2px;
   border: 0;
@@ -178,17 +178,17 @@
 .directory-guides {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 20px;
-  margin: -6px 2px 18px;
+  gap: 8px 20px;
+  margin: -8px 2px 20px;
   font-size: var(--text-xs);
 }
 .directory-count {
-  margin: 23px 2px 16px;
+  margin: 24px 2px 16px;
   color: var(--muted);
   font-weight: 750;
 }
 .species-grid {
-  gap: 25px;
+  gap: 24px;
 }
 .species-card {
   min-height: 505px;
@@ -252,10 +252,10 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 22px 23px 19px;
+  padding: 24px 24px 20px;
 }
 .species-card-genus {
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   color: var(--forest-450);
   line-height: 1;
 }
@@ -282,7 +282,7 @@
    bottom however tall the text runs. */
 .species-card .species-card-description {
   min-height: 42px;
-  margin: 14px 0 16px;
+  margin: 16px 0 16px;
   color: var(--sand-600);
   font-size: var(--text-base);
   line-height: 1.55;
@@ -301,9 +301,9 @@
   min-width: 0;
   display: grid;
   grid-template-columns: 18px minmax(0, 1fr);
-  gap: 1px 5px;
+  gap: 1px 4px;
   align-content: center;
-  padding: 9px 10px;
+  padding: 8px 12px;
   background: var(--surface-muted);
 }
 .species-card-facts svg {
@@ -329,14 +329,14 @@
   white-space: nowrap;
 }
 .card-season {
-  margin-top: 13px;
+  margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
 }
 .card-season-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 3px;
+  gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -347,8 +347,8 @@
   grid-template-rows: 15px 17px;
   align-items: end;
   justify-items: stretch;
-  gap: 3px;
-  padding: 3px 2px 4px;
+  gap: 4px;
+  padding: 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
 }
@@ -400,7 +400,7 @@
 .species-card .card-link {
   justify-content: space-between;
   margin-top: 16px;
-  padding-top: 13px;
+  padding-top: 12px;
   border-top: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   color: var(--forest-650);
   font-size: var(--text-xs);
@@ -414,7 +414,7 @@
 
 .compact-species-page .species-hero {
   overflow: hidden;
-  padding: 25px 0 48px;
+  padding: 24px 0 48px;
   border-bottom: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   background: var(--paper);
   color: var(--ink);
@@ -429,7 +429,7 @@
   grid-template-areas:
     "copy panel"
     "details panel";
-  gap: 0 62px;
+  gap: 0 64px;
   align-items: center;
   padding-top: 36px;
 }
@@ -447,11 +447,11 @@
   grid-area: panel;
 }
 .compact-species-page .species-hero .eyebrow.light {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   color: var(--sand-550);
 }
 .compact-species-page .species-hero h1 {
-  margin: 0 0 9px;
+  margin: 0 0 8px;
   color: var(--ink);
   font-size: var(--display-xl);
   line-height: 0.88;
@@ -463,7 +463,7 @@
   font: 18px var(--font-nunito-sans), sans-serif;
 }
 .species-alternate-names {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
   color: var(--muted);
   font-size: var(--text-base);
   line-height: 1.5;
@@ -478,7 +478,7 @@
   font-size: var(--text-xs);
 }
 .compact-species-page .species-dek {
-  margin: 19px 0;
+  margin: 20px 0;
   color: var(--sand-600);
   font-size: var(--text-base);
   line-height: 1.6;
@@ -495,10 +495,10 @@
 }
 .species-hero-lookalike {
   flex-wrap: wrap;
-  gap: 6px 8px;
+  gap: 8px 8px;
   align-items: center;
   min-height: 30px;
-  padding: 3px 8px 3px 10px;
+  padding: 4px 8px 4px 12px;
   border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
   color: var(--ink);
@@ -535,10 +535,10 @@
   min-width: 0;
   display: grid;
   grid-template-columns: 20px minmax(0, 1fr);
-  gap: 2px 7px;
+  gap: 2px 8px;
   align-content: center;
   min-height: 64px;
-  padding: 11px 12px;
+  padding: 12px 12px;
   background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
 }
 .species-hero-facts svg {
@@ -620,7 +620,7 @@
   min-height: 34px;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   padding: 0 12px;
   border: 1px solid color-mix(in srgb, var(--white) 20%, transparent);
   border-radius: var(--radius-pill);
@@ -677,13 +677,13 @@
   left: 20px;
   z-index: 2;
   min-width: 0;
-  padding: 9px 13px;
+  padding: 8px 12px;
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--grey-850) 70%, transparent);
   pointer-events: none;
 }
 .specimen-panel .species-gallery-caption p {
-  margin: 0 0 3px;
+  margin: 0 0 4px;
   overflow: hidden;
   color: var(--surface-warm);
   font-size: var(--text-base);
@@ -711,7 +711,7 @@
 }
 .species-gallery-thumbnails {
   display: flex;
-  gap: 9px;
+  gap: 8px;
   min-height: 84px;
   padding: 12px 16px;
   overflow-x: auto;

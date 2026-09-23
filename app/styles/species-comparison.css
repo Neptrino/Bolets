@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 70px minmax(0, 1fr);
   align-items: center;
-  padding: 26px;
+  padding: 28px;
   overflow: hidden;
   background: var(--grey-850);
   border: 1px solid color-mix(in srgb, var(--bark) 70%, transparent);
@@ -79,7 +79,7 @@
 .compare-profile-control {
   position: relative;
   z-index: 2;
-  padding: 14px 16px 13px;
+  padding: 16px 16px 12px;
   border-bottom: 1px solid color-mix(in srgb, var(--paper) 20%, transparent);
   background: var(--grey-850);
   box-shadow: inset 0 1px color-mix(in srgb, var(--white) 5%, transparent);
@@ -105,7 +105,7 @@
   right: 13px;
   bottom: 10px;
   z-index: 2;
-  padding: 4px 6px;
+  padding: 4px 8px;
   color: color-mix(in srgb, var(--on-dark) 80%, transparent);
   background: color-mix(in srgb, var(--grey-850) 50%, transparent);
   font-size: var(--text-xs);
@@ -117,7 +117,7 @@
 .compare-profile-body {
   min-height: 346px;
   position: relative;
-  padding: 23px 25px 25px;
+  padding: 24px 24px 24px;
   background: var(--surface);
 }
 .compare-profile-body::before {
@@ -134,7 +134,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 16px;
 }
 .compare-profile-meta > span {
   overflow: hidden;
@@ -160,7 +160,7 @@
 }
 .compare-profile-body > p {
   min-height: 44px;
-  margin: 14px 0 18px;
+  margin: 16px 0 20px;
   color: var(--sand-600);
   font-size: var(--text-xs);
   line-height: 1.55;
@@ -177,8 +177,8 @@
   display: grid;
   grid-template-columns: auto 1fr;
   align-content: start;
-  gap: 2px 6px;
-  padding: 10px;
+  gap: 2px 8px;
+  padding: 12px;
   background: color-mix(in srgb, var(--paper) 90%, transparent);
 }
 .compare-quick-facts svg {
@@ -203,14 +203,14 @@
 .compare-profile-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 19px;
+  gap: 8px;
+  margin-top: 20px;
   color: var(--gold);
   font-size: var(--text-xs);
   font-weight: 850;
 }
 .compare-profile-link:hover {
-  gap: 9px;
+  gap: 8px;
 }
 .compare-swap {
   position: relative;
@@ -240,7 +240,7 @@
   clip-path: inset(50%);
 }
 .compare-matrix {
-  margin-top: 54px;
+  margin-top: 56px;
   border: 1px solid var(--line);
   background: var(--surface);
   box-shadow: var(--shadow-lg);
@@ -250,7 +250,7 @@
   grid-template-columns: 180px minmax(0, 1fr);
   align-items: end;
   gap: 24px;
-  padding: 27px 28px 24px;
+  padding: 28px 28px 24px;
   color: var(--on-dark);
   background: var(--grey-850);
 }
@@ -262,8 +262,8 @@
 .compare-matrix-label {
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 20px 22px;
+  gap: 12px;
+  padding: 20px 24px;
   color: var(--bark);
   background: var(--paper);
 }
@@ -278,7 +278,7 @@
 }
 .compare-matrix-cell {
   min-width: 0;
-  padding: 20px 22px;
+  padding: 20px 24px;
   background: color-mix(in srgb, var(--surface) 90%, transparent);
   transition: background-color 160ms ease;
 }
@@ -312,7 +312,7 @@
     padding: 16px;
   }
   .compare-swap {
-    margin: -9px 0;
+    margin: -8px 0;
     transform: rotate(90deg);
   }
   .compare-swap:hover {
@@ -328,7 +328,7 @@
     grid-template-columns: 1fr;
   }
   .compare-matrix-label {
-    padding: 13px 16px;
+    padding: 12px 16px;
   }
   .compare-matrix-cell + .compare-matrix-cell {
     border-left: 0;
@@ -340,16 +340,16 @@
   .compare-stage {
     width: calc(100% + 16px);
     margin-left: -8px;
-    padding: 10px;
+    padding: 12px;
   }
   .compare-profile-visual {
     height: 224px;
   }
   .compare-profile-control {
-    padding: 13px 14px 12px;
+    padding: 12px 16px 12px;
   }
   .compare-profile-body {
-    padding: 20px 19px 23px;
+    padding: 20px 20px 24px;
   }
   .compare-profile-meta {
     align-items: flex-start;
@@ -371,13 +371,13 @@
     grid-row: auto;
   }
   .compare-matrix {
-    margin-top: 38px;
+    margin-top: 40px;
   }
   .compare-matrix-heading {
-    padding: 23px 20px;
+    padding: 24px 20px;
   }
   .compare-matrix-cell {
-    padding: 17px 16px;
+    padding: 16px 16px;
   }
 }
 
@@ -414,15 +414,15 @@
 }
 .compare-profile-control {
   display: grid;
-  gap: 7px;
+  gap: 8px;
   min-height: 92px;
-  padding: 13px 16px 14px 19px;
+  padding: 12px 16px 16px 20px;
   border-bottom: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   background: var(--surface-muted);
   box-shadow: inset 4px 0 var(--pumpkin);
 }
 .compare-profile-control > span {
-  gap: 7px;
+  gap: 8px;
   color: var(--forest-450);
   font-size: var(--text-xs);
   letter-spacing: 0.11em;
@@ -438,7 +438,7 @@
 }
 .compare-profile-control .species-select-trigger-comparison {
   min-height: 44px;
-  padding: 0 10px;
+  padding: 0 12px;
   border: 1px solid transparent;
   border-radius: var(--radius-md);
   color: var(--ink);
@@ -497,7 +497,7 @@
   min-height: 340px;
   display: flex;
   flex-direction: column;
-  padding: 22px 23px 20px;
+  padding: 24px 24px 20px;
   background: var(--surface-muted);
 }
 .compare-profile-body::before {
@@ -505,7 +505,7 @@
 }
 .compare-profile-meta {
   justify-content: flex-start;
-  gap: 7px;
+  gap: 8px;
   color: var(--forest-450);
 }
 .compare-profile-meta > span {
@@ -515,11 +515,11 @@
 }
 .compare-profile-meta > span + span::before {
   content: "\00b7";
-  margin-right: 7px;
+  margin-right: 8px;
   color: var(--stone);
 }
 .compare-profile-body h2 {
-  margin: 10px 0 2px;
+  margin: 12px 0 2px;
   color: var(--ink);
   font-size: var(--display-sm);
   line-height: 0.98;
@@ -532,7 +532,7 @@
 .compare-profile-body > p {
   max-width: none;
   min-height: 60px;
-  margin: 14px 0 16px;
+  margin: 16px 0 16px;
   color: var(--sand-600);
   font-size: var(--text-base);
   line-height: 1.55;
@@ -550,7 +550,7 @@
 .compare-profile-link {
   justify-content: space-between;
   margin-top: 16px;
-  padding-top: 13px;
+  padding-top: 12px;
   border-top: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   color: var(--forest-650);
 }
@@ -558,7 +558,7 @@
   transition: transform 160ms ease;
 }
 .compare-profile-link:hover {
-  gap: 6px;
+  gap: 8px;
 }
 .compare-profile-link:hover svg {
   transform: translate(2px, -2px);
@@ -584,7 +584,7 @@
 }
 .compare-matrix {
   --compare-label-column: 180px;
-  margin-top: 58px;
+  margin-top: 60px;
   overflow: visible;
   border: 0;
   border-radius: 0;
@@ -592,10 +592,10 @@
   box-shadow: none;
 }
 .compare-matrix-intro {
-  margin: 0 2px 18px;
+  margin: 0 2px 20px;
 }
 .compare-matrix-intro .eyebrow {
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 .compare-matrix-intro h2 {
   margin: 0;
@@ -625,7 +625,7 @@
 .compare-matrix-criterion {
   display: flex;
   align-items: center;
-  padding: 17px 22px;
+  padding: 16px 24px;
   background: var(--paper);
   box-shadow: inset 4px 0 var(--pumpkin);
   color: var(--sand-600);
@@ -636,7 +636,7 @@
   grid-template-columns: 32px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
-  padding: 17px 22px;
+  padding: 16px 24px;
   border-left: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   background: var(--on-dark);
 }
@@ -696,11 +696,11 @@
 }
 .compare-matrix-cell-key {
   display: none;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
   color: var(--sand-600);
 }
 .compare-matrix-row-season .compare-matrix-cell {
-  padding-block: 16px 18px;
+  padding-block: 16px 20px;
 }
 .compare-season {
   min-width: 0;
@@ -710,7 +710,7 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 }
 .compare-season-summary span {
   color: var(--sand-600);
@@ -747,7 +747,7 @@
     padding: 0;
   }
   .compare-swap {
-    margin: -5px 0;
+    margin: -4px 0;
     transform: none;
   }
   .compare-swap svg {
@@ -779,7 +779,7 @@
     display: block;
   }
   .compare-matrix-row-season .compare-matrix-cell {
-    padding-block: 16px 18px;
+    padding-block: 16px 20px;
   }
 }
 
@@ -790,21 +790,21 @@
     padding: 0;
   }
   .compare-profile-control {
-    padding: 12px 12px 13px 15px;
+    padding: 12px 12px 12px 16px;
   }
   .compare-profile-control .species-select-trigger-comparison {
     font-size: var(--text-xl);
   }
   .compare-profile-body {
-    padding: 20px 19px 19px;
+    padding: 20px 20px 20px;
   }
   .compare-profile-meta {
     align-items: center;
     flex-direction: row;
-    gap: 7px;
+    gap: 8px;
   }
   .compare-profile-body h2 {
-    margin-top: 10px;
+    margin-top: 12px;
     font-size: var(--display-md);
   }
   .compare-profile-body > p {
@@ -824,7 +824,7 @@
     margin-top: 44px;
   }
   .compare-matrix-intro {
-    margin-bottom: 14px;
+    margin-bottom: 16px;
   }
   .compare-matrix-intro h2 {
     font-size: var(--text-3xl);

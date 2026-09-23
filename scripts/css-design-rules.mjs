@@ -1,9 +1,9 @@
 // Checks stylesheets against the design rules in app/styles/tokens.css:
 // colours come from the palette, backgrounds are solid (gradients only where
 // they draw what the map draws: legend swatches, basemap previews and the
-// resolution grid), and corners and elevation use the radius and shadow
-// tokens. tests/css-styles.test.ts fails on any violation; run this file to
-// list them.
+// resolution grid), corners and elevation use the radius and shadow tokens,
+// and spacing sits on a 4px grid. tests/css-styles.test.ts fails on any
+// violation; run this file to list them.
 import { readFileSync, readdirSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import postcss from "postcss";
@@ -84,12 +84,31 @@ export function findUntokenisedShadows(cwd = process.cwd()) {
     .sort();
 }
 
+// Spacing: gap, padding and margin lengths sit on a 4px grid (0.25rem steps);
+// 1px and 2px are allowed for hairline offsets. Relative units, var() and
+// values computed with calc(), clamp() and friends are not checked.
+export function findOffGridSpacing(cwd = process.cwd()) {
+  const property = /^(?:gap|row-gap|column-gap|padding|margin)(?:-(?:top|right|bottom|left|inline|block|inline-start|inline-end|block-start|block-end))?$/;
+  const onGrid = (part) => {
+    const match = part.match(/^-?(\d*\.?\d+)(px|rem)$/);
+    if (!match) return true;
+    const px = Number(match[1]) * (match[2] === "rem" ? 16 : 1);
+    return px <= 2 || Math.abs(px / 4 - Math.round(px / 4)) < 1e-6;
+  };
+  return declarations(cwd, property)
+    .filter(({ decl }) => !/[a-z-]+\(/i.test(decl.value.replace(/var\([^)]*\)/g, "")))
+    .filter(({ decl }) => postcss.list.space(decl.value).some((part) => !onGrid(part)))
+    .map(({ path, decl }) => `${path}: ${decl.prop}: ${decl.value}`)
+    .sort();
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
   const found = [
     ...findHardcodedColours(),
     ...findGradients(),
     ...findUntokenisedRadii(),
     ...findUntokenisedShadows(),
+    ...findOffGridSpacing(),
   ];
   console.log(found.length ? found.join("\n") : "Stylesheets follow the design rules.");
 }
