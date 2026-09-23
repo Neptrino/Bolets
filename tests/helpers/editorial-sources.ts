@@ -31,6 +31,7 @@ export const NON_CONTENT_COMMITS: readonly string[] = [
   "430d7ea", // Extract shared card, panel, pill, label and icon primitives
   "cf653bd", // Share one notice primitive for caveats and safety notes
   "a20bfad", // Render editorial notes with one Notice component
+  "2d5cc65", // Keep catalogue filters when returning from a species page
 ];
 
 const file = (name: string): ContentSource => ({ kind: "file", file: name });

@@ -45,10 +45,14 @@ export function SpeciesEcologySection({
 
   if ("scope" in species) {
     return (
-      <ProfileSection species={species} id="ecologia" className="ecology-section" eyebrow="Perfil ecològic descriptiu" title={headings.ecology}>
+      <ProfileSection species={species} id="ecologia" className="ecology-section" eyebrow="Perfil ecològic descriptiu" title={prose?.ecologyHeading ?? headings.ecology}>
           <div className="profile-panel">
             <div className="profile-panel-body">
-          <p className="profile-lede">{species.ecology.description}</p>
+          {prose ? (
+            <div className="profile-prose">
+              {prose.ecology.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            </div>
+          ) : <p className="profile-lede">{species.ecology.description}</p>}
           <ProfileFacts
             label="Hàbitat i temporada"
             items={[

@@ -353,7 +353,7 @@ export const culinaryProfiles: Record<string, CulinaryProfile> = {
     summary: "Condiment d’aroma molt intens: se n’utilitza poca quantitat i amb coccions suaus.",
     flavour: "Terrós, profund, aliaci i persistent, molt dependent de la maduració.",
     texture: "Ferma i compacta, amb mossegada fina quan és madura.",
-    bestUses: ["Ratllada sobre ous", "Pasta i arrossos", "Salses suaus", "Mantega trufada refrigerada"],
+    bestUses: ["Ratllada sobre ous", "Pasta i arrossos", "Salses suaus", "Mantega tofonada refrigerada"],
     preparation: ["Raspalleu-la sota un fil d’aigua i eixugueu-la bé.", "Talleu-la o ratlleu-la just abans de servir.", "Eviteu coccions llargues, que dissipen l’aroma."],
     preservation: ["Refrigerada i consumida ràpidament", "Congelada sencera, assumint pèrdua de textura"],
     cautions: ["La morfologia macroscòpica no sempre separa les tòfones semblants; per a valor comercial cal verificació experta."],

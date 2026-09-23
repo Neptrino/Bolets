@@ -10,7 +10,7 @@ Does hand-written text in the searched phrasing move a fitxa more than untouched
 
 ## Treatment
 
-**Treated group:** the top 20 of `speciesBySearchDemand` (`data/species-search-demand.ts`). All carry the text below; only the first three pilots also changed their title.
+**Treated group:** the top 20 of `speciesBySearchDemand` (`data/species-search-demand.ts`) since 24 September, extended the same night to every edible species in the catalogue (42 species in total, including five descriptive reference-only profiles, whose text keeps to their sourced season and habitat). All carry the text below; only the first three pilots also changed their title.
 
 ### Pilot titles (three species)
 
@@ -35,7 +35,7 @@ The section order changed from identify → names → kitchen → where to an ou
 
 ## Baseline
 
-**Untreated group:** species ranked 21–42 in `speciesBySearchDemand`, plus the unranked catalogue. Compare page-level Search Console data (impressions, average position, clicks for each `/bolets/<slug>`) for both groups: 1–24 September before, and the same number of days after the deploy.
+**Untreated group:** the toxic, inedible and not-recommended species outside the top 20. Because every edible species is now treated, this group differs in search intent (safety rather than foraging), so treat the comparison as indicative and give most weight to each treated page’s own before/after movement against the October seasonal rise. Compare page-level Search Console data (impressions, average position, clicks for each `/bolets/<slug>`) for both groups: 1–24 September before, and the same number of days after the deploy.
 
 ### Pilot keywords (17 September 2026, `docs/keyword-clusters-2026-09-17.csv`)
 
