@@ -30,6 +30,7 @@ import {
   pageTitle,
   SITE_URL,
 } from "@/src/lib/seo";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 const canonicalPath = "/parts-dun-bolet";
 const title = pageTitle("Parts d’un bolet: guia d’identificació");
@@ -58,15 +59,7 @@ export default function MushroomPartsGuidePage() {
               about: "Morfologia bàsica dels bolets",
               ...editorialArticleFields("parts-dun-bolet"),
             },
-            {
-              "@type": "BreadcrumbList",
-              "@id": `${canonicalUrl}#breadcrumb`,
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL },
-                { "@type": "ListItem", position: 2, name: "Bolets", item: absoluteUrl("/bolets") },
-                { "@type": "ListItem", position: 3, name: "Parts d’un bolet", item: canonicalUrl },
-              ],
-            },
+            breadcrumbSchema([{ name: "Bolets", url: absoluteUrl("/bolets") }, { name: "Parts d’un bolet", url: canonicalUrl }], `${canonicalUrl}#breadcrumb`),
           ],
         }}
       />

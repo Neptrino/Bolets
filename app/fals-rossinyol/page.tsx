@@ -11,6 +11,7 @@ import { getSpecies } from "@/data/species";
 import { getReferenceSpecies } from "@/data/reference-species";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { absoluteUrl, articleMetadata, metaDescription, pageTitle, SITE_URL } from "@/src/lib/seo";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 const path = "/fals-rossinyol";
 const title = pageTitle("Fals rossinyol: trets i confusions");
@@ -31,11 +32,7 @@ export default function FalseChanterelleGuidePage() {
         "@context": "https://schema.org",
         "@graph": [
           { "@type": "Article", "@id": `${url}#article`, headline: "Fals rossinyol: trets i confusions", description, url, inLanguage: "ca", isPartOf: { "@id": `${SITE_URL}/#website` }, publisher: { "@id": `${SITE_URL}/#organization` }, ...editorialArticleFields("fals-rossinyol") },
-          { "@type": "BreadcrumbList", itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL },
-            { "@type": "ListItem", position: 2, name: "Bolets", item: absoluteUrl("/bolets") },
-            { "@type": "ListItem", position: 3, name: "Fals rossinyol", item: url },
-          ] },
+          breadcrumbSchema([{ name: "Bolets", url: absoluteUrl("/bolets") }, { name: "Fals rossinyol", url: url }]),
         ],
       }} />
       <PageHeader

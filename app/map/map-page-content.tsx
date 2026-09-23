@@ -30,6 +30,7 @@ import { territorialBoundsFromQuery } from "@/src/lib/territorial-map";
 import type { MapViewMode, RegionId, SuitabilityResult } from "@/src/lib/types";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 import { icgcBootstrapAssetPath } from "@/src/lib/icgc-bootstrap";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 export type MapPageQuery = {
   species?: string;
@@ -130,14 +131,10 @@ export async function MapPageContent({ query, mapPage }: MapPageContentProps) {
             : { "@type": "Thing", name: "Hàbitat i condicions de fructificació dels bolets a Catalunya" },
           ...editorialArticleFields("map"),
         },
-        {
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL },
-            { "@type": "ListItem", position: 2, name: "Mapa de bolets", item: absoluteUrl("/map") },
-            ...(mapPage ? [{ "@type": "ListItem", position: 3, name: mapPage.heading, item: absoluteUrl(canonicalPath) }] : []),
-          ],
-        },
+        breadcrumbSchema([
+          { name: "Mapa de bolets", url: absoluteUrl("/map") },
+          ...(mapPage ? [{ name: mapPage.heading, url: absoluteUrl(canonicalPath) }] : []),
+        ]),
       ],
     }} />
     <details className="map-page-heading">

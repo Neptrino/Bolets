@@ -26,6 +26,7 @@ import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/compone
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { collectingSources } from "@/data/field-guide-sources";
 import { absoluteUrl, articleMetadata, metaDescription, pageTitle, SITE_URL } from "@/src/lib/seo";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 const path = "/normativa-bolets";
 const title = pageTitle("Permisos per collir bolets a Catalunya");
@@ -46,13 +47,7 @@ export default function CollectingRulesGuidePage() {
             isPartOf: { "@id": `${SITE_URL}/#website` }, publisher: { "@id": `${SITE_URL}/#organization` },
             ...editorialArticleFields("normativa-bolets"),
           },
-          {
-            "@type": "BreadcrumbList", itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL },
-              { "@type": "ListItem", position: 2, name: "Guies", item: absoluteUrl("/guies") },
-              { "@type": "ListItem", position: 3, name: "Permisos i accés al bosc", item: url },
-            ],
-          },
+          breadcrumbSchema([{ name: "Guies", url: absoluteUrl("/guies") }, { name: "Permisos i accés al bosc", url: url }]),
         ],
       }} />
       <PageHeader

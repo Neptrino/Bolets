@@ -18,6 +18,7 @@ import {
 import { absoluteUrl, speciesPath } from "@/src/lib/seo";
 import { seasonGuideForMonth } from "@/src/lib/season-guides";
 import type { Month } from "@/src/lib/types";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 type SeasonPageContentProps = {
   canonicalPath: string;
@@ -41,10 +42,9 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
     ? "Temporada de bolets a Catalunya"
     : `Bolets ${monthWithPreposition(month)}: espècies i calendari`;
   const canonicalUrl = absoluteUrl(canonicalPath);
-  const breadcrumbItems = [
-    { "@type": "ListItem", position: 1, name: "Inici", item: absoluteUrl() },
-    { "@type": "ListItem", position: 2, name: "Temporada", item: absoluteUrl("/temporada") },
-    ...(!overview ? [{ "@type": "ListItem", position: 3, name: selectedMonth.label, item: canonicalUrl }] : []),
+  const breadcrumbs = [
+    { name: "Temporada", url: absoluteUrl("/temporada") },
+    ...(!overview ? [{ name: selectedMonth.label, url: canonicalUrl }] : []),
   ];
 
   return (
@@ -73,11 +73,7 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
               })),
             },
           },
-          {
-            "@type": "BreadcrumbList",
-            "@id": `${canonicalUrl}#breadcrumb`,
-            itemListElement: breadcrumbItems,
-          },
+          breadcrumbSchema(breadcrumbs, `${canonicalUrl}#breadcrumb`),
         ],
       }} />
       {!overview ? <Link href="/temporada" className="text-link season-overview-back">← Temporada de bolets a Catalunya</Link> : null}

@@ -13,6 +13,7 @@ import { absoluteUrl, articleMetadata, metaDescription, pageTitle, SITE_URL } fr
 import type { SourceReference } from "@/src/lib/types";
 import { FaqFragmentNavigation } from "./fragment-navigation";
 import styles from "./page.module.css";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 const path = "/preguntes-frequents-bolets";
 const title = pageTitle("Anar a buscar bolets: preguntes freqüents");
@@ -179,14 +180,7 @@ export default function MushroomHuntingFaqPage() {
             citation: sources.map((source) => source.url),
             ...editorialArticleFields("preguntes-frequents-bolets"),
           },
-          {
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL },
-              { "@type": "ListItem", position: 2, name: "Guies", item: absoluteUrl("/guies") },
-              { "@type": "ListItem", position: 3, name: "Preguntes freqüents sobre bolets", item: url },
-            ],
-          },
+          breadcrumbSchema([{ name: "Guies", url: absoluteUrl("/guies") }, { name: "Preguntes freqüents sobre bolets", url: url }]),
           faqPageSchema(
             topics.flatMap((topic) => topic.questions.map((item) => ({ question: item.question, answer: plainText(item.answer) }))),
             `${url}#preguntes`,

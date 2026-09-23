@@ -27,6 +27,7 @@ import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
 import { areaMapPath, hubRegionMapPath, PIRINEU_MAP_SLUG } from "@/src/lib/place-map";
 import { speciesDrawing, speciesIllustration } from "@/src/lib/species-illustrations";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: "Guies locals de bolets per territori",
@@ -141,13 +142,7 @@ export default function GuidesPage() {
                 ],
               },
             },
-            {
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Inici", item: absoluteUrl() },
-                { "@type": "ListItem", position: 2, name: "Guies", item: absoluteUrl("/guies") },
-              ],
-            },
+            breadcrumbSchema([{ name: "Guies", url: absoluteUrl("/guies") }]),
           ],
         }}
       />

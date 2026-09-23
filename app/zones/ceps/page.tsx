@@ -43,6 +43,7 @@ import {
 import { faqPageSchema } from "@/src/lib/faq-schema";
 import type { SpeciesProfile } from "@/src/lib/types";
 import { speciesMapHref } from "@/src/lib/species-map-pages";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: pageTitle("Ceps de Catalunya: tipus, temporada i zones"),
@@ -169,29 +170,7 @@ export default function CepsTerritoryPage() {
               ...editorialArticleFields("zones-ceps"),
             },
             faqPageSchema(faqs, `${absoluteUrl("/zones/ceps")}#preguntes`),
-            {
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                {
-                  "@type": "ListItem",
-                  position: 1,
-                  name: "Inici",
-                  item: absoluteUrl(),
-                },
-                {
-                  "@type": "ListItem",
-                  position: 2,
-                  name: "Guies",
-                  item: absoluteUrl("/guies"),
-                },
-                {
-                  "@type": "ListItem",
-                  position: 3,
-                  name: "Ceps",
-                  item: absoluteUrl("/zones/ceps"),
-                },
-              ],
-            },
+            breadcrumbSchema([{ name: "Guies", url: absoluteUrl("/guies") }, { name: "Ceps", url: absoluteUrl("/zones/ceps") }]),
           ],
         }}
       />

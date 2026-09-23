@@ -41,6 +41,7 @@ import { faqPageSchema } from "@/src/lib/faq-schema";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, pageTitle, speciesPath } from "@/src/lib/seo";
 import { speciesMapHref } from "@/src/lib/species-map-pages";
 import type { ReferenceSpeciesProfile, RegionId, SpeciesProfile } from "@/src/lib/types";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: pageTitle("Rovellons: quan surten i on trobar-ne a Catalunya"),
@@ -229,14 +230,7 @@ export default function RovellonsTerritoryPage() {
             ...editorialArticleFields("zones-rovellons"),
           },
           faqPageSchema(faqs, `${absoluteUrl("/zones/rovellons")}#preguntes`),
-          {
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Inici", item: absoluteUrl() },
-              { "@type": "ListItem", position: 2, name: "Guies", item: absoluteUrl("/guies") },
-              { "@type": "ListItem", position: 3, name: "Rovellons", item: absoluteUrl("/zones/rovellons") },
-            ],
-          },
+          breadcrumbSchema([{ name: "Guies", url: absoluteUrl("/guies") }, { name: "Rovellons", url: absoluteUrl("/zones/rovellons") }]),
         ],
       }} />
 

@@ -8,6 +8,7 @@ import { SpeciesNameGlossary } from "@/components/species-name-glossary";
 import { editorialArticleFields } from "@/data/editorial";
 import { speciesNameGlossaryRows, speciesNameSources } from "@/data/species-common-names";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 const path = "/noms-de-bolets-catala-castella";
 const title = "Noms de bolets en català i castellà";
@@ -36,11 +37,7 @@ export default function MushroomNamesPage() {
         "@context": "https://schema.org",
         "@graph": [
           { "@type": "Article", "@id": `${absoluteUrl(path)}#article`, headline: title, description, url: absoluteUrl(path), inLanguage: "ca", isPartOf: { "@id": `${SITE_URL}/#website` }, publisher: { "@id": `${SITE_URL}/#organization` }, ...editorialArticleFields("noms-de-bolets-catala-castella") },
-          { "@type": "BreadcrumbList", itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL },
-            { "@type": "ListItem", position: 2, name: "Bolets", item: absoluteUrl("/bolets") },
-            { "@type": "ListItem", position: 3, name: "Noms en català i castellà", item: absoluteUrl(path) },
-          ] },
+          breadcrumbSchema([{ name: "Bolets", url: absoluteUrl("/bolets") }, { name: "Noms en català i castellà", url: absoluteUrl(path) }]),
         ],
       }} />
       <PageHeader

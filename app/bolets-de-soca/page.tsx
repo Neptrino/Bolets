@@ -11,6 +11,7 @@ import { getSpecies } from "@/data/species";
 import { woodFungiSpeciesIds } from "@/data/wood-fungi";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { absoluteUrl, articleMetadata, metaDescription, pageTitle, SITE_URL } from "@/src/lib/seo";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 const path = "/bolets-de-soca";
 const title = pageTitle("Bolets de soca: espècies que creixen a la fusta");
@@ -31,11 +32,7 @@ export default function WoodFungiGuidePage() {
         "@context": "https://schema.org",
         "@graph": [
           { "@type": "Article", "@id": `${url}#article`, headline: "Bolets de soca: espècies que creixen a la fusta", description, url, inLanguage: "ca", isPartOf: { "@id": `${SITE_URL}/#website` }, publisher: { "@id": `${SITE_URL}/#organization` }, ...editorialArticleFields("bolets-de-soca") },
-          { "@type": "BreadcrumbList", itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL },
-            { "@type": "ListItem", position: 2, name: "Bolets", item: absoluteUrl("/bolets") },
-            { "@type": "ListItem", position: 3, name: "Bolets de soca", item: url },
-          ] },
+          breadcrumbSchema([{ name: "Bolets", url: absoluteUrl("/bolets") }, { name: "Bolets de soca", url: url }]),
         ],
       }} />
       <PageHeader

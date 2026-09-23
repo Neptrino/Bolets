@@ -38,6 +38,7 @@ import { speciesMapHref } from "@/src/lib/species-map-pages";
 import { speciesFaqs, speciesLead, speciesMetaDescription, speciesPageTitle } from "@/src/lib/species-summary";
 import type { Month, RegionId, SeasonalActivity } from "@/src/lib/types";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 const catalanList = new Intl.ListFormat("ca-ES", {
   style: "long",
@@ -212,30 +213,7 @@ export default async function SpeciesPage({
                 },
               },
             },
-            {
-              "@type": "BreadcrumbList",
-              "@id": `${canonicalUrl}#breadcrumb`,
-              itemListElement: [
-                {
-                  "@type": "ListItem",
-                  position: 1,
-                  name: "Inici",
-                  item: SITE_URL,
-                },
-                {
-                  "@type": "ListItem",
-                  position: 2,
-                  name: "Bolets",
-                  item: `${SITE_URL}/bolets`,
-                },
-                {
-                  "@type": "ListItem",
-                  position: 3,
-                  name: species.identity.commonName,
-                  item: canonicalUrl,
-                },
-              ],
-            },
+            breadcrumbSchema([{ name: "Bolets", url: `${SITE_URL}/bolets` }, { name: species.identity.commonName, url: canonicalUrl }], `${canonicalUrl}#breadcrumb`),
             ...(faqs.length > 0 ? [faqPageSchema(faqs, `${canonicalUrl}#preguntes`)] : []),
           ],
         }}

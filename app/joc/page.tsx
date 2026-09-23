@@ -14,6 +14,7 @@ import { speciesSameAs } from "@/data/species-identifiers";
 import { getEdibilityPresentation } from "@/src/lib/edibility-presentation";
 import type { MushroomGameEntry, MushroomGameTone } from "@/src/lib/mushroom-game";
 import { SITE_URL, speciesPath } from "@/src/lib/seo";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 const GAME_TITLE = "Joc de buscar bolets: identifica 6 espècies";
 const GAME_DESCRIPTION = "Juga a buscar bolets en un bosc il·lustrat. Troba sis espècies de Catalunya, observa’n els detalls i aprèn a identificar-les.";
@@ -133,13 +134,7 @@ export default function MushroomGamePage() {
               url: `${SITE_URL}${speciesPath({ speciesId: entry.id })}`,
             })),
           },
-          {
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL },
-              { "@type": "ListItem", position: 2, name: "Joc de buscar bolets", item: GAME_URL },
-            ],
-          },
+          breadcrumbSchema([{ name: "Joc de buscar bolets", url: GAME_URL }]),
         ],
       }} />
       <PageHeader

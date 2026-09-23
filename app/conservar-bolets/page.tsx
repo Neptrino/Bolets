@@ -45,6 +45,7 @@ import {
   SITE_URL,
   speciesPath,
 } from "@/src/lib/seo";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 const title = "Com conservar i congelar bolets amb seguretat";
 const description = "Com conservar bolets: congelar-los escaldats o cuinats, assecar-los a làmines o fer-los en escabetx, amb les recomanacions de l’ACSA.";
@@ -164,14 +165,7 @@ export default function PreserveMushroomsPage() {
             ...editorialArticleFields("conservar-bolets"),
           },
           faqPageSchema(faqs, `${absoluteUrl("/conservar-bolets")}#preguntes`),
-          {
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Inici", item: absoluteUrl() },
-              { "@type": "ListItem", position: 2, name: "Guies", item: absoluteUrl("/guies") },
-              { "@type": "ListItem", position: 3, name: "Conservar bolets", item: absoluteUrl("/conservar-bolets") },
-            ],
-          },
+          breadcrumbSchema([{ name: "Guies", url: absoluteUrl("/guies") }, { name: "Conservar bolets", url: absoluteUrl("/conservar-bolets") }]),
         ],
       }} />
 

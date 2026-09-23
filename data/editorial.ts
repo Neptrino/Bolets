@@ -18,7 +18,7 @@ export const EDITORIAL_LAUNCH_DATE = "2026-08-13";
 // a page family changes visibly (`tests/editorial-freshness.test.ts` names
 // the constant to bump). Per-item overrides below date content changes to a
 // single page; the later of the two wins.
-export const LOCAL_GUIDES_UPDATED_AT = "2026-09-18";
+export const LOCAL_GUIDES_UPDATED_AT = "2026-09-23";
 export const SPECIES_PAGES_UPDATED_AT = "2026-09-23";
 export const ZONE_PAGES_UPDATED_AT = "2026-09-23";
 export const PLACE_PAGES_UPDATED_AT = "2026-09-15";
@@ -251,18 +251,18 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   },
   "bolets-de-soca": {
     publishedAt: "2026-08-27",
-    updatedAt: "2026-08-30",
+    updatedAt: "2026-09-23",
   },
   "fals-rossinyol": {
     publishedAt: "2026-08-27",
-    updatedAt: "2026-08-30",
+    updatedAt: "2026-09-23",
   },
   "bolets": {
     updatedAt: "2026-09-23",
   },
   "noms-de-bolets-catala-castella": {
     publishedAt: "2026-09-03",
-    updatedAt: "2026-09-06",
+    updatedAt: "2026-09-23",
   },
   "equip-editorial": {
     updatedAt: "2026-08-31",
@@ -355,7 +355,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-23",
   },
   "parts-dun-bolet": {
-    updatedAt: "2026-09-14",
+    updatedAt: "2026-09-23",
   },
   "avis-legal": {
     publishedAt: "2026-08-17",

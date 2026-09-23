@@ -35,6 +35,7 @@ import { speciesDrawing, speciesIllustration } from "@/src/lib/species-illustrat
 import { territorialMapPath } from "@/src/lib/territorial-map";
 import type { AreaProfile, PlaceProfile } from "@/data/location-pages";
 import type { SourceReference, SpeciesProfile } from "@/src/lib/types";
+import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 
 type Props = { params: Promise<{ place: string; species: string; guide: string }> };
 
@@ -285,7 +286,7 @@ export default async function SpeciesLocationPage({ params }: Props) {
 
   return (
     <article className="local-species-page">
-      <JsonLd data={{ "@context": "https://schema.org", "@graph": [{ "@type": "Article", "@id": `${url}#article`, headline: page.titlePhrase, description: page.habitatNote, url, inLanguage: "ca", image, isPartOf: { "@id": `${SITE_URL}/#website` }, publisher: { "@id": `${SITE_URL}/#organization` }, ...editorialArticleFields(editorialContentId), about: [{ "@type": "Taxon", name: species.identity.scientificName, alternateName: [species.identity.commonName, ...species.identity.alternateNames], taxonRank: "species", sameAs: speciesSameAs(species.speciesId) }, { "@type": "Place", name: location.name, containedInPlace: { "@type": "Place", name: area.name } }] }, { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Inici", item: SITE_URL }, { "@type": "ListItem", position: 2, name: "Guies", item: absoluteUrl("/guies") }, { "@type": "ListItem", position: 3, name: area.name, item: absoluteUrl(`/zones/${area.slug}`) }, { "@type": "ListItem", position: 4, name: location.name, item: absoluteUrl(placePath(location)) }, { "@type": "ListItem", position: 5, name: displaySearchName(page.searchName), item: url }] }] }} />
+      <JsonLd data={{ "@context": "https://schema.org", "@graph": [{ "@type": "Article", "@id": `${url}#article`, headline: page.titlePhrase, description: page.habitatNote, url, inLanguage: "ca", image, isPartOf: { "@id": `${SITE_URL}/#website` }, publisher: { "@id": `${SITE_URL}/#organization` }, ...editorialArticleFields(editorialContentId), about: [{ "@type": "Taxon", name: species.identity.scientificName, alternateName: [species.identity.commonName, ...species.identity.alternateNames], taxonRank: "species", sameAs: speciesSameAs(species.speciesId) }, { "@type": "Place", name: location.name, containedInPlace: { "@type": "Place", name: area.name } }] }, breadcrumbSchema([{ name: "Guies", url: absoluteUrl("/guies") }, { name: area.name, url: absoluteUrl(`/zones/${area.slug}`) }, { name: location.name, url: absoluteUrl(placePath(location)) }, { name: displaySearchName(page.searchName), url: url }])] }} />
       <header className="local-species-hero guide-hero">
         <div className="guide-hero-map" aria-hidden="true">
           <Image src={placeMapPath(location, "banner")} alt="" width={banner.width} height={banner.height} unoptimized priority style={{ objectPosition: `${banner.focus.x * 100}% ${banner.focus.y * 100}%` }} />
