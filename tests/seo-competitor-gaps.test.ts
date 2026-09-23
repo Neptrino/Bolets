@@ -49,7 +49,13 @@ describe("mushroom preservation guide", () => {
     expect(document.body.textContent).toContain("−18 °C");
     expect(document.body.textContent).toContain("màxim de dos mesos");
     expect(document.body.textContent).toContain("No tornis a congelar");
-    expect(document.querySelectorAll("#preguntes details")).toHaveLength(4);
+    expect(document.querySelectorAll("#preguntes details")).toHaveLength(10);
+    expect(document.querySelector("#frescos")?.textContent).toContain("D’un a tres dies");
+    for (const method of ["congelar", "assecar", "escabetx"]) {
+      expect(document.querySelectorAll(`section#${method} .guide-step-flow li`)).toHaveLength(3);
+    }
+    expect(document.querySelector("#assecar")?.textContent).toContain("L’assecat no substitueix la cocció");
+    expect(document.querySelector("#escabetx")?.textContent).toContain("un mínim de 30 minuts");
     expect(document.querySelectorAll('script[type="application/ld+json"]')).toHaveLength(1);
     for (const source of mushroomPreservationSources) {
       expect(html).toContain(source.url.replaceAll("&", "&amp;"));

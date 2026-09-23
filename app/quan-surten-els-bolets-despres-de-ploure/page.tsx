@@ -1,3 +1,4 @@
+import "@/app/styles/guide-blocks.css";
 import "@/app/styles/rain-guide.css";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -184,12 +185,12 @@ export default function MushroomsAfterRainPage() {
         layout="split"
       />
 
-      <aside className="rain-direct-answer" aria-labelledby="rain-direct-answer-title">
+      <aside className="guide-answer" aria-labelledby="rain-direct-answer-title">
         <Clock3 size={24} aria-hidden="true" />
         <div>
           <p className="eyebrow">Resposta curta</p>
           <h2 id="rain-direct-answer-title">{rainAnswerSentence}</h2>
-          <ul className="rain-answer-groups">
+          <ul className="guide-answer-points">
             {answerGroups.map((group) => (
               <li key={group.key}>
                 <strong>{group.days}</strong>
@@ -259,21 +260,21 @@ export default function MushroomsAfterRainPage() {
         <RainResponseCurve window={cepWindow} appliesToAll={Boolean(sharedThresholds)} />
       </section>}
 
-      <section className="rain-species-examples" aria-labelledby="rain-species-title">
+      <section className="guide-section" aria-labelledby="rain-species-title">
         <SectionHeader
           meta={`${exampleSpecies.length} exemples del catàleg`}
           title="Cada espècie respon al seu ritme"
           titleId="rain-species-title"
           description="Quina pluja compta i què la condiciona, espècie per espècie. Descriuen patrons habituals, no una data garantida després de ploure."
         />
-        <div className="rain-species-grid">
+        <div className="guide-species-grid rain-species-grid">
           {exampleSpecies.map((species) => {
             const rainfall = species.ecologicalConfig.rainfall;
             const window = scoredRainWindowForModel(species.modelConfig);
             const moistureLevel = priorMoistureLevel(rainfall.priorMoisture);
             return <article key={species.speciesId}>
-              <div className="rain-species-identity">
-                <span className="rain-species-icon-tile"><SpeciesIcon speciesId={species.speciesId} size={56} /></span>
+              <div className="guide-species-identity">
+                <span className="guide-icon-tile"><SpeciesIcon speciesId={species.speciesId} size={56} /></span>
                 <div><h3>{species.identity.commonName}</h3><em>{species.identity.scientificName}</em></div>
               </div>
               {window ? <div className="rain-species-rain">
@@ -305,14 +306,14 @@ export default function MushroomsAfterRainPage() {
         </div>
       </section>
 
-      <section className="rain-signals-section" aria-labelledby="rain-signals-title">
+      <section className="guide-section" aria-labelledby="rain-signals-title">
         <SectionHeader
           meta="Factors clau"
           title="Què canvia realment després de ploure?"
           titleId="rain-signals-title"
           description="Cap factor funciona sol, i un mateix episodi de pluja pot tenir efectes molt diferents."
         />
-        <div className="rain-factor-grid" aria-label="Factors que influeixen en les condicions després de ploure">
+        <div className="guide-factor-grid" aria-label="Factors que influeixen en les condicions després de ploure">
           <article><CalendarRange size={22} /><span>Temporada</span><h3>El moment de l’any</h3><p>Fora de la temporada habitual, una pluja difícilment serà suficient.</p></article>
           <article><Droplets size={22} /><span>Sòl</span><h3>La humitat que ja hi havia</h3><p>Un sòl molt sec pot necessitar més d’un xàfec per recuperar aigua.</p></article>
           <article><CloudRain size={22} /><span>Pluja</span><h3>Quantitat i repartiment</h3><p>Uns quants dies de pluja sostinguda no tenen el mateix efecte que un aiguat breu.</p></article>
@@ -321,26 +322,26 @@ export default function MushroomsAfterRainPage() {
         </div>
       </section>
 
-      <section className="rain-model-section" aria-labelledby="rain-model-title">
+      <section className="guide-section" aria-labelledby="rain-model-title">
         <SectionHeader
           meta="Com llegir-ho"
           title="Pluja, bosc i temporada han de coincidir"
           titleId="rain-model-title"
           description="La pluja només modifica una part de les condicions. El mapa combina el lloc i el moment abans de donar una valoració."
         />
-        <div className="rain-index-flow">
+        <div className="guide-step-flow">
           <article><span aria-hidden="true">1</span><Trees size={20} /><h3>Bosc adequat</h3><p>Comprova si el bosc, el sòl i l’altitud encaixen amb l’espècie.</p></article>
           <article><span aria-hidden="true">2</span><Gauge size={20} /><h3>Moment favorable</h3><p>Combina la temporada, l’aigua disponible i la temperatura recent.</p></article>
           <article><span aria-hidden="true">3</span><CloudRain size={20} /><h3>Resultat conjunt</h3><p>Un bon moment no compensa un bosc inadequat, ni al revés.</p></article>
         </div>
-        <div className="rain-formula-panel">
+        <div className="guide-summary-panel">
           <div><span>Primer</span><strong>Valorem com són les condicions per fructificar dins de l’hàbitat adequat.</strong></div>
           <div><span>Després</span><strong>La valoració baixa si hi ha poc terreny adequat o si una condició clau és desfavorable.</strong></div>
           <p><ShieldCheck size={17} aria-hidden="true" /> Les valoracions serveixen per comparar zones de 0 a 100. No indiquen probabilitat de presència, abundància ni data de sortida. El càlcul complet es pot consultar a la pàgina del mètode.</p>
         </div>
       </section>
 
-      <section className="rain-evidence" aria-labelledby="rain-evidence-title">
+      <section className="guide-section" aria-labelledby="rain-evidence-title">
         <SectionHeader
           meta="Base científica i límits"
           title="Què sabem i què continua sent incert"
@@ -355,7 +356,7 @@ export default function MushroomsAfterRainPage() {
             <a href={source.url} target="_blank" rel="noreferrer" aria-label={`Consultar l’estudi: ${source.title}`}>Consultar l’estudi <ArrowUpRight size={14} /></a>
           </article>)}
         </div>
-        <aside className="rain-model-caveat"><ShieldCheck size={21} aria-hidden="true" /><p><strong>Límit important.</strong> Les valoracions permeten comparar condicions, però encara no les hem contrastat amb prou observacions de camp a Catalunya. No són una probabilitat de trobar bolets.</p></aside>
+        <aside className="guide-caveat"><ShieldCheck size={21} aria-hidden="true" /><p><strong>Límit important.</strong> Les valoracions permeten comparar condicions, però encara no les hem contrastat amb prou observacions de camp a Catalunya. No són una probabilitat de trobar bolets.</p></aside>
       </section>
 
       <FaqSection faqs={rainFaqs} title="Pluja, espera i condicions actuals" titleId="rain-faq-title" />

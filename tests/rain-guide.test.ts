@@ -35,8 +35,8 @@ describe("rain response guide", () => {
     ]) {
       expect(html).toContain(`<h3>${heading}</h3>`);
     }
-    expect(html.match(/class="rain-index-flow"/g)).toHaveLength(1);
-    expect(html.match(/class="rain-factor-grid"/g)).toHaveLength(1);
+    expect(html.match(/class="guide-step-flow"/g)).toHaveLength(1);
+    expect(html.match(/class="guide-factor-grid"/g)).toHaveLength(1);
     expect(html.match(/class="rain-evidence-grid"/g)).toHaveLength(1);
     expect(html).toContain("El vent i una ratxa seca poden fer perdre ràpidament la humitat");
     expect(html).not.toContain("energia del sòl");
@@ -45,7 +45,7 @@ describe("rain response guide", () => {
   });
 
   it("answers the question first with the scored windows and shared thresholds", () => {
-    const answer = html.slice(html.indexOf('class="rain-direct-answer"'), html.indexOf("</aside>"));
+    const answer = html.slice(html.indexOf('class="guide-answer"'), html.indexOf("</aside>"));
     expect(answer).toMatch(/<h2[^>]*>Els bolets surten entre \d+ i \d+ dies després de ploure, segons l’espècie\.<\/h2>/);
     expect(answer.match(/<li>/g)?.length).toBeGreaterThanOrEqual(3);
     expect(answer).toMatch(/Dies \d+–\d+/);

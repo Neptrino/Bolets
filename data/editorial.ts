@@ -73,6 +73,20 @@ export const officialSafetySource: SourceReference = {
 
 export const mushroomPreservationSources: SourceReference[] = [
   {
+    id: "acsa-menja-bolets",
+    title: "Menja bolets amb seguretat",
+    publisher: "Agència Catalana de Seguretat Alimentària",
+    url: "https://acsa.gencat.cat/ca/seguretat_alimentaria/consells_sobre_seguretat_alimentaria/menja-amb-seguretat-.../menja-bolets-amb-seguretat/",
+    confidence: "high",
+  },
+  {
+    id: "acsa-nevera",
+    title: "Conservació dels aliments a la nevera",
+    publisher: "Agència Catalana de Seguretat Alimentària",
+    url: "https://acsa.gencat.cat/ca/seguretat_alimentaria/consells_sobre_seguretat_alimentaria/consells-generals/consells-per-emmagatzemar-correctament-els-aliments-a-la-nevera/",
+    confidence: "high",
+  },
+  {
     id: "acsa-conservar-bolets",
     title: "Conservar bolets",
     publisher: "Agència Catalana de Seguretat Alimentària",
@@ -91,6 +105,27 @@ export const mushroomPreservationSources: SourceReference[] = [
     title: "Descongeles els aliments de manera segura?",
     publisher: "Agència Catalana de Seguretat Alimentària",
     url: "https://acsa.gencat.cat/ca/detall/article/descongelacio-00002",
+    confidence: "high",
+  },
+  {
+    id: "canal-aliments-bolets",
+    title: "Bolets",
+    publisher: "Canal Aliments, Generalitat de Catalunya",
+    url: "https://canalaliments.gencat.cat/ca/coneix-aliments/bolets-tofona/bolets/index.html",
+    confidence: "high",
+  },
+  {
+    id: "psu-preserving-mushrooms",
+    title: "Preparing and Preserving Mushrooms",
+    publisher: "Penn State Extension",
+    url: "https://extension.psu.edu/preparing-and-preserving-mushrooms",
+    confidence: "moderate",
+  },
+  {
+    id: "madrid-conservas-botulismo",
+    title: "Conservas caseras: evitar el botulismo",
+    publisher: "Comunidad de Madrid",
+    url: "https://www.comunidad.madrid/servicios/salud/conservas-caseras-evitar-botulismo",
     confidence: "high",
   },
 ];
