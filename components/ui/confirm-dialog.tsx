@@ -45,7 +45,7 @@ export function ConfirmDialog({
 
   return <dialog
     ref={dialog}
-    className="site-confirm-dialog"
+    className="site-dialog"
     aria-labelledby={titleId}
     aria-describedby={descriptionId}
     aria-busy={busy}
@@ -57,14 +57,14 @@ export function ConfirmDialog({
       if (event.target === event.currentTarget && !busy) onCancel();
     }}
   >
-    <div className="site-confirm-dialog-card" data-tone={tone}>
-      <button type="button" className="site-confirm-dialog-close" onClick={onCancel} disabled={busy} aria-label="Tancar"><X size={20} aria-hidden="true" /></button>
-      <span className="site-confirm-dialog-icon" aria-hidden="true">{icon ?? <CircleAlert size={24} />}</span>
-      <div className="site-confirm-dialog-copy"><h2 id={titleId}>{title}</h2><p id={descriptionId}>{description}</p></div>
-      {error ? <p className="site-confirm-dialog-error" aria-live="polite">{error}</p> : null}
-      <div className="site-confirm-dialog-actions">
-        <button type="button" className="site-confirm-dialog-button" onClick={onCancel} disabled={busy}>{cancelLabel}</button>
-        <button type="button" className="site-confirm-dialog-button" data-tone={tone} onClick={onConfirm} disabled={busy}>{busy ? busyLabel : confirmLabel}</button>
+    <div className="site-dialog-card" data-tone={tone}>
+      <button type="button" className="site-dialog-close" onClick={onCancel} disabled={busy} aria-label="Tancar"><X size={20} aria-hidden="true" /></button>
+      <span className="site-dialog-icon" aria-hidden="true">{icon ?? <CircleAlert size={24} />}</span>
+      <div className="site-dialog-copy"><h2 id={titleId}>{title}</h2><p id={descriptionId}>{description}</p></div>
+      {error ? <p className="site-dialog-error" aria-live="polite">{error}</p> : null}
+      <div className="site-dialog-actions">
+        <button type="button" className="site-dialog-button" onClick={onCancel} disabled={busy}>{cancelLabel}</button>
+        <button type="button" className="site-dialog-button" data-tone={tone} onClick={onConfirm} disabled={busy}>{busy ? busyLabel : confirmLabel}</button>
       </div>
     </div>
   </dialog>;

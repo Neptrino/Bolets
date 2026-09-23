@@ -57,12 +57,8 @@
 .statusBadge[data-status="approved"] { color: var(--forest-600); }
 .statusBadge[data-status="rejected"] { color: var(--danger-ink); }
 
-.reviewDialog { width: min(860px, calc(100% - 32px)); max-width: none; margin: auto; padding: 0; border: 0; border-radius: var(--radius-lg); background: transparent; color: var(--ink); }
-.reviewDialog::backdrop { background: color-mix(in srgb, var(--forest-900) 60%, transparent); backdrop-filter: blur(5px); }
-.reviewDialogCard { position: relative; display: grid; gap: 18px; max-height: min(820px, calc(100vh - 40px)); padding: 24px; overflow-y: auto; border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-xl); }
-.dialogClose { position: absolute; top: 12px; right: 12px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
-.dialogClose:hover { background: var(--surface-warm); color: var(--ink); }
-.dialogClose:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; }
+.reviewDialog { width: min(860px, calc(100% - 32px)); }
+.reviewDialogCard { gap: 18px; max-height: min(820px, calc(100vh - 40px)); }
 .dialogHeader { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; padding-right: 34px; }
 .dialogHeader > span { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--surface-muted); color: var(--forest-panel); }
 .dialogHeader[data-tone="danger"] > span { background: var(--danger-surface); color: var(--danger-ink); }

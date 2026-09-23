@@ -16,50 +16,7 @@
 .trigger:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; }
 .permanent { color: var(--muted); font-size: var(--text-xs); font-weight: 800; }
 
-.dialog {
-  width: min(720px, calc(100% - 32px));
-  max-width: none;
-  margin: auto;
-  padding: 0;
-  border: 0;
-  border-radius: var(--radius-lg);
-  background: transparent;
-  color: var(--ink);
-}
-
-.dialog::backdrop { background: color-mix(in srgb, var(--forest-900) 60%, transparent); backdrop-filter: blur(5px); }
-
-.card {
-  position: relative;
-  display: grid;
-  gap: 20px;
-  max-height: min(850px, calc(100vh - 40px));
-  padding: 24px;
-  overflow-y: auto;
-  border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-xl);
-}
-
-.close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-}
-
-.close:hover { background: var(--surface-warm); color: var(--ink); }
-.close:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; }
+.dialog { width: min(720px, calc(100% - 32px)); }
 
 .header {
   display: grid;

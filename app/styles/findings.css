@@ -77,6 +77,7 @@
 .finding-save-success-copy p { margin: 0; color: var(--muted); font-size: var(--text-xs); line-height: 1.5; }
 .finding-save-success-actions { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 3px; }
 
+.finding-report-dialog .site-dialog-icon { background: var(--surface-muted); color: var(--finding-green-deep); }
 .finding-report-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
@@ -362,18 +363,6 @@
 .finding-personal-menu-panel button[data-tone="danger"] { color: var(--danger-ink); }
 .finding-pagination { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding-top: 3px; }
 .finding-pagination p { margin: 0; color: var(--muted); font-size: var(--text-xs); }
-.finding-report-dialog { width: min(560px, calc(100% - 32px)); max-width: none; margin: auto; padding: 0; border: 0; border-radius: var(--radius-lg); overflow: visible; background: transparent; color: var(--ink); }
-.finding-report-dialog::backdrop { background: color-mix(in srgb, var(--forest-900) 60%, transparent); backdrop-filter: blur(5px); }
-.finding-report-dialog-card { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; padding: 26px; border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-xl); }
-.finding-report-dialog-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--surface-muted); color: var(--finding-green-deep); }
-.finding-report-dialog-copy { align-self: center; padding-right: 34px; }
-.finding-report-dialog-copy h2 { margin: 0 0 7px; font-size: var(--text-xl); line-height: 1.15; }
-.finding-report-dialog-copy p { margin: 0; color: var(--muted); font-size: var(--text-base); line-height: 1.55; }
-.finding-report-dialog-close { position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
-.finding-report-dialog-close:hover { background: var(--surface-warm); color: var(--ink); }
-.finding-report-dialog-close:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; }
-.finding-report-dialog .finding-field, .finding-report-dialog .finding-notice, .finding-report-dialog-actions { grid-column: 1 / -1; }
-.finding-report-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 4px; }
 
 .finding-auth-wrap { max-width: 600px; margin-inline: auto; }
 .finding-auth-code { letter-spacing: .25em; text-align: center; font-weight: 900; }
@@ -440,10 +429,6 @@
   .finding-pagination .finding-button-secondary { width: 100%; }
   .finding-autodetect-card { padding: 14px; }
   .finding-photo-workflow { grid-template-columns: 1fr; }
-  .finding-report-dialog-card { grid-template-columns: 1fr; padding: 22px; }
-  .finding-report-dialog-copy { padding-right: 18px; }
-  .finding-report-dialog-actions { flex-direction: column-reverse; }
-  .finding-report-dialog-actions > button { width: 100%; }
   .finding-public-location-map { min-height: 240px; }
   .finding-location-preview-map { min-height: 270px; }
   .finding-passkey-list li { grid-template-columns: auto minmax(0, 1fr); }

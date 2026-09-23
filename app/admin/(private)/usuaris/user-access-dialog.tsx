@@ -55,14 +55,14 @@ export function UserAccessDialog({
       </button>
       <dialog
         ref={dialog}
-        className={styles.dialog}
+        className={`site-dialog ${styles.dialog}`}
         aria-labelledby={titleId}
         onClick={(event) => {
           if (event.target === event.currentTarget) dialog.current?.close();
         }}
       >
-        <div className={styles.card}>
-          <button type="button" className={styles.close} onClick={() => dialog.current?.close()} aria-label="Tancar">
+        <div className="site-dialog-panel">
+          <button type="button" className="site-dialog-close" onClick={() => dialog.current?.close()} aria-label="Tancar">
             <X size={20} aria-hidden="true" />
           </button>
           <header className={styles.header}>

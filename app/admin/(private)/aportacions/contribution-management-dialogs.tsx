@@ -69,16 +69,16 @@ export function ContributionReviewDialog({ request }: { request: AdminContributi
       </button>
       <dialog
         ref={dialog}
-        className={styles.reviewDialog}
+        className={`site-dialog ${styles.reviewDialog}`}
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
         onClick={(event) => {
           if (event.target === event.currentTarget) dialog.current?.close();
         }}
       >
-        <form action={reviewContributionAction} className={styles.reviewDialogCard}>
+        <form action={reviewContributionAction} className={`site-dialog-panel ${styles.reviewDialogCard}`}>
           <input type="hidden" name="requestId" value={request.id} />
-          <button type="button" className={styles.dialogClose} onClick={() => dialog.current?.close()} aria-label="Tancar">
+          <button type="button" className="site-dialog-close" onClick={() => dialog.current?.close()} aria-label="Tancar">
             <X size={20} aria-hidden="true" />
           </button>
           <header className={styles.dialogHeader}>
@@ -117,14 +117,14 @@ export function ContributionDetailsDialog({ request }: { request: AdminContribut
       </button>
       <dialog
         ref={dialog}
-        className={styles.reviewDialog}
+        className={`site-dialog ${styles.reviewDialog}`}
         aria-labelledby={titleId}
         onClick={(event) => {
           if (event.target === event.currentTarget) dialog.current?.close();
         }}
       >
-        <div className={styles.reviewDialogCard}>
-          <button type="button" className={styles.dialogClose} onClick={() => dialog.current?.close()} aria-label="Tancar">
+        <div className={`site-dialog-panel ${styles.reviewDialogCard}`}>
+          <button type="button" className="site-dialog-close" onClick={() => dialog.current?.close()} aria-label="Tancar">
             <X size={20} aria-hidden="true" />
           </button>
           <header className={styles.dialogHeader}>
@@ -160,15 +160,15 @@ export function RevokeAccessDialog({ userId, userEmail }: { userId: string; user
       </button>
       <dialog
         ref={dialog}
-        className={styles.reviewDialog}
+        className={`site-dialog ${styles.reviewDialog}`}
         aria-labelledby={titleId}
         onClick={(event) => {
           if (event.target === event.currentTarget) dialog.current?.close();
         }}
       >
-        <form action={revokeContributorAction} className={styles.reviewDialogCard}>
+        <form action={revokeContributorAction} className={`site-dialog-panel ${styles.reviewDialogCard}`}>
           <input type="hidden" name="userId" value={userId} />
-          <button type="button" className={styles.dialogClose} onClick={() => dialog.current?.close()} aria-label="Tancar">
+          <button type="button" className="site-dialog-close" onClick={() => dialog.current?.close()} aria-label="Tancar">
             <X size={20} aria-hidden="true" />
           </button>
           <header className={styles.dialogHeader} data-tone="danger">
