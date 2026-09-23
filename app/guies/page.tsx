@@ -18,12 +18,13 @@ import {
   areasBySlug,
   getPlace,
   locationPagePath,
+  PIRINEU_AREA_SLUGS,
   placeProfiles,
   speciesLocationPages,
 } from "@/data/location-pages";
 import { getSpecies } from "@/data/species";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE } from "@/src/lib/seo";
-import { areaMapPath } from "@/src/lib/place-map";
+import { areaMapPath, hubRegionMapPath, PIRINEU_MAP_SLUG } from "@/src/lib/place-map";
 import { speciesDrawing, speciesIllustration } from "@/src/lib/species-illustrations";
 import { speciesTerritoryGuides } from "@/src/lib/species-territory-guides";
 
@@ -62,8 +63,9 @@ function placeCountForArea(areaSlug: string) {
  * drawing (rovelló and pinetell, the ceps) collapse into one icon unless each
  * has its own editorial drawing; the tooltip names every species behind an icon.
  */
-function speciesForArea(areaSlug: string) {
-  const species = [...new Set(speciesLocationPages.filter((page) => page.areaSlug === areaSlug).map((page) => page.speciesId))]
+function speciesForArea(areaSlugs: string | readonly string[]) {
+  const slugs = new Set(typeof areaSlugs === "string" ? [areaSlugs] : areaSlugs);
+  const species = [...new Set(speciesLocationPages.filter((page) => slugs.has(page.areaSlug)).map((page) => page.speciesId))]
     .flatMap((speciesId) => getSpecies(speciesId) ?? []);
   const icons = new Map<string, { drawing?: string; illustration: ReturnType<typeof speciesIllustration>; label: string }>();
   for (const entry of species) {
@@ -77,6 +79,8 @@ function speciesForArea(areaSlug: string) {
 }
 
 export default function GuidesPage() {
+  const pirineuSpecies = speciesForArea(PIRINEU_AREA_SLUGS);
+  const pirineuGuideCount = PIRINEU_AREA_SLUGS.reduce((total, slug) => total + guideCountForArea(slug), 0);
   const territories = [...areaProfiles].sort((left, right) =>
     catalanCollator.compare(left.name, right.name),
   );
@@ -161,10 +165,32 @@ export default function GuidesPage() {
           title="Guies per territori"
           titleId="guides-territories-title"
           description="Cada comarca o massís agrupa els seus indrets documentats i les guies d’espècie que hi encaixen."
-          actions={<><Link href="/zones/pirineu" className="text-link">Guia del Pirineu <ArrowUpRight size={16} aria-hidden="true" /></Link><Link href="/bolets-avui" className="text-link">Condicions d’avui per zona <ArrowUpRight size={16} aria-hidden="true" /></Link></>}
+          actions={<Link href="/bolets-avui" className="text-link">Condicions d’avui per zona <ArrowUpRight size={16} aria-hidden="true" /></Link>}
           size="compact"
         />
         <ul className="guides-territory-list" data-guides-territory-list>
+          <li>
+            <Link href="/zones/pirineu">
+              <span className="guides-territory-map">
+                <Image src={hubRegionMapPath(PIRINEU_MAP_SLUG)} alt="" width={650} height={812} unoptimized sizes="400px" />
+                <span className="guides-territory-species" role="img" aria-label={`Espècies: ${pirineuSpecies.names.join(", ")}`}>
+                  {pirineuSpecies.icons.slice(0, 4).map(({ key, drawing, illustration, label }) => (
+                    <span key={key} className="guides-territory-species-icon" data-tooltip={label}>
+                      {drawing
+                        ? <Image src={drawing} alt="" width={64} height={64} unoptimized />
+                        : illustration ? <MushroomSpecimen kind={illustration} /> : <i>{label.charAt(0)}</i>}
+                    </span>
+                  ))}
+                </span>
+              </span>
+              <span className="guides-territory-copy">
+                <span className="guides-territory-type">Regió</span>
+                <strong>Pirineu</strong>
+                <small>{PIRINEU_AREA_SLUGS.length} comarques · {pirineuGuideCount} guies</small>
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </span>
+            </Link>
+          </li>
           {territories.map((area) => {
             const guideCount = guideCountForArea(area.slug);
             const placeCount = placeCountForArea(area.slug);
@@ -257,10 +283,6 @@ export default function GuidesPage() {
         </ul>
       </section>
 
-      <aside className="location-safety-note">
-        <Trees size={22} />
-        <div><strong>Hàbitat potencial, no una coordenada.</strong><p>Les guies no confirmen presència actual ni substitueixen una identificació experta. Abans de sortir, <Link href="/normativa-bolets">comprova els permisos i l’accés al bosc</Link>.</p></div>
-      </aside>
     </PageShell>
   );
 }

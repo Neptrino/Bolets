@@ -109,6 +109,17 @@ export function placeMapPath(place: PlaceProfile, variant: "portrait" | "banner"
   return `/media/place-maps/${place.areaSlug}/${place.slug}${variant === "banner" ? "-banner" : ""}.webp?v=${PLACE_MAP_VERSION}`;
 }
 
+/** Portrait of a multi-area editorial hub such as the Pyrenees, framed on its areas. */
+export const PIRINEU_MAP_SLUG = "pirineu";
+
+export function hubRegionMapFilePath(slug: string) {
+  return `${PLACE_MAP_DIRECTORY}/${slug}.webp`;
+}
+
+export function hubRegionMapPath(slug: string) {
+  return `/media/place-maps/${slug}.webp?v=${PLACE_MAP_VERSION}`;
+}
+
 export function areaMapPath(area: AreaProfile) {
   return `/media/place-maps/${area.slug}.webp?v=${PLACE_MAP_VERSION}`;
 }

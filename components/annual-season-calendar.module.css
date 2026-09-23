@@ -47,7 +47,10 @@
 
 .note {
   margin-top: 16px;
-  max-width: 85ch;
+}
+
+.note a {
+  font-size: inherit;
 }
 
 .scroll {

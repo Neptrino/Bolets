@@ -93,7 +93,7 @@ export const seasonGuides = [
     rangeLabel: "Setembre–novembre",
     rangeSentence: "de setembre a novembre",
     representativeMonth: "oct",
-    seoTitle: "Bolets de tardor a Catalunya: espècies i temporada",
+    seoTitle: "Bolets de tardor a Catalunya: espècies i mesos",
     seoDescription: "Guia dels bolets de tardor a Catalunya, de setembre a novembre: rovellons, camagrocs, fredolics, llenegues, ceps i condicions actuals.",
     intro: "La tardor concentra la diversitat més gran del catàleg, però una data al calendari no garanteix fructificació: cal que pluja, temperatura i humitat del sòl coincideixin.",
     conditionTitle: "La temporada més ampla",

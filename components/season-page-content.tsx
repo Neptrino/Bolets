@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowUpRight, CalendarDays, CloudRain, Map } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
+import { SeasonGuideCards } from "@/components/season-guide-sections";
 import { SpeciesCollection } from "@/components/species-collection";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { AnnualSeasonCalendar } from "@/components/annual-season-calendar";
@@ -134,6 +135,8 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
           );
         })}
       </nav>
+
+      <SeasonGuideCards highlight={relatedSeasonGuide.id} className="season-overview-guides" />
 
       <AnnualSeasonCalendar currentMonth={currentMonth} selectedMonth={month} />
 

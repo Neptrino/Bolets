@@ -10,13 +10,15 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import sharp from "sharp";
-import { areaBounds, areaProfiles, placeProfiles } from "../data/location-pages.ts";
+import { areaBounds, areaProfiles, areasBounds, areasBySlug, PIRINEU_AREA_SLUGS, placeProfiles } from "../data/location-pages.ts";
 import {
   PLACE_MAP_BRIGHTNESS,
   PLACE_MAP_TINT,
   areaMapFilePath,
   areaMapSpec,
   hubMapUpstreamUrl,
+  hubRegionMapFilePath,
+  PIRINEU_MAP_SLUG,
   placeBannerSpec,
   placeMapFilePath,
   placeMapSpec,
@@ -30,6 +32,7 @@ const force = args.includes("--force");
 const only = new Set(args.filter((arg) => !arg.startsWith("--")));
 const jobs: Job[] = [
   ...areaProfiles.map((area) => ({ id: area.slug, file: areaMapFilePath(area), spec: areaMapSpec(areaBounds(area)) })),
+  { id: PIRINEU_MAP_SLUG, file: hubRegionMapFilePath(PIRINEU_MAP_SLUG), spec: areaMapSpec(areasBounds(PIRINEU_AREA_SLUGS.map((slug) => areasBySlug[slug]))) },
   ...placeProfiles.flatMap((place) => [
     { id: `${place.areaSlug}/${place.slug}`, file: placeMapFilePath(place), spec: placeMapSpec(place) },
     { id: `${place.areaSlug}/${place.slug}`, file: placeMapFilePath(place, "banner"), spec: placeBannerSpec(place) },

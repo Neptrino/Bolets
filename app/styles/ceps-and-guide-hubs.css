@@ -371,12 +371,11 @@
   margin-top: 56px;
   margin-bottom: 0;
 }
-.guides-page .location-safety-note { margin-top: 56px; }
 .guides-reading-links {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-  margin: 0;
+  margin: 18px 0 0;
   padding: 0;
   list-style: none;
 }

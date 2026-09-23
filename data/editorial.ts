@@ -246,13 +246,13 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-23",
   },
   "bolets-d-estiu": {
-    updatedAt: "2026-09-03",
+    updatedAt: "2026-09-23",
   },
   "bolets-de-tardor": {
-    updatedAt: "2026-09-03",
+    updatedAt: "2026-09-23",
   },
   "bolets-d-hivern": {
-    updatedAt: "2026-09-03",
+    updatedAt: "2026-09-23",
   },
   "temporada": {
     updatedAt: "2026-09-23",
@@ -333,7 +333,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   joc: { updatedAt: "2026-09-18" },
   metode: { updatedAt: "2026-09-14" },
   "col-labora": { updatedAt: "2026-09-02" },
-  guies: { updatedAt: "2026-09-18" },
+  guies: { updatedAt: "2026-09-23" },
 };
 
 export function getEditorialMetadata(contentId: string): EditorialMetadata {

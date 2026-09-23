@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, CircleAlert, Sprout } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
-import { SeasonGuideSwitcher } from "@/components/season-guide-switcher";
-import { SpeciesCollection } from "@/components/species-collection";
-import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
+import { SeasonTabs, SeasonMonthColumns, SeasonProtagonists, SeasonSpeciesCollections } from "@/components/season-guide-sections";
 import { coreEditorialSources, editorialArticleFields, officialSafetySource } from "@/data/editorial";
-import { getSpeciesByScientificName, speciesAlphabetical } from "@/data/species";
+import { speciesAlphabetical } from "@/data/species";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 import { seasonGuidesById } from "@/src/lib/season-guides";
 
@@ -24,7 +22,8 @@ export const metadata: Metadata = {
   },
 };
 
-const springMonths = seasonGuidesById.primavera.months;
+const springGuide = seasonGuidesById.primavera;
+const springMonths = springGuide.months;
 const featuredIds = ["morchella-esculenta", "calocybe-gambosa", "marasmius-oreades"];
 const springSpecies = speciesAlphabetical
   .filter((species) => springMonths.some((month) => species.ecologicalConfig.seasonality[month] !== "inactive"))
@@ -35,13 +34,6 @@ const springSpecies = speciesAlphabetical
     return left.identity.commonName.localeCompare(right.identity.commonName, "ca");
   });
 
-const toxicLookalikes = [...new Map(springSpecies.flatMap((species) =>
-  species.similarSpecies
-    .filter((lookalike) => ["toxic", "dangerously_toxic"].includes(lookalike.edibility))
-    .map((lookalike) => getSpeciesByScientificName(lookalike.scientificName))
-    .filter((lookalike) => Boolean(lookalike))
-    .map((lookalike) => [lookalike!.speciesId, lookalike!] as const),
-)).values()];
 
 export default function SpringMushroomsPage() {
   return (
@@ -57,15 +49,21 @@ export default function SpringMushroomsPage() {
         mainEntity: { "@type": "ItemList", numberOfItems: springSpecies.length, itemListElement: springSpecies.map((species, index) => ({ "@type": "ListItem", position: index + 1, name: species.identity.commonName, url: absoluteUrl(speciesPath(species)) })) },
       }} />
       <PageHeader
-        eyebrow={<><Sprout size={15} /> Calendari de març a juny</>}
+        eyebrow={<SeasonTabs current="primavera" />}
         title={<>Bolets<br /><PageTitleAccent>de primavera.</PageTitleAccent></>}
         description="La selecció inclou totes les espècies del catàleg amb activitat possible o superior entre març i juny. La múrgola, el moixernó i el cama-sec encapçalen la guia, però el calendari real depèn d’altitud, pluja i temperatura."
         layout="split"
       />
 
-      <aside className="intent-safety-note spring-safety-note"><CircleAlert size={22} /><div><strong>La primavera també té confusions de risc.</strong><p>Identifica exemplars complets, revisa tots els trets i no decideixis el consum amb una fotografia. En cas d’ingestió sospitosa, truca al 061.</p></div></aside>
+      <SeasonProtagonists guide={springGuide} species={springSpecies} />
+      <SeasonMonthColumns guide={springGuide} species={springSpecies} description={<><strong>La primavera també té confusions de risc.</strong> Identifica exemplars complets i no decideixis el consum amb una fotografia; la pluja, la temperatura i l’altitud marquen cada finestra.</>} />
+      <SeasonSpeciesCollections
+        guide={springGuide}
+        species={springSpecies}
+        meta={<span className="season-range-meta"><CalendarDays size={14} /> {springGuide.rangeLabel}</span>}
+      />
 
-      <section className="intent-reading-section" aria-labelledby="spring-reading-title">
+      <section className="intent-reading-section season-reading-section" aria-labelledby="spring-reading-title">
         <SectionHeader
           meta="Temporada, no promesa"
           title="Com interpretar els bolets de primavera"
@@ -84,17 +82,6 @@ export default function SpringMushroomsPage() {
         </div>
       </section>
 
-      {toxicLookalikes.length > 0 && <section className="spring-lookalikes"><div><p className="eyebrow">Mereixen una lectura separada</p><h2>Semblants tòxics presents al catàleg</h2></div><div>{toxicLookalikes.map((species) => <Link key={species.speciesId} href={speciesPath(species)}>{species.identity.commonName}<ArrowUpRight size={15} /></Link>)}</div></section>}
-
-      <section className="intent-species-section" aria-labelledby="spring-catalogue-title">
-        <SectionHeader
-          meta={<div className="seasonal-calendar-controls"><span><CalendarDays size={14} /> Març–juny</span><SeasonGuideSwitcher current="primavera" /></div>}
-          title={`${springSpecies.length} espècies del calendari`}
-          titleId="spring-catalogue-title"
-          actions={<Link href="/temporada" className="text-link">Veure tot l’any <ArrowUpRight size={16} /></Link>}
-        />
-        <SpeciesCollection species={springSpecies.map(toSpeciesCardProfile)} />
-      </section>
       <EditorialAttribution contentId="bolets-de-primavera" sources={[officialSafetySource, ...coreEditorialSources, ...springSpecies.flatMap((species) => species.references)]} variant="compact" />
     </PageShell>
   );

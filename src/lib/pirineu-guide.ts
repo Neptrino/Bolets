@@ -1,4 +1,4 @@
-import { areasBySlug, locationPagesForArea, placesForArea } from "@/data/location-pages";
+import { areasBySlug, locationPagesForArea, placesForArea, PIRINEU_AREA_SLUGS } from "@/data/location-pages";
 import { getSpecies, speciesProfiles } from "@/data/species";
 import type { AreaProfile } from "@/data/location-pages";
 import type { SpeciesProfile } from "@/src/lib/types";
@@ -8,7 +8,7 @@ import type { SpeciesProfile } from "@/src/lib/types";
    and altitude ranges come from the versioned profiles, places and guides
    from the curated location pages. */
 
-export const PIRINEU_AREA_SLUGS = ["ripolles", "cerdanya", "bergueda", "solsones"] as const;
+export { PIRINEU_AREA_SLUGS };
 
 export type PirineuAreaSlug = (typeof PIRINEU_AREA_SLUGS)[number];
 

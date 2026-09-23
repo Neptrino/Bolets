@@ -862,6 +862,20 @@ export function placeBounds(place: PlaceProfile): SpatialBounds {
   };
 }
 
+/** Comarca hubs grouped under the /zones/pirineu editorial hub (axial Pyrenees and Prepyrenees). */
+export const PIRINEU_AREA_SLUGS = ["ripolles", "cerdanya", "bergueda", "solsones"] as const;
+
+/** Smallest bounds containing every given area's documented places. */
+export function areasBounds(areas: readonly AreaProfile[]): SpatialBounds {
+  const bounds = areas.map(areaBounds);
+  return {
+    west: Math.min(...bounds.map((entry) => entry.west)),
+    south: Math.min(...bounds.map((entry) => entry.south)),
+    east: Math.max(...bounds.map((entry) => entry.east)),
+    north: Math.max(...bounds.map((entry) => entry.north)),
+  };
+}
+
 export function areaBounds(area: AreaProfile): SpatialBounds {
   const centres = placesForArea(area.slug).map((place) => place.mapCentre);
   const longitudes = centres.map(([longitude]) => longitude);

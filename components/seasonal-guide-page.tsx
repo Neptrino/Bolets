@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, CircleAlert, CloudRain, Leaf, Snowflake, Sun, Trees } from "lucide-react";
+import { ArrowUpRight, CalendarDays, Leaf, Snowflake, Sun, Trees } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
-import { SeasonGuideSwitcher } from "@/components/season-guide-switcher";
-import { SpeciesCollection } from "@/components/species-collection";
-import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
+import { SeasonTabs, SeasonMonthColumns, SeasonProtagonists, SeasonSpeciesCollections } from "@/components/season-guide-sections";
 import { coreEditorialSources, editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { absoluteUrl, SITE_URL, speciesPath } from "@/src/lib/seo";
 import { speciesForSeasonGuide, type SeasonGuide } from "@/src/lib/season-guides";
@@ -20,10 +18,6 @@ const seasonIcons = {
 export function SeasonalGuidePage({ guide }: { guide: SeasonGuide }) {
   const species = speciesForSeasonGuide(guide);
   const SeasonIcon = seasonIcons[guide.id];
-  const highlightedSpecies = new Intl.ListFormat("ca-ES", {
-    style: "long",
-    type: "conjunction",
-  }).format(species.slice(0, 6).map((item) => item.identity.commonName));
 
   return (
     <PageShell as="article">
@@ -48,24 +42,22 @@ export function SeasonalGuidePage({ guide }: { guide: SeasonGuide }) {
         },
       }} />
       <PageHeader
-        eyebrow={<><SeasonIcon size={15} /> Calendari {guide.rangeSentence}</>}
+        eyebrow={<SeasonTabs current={guide.id} />}
         title={<>Bolets<br /><PageTitleAccent>{guide.heroAccent}</PageTitleAccent></>}
         description={<>{guide.intro} La guia inclou totes les espècies del catàleg amb activitat possible o superior durant aquests mesos.</>}
         layout="split"
       />
 
-      <section className="seasonal-guide-notes" aria-label={`Com interpretar la temporada ${guide.id}`}>
-        <article><CloudRain size={21} aria-hidden="true" /><div><h2>{guide.conditionTitle}</h2><p>{guide.conditionText}</p></div></article>
-        <article><CircleAlert size={21} aria-hidden="true" /><div><h2>Calendari no vol dir presència</h2><p>No consumeixis cap bolet sense una identificació experta. El calendari descriu potencial estacional i no confirma que una espècie estigui fructificant.</p></div></article>
-      </section>
+      <SeasonProtagonists guide={guide} species={species} />
+      <SeasonMonthColumns guide={guide} species={species} description={<><strong>{guide.conditionTitle}.</strong> {guide.conditionText}</>} />
+      <SeasonSpeciesCollections
+        guide={guide}
+        species={species}
+        currentMonth={guide.representativeMonth}
+        meta={<span className="season-range-meta"><CalendarDays size={14} /> {guide.rangeLabel}</span>}
+      />
 
-      <section className="season-search-answer seasonal-search-answer" aria-labelledby={`${guide.id}-answer-title`}>
-        <p className="eyebrow">Resposta de temporada</p>
-        <h2 id={`${guide.id}-answer-title`}>Quins bolets poden sortir {guide.rangeSentence}?</h2>
-        <p>El catàleg inclou, entre d’altres, <strong>{highlightedSpecies}</strong> amb activitat possible durant aquesta estació. La combinació concreta canvia cada mes; consulta el <Link href="/temporada">calendari mensual</Link> i les <Link href="/bolets-avui">condicions actuals</Link> abans de preparar una sortida.</p>
-      </section>
-
-      <section className="intent-reading-section" aria-labelledby={`${guide.id}-reading-title`}>
+      <section className="intent-reading-section season-reading-section" aria-labelledby={`${guide.id}-reading-title`}>
         <SectionHeader
           meta="Temporada, no promesa"
           title={guide.reading.title}
@@ -91,15 +83,6 @@ export function SeasonalGuidePage({ guide }: { guide: SeasonGuide }) {
         </nav>
       </section>
 
-      <section className="intent-species-section" aria-labelledby={`${guide.id}-catalogue-title`}>
-        <SectionHeader
-          meta={<div className="seasonal-calendar-controls"><span><CalendarDays size={14} /> {guide.rangeLabel}</span><SeasonGuideSwitcher current={guide.id} /></div>}
-          title={`${species.length} espècies del calendari`}
-          titleId={`${guide.id}-catalogue-title`}
-          actions={<Link href="/temporada" className="text-link">Veure els mesos <ArrowUpRight size={16} /></Link>}
-        />
-        <SpeciesCollection species={species.map(toSpeciesCardProfile)} currentMonth={guide.representativeMonth} />
-      </section>
       <EditorialAttribution contentId={guide.path.slice(1)} sources={[officialSafetySource, ...coreEditorialSources, ...species.flatMap((item) => item.references)]} variant="compact" />
     </PageShell>
   );

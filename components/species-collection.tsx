@@ -22,6 +22,7 @@ export function SpeciesCollection({
   toolbar,
   beforeGrid,
   className,
+  showLayoutControl = true,
 }: {
   species: SpeciesCardProfile[];
   currentMonth?: Month;
@@ -30,14 +31,18 @@ export function SpeciesCollection({
   /** Content between the bar and the cards. */
   beforeGrid?: ReactNode;
   className?: string;
+  /** Off for a second collection on the same page; the shared layout still applies. */
+  showLayoutControl?: boolean;
 }) {
   const [layout, setLayout] = useSpeciesDirectoryLayout();
   return (
     <div className={className ? `species-collection ${className}` : "species-collection"}>
-      <div className="directory-results-bar">
-        {toolbar}
-        <SpeciesDirectoryLayoutControl layout={layout} onChange={setLayout} />
-      </div>
+      {(toolbar || showLayoutControl) && (
+        <div className="directory-results-bar">
+          {toolbar}
+          {showLayoutControl && <SpeciesDirectoryLayoutControl layout={layout} onChange={setLayout} />}
+        </div>
+      )}
       {beforeGrid}
       <div className="species-grid" data-layout={layout}>
         {species.map((item, index) => <SpeciesCard key={item.speciesId} species={item} index={index} currentMonth={currentMonth} sizes={imageSizes[layout]} />)}

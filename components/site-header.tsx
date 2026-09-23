@@ -9,7 +9,7 @@ import { BrandMark } from "@/components/brand-mark";
 const links = [
   { href: "/bolets", label: "Espècies", mobileLabel: "Espècies", activePrefixes: ["/bolets"], featured: false },
   { href: "/temporada", label: "Temporada", mobileLabel: "Temporada", activePrefixes: ["/temporada", "/bolets-de-primavera", "/bolets-d-estiu", "/bolets-de-tardor", "/bolets-d-hivern"], featured: false },
-  { href: "/guies", label: "Guies locals", mobileLabel: "Guies locals", activePrefixes: ["/guies", "/zones"], featured: false },
+  { href: "/guies", label: "Zones", mobileLabel: "Zones", activePrefixes: ["/guies", "/zones"], featured: false },
   { href: "/joc", label: "Joc", mobileLabel: "Joc del bosc", activePrefixes: ["/joc"], featured: false },
   { href: "/bolets-avui", label: "Avui", mobileLabel: "Bolets avui", activePrefixes: ["/bolets-avui"], featured: true }
 ] as const;
