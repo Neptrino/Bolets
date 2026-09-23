@@ -10,6 +10,9 @@
 .directory-results-bar .directory-count {
   margin: 0;
 }
+.directory-results-bar .directory-layout-control {
+  margin-left: auto;
+}
 .directory-layout-control {
   display: inline-grid;
   grid-auto-flow: column;
@@ -208,15 +211,16 @@
     flex-basis: 116px;
     min-height: 112px;
   }
+  /* Icon-only badge: the stars or warning icon carry the edibility here, and the
+     badge's aria-label keeps the full wording for assistive technology. */
   .species-grid[data-layout="list"] .species-card-illustration .culinary-rating {
     top: auto;
-    right: 6px;
+    right: auto;
     bottom: 6px;
     left: 6px;
-    flex-wrap: wrap;
-    justify-content: center;
-    white-space: normal;
-    text-align: center;
+  }
+  .species-grid[data-layout="list"] .culinary-rating-label {
+    display: none;
   }
   .species-grid[data-layout="list"] .species-card-description {
     display: none;

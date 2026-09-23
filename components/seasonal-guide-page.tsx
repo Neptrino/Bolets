@@ -4,7 +4,8 @@ import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { SeasonGuideSwitcher } from "@/components/season-guide-switcher";
-import { SpeciesCard } from "@/components/species-card";
+import { SpeciesCollection } from "@/components/species-collection";
+import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { coreEditorialSources, editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { absoluteUrl, SITE_URL, speciesPath } from "@/src/lib/seo";
 import { speciesForSeasonGuide, type SeasonGuide } from "@/src/lib/season-guides";
@@ -90,14 +91,14 @@ export function SeasonalGuidePage({ guide }: { guide: SeasonGuide }) {
         </nav>
       </section>
 
-      <section aria-labelledby={`${guide.id}-catalogue-title`}>
+      <section className="intent-species-section" aria-labelledby={`${guide.id}-catalogue-title`}>
         <SectionHeader
           meta={<div className="seasonal-calendar-controls"><span><CalendarDays size={14} /> {guide.rangeLabel}</span><SeasonGuideSwitcher current={guide.id} /></div>}
           title={`${species.length} espècies del calendari`}
           titleId={`${guide.id}-catalogue-title`}
           actions={<Link href="/temporada" className="text-link">Veure els mesos <ArrowUpRight size={16} /></Link>}
         />
-        <div className="species-grid intent-species-grid">{species.map((item, index) => <SpeciesCard key={item.speciesId} species={item} index={index} currentMonth={guide.representativeMonth} />)}</div>
+        <SpeciesCollection species={species.map(toSpeciesCardProfile)} currentMonth={guide.representativeMonth} />
       </section>
       <EditorialAttribution contentId={guide.path.slice(1)} sources={[officialSafetySource, ...coreEditorialSources, ...species.flatMap((item) => item.references)]} variant="compact" />
     </PageShell>

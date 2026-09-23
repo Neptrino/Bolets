@@ -20,6 +20,7 @@ import { monthInTimeZone } from "@/src/lib/seasonality";
 import { faqPageSchema } from "@/src/lib/faq-schema";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, pageTitle, speciesPath } from "@/src/lib/seo";
 import { territorialMapPath } from "@/src/lib/territorial-map";
+import { CatalogueSpeciesCell } from "@/components/catalogue-species-cell";
 import { seasonWindowPhrase } from "@/src/lib/zone-hub-copy";
 
 export const revalidate = 3600;
@@ -180,7 +181,7 @@ export default function PirineuGuidePage() {
                 const [low, high] = species.ecologicalConfig.habitat.altitude;
                 return (
                   <tr key={species.speciesId}>
-                    <th scope="row"><Link href={speciesPath(species)}>{species.identity.commonName}</Link><small>{species.identity.scientificName}</small></th>
+                    <CatalogueSpeciesCell speciesId={species.speciesId} href={speciesPath(species)} name={species.identity.commonName} scientificName={species.identity.scientificName} />
                     <td>{low <= 0 ? `fins a ${catalanNumber.format(high)} m` : `${catalanNumber.format(low)}–${catalanNumber.format(high)} m`}</td>
                     <td>{species.ecologicalConfig.habitat.forestTypes.slice(0, 3).join(", ")}</td>
                     <td>{speciesSeasonLabel(species)}</td>

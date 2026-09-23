@@ -3,16 +3,17 @@ import Link from "next/link";
 import { ArrowUpRight, CalendarDays, CookingPot, Images, Languages, Leaf, Map, ShieldAlert, Snowflake, Sprout, Sun } from "lucide-react";
 import { PageHeader, PageShell, SectionHeader } from "@/components/page-layout";
 import { SpeciesDirectory } from "@/components/species-directory";
+import { CatalogueSpeciesCell } from "@/components/catalogue-species-cell";
 import { FaqSection } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import { catalogueSpecies as speciesAlphabetical } from "@/data/catalogue";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { seasonGuides, type SeasonGuideId } from "@/src/lib/season-guides";
-import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 import { catalogueSearchQuery } from "@/src/lib/catalogue-search";
+import { parseCatalogueFilters } from "@/src/lib/catalogue-filters";
 import { faqPageSchema } from "@/src/lib/faq-schema";
-import { catalogueCounts, catalogueFaqs, catalogueListRows } from "@/src/lib/catalogue-list";
+import { catalogueCounts, catalogueFaqs, catalogueListRows, toCatalogueDirectoryEntry } from "@/src/lib/catalogue-list";
 
 export const metadata: Metadata = {
   title: "Tipus de bolets de Catalunya: guia d’espècies",
@@ -33,17 +34,19 @@ export const metadata: Metadata = {
 };
 export const revalidate = 3600;
 
-const seasonShortcutLabels = {
-  primavera: "Primavera",
-  estiu: "Estiu",
-  tardor: "Tardor",
-  hivern: "Hivern",
-} satisfies Record<SeasonGuideId, string>;
+const seasonGuideIcons = {
+  primavera: Sprout,
+  estiu: Sun,
+  tardor: Leaf,
+  hivern: Snowflake,
+} satisfies Record<SeasonGuideId, typeof Sprout>;
 
 export default async function SpeciesIndexPage({ searchParams }: {
-  searchParams: Promise<{ q?: string | string[] }>;
+  searchParams: Promise<{ q?: string | string[]; tipus?: string | string[]; estacio?: string | string[] }>;
 }) {
-  const initialQuery = catalogueSearchQuery((await searchParams).q);
+  const params = await searchParams;
+  const initialQuery = catalogueSearchQuery(params.q);
+  const initialFilters = parseCatalogueFilters(params);
   const rows = catalogueListRows(speciesAlphabetical);
   const counts = catalogueCounts(rows);
   const faqs = catalogueFaqs(counts);
@@ -62,15 +65,12 @@ export default async function SpeciesIndexPage({ searchParams }: {
         description={<>{counts.total} fitxes: {counts.edible} bolets comestibles, {counts.toxic} tòxics o mortals i {counts.other} no comestibles o no recomanats, amb fotografies, noms en català, castellà i científic, hàbitat, temporada i espècies semblants.</>}
       />
       <SpeciesDirectory
-        key={initialQuery}
+        key={`${initialQuery}|${initialFilters.group}|${initialFilters.season}`}
         initialQuery={initialQuery}
-        species={speciesAlphabetical.map(toSpeciesCardProfile)}
+        initialFilters={initialFilters}
+        species={speciesAlphabetical.map(toCatalogueDirectoryEntry)}
         currentMonth={monthInTimeZone()}
-        seasonShortcuts={seasonGuides.map((guide) => ({
-          id: guide.id,
-          href: guide.path,
-          label: seasonShortcutLabels[guide.id],
-        }))}
+        seasonGuides={seasonGuides.map((guide) => ({ id: guide.id, href: guide.path, label: `Guia de ${guide.cardTitle.toLocaleLowerCase("ca-ES")}` }))}
       />
       <section className="catalogue-list" aria-labelledby="catalogue-list-title">
         <SectionHeader
@@ -95,7 +95,7 @@ export default async function SpeciesIndexPage({ searchParams }: {
             <tbody>
               {rows.map((row) => (
                 <tr key={row.speciesId} data-group={row.group}>
-                  <th scope="row"><Link href={row.href}>{row.name}</Link><small>{row.scientificName}</small></th>
+                  <CatalogueSpeciesCell speciesId={row.speciesId} href={row.href} name={row.name} scientificName={row.scientificName} />
                   <td lang="es">{row.spanish || "—"}</td>
                   <td><span className={`catalogue-list-edibility ${row.group}`}>{row.edibilityLabel}</span></td>
                   <td>{row.season}</td>
@@ -124,6 +124,23 @@ export default async function SpeciesIndexPage({ searchParams }: {
             <Link href="/bolets-de-soca"><Leaf size={18} /><span><strong>Bolets de soca</strong><small>Espècies de la fusta i fitxes del catàleg</small></span><ArrowUpRight size={16} /></Link>
             <Link href="/fals-rossinyol"><ShieldAlert size={18} /><span><strong>Fals rossinyol</strong><small>Noms, fonts i confusions</small></span><ArrowUpRight size={16} /></Link>
             <Link href="/noms-de-bolets-catala-castella"><Languages size={18} /><span><strong>Noms en català i castellà</strong><small>Glossari amb noms científics i variants</small></span><ArrowUpRight size={16} /></Link>
+          </nav>
+        </section>
+        <section className="species-guides-navigation" aria-labelledby="species-guides-title">
+          <SectionHeader
+            meta="Per tipus i temporada"
+            title="Guies de comestibles, verinosos i estacions"
+            titleId="species-guides-title"
+            description="Cada guia explica un grup d’espècies amb més context que el filtre del catàleg: confusions, riscos, mesos i condicions del bosc."
+          />
+          <nav className="species-topic-links" aria-label="Guies per tipus i temporada">
+            <Link href="/bolets-comestibles"><CookingPot size={18} /><span><strong>Bolets comestibles</strong><small>Espècies, confusions i condicions</small></span><ArrowUpRight size={16} /></Link>
+            <Link href="/bolets-verinosos"><ShieldAlert size={18} /><span><strong>Bolets verinosos</strong><small>Identificació i riscos</small></span><ArrowUpRight size={16} /></Link>
+            <Link href="/temporada"><CalendarDays size={18} /><span><strong>Bolets per mesos</strong><small>Calendari mensual per espècie</small></span><ArrowUpRight size={16} /></Link>
+            {seasonGuides.map((guide) => {
+              const SeasonIcon = seasonGuideIcons[guide.id];
+              return <Link href={guide.path} key={guide.id}><SeasonIcon size={18} /><span><strong>{guide.cardTitle}</strong><small>Espècies habituals {guide.rangeSentence}</small></span><ArrowUpRight size={16} /></Link>;
+            })}
           </nav>
         </section>
         <section className="species-tools-navigation" aria-labelledby="species-tools-title">

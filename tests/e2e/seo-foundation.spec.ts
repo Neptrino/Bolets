@@ -112,24 +112,32 @@ test("every month in the season calendar links to its own canonical page", async
   expect(structuredData.some((item) => item.includes('"BreadcrumbList"'))).toBe(true);
 });
 
-test("the catalogue separates monthly and seasonal navigation", async ({ page }) => {
+test("the catalogue filters in place and links its type and season guides", async ({ page }) => {
   await page.goto("/bolets");
 
   const directory = page.locator(".directory-shell");
   const supportingLinks = page.locator(".species-catalogue-support");
   await expect(directory.locator(".directory-controls")).toBeInViewport();
-  const shortcuts = directory.getByRole("navigation", { name: "Explora el catàleg" });
-  await expect(shortcuts.getByRole("link")).toHaveCount(7);
-  await expect(shortcuts.getByRole("group", { name: "Explora espècies" }).getByRole("link")).toHaveCount(3);
-  await expect(shortcuts.getByRole("group", { name: "Per estacions" }).getByRole("link")).toHaveCount(4);
-  await expect(shortcuts).toBeInViewport();
-  await expect(shortcuts.getByRole("link", { name: "Comestibles" })).toHaveAttribute("href", "/bolets-comestibles");
-  await expect(shortcuts.getByRole("link", { name: "Verinosos" })).toHaveAttribute("href", "/bolets-verinosos");
-  await expect(shortcuts.getByRole("link", { name: "Per mesos" })).toHaveAttribute("href", "/temporada");
-  await expect(shortcuts.getByRole("link", { name: "Primavera" })).toHaveAttribute("href", "/bolets-de-primavera");
-  await expect(shortcuts.getByRole("link", { name: "Estiu" })).toHaveAttribute("href", "/bolets-d-estiu");
-  await expect(shortcuts.getByRole("link", { name: "Tardor" })).toHaveAttribute("href", "/bolets-de-tardor");
-  await expect(shortcuts.getByRole("link", { name: "Hivern" })).toHaveAttribute("href", "/bolets-d-hivern");
+  const filters = directory.getByRole("group", { name: "Filtra el catàleg" });
+  await expect(filters).toBeInViewport();
+  await expect(filters.getByRole("group", { name: "Comestibilitat" }).getByRole("button")).toHaveCount(3);
+  await expect(filters.getByRole("group", { name: "Estació" }).getByRole("button")).toHaveCount(4);
+  const autumn = filters.getByRole("button", { name: /Tardor/ });
+  await autumn.click();
+  await expect(autumn).toHaveAttribute("aria-pressed", "true");
+  await expect(page).toHaveURL(/\/bolets\?estacio=tardor$/);
+  await expect(directory.getByRole("link", { name: /Guia de bolets de tardor/ })).toHaveAttribute("href", "/bolets-de-tardor");
+  await directory.getByRole("button", { name: "Treu els filtres" }).click();
+  await expect(autumn).toHaveAttribute("aria-pressed", "false");
+  const guides = page.getByRole("navigation", { name: "Guies per tipus i temporada" });
+  await expect(guides.getByRole("link")).toHaveCount(7);
+  await expect(guides.getByRole("link", { name: /Bolets comestibles/ })).toHaveAttribute("href", "/bolets-comestibles");
+  await expect(guides.getByRole("link", { name: /Bolets verinosos/ })).toHaveAttribute("href", "/bolets-verinosos");
+  await expect(guides.getByRole("link", { name: /Bolets per mesos/ })).toHaveAttribute("href", "/temporada");
+  await expect(guides.getByRole("link", { name: /Bolets de primavera/ })).toHaveAttribute("href", "/bolets-de-primavera");
+  await expect(guides.getByRole("link", { name: /Bolets d’estiu/ })).toHaveAttribute("href", "/bolets-d-estiu");
+  await expect(guides.getByRole("link", { name: /Bolets de tardor/ })).toHaveAttribute("href", "/bolets-de-tardor");
+  await expect(guides.getByRole("link", { name: /Bolets d’hivern/ })).toHaveAttribute("href", "/bolets-d-hivern");
   const [directoryBox, supportingLinksBox] = await Promise.all([
     directory.boundingBox(),
     supportingLinks.boundingBox(),

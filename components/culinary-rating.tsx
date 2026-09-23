@@ -33,17 +33,20 @@ export function CulinaryRating({
           aria-hidden="true"
         />
       ) : (
-        <span className="culinary-stars" aria-hidden="true">
-          {[1, 2, 3].map((value) => (
-            <Star
-              key={value}
-              size={compact ? 13 : 15}
-              className={value <= profile.rating ? "is-filled" : ""}
-            />
-          ))}
-        </span>
+        <CulinaryStars rating={profile.rating} size={compact ? 13 : 15} />
       )}
-      <span>{label}</span>
+      <span className="culinary-rating-label">{label}</span>
+    </span>
+  );
+}
+
+/** The three-star culinary scale, decorative: the surrounding text states the value. */
+export function CulinaryStars({ rating, size = 15 }: { rating: number; size?: number }) {
+  return (
+    <span className="culinary-stars" aria-hidden="true">
+      {[1, 2, 3].map((value) => (
+        <Star key={value} size={size} className={value <= rating ? "is-filled" : ""} />
+      ))}
     </span>
   );
 }

@@ -4,7 +4,8 @@ import { ArrowUpRight, Images, ShieldAlert } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { PoisonousComparisons } from "@/components/poisonous-comparisons";
-import { SpeciesCard } from "@/components/species-card";
+import { SpeciesCollection } from "@/components/species-collection";
+import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { toxicSpecies } from "@/src/lib/species-collections";
@@ -87,14 +88,15 @@ export default function PoisonousMushroomsPage() {
 
       <PoisonousComparisons />
 
-      <SectionHeader
-        meta={`${toxicSpecies.length} espècies`}
-        title="Fitxes de bolets tòxics"
-        actions={<Link href="/bolets-comestibles" className="text-link">Veure bolets comestibles <ArrowUpRight size={16} /></Link>}
-      />
-      <div className="species-grid intent-species-grid">
-        {toxicSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} currentMonth={currentMonth} />)}
-      </div>
+      <section className="intent-species-section" aria-labelledby="toxic-cards-title">
+        <SectionHeader
+          meta={`${toxicSpecies.length} espècies`}
+          title="Fitxes de bolets tòxics"
+          titleId="toxic-cards-title"
+          actions={<Link href="/bolets-comestibles" className="text-link">Veure bolets comestibles <ArrowUpRight size={16} /></Link>}
+        />
+        <SpeciesCollection species={toxicSpecies.map(toSpeciesCardProfile)} currentMonth={currentMonth} />
+      </section>
       <EditorialAttribution contentId="bolets-verinosos" sources={[officialSafetySource, ...toxicSpecies.flatMap((species) => species.references)]} />
     </PageShell>
   );

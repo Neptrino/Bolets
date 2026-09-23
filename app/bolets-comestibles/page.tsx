@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, CircleAlert, CookingPot, Images, Snowflake, Trees } from "lucide-react";
+import { ArrowUpRight, CalendarDays, CircleAlert, CookingPot, Images, Snowflake, Trees, TriangleAlert } from "lucide-react";
 import { FaqSection } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
-import { SpeciesCard } from "@/components/species-card";
+import { SpeciesCollection } from "@/components/species-collection";
+import { CatalogueSpeciesCell } from "@/components/catalogue-species-cell";
+import { CulinaryStars } from "@/components/culinary-rating";
+import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { edibleSpecies } from "@/src/lib/species-collections";
@@ -103,7 +106,7 @@ export default function EdibleMushroomsPage() {
         />
         {groups.map((group) => (
           <div className="catalogue-list-group" key={group.id}>
-            <h3>{group.title} <small>{group.rows.length}</small></h3>
+            <h3><span className="catalogue-list-group-mark" aria-hidden="true">{group.id === "conditions" ? <TriangleAlert size={18} /> : <CulinaryStars rating={group.id === "excellent" ? 3 : 2} size={17} />}</span>{group.title} <small>{group.rows.length}</small></h3>
             <p>{group.description}</p>
             <div className="catalogue-list-scroll" role="region" aria-label={group.title} tabIndex={0}>
               <table>
@@ -118,7 +121,7 @@ export default function EdibleMushroomsPage() {
                 <tbody>
                   {group.rows.map((row) => (
                     <tr key={row.speciesId}>
-                      <th scope="row"><Link href={row.href}>{row.name}</Link><small>{row.scientificName}</small></th>
+                      <CatalogueSpeciesCell speciesId={row.speciesId} href={row.href} name={row.name} scientificName={row.scientificName} />
                       <td lang="es">{row.spanish || "—"}</td>
                       <td>{row.season}</td>
                       <td>{row.habitat}</td>
@@ -131,14 +134,15 @@ export default function EdibleMushroomsPage() {
         ))}
       </section>
 
-      <SectionHeader
-        meta={`${edibleSpecies.length} espècies`}
-        title="Fitxes de bolets comestibles"
-        actions={<Link href="/bolets-verinosos" className="text-link">Veure bolets verinosos <ArrowUpRight size={16} /></Link>}
-      />
-      <div className="species-grid intent-species-grid">
-        {edibleSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} currentMonth={currentMonth} />)}
-      </div>
+      <section className="intent-species-section" aria-labelledby="edible-cards-title">
+        <SectionHeader
+          meta={`${edibleSpecies.length} espècies`}
+          title="Fitxes de bolets comestibles"
+          titleId="edible-cards-title"
+          actions={<Link href="/bolets-verinosos" className="text-link">Veure bolets verinosos <ArrowUpRight size={16} /></Link>}
+        />
+        <SpeciesCollection species={edibleSpecies.map(toSpeciesCardProfile)} currentMonth={currentMonth} />
+      </section>
       <FaqSection faqs={faqs} title="Preguntes sobre els bolets comestibles" titleId="edible-faq-title" size="compact" />
       <EditorialAttribution contentId="bolets-comestibles" sources={[officialSafetySource, ...edibleSpecies.flatMap((species) => species.references)]} />
     </PageShell>

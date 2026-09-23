@@ -1,6 +1,9 @@
 import { catalogueSpecies } from "@/data/catalogue";
 import { getSpanishSpeciesNames } from "@/data/species-common-names";
 import { getEdibilityPresentation } from "@/src/lib/edibility-presentation";
+import { seasonGuides, type SeasonGuideId } from "@/src/lib/season-guides";
+import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
+import type { CatalogueDirectoryEntry } from "@/src/lib/catalogue-filters";
 import { speciesPath } from "@/src/lib/seo";
 import { speciesHabitatPhrase, speciesSeasonPhrase } from "@/src/lib/species-summary";
 import type { CatalogueSpecies, EdibilityStatus, SpeciesProfile } from "@/src/lib/types";
@@ -43,6 +46,40 @@ export function catalogueGroup(status: EdibilityStatus): CatalogueGroup {
   if (EDIBLE.has(status)) return "edible";
   if (TOXIC.has(status)) return "toxic";
   return "other";
+}
+
+const SEASON_IDS = seasonGuides.map((guide) => guide.id);
+
+/** Reference text such as "Tardor", "Estiu i tardor", "De primavera a tardor" or "final d’estiu". */
+function seasonsFromText(text: string): SeasonGuideId[] {
+  const lower = text.toLocaleLowerCase("ca-ES");
+  const range = lower.match(/^de (\p{L}+) a (\p{L}+)/u);
+  if (range) {
+    const start = SEASON_IDS.indexOf(range[1] as SeasonGuideId);
+    const end = SEASON_IDS.indexOf(range[2] as SeasonGuideId);
+    if (start >= 0 && end >= 0) {
+      const length = ((end - start + SEASON_IDS.length) % SEASON_IDS.length) + 1;
+      return Array.from({ length }, (_, offset) => SEASON_IDS[(start + offset) % SEASON_IDS.length]);
+    }
+  }
+  return SEASON_IDS.filter((season) => new RegExp(`(^|[\\s’'])${season}\\b`, "u").test(lower));
+}
+
+/** Seasons a species belongs to, matching the species lists of the season guides. */
+export function speciesCatalogueSeasons(species: CatalogueSpecies): SeasonGuideId[] {
+  if ("scope" in species) return seasonsFromText(species.ecology.season);
+  const { seasonality } = species.ecologicalConfig;
+  return seasonGuides
+    .filter((guide) => guide.months.some((month) => seasonality[month] !== "inactive"))
+    .map((guide) => guide.id);
+}
+
+export function toCatalogueDirectoryEntry(species: CatalogueSpecies): CatalogueDirectoryEntry {
+  return {
+    ...toSpeciesCardProfile(species),
+    catalogueGroup: catalogueGroup(species.identity.edibility),
+    catalogueSeasons: speciesCatalogueSeasons(species),
+  };
 }
 
 /** "Tardor", "Primavera i tardor", "De primavera a tardor". */

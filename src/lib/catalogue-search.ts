@@ -9,7 +9,7 @@ export function catalogueSearchQuery(value: string | string[] | undefined) {
   return typeof value === "string" ? value.trim().slice(0, 120) : "";
 }
 
-export function filterCatalogue(species: SpeciesCardProfile[], query: string) {
+export function filterCatalogue<T extends SpeciesCardProfile>(species: T[], query: string): T[] {
   const terms = normalizeCatalogueSearch(query).split(" ").filter(Boolean);
   if (!terms.length) return species;
   return species.filter((item) => {

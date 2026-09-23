@@ -5,7 +5,8 @@ import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { SeasonGuideSwitcher } from "@/components/season-guide-switcher";
-import { SpeciesCard } from "@/components/species-card";
+import { SpeciesCollection } from "@/components/species-collection";
+import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { coreEditorialSources, editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { getSpeciesByScientificName, speciesAlphabetical } from "@/data/species";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
@@ -85,14 +86,14 @@ export default function SpringMushroomsPage() {
 
       {toxicLookalikes.length > 0 && <section className="spring-lookalikes"><div><p className="eyebrow">Mereixen una lectura separada</p><h2>Semblants tòxics presents al catàleg</h2></div><div>{toxicLookalikes.map((species) => <Link key={species.speciesId} href={speciesPath(species)}>{species.identity.commonName}<ArrowUpRight size={15} /></Link>)}</div></section>}
 
-      <section aria-labelledby="spring-catalogue-title">
+      <section className="intent-species-section" aria-labelledby="spring-catalogue-title">
         <SectionHeader
           meta={<div className="seasonal-calendar-controls"><span><CalendarDays size={14} /> Març–juny</span><SeasonGuideSwitcher current="primavera" /></div>}
           title={`${springSpecies.length} espècies del calendari`}
           titleId="spring-catalogue-title"
           actions={<Link href="/temporada" className="text-link">Veure tot l’any <ArrowUpRight size={16} /></Link>}
         />
-        <div className="species-grid intent-species-grid">{springSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} />)}</div>
+        <SpeciesCollection species={springSpecies.map(toSpeciesCardProfile)} />
       </section>
       <EditorialAttribution contentId="bolets-de-primavera" sources={[officialSafetySource, ...coreEditorialSources, ...springSpecies.flatMap((species) => species.references)]} variant="compact" />
     </PageShell>

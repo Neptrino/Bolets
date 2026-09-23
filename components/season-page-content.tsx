@@ -4,7 +4,8 @@ import Link from "next/link";
 import { ArrowUpRight, CalendarDays, CloudRain, Map } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
-import { SpeciesCard } from "@/components/species-card";
+import { SpeciesCollection } from "@/components/species-collection";
+import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { AnnualSeasonCalendar } from "@/components/annual-season-calendar";
 import { speciesInSeason } from "@/src/lib/species-collections";
 import {
@@ -148,16 +149,17 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
         <Link href="/bolets/infografia">Infografia de bolets: el calendari de totes les espècies en un pòster <ArrowUpRight size={15} aria-hidden="true" /></Link>
       </nav>
 
-      <SectionHeader
-        meta={selectedMonth.label}
-        title={overview ? "Espècies actives aquest mes" : `Espècies actives ${monthWithPreposition(month)}`}
-        actions={<span className="season-related-links"><Link href={relatedSeasonGuide.path} className="text-link">{relatedSeasonGuide.cardTitle} <ArrowUpRight size={16} /></Link><Link href="/bolets" className="text-link">Veure tots els bolets <ArrowUpRight size={16} /></Link></span>}
-      />
-      {activeSpecies.length ? (
-        <div className="species-grid intent-species-grid">
-          {activeSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} currentMonth={month} />)}
-        </div>
-      ) : <p className="empty-state">No hi ha cap espècie activa aquest mes segons el calendari del catàleg.</p>}
+      <section className="intent-species-section" aria-labelledby="season-month-species-title">
+        <SectionHeader
+          meta={selectedMonth.label}
+          title={overview ? "Espècies actives aquest mes" : `Espècies actives ${monthWithPreposition(month)}`}
+          titleId="season-month-species-title"
+          actions={<span className="season-related-links"><Link href={relatedSeasonGuide.path} className="text-link">{relatedSeasonGuide.cardTitle} <ArrowUpRight size={16} /></Link><Link href="/bolets" className="text-link">Veure tots els bolets <ArrowUpRight size={16} /></Link></span>}
+        />
+        {activeSpecies.length ? (
+          <SpeciesCollection species={activeSpecies.map(toSpeciesCardProfile)} currentMonth={month} />
+        ) : <p className="empty-state">No hi ha cap espècie activa aquest mes segons el calendari del catàleg.</p>}
+      </section>
     </PageShell>
   );
 }

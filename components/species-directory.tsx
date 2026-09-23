@@ -1,37 +1,92 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { CalendarDays, CookingPot, Leaf, Search, ShieldAlert, Snowflake, Sprout, Sun, X } from "lucide-react";
-import { SpeciesCard } from "@/components/species-card";
-import type { SpeciesCardProfile } from "@/src/lib/species-card-profile";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowUpRight, CookingPot, Leaf, Search, ShieldAlert, Snowflake, Sprout, Sun, X, type LucideIcon } from "lucide-react";
+import { SpeciesCollection } from "@/components/species-collection";
+import type { CatalogueGroup } from "@/src/lib/catalogue-list";
 import type { SeasonGuideId } from "@/src/lib/season-guides";
 import type { Month } from "@/src/lib/types";
 import { filterCatalogue } from "@/src/lib/catalogue-search";
-import { SpeciesDirectoryLayoutControl, useSpeciesDirectoryLayout } from "@/components/species-directory-layout";
-import "@/app/styles/species-directory-layouts.css";
+import {
+  catalogueFilterSearch,
+  catalogueGroupOptions,
+  catalogueSeasonOptions,
+  emptyCatalogueFilters,
+  matchesCatalogueFilters,
+  type CatalogueDirectoryEntry,
+  type CatalogueFilters,
+} from "@/src/lib/catalogue-filters";
 
-const seasonShortcutIcons = {
+const groupIcons = {
+  edible: CookingPot,
+  toxic: ShieldAlert,
+  other: X,
+} satisfies Record<CatalogueGroup, LucideIcon>;
+
+const seasonIcons = {
   primavera: Sprout,
   estiu: Sun,
   tardor: Leaf,
   hivern: Snowflake,
-} satisfies Record<SeasonGuideId, typeof Sprout>;
+} satisfies Record<SeasonGuideId, LucideIcon>;
+
+const groupGuides: Partial<Record<CatalogueGroup, { href: string; label: string }>> = {
+  edible: { href: "/bolets-comestibles", label: "Guia de bolets comestibles" },
+  toxic: { href: "/bolets-verinosos", label: "Guia de bolets verinosos" },
+};
+
+function FilterChip({ pressed, count, icon: Icon, label, onToggle }: {
+  pressed: boolean;
+  count: number;
+  icon: LucideIcon;
+  label: string;
+  onToggle: () => void;
+}) {
+  return (
+    <button type="button" className="directory-filter" aria-pressed={pressed} disabled={!pressed && count === 0} onClick={onToggle}>
+      <Icon size={16} aria-hidden="true" />
+      <span>{label}</span>
+      <span className="directory-filter-count" aria-label={`${count} espècies`}>{count}</span>
+    </button>
+  );
+}
 
 export function SpeciesDirectory({
   species,
   currentMonth,
-  seasonShortcuts,
+  seasonGuides,
   initialQuery = "",
+  initialFilters = emptyCatalogueFilters,
 }: {
-  species: SpeciesCardProfile[];
+  species: CatalogueDirectoryEntry[];
   currentMonth: Month;
-  seasonShortcuts: Array<{ id: SeasonGuideId; href: string; label: string }>;
+  seasonGuides: Array<{ id: SeasonGuideId; href: string; label: string }>;
   initialQuery?: string;
+  initialFilters?: CatalogueFilters;
 }) {
   const [query, setQuery] = useState(initialQuery);
-  const matches = useMemo(() => filterCatalogue(species, query), [query, species]);
-  const [layout, setLayout] = useSpeciesDirectoryLayout();
+  const [filters, setFilters] = useState(initialFilters);
+  const searched = useMemo(() => filterCatalogue(species, query), [query, species]);
+  const matches = useMemo(() => searched.filter((item) => matchesCatalogueFilters(item, filters)), [searched, filters]);
+  const filtered = Boolean(query.trim() || filters.group || filters.season);
+  const countFor = (next: CatalogueFilters) => searched.filter((item) => matchesCatalogueFilters(item, next)).length;
+  const toggle = (key: keyof CatalogueFilters, value: CatalogueFilters[typeof key]) =>
+    setFilters((current) => ({ ...current, [key]: current[key] === value ? null : value }));
+
+  // Mirror the state in the address so a filtered view can be shared or reloaded.
+  const synced = useRef(false);
+  useEffect(() => {
+    if (!synced.current) { synced.current = true; return; }
+    window.history.replaceState(null, "", `/bolets${catalogueFilterSearch(query, filters)}`);
+  }, [query, filters]);
+
+  const activeGuides = [
+    filters.group ? groupGuides[filters.group] : undefined,
+    filters.season ? seasonGuides.find((guide) => guide.id === filters.season) : undefined,
+  ].filter((guide) => guide !== undefined);
+  const groupParam = catalogueGroupOptions.find((option) => option.value === filters.group)?.param;
+
   return (
     <section className="directory-shell">
       <div className="directory-controls">
@@ -50,37 +105,68 @@ export function SpeciesDirectory({
               </Link>
             )}
           </div>
+          {groupParam && <input type="hidden" name="tipus" value={groupParam} />}
+          {filters.season && <input type="hidden" name="estacio" value={filters.season} />}
           <button type="submit" className="button directory-search-submit">Cerca</button>
         </form>
       </div>
       <p className="directory-help">Un mateix bolet pot tenir diversos noms. <Link href="/noms-de-bolets-catala-castella">Consulta el glossari</Link> o <Link href="/parts-dun-bolet">aprèn a observar-ne les parts</Link>.</p>
-      <nav className="directory-shortcuts" aria-label="Explora el catàleg">
-        <div className="directory-shortcut-group" role="group" aria-labelledby="directory-shortcuts-species">
-          <span className="directory-shortcut-label" id="directory-shortcuts-species">Explora espècies</span>
-          <div className="directory-shortcut-items">
-            <Link href="/bolets-comestibles"><CookingPot size={16} aria-hidden="true" />Comestibles</Link>
-            <Link href="/bolets-verinosos"><ShieldAlert size={16} aria-hidden="true" />Verinosos</Link>
-            <Link href="/temporada"><CalendarDays size={16} aria-hidden="true" />Per mesos</Link>
+      <div className="directory-filters" role="group" aria-label="Filtra el catàleg">
+        <div className="directory-filter-group" role="group" aria-labelledby="directory-filter-group">
+          <span className="directory-filter-label" id="directory-filter-group">Comestibilitat</span>
+          <div className="directory-filter-items">
+            {catalogueGroupOptions.map((option) => (
+              <FilterChip
+                key={option.value}
+                label={option.label}
+                icon={groupIcons[option.value]}
+                pressed={filters.group === option.value}
+                count={countFor({ ...filters, group: option.value })}
+                onToggle={() => toggle("group", option.value)}
+              />
+            ))}
           </div>
         </div>
-        <div className="directory-shortcut-group" role="group" aria-labelledby="directory-shortcuts-seasons">
-          <span className="directory-shortcut-label" id="directory-shortcuts-seasons">Per estacions</span>
-          <div className="directory-shortcut-items">
-            {seasonShortcuts.map((shortcut) => {
-              const SeasonIcon = seasonShortcutIcons[shortcut.id];
-              return <Link href={shortcut.href} key={shortcut.id}><SeasonIcon size={16} aria-hidden="true" />{shortcut.label}</Link>;
-            })}
+        <div className="directory-filter-group" role="group" aria-labelledby="directory-filter-season">
+          <span className="directory-filter-label" id="directory-filter-season">Estació</span>
+          <div className="directory-filter-items">
+            {catalogueSeasonOptions.map((option) => (
+              <FilterChip
+                key={option.value}
+                label={option.label}
+                icon={seasonIcons[option.value]}
+                pressed={filters.season === option.value}
+                count={countFor({ ...filters, season: option.value })}
+                onToggle={() => toggle("season", option.value)}
+              />
+            ))}
           </div>
         </div>
-      </nav>
-      <div className="directory-results-bar">
-        <p className="directory-count" aria-live="polite">
-          {query ? `${matches.length} ${matches.length === 1 ? "resultat" : "resultats"} per “${query}”` : "Ordenades alfabèticament pel nom català"}
-        </p>
-        <SpeciesDirectoryLayoutControl layout={layout} onChange={setLayout} />
       </div>
-      <div className="species-grid" data-layout={layout}>{matches.map((item, index) => <SpeciesCard key={item.speciesId} species={item} index={index} currentMonth={currentMonth} sizes={layout === "cards" ? undefined : layout === "list" ? "160px" : "(max-width: 580px) calc(50vw - 30px), (max-width: 1000px) calc(33.333vw - 30px), 280px"} />)}</div>
-      {!matches.length && <div className="empty-state"><p>No hem trobat cap espècie amb aquests criteris. Prova un altre nom o consulta el glossari.</p><Link href="/bolets" className="text-link">Veure tot el catàleg</Link></div>}
+      <SpeciesCollection
+        species={matches}
+        currentMonth={currentMonth}
+        toolbar={<>
+          <p className="directory-count" aria-live="polite">
+            {filtered
+              ? `${matches.length} ${matches.length === 1 ? "resultat" : "resultats"}${query.trim() ? ` per “${query.trim()}”` : ""}`
+              : "Ordenades alfabèticament pel nom català"}
+          </p>
+          {(filters.group || filters.season) && (
+            <button type="button" className="directory-reset" onClick={() => setFilters(emptyCatalogueFilters)}>
+              <X size={14} aria-hidden="true" /> Treu els filtres
+            </button>
+          )}
+        </>}
+        beforeGrid={activeGuides.length > 0 && (
+          <p className="directory-guides">
+            {activeGuides.map((guide) => (
+              <Link key={guide.href} href={guide.href} className="text-link">{guide.label} <ArrowUpRight size={14} aria-hidden="true" /></Link>
+            ))}
+          </p>
+        )}
+      />
+      {!matches.length && <div className="empty-state"><p>No hem trobat cap espècie amb aquests criteris. Prova un altre nom, treu algun filtre o consulta el glossari.</p><Link href="/bolets" onClick={(event) => { event.preventDefault(); setQuery(""); setFilters(emptyCatalogueFilters); }} className="text-link">Veure tot el catàleg</Link></div>}
     </section>
   );
 }

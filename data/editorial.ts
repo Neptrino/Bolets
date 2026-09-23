@@ -236,14 +236,14 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-23",
   },
   "bolets-verinosos": {
-    updatedAt: "2026-09-14",
+    updatedAt: "2026-09-23",
   },
   "mapa-pluja": {
     publishedAt: "2026-09-17",
     updatedAt: "2026-09-23",
   },
   "bolets-de-primavera": {
-    updatedAt: "2026-09-18",
+    updatedAt: "2026-09-23",
   },
   "bolets-d-estiu": {
     updatedAt: "2026-09-03",
@@ -255,7 +255,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-03",
   },
   "temporada": {
-    updatedAt: "2026-09-14",
+    updatedAt: "2026-09-23",
   },
   "bolets-avui": {
     updatedAt: "2026-09-18",
