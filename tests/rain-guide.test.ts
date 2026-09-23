@@ -6,7 +6,7 @@ import { buildSitemap as sitemap, editorialLastModified } from "@/app/sitemap";
 import { getEditorialMetadata, hydrothermalScientificSources } from "@/data/editorial";
 
 function articleFor(html: string, commonName: string) {
-  const start = html.indexOf(`<span>${commonName}</span>`);
+  const start = html.indexOf(`<h3>${commonName}</h3>`);
   const end = html.indexOf("</article>", start);
   expect(start, `${commonName} should appear in the guide`).toBeGreaterThanOrEqual(0);
   expect(end, `${commonName} card should close`).toBeGreaterThan(start);
@@ -44,15 +44,24 @@ describe("rain response guide", () => {
     expect(html).not.toContain("3, 7 i 30 dies");
   });
 
-  it("keeps the six examples focused on field-readable guidance", () => {
-    for (const species of ["Rovelló", "Pinetell", "Cep", "Camagroc", "Múrgola", "Camasec"] as const) {
+  it("answers the question first with the scored windows and shared thresholds", () => {
+    const answer = html.slice(html.indexOf('class="rain-direct-answer"'), html.indexOf("</aside>"));
+    expect(answer).toMatch(/<h2[^>]*>Els bolets surten entre \d+ i \d+ dies després de ploure, segons l’espècie\.<\/h2>/);
+    expect(answer.match(/<li>/g)?.length).toBeGreaterThanOrEqual(3);
+    expect(answer).toMatch(/Dies \d+–\d+/);
+    expect(answer).toMatch(/Amb uns <strong>\d+ mm<\/strong>/);
+  });
+
+  it("keeps the eight examples focused on field-readable guidance", () => {
+    for (const species of ["Cep", "Camagroc", "Rossinyol", "Rovelló", "Fredolic", "Pinetell", "Múrgola", "Camasec"] as const) {
       const card = articleFor(html, species);
-      // The lead sentence is derived from the shipped model parameters
-      // (rain-response-summary), so it must always print gauge millimetres
-      // and the scored window in days.
-      expect(card).toContain('class="rain-species-lead"');
-      expect(card).toMatch(/Amb uns \d+ mm/);
-      expect(card).toMatch(/dies/);
+      // The strip is derived from the shipped model parameters
+      // (rain-response-summary), so it always prints the scored window.
+      expect(card).toContain('class="rain-timeline-bar"');
+      expect(card).toMatch(/dies \d+–\d+/);
+      // Every species shares the rain thresholds today, so the cards leave
+      // them to the short answer instead of repeating the same millimetres.
+      expect(card).not.toMatch(/\d+ mm/);
       expect(card).toContain("<dt>Humitat prèvia</dt>");
       expect(card).not.toContain("Finestra hídrica");
       expect(card).not.toContain("Finestra tèrmica");
@@ -83,7 +92,7 @@ describe("rain response guide", () => {
     };
     const article = jsonLd["@graph"].find((entry) => entry["@type"] === "Article");
     const faq = jsonLd["@graph"].find((entry) => entry["@type"] === "FAQPage");
-    expect(article?.description).toContain("La pluja no activa un compte enrere");
+    expect(article?.description).toMatch(/^Els bolets surten entre \d+ i \d+ dies després de ploure/);
     expect(article?.citation).toEqual(hydrothermalScientificSources.map((source) => source.url));
     expect(article?.dateModified).toBe(getEditorialMetadata("quan-surten-els-bolets-despres-de-ploure").updatedAt);
     expect(faq).toBeDefined();

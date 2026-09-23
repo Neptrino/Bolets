@@ -27,6 +27,8 @@ export type ScoredRainWindow = {
   typicalHalfResponseMm: number;
   /** Gauge rain that typically yields nine tenths of the response in autumn. */
   typicalNearFullMm: number;
+  /** Gauge rain a typical autumn episode loses to interception and evaporation. */
+  typicalLossMm: number;
 };
 
 /**
@@ -92,7 +94,18 @@ export function scoredRainWindow(water: WaterModelParametersV2): ScoredRainWindo
     nearFullNetMm,
     typicalHalfResponseMm: roundToFive(halfResponseNetMm + typicalDeductionMm),
     typicalNearFullMm: roundToFive(nearFullNetMm + typicalDeductionMm),
+    typicalLossMm: typicalDeductionMm,
   };
+}
+
+/**
+ * The rain response (0 to 1) a gauge total reaches in a typical autumn window:
+ * the same Hill curve the score uses, shifted by the typical loss, so a chart
+ * of it passes through the printed "starts" and "strong" thresholds.
+ */
+export function rainResponseAtGaugeMm(window: ScoredRainWindow, gaugeMm: number) {
+  const net = Math.max(0, gaugeMm - window.typicalLossMm);
+  return net ** 2 / (net ** 2 + window.halfResponseNetMm ** 2);
 }
 
 export function scoredRainWindowForModel(config: FruitingModelConfig) {

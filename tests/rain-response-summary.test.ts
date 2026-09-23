@@ -4,6 +4,7 @@ import {
   altitudeCalendarSentence,
   altitudeCalendarShift,
   groupSpeciesByRainWindow,
+  rainResponseAtGaugeMm,
   rainResponseState,
   rainWindowSentence,
   scoredRainWindow,
@@ -119,5 +120,17 @@ describe("rain window groups", () => {
     expect(groups.reduce((total, group) => total + group.speciesNames.length, 0)).toBe(scored);
     const cepGroup = groups.find((group) => group.speciesNames.includes("Cep"));
     expect(cepGroup?.window).toMatchObject({ startDaysAgo: 15, endDaysAgo: 26 });
+  });
+});
+
+describe("rain response at gauge millimetres", () => {
+  it("passes near the printed thresholds and saturates beyond them", () => {
+    const window = scoredRainWindow(v2Water("boletus-edulis").water);
+    expect(rainResponseAtGaugeMm(window, 0)).toBe(0);
+    expect(rainResponseAtGaugeMm(window, window.typicalLossMm)).toBe(0);
+    expect(rainResponseAtGaugeMm(window, window.typicalHalfResponseMm)).toBeCloseTo(0.5, 1);
+    expect(rainResponseAtGaugeMm(window, window.typicalNearFullMm)).toBeCloseTo(0.9, 1);
+    expect(rainResponseAtGaugeMm(window, window.typicalNearFullMm * 2)).toBeLessThan(1);
+    expect(rainResponseAtGaugeMm(window, window.typicalNearFullMm * 2)).toBeGreaterThan(0.95);
   });
 });
