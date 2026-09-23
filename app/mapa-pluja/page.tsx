@@ -62,7 +62,7 @@ const catalanList = new Intl.ListFormat("ca-ES", { style: "long", type: "conjunc
 const faqs = [
   {
     question: "On ha plogut més a Catalunya aquesta setmana?",
-    answer: "El mapa d’aquesta pàgina mostra la pluja dels últims set dies a tot el territori, i la taula de sota la dona zona per zona. S’actualitza dues vegades al dia.",
+    answer: "El mapa d’aquesta pàgina mostra la pluja dels últims set dies a tot el territori, i la taula de sota la dona zona per zona. S’actualitza un cop al dia, de matinada, amb la pluja recollida fins aleshores.",
   },
   {
     question: "Quanta pluja necessiten els bolets?",

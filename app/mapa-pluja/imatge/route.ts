@@ -1,8 +1,8 @@
 import { renderRainMap } from "@/src/lib/rain-map-server";
 
 export const runtime = "nodejs";
-// The coarse condition cache republishes twice a day; an hour keeps the
-// picture close to the readings beside it without re-rendering per visit.
+// The coarse condition cache republishes once a day, early morning; an hour
+// picks up the new publication without re-rendering per visit.
 export const revalidate = 3600;
 
 export async function GET() {

@@ -23,7 +23,10 @@ import type { RainfallCellReading } from "@/src/lib/rain-overview";
  * the same cells and the same publication.
  */
 
-/** The coarse condition cache republishes twice a day. */
+/**
+ * The coarse condition cache republishes once a day, early morning; an hour
+ * picks up the new publication without re-reading per visit.
+ */
 export const RAIN_SNAPSHOT_REVALIDATE_SECONDS = 60 * 60;
 
 export interface RainfallSnapshot {
