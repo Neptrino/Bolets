@@ -182,8 +182,6 @@
 .seo-guide-section h2 { margin: 0 0 .65rem; font-size: var(--display-sm); }
 .seo-guide-section > p { font-size: var(--text-base); line-height: 1.7; }
 .seo-guide-section > p:not(.eyebrow) { margin: 0 0 1.25rem; }
-.collecting-area-grid { margin: 1.5rem 0; }
-.collecting-area-grid section > p + p { margin-top: .8rem; }
 .map-page-guide-links { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .7rem 1.2rem; margin-top: 1rem; }
 .map-page-guide-links a { display: inline-flex; align-items: center; gap: .3rem; color: #31472e; font-weight: 800; }
 .map-page-seo-copy { margin-top: 3.75rem; margin-bottom: 1rem; }
