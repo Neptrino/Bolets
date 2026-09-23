@@ -322,7 +322,8 @@
 .place-season-matrix > header .eyebrow { margin-bottom: 0.5rem; }
 .place-season-matrix h2 { margin: 0; color: var(--forest-panel); font-size: var(--display-sm); letter-spacing: -0.03em; }
 .place-season-matrix > header > p { margin: 0; color: var(--muted); line-height: 1.6; }
-.place-season-table-scroll { overflow-x: auto; }
+/* Positioned so the screen-reader-only labels inside cells stay clipped instead of widening the page on phones. */
+.place-season-table-scroll { position: relative; overflow-x: auto; }
 .place-season-table { width: 100%; min-width: 760px; border-collapse: collapse; }
 .place-season-table th,
 .place-season-table td { padding: 16px 16px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
