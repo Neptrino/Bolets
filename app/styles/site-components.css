@@ -166,10 +166,6 @@
   border-color: color-mix(in srgb, var(--forest-650) 60%, transparent);
   background: color-mix(in srgb, var(--forest-650) 15%, transparent);
 }
-.habitat-map-link:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--pumpkin) 60%, transparent);
-  outline-offset: 2px;
-}
 .habitat-map-link span {
   color: var(--forest-550);
   font-size: var(--text-xs);

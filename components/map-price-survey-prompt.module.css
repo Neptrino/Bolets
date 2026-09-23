@@ -131,9 +131,6 @@
 .later:hover { background: var(--surface-warm); border-color: var(--forest-panel); }
 .cta { gap: 8px; border-color: var(--forest-panel); }
 .cta:hover { border-color: var(--clay); background: var(--clay); }
-.close:focus-visible,
-.later:focus-visible,
-.cta:focus-visible { outline: 3px solid var(--clay); outline-offset: 3px; }
 
 @media (max-width: 560px) {
   .dialog {

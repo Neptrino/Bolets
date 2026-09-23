@@ -105,6 +105,6 @@
   .daily-share-actions { grid-template-columns: 1fr; align-items: start; }
   .daily-share-copy { align-self: start; }
   .daily-share-status { grid-column: auto; }
-  .daily-share-card-meta { align-items: flex-start; flex-direction: column; }
-  .daily-share-compact-card { align-items: flex-start; flex-direction: column; }
+  .daily-share-card-meta,
+.daily-share-compact-card { align-items: flex-start; flex-direction: column; }
 }

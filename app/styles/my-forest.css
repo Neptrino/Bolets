@@ -64,9 +64,9 @@
 .forest-journal-total { display: flex; gap: 12px; align-items: center; padding-right: 24px; border-right: 1px solid color-mix(in srgb, var(--white) 15%, transparent); }
 .forest-journal-total > span { display: grid; }
 .forest-journal-total strong { font-size: var(--display-sm); line-height: .9; }
-.forest-journal-total small { color: var(--on-dark-muted); font-size: var(--text-xs); }
 .forest-journal-card dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; margin: 0; }
 .forest-journal-card dl div { display: grid; gap: 2px; }
+.forest-journal-total small,
 .forest-journal-card dt { color: var(--on-dark-muted); font-size: var(--text-xs); }
 .forest-journal-card dd { margin: 0; font-weight: 900; }
 .forest-journal-card > p { grid-column: 1 / -1; display: flex; gap: 8px; align-items: center; margin: 0; color: var(--on-dark-muted); font-size: var(--text-xs); }

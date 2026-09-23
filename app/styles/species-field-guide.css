@@ -132,13 +132,6 @@
   transition: opacity 140ms ease, transform 140ms ease;
   visibility: hidden;
 }
-.score-calculation-help:hover + .score-calculation-tooltip,
-.score-calculation-help:focus + .score-calculation-tooltip,
-.score-calculation-help:focus-visible + .score-calculation-tooltip {
-  opacity: 1;
-  transform: translateY(0);
-  visibility: visible;
-}
 .score-calculation li.score-calculation-result {
   background: var(--ink);
 }
@@ -283,13 +276,6 @@
   transition: opacity 140ms ease, transform 140ms ease;
   visibility: hidden;
 }
-.factor-bar-help:hover + .factor-bar-tooltip,
-.factor-bar-help:focus + .factor-bar-tooltip,
-.factor-bar-help:focus-visible + .factor-bar-tooltip {
-  opacity: 1;
-  transform: translateY(0);
-  visibility: visible;
-}
 .factor-bar-reading {
   display: flex;
   grid-column: 3;
@@ -400,10 +386,6 @@
   width: 15px;
   height: 15px;
 }
-.condition-card-help:focus-visible {
-  outline: 2px solid var(--apricot);
-  outline-offset: 2px;
-}
 .condition-card-tooltip,
 .condition-stat-tooltip {
   overflow: auto;
@@ -444,13 +426,6 @@
 }
 .condition-card-tooltip > strong + span {
   margin-top: 4px;
-}
-.condition-card-help:hover + .condition-card-tooltip,
-.condition-card-help:focus + .condition-card-tooltip,
-.condition-card-help:focus-visible + .condition-card-tooltip {
-  opacity: 1;
-  transform: translateY(0);
-  visibility: visible;
 }
 .condition-list .condition-current {
   display: block;
@@ -504,6 +479,7 @@
   width: 14px;
   height: 14px;
 }
+.condition-card-help:focus-visible,
 .condition-stat-help:focus-visible {
   outline: 2px solid var(--apricot);
   outline-offset: 2px;
@@ -607,11 +583,6 @@
   cursor: help;
 }
 
-.cell-score-history-help:focus-visible {
-  outline: 2px solid var(--clay);
-  outline-offset: 2px;
-}
-
 .cell-score-history-tooltip {
   position: absolute;
   z-index: 6;
@@ -634,6 +605,15 @@
   visibility: hidden;
 }
 
+.score-calculation-help:hover + .score-calculation-tooltip,
+.score-calculation-help:focus + .score-calculation-tooltip,
+.score-calculation-help:focus-visible + .score-calculation-tooltip,
+.factor-bar-help:hover + .factor-bar-tooltip,
+.factor-bar-help:focus + .factor-bar-tooltip,
+.factor-bar-help:focus-visible + .factor-bar-tooltip,
+.condition-card-help:hover + .condition-card-tooltip,
+.condition-card-help:focus + .condition-card-tooltip,
+.condition-card-help:focus-visible + .condition-card-tooltip,
 .cell-score-history-help:hover + .cell-score-history-tooltip,
 .cell-score-history-help:focus + .cell-score-history-tooltip,
 .cell-score-history-help:focus-visible + .cell-score-history-tooltip {

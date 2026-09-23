@@ -352,10 +352,6 @@
   color: var(--clay);
   cursor: pointer;
 }
-.compact-species-page .culinary-rating-help button:focus-visible {
-  outline: 3px solid var(--clay);
-  outline-offset: 2px;
-}
 /* Portalled popup follows its trigger and avoids viewport edges. */
 .culinary-tooltip-positioner {
   z-index: 80;

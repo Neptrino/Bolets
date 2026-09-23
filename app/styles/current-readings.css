@@ -69,10 +69,6 @@
 .current-row-map { gap: 0.5rem; align-items: center; justify-content: center; min-height: 2.75rem; justify-self: end; padding: 0.5rem 0.75rem; border: 1px solid color-mix(in srgb, var(--forest-panel) 20%, transparent); color: var(--forest-panel); font-size: var(--text-xs); font-weight: 850; line-height: 1; text-decoration: none; white-space: nowrap; }
 .current-row-map svg { flex: 0 0 auto; }
 .current-row-map:hover { border-color: var(--forest-panel); background: var(--forest-panel); color: var(--surface-warm); }
-.current-leader-species-link:focus-visible,
-.current-leader-link:focus-visible,
-.current-row-species-link:focus-visible,
-.current-row-map:focus-visible { outline: 3px solid var(--pumpkin); outline-offset: 3px; }
 .current-unavailable { display: grid; gap: 0.25rem; }
 .current-unavailable strong { color: var(--forest-550); font-size: var(--text-base); }
 .current-unavailable span { color: var(--forest-450); font-size: var(--text-xs); line-height: 1.35; }

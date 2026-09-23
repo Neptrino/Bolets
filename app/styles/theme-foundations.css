@@ -3,8 +3,10 @@
   background: var(--pumpkin);
   color: var(--ink);
 }
+/* One focus ring for light surfaces: clay keeps 3:1 contrast on cream and
+   paper. Dark panels override it with apricot. */
 :focus-visible {
-  outline: 3px solid var(--pumpkin);
+  outline: 3px solid var(--clay);
   outline-offset: 3px;
 }
 body {
@@ -43,12 +45,6 @@ body {
 .moss-button:hover {
   background: var(--apricot);
 }
-.site-footer,
-.home-map-callout,
-.conditions-panel {
-  background: var(--ink);
-  color: var(--paper);
-}
 .eyebrow {
   color: var(--gold);
 }
@@ -56,6 +52,9 @@ body {
 .conditions-heading .eyebrow {
   color: var(--apricot);
 }
+.site-footer,
+.home-map-callout,
+.conditions-panel,
 .button {
   background: var(--ink);
   color: var(--paper);

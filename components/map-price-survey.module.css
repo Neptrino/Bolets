@@ -70,11 +70,6 @@
   cursor: default;
 }
 
-.answers button:focus-visible {
-  outline: 2px solid var(--clay);
-  outline-offset: 3px;
-}
-
 .status {
   margin: 0;
   font-size: var(--text-xs);

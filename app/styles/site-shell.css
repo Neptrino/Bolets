@@ -323,10 +323,6 @@ h3 {
   object-fit: cover;
   object-position: center;
 }
-.hero-copy {
-  position: relative;
-  z-index: 2;
-}
 .hero h1 {
   margin: 0;
   max-width: 9em;
@@ -512,6 +508,7 @@ h3 {
   gap: 48px;
   justify-content: start;
 }
+.hero-copy,
 .home-map-callout-copy {
   position: relative;
   z-index: 2;

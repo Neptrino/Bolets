@@ -300,12 +300,6 @@
 .place-today-card-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 8px; }
 .place-today-card-links a { display: inline-flex; gap: 4px; align-items: center; color: var(--moss); font-size: var(--text-xs); font-weight: 800; }
 .place-today-card-links a:hover { color: var(--clay); }
-.place-today-actions .button:focus-visible,
-.place-today-link:focus-visible,
-.place-today-card-links a:focus-visible,
-.place-map-live:focus-visible,
-.place-nearby-card:focus-visible,
-.place-season-table-scroll:focus-visible { outline: 3px solid var(--clay); outline-offset: 3px; }
 
 /* Season matrix: species × month. */
 .place-season-matrix { margin: 0; scroll-margin-top: 24px; }

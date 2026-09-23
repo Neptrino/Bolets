@@ -13,12 +13,6 @@
   font-size: var(--text-xs);
 }
 
-.legend li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .help,
 .note {
   color: var(--muted);
@@ -30,6 +24,7 @@
   margin-bottom: 12px;
 }
 
+.legend li,
 .yearHelp {
   display: flex;
   align-items: center;
@@ -63,13 +58,6 @@
 
 .mapLink {
   white-space: nowrap;
-}
-
-.scroll:focus-visible,
-.table a:focus-visible,
-.monthNavigation a:focus-visible {
-  outline: 2px solid var(--clay);
-  outline-offset: 3px;
 }
 
 .table {

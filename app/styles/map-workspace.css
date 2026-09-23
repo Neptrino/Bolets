@@ -405,7 +405,10 @@
 .map-stage:has(.map-detail-panel.is-open) .maplibregl-ctrl-bottom-right {
   display: none;
 }
-.map-page .maplibregl-ctrl-group button {
+.map-page .maplibregl-ctrl-group button,
+.map-page .map-cell-visibility-panel-toggle,
+.map-page .map-cell-visibility.is-collapsed .map-cell-visibility-panel-toggle,
+.map-page .map-cell-visibility-toggle {
   width: 44px;
   height: 44px;
 }
@@ -426,12 +429,6 @@
 .map-page .map-cell-visibility.is-collapsed {
   width: 44px;
   overflow: visible;
-}
-.map-page .map-cell-visibility-panel-toggle,
-.map-page .map-cell-visibility.is-collapsed .map-cell-visibility-panel-toggle,
-.map-page .map-cell-visibility-toggle {
-  width: 44px;
-  height: 44px;
 }
 .map-page .map-cell-visibility-heading {
   grid-template-columns: 12px minmax(0, 1fr) auto 44px;
@@ -539,14 +536,11 @@
     gap: 8px 12px;
     padding: 12px 16px;
   }
-  .map-floating-card-context {
-    grid-column: 1 / -1;
-    grid-row: auto;
-  }
-  .map-score-reading,
-  .map-condition-summary,
-  .map-floating-card > p,
-  .map-footer-actions {
+  .map-floating-card-context,
+.map-score-reading,
+.map-condition-summary,
+.map-floating-card > p,
+.map-footer-actions {
     grid-column: 1 / -1;
     grid-row: auto;
   }

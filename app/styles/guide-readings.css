@@ -25,13 +25,6 @@
 .species-search-summary nav a:hover { background: var(--surface-warm); }
 .guide-reading-actions svg,
 .species-search-summary nav svg { flex-shrink: 0; }
-.guide-reading-actions a:focus-visible,
-.species-search-summary a:focus-visible,
-.guide-types-table-scroll:focus-visible,
-.ceps-other-guides summary:focus-visible {
-  outline: 3px solid var(--clay);
-  outline-offset: 3px;
-}
 .guide-types.ceps-local-guides { margin-bottom: 48px; }
 .ceps-other-guides { margin: 20px 0; }
 .ceps-other-guides summary {

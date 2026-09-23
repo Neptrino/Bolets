@@ -231,16 +231,12 @@
     padding: 24px;
   }
 
-  .communityGrid {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-
   .support {
     padding: 24px;
   }
 
-  .supportGrid {
+  .communityGrid,
+.supportGrid {
     grid-template-columns: 1fr;
     gap: 24px;
   }

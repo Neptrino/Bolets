@@ -24,12 +24,6 @@
   cursor: pointer;
 }
 
-.item summary:focus-visible {
-  outline: 2px solid var(--forest-panel);
-  outline-offset: 4px;
-  border-radius: var(--radius-sm);
-}
-
 .answer {
   margin-top: 0.75rem;
   scroll-margin-top: 120px;
@@ -48,6 +42,7 @@
   text-underline-offset: 3px;
 }
 
+.item summary:focus-visible,
 .answer a:focus-visible {
   outline: 2px solid var(--forest-panel);
   outline-offset: 4px;

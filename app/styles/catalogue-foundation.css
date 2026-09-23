@@ -155,10 +155,6 @@
   opacity: .45;
   cursor: not-allowed;
 }
-.directory-filter:focus-visible {
-  outline: 3px solid var(--pumpkin);
-  outline-offset: 2px;
-}
 .directory-reset {
   display: inline-flex;
   align-items: center;
@@ -520,10 +516,6 @@
 .species-hero-lookalike:hover strong,
 .species-hero-lookalike:focus-visible strong {
   text-decoration: underline;
-}
-.species-hero-lookalike:focus-visible {
-  outline: 3px solid var(--clay);
-  outline-offset: 2px;
 }
 .species-hero-facts {
   display: grid;

@@ -36,13 +36,6 @@
   color: var(--danger-ink);
 }
 
-.tableActions a:focus-visible,
-.tableActions button:focus-visible,
-.moderationActions button:focus-visible {
-  outline: 3px solid var(--clay);
-  outline-offset: 2px;
-}
-
 .tableActions button:disabled,
 .moderationActions button:disabled {
   cursor: wait;

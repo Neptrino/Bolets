@@ -70,10 +70,6 @@
   border-color: color-mix(in srgb, var(--clay) 40%, transparent);
   box-shadow: var(--shadow-md);
 }
-.local-resource-shelf a:focus-visible {
-  outline: 2px solid var(--clay);
-  outline-offset: 3px;
-}
 .local-species-page .region-map-habitat .map-cell-visibility:not(.is-collapsed) {
   top: 10px;
   right: 50px;
@@ -193,10 +189,6 @@
   border-color: color-mix(in srgb, var(--forest-650) 30%, transparent);
   background: var(--surface);
 }
-.species-local-guide-links a:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--pumpkin) 60%, transparent);
-  outline-offset: 2px;
-}
 .species-local-guide-links .species-territory-hub-link {
   grid-column: 1 / -1;
   border-color: color-mix(in srgb, var(--forest-650) 20%, transparent);
@@ -259,7 +251,6 @@
   .location-hub-copy h1 { font-size: var(--display-lg); }
   .location-hub-copy > p:last-child { font-size: var(--text-base); }
   .location-hub-facts { grid-template-columns: 1fr; }
-  .location-hub-facts > div + div { border-top: 1px solid var(--line); border-left: 0; }
   .location-guide-gallery { padding: 60px 0; }
   .location-guide-gallery > header { gap: 16px; }
   .location-guide-card { min-height: 0; }
@@ -267,7 +258,8 @@
   .location-guide-card-copy { padding: 28px 24px; }
   .location-guide-card-copy > p { font-size: var(--text-base); }
   .local-species-breadcrumbs { margin-bottom: 40px; }
-  .local-species-summary > div + div { border-top: 1px solid var(--line); border-left: 0; }
+  .location-hub-facts > div + div,
+.local-species-summary > div + div { border-top: 1px solid var(--line); border-left: 0; }
   .local-resource-shelf ul { grid-template-columns: 1fr; }
   .local-related-guides > div { grid-template-columns: 1fr; }
 }

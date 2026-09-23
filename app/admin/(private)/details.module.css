@@ -19,13 +19,6 @@
   text-decoration: none;
 }
 
-.filterBar a:focus-visible,
-.pager a:focus-visible,
-.publicLink:focus-visible {
-  outline: 3px solid var(--apricot);
-  outline-offset: 3px;
-}
-
 .overviewLine {
   display: flex;
   flex-wrap: wrap;
@@ -136,6 +129,9 @@
   box-shadow: var(--shadow-md);
 }
 
+.filterBar a:focus-visible,
+.pager a:focus-visible,
+.publicLink:focus-visible,
 .adminTableFrame:focus-visible {
   outline: 3px solid var(--apricot);
   outline-offset: 3px;

@@ -385,10 +385,6 @@
   border-color: color-mix(in srgb, var(--bark) 30%, transparent);
   box-shadow: var(--shadow-lg);
 }
-.guides-reading-links a:focus-visible {
-  outline: 2px solid var(--forest-panel);
-  outline-offset: 2px;
-}
 .guides-reading-links a > svg {
   color: var(--clay);
 }
@@ -439,6 +435,7 @@
   border-color: color-mix(in srgb, var(--bark) 30%, transparent);
   box-shadow: var(--shadow-lg);
 }
+.guides-reading-links a:focus-visible,
 .guides-territory-list a:focus-visible {
   outline: 2px solid var(--forest-panel);
   outline-offset: 2px;
