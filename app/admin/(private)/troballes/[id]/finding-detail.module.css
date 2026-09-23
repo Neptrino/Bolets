@@ -38,7 +38,7 @@
   border: 1px solid var(--line);
   border-radius: 16px;
   background: var(--surface);
-  box-shadow: 0 12px 28px rgba(57, 48, 37, .045);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--bark-800) 5%, transparent);
 }
 
 .recordHeader {

@@ -1,14 +1,14 @@
 .mushroom-game {
-  --game-cream: #f3e8c8;
-  --game-lime: #dbe5a0;
-  --game-moss: #4c673e;
-  --game-deep: #14291f;
-  --game-night: #0d1b18;
+  --game-cream: var(--paper);
+  --game-lime: var(--forest-100);
+  --game-moss: var(--forest-600);
+  --game-deep: var(--forest-900);
+  --game-night: var(--forest-900);
   overflow: hidden;
-  border: 1px solid rgba(38, 51, 36, 0.2);
+  border: 1px solid color-mix(in srgb, var(--forest-900) 20%, transparent);
   border-radius: 30px;
   background: var(--game-night);
-  box-shadow: 0 32px 90px rgba(59, 47, 31, 0.2);
+  box-shadow: 0 32px 90px color-mix(in srgb, var(--bark-800) 20%, transparent);
 }
 
 .mushroom-game-toolbar {
@@ -20,9 +20,9 @@
   justify-content: space-between;
   gap: 24px;
   padding: 14px 22px;
-  border-bottom: 1px solid rgba(238, 230, 193, 0.13);
+  border-bottom: 1px solid color-mix(in srgb, var(--warning-surface) 15%, transparent);
   color: var(--game-cream);
-  background: rgba(13, 27, 24, 0.96);
+  background: color-mix(in srgb, var(--forest-900) 90%, transparent);
 }
 
 .mushroom-game-mobile-exit {
@@ -36,7 +36,7 @@
 }
 
 .mushroom-game-location > svg {
-  color: #e5a85c;
+  color: var(--apricot);
 }
 
 .mushroom-game-location span {
@@ -50,7 +50,7 @@
 
 .mushroom-game-location small {
   margin-top: 2px;
-  color: rgba(243, 232, 200, 0.62);
+  color: color-mix(in srgb, var(--paper) 60%, transparent);
   font-size: var(--text-xs);
 }
 
@@ -64,13 +64,13 @@
   display: grid;
   min-width: 84px;
   padding: 7px 12px;
-  border: 1px solid rgba(243, 232, 200, 0.14);
+  border: 1px solid color-mix(in srgb, var(--paper) 15%, transparent);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
+  background: color-mix(in srgb, var(--white) 5%, transparent);
 }
 
 .mushroom-game-stats dt {
-  color: rgba(243, 232, 200, 0.56);
+  color: color-mix(in srgb, var(--paper) 60%, transparent);
   font-size: var(--text-xs);
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -79,7 +79,7 @@
 
 .mushroom-game-stats dd {
   margin: 0;
-  color: #fff8dc;
+  color: var(--paper);
   font-size: var(--text-xl);
   font-weight: 900;
   line-height: 1;
@@ -90,8 +90,8 @@
 }
 
 .mushroom-game-stats .is-popping dd {
-  color: #f5c86f;
-  text-shadow: 0 0 18px rgba(245, 200, 111, 0.7);
+  color: var(--amber-150);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--amber-150) 70%, transparent);
 }
 
 .mushroom-game-stage {
@@ -99,9 +99,7 @@
   min-height: 680px;
   overflow: hidden;
   isolation: isolate;
-  background:
-    radial-gradient(circle at 68% 26%, rgba(239, 176, 95, 0.24), transparent 28%),
-    linear-gradient(180deg, #617066 0%, #293f34 54%, #15281f 100%);
+  background: var(--forest-panel);
   transition: background 1.2s ease;
 }
 
@@ -110,9 +108,7 @@
 }
 
 .mushroom-game-stage[data-complete="true"] {
-  background:
-    radial-gradient(circle at 68% 25%, rgba(255, 220, 132, 0.58), transparent 31%),
-    linear-gradient(180deg, #788774 0%, #38533f 54%, #193226 100%);
+  background: var(--forest-650);
 }
 
 .mushroom-game-stage::after {
@@ -122,7 +118,6 @@
   pointer-events: none;
   content: "";
   background:
-    radial-gradient(circle at center, transparent 25%, rgba(6, 18, 14, 0.28) 100%),
     url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.11'/%3E%3C/svg%3E");
   mix-blend-mode: soft-light;
 }
@@ -163,7 +158,7 @@
 .mushroom-game-pulse {
   position: absolute;
   inset: 5px;
-  border: 1px solid rgba(242, 228, 176, 0.56);
+  border: 1px solid color-mix(in srgb, var(--warning-surface) 60%, transparent);
   border-radius: 50%;
   opacity: 0;
   transform: scale(0.7);
@@ -183,10 +178,10 @@
   width: 25px;
   height: 25px;
   place-items: center;
-  border: 2px solid #dce7b2;
+  border: 2px solid var(--forest-100);
   border-radius: 50%;
-  color: #183026;
-  background: #dce7b2;
+  color: var(--forest-900);
+  background: var(--forest-100);
   opacity: 0;
   transform: scale(0.5);
   transition: 0.25s ease;
@@ -205,11 +200,11 @@
   left: 50%;
   width: min(92%, 530px);
   padding: 38px;
-  border: 1px solid rgba(244, 232, 195, 0.2);
+  border: 1px solid color-mix(in srgb, var(--warning-surface) 20%, transparent);
   border-radius: 24px;
   color: var(--game-cream);
-  background: rgba(15, 35, 27, 0.9);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  background: color-mix(in srgb, var(--forest-900) 90%, transparent);
+  box-shadow: 0 30px 80px color-mix(in srgb, var(--black) 30%, transparent);
   backdrop-filter: blur(20px);
   transform: translate(-50%, -50%);
 }
@@ -217,14 +212,14 @@
 .mushroom-game-briefing h2,
 .mushroom-game-complete h2 {
   margin: 8px 0 16px;
-  color: #fff6d6;
+  color: var(--paper);
   font-size: var(--display-md);
   line-height: 0.98;
   letter-spacing: -0.04em;
 }
 
 .mushroom-game-briefing h2 em {
-  color: #e8b364;
+  color: var(--amber-150);
   font-style: italic;
   font-weight: 600;
 }
@@ -232,7 +227,7 @@
 .mushroom-game-briefing > p:not(.mushroom-game-kicker),
 .mushroom-game-complete > p:not(.mushroom-game-kicker) {
   margin: 0;
-  color: rgba(243, 232, 200, 0.76);
+  color: color-mix(in srgb, var(--paper) 80%, transparent);
   font-size: var(--text-base);
   line-height: 1.6;
 }
@@ -249,7 +244,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #d9dec2;
+  color: var(--on-dark-muted);
   font-size: var(--text-base);
 }
 
@@ -258,7 +253,7 @@
   align-items: center;
   gap: 7px;
   margin: 0;
-  color: #e8b364;
+  color: var(--amber-150);
   font-size: var(--text-xs);
   font-weight: 900;
   letter-spacing: 0.14em;
@@ -274,9 +269,9 @@
   padding: 11px 20px;
   border: 0;
   border-radius: var(--radius-pill);
-  color: #173025;
-  background: #e4b363;
-  box-shadow: 0 9px 28px rgba(4, 15, 10, 0.24);
+  color: var(--forest-900);
+  background: var(--amber-150);
+  box-shadow: 0 9px 28px color-mix(in srgb, var(--black) 20%, transparent);
   font: inherit;
   font-weight: 900;
   cursor: pointer;
@@ -284,7 +279,7 @@
 }
 
 .mushroom-game-primary:hover {
-  background: #f0c779;
+  background: var(--amber-150);
   transform: translateY(-2px);
 }
 
@@ -295,7 +290,7 @@
   display: grid;
   place-items: center;
   padding: 28px;
-  background: rgba(6, 17, 13, 0.64);
+  background: color-mix(in srgb, var(--black) 60%, transparent);
   backdrop-filter: blur(8px);
 }
 
@@ -306,11 +301,11 @@
   max-height: 100%;
   overflow: auto;
   grid-template-columns: minmax(300px, 0.92fr) minmax(360px, 1.08fr);
-  border: 1px solid rgba(241, 226, 189, 0.3);
+  border: 1px solid color-mix(in srgb, var(--warning-surface) 30%, transparent);
   border-radius: 24px;
   color: var(--game-cream);
-  background: #142a21;
-  box-shadow: 0 34px 100px rgba(0, 0, 0, 0.46);
+  background: var(--forest-900);
+  box-shadow: 0 34px 100px color-mix(in srgb, var(--black) 50%, transparent);
   outline: none;
   animation: mushroom-panel-in 0.3s ease both;
 }
@@ -324,10 +319,10 @@
   width: 42px;
   height: 42px;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid color-mix(in srgb, var(--white) 20%, transparent);
   border-radius: 50%;
   color: white;
-  background: rgba(8, 20, 15, 0.74);
+  background: color-mix(in srgb, var(--forest-900) 70%, transparent);
   cursor: pointer;
 }
 
@@ -335,16 +330,9 @@
   position: relative;
   min-height: 520px;
   overflow: hidden;
-  background: #26352b;
+  background: var(--forest-900);
 }
 
-.mushroom-game-photo::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  background: linear-gradient(180deg, transparent 55%, rgba(7, 17, 13, 0.72));
-  pointer-events: none;
-}
 
 .mushroom-game-photo img {
   object-fit: cover;
@@ -361,7 +349,7 @@
   padding: 7px 11px;
   border-radius: var(--radius-pill);
   color: white;
-  background: rgba(7, 17, 13, 0.72);
+  background: color-mix(in srgb, var(--black) 70%, transparent);
   font-size: var(--text-xs);
   font-weight: 800;
 }
@@ -377,7 +365,7 @@
 .mushroom-game-observation-copy h2 {
   margin: 7px 0 6px;
   padding-right: 40px;
-  color: #fff6d7;
+  color: var(--paper);
   font-size: var(--display-sm);
   line-height: 1.04;
   letter-spacing: -0.03em;
@@ -385,14 +373,14 @@
 
 .mushroom-game-observation-copy > p:not(.mushroom-game-kicker, .mushroom-game-scientific, .mushroom-game-feedback, .mushroom-game-credit) {
   margin: 10px 0 0;
-  color: rgba(243, 232, 200, 0.76);
+  color: color-mix(in srgb, var(--paper) 80%, transparent);
   font-size: var(--text-base);
   line-height: 1.58;
 }
 
 .mushroom-game-scientific {
   margin: 0 0 10px;
-  color: #aebd93;
+  color: var(--forest-250);
   font-size: var(--text-base);
   font-style: italic;
 }
@@ -411,10 +399,10 @@
   align-items: flex-start;
   gap: 11px;
   padding: 10px 12px;
-  border: 1px solid rgba(228, 179, 99, 0.12);
+  border: 1px solid color-mix(in srgb, var(--amber-150) 10%, transparent);
   border-radius: 10px;
-  color: #e2ddc4;
-  background: rgba(255, 255, 255, 0.035);
+  color: var(--paper);
+  background: color-mix(in srgb, var(--white) 5%, transparent);
   font-size: var(--text-xs);
   line-height: 1.45;
 }
@@ -425,8 +413,8 @@
   flex: 0 0 auto;
   margin-top: 6px;
   border-radius: 50%;
-  background: #e4b363;
-  box-shadow: 0 0 0 4px rgba(228, 179, 99, 0.1);
+  background: var(--amber-150);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--amber-150) 10%, transparent);
 }
 
 .mushroom-game-choices {
@@ -438,10 +426,10 @@
 .mushroom-game-choices button {
   min-height: 46px;
   padding: 9px 14px;
-  border: 1px solid rgba(240, 228, 193, 0.23);
+  border: 1px solid color-mix(in srgb, var(--warning-surface) 20%, transparent);
   border-radius: 11px;
-  color: #fff8dc;
-  background: rgba(255, 255, 255, 0.055);
+  color: var(--paper);
+  background: color-mix(in srgb, var(--white) 5%, transparent);
   font: inherit;
   font-size: var(--text-base);
   font-weight: 800;
@@ -451,8 +439,8 @@
 }
 
 .mushroom-game-choices button:hover {
-  border-color: #e4b363;
-  background: rgba(228, 179, 99, 0.14);
+  border-color: var(--amber-150);
+  background: color-mix(in srgb, var(--amber-150) 15%, transparent);
   transform: translateX(3px);
 }
 
@@ -468,25 +456,25 @@
 }
 
 .feedback-incorrect {
-  color: #f3d9bd;
-  background: rgba(184, 99, 51, 0.18);
+  color: var(--warning-surface);
+  background: color-mix(in srgb, var(--clay) 20%, transparent);
 }
 
 .feedback-correct {
-  color: #e6efc5;
-  background: rgba(140, 169, 87, 0.18);
+  color: var(--forest-100);
+  background: color-mix(in srgb, var(--forest-400) 20%, transparent);
 }
 
 .mushroom-game-credit {
   margin: auto 0 0;
   padding-top: 20px;
-  color: rgba(243, 232, 200, 0.48);
+  color: color-mix(in srgb, var(--paper) 50%, transparent);
   font-size: var(--text-xs);
   line-height: 1.4;
 }
 
 .mushroom-game-credit a {
-  color: #d7dcaa;
+  color: var(--forest-100);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -502,9 +490,9 @@
   font-weight: 900;
 }
 
-.status-edible { color: #e8efc9; background: rgba(128, 159, 83, 0.2); }
-.status-caution { color: #f2ddb1; background: rgba(210, 150, 66, 0.2); }
-.status-danger { color: #ffd8ce; background: rgba(197, 78, 56, 0.24); }
+.status-edible { color: var(--forest-100); background: color-mix(in srgb, var(--forest-400) 20%, transparent); }
+.status-caution { color: var(--warning-surface); background: color-mix(in srgb, var(--amber-350) 20%, transparent); }
+.status-danger { color: var(--danger-surface); background: color-mix(in srgb, var(--clay) 20%, transparent); }
 
 .mushroom-game-field-notes {
   display: grid;
@@ -516,13 +504,13 @@
 
 .mushroom-game-field-notes div {
   padding: 12px;
-  border: 1px solid rgba(240, 228, 193, 0.13);
+  border: 1px solid color-mix(in srgb, var(--warning-surface) 15%, transparent);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.035);
+  background: color-mix(in srgb, var(--white) 5%, transparent);
 }
 
 .mushroom-game-field-notes dt {
-  color: #aebd93;
+  color: var(--forest-250);
   font-size: var(--text-xs);
   font-weight: 900;
   text-transform: uppercase;
@@ -530,7 +518,7 @@
 
 .mushroom-game-field-notes dd {
   margin: 5px 0 0;
-  color: #f0e8d0;
+  color: var(--paper);
   font-size: var(--text-xs);
   line-height: 1.45;
 }
@@ -556,9 +544,9 @@
   place-items: center;
   margin: 0 auto 18px;
   border-radius: 50%;
-  color: #183026;
-  background: #e4b363;
-  box-shadow: 0 0 0 10px rgba(228, 179, 99, 0.1);
+  color: var(--forest-900);
+  background: var(--amber-150);
+  box-shadow: 0 0 0 10px color-mix(in srgb, var(--amber-150) 10%, transparent);
   animation: mushroom-finale-icon 1.2s cubic-bezier(0.2, 1.4, 0.35, 1) 0.65s both;
 }
 
@@ -594,14 +582,14 @@
   align-items: center;
   gap: 13px;
   padding: 15px 16px;
-  border: 1px solid rgba(52, 72, 58, 0.16);
+  border: 1px solid color-mix(in srgb, var(--forest-panel) 15%, transparent);
   border-radius: 15px;
-  background: rgba(251, 247, 233, 0.65);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
   transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 
 .mushroom-game-species-links a:hover {
-  border-color: rgba(110, 61, 37, 0.45);
+  border-color: color-mix(in srgb, var(--moss) 40%, transparent);
   background: var(--surface-warm);
   transform: translateY(-2px);
 }
@@ -651,7 +639,7 @@
   color: var(--moss);
   font-weight: 850;
   text-decoration: underline;
-  text-decoration-color: rgba(110, 61, 37, 0.3);
+  text-decoration-color: color-mix(in srgb, var(--moss) 30%, transparent);
   text-underline-offset: 4px;
 }
 
@@ -723,10 +711,10 @@
     align-items: center;
     gap: 4px;
     padding: 7px 10px;
-    border: 1px solid rgba(243, 232, 200, 0.2);
+    border: 1px solid color-mix(in srgb, var(--paper) 20%, transparent);
     border-radius: var(--radius-pill);
     color: var(--game-cream);
-    background: rgba(255, 255, 255, 0.05);
+    background: color-mix(in srgb, var(--white) 5%, transparent);
     font: inherit;
     font-size: var(--text-xs);
     font-weight: 800;

@@ -3,7 +3,7 @@
   z-index: 0;
   inset: 0;
   overflow: hidden;
-  background: #1b3328;
+  background: var(--forest-900);
   pointer-events: none;
 }
 
@@ -27,9 +27,7 @@
   position: absolute;
   inset: 0;
   content: "";
-  background:
-    linear-gradient(180deg, rgba(7, 23, 17, 0.12), rgba(7, 21, 15, 0.36)),
-    radial-gradient(circle at center, transparent 32%, rgba(5, 16, 12, 0.28) 100%);
+  background: color-mix(in srgb, var(--forest-900) 25%, transparent);
   transition: opacity 1.2s ease;
 }
 
@@ -66,10 +64,10 @@
 }
 
 .mushroom-game-stage[data-complete="true"] .forest-sun {
-  fill: #ffe087;
+  fill: var(--amber-150);
   opacity: 1;
   transform: scale(1.45);
-  filter: drop-shadow(0 0 28px rgba(255, 218, 139, 0.9));
+  filter: drop-shadow(0 0 28px color-mix(in srgb, var(--amber-150) 90%, transparent));
 }
 
 .mushroom-game-stage[data-complete="true"] .forest-sun-glow {
@@ -95,18 +93,18 @@
   height: 64px;
   overflow: visible;
   transform: translateX(-50%);
-  filter: drop-shadow(0 8px 5px rgba(3, 12, 8, 0.58));
+  filter: drop-shadow(0 8px 5px color-mix(in srgb, var(--black) 60%, transparent));
   transition: transform 0.25s cubic-bezier(0.2, 1.4, 0.4, 1), filter 0.25s ease;
 }
 
 .mushroom-game-hotspot:hover .mushroom-game-specimen,
 .mushroom-game-hotspot:focus-visible .mushroom-game-specimen {
   transform: translateX(-50%) translateY(-3px) scale(1.1);
-  filter: drop-shadow(0 11px 7px rgba(3, 12, 8, 0.64)) brightness(1.08);
+  filter: drop-shadow(0 11px 7px color-mix(in srgb, var(--black) 60%, transparent)) brightness(1.08);
 }
 
 .mushroom-game-hotspot[data-found="true"] .mushroom-game-specimen {
-  filter: drop-shadow(0 0 9px rgba(219, 229, 160, 0.5)) drop-shadow(0 8px 5px rgba(3, 12, 8, 0.55));
+  filter: drop-shadow(0 0 9px color-mix(in srgb, var(--forest-100) 50%, transparent)) drop-shadow(0 8px 5px color-mix(in srgb, var(--black) 60%, transparent));
 }
 
 @keyframes mushroom-illustrated-mist {

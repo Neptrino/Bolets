@@ -17,7 +17,7 @@
   .method-hero-equation {
     max-width: 520px;
     padding: 19px;
-    box-shadow: 14px 14px 0 rgba(242, 167, 102, 0.1);
+    box-shadow: 14px 14px 0 color-mix(in srgb, var(--apricot) 10%, transparent);
   }
   .method-equation-main {
     min-height: 135px;
@@ -118,7 +118,7 @@
   }
   .method-score-equation > p {
     padding: 18px 0 0;
-    border-top: 1px solid rgba(242, 167, 102, 0.25);
+    border-top: 1px solid color-mix(in srgb, var(--apricot) 20%, transparent);
     border-left: 0;
   }
   .method-subscore-heading {

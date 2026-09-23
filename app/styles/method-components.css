@@ -8,7 +8,7 @@
   position: relative;
   padding: 22px;
   border: 1px solid var(--line);
-  background: rgba(251, 247, 233, 0.82);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
   animation: reveal 440ms both;
   animation-delay: calc(var(--component-order) * 55ms);
 }
@@ -39,7 +39,7 @@
 }
 .method-factor-grid p {
   margin: 0;
-  color: #655f57;
+  color: var(--sand-600);
   font-size: var(--text-xs);
   line-height: 1.5;
 }
@@ -57,7 +57,7 @@
 }
 .method-subscore-heading > p:last-child {
   margin: 0;
-  color: #6b655d;
+  color: var(--sand-600);
   font-size: var(--text-xs);
 }
 .method-subscore-grid {
@@ -68,11 +68,11 @@
 .method-subscore {
   padding: 28px;
   border: 1px solid var(--line);
-  background: rgba(251, 247, 233, 0.55);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
 }
 .method-subscore-rain {
   grid-column: 1 / -1;
-  background: #eadfc9;
+  background: var(--paper);
 }
 .method-subscore-title {
   display: flex;
@@ -98,7 +98,7 @@
 .method-subscore > p,
 .method-rain-steps p {
   margin: 0;
-  color: #686159;
+  color: var(--sand-600);
   font-size: var(--text-xs);
   line-height: 1.65;
 }
@@ -114,11 +114,11 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
-  background: rgba(110, 61, 37, 0.18);
+  background: color-mix(in srgb, var(--moss) 20%, transparent);
 }
 .method-rain-steps > div {
   padding: 22px;
-  background: #f5ebd7;
+  background: var(--paper);
 }
 .method-rain-steps > div > b {
   color: var(--gold);
@@ -131,8 +131,8 @@
   align-content: center;
   margin: 14px 0;
   padding: 15px 0;
-  border-top: 1px solid rgba(110, 61, 37, 0.16);
-  border-bottom: 1px solid rgba(110, 61, 37, 0.16);
+  border-top: 1px solid color-mix(in srgb, var(--moss) 15%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--moss) 15%, transparent);
   font-size: var(--text-base);
 }
 .method-season-scale {
@@ -144,17 +144,17 @@
 .method-season-scale span {
   display: grid;
   gap: 4px;
-  color: #6b655d;
+  color: var(--sand-600);
   font-size: var(--text-xs);
 }
 .method-season-scale i {
   height: 5px;
-  background: #b7b1a7;
+  background: var(--data-grey-300);
 }
-.method-season-scale span:nth-child(2) i { background: #e7c8a5; }
+.method-season-scale span:nth-child(2) i { background: var(--data-sand-200); }
 .method-season-scale span:nth-child(3) i { background: var(--apricot); }
 .method-season-scale span:nth-child(4) i { background: var(--pumpkin); }
-.method-season-scale span:nth-child(5) i { background: #963f20; }
+.method-season-scale span:nth-child(5) i { background: var(--data-clay-600); }
 .method-season-scale b {
   font: 18px var(--font-nunito-sans), sans-serif;
 }
@@ -169,15 +169,15 @@
 .method-publish-card {
   min-height: 290px;
   padding: 25px;
-  border: 1px solid rgba(242, 235, 213, 0.18);
-  background: rgba(242, 235, 213, 0.035);
+  border: 1px solid color-mix(in srgb, var(--paper) 20%, transparent);
+  background: color-mix(in srgb, var(--paper) 5%, transparent);
 }
 .method-publish-card > span {
   display: flex;
   align-items: center;
   gap: 9px;
   padding-bottom: 19px;
-  border-bottom: 1px solid rgba(242, 235, 213, 0.14);
+  border-bottom: 1px solid color-mix(in srgb, var(--paper) 15%, transparent);
   color: var(--apricot);
   font-size: var(--text-xs);
   font-weight: 850;
@@ -195,7 +195,7 @@
   grid-template-columns: 17px 1fr;
   gap: 10px;
   align-items: start;
-  color: #d9cebd;
+  color: var(--line);
   font-size: var(--text-base);
   line-height: 1.5;
 }
@@ -203,8 +203,8 @@
   margin-top: 2px;
   color: var(--apricot);
 }
-.method-publish-withhold { border-top: 4px solid #c3bcae; }
-.method-publish-zero { border-top: 4px solid #b34a2c; }
+.method-publish-withhold { border-top: 4px solid var(--line); }
+.method-publish-zero { border-top: 4px solid var(--gold); }
 .method-publish-cap { border-top: 4px solid var(--apricot); }
 .method-stress {
   display: grid;
@@ -213,8 +213,8 @@
   align-items: center;
   margin-top: 70px;
   padding: 38px 0;
-  border-top: 1px solid rgba(242, 235, 213, 0.18);
-  border-bottom: 1px solid rgba(242, 235, 213, 0.18);
+  border-top: 1px solid color-mix(in srgb, var(--paper) 20%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--paper) 20%, transparent);
 }
 .method-stress h3 {
   margin: 0 0 13px;
@@ -223,7 +223,7 @@
 }
 .method-stress p:last-child {
   margin: 0;
-  color: #cfc4b4;
+  color: var(--line);
   font-size: var(--text-base);
   line-height: 1.65;
 }
@@ -252,7 +252,7 @@
   letter-spacing: 0.1em;
 }
 .method-label-scale-heading small {
-  color: #a9a093;
+  color: var(--stone);
   font-size: var(--text-xs);
 }
 .method-label-ranges {
@@ -265,7 +265,7 @@
   display: grid;
   align-content: center;
   padding: 8px 13px;
-  color: #fffaf0;
+  color: var(--surface-warm);
   font-size: var(--text-xs);
 }
 .method-label-ranges b {
@@ -275,19 +275,17 @@
 .method-resolution-note {
   grid-template-columns: auto 1fr;
   margin-top: 50px;
-  border-color: rgba(242, 235, 213, 0.16);
-  background: rgba(242, 235, 213, 0.04);
+  border-color: color-mix(in srgb, var(--paper) 15%, transparent);
+  background: color-mix(in srgb, var(--paper) 5%, transparent);
 }
 .method-resolution-note > svg {
   color: var(--apricot);
 }
 .method-resolution-note p {
-  color: #cfc4b4;
+  color: var(--line);
 }
 .method-band-sources {
-  background:
-    radial-gradient(circle at 88% 8%, rgba(33, 102, 172, 0.09), transparent 24%),
-    #e8e0ce;
+  background: var(--paper);
 }
 .method-source-lanes {
   display: grid;
@@ -296,8 +294,8 @@
   align-items: center;
   margin: -16px 0 82px;
   padding: 18px 21px;
-  border: 1px solid rgba(89, 53, 37, 0.17);
-  background: rgba(251, 247, 233, 0.48);
+  border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
+  background: color-mix(in srgb, var(--surface) 50%, transparent);
 }
 .method-source-lanes span {
   display: flex;
@@ -314,7 +312,7 @@
 .method-source-lanes i {
   height: 1px;
   position: relative;
-  background: rgba(89, 53, 37, 0.3);
+  background: color-mix(in srgb, var(--bark) 30%, transparent);
 }
 .method-source-lanes i::after {
   content: "";
@@ -323,8 +321,8 @@
   right: 0;
   width: 7px;
   height: 7px;
-  border-top: 1px solid rgba(89, 53, 37, 0.45);
-  border-right: 1px solid rgba(89, 53, 37, 0.45);
+  border-top: 1px solid color-mix(in srgb, var(--bark) 40%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--bark) 40%, transparent);
   transform: rotate(45deg);
 }
 .method-source-group + .method-source-group {
@@ -338,7 +336,7 @@
   margin-bottom: 25px;
 }
 .method-source-group-heading > span {
-  color: rgba(89, 53, 37, 0.25);
+  color: color-mix(in srgb, var(--bark) 20%, transparent);
   font: 42px/1 var(--font-nunito-sans), sans-serif;
 }
 .method-source-group-heading .eyebrow {
@@ -350,7 +348,7 @@
   line-height: 1.05;
 }
 .method-source-group-heading > small {
-  color: #766d62;
+  color: var(--muted);
   font-size: var(--text-xs);
   font-weight: 750;
   letter-spacing: 0.04em;
@@ -358,8 +356,8 @@
 .method-source-grid {
   display: grid;
   gap: 1px;
-  background: rgba(89, 53, 37, 0.18);
-  border: 1px solid rgba(89, 53, 37, 0.18);
+  background: color-mix(in srgb, var(--bark) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
 }
 .method-source-grid-static {
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -373,22 +371,18 @@
   display: flex;
   flex-direction: column;
   padding: 29px;
-  background: rgba(251, 247, 233, 0.76);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
 }
 .method-source-card-weather {
-  color: #eef0e8;
+  color: var(--surface-muted);
   background: var(--method-blue-dark);
 }
 .method-source-card-moisture {
-  color: #eef0e8;
-  background: #315b69;
+  color: var(--surface-muted);
+  background: var(--sky-650);
 }
 .method-source-card-mask {
-  background-image: repeating-linear-gradient(
-    135deg,
-    rgba(33, 102, 172, 0.045) 0 9px,
-    transparent 9px 18px
-  );
+  background-color: color-mix(in srgb, var(--sky-600) 3%, transparent);
 }
 .method-source-card-top {
   display: flex;
@@ -424,13 +418,13 @@
 .method-source-card > p,
 .method-source-evidence p {
   margin: 0;
-  color: #655f58;
+  color: var(--sand-600);
   font-size: var(--text-base);
   line-height: 1.65;
 }
 .method-source-card-weather > p,
 .method-source-card-moisture > p {
-  color: #cedbe0;
+  color: var(--grey-150);
 }
 .method-source-card dl,
 .method-source-evidence dl {
@@ -446,23 +440,23 @@
   justify-content: space-between;
   gap: 10px;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(89, 53, 37, 0.15);
+  border-bottom: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   font-size: var(--text-xs);
 }
 .method-source-card-weather dl div,
 .method-source-card-moisture dl div {
-  border-bottom-color: rgba(238, 240, 232, 0.17);
+  border-bottom-color: color-mix(in srgb, var(--surface-muted) 15%, transparent);
 }
 .method-source-card dt,
 .method-source-evidence dt {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: #7b7165;
+  color: var(--muted);
 }
 .method-source-card-weather dt,
 .method-source-card-moisture dt {
-  color: #b8c9cd;
+  color: var(--grey-150);
 }
 .method-source-card dd,
 .method-source-evidence dd {
@@ -480,13 +474,13 @@
   font-size: var(--text-xs);
   font-weight: 850;
   text-decoration: underline;
-  text-decoration-color: rgba(168, 71, 31, 0.35);
+  text-decoration-color: color-mix(in srgb, var(--gold) 30%, transparent);
   text-underline-offset: 4px;
 }
 .method-source-card-weather > a,
 .method-source-card-moisture > a {
   color: var(--apricot);
-  text-decoration-color: rgba(242, 167, 102, 0.4);
+  text-decoration-color: color-mix(in srgb, var(--apricot) 40%, transparent);
 }
 .method-source-card > a:hover,
 .method-source-evidence > a:hover {
@@ -498,8 +492,8 @@
   gap: 30px;
   align-items: center;
   padding: 29px;
-  border: 1px solid rgba(89, 53, 37, 0.18);
-  background: rgba(251, 247, 233, 0.76);
+  border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
 }
 .method-source-evidence .method-source-card-top {
   display: grid;
@@ -536,7 +530,7 @@
 }
 .method-source-trust-note p {
   margin: 0;
-  color: #d1c6b5;
+  color: var(--line);
   font-size: var(--text-base);
   line-height: 1.65;
 }
@@ -552,7 +546,7 @@
   align-items: end;
 }
 .method-cta .eyebrow {
-  color: #713418;
+  color: var(--moss);
 }
 .method-cta h2 {
   margin: 0;
@@ -561,7 +555,7 @@
 }
 .method-cta p:not(.eyebrow) {
   margin-bottom: 24px;
-  color: #58301f;
+  color: var(--bark);
   font-size: var(--text-base);
   line-height: 1.65;
 }

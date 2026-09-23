@@ -6,14 +6,14 @@
   align-items: flex-start;
   margin: 28px 0 58px;
   padding: 18px 20px;
-  border: 1px solid rgba(89, 53, 37, 0.16);
+  border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   border-left: 4px solid var(--gold);
   border-radius: 13px;
-  background: rgba(255, 253, 247, 0.7);
+  background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
   color: var(--bark);
 }
 .intent-emergency-note {
-  border-color: rgba(132, 54, 40, 0.36);
+  border-color: color-mix(in srgb, var(--danger-ink) 40%, transparent);
   border-left-color: var(--danger-ink);
   background: var(--danger-surface);
   color: var(--danger-ink);
@@ -52,7 +52,7 @@
   padding: 22px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(255, 253, 247, 0.58);
+  background: color-mix(in srgb, var(--surface-muted) 60%, transparent);
 }
 .intent-reading-grid p {
   margin: 0;
@@ -109,17 +109,17 @@
   align-items: center;
   min-height: 82px;
   padding: 16px;
-  border: 1px solid rgba(89, 53, 37, 0.14);
+  border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   border-radius: 14px;
-  background: rgba(255, 253, 247, 0.72);
+  background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
   color: var(--ink);
   text-decoration: none;
   transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
 }
 .species-topic-links > a:hover {
   transform: translateY(-2px);
-  border-color: rgba(89, 53, 37, 0.28);
-  background: #fffdf8;
+  border-color: color-mix(in srgb, var(--bark) 30%, transparent);
+  background: var(--surface-muted);
 }
 .species-topic-links > a > svg:first-child {
   color: var(--clay);
@@ -151,7 +151,7 @@
 .season-now-number {
   min-width: 78px;
   padding-right: 24px;
-  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  border-right: 1px solid color-mix(in srgb, var(--white) 20%, transparent);
   color: var(--apricot);
   font-family: var(--font-nunito-sans), sans-serif;
   font-size: var(--text-3xl);
@@ -182,7 +182,7 @@
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 13px;
-  background: rgba(255, 253, 247, 0.68);
+  background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
 }
 .season-year > a {
   display: grid;
@@ -195,7 +195,7 @@
   transition: background-color 150ms ease, color 150ms ease;
 }
 .season-year > a:hover {
-  background: rgba(197, 84, 39, 0.09);
+  background: color-mix(in srgb, var(--clay) 10%, transparent);
 }
 .season-year > a:focus-visible {
   z-index: 1;
@@ -224,7 +224,7 @@
   color: var(--muted);
 }
 .season-year .is-selected small {
-  color: rgba(255, 255, 255, 0.76);
+  color: color-mix(in srgb, var(--white) 80%, transparent);
 }
 .season-explainer {
   margin-top: 0;
@@ -239,7 +239,7 @@
   padding: 1.4rem;
   border: 1px solid var(--line);
   border-radius: 16px;
-  background: rgba(255, 253, 247, .62);
+  background: color-mix(in srgb, var(--surface-muted) 60%, transparent);
 }
 .current-search-intro h2 {
   margin: .3rem 0 .55rem;
@@ -311,7 +311,7 @@
 .species-name-table {
   width: 100%;
   border-collapse: collapse;
-  background: rgba(255, 253, 247, .55);
+  background: color-mix(in srgb, var(--surface-muted) 60%, transparent);
 }
 .species-name-table th,
 .species-name-table td {
@@ -369,7 +369,7 @@
   .season-now-number {
     padding: 0 0 13px;
     border-right: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    border-bottom: 1px solid color-mix(in srgb, var(--white) 20%, transparent);
   }
   .season-now-panel .button {
     justify-self: start;
@@ -416,8 +416,8 @@
 .catalogue-list-species .species-icon { flex: none; width: 40px; height: 40px; object-fit: contain; }
 .catalogue-list tbody th:has(.catalogue-list-species) { padding-left: 14px; }
 .catalogue-list-edibility { font-weight: 750; }
-.catalogue-list-edibility.toxic { color: #9a3418; }
-.catalogue-list-edibility.edible { color: #2f5d3c; }
+.catalogue-list-edibility.toxic { color: var(--gold); }
+.catalogue-list-edibility.edible { color: var(--forest-600); }
 .catalogue-list > .catalogue-list-scroll { margin-top: 18px; }
 .catalogue-list-group { margin-top: 26px; }
 .catalogue-list > .catalogue-list-group:first-of-type { margin-top: 18px; }

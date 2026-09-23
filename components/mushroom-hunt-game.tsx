@@ -344,7 +344,6 @@ export function MushroomHuntGame({ entries }: MushroomHuntGameProps) {
 
         {celebration ? (
           <div key={celebration.key} className="mushroom-game-correct-celebration" aria-live="polite">
-            <div className="mushroom-game-correct-rays" aria-hidden="true" />
             <div className="mushroom-game-correct-spores" aria-hidden="true">
               {CORRECT_SPORES.map((style, index) => <i key={index} style={style} />)}
             </div>

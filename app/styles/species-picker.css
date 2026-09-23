@@ -2,8 +2,8 @@
 .species-select-trigger:hover,
 .species-select-trigger:focus-within,
 .species-select-trigger:has(.species-select-icon[data-popup-open]) {
-  border-color: #b75b31;
-  background: #fffaf0;
+  border-color: var(--clay);
+  background: var(--surface-warm);
 }
 .species-select-trigger:focus-within,
 .species-select-trigger:has(.species-select-icon[data-popup-open]) {
@@ -39,14 +39,14 @@
   overscroll-behavior: contain;
   padding: 6px;
   outline: none;
-  scrollbar-color: #c49776 transparent;
+  scrollbar-color: var(--sand-400) transparent;
   scrollbar-width: thin;
 }
 .species-select-item + .species-select-item {
-  border-top: 1px solid rgba(209, 197, 170, 0.56);
+  border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
 }
 .species-select-item[data-selected] {
-  color: #983f1d;
+  color: var(--gold);
 }
 .species-select-item-text {
   grid-column: 2;
@@ -65,7 +65,7 @@
 .species-select-empty > span {
   display: block;
   padding: 16px 12px;
-  color: #675f57;
+  color: var(--sand-600);
   font-size: var(--text-base);
   line-height: 1.35;
 }
@@ -107,11 +107,11 @@
   gap: 6px;
   width: min(260px, calc(100% - 96px));
   padding: 10px 12px 12px;
-  border: 1px solid rgba(89, 53, 37, 0.25);
+  border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
   border-radius: 12px;
-  background: rgba(251, 247, 233, 0.96);
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
   color: var(--bark);
-  box-shadow: 0 3px 12px rgba(33, 58, 76, 0.18);
+  box-shadow: 0 3px 12px color-mix(in srgb, var(--sky-700) 20%, transparent);
   backdrop-filter: blur(12px);
 }
 .map-fullscreen-species-control > span {

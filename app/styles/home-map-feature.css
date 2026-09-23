@@ -8,7 +8,7 @@
   border: 1px solid var(--line);
   border-radius: 18px;
   background: var(--surface);
-  box-shadow: 0 18px 44px rgb(52 57 45 / 10%);
+  box-shadow: 0 18px 44px color-mix(in srgb, var(--forest-panel) 10%, transparent);
 }
 .home-map-feature > * { min-width: 0; }
 .home-map-feature-copy { padding: 2.5rem; }
@@ -31,7 +31,7 @@
   display: block;
   min-height: 360px;
   overflow: hidden;
-  background: #f2f1ed;
+  background: var(--surface-muted);
   padding: 0;
   border-left: 1px solid var(--line);
   color: var(--forest-panel);
@@ -98,7 +98,7 @@
 .home-map-today .button { white-space: nowrap; }
 .home-map-today-actions { display: grid; gap: .6rem; justify-items: end; }
 .home-map-today-secondary { display: inline-flex; gap: .3rem; align-items: center; color: var(--on-dark-muted); font-size: var(--text-sm); font-weight: 700; }
-.home-map-today-secondary:hover, .home-map-today-secondary:focus-visible { color: #fffaf0; }
+.home-map-today-secondary:hover, .home-map-today-secondary:focus-visible { color: var(--surface-warm); }
 
 @media (max-width: 1000px) {
   .home-map-today { grid-template-columns: 1fr; padding: 1.5rem; justify-items: start; }

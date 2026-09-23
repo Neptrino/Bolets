@@ -70,7 +70,6 @@ export function SpeciesGallery({ images, speciesName, captions }: SpeciesGallery
             fetchPriority={activeIndex === 0 ? "high" : "auto"}
             sizes="(max-width: 760px) calc(100vw - 48px), (max-width: 1000px) calc(55vw - 45px), (max-width: 1228px) calc(55vw - 61px), 615px"
           />
-          <span className="species-gallery-vignette" aria-hidden="true" />
         </button>
 
         <div className="species-gallery-toolbar">

@@ -69,7 +69,7 @@
   line-height: 0.92;
 }
 .location-hub-copy h1 i {
-  color: #d8b971;
+  color: var(--amber-150);
   font-weight: 650;
 }
 .location-hub-copy > p:last-child {
@@ -130,7 +130,7 @@
   border: 1px solid var(--line);
   border-radius: 18px;
   background: var(--surface);
-  box-shadow: 0 20px 60px rgba(70, 55, 35, 0.08);
+  box-shadow: 0 20px 60px color-mix(in srgb, var(--bark-800) 10%, transparent);
 }
 .location-guide-card-media {
   position: relative;
@@ -143,18 +143,15 @@
   transition: transform 450ms ease;
 }
 .location-guide-card:hover .location-guide-card-media img { transform: scale(1.035); }
-.location-guide-card-media::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  background: linear-gradient(180deg, transparent 58%, rgba(24, 47, 35, 0.88));
-}
 .location-guide-card-media > span {
   position: absolute;
   z-index: 1;
-  right: 22px;
   bottom: 18px;
   left: 22px;
+  max-width: calc(100% - 44px);
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--forest-900) 75%, transparent);
   color: var(--on-dark);
   font-size: var(--text-base);
   font-style: italic;
@@ -209,7 +206,7 @@
 .local-species-breadcrumbs a {
   color: var(--on-dark);
   text-decoration: underline;
-  text-decoration-color: rgba(255, 255, 255, 0.28);
+  text-decoration-color: color-mix(in srgb, var(--white) 30%, transparent);
   text-underline-offset: 4px;
 }
 .local-species-breadcrumbs a:hover { text-decoration-color: currentColor; }

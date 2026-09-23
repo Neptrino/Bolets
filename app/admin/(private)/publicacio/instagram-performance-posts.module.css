@@ -5,7 +5,7 @@
   border: 1px solid var(--line);
   border-radius: 20px;
   background: var(--surface);
-  box-shadow: 0 18px 48px rgba(57, 48, 37, 0.055);
+  box-shadow: 0 18px 48px color-mix(in srgb, var(--bark-800) 5%, transparent);
   list-style: none;
 }
 
@@ -19,7 +19,7 @@
 }
 
 .post:first-child {
-  background: linear-gradient(90deg, color-mix(in srgb, var(--forest-panel) 6%, var(--surface)), var(--surface) 46%);
+  background: color-mix(in srgb, var(--forest-panel) 4%, var(--surface));
 }
 
 .post:last-child {
@@ -54,9 +54,7 @@
   width: 84px;
   aspect-ratio: 1;
   border-radius: 13px;
-  background:
-    radial-gradient(circle at 72% 24%, color-mix(in srgb, var(--apricot) 35%, transparent), transparent 38%),
-    var(--forest-panel);
+  background: var(--forest-panel);
 }
 
 .thumbnail img {

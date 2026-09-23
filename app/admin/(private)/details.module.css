@@ -1,8 +1,8 @@
 .detailShell {
-  --detail-green: #2f6b4c;
-  --detail-blue: #355f75;
-  --detail-amber: #9b6424;
-  --detail-red: #8b3d2f;
+  --detail-green: var(--forest-600);
+  --detail-blue: var(--sky-650);
+  --detail-amber: var(--amber-550);
+  --detail-red: var(--danger-ink);
 }
 
 .filterBar a,
@@ -80,7 +80,7 @@
   border-left: 5px solid var(--detail-green);
   border-radius: 15px;
   background: var(--surface);
-  box-shadow: 0 12px 28px rgba(57, 48, 37, 0.045);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--bark-800) 5%, transparent);
 }
 
 .detailCard[data-state="draft"] { border-left-color: var(--detail-amber); }
@@ -143,7 +143,7 @@
   border: 1px solid var(--line);
   border-radius: 16px;
   background: var(--surface);
-  box-shadow: 0 12px 28px rgba(57, 48, 37, 0.045);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--bark-800) 5%, transparent);
 }
 
 .adminTableFrame:focus-visible {

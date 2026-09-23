@@ -16,8 +16,8 @@
   padding: 8px;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: rgba(255, 250, 240, .82);
-  box-shadow: 0 12px 32px rgba(75, 54, 33, .06);
+  background: color-mix(in srgb, var(--surface-warm) 80%, transparent);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--bark-800) 5%, transparent);
 }
 
 .adminLinks {

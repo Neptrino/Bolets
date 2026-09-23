@@ -20,7 +20,7 @@
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: #efe9da;
+  background: var(--paper);
 }
 .directory-layout-option {
   position: relative;
@@ -43,7 +43,7 @@
   padding: 7px 11px;
   border: 1px solid transparent;
   border-radius: 7px;
-  color: #665d52;
+  color: var(--sand-600);
   font-size: var(--text-xs);
   font-weight: 800;
   line-height: 1.2;
@@ -55,13 +55,13 @@
   color: var(--clay);
 }
 .directory-layout-option:hover span {
-  background: #f8f3e9;
+  background: var(--surface-muted);
   color: var(--bark);
 }
 .directory-layout-option input:checked + span {
-  border-color: rgba(169, 80, 39, 0.34);
-  background: #f2d6b5;
-  color: #5f321f;
+  border-color: color-mix(in srgb, var(--gold) 30%, transparent);
+  background: var(--warning-surface);
+  color: var(--bark);
 }
 .directory-layout-option input:focus-visible + span {
   outline: 3px solid var(--pumpkin);

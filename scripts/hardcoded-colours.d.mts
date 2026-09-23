@@ -1,2 +1,2 @@
-export declare const BASELINE_PATH: string;
-export declare function countHardcodedColours(cwd?: string): Record<string, number>;
+export declare function findHardcodedColours(cwd?: string): string[];
+export declare function findGradients(cwd?: string): string[];

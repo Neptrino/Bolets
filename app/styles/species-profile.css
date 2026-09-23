@@ -4,10 +4,10 @@
    note, the map block and the field card. Colour is left for meaning
    (edibility badges, season levels, the clay call to action). */
 .compact-species-page {
-  --profile-line: #c9bb9c;
-  --profile-label: #5a564e;
-  --profile-heading: #262823;
-  --profile-tint: rgba(89, 53, 37, 0.08);
+  --profile-line: var(--line);
+  --profile-label: var(--sand-600);
+  --profile-heading: var(--grey-850);
+  --profile-tint: color-mix(in srgb, var(--bark) 10%, transparent);
   --profile-accent: var(--warning-surface);
   background: var(--paper);
 }
@@ -366,7 +366,7 @@
   border: 1px solid var(--line);
   border-radius: 9px;
   background: var(--forest-panel);
-  box-shadow: 0 8px 24px rgba(19, 24, 20, 0.18);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--forest-900) 20%, transparent);
   color: var(--on-dark);
   font-size: var(--text-xs);
   font-weight: 400;
@@ -407,7 +407,7 @@
   align-items: flex-start;
   margin: 10px 0 0;
   padding-top: 10px;
-  border-top: 1px solid rgba(89, 53, 37, 0.18);
+  border-top: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
   line-height: 1.5;
 }
 .compact-species-page .profile-safety p svg {
@@ -583,7 +583,7 @@
     padding: 12px 0;
   }
   .compact-species-page .profile-facts > div + div {
-    border-top: 1px solid rgba(89, 53, 37, 0.12);
+    border-top: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   }
   .compact-species-page .profile-lookalikes {
     grid-template-columns: minmax(0, 1fr);
@@ -636,11 +636,11 @@
   color: var(--on-dark-muted);
 }
 .compact-species-page .profile-panel-head .profile-tags b {
-  background: rgba(255, 255, 255, 0.14);
+  background: color-mix(in srgb, var(--white) 15%, transparent);
   color: var(--on-dark);
 }
 .compact-species-page .profile-panel-head .edibility-badge {
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid color-mix(in srgb, var(--white) 20%, transparent);
 }
 .compact-species-page .profile-panel-head .profile-rating-why {
   flex: 1 1 100%;
@@ -648,8 +648,8 @@
   color: var(--on-dark);
 }
 .compact-species-page .profile-panel-head .culinary-rating-help button {
-  border-color: rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.1);
+  border-color: color-mix(in srgb, var(--white) 30%, transparent);
+  background: color-mix(in srgb, var(--white) 10%, transparent);
   color: var(--on-dark);
 }
 .compact-species-page .profile-panel-head .habitat-map-link {
@@ -657,9 +657,9 @@
   flex: 0 0 auto;
   gap: 2px;
   padding: 10px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1px solid color-mix(in srgb, var(--white) 30%, transparent);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--white) 10%, transparent);
   color: var(--on-dark);
   text-decoration: none;
 }
@@ -680,7 +680,7 @@
 }
 .compact-species-page .profile-panel-head .habitat-map-link:hover,
 .compact-species-page .profile-panel-head .habitat-map-link:focus-visible {
-  background: rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--white) 20%, transparent);
 }
 .compact-species-page .profile-panel-body {
   padding: 0;

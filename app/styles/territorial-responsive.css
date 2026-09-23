@@ -56,7 +56,7 @@
     align-items: start;
   }
   .rovellons-now-grid > * + * {
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-top: 1px solid color-mix(in srgb, var(--white) 15%, transparent);
     border-left: 0;
   }
   .rovellons-now-grid aside {

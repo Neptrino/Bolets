@@ -13,10 +13,10 @@
 .ecology-section .season-calendar {
   margin-top: 12px;
   padding: 12px 14px;
-  border: 1px solid rgba(130, 100, 59, 0.16);
+  border: 1px solid color-mix(in srgb, var(--sand-550) 15%, transparent);
   border-radius: 12px;
-  background: #eaddc4;
-  box-shadow: 0 8px 22px rgba(89, 53, 37, 0.05);
+  background: var(--paper);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--bark) 5%, transparent);
 }
 .ecology-section .season-calendar-label {
   margin-bottom: 10px;
@@ -39,7 +39,7 @@
 .compact-species-page .distribution-section .habitat-map-legend-heading,
 .local-species-page .region-map-habitat .habitat-map-legend-heading {
   padding-right: 14px;
-  border-right: 1px solid rgba(89, 53, 37, 0.14);
+  border-right: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
 }
 .compact-species-page .distribution-section .habitat-map-legend-items,
 .local-species-page .region-map-habitat .habitat-map-legend-items {
@@ -84,6 +84,6 @@
     padding-right: 0;
     padding-bottom: 8px;
     border-right: 0;
-    border-bottom: 1px solid rgba(89, 53, 37, 0.14);
+    border-bottom: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   }
 }

@@ -15,7 +15,7 @@
   padding: 17px 21px 17px 62px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(255, 253, 247, 0.7);
+  background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
   font-size: var(--text-base);
   line-height: 1.65;
 }
@@ -43,7 +43,7 @@
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 15px;
-  background: rgba(255, 253, 247, 0.7);
+  background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
 }
 .comparison-facts-table > header,
 .comparison-facts-table > div {
@@ -61,7 +61,7 @@
   border-right: 1px solid var(--line);
 }
 .comparison-facts-table > header > * {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: color-mix(in srgb, var(--white) 15%, transparent);
 }
 .comparison-facts-table > header > *:last-child,
 .comparison-facts-table > div > *:last-child {
@@ -152,7 +152,7 @@
 }
 .comparison-risk-label {
   padding: 4px 7px;
-  border: 1px solid rgba(129, 66, 45, 0.24);
+  border: 1px solid color-mix(in srgb, var(--danger-ink) 20%, transparent);
   border-radius: 999px;
   color: var(--clay);
   font-size: var(--text-xs);
@@ -164,7 +164,7 @@
 }
 .comparison-risk-label.inedible,
 .comparison-risk-label.not_recommended {
-  border-color: rgba(158, 116, 51, 0.28);
+  border-color: color-mix(in srgb, var(--amber-550) 30%, transparent);
   color: var(--gold);
 }
 .comparison-guides a:hover {

@@ -74,7 +74,7 @@
   color: inherit;
 }
 
-.close:hover { background: #465e4d; }
+.close:hover { background: var(--forest-650); }
 
 .link:focus-visible,
 .close:focus-visible {

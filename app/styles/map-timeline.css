@@ -7,11 +7,11 @@
   width: min(580px, calc(100% - 120px));
   gap: 6px;
   padding: 10px 13px 8px;
-  border: 1px solid rgba(255, 244, 219, .28);
+  border: 1px solid color-mix(in srgb, var(--paper) 30%, transparent);
   border-radius: 16px;
-  background: rgba(39, 60, 45, .88);
-  box-shadow: 0 16px 38px rgba(24, 30, 25, .32);
-  color: #fff9ea;
+  background: color-mix(in srgb, var(--forest-panel) 90%, transparent);
+  box-shadow: 0 16px 38px color-mix(in srgb, var(--forest-900) 30%, transparent);
+  color: var(--on-dark);
   transform: translateX(50%);
   backdrop-filter: blur(14px);
 }
@@ -51,8 +51,8 @@
 .prediction-timeline-heading span {
   padding: 3px 7px;
   border-radius: 999px;
-  background: rgba(255, 244, 219, .14);
-  color: #f4c596;
+  background: color-mix(in srgb, var(--paper) 15%, transparent);
+  color: var(--apricot);
   font-weight: 900;
   letter-spacing: .05em;
   text-transform: uppercase;
@@ -84,10 +84,10 @@
   flex: 0 0 auto;
   padding: 0;
   place-items: center;
-  border: 1px solid rgba(255, 244, 219, .32);
+  border: 1px solid color-mix(in srgb, var(--paper) 30%, transparent);
   border-radius: 50%;
-  background: #f4d2a4;
-  color: #304839;
+  background: var(--warning-surface);
+  color: var(--forest-panel);
   cursor: pointer;
   transition: background-color 150ms ease, transform 150ms ease;
 }
@@ -100,9 +100,9 @@
 
 .prediction-timeline-play:hover,
 .prediction-timeline-play:focus-visible {
-  background: #f1a269;
-  color: #263b2c;
-  outline: 2px solid #fff9ea;
+  background: var(--apricot);
+  color: var(--forest-panel);
+  outline: 2px solid var(--on-dark);
   outline-offset: 2px;
   transform: translateY(-1px);
 }
@@ -119,7 +119,7 @@
   width: 100%;
   min-height: 24px;
   margin: 0;
-  accent-color: #f1a269;
+  accent-color: var(--apricot);
   cursor: ew-resize;
 }
 
@@ -127,7 +127,7 @@
   position: relative;
   display: flex;
   justify-content: space-between;
-  color: rgba(255, 249, 234, .72);
+  color: color-mix(in srgb, var(--on-dark) 70%, transparent);
   font-size: var(--text-xs);
   line-height: 1;
 }
@@ -135,7 +135,7 @@
 .prediction-timeline-scale b {
   position: absolute;
   left: var(--prediction-timeline-today-position);
-  color: #fff9ea;
+  color: var(--on-dark);
   transform: translateX(-50%);
 }
 
@@ -144,13 +144,13 @@
   bottom: calc(100% + 2px);
   left: 50%;
   height: 22px;
-  border-left: 1px dashed rgba(244, 197, 150, .58);
+  border-left: 1px dashed color-mix(in srgb, var(--apricot) 60%, transparent);
   content: "";
   pointer-events: none;
 }
 
 .prediction-timeline-scale span:last-child {
-  color: #f4c596;
+  color: var(--apricot);
   text-align: right;
 }
 

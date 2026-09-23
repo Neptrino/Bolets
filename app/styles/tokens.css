@@ -1,24 +1,112 @@
 :root {
-  --ink: #3b3b3b;
-  --moss: #6e3d25;
-  --paper: #f2ebd5;
-  --clay: #bd592a;
-  --gold: #a8471f;
-  --line: #d1c5aa;
-  --muted: #706d66;
-  --stone: #96958e;
-  --pumpkin: #f28a2e;
-  --apricot: #f2a766;
-  --bark: #593525;
-  --surface: #fbf7e9;
-  --surface-muted: #f8f5ed;
-  --surface-warm: #fff9ed;
-  --forest-panel: #34483a;
-  --warning-surface: #f4e1bb;
-  --danger-surface: #f5d9cf;
-  --danger-ink: #8b3d2f;
-  --on-dark: #fff7e8;
-  --on-dark-muted: #c7d0ba;
+  /* Palette: every interface colour. Stylesheets reference these (or the
+     semantic tokens below) and never hardcode hex, rgb() or hsl(); use
+     color-mix(in srgb, var(--x) N%, transparent) for translucency. */
+  --white: #ffffff;
+
+  --cream-50: #fff9ed;
+  --cream-100: #fff7e8;
+  --cream-150: #fbf7e9;
+  --cream-200: #f8f5ed;
+  --cream-250: #f2ebd5;
+  --cream-300: #f4e1bb;
+
+  --sand-100: #f5d9cf;
+  --sand-200: #d1c5aa;
+  --sand-400: #a98b63;
+  --sand-550: #756847;
+  --sand-600: #655e55;
+
+  --bark-250: #f1a68e;
+  --bark-400: #bc7a68;
+  --bark-750: #593525;
+  --bark-800: #413123;
+
+  --clay-250: #f2a766;
+  --clay-350: #f28a2e;
+  --clay-500: #bd592a;
+  --clay-550: #a8471f;
+  --clay-700: #6e3d25;
+
+  --amber-150: #f5c86f;
+  --amber-350: #c89227;
+  --amber-550: #9b6424;
+  --amber-650: #73511f;
+
+  --red-650: #8b3d2f;
+
+  --forest-100: #dbe3a1;
+  --forest-200: #c7d0ba;
+  --forest-250: #9fc48b;
+  --forest-400: #809f53;
+  --forest-450: #7a8176;
+  --forest-550: #626b60;
+  --forest-600: #2f6b4c;
+  --forest-650: #425c49;
+  --forest-700: #34483a;
+  --forest-900: #16221b;
+
+  --sky-200: #a9cae4;
+  --sky-600: #2166ac;
+  --sky-650: #355f75;
+  --sky-700: #174a7c;
+
+  --plum-550: #b12a90;
+  --plum-700: #811d69;
+
+  --grey-150: #cedbe0;
+  --grey-400: #96958e;
+  --grey-550: #706d66;
+  --grey-750: #3b3b3b;
+  --grey-850: #2d2825;
+
+  --black: #000000;
+
+  /* Data swatches: exact colours of map layers, legends and score scales.
+     They mirror the scales drawn by the map code, so they are not snapped
+     to the interface palette. */
+  --data-cream-100: #f5f1e9;
+  --data-cream-150: #e8dfc4;
+  --data-cream-200: #dfdfd9;
+  --data-cream-250: #deddd7;
+  --data-cream-300: #d9ddd5;
+  --data-sand-150: #ddd7cc;
+  --data-sand-200: #e7c8a5;
+  --data-sand-250: #dfc29d;
+  --data-clay-350: #d79050;
+  --data-clay-400: #d88445;
+  --data-clay-500: #c65d2a;
+  --data-clay-550: #b85a2d;
+  --data-clay-600: #963f20;
+  --data-clay-650: #8f3c20;
+  --data-amber-200: #e7ba72;
+  --data-forest-400: #879455;
+  --data-forest-500: #617b42;
+  --data-forest-600: #526a39;
+  --data-forest-650: #4e683d;
+  --data-forest-700: #324d31;
+  --data-grey-300: #b7b1a7;
+
+  --ink: var(--grey-750);
+  --moss: var(--clay-700);
+  --paper: var(--cream-250);
+  --clay: var(--clay-500);
+  --gold: var(--clay-550);
+  --line: var(--sand-200);
+  --muted: var(--grey-550);
+  --stone: var(--grey-400);
+  --pumpkin: var(--clay-350);
+  --apricot: var(--clay-250);
+  --bark: var(--bark-750);
+  --surface: var(--cream-150);
+  --surface-muted: var(--cream-200);
+  --surface-warm: var(--cream-50);
+  --forest-panel: var(--forest-700);
+  --warning-surface: var(--cream-300);
+  --danger-surface: var(--sand-100);
+  --danger-ink: var(--red-650);
+  --on-dark: var(--cream-100);
+  --on-dark-muted: var(--forest-200);
   --radius-pill: 999px;
   --layout-max: 1180px;
   --layout-gutter: 24px;

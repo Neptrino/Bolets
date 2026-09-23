@@ -6,10 +6,10 @@
   align-items: center;
   gap: 7px;
   padding: 7px 10px;
-  border: 1px solid rgba(89, 53, 37, 0.12);
+  border: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   border-radius: var(--radius-pill);
-  background: #eef2dd;
-  color: #314425;
+  background: var(--paper);
+  color: var(--forest-panel);
   font-size: var(--text-xs);
   font-weight: 850;
   letter-spacing: 0.04em;
@@ -19,12 +19,12 @@
 .culinary-rating.compact {
   gap: 5px;
   padding: 6px 9px;
-  box-shadow: 0 4px 16px rgba(25, 28, 19, 0.14);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--forest-900) 15%, transparent);
 }
 .culinary-stars {
   display: inline-flex;
   gap: 1px;
-  color: #c89227;
+  color: var(--amber-350);
 }
 .culinary-stars svg {
   fill: transparent;
@@ -38,23 +38,23 @@
 .culinary-rating.not_recommended,
 .culinary-rating.inedible,
 .culinary-rating.unknown {
-  background: #ece9e1;
-  color: #5e5b54;
+  background: var(--surface-muted);
+  color: var(--sand-600);
 }
 .culinary-rating.toxic,
 .culinary-rating.dangerously_toxic {
-  background: #f5ddd6;
-  color: #833b2d;
+  background: var(--danger-surface);
+  color: var(--danger-ink);
 }
 .culinary-rating.safety-warning {
   gap: 6px;
-  border-color: rgba(131, 59, 45, 0.24);
-  background: #f7ded6;
-  color: #843628;
+  border-color: color-mix(in srgb, var(--danger-ink) 20%, transparent);
+  background: var(--danger-surface);
+  color: var(--danger-ink);
 }
 .culinary-rating.safety-warning .culinary-warning-icon {
   flex: 0 0 auto;
-  fill: rgba(189, 89, 42, 0.13);
+  fill: color-mix(in srgb, var(--clay) 15%, transparent);
   stroke-width: 2.35;
 }
 
@@ -65,16 +65,16 @@
 .directory-controls {
   min-height: 76px;
   padding: 11px 13px 11px 20px;
-  border: 1px solid rgba(89, 53, 37, 0.15);
+  border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   border-radius: 18px;
-  background: rgba(255, 253, 247, 0.76);
-  box-shadow: 0 10px 32px rgba(89, 53, 37, 0.06);
+  background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
+  box-shadow: 0 10px 32px color-mix(in srgb, var(--bark) 5%, transparent);
 }
 .directory-summary {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  color: #766d63;
+  color: var(--muted);
 }
 .directory-summary strong {
   color: var(--ink);
@@ -97,7 +97,7 @@
   gap: 7px;
 }
 .directory-filter-label {
-  color: #7d746a;
+  color: var(--muted);
   font-size: var(--text-xs);
   font-weight: 850;
   letter-spacing: .06em;
@@ -115,10 +115,10 @@
   align-items: center;
   gap: 7px;
   padding: 6px 8px 6px 12px;
-  border: 1px solid rgba(89, 53, 37, 0.16);
+  border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   border-radius: 999px;
-  background: #f8f3e9;
-  color: #42483e;
+  background: var(--surface-muted);
+  color: var(--forest-panel);
   font: inherit;
   font-size: var(--text-xs);
   font-weight: 850;
@@ -134,30 +134,30 @@
   min-width: 24px;
   padding: 2px 7px;
   border-radius: 999px;
-  background: #ece3d2;
-  color: #665d52;
+  background: var(--paper);
+  color: var(--sand-600);
   font-weight: 800;
   text-align: center;
 }
 .directory-filter[aria-pressed="false"]:hover:not(:disabled) {
-  border-color: rgba(169, 80, 39, 0.34);
-  background: #fffdf8;
+  border-color: color-mix(in srgb, var(--gold) 30%, transparent);
+  background: var(--surface-muted);
 }
 .directory-filter[aria-pressed="true"] {
   border-color: var(--ink);
   background: var(--ink);
-  color: #fffaf0;
+  color: var(--surface-warm);
 }
 .directory-filter[aria-pressed="true"]:hover {
-  border-color: #242424;
-  background: #242424;
+  border-color: var(--grey-850);
+  background: var(--grey-850);
 }
 .directory-filter[aria-pressed="true"] svg {
-  color: #f2d6b5;
+  color: var(--warning-surface);
 }
 .directory-filter[aria-pressed="true"] .directory-filter-count {
-  background: rgba(255, 250, 240, 0.18);
-  color: #fffaf0;
+  background: color-mix(in srgb, var(--surface-warm) 20%, transparent);
+  color: var(--surface-warm);
 }
 .directory-filter:disabled {
   opacity: .45;
@@ -192,7 +192,7 @@
 }
 .directory-count {
   margin: 23px 2px 16px;
-  color: #786f65;
+  color: var(--muted);
   font-size: var(--text-xs);
   font-weight: 750;
   letter-spacing: 0.055em;
@@ -205,15 +205,15 @@
   min-height: 505px;
   padding: 0;
   overflow: hidden;
-  border: 1px solid rgba(89, 53, 37, 0.11);
+  border: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   border-radius: 20px;
-  background: #fffdf8;
-  box-shadow: 0 8px 26px rgba(70, 49, 34, 0.07);
+  background: var(--surface-muted);
+  box-shadow: 0 8px 26px color-mix(in srgb, var(--bark-800) 5%, transparent);
 }
 .species-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(89, 53, 37, 0.2);
-  box-shadow: 0 20px 46px rgba(70, 49, 34, 0.15);
+  border-color: color-mix(in srgb, var(--bark) 20%, transparent);
+  box-shadow: 0 20px 46px color-mix(in srgb, var(--bark-800) 15%, transparent);
 }
 .species-card-illustration,
 .species-card-illustration.has-photo {
@@ -230,7 +230,7 @@
   z-index: 3;
   top: 13px;
   right: 13px;
-  color: #314425;
+  color: var(--forest-panel);
   font-family: var(--font-nunito-sans), sans-serif;
   font-size: var(--text-xs);
   line-height: 1;
@@ -249,11 +249,11 @@
 .species-card-illustration .culinary-rating.not_recommended,
 .species-card-illustration .culinary-rating.inedible,
 .species-card-illustration .culinary-rating.unknown {
-  color: #5e5b54;
+  color: var(--sand-600);
 }
 .species-card-illustration .culinary-rating.toxic,
 .species-card-illustration .culinary-rating.dangerously_toxic {
-  color: #833b2d;
+  color: var(--danger-ink);
 }
 .species-card-photo {
   object-position: center 48%;
@@ -267,7 +267,7 @@
 }
 .species-card-genus {
   margin-bottom: 6px;
-  color: #75846a;
+  color: var(--forest-450);
   font-size: var(--text-xs);
   font-weight: 850;
   letter-spacing: 0.12em;
@@ -280,13 +280,13 @@
 }
 .species-card h3 {
   margin: 0;
-  color: #2e302c;
+  color: var(--ink);
   font-size: var(--text-2xl);
   line-height: 1.02;
   letter-spacing: -0.02em;
 }
 .species-card em {
-  color: #7e746b;
+  color: var(--muted);
   font-family: var(--font-nunito-sans), sans-serif;
   font-size: var(--text-base);
 }
@@ -298,7 +298,7 @@
 .species-card .species-card-description {
   min-height: 42px;
   margin: 14px 0 16px;
-  color: #625f58;
+  color: var(--sand-600);
   font-size: var(--text-base);
   line-height: 1.55;
 }
@@ -308,9 +308,9 @@
   gap: 1px;
   margin: auto 0 0;
   overflow: hidden;
-  border: 1px solid rgba(89, 53, 37, 0.11);
+  border: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   border-radius: 11px;
-  background: rgba(89, 53, 37, 0.11);
+  background: color-mix(in srgb, var(--bark) 10%, transparent);
 }
 .species-card-facts div {
   min-width: 0;
@@ -319,7 +319,7 @@
   gap: 1px 5px;
   align-content: center;
   padding: 9px 10px;
-  background: #f7f2e8;
+  background: var(--surface-muted);
 }
 .species-card-facts svg {
   grid-row: span 2;
@@ -327,7 +327,7 @@
   color: var(--clay);
 }
 .species-card-facts dt {
-  color: #91857a;
+  color: var(--stone);
   font-size: var(--text-xs);
   font-weight: 800;
   line-height: 1.1;
@@ -336,7 +336,7 @@
 .species-card-facts dd {
   margin: 0;
   overflow: hidden;
-  color: #4d4c47;
+  color: var(--ink);
   font-size: var(--text-xs);
   font-weight: 750;
   line-height: 1.25;
@@ -346,7 +346,7 @@
 .card-season {
   margin-top: 13px;
   padding-top: 12px;
-  border-top: 1px solid rgba(89, 53, 37, 0.1);
+  border-top: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
 }
 .card-season-grid {
   display: grid;
@@ -368,21 +368,21 @@
   border-radius: 6px;
 }
 .card-season-month.is-current {
-  border-color: rgba(174, 76, 35, 0.52);
-  background: #f5e5ce;
-  box-shadow: 0 0 0 2px rgba(196, 92, 43, 0.08);
+  border-color: color-mix(in srgb, var(--gold) 50%, transparent);
+  background: var(--paper);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--clay) 10%, transparent);
 }
 .card-season-month-label {
   align-self: center;
   overflow: hidden;
-  color: #958a7f;
+  color: var(--stone);
   font-size: var(--text-xs);
   font-weight: 750;
   line-height: 1;
   text-align: center;
 }
 .card-season-month.is-current .card-season-month-label {
-  color: #8e3f22;
+  color: var(--danger-ink);
   font-weight: 900;
 }
 .card-season-label-narrow {
@@ -394,30 +394,30 @@
   display: block;
   align-self: end;
   border-radius: 2px;
-  background: #ddd7cc;
+  background: var(--data-sand-150);
 }
 .card-season-level.possible {
   height: 7px;
-  background: #dfc29d;
+  background: var(--data-sand-250);
 }
 .card-season-level.moderate {
   height: 10px;
-  background: #d79050;
+  background: var(--data-clay-350);
 }
 .card-season-level.good {
   height: 13px;
-  background: #c65d2a;
+  background: var(--data-clay-500);
 }
 .card-season-level.peak {
   height: 17px;
-  background: #8f3c20;
+  background: var(--data-clay-650);
 }
 .species-card .card-link {
   justify-content: space-between;
   margin-top: 16px;
   padding-top: 13px;
-  border-top: 1px solid rgba(89, 53, 37, 0.1);
-  color: #4e542f;
+  border-top: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
+  color: var(--forest-650);
   font-size: var(--text-xs);
 }
 .species-card:hover .card-link svg {
@@ -430,12 +430,12 @@
 .compact-species-page .species-hero {
   overflow: hidden;
   padding: 25px 0 48px;
-  border-bottom: 1px solid rgba(89, 53, 37, 0.12);
+  border-bottom: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   background: var(--paper);
   color: var(--ink);
 }
 .compact-species-page .back-link {
-  color: #646a5e;
+  color: var(--forest-550);
   font-weight: 750;
 }
 .compact-species-page .species-hero-grid {
@@ -463,38 +463,38 @@
 }
 .compact-species-page .species-hero .eyebrow.light {
   margin-bottom: 10px;
-  color: #6e774f;
+  color: var(--sand-550);
 }
 .compact-species-page .species-hero h1 {
   margin: 0 0 9px;
-  color: #2e302c;
+  color: var(--ink);
   font-size: var(--display-xl);
   line-height: 0.88;
   letter-spacing: -0.045em;
 }
 .compact-species-page .species-hero em {
   display: block;
-  color: #8a583d;
+  color: var(--moss);
   font: 18px var(--font-nunito-sans), sans-serif;
 }
 .species-alternate-names {
   margin: 10px 0 0;
-  color: #6b6d65;
+  color: var(--muted);
   font-size: var(--text-base);
   line-height: 1.5;
 }
 .species-alternate-names .species-names-label {
-  color: #4e514a;
+  color: var(--sand-600);
   font-weight: 750;
 }
 .compact-species-page .species-updated {
   margin: 12px 0 0;
-  color: #6b6d65;
+  color: var(--muted);
   font-size: var(--text-xs);
 }
 .compact-species-page .species-dek {
   margin: 19px 0;
-  color: #5b5d56;
+  color: var(--sand-600);
   font-size: var(--text-base);
   line-height: 1.6;
 }
@@ -506,7 +506,7 @@
 }
 .species-hero-status .edibility-badge {
   min-height: 30px;
-  border: 1px solid rgba(89, 53, 37, 0.1);
+  border: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
 }
 .species-hero-lookalike {
   display: inline-flex;
@@ -515,10 +515,10 @@
   align-items: center;
   min-height: 30px;
   padding: 3px 8px 3px 10px;
-  border: 1px solid rgba(89, 53, 37, 0.14);
+  border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
   border-radius: 999px;
-  background: rgba(255, 253, 247, 0.8);
-  color: #42453f;
+  background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
+  color: var(--ink);
   font-size: var(--text-xs);
   line-height: 1.3;
   text-decoration: none;
@@ -528,7 +528,7 @@
   color: var(--clay);
 }
 .species-hero-lookalike strong {
-  color: #2e302c;
+  color: var(--ink);
 }
 .species-hero-lookalike:hover strong,
 .species-hero-lookalike:focus-visible strong {
@@ -544,9 +544,9 @@
   gap: 1px;
   margin-top: 24px;
   overflow: hidden;
-  border: 1px solid rgba(89, 53, 37, 0.12);
+  border: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   border-radius: 14px;
-  background: rgba(89, 53, 37, 0.11);
+  background: color-mix(in srgb, var(--bark) 10%, transparent);
 }
 .species-hero-facts div {
   min-width: 0;
@@ -556,7 +556,7 @@
   align-content: center;
   min-height: 64px;
   padding: 11px 12px;
-  background: rgba(255, 253, 247, 0.8);
+  background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
 }
 .species-hero-facts svg {
   grid-row: span 2;
@@ -564,7 +564,7 @@
   color: var(--clay);
 }
 .species-hero-facts span {
-  color: #8a8076;
+  color: var(--stone);
   font-size: var(--text-xs);
   font-weight: 800;
   letter-spacing: 0.07em;
@@ -573,7 +573,7 @@
 }
 .species-hero-facts strong {
   overflow: hidden;
-  color: #42453f;
+  color: var(--ink);
   font-size: var(--text-base);
   line-height: 1.3;
   text-overflow: ellipsis;
@@ -589,21 +589,21 @@
   overflow: hidden;
   border: 0;
   border-radius: 22px;
-  background: #39322d;
-  box-shadow: 0 24px 54px rgba(70, 49, 34, 0.18);
+  background: var(--grey-850);
+  box-shadow: 0 24px 54px color-mix(in srgb, var(--bark-800) 20%, transparent);
 }
 .species-gallery {
   position: absolute;
   inset: 0;
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
-  background: #2d2825;
+  background: var(--grey-850);
 }
 .species-gallery-stage {
   position: relative;
   min-height: 0;
   overflow: hidden;
-  background: #201d1b;
+  background: var(--grey-850);
 }
 .species-gallery-expand-target {
   position: absolute;
@@ -620,12 +620,6 @@
 }
 .species-gallery-expand-target:hover .specimen-photo {
   transform: scale(1.025);
-}
-.species-gallery-vignette {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(22, 18, 16, 0.1), transparent 45%, rgba(22, 18, 16, 0.88) 100%);
-  pointer-events: none;
 }
 .species-gallery-toolbar {
   position: absolute;
@@ -645,10 +639,10 @@
   align-items: center;
   gap: 7px;
   padding: 0 12px;
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid color-mix(in srgb, var(--white) 20%, transparent);
   border-radius: 999px;
-  background: rgba(31, 26, 23, 0.7);
-  color: #fff8ec;
+  background: color-mix(in srgb, var(--grey-850) 70%, transparent);
+  color: var(--surface-warm);
   font-size: var(--text-xs);
   font-weight: 800;
   line-height: 1;
@@ -664,10 +658,10 @@
   display: grid;
   place-items: center;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.26);
+  border: 1px solid color-mix(in srgb, var(--white) 30%, transparent);
   border-radius: 50%;
-  background: rgba(31, 26, 23, 0.7);
-  color: #fff8ec;
+  background: color-mix(in srgb, var(--grey-850) 70%, transparent);
+  color: var(--surface-warm);
   cursor: pointer;
   backdrop-filter: blur(10px);
   transition: background 160ms ease, transform 160ms ease;
@@ -683,7 +677,7 @@
 .species-gallery-arrow:hover,
 .species-lightbox-arrow:hover,
 .species-lightbox-close:hover {
-  background: rgba(154, 73, 37, 0.9);
+  background: color-mix(in srgb, var(--gold) 90%, transparent);
 }
 .species-gallery-arrow.previous,
 .species-lightbox-arrow.previous {
@@ -700,16 +694,19 @@
   left: 20px;
   z-index: 2;
   min-width: 0;
+  padding: 9px 13px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--grey-850) 70%, transparent);
   pointer-events: none;
 }
 .specimen-panel .species-gallery-caption p {
   margin: 0 0 3px;
   overflow: hidden;
-  color: #fff8ec;
+  color: var(--surface-warm);
   font-size: var(--text-base);
   line-height: 1.3;
   text-overflow: ellipsis;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1px 10px color-mix(in srgb, var(--black) 60%, transparent);
   white-space: nowrap;
 }
 .species-gallery-caption a {
@@ -717,13 +714,13 @@
   font-weight: 800;
   pointer-events: auto;
   text-decoration: underline;
-  text-decoration-color: rgba(255, 255, 255, 0.45);
+  text-decoration-color: color-mix(in srgb, var(--white) 40%, transparent);
   text-underline-offset: 2px;
 }
 .species-gallery-caption > span {
   display: block;
   overflow: hidden;
-  color: #e3d9cb;
+  color: var(--paper);
   font-size: var(--text-xs);
   line-height: 1.3;
   text-overflow: ellipsis;
@@ -735,9 +732,9 @@
   min-height: 84px;
   padding: 12px 16px;
   overflow-x: auto;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: #2d2825;
-  scrollbar-color: #9d6346 transparent;
+  border-top: 1px solid color-mix(in srgb, var(--white) 10%, transparent);
+  background: var(--grey-850);
+  scrollbar-color: var(--clay) transparent;
   scrollbar-width: thin;
 }
 .species-gallery-thumbnails button {
@@ -747,7 +744,7 @@
   overflow: hidden;
   border: 2px solid transparent;
   border-radius: 9px;
-  background: #171412;
+  background: var(--black);
   opacity: 0.58;
   cursor: pointer;
   transition: border-color 160ms ease, opacity 160ms ease, transform 160ms ease;
@@ -757,7 +754,7 @@
   transform: translateY(-1px);
 }
 .species-gallery-thumbnails button.active {
-  border-color: #ef9d64;
+  border-color: var(--apricot);
   opacity: 1;
 }
 .species-gallery-thumbnails img {

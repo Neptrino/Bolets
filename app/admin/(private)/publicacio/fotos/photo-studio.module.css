@@ -3,5 +3,5 @@
   width: 100%;
   border: 0;
   margin-top: 24px;
-  background: var(--color-cream, #f7f5ec);
+  background: var(--color-cream, var(--surface-muted));
 }

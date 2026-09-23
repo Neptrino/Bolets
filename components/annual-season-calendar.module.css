@@ -175,7 +175,7 @@
 }
 
 .possible {
-  background: #e7c8a5;
+  background: var(--warning-surface);
 }
 
 .moderate {
@@ -188,7 +188,7 @@
 
 .peak {
   color: var(--on-dark);
-  background: #963f20;
+  background: var(--gold);
 }
 
 @media (max-width: 680px) {

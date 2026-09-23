@@ -74,7 +74,7 @@
   display: grid;
   gap: 8px;
   padding: 18px;
-  background: #171412;
+  background: var(--black);
 }
 .specimen-panel .species-photo-reading {
   margin: 0;
@@ -99,18 +99,18 @@
   align-content: start;
   gap: 14px;
   padding: 20px 22px;
-  border: 1px solid rgba(47, 65, 42, 0.14);
+  border: 1px solid color-mix(in srgb, var(--forest-panel) 15%, transparent);
   border-radius: 14px;
-  background: rgba(255, 252, 244, 0.58);
+  background: color-mix(in srgb, var(--surface-muted) 60%, transparent);
 }
 .current-reading-notes-block h3 {
   margin: 0;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(47, 65, 42, 0.14);
+  border-bottom: 1px solid color-mix(in srgb, var(--forest-panel) 15%, transparent);
   color: var(--forest-panel);
   font-size: var(--text-lg);
 }
-.current-reading-notes-block > p { color: #485148; }
+.current-reading-notes-block > p { color: var(--forest-panel); }
 .current-reading-highlights {
   display: grid;
   gap: 14px;
@@ -122,10 +122,10 @@
   display: grid;
   gap: 4px;
   padding-left: 14px;
-  border-left: 3px solid #61704d;
+  border-left: 3px solid var(--forest-550);
 }
 .current-reading-highlights strong { color: var(--forest-panel); font-size: var(--text-base); }
-.current-reading-highlights p { color: #485148; font-size: var(--text-base); line-height: 1.55; }
+.current-reading-highlights p { color: var(--forest-panel); font-size: var(--text-base); line-height: 1.55; }
 .current-reading-highlights a {
   display: inline-flex;
   color: var(--clay);
@@ -136,7 +136,7 @@
   font-weight: 750;
 }
 .current-reading-highlights a svg { flex-shrink: 0; }
-.current-reading-notes-footnote { padding-top: 12px; border-top: 1px dashed rgba(47, 65, 42, 0.18); color: #687067; font-size: var(--text-xs); }
+.current-reading-notes-footnote { padding-top: 12px; border-top: 1px dashed color-mix(in srgb, var(--forest-panel) 20%, transparent); color: var(--forest-550); font-size: var(--text-xs); }
 .current-reading-notes .data-source-credits--panel { margin-top: 24px; }
 .poisonous-comparisons { margin: 40px 0 56px; }
 .poisonous-comparison-grid {

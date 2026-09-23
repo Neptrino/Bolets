@@ -267,7 +267,7 @@
   .habitat-map-legend-item + .habitat-map-legend-item {
     padding-top: 12px;
     padding-left: 0;
-    border-top: 1px solid rgba(89, 53, 37, 0.14);
+    border-top: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
     border-left: 0;
   }
 }
@@ -295,17 +295,10 @@
     grid-template-columns: repeat(3, max-content);
     justify-content: start;
     padding-top: 18px;
-    border-top: 1px solid rgba(255, 247, 232, 0.14);
+    border-top: 1px solid color-mix(in srgb, var(--on-dark) 15%, transparent);
   }
   .hero::after {
-    background:
-      linear-gradient(
-        90deg,
-        rgba(15, 28, 20, 0.95) 0%,
-        rgba(15, 28, 20, 0.78) 52%,
-        rgba(15, 28, 20, 0.34) 100%
-      ),
-      linear-gradient(0deg, rgba(15, 28, 20, 0.46), transparent 52%);
+    background: color-mix(in srgb, var(--forest-900) 60%, transparent);
   }
   .hero-media img {
     object-position: 58% center;
@@ -350,19 +343,14 @@
     justify-content: start;
     row-gap: 26px;
     padding-top: 18px;
-    border-top: 1px solid rgba(255, 247, 232, 0.14);
+    border-top: 1px solid color-mix(in srgb, var(--on-dark) 15%, transparent);
   }
   .hero {
     min-height: 650px;
     padding-top: 75px;
   }
   .hero::after {
-    background: linear-gradient(
-      180deg,
-      rgba(15, 28, 20, 0.88) 0%,
-      rgba(15, 28, 20, 0.77) 57%,
-      rgba(15, 28, 20, 0.58) 100%
-    );
+    background: color-mix(in srgb, var(--forest-900) 75%, transparent);
   }
   .hero-media img {
     object-position: 66% center;

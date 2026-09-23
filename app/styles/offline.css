@@ -14,7 +14,7 @@
   background: var(--ink);
   color: var(--on-dark);
   font-size: var(--text-base);
-  box-shadow: 0 10px 30px rgba(23, 35, 25, 0.28);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--forest-900) 30%, transparent);
 }
 .update-banner button {
   min-height: 34px;
@@ -53,7 +53,7 @@
   align-items: center;
   gap: 10px 18px;
   padding-top: 20px;
-  border-top: 1px solid rgba(255, 247, 232, 0.14);
+  border-top: 1px solid color-mix(in srgb, var(--on-dark) 15%, transparent);
 }
 .install-app-reason {
   display: grid;

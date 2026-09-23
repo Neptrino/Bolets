@@ -27,7 +27,7 @@
   color: var(--ink);
 }
 
-.dialog::backdrop { background: rgba(31, 36, 30, .58); backdrop-filter: blur(5px); }
+.dialog::backdrop { background: color-mix(in srgb, var(--forest-900) 60%, transparent); backdrop-filter: blur(5px); }
 
 .card {
   position: relative;
@@ -36,10 +36,10 @@
   max-height: min(850px, calc(100vh - 40px));
   padding: 24px;
   overflow-y: auto;
-  border: 1px solid rgba(89, 53, 37, .18);
+  border: 1px solid color-mix(in srgb, var(--bark) 20%, transparent);
   border-radius: 20px;
   background: var(--surface);
-  box-shadow: 0 28px 80px rgba(31, 36, 30, .32);
+  box-shadow: 0 28px 80px color-mix(in srgb, var(--forest-900) 30%, transparent);
 }
 
 .close {
@@ -75,7 +75,7 @@
   width: 44px;
   height: 44px;
   border-radius: 13px;
-  background: #e2eadf;
+  background: var(--surface-muted);
   color: var(--forest-panel);
 }
 
@@ -114,7 +114,7 @@
   font-size: var(--text-sm);
 }
 
-.form input:focus-visible { outline: 3px solid rgba(66, 92, 73, .14); border-color: var(--forest-panel); }
+.form input:focus-visible { outline: 3px solid color-mix(in srgb, var(--forest-650) 15%, transparent); border-color: var(--forest-panel); }
 .form p { margin: 0; color: var(--muted); font-size: var(--text-xs); line-height: 1.45; }
 .actions { display: flex; justify-content: flex-end; }
 .actions button { min-height: 38px; padding: 8px 13px; border: 1px solid var(--forest-panel); border-radius: var(--radius-pill); background: var(--forest-panel); color: var(--on-dark); font: inherit; font-size: var(--text-xs); font-weight: 900; cursor: pointer; }

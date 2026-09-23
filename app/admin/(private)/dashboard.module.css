@@ -34,15 +34,15 @@
   background: var(--surface);
   color: var(--ink);
   text-decoration: none;
-  box-shadow: 0 14px 34px rgba(75, 54, 33, .06);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--bark-800) 5%, transparent);
 }
 
 .priorityGrid > a[data-tone="clay"],
 .priorityGrid > a[data-tone="attention"] { --card-tone: var(--clay); }
 .priorityGrid > a[data-tone="red"],
 .priorityGrid > a[data-tone="critical"] { --card-tone: var(--danger-ink); }
-.priorityGrid > a[data-tone="running"] { --card-tone: #355f75; }
-.priorityGrid > a[data-tone="healthy"] { --card-tone: #2f6b4c; }
+.priorityGrid > a[data-tone="running"] { --card-tone: var(--sky-650); }
+.priorityGrid > a[data-tone="healthy"] { --card-tone: var(--forest-600); }
 
 .priorityGrid > a > svg:first-child {
   color: var(--card-tone);
@@ -95,9 +95,9 @@
   gap: 8px 12px;
   align-items: start;
   padding: 20px;
-  border: 1px solid rgba(66, 92, 73, .22);
+  border: 1px solid color-mix(in srgb, var(--forest-650) 20%, transparent);
   border-radius: 17px;
-  background: #eef1e8;
+  background: var(--surface-muted);
   color: var(--ink);
   text-decoration: none;
 }
@@ -137,7 +137,7 @@
   gap: 12px;
   align-items: center;
   padding: 20px;
-  border: 1px solid rgba(139, 61, 47, .25);
+  border: 1px solid color-mix(in srgb, var(--danger-ink) 20%, transparent);
   border-radius: 16px;
   background: var(--danger-surface);
   color: var(--danger-ink);
