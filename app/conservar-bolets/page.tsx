@@ -46,6 +46,7 @@ import {
   speciesPath,
 } from "@/src/lib/seo";
 import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
+import { Notice } from "@/components/notice";
 
 const title = "Com conservar i congelar bolets amb seguretat";
 const description = "Com conservar bolets: congelar-los escaldats o cuinats, assecar-los a làmines o fer-los en escabetx, amb les recomanacions de l’ACSA.";
@@ -283,10 +284,7 @@ export default function PreserveMushroomsPage() {
           <li><span aria-hidden="true">2</span><FlaskConical size={20} /><h3>Cobreix d’escabetx</h3><p>Bull 2 minuts 2 gots de vinagre de vi blanc, ½ got d’aigua, 1 culleradeta de sucre, 1 de sal i una branca de farigola. Cobreix els bolets i afegeix un rajolí d’oli per sobre.</p></li>
           <li><span aria-hidden="true">3</span><Flame size={20} /><h3>Esterilitza</h3><p>Tapa els pots i bull-los a foc lent, ben coberts d’aigua, un mínim de 30 minuts. Deixa’ls refredar dins la mateixa aigua i guarda’ls en un lloc fresc.</p></li>
         </ol>
-        <aside className="notice guide-caveat">
-          <TriangleAlert size={21} aria-hidden="true" />
-          <p><strong>No improvisis la proporció de vinagre.</strong> Llença qualsevol pot amb la tapa inflada, rovellada, amb pèrdues de líquid o que faci una olor estranya en obrir-lo. La toxina botulínica no es detecta a simple vista. Etiqueta cada pot amb el contingut i la data.</p>
-        </aside>
+        <Notice icon={TriangleAlert} title="No improvisis la proporció de vinagre." className="guide-caveat">Llença qualsevol pot amb la tapa inflada, rovellada, amb pèrdues de líquid o que faci una olor estranya en obrir-lo. La toxina botulínica no es detecta a simple vista. Etiqueta cada pot amb el contingut i la data.</Notice>
       </section>
 
       <section className="guide-section" aria-labelledby="preservation-species-title">

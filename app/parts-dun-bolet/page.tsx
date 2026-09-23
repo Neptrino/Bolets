@@ -31,6 +31,7 @@ import {
   SITE_URL,
 } from "@/src/lib/seo";
 import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
+import { Notice } from "@/components/notice";
 
 const canonicalPath = "/parts-dun-bolet";
 const title = pageTitle("Parts d’un bolet: guia d’identificació");
@@ -165,10 +166,7 @@ export default function MushroomPartsGuidePage() {
         </nav>
       </section>
 
-      <aside className="notice intent-safety-note">
-        <ShieldAlert size={22} aria-hidden="true" />
-        <div><strong>Cap part, per si sola, confirma l’espècie.</strong><p>Color, forma i mida canvien amb l’edat, la humitat i el lloc. Per a una identificació responsable cal contrastar diversos trets, incloses les confusions possibles, amb una persona experta.</p></div>
-      </aside>
+      <Notice icon={ShieldAlert} title="Cap part, per si sola, confirma l’espècie." className="intent-safety-note">Color, forma i mida canvien amb l’edat, la humitat i el lloc. Per a una identificació responsable cal contrastar diversos trets, incloses les confusions possibles, amb una persona experta.</Notice>
 
       <EditorialAttribution contentId="parts-dun-bolet" sources={coreEditorialSources} />
     </PageShell>

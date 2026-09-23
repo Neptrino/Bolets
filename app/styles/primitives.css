@@ -44,3 +44,23 @@
   border-radius: var(--radius-md);
   background: var(--surface-warm);
 }
+
+/* Notice layout used by the Notice component: icon, title line and text. */
+.notice-block {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 20px;
+  color: var(--bark);
+}
+.notice-block > svg { flex: 0 0 auto; margin-top: 2px; color: var(--notice-accent, var(--gold)); }
+.notice-block strong { display: block; margin-bottom: 4px; font-size: var(--text-base); }
+.notice-block p { margin: 0; color: inherit; font-size: var(--text-base); line-height: 1.55; }
+.notice-block p a { color: inherit; font-weight: 750; text-decoration: underline; text-underline-offset: 0.2em; }
+.notice[data-tone="emergency"] {
+  --notice-accent: var(--danger-ink);
+  border-color: color-mix(in srgb, var(--danger-ink) 40%, transparent);
+  border-left-color: var(--notice-accent);
+  background: var(--danger-surface);
+  color: var(--danger-ink);
+}

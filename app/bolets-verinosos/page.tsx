@@ -11,6 +11,7 @@ import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { toxicSpecies } from "@/src/lib/species-collections";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
+import { Notice } from "@/components/notice";
 
 export const metadata: Metadata = {
   title: "Bolets verinosos i tòxics de Catalunya",
@@ -58,10 +59,7 @@ export default function PoisonousMushroomsPage() {
         tone="danger"
       />
 
-      <aside className="notice intent-emergency-note">
-        <ShieldAlert size={23} aria-hidden="true" />
-        <div><strong>Davant una ingestió sospitosa, actua de seguida.</strong><p>Segueix la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a>, truca al 061 Salut Respon i conserva restes del bolet. No esperis que apareguin símptomes ni apliquis remeis casolans.</p></div>
-      </aside>
+      <Notice icon={ShieldAlert} title="Davant una ingestió sospitosa, actua de seguida." tone="emergency" className="intent-safety-note">Segueix la <a href={officialSafetySource.url} target="_blank" rel="noreferrer">guia de l’ACSA</a>, truca al 061 Salut Respon i conserva restes del bolet. No esperis que apareguin símptomes ni apliquis remeis casolans.</Notice>
 
       <section className="intent-reading-section" aria-labelledby="poisonous-reading-title">
         <SectionHeader

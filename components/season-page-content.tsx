@@ -19,6 +19,7 @@ import { absoluteUrl, speciesPath } from "@/src/lib/seo";
 import { seasonGuideForMonth } from "@/src/lib/season-guides";
 import type { Month } from "@/src/lib/types";
 import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
+import { Notice } from "@/components/notice";
 
 type SeasonPageContentProps = {
   canonicalPath: string;
@@ -136,10 +137,7 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
 
       <AnnualSeasonCalendar currentMonth={currentMonth} selectedMonth={month} />
 
-      <aside className="notice intent-safety-note season-explainer">
-        <CloudRain size={22} aria-hidden="true" />
-        <div><strong>Calendari i condicions no són el mateix.</strong><p>La temporada indica quan una espècie pot fructificar habitualment. Per valorar el moment actual també cal llegir la pluja acumulada, la humitat, la temperatura i si el terreny és adequat. <Link href="/preguntes-frequents-bolets#quan-anar-hi" className="text-link">Resolem els dubtes sobre temporada i pluja.</Link></p></div>
-      </aside>
+      <Notice icon={CloudRain} title="Calendari i condicions no són el mateix." className="intent-safety-note season-explainer">La temporada indica quan una espècie pot fructificar habitualment. Per valorar el moment actual també cal llegir la pluja acumulada, la humitat, la temperatura i si el terreny és adequat. <Link href="/preguntes-frequents-bolets#quan-anar-hi" className="text-link">Resolem els dubtes sobre temporada i pluja.</Link></Notice>
 
       <nav className="guide-reading-actions" aria-label="Guies per preparar la temporada">
         {activeSpecies.filter((species) => cepSpeciesIds.some((id) => id === species.speciesId) || ["craterellus-lutescens", "tricholoma-terreum"].includes(species.speciesId)).map((species) => (

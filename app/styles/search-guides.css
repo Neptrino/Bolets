@@ -1,39 +1,6 @@
 /* Search-intent guides: editorial index pages backed by the species catalogue. */
-.intent-safety-note,
-.intent-emergency-note {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  margin: 28px 0 60px;
-  padding: 20px 20px;
-  border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
-  background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
-  color: var(--bark);
-}
-.intent-emergency-note {
-  border-color: color-mix(in srgb, var(--danger-ink) 40%, transparent);
-  border-left-color: var(--danger-ink);
-  background: var(--danger-surface);
-  color: var(--danger-ink);
-}
-.intent-safety-note svg,
-.intent-emergency-note svg {
-  flex: 0 0 auto;
-  margin-top: 2px;
-}
-.intent-safety-note strong,
-.intent-emergency-note strong {
-  display: block;
-  margin-bottom: 4px;
-  font-size: var(--text-base);
-}
-.intent-safety-note p,
-.intent-emergency-note p {
-  margin: 0;
-  color: inherit;
-  font-size: var(--text-base);
-  line-height: 1.55;
-}
+/* Placement of the Notice component on search-intent pages. */
+.intent-safety-note { margin: 28px 0 60px; }
 .intent-species-section { margin-top: 56px; }
 .intent-species-section .directory-results-bar {
   margin-top: 0;

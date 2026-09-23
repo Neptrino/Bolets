@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { editorialArticleFields, editorialTeam, siteAuthor } from "@/data/editorial";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL } from "@/src/lib/seo";
+import { Notice } from "@/components/notice";
 
 export const metadata: Metadata = {
   title: "Equip editorial, metodologia i correccions",
@@ -49,10 +50,7 @@ export default function EditorialTeamPage() {
         <section><ShieldCheck size={22} /><h2>Fonts i seguretat</h2><p>La cartografia prové d’organismes públics i altres fonts identificades als crèdits. Les advertències de consum prioritzen les indicacions oficials de l’Agència Catalana de Seguretat Alimentària. Aquesta web és educativa i no presta un servei d’identificació.</p></section>
       </div>
 
-      <aside className="notice intent-emergency-note">
-        <CircleAlert size={23} aria-hidden="true" />
-        <div><strong>Sense revisió micològica independent.</strong><p>El contingut actual ha passat revisió editorial, però no té revisió científica o micològica externa i ara mateix no n’hi ha cap de prevista. Ho indiquem a cada pàgina sensible: les fonts citades no són una validació experta d’aquesta web.</p></div>
-      </aside>
+      <Notice icon={CircleAlert} title="Sense revisió micològica independent." tone="emergency" className="intent-safety-note">El contingut actual ha passat revisió editorial, però no té revisió científica o micològica externa i ara mateix no n’hi ha cap de prevista. Ho indiquem a cada pàgina sensible: les fonts citades no són una validació experta d’aquesta web.</Notice>
 
       <section className="seo-guide-section">
         <p className="eyebrow">Correccions públiques</p>

@@ -15,6 +15,7 @@ import { faqPageSchema } from "@/src/lib/faq-schema";
 import { edibleFaqs, edibleGroups } from "@/src/lib/catalogue-list";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
+import { Notice } from "@/components/notice";
 
 export const metadata: Metadata = {
   title: "Bolets comestibles de Catalunya: guia d’espècies",
@@ -65,10 +66,7 @@ export default function EdibleMushroomsPage() {
         tone="forest"
       />
 
-      <aside className="notice intent-safety-note">
-        <CircleAlert size={22} aria-hidden="true" />
-        <div><strong>Comestible no vol dir identificat.</strong><p>Una fotografia, un nom popular o aquesta web no són suficients per decidir si un bolet es pot consumir. Confirma sempre l’espècie amb una persona experta.</p></div>
-      </aside>
+      <Notice icon={CircleAlert} title="Comestible no vol dir identificat." className="intent-safety-note">Una fotografia, un nom popular o aquesta web no són suficients per decidir si un bolet es pot consumir. Confirma sempre l’espècie amb una persona experta.</Notice>
 
       <section className="intent-reading-section" aria-labelledby="edible-reading-title">
         <SectionHeader
