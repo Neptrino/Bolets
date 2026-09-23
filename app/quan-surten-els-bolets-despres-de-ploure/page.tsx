@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
+import { SpeciesIcon } from "@/components/species-icon";
 import {
   PageHeader,
   PageShell,
@@ -68,6 +69,7 @@ const exampleSpecies = [
 const rainWindowGroups = groupSpeciesByRainWindow(
   speciesProfiles.map((species) => ({ commonName: species.identity.commonName, modelConfig: species.modelConfig })),
 );
+const speciesIdByCommonName = new Map(speciesProfiles.map((species) => [species.identity.commonName, species.speciesId]));
 const cepSpecies = getSpecies("boletus-edulis");
 const cepWindow = cepSpecies ? scoredRainWindowForModel(cepSpecies.modelConfig) : null;
 const cepCalendarShift = cepSpecies && cepSpecies.modelConfig.status === "supported" && cepSpecies.modelConfig.model === "hydrothermal-v2"
@@ -206,7 +208,15 @@ export default function MushroomsAfterRainPage() {
                   <th scope="row">{group.window.excludesRecent ? `Caiguda ${rainWindowPhrase(group.window)}` : `Els últims ${group.window.endDaysAgo} dies`}</th>
                   <td>≈ {group.window.typicalHalfResponseMm} mm</td>
                   <td>≈ {group.window.typicalNearFullMm} mm</td>
-                  <td>{speciesListLabel(group.speciesNames)}</td>
+                  <td>
+                    <span className="rain-window-icons" aria-hidden="true">
+                      {group.speciesNames.slice(0, MAX_LISTED_SPECIES).map((name) => {
+                        const speciesId = speciesIdByCommonName.get(name);
+                        return speciesId ? <SpeciesIcon key={speciesId} speciesId={speciesId} size={32} /> : null;
+                      })}
+                    </span>
+                    {speciesListLabel(group.speciesNames)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -225,21 +235,26 @@ export default function MushroomsAfterRainPage() {
           titleId="rain-species-title"
           description="Les mateixes xifres, espècie per espècie. Descriuen patrons habituals, no una data garantida després de ploure."
         />
-        {exampleSpecies.map((species) => {
-          const rainfall = species.ecologicalConfig.rainfall;
-          const window = scoredRainWindowForModel(species.modelConfig);
-          return <article key={species.speciesId}>
-            <div className="rain-species-identity"><span>{species.identity.commonName}</span><em>{species.identity.scientificName}</em></div>
-            <p className="rain-species-lead">{window ? rainWindowSentence(window) : rainfall.fruitingDelay}</p>
-            <dl>
-              {!window && <div><dt>Aigua que necessita</dt><dd>{rainfall.preferredAccumulation}</dd></div>}
-              <div><dt>Humitat prèvia</dt><dd>{rainfall.priorMoisture}</dd></div>
-              <div><dt>Què la pot frenar</dt><dd>{rainfall.interruption}</dd></div>
-            </dl>
-            <p className="rain-species-note">{rainfallLimitationCopy(species.speciesId, rainfall.uncertainty)}</p>
-            <Link href={speciesPath(species)} className="text-link" aria-label={`Veure la fitxa de ${species.identity.commonName}`}>Veure la fitxa <ArrowUpRight size={15} /></Link>
-          </article>;
-        })}
+        <div className="rain-species-grid">
+          {exampleSpecies.map((species) => {
+            const rainfall = species.ecologicalConfig.rainfall;
+            const window = scoredRainWindowForModel(species.modelConfig);
+            return <article key={species.speciesId}>
+              <div className="rain-species-identity">
+                <SpeciesIcon speciesId={species.speciesId} size={56} />
+                <div><h3>{species.identity.commonName}</h3><em>{species.identity.scientificName}</em></div>
+              </div>
+              <p className="rain-species-lead">{window ? rainWindowSentence(window) : rainfall.fruitingDelay}</p>
+              <dl>
+                {!window && <div><dt>Aigua que necessita</dt><dd>{rainfall.preferredAccumulation}</dd></div>}
+                <div><dt>Humitat prèvia</dt><dd>{rainfall.priorMoisture}</dd></div>
+                <div><dt>Què la pot frenar</dt><dd>{rainfall.interruption}</dd></div>
+              </dl>
+              <p className="rain-species-note">{rainfallLimitationCopy(species.speciesId, rainfall.uncertainty)}</p>
+              <Link href={speciesPath(species)} className="text-link" aria-label={`Veure la fitxa de ${species.identity.commonName}`}>Veure la fitxa <ArrowUpRight size={15} /></Link>
+            </article>;
+          })}
+        </div>
       </section>
 
       <section className="rain-evidence" aria-labelledby="rain-evidence-title">
