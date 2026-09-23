@@ -364,7 +364,7 @@ test("the ceps guide connects every cep, broad region and published local guide"
     cepSpeciesIds.some((speciesId) => speciesId === guide.speciesId),
   ).length;
   await expect(page.locator("[data-cep-local-guides] tbody a, .ceps-other-guides a")).toHaveCount(cepGuideCount);
-  await expect(page.locator(".rovellons-faq details")).toHaveCount(7);
+  await expect(page.locator("#preguntes details")).toHaveCount(9);
   await expect(page.locator(".rovellons-safety")).toContainText("ACSA");
   await expect(page.locator(".editorial-panel--compact")).toContainText("Editorial, no micològica");
 });

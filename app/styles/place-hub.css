@@ -438,11 +438,8 @@
 .location-hub-panels .guide-panel-note a,
 .location-hub-faq .guide-panel-lede a { color: var(--moss); font-weight: 750; }
 .location-hub-faq { margin: var(--place-section-gap) 0 0; }
-.location-hub-faq-list.guide-panel-body { display: grid; gap: 0; padding-top: 6px; }
-.location-hub-faq-list article { padding: 16px 0; border-top: 1px solid var(--line); }
-.location-hub-faq-list article:first-child { border-top: 0; }
-.location-hub-faq-list h3 { margin: 0 0 6px; color: var(--forest-panel); font-size: var(--text-base); font-weight: 850; }
-.location-hub-faq-list p { margin: 0; color: var(--ink); font-size: var(--text-base); line-height: 1.65; }
+.location-hub-faq-list.guide-panel-body { padding-top: 6px; }
+.location-hub-faq-list > div { margin-top: 0; }
 @media (max-width: 900px) {
   .location-hub-panels { grid-template-columns: 1fr; }
 }

@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowUpRight, BookOpen, BookOpenText, CalendarRange, CircleH
 import { DataSourceCredits } from "@/components/editorial-attribution";
 import { HubFacts, HubSeasonMatrix, HubTodayPanel, hubAltitudeBand, hubSeasonWindow, hubSpeciesList, type HubReading } from "@/components/hub-sections";
 import { HubMapPortrait } from "@/components/hub-map-portrait";
+import { FaqEntries } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import { MediaImage } from "@/components/media-image";
 import { editorialArticleFields } from "@/data/editorial";
@@ -28,6 +29,7 @@ import { areaMapPath, areaMapSpec } from "@/src/lib/place-map";
 import { getAreaPredictionSummaries } from "@/src/lib/predictions";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
+import { faqPageSchema } from "@/src/lib/faq-schema";
 import { zoneHubFaqs, zoneHubSummary } from "@/src/lib/zone-hub-copy";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, pageTitle, speciesPath } from "@/src/lib/seo";
 import { territorialMapPath } from "@/src/lib/territorial-map";
@@ -146,7 +148,7 @@ export default async function AreaPage({ params }: Props) {
     <div className="location-hub">
       <JsonLd data={{ "@context": "https://schema.org", "@graph": [
         { "@type": "CollectionPage", "@id": `${absoluteUrl(areaPath(area))}#page`, name: `Bolets ${area.prepositionalName}`, description: summary, url: absoluteUrl(areaPath(area)), inLanguage: "ca", ...editorialArticleFields(`zone:${area.slug}`), about: { "@type": "Place", name: area.name }, mainEntity: { "@type": "ItemList", itemListElement: places.map((place, index) => ({ "@type": "ListItem", position: index + 1, name: place.name, url: absoluteUrl(placePath(place)) })) } },
-        { "@type": "FAQPage", "@id": `${absoluteUrl(areaPath(area))}#preguntes`, mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })) },
+        faqPageSchema(faqs, `${absoluteUrl(areaPath(area))}#preguntes`),
       ] }} />
       <header className="location-hub-hero">
         <div className="page-width location-hub-hero-grid">
@@ -225,15 +227,13 @@ export default async function AreaPage({ params }: Props) {
         <section id="preguntes" className="guide-panel location-hub-faq" aria-labelledby="preguntes-title">
           <header className="guide-panel-head">
             <div>
-              <p className="eyebrow"><CircleHelp size={15} aria-hidden="true" /> Preguntes</p>
+              <p className="eyebrow"><CircleHelp size={15} aria-hidden="true" /> Preguntes freqüents</p>
               <h2 id="preguntes-title">Preguntes sobre els bolets {area.prepositionalName}</h2>
               <p className="guide-panel-lede">Respostes breus amb les dades d’aquesta guia; els detalls són a cada secció i a cada indret.</p>
             </div>
           </header>
           <div className="guide-panel-body location-hub-faq-list">
-            {faqs.map((faq) => (
-              <article key={faq.question}><h3>{faq.question}</h3><p>{faq.answer}</p></article>
-            ))}
+            <FaqEntries faqs={faqs} />
           </div>
         </section>
 

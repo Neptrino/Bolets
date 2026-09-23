@@ -8,6 +8,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { Map } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
+import { faqPageSchema } from "@/src/lib/faq-schema";
 import { SpeciesCulinarySection } from "@/components/species-profile/culinary-section";
 import { SpeciesDistributionSection } from "@/components/species-profile/distribution-section";
 import { SpeciesEcologySection } from "@/components/species-profile/ecology-section";
@@ -235,18 +236,7 @@ export default async function SpeciesPage({
                 },
               ],
             },
-            ...(faqs.length > 0 ? [{
-              "@type": "FAQPage",
-              "@id": `${canonicalUrl}#preguntes`,
-              mainEntity: faqs.map((faq) => ({
-                "@type": "Question",
-                name: faq.question,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: faq.answer,
-                },
-              })),
-            }] : []),
+            ...(faqs.length > 0 ? [faqPageSchema(faqs, `${canonicalUrl}#preguntes`)] : []),
           ],
         }}
       />

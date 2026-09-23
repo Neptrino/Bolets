@@ -99,8 +99,7 @@
 .rovellons-territories h2,
 .rovellons-lookalike-species h2,
 .rovellons-published h2,
-.rovellons-signals h2,
-.rovellons-faq h2 {
+.rovellons-signals h2 {
   margin: 4px 0 0;
   font-size: var(--display-md);
   line-height: 1.02;
@@ -496,31 +495,6 @@
 .guide-lookalikes article .text-link {
   margin-top: auto;
   padding-top: 22px;
-}
-.rovellons-faq {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 24px;
-  margin-bottom: 50px;
-}
-.rovellons-faq > div {
-  border-top: 1px solid var(--line);
-}
-.rovellons-faq details {
-  border-bottom: 1px solid var(--line);
-}
-.rovellons-faq summary {
-  padding: 19px 30px 19px 2px;
-  color: var(--ink);
-  font-size: var(--text-base);
-  font-weight: 850;
-  cursor: pointer;
-}
-.rovellons-faq details p {
-  margin: -3px 0 20px;
-  color: var(--muted);
-  font-size: var(--text-base);
-  line-height: 1.65;
 }
 .rovellons-safety {
   display: flex;

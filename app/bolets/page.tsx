@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, CalendarDays, CookingPot, Images, Languages, Leaf, Map, ShieldAlert, Snowflake, Sprout, Sun } from "lucide-react";
 import { PageHeader, PageShell, SectionHeader } from "@/components/page-layout";
 import { SpeciesDirectory } from "@/components/species-directory";
+import { FaqSection } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import { catalogueSpecies as speciesAlphabetical } from "@/data/catalogue";
 import { monthInTimeZone } from "@/src/lib/seasonality";
@@ -10,6 +11,7 @@ import { seasonGuides, type SeasonGuideId } from "@/src/lib/season-guides";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 import { catalogueSearchQuery } from "@/src/lib/catalogue-search";
+import { faqPageSchema } from "@/src/lib/faq-schema";
 import { catalogueCounts, catalogueFaqs, catalogueListRows } from "@/src/lib/catalogue-list";
 
 export const metadata: Metadata = {
@@ -48,7 +50,7 @@ export default async function SpeciesIndexPage({ searchParams }: {
   return (
     <PageShell as="section">
       <JsonLd data={{ "@context": "https://schema.org", "@type": "CollectionPage", name: "Tipus de bolets de Catalunya", url: `${SITE_URL}/bolets`, inLanguage: "ca", mainEntity: { "@type": "ItemList", numberOfItems: speciesAlphabetical.length, itemListElement: speciesAlphabetical.map((species, index) => ({ "@type": "ListItem", position: index + 1, name: `${species.identity.commonName} (${species.identity.scientificName})`, url: `${SITE_URL}${speciesPath(species)}` })) } }} />
-      <JsonLd data={{ "@context": "https://schema.org", "@type": "FAQPage", "@id": `${SITE_URL}/bolets#preguntes`, mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })) }} />
+      <JsonLd data={{ "@context": "https://schema.org", ...faqPageSchema(faqs, `${SITE_URL}/bolets#preguntes`) }} />
       <PageHeader
         eyebrow="Guia d’espècies"
         title={<>Tipus de bolets<br />de Catalunya.</>}
@@ -104,14 +106,7 @@ export default async function SpeciesIndexPage({ searchParams }: {
           </table>
         </div>
       </section>
-      <section className="catalogue-faq" aria-labelledby="catalogue-faq-title">
-        <SectionHeader meta="Preguntes habituals" title="Preguntes sobre els bolets de Catalunya" titleId="catalogue-faq-title" size="compact" />
-        <div className="catalogue-faq-list">
-          {faqs.map((faq) => (
-            <article key={faq.question}><h3>{faq.question}</h3><p>{faq.answer}</p></article>
-          ))}
-        </div>
-      </section>
+      <FaqSection faqs={faqs} title="Preguntes sobre els bolets de Catalunya" titleId="catalogue-faq-title" size="compact" />
       <div className="species-catalogue-support">
         <section aria-labelledby="popular-species-title">
           <SectionHeader

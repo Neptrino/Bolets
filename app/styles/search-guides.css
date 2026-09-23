@@ -339,11 +339,6 @@
 .species-name-unverified { color: var(--muted); font-style: italic; }
 .species-name-empty { color: var(--muted); font-size: var(--text-base); }
 
-.rain-faq { margin-top: 4.5rem; }
-.rain-faq > div { display: grid; gap: .65rem; margin-top: 1.35rem; }
-.rain-faq details { padding: .95rem 1rem; border: 1px solid var(--line); border-radius: 11px; background: rgba(255, 252, 244, .5); }
-.rain-faq summary { cursor: pointer; color: var(--forest-panel); font-size: var(--text-base); font-weight: 850; }
-.rain-faq p { margin: .75rem 0 0; color: var(--muted); font-size: var(--text-base); line-height: 1.65; }
 
 @media (max-width: 900px) {
   .intent-reading-grid {
@@ -423,8 +418,3 @@
 .catalogue-list-group h3 { display: flex; align-items: baseline; gap: 10px; margin: 0 0 4px; color: var(--forest-panel); font-size: var(--text-xl); }
 .catalogue-list-group h3 small { color: var(--muted); font-size: var(--text-base); font-weight: 600; }
 .catalogue-list-group > p { margin: 0 0 12px; color: var(--muted); }
-.catalogue-faq { margin: 44px 0 0; }
-.catalogue-faq-list { margin-top: 18px; border-top: 1px solid var(--line); }
-.catalogue-faq-list article { padding: 14px 0; border-bottom: 1px solid var(--line); }
-.catalogue-faq-list h3 { margin: 0 0 6px; color: var(--forest-panel); font-size: var(--text-base); font-weight: 850; }
-.catalogue-faq-list p { margin: 0; line-height: 1.6; }

@@ -1,0 +1,55 @@
+/* The shared FAQ: one closed card per question, as first agreed on the rain
+   guide. Answers stay in the HTML, so search and find-in-page still read them. */
+.section {
+  margin-top: 4.5rem;
+}
+
+.list {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1.35rem;
+}
+
+.item {
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(255, 252, 244, 0.5);
+}
+
+.item summary {
+  color: var(--forest-panel);
+  font-size: var(--text-base);
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.item summary:focus-visible {
+  outline: 2px solid var(--forest-panel);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.answer {
+  margin-top: 0.75rem;
+  scroll-margin-top: 120px;
+}
+
+.answer p {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-base);
+  line-height: 1.65;
+}
+
+.answer a {
+  color: var(--bark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.answer a:focus-visible {
+  outline: 2px solid var(--forest-panel);
+  outline-offset: 4px;
+  border-radius: 4px;
+}

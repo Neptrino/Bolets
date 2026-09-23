@@ -15,6 +15,7 @@ import {
   Wind,
 } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
+import { FaqSection } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import { priorMoistureLevel, RainResponseCurve, RainTimeline, RainWindowTrack } from "@/components/rain-guide-graphics";
 import { SpeciesIcon } from "@/components/species-icon";
@@ -38,6 +39,7 @@ import {
   rainWindowSentence,
   scoredRainWindowForModel,
 } from "@/src/lib/rain-response-summary";
+import { faqPageSchema } from "@/src/lib/faq-schema";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
 import { rainfallLimitationCopy } from "@/src/lib/species-copy";
 
@@ -172,10 +174,7 @@ export default function MushroomsAfterRainPage() {
             citation: hydrothermalScientificSources.map((source) => source.url),
             ...editorialArticleFields("quan-surten-els-bolets-despres-de-ploure"),
           },
-          {
-            "@type": "FAQPage",
-            mainEntity: rainFaqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })),
-          },
+          faqPageSchema(rainFaqs, `${absoluteUrl("/quan-surten-els-bolets-despres-de-ploure")}#preguntes`),
         ],
       }} />
       <PageHeader
@@ -359,10 +358,7 @@ export default function MushroomsAfterRainPage() {
         <aside className="rain-model-caveat"><ShieldCheck size={21} aria-hidden="true" /><p><strong>Límit important.</strong> Les valoracions permeten comparar condicions, però encara no les hem contrastat amb prou observacions de camp a Catalunya. No són una probabilitat de trobar bolets.</p></aside>
       </section>
 
-      <section className="rain-faq" aria-labelledby="rain-faq-title">
-        <SectionHeader meta="Preguntes freqüents" title="Pluja, espera i condicions actuals" titleId="rain-faq-title" />
-        <div>{rainFaqs.map((faq) => <details key={faq.question}><summary>{faq.question}</summary><p>{faq.answer}</p></details>)}</div>
-      </section>
+      <FaqSection faqs={rainFaqs} title="Pluja, espera i condicions actuals" titleId="rain-faq-title" />
 
       <nav className="rain-guide-actions" aria-label="Continuar explorant les condicions dels bolets">
         <Link href="/mapa-pluja">Quanta pluja ha caigut aquests dies <ArrowUpRight size={16} /></Link>

@@ -22,7 +22,7 @@ describe("mushroom-hunting FAQ", () => {
     expect(document.querySelectorAll("details[open]")).toHaveLength(1);
     expect(document.querySelector("details")?.hasAttribute("open")).toBe(true);
     for (const question of document.querySelectorAll("details")) {
-      expect(question.querySelector("summary h3")?.textContent?.endsWith("?")).toBe(true);
+      expect(question.querySelector("summary")?.textContent?.endsWith("?")).toBe(true);
       expect(question.querySelector("p")?.textContent?.length).toBeGreaterThan(100);
       expect(question.querySelectorAll('a[href^="/"]').length).toBeGreaterThanOrEqual(1);
       expect(question.querySelectorAll('a[href^="/"]').length).toBeLessThanOrEqual(2);
@@ -40,7 +40,7 @@ describe("mushroom-hunting FAQ", () => {
     for (const details of document.querySelectorAll("details")) {
       const answer = details.querySelector("div[id]")!;
       const link = answer.querySelector(`a[href="#${answer.id}"]`);
-      expect(link?.getAttribute("aria-label")).toContain(details.querySelector("h3")!.textContent);
+      expect(link?.getAttribute("aria-label")).toContain(details.querySelector("summary")!.textContent);
       expect(link?.textContent).toContain("Enllaç a aquesta resposta");
       expect(answer.parentElement).toBe(details);
     }
@@ -104,6 +104,12 @@ describe("mushroom-hunting FAQ", () => {
     expect(article.dateModified).toBe(getEditorialMetadata("preguntes-frequents-bolets").updatedAt);
     expect(article).not.toHaveProperty("reviewedBy");
     expect(graph.some((item: Record<string, unknown>) => item["@type"] === "BreadcrumbList")).toBe(true);
+    const faq = graph.find((item: Record<string, unknown>) => item["@type"] === "FAQPage");
+    const visibleQuestions = [...document.querySelectorAll("details summary")].map((summary) => summary.textContent);
+    expect(faq.mainEntity.map((question: { name: string }) => question.name)).toEqual(visibleQuestions);
+    for (const [index, details] of [...document.querySelectorAll("details")].entries()) {
+      expect(details.querySelector("div[id] > p")!.textContent).toBe(faq.mainEntity[index].acceptedAnswer.text);
+    }
     expect(publicEditorialItems).toContain("preguntes-frequents-bolets");
     expect(sitemap().filter((entry) => entry.url.endsWith(path))).toEqual([
       { url: `https://bolets.app${path}`, lastModified: editorialLastModified("preguntes-frequents-bolets") },

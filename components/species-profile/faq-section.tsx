@@ -1,4 +1,4 @@
-import { CircleHelp } from "lucide-react";
+import { FaqEntries } from "@/components/faq";
 import { ProfileSection } from "@/components/species-profile/profile-section";
 import { speciesHeadings } from "@/src/lib/species-headings";
 import type { SpeciesFaq } from "@/src/lib/species-summary";
@@ -12,15 +12,8 @@ export function SpeciesFaqSection({ species, faqs }: { species: CatalogueSpecies
   const headings = speciesHeadings(species.identity.commonName);
 
   return (
-    <ProfileSection species={species} id="preguntes" eyebrow="Preguntes habituals" title={headings.faq}>
-      <div className="profile-faq">
-        {faqs.map((faq) => (
-          <article key={faq.question}>
-            <h3><CircleHelp size={16} aria-hidden="true" /> {faq.question}</h3>
-            <p>{faq.answer}</p>
-          </article>
-        ))}
-      </div>
+    <ProfileSection species={species} id="preguntes" eyebrow="Preguntes freqüents" title={headings.faq}>
+      <FaqEntries faqs={faqs} />
     </ProfileSection>
   );
 }

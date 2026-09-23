@@ -11,6 +11,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { DataSourceCredits, EditorialAttribution } from "@/components/editorial-attribution";
+import { FaqSection } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import {
   PageHeader,
@@ -29,6 +30,7 @@ import {
   TERRITORY_WET_THRESHOLD_MM,
   type RainfallTerritoryReading,
 } from "@/src/lib/rain-overview";
+import { faqPageSchema } from "@/src/lib/faq-schema";
 import { formatDays, formatMillimetres, getRainfallBand, rainfallScale } from "@/src/lib/rainfall-scale";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, metaDescription, pageTitle, SITE_URL } from "@/src/lib/seo";
 
@@ -249,14 +251,7 @@ export default function RainAndMushroomsPage() {
             publisher: { "@id": `${SITE_URL}/#organization` },
             ...editorialArticleFields("mapa-pluja"),
           },
-          {
-            "@type": "FAQPage",
-            mainEntity: faqs.map((faq) => ({
-              "@type": "Question",
-              name: faq.question,
-              acceptedAnswer: { "@type": "Answer", text: faq.answer },
-            })),
-          },
+          faqPageSchema(faqs, `${absoluteUrl("/mapa-pluja")}#preguntes`),
         ],
       }} />
 
@@ -352,17 +347,7 @@ export default function RainAndMushroomsPage() {
         </div>
       </section>
 
-      <section className="rain-map-faq" aria-labelledby="rain-map-faq-title">
-        <SectionHeader meta="Preguntes freqüents" title="Pluja, radar i bolets" titleId="rain-map-faq-title" />
-        <div className="rain-map-faq-list">
-          {faqs.map((faq) => (
-            <article key={faq.question}>
-              <h3>{faq.question}</h3>
-              <p>{faq.answer}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+      <FaqSection faqs={faqs} title="Pluja, radar i bolets" titleId="rain-map-faq-title" />
 
       <DataSourceCredits
         variant="panel"

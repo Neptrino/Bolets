@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, BookOpenText, CalendarRange, CircleHelp, CloudRain, MapPinned, Mountain, ShieldCheck, Trees } from "lucide-react";
 import { DataSourceCredits } from "@/components/editorial-attribution";
 import { hubSeasonWindow, hubSpeciesList } from "@/components/hub-sections";
+import { FaqEntries } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import { PageShell, SectionHeader } from "@/components/page-layout";
 import { editorialArticleFields } from "@/data/editorial";
@@ -16,6 +17,7 @@ import { speciesSeasonLabel } from "@/src/lib/catalogue-list";
 import { pirineuAreas, pirineuAreasForSpecies, pirineuGuideSpecies } from "@/src/lib/pirineu-guide";
 import { areaMapPath } from "@/src/lib/place-map";
 import { monthInTimeZone } from "@/src/lib/seasonality";
+import { faqPageSchema } from "@/src/lib/faq-schema";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, pageTitle, speciesPath } from "@/src/lib/seo";
 import { territorialMapPath } from "@/src/lib/territorial-map";
 import { seasonWindowPhrase } from "@/src/lib/zone-hub-copy";
@@ -86,11 +88,7 @@ export default function PirineuGuidePage() {
               itemListElement: pirineuAreas.map(({ area }, index) => ({ "@type": "ListItem", position: index + 1, name: area.name, url: absoluteUrl(areaPath(area)) })),
             },
           },
-          {
-            "@type": "FAQPage",
-            "@id": `${url}#preguntes`,
-            mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })),
-          },
+          faqPageSchema(faqs, `${url}#preguntes`),
         ],
       }} />
       <header className="rovellons-hero">
@@ -218,15 +216,13 @@ export default function PirineuGuidePage() {
       <section id="preguntes" className="guide-panel location-hub-faq" aria-labelledby="pirineu-faq-title">
         <header className="guide-panel-head">
           <div>
-            <p className="eyebrow"><CircleHelp size={15} aria-hidden="true" /> Preguntes</p>
+            <p className="eyebrow"><CircleHelp size={15} aria-hidden="true" /> Preguntes freqüents</p>
             <h2 id="pirineu-faq-title">Preguntes sobre els bolets al Pirineu</h2>
             <p className="guide-panel-lede">Respostes breus amb les dades d’aquesta guia; els detalls són a cada comarca i a cada fitxa.</p>
           </div>
         </header>
         <div className="guide-panel-body location-hub-faq-list">
-          {faqs.map((faq) => (
-            <article key={faq.question}><h3>{faq.question}</h3><p>{faq.answer}</p></article>
-          ))}
+          <FaqEntries faqs={faqs} />
         </div>
       </section>
 

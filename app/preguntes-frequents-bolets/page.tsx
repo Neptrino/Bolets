@@ -1,12 +1,14 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ArrowDown, BookOpenText, Link2, Plus } from "lucide-react";
+import { ArrowDown, BookOpenText, Link2 } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { EditorialSafetyNotice } from "@/components/editorial-safety-notice";
+import { FaqItem, FaqList } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { collectingSources, mushroomPoisoningSource } from "@/data/field-guide-sources";
+import { faqPageSchema, plainText } from "@/src/lib/faq-schema";
 import { absoluteUrl, articleMetadata, metaDescription, pageTitle, SITE_URL } from "@/src/lib/seo";
 import type { SourceReference } from "@/src/lib/types";
 import { FaqFragmentNavigation } from "./fragment-navigation";
@@ -185,6 +187,10 @@ export default function MushroomHuntingFaqPage() {
               { "@type": "ListItem", position: 3, name: "Preguntes freqüents sobre bolets", item: url },
             ],
           },
+          faqPageSchema(
+            topics.flatMap((topic) => topic.questions.map((item) => ({ question: item.question, answer: plainText(item.answer) }))),
+            `${url}#preguntes`,
+          ),
         ],
       }} />
       <PageHeader
@@ -204,28 +210,22 @@ export default function MushroomHuntingFaqPage() {
       {topics.map((topic, topicIndex) => (
         <section className="seo-guide-section" key={topic.id} aria-labelledby={topic.id}>
           <SectionHeader meta={`0${topicIndex + 1} · ${topic.label}`} title={topic.title} titleId={topic.id} />
-          <div className={styles.questions}>
+          <FaqList>
             {topic.questions.map((item, questionIndex) => (
               // The browser may reveal a fragment's ancestor before hydration.
-              <details className={styles.question} key={item.id} data-faq-question open={topicIndex === 0 && questionIndex === 0} suppressHydrationWarning>
-                <summary>
-                  <h3>{item.question}</h3>
-                  <Plus size={20} aria-hidden="true" />
-                </summary>
-                {/* A fragment inside the answer lets the browser reveal its
-                    closed details ancestor, including without JavaScript. */}
-                <div className={styles.answer} id={item.id}>
-                  <p>{item.answer}</p>
-                  {item.sources && <ul className={styles.sources} aria-label="Fonts d’aquesta resposta">
-                    {item.sources.map((source) => <li key={source.id}>Font: <a href={source.url}>{source.publisher}</a></li>)}
-                  </ul>}
-                  <a className={styles.permalink} href={`#${item.id}`} aria-label={`Enllaç a aquesta resposta: ${item.question}`}>
-                    <Link2 size={14} aria-hidden="true" /> Enllaç a aquesta resposta
-                  </a>
-                </div>
-              </details>
+              // The answer id sits inside the details, so a fragment reveals
+              // its closed ancestor, including without JavaScript.
+              <FaqItem question={item.question} answerId={item.id} key={item.id} data-faq-question open={topicIndex === 0 && questionIndex === 0} suppressHydrationWarning>
+                <p>{item.answer}</p>
+                {item.sources && <ul className={styles.sources} aria-label="Fonts d’aquesta resposta">
+                  {item.sources.map((source) => <li key={source.id}>Font: <a href={source.url}>{source.publisher}</a></li>)}
+                </ul>}
+                <a className={styles.permalink} href={`#${item.id}`} aria-label={`Enllaç a aquesta resposta: ${item.question}`}>
+                  <Link2 size={14} aria-hidden="true" /> Enllaç a aquesta resposta
+                </a>
+              </FaqItem>
             ))}
-          </div>
+          </FaqList>
         </section>
       ))}
       <EditorialAttribution contentId="preguntes-frequents-bolets" sources={sources} />

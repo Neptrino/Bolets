@@ -12,6 +12,7 @@ import {
   Trees,
 } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
+import { FaqSection } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import { SpeciesCard } from "@/components/species-card";
 import { SpeciesIcon } from "@/components/species-icon";
@@ -36,6 +37,7 @@ import {
   monthlyActivityLabel,
   SEASON_MONTHS,
 } from "@/src/lib/seasonality";
+import { faqPageSchema } from "@/src/lib/faq-schema";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, pageTitle, speciesPath } from "@/src/lib/seo";
 import { speciesMapHref } from "@/src/lib/species-map-pages";
 import type { ReferenceSpeciesProfile, RegionId, SpeciesProfile } from "@/src/lib/types";
@@ -226,14 +228,7 @@ export default function RovellonsTerritoryPage() {
             ],
             ...editorialArticleFields("zones-rovellons"),
           },
-          {
-            "@type": "FAQPage",
-            mainEntity: faqs.map((faq) => ({
-              "@type": "Question",
-              name: faq.question,
-              acceptedAnswer: { "@type": "Answer", text: faq.answer },
-            })),
-          },
+          faqPageSchema(faqs, `${absoluteUrl("/zones/rovellons")}#preguntes`),
           {
             "@type": "BreadcrumbList",
             itemListElement: [
@@ -435,10 +430,7 @@ export default function RovellonsTerritoryPage() {
           ]}
         />
 
-        <section className="rovellons-faq" aria-labelledby="rovellons-faq-title">
-          <header><p className="eyebrow">Preguntes freqüents</p><h2 id="rovellons-faq-title">Preguntes freqüents sobre els rovellons</h2></header>
-          <div>{faqs.map((faq) => <details key={faq.question}><summary>{faq.question}</summary><p>{faq.answer}</p></details>)}</div>
-        </section>
+        <FaqSection faqs={faqs} title="Preguntes freqüents sobre els rovellons" titleId="rovellons-faq-title" />
 
         <nav className="rain-guide-actions" aria-label="Guies relacionades amb els rovellons">
           <Link href="/bolets-avui">On trobar bolets avui <ArrowUpRight size={16} /></Link>

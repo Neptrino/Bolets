@@ -5,8 +5,7 @@
 .preservation-direct-answer p:last-child { margin: .55rem 0 0; color: var(--on-dark-muted); line-height: 1.65; }
 .preservation-steps,
 .preservation-methods,
-.preservation-species,
-.preservation-faq { margin-top: 4.5rem; }
+.preservation-species { margin-top: 4.5rem; }
 .preservation-step-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; margin: 1.35rem 0 0; padding: 0; list-style: none; counter-reset: none; }
 .preservation-step-grid li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .8rem; padding: 1.15rem; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
 .preservation-step-grid li > span { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 999px; background: var(--forest-panel); color: var(--on-dark); font-size: var(--text-xs); font-weight: 900; }
@@ -32,10 +31,6 @@
 .preservation-cold-chain > div:last-child p { display: flex; gap: .65rem; align-items: flex-start; margin: 0; padding: .7rem 0; border-bottom: 1px solid rgba(255, 255, 255, .14); color: var(--on-dark-muted); line-height: 1.55; }
 .preservation-cold-chain > div:last-child p:last-child { border-bottom: 0; }
 .preservation-cold-chain svg { flex: 0 0 auto; margin-top: .12rem; color: var(--apricot); }
-.preservation-faq > div { display: grid; gap: .65rem; margin-top: 1.35rem; }
-.preservation-faq details { padding: .95rem 1rem; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); }
-.preservation-faq summary { cursor: pointer; color: var(--forest-panel); font-weight: 850; }
-.preservation-faq details p { margin: .75rem 0 0; color: var(--muted); line-height: 1.65; }
 
 @media (max-width: 900px) {
   .preservation-method-grid { grid-template-columns: 1fr; }

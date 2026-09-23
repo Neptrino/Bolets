@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays, CircleAlert, CookingPot, Images, Snowflake, Trees } from "lucide-react";
+import { FaqSection } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { SpeciesCard } from "@/components/species-card";
 import { EditorialAttribution } from "@/components/editorial-attribution";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { edibleSpecies } from "@/src/lib/species-collections";
+import { faqPageSchema } from "@/src/lib/faq-schema";
 import { edibleFaqs, edibleGroups } from "@/src/lib/catalogue-list";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, SITE_URL, speciesPath } from "@/src/lib/seo";
@@ -51,7 +53,7 @@ export default function EdibleMushroomsPage() {
           })),
         },
       }} />
-      <JsonLd data={{ "@context": "https://schema.org", "@type": "FAQPage", "@id": `${absoluteUrl("/bolets-comestibles")}#preguntes`, mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })) }} />
+      <JsonLd data={{ "@context": "https://schema.org", ...faqPageSchema(faqs, `${absoluteUrl("/bolets-comestibles")}#preguntes`) }} />
       <PageHeader
         eyebrow={<><CookingPot size={15} /> Guia de comestibilitat</>}
         title={<>Bolets comestibles<br /><PageTitleAccent>de Catalunya.</PageTitleAccent></>}
@@ -137,14 +139,7 @@ export default function EdibleMushroomsPage() {
       <div className="species-grid intent-species-grid">
         {edibleSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} currentMonth={currentMonth} />)}
       </div>
-      <section className="catalogue-faq" aria-labelledby="edible-faq-title">
-        <SectionHeader meta="Preguntes habituals" title="Preguntes sobre els bolets comestibles" titleId="edible-faq-title" size="compact" />
-        <div className="catalogue-faq-list">
-          {faqs.map((faq) => (
-            <article key={faq.question}><h3>{faq.question}</h3><p>{faq.answer}</p></article>
-          ))}
-        </div>
-      </section>
+      <FaqSection faqs={faqs} title="Preguntes sobre els bolets comestibles" titleId="edible-faq-title" size="compact" />
       <EditorialAttribution contentId="bolets-comestibles" sources={[officialSafetySource, ...edibleSpecies.flatMap((species) => species.references)]} />
     </PageShell>
   );

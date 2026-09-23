@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { CepsLocalGuides } from "@/components/ceps-local-guides";
 import { EditorialAttribution } from "@/components/editorial-attribution";
+import { FaqSection } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import { SpeciesCard } from "@/components/species-card";
 import { SpeciesIcon } from "@/components/species-icon";
@@ -39,6 +40,7 @@ import {
   pageTitle,
   speciesPath,
 } from "@/src/lib/seo";
+import { faqPageSchema } from "@/src/lib/faq-schema";
 import type { SpeciesProfile } from "@/src/lib/types";
 import { speciesMapHref } from "@/src/lib/species-map-pages";
 
@@ -166,14 +168,7 @@ export default function CepsTerritoryPage() {
               })),
               ...editorialArticleFields("zones-ceps"),
             },
-            {
-              "@type": "FAQPage",
-              mainEntity: faqs.map((faq) => ({
-                "@type": "Question",
-                name: faq.question,
-                acceptedAnswer: { "@type": "Answer", text: faq.answer },
-              })),
-            },
+            faqPageSchema(faqs, `${absoluteUrl("/zones/ceps")}#preguntes`),
             {
               "@type": "BreadcrumbList",
               itemListElement: [
@@ -517,23 +512,7 @@ export default function CepsTerritoryPage() {
           ]}
         />
 
-        <section
-          className="rovellons-faq"
-          aria-labelledby="ceps-faq-title"
-        >
-          <header>
-            <p className="eyebrow">Preguntes freqüents</p>
-            <h2 id="ceps-faq-title">Preguntes freqüents sobre els ceps</h2>
-          </header>
-          <div>
-            {faqs.map((faq) => (
-              <details key={faq.question}>
-                <summary>{faq.question}</summary>
-                <p>{faq.answer}</p>
-              </details>
-            ))}
-          </div>
-        </section>
+        <FaqSection faqs={faqs} title="Preguntes freqüents sobre els ceps" titleId="ceps-faq-title" />
 
         <nav className="rain-guide-actions" aria-label="Guies relacionades amb els ceps">
           <Link href="/bolets-avui">On trobar bolets avui <ArrowUpRight size={16} /></Link>

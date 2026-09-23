@@ -12,6 +12,8 @@ import {
   Tag,
 } from "lucide-react";
 import { EditorialAttribution } from "@/components/editorial-attribution";
+import { FaqSection } from "@/components/faq";
+import { faqPageSchema } from "@/src/lib/faq-schema";
 import { JsonLd } from "@/components/json-ld";
 import {
   PageHeader,
@@ -117,15 +119,7 @@ export default function PreserveMushroomsPage() {
             citation: mushroomPreservationSources.map((source) => source.url),
             ...editorialArticleFields("conservar-bolets"),
           },
-          {
-            "@type": "FAQPage",
-            "@id": `${absoluteUrl("/conservar-bolets")}#preguntes`,
-            mainEntity: faqs.map((faq) => ({
-              "@type": "Question",
-              name: faq.question,
-              acceptedAnswer: { "@type": "Answer", text: faq.answer },
-            })),
-          },
+          faqPageSchema(faqs, `${absoluteUrl("/conservar-bolets")}#preguntes`),
           {
             "@type": "BreadcrumbList",
             itemListElement: [
@@ -215,12 +209,7 @@ export default function PreserveMushroomsPage() {
         </div>
       </section>
 
-      <section className="preservation-faq" aria-labelledby="preservation-faq-title">
-        <SectionHeader meta="Preguntes freqüents" title="Dubtes sobre congelar bolets" titleId="preservation-faq-title" />
-        <div>
-          {faqs.map((faq) => <details key={faq.question}><summary>{faq.question}</summary><p>{faq.answer}</p></details>)}
-        </div>
-      </section>
+      <FaqSection faqs={faqs} title="Dubtes sobre congelar bolets" titleId="preservation-faq-title" />
 
       <nav className="rain-guide-actions" aria-label="Continuar explorant les guies de bolets">
         <Link href="/bolets-comestibles">Veure els bolets comestibles <CookingPot size={16} /></Link>

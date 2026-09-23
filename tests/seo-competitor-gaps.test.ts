@@ -49,7 +49,7 @@ describe("mushroom preservation guide", () => {
     expect(document.body.textContent).toContain("−18 °C");
     expect(document.body.textContent).toContain("màxim de dos mesos");
     expect(document.body.textContent).toContain("No tornis a congelar");
-    expect(document.querySelectorAll(".preservation-faq details")).toHaveLength(4);
+    expect(document.querySelectorAll("#preguntes details")).toHaveLength(4);
     expect(document.querySelectorAll('script[type="application/ld+json"]')).toHaveLength(1);
     for (const source of mushroomPreservationSources) {
       expect(html).toContain(source.url.replaceAll("&", "&amp;"));
@@ -59,10 +59,10 @@ describe("mushroom preservation guide", () => {
   it("is indexed with truthful editorial metadata", () => {
     const editorial = getEditorialMetadata("conservar-bolets");
     expect(editorial.publishedAt).toBe("2026-08-31");
-    expect(editorial.updatedAt).toBe("2026-09-03");
+    expect(editorial.updatedAt).toBe("2026-09-23");
     expect(publicEditorialItems).toContain("conservar-bolets");
     expect(sitemap().filter((entry) => entry.url.endsWith("/conservar-bolets"))).toEqual([
-      { url: "https://bolets.app/conservar-bolets", lastModified: new Date("2026-09-03T00:00:00Z") },
+      { url: "https://bolets.app/conservar-bolets", lastModified: new Date("2026-09-23T00:00:00Z") },
     ]);
   });
 

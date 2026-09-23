@@ -523,8 +523,7 @@
   .rovellons-definition,
   .guide-types > header,
   .rovellons-territories > header,
-  .rovellons-published,
-  .rovellons-faq {
+  .rovellons-published {
     grid-template-columns: 1fr;
   }
   .rovellons-territories > header .eyebrow,

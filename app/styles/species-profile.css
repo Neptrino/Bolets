@@ -306,32 +306,6 @@
   color: var(--clay);
 }
 
-/* FAQ */
-.compact-species-page .profile-faq {
-  border-top: 1px solid var(--profile-line);
-}
-.compact-species-page .profile-faq article {
-  padding: 12px 0;
-  border-bottom: 1px solid var(--profile-line);
-}
-.compact-species-page .profile-faq h3 {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin: 0 0 4px;
-  color: var(--profile-heading);
-  font-size: var(--text-base);
-}
-.compact-species-page .profile-faq h3 svg {
-  flex: 0 0 auto;
-  color: var(--gold);
-}
-.compact-species-page .profile-faq p {
-  margin: 0;
-  color: var(--ink);
-  line-height: 1.55;
-}
-
 /* Cuina */
 .compact-species-page .profile-rating {
   display: flex;

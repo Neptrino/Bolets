@@ -19,8 +19,8 @@ export const EDITORIAL_LAUNCH_DATE = "2026-08-13";
 // the constant to bump). Per-item overrides below date content changes to a
 // single page; the later of the two wins.
 export const LOCAL_GUIDES_UPDATED_AT = "2026-09-18";
-export const SPECIES_PAGES_UPDATED_AT = "2026-09-19";
-export const ZONE_PAGES_UPDATED_AT = "2026-09-18";
+export const SPECIES_PAGES_UPDATED_AT = "2026-09-23";
+export const ZONE_PAGES_UPDATED_AT = "2026-09-23";
 export const PLACE_PAGES_UPDATED_AT = "2026-09-15";
 export const COMPARISON_PAGES_UPDATED_AT = "2026-09-02";
 export const MAP_PAGES_UPDATED_AT = "2026-08-31";
@@ -193,18 +193,18 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "compare:rovello-vs-rovello-de-cabra": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
   "compare:moixero-vs-inocibe-patouillard": { updatedAt: "2026-09-18" },
   "zones-rovellons": {
-    updatedAt: "2026-09-21",
+    updatedAt: "2026-09-23",
   },
   "zones-ceps": {
-    updatedAt: "2026-09-21",
+    updatedAt: "2026-09-23",
   },
   "zones-pirineu": {
     publishedAt: "2026-09-17",
-    updatedAt: "2026-09-18",
+    updatedAt: "2026-09-23",
   },
   "preguntes-frequents-bolets": {
     publishedAt: "2026-08-27",
-    updatedAt: "2026-09-15",
+    updatedAt: "2026-09-23",
   },
   "species:hygrophoropsis-aurantiaca": {
     publishedAt: "2026-08-27",
@@ -233,7 +233,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-08-31",
   },
   "bolets-comestibles": {
-    updatedAt: "2026-09-18",
+    updatedAt: "2026-09-23",
   },
   "bolets-verinosos": {
     updatedAt: "2026-09-14",
@@ -314,7 +314,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "species:lepista-nuda": { updatedAt: "2026-09-19" },
   "conservar-bolets": {
     publishedAt: "2026-08-31",
-    updatedAt: "2026-09-03",
+    updatedAt: "2026-09-23",
   },
   "quan-surten-els-bolets-despres-de-ploure": {
     updatedAt: "2026-09-23",

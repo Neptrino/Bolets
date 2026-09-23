@@ -42,10 +42,11 @@ describe("species territory guide registry", () => {
     // Pinned per hub so that changing a hub's content has to bump its own date:
     // the sitemap lastmod is the crawl signal. Both hubs were rewritten on
     // 21 September around the questions people actually search — "quan surten"
-    // and "on trobar" — and had their house jargon removed.
+    // and "on trobar" — and had their house jargon removed; on 23 September
+    // their FAQ moved to the shared collapsible design.
     const expectedRevisions: Record<string, string> = {
-      "zones-rovellons": "2026-09-21",
-      "zones-ceps": "2026-09-21",
+      "zones-rovellons": "2026-09-23",
+      "zones-ceps": "2026-09-23",
     };
 
     for (const guide of speciesTerritoryGuides) {

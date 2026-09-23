@@ -47,7 +47,7 @@ export function speciesProfileSections(species: CatalogueSpecies) {
     { id: "cuina", label: species.culinaryProfile.kind === "culinary" ? "A la cuina" : "Es pot menjar?" },
     { id: "ecologia", label: "On i quan creix" },
     ...("scope" in species ? [] : [{ id: "distribució", label: "On podria créixer" }]),
-    { id: "preguntes", label: "Preguntes habituals" },
+    { id: "preguntes", label: "Preguntes freqüents" },
     { id: "targeta-de-camp", label: "Targeta de camp" },
     { id: "fonts", label: "Fonts i autoria" },
   ].map((section, index) => ({ ...section, number: String(index + 1).padStart(2, "0") }));
