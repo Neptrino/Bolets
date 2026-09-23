@@ -173,6 +173,19 @@ export BOLETS_APP_DIR=$app_dir
 # shellcheck source=deploy/vps/load-release-image.sh
 . "$app_dir/deploy/vps/load-release-image.sh"
 
+# Release images are pulled by digest, so they are never dangling and
+# `docker image prune` keeps every one of them: 77 images (84 GB) filled the
+# disk again on 2026-09-23 and failed the static export. Remove application
+# images that no retained release references. Docker refuses to remove an
+# image a container still uses, so the running release is always kept.
+prune_release_images() {
+  keep=$(cat /opt/bolets/releases/*/.release-image 2>/dev/null | sort -u)
+  docker images --digests --format '{{.Repository}}@{{.Digest}} {{.ID}}' "${BOLETS_APP_IMAGE%@*}" 2>/dev/null |
+    while read -r reference id; do
+      printf '%s\n' "$keep" | grep -qxF "$reference" || docker rmi "$id" >/dev/null 2>&1 || true
+    done
+}
+
 cd "$supabase_dir"
 # compose_files is assembled only from the fixed, validated paths above.
 # shellcheck disable=SC2086
@@ -182,6 +195,9 @@ docker compose $compose_files config --quiet
 if ! docker image inspect "$BOLETS_APP_IMAGE" >/dev/null 2>&1; then
   docker pull "$BOLETS_APP_IMAGE"
 fi
+# Free space held by images of releases that are no longer kept before the
+# static export needs it.
+prune_release_images
 image_revision=$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$BOLETS_APP_IMAGE")
 if [ "$image_revision" != "$BOLETS_RELEASE_REVISION" ]; then
   echo "Image revision does not match the release source" >&2
@@ -265,6 +281,7 @@ ls -t /opt/bolets/releases 2>/dev/null | tail -n +11 | while read -r release; do
   rm -rf "/opt/bolets/releases/$release"
 done
 docker image prune -f >/dev/null 2>&1 || true
+prune_release_images
 docker builder prune -f --keep-storage 5GB >/dev/null 2>&1 || true
 
 echo "Bolets rollout completed"
