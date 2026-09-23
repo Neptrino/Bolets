@@ -1,12 +1,15 @@
 import "@/app/styles/comparison-guides.css";
+import "@/app/styles/species-comparison.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRightLeft, ArrowUpRight, CircleAlert } from "lucide-react";
+import { ArrowRightLeft, ArrowUpRight, CircleAlert, ScanLine } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { MediaImage } from "@/components/media-image";
+import { ComparisonGuideList } from "@/components/comparison-guide-list";
+import { SpeciesComparator } from "@/components/species-comparator";
 import { EditorialAttribution } from "@/components/editorial-attribution";
-import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
+import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { editorialArticleFields, officialSafetySource } from "@/data/editorial";
 import { comparisonPages, comparisonPagesBySlug } from "@/data/comparison-pages";
 import { getCatalogueSpecies } from "@/data/catalogue";
@@ -16,6 +19,7 @@ import { SEASON_MONTHS } from "@/src/lib/seasonality";
 import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, metaDescription, pageTitle, SITE_URL, speciesPath } from "@/src/lib/seo";
 import type { CatalogueSpecies, SpeciesProfile } from "@/src/lib/types";
 import { Notice } from "@/components/notice";
+import { LOOKALIKE_GUIDE_PATH } from "@/src/lib/lookalike-guide";
 
 export function generateStaticParams() {
   return comparisonPages.map(({ slug }) => ({ slug }));
@@ -71,9 +75,10 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
   const left = getCatalogueSpecies(page.leftSpeciesId);
   const right = getCatalogueSpecies(page.rightSpeciesId);
   if (!left || !right) notFound();
-  const canOpenInteractiveComparison = Boolean(
-    getSpecies(page.leftSpeciesId) && getSpecies(page.rightSpeciesId),
-  );
+  // Scored species get the interactive comparator; a descriptive-only species
+  // has no numeric ecology to put in its matrix, so that pair keeps plain photos.
+  const scoredLeft = getSpecies(page.leftSpeciesId);
+  const scoredRight = getSpecies(page.rightSpeciesId);
   const leftImage = left.media.find((asset) => asset.identificationReference) ?? left.media[0];
   const rightImage = right.media.find((asset) => asset.identificationReference) ?? right.media[0];
 
@@ -87,6 +92,37 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
     ["Temporada", seasonLabel(left), seasonLabel(right)],
     ["Altitud", altitudeLabel(left), altitudeLabel(right)],
   ];
+
+  const writtenGuide = (
+    <>
+      <aside className="panel-dark comparison-answer">
+        <CircleAlert size={22} aria-hidden="true" />
+        <div><span>Diferència clau</span><strong>{page.decisiveDifference}</strong></div>
+      </aside>
+
+      {page.diagnosticTraits && page.diagnosticTraits.length > 0 && (
+        <section className="comparison-facts" aria-labelledby="comparison-traits-title">
+          <SectionHeader meta="Identificació" title="Trets decisius" titleId="comparison-traits-title" />
+          <div className="card comparison-facts-table">
+            <header><span>Tret</span><strong>{left.identity.commonName}</strong><strong>{right.identity.commonName}</strong></header>
+            {page.diagnosticTraits.map((trait) => (
+              <div key={trait.label}><span>{trait.label}</span><p>{trait.left}</p><p>{trait.right}</p></div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {page.fieldChecks && page.fieldChecks.length > 0 && (
+        <section className="seo-guide-section" aria-labelledby="comparison-checks-title">
+          <SectionHeader meta="Al camp" title="Com comprovar-ho, per ordre" titleId="comparison-checks-title" />
+          <ol className="step-cards step-cards-wide">
+            {page.fieldChecks.map((check) => <li key={check}><p>{check}</p></li>)}
+          </ol>
+        </section>
+      )}
+
+    </>
+  );
 
   return (
     <PageShell>
@@ -109,71 +145,64 @@ export default async function ComparisonLandingPage({ params }: { params: Promis
         eyebrow={<><ArrowRightLeft size={15} /> Guia comparativa</>}
         title={<>{left.identity.commonName} <PageTitleAccent>vs.</PageTitleAccent> {right.identity.commonName.toLocaleLowerCase("ca")}</>}
         description={page.introduction}
+        actions={(
+          <Link href={LOOKALIKE_GUIDE_PATH} className="button">
+            <ScanLine size={18} aria-hidden="true" /> Bolets típics i confusions <ArrowUpRight size={17} aria-hidden="true" />
+          </Link>
+        )}
       />
 
-      <div className="comparison-reference-images" aria-label="Fotografies de referència">
-        {[{ species: left, image: leftImage }, { species: right, image: rightImage }].map((item) => (
-          <figure key={item.species.speciesId}>
-            <div className="comparison-reference-frame">
-              {item.image ? <MediaImage asset={item.image} alt={item.image.alt} fill sizes="(max-width: 700px) calc(100vw - 48px), 50vw" /> : <span>Sense fotografia de referència verificada</span>}
-            </div>
-            <figcaption><strong>{item.species.identity.commonName}</strong><em>{item.species.identity.scientificName}</em>{item.image && <a href={item.image.sourceUrl} target="_blank" rel="noreferrer">{item.image.attribution}</a>}</figcaption>
-          </figure>
-        ))}
-      </div>
-
-      <aside className="panel-dark comparison-answer">
-        <CircleAlert size={22} aria-hidden="true" />
-        <div><span>Diferència clau</span><strong>{page.decisiveDifference}</strong></div>
-      </aside>
-
-      {page.diagnosticTraits && page.diagnosticTraits.length > 0 && (
-        <section className="comparison-facts" aria-labelledby="comparison-traits-title">
-          <h2 id="comparison-traits-title">Trets decisius</h2>
-          <div className="card comparison-facts-table">
-            <header><span>Tret</span><strong>{left.identity.commonName}</strong><strong>{right.identity.commonName}</strong></header>
-            {page.diagnosticTraits.map((trait) => (
-              <div key={trait.label}><span>{trait.label}</span><p>{trait.left}</p><p>{trait.right}</p></div>
+      {scoredLeft && scoredRight ? (
+        <SpeciesComparator
+          left={scoredLeft}
+          right={scoredRight}
+          swappable={false}
+          matrixHeading={page.habitatAndSeason ? {
+            meta: "Hàbitat, clima i temporada",
+            title: "Ajuda el lloc o el mes a distingir-los?",
+            description: page.habitatAndSeason,
+          } : undefined}
+        >
+          {writtenGuide}
+        </SpeciesComparator>
+      ) : (
+        <>
+          <div className="comparison-reference-images" aria-label="Fotografies de referència">
+            {[{ species: left, image: leftImage }, { species: right, image: rightImage }].map((item) => (
+              <figure key={item.species.speciesId}>
+                <div className="comparison-reference-frame">
+                  {item.image ? <MediaImage asset={item.image} alt={item.image.alt} fill sizes="(max-width: 700px) calc(100vw - 48px), 50vw" /> : <span>Sense fotografia de referència verificada</span>}
+                </div>
+                <figcaption><strong>{item.species.identity.commonName}</strong><em>{item.species.identity.scientificName}</em>{item.image && <a href={item.image.sourceUrl} target="_blank" rel="noreferrer">{item.image.attribution}</a>}</figcaption>
+              </figure>
             ))}
+          </div>
+          {writtenGuide}
+        </>
+      )}
+
+      {!(scoredLeft && scoredRight) && (
+        <section className="comparison-facts" aria-labelledby="comparison-facts-title">
+          <SectionHeader
+            meta="Hàbitat i temporada"
+            title={`Diferències entre ${left.identity.commonName.toLocaleLowerCase("ca")} i ${right.identity.commonName.toLocaleLowerCase("ca")}`}
+            titleId="comparison-facts-title"
+            description={page.habitatAndSeason}
+          />
+          <div className="card comparison-facts-table">
+            <header><span>Criteri</span><strong>{left.identity.commonName}</strong><strong>{right.identity.commonName}</strong></header>
+            {rows.map(([label, leftValue, rightValue]) => <div key={label}><span>{label}</span><p>{leftValue}</p><p>{rightValue}</p></div>)}
           </div>
         </section>
       )}
 
-      {page.fieldChecks && page.fieldChecks.length > 0 && (
-        <section className="seo-guide-section" aria-labelledby="comparison-checks-title">
-          <p className="eyebrow">Al camp</p>
-          <h2 id="comparison-checks-title">Com comprovar-ho, per ordre</h2>
-          <ol className="comparison-field-checks">
-            {page.fieldChecks.map((check) => <li key={check}>{check}</li>)}
-          </ol>
-        </section>
-      )}
-
-      {page.habitatAndSeason && (
-        <section className="seo-guide-section" aria-labelledby="comparison-habitat-title">
-          <p className="eyebrow">Hàbitat i temporada</p>
-          <h2 id="comparison-habitat-title">Ajuda el lloc o el mes a distingir-los?</h2>
-          <p>{page.habitatAndSeason}</p>
-        </section>
-      )}
-
-      <section className="comparison-facts" aria-labelledby="comparison-facts-title">
-        <h2 id="comparison-facts-title">Diferències entre {left.identity.commonName.toLocaleLowerCase("ca")} i {right.identity.commonName.toLocaleLowerCase("ca")}</h2>
-        <div className="card comparison-facts-table">
-          <header><span>Criteri</span><strong>{left.identity.commonName}</strong><strong>{right.identity.commonName}</strong></header>
-          {rows.map(([label, leftValue, rightValue]) => <div key={label}><span>{label}</span><p>{leftValue}</p><p>{rightValue}</p></div>)}
-        </div>
-      </section>
-
       <div className="comparison-actions">
         <Link href={speciesPath(left)} className="text-link">Guia principal: {left.identity.commonName} <ArrowUpRight size={16} /></Link>
-        {canOpenInteractiveComparison && (
-          <Link href={`/compare?left=${left.speciesId}&right=${right.speciesId}`} className="button moss-button">Obrir el comparador complet <ArrowRightLeft size={16} /></Link>
-        )}
         <Link href={speciesPath(right)} className="text-link">Guia principal: {right.identity.commonName} <ArrowUpRight size={16} /></Link>
       </div>
 
       <Notice icon={CircleAlert} title={page.confusionRisk ? "Què hi ha en joc" : "No decideixis el consum amb una taula."} tone="emergency" className="intent-safety-note comparison-warning">{page.confusionRisk ?? "La variació natural, l’edat i l’estat del bolet poden alterar-ne l’aspecte. Confirma qualsevol identificació amb una persona experta."}</Notice>
+      <ComparisonGuideList currentSlug={page.slug} />
       <EditorialAttribution contentId={`compare:${page.slug}`} sources={[officialSafetySource, ...left.references, ...right.references]} />
     </PageShell>
   );

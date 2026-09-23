@@ -25,6 +25,7 @@ import { getSpanishSpeciesNames } from "@/data/species-common-names";
 import { getReferenceSpeciesByScientificName } from "@/data/reference-species";
 import { getSpeciesByScientificName } from "@/data/species";
 import { commonNameDisplayLabel } from "@/src/lib/common-name";
+import { lookalikeGuideHref } from "@/src/lib/lookalike-guide";
 import { speciesPath } from "@/src/lib/seo";
 import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
 import { speciesHeadings } from "@/src/lib/species-headings";
@@ -39,6 +40,7 @@ export function SpeciesIdentificationSection({
     (item) => item.warning || item.edibility.includes("toxic"),
   );
   const speciesComparisons = comparisonPagesForSpecies(species.speciesId);
+  const guideHref = lookalikeGuideHref(species.speciesId);
   const spanishNames = getSpanishSpeciesNames(species.speciesId);
   const headings = speciesHeadings(species.identity.commonName);
   const morphology = species.morphology;
@@ -155,8 +157,9 @@ export function SpeciesIdentificationSection({
           </Link>
         </p>
       )}
-      {speciesComparisons.length > 0 && <nav className="profile-links" aria-label="Comparacions de l’espècie">
+      {(speciesComparisons.length > 0 || guideHref) && <nav className="profile-links" aria-label="Comparacions de l’espècie">
         {speciesComparisons.map((comparison) => <Link key={comparison.slug} href={`/compare/${comparison.slug}`} className="text-link">{comparison.shortTitle} <ArrowUpRight size={15} aria-hidden="true" /></Link>)}
+        {guideHref && <Link href={guideHref} className="text-link">Bolets típics i les seves confusions <ArrowUpRight size={15} aria-hidden="true" /></Link>}
       </nav>}
 </ProfileSection>
 

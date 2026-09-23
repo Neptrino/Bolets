@@ -97,6 +97,12 @@ const STATIC_PAGES: Record<string, ContentSource[]> = {
   ],
   "bolets-de-soca": [file("app/bolets-de-soca/page.tsx"), file("data/wood-fungi.ts")],
   "fals-rossinyol": [file("app/fals-rossinyol/page.tsx")],
+  "bolets-i-confusions": [
+    file("app/bolets-i-confusions/page.tsx"),
+    file("src/lib/lookalike-guide.ts"),
+    file("data/identification-method.ts"),
+    file("data/comparison-pages.ts"),
+  ],
   "normativa-bolets": [file("app/normativa-bolets/page.tsx")],
   "preguntes-frequents-bolets": [file("app/preguntes-frequents-bolets/page.tsx")],
   "bolets-comestibles": [file("app/bolets-comestibles/page.tsx"), file("src/lib/species-collections.ts"), file("src/lib/catalogue-list.ts")],
@@ -118,7 +124,7 @@ const STATIC_PAGES: Record<string, ContentSource[]> = {
   ],
   map: [file("app/map/page.tsx"), file("src/lib/map-seo.ts")],
   troballes: [file("app/troballes/page.tsx")],
-  compare: [file("app/compare/page.tsx")],
+  compare: [file("app/compare/page.tsx"), file("components/species-comparator.tsx"), file("components/comparison-guide-list.tsx")],
   joc: [file("app/joc/page.tsx"), file("components/mushroom-hunt-game.tsx"), file("src/lib/mushroom-game.ts")],
   metode: [file("app/metode/page.tsx"), file("src/lib/suitability-scale.ts")],
   "col-labora": [file("app/col-labora/page.tsx"), file("components/contribution-guide.tsx")],
@@ -171,7 +177,7 @@ export function editorialSourcesFor(contentId: string): EditorialSourceSet {
     case "compare":
       return {
         sectionConstant: "COMPARISON_PAGES_UPDATED_AT",
-        sources: [file("app/compare/[slug]/page.tsx"), block("data/comparison-pages.ts", `slug: "${key}"`)],
+        sources: [file("app/compare/[slug]/page.tsx"), file("components/species-comparator.tsx"), file("components/comparison-guide-list.tsx"), block("data/comparison-pages.ts", `slug: "${key}"`)],
       };
     case "map":
       return {

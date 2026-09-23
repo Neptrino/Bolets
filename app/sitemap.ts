@@ -47,6 +47,7 @@ export function sitemapContentEntries(): SitemapContentEntry[] {
     { path: "/parts-dun-bolet", contentId: "parts-dun-bolet" },
     { path: "/bolets-de-soca", contentId: "bolets-de-soca" },
     { path: "/fals-rossinyol", contentId: "fals-rossinyol" },
+    { path: "/bolets-i-confusions", contentId: "bolets-i-confusions" },
     { path: "/normativa-bolets", contentId: "normativa-bolets" },
     { path: "/preguntes-frequents-bolets", contentId: "preguntes-frequents-bolets" },
     { path: "/bolets-comestibles", contentId: "bolets-comestibles" },

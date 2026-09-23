@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, CookingPot, Images, Languages, Leaf, Map, ShieldAlert, Snowflake, Sprout, Sun } from "lucide-react";
+import { ArrowUpRight, CalendarDays, CookingPot, Images, Languages, Leaf, Map, ScanLine, ShieldAlert, Snowflake, Sprout, Sun } from "lucide-react";
 import { PageHeader, PageShell, SectionHeader } from "@/components/page-layout";
 import { SpeciesDirectory } from "@/components/species-directory";
 import { CatalogueSpeciesCell } from "@/components/catalogue-species-cell";
@@ -136,6 +136,7 @@ export default async function SpeciesIndexPage({ searchParams }: {
           <nav className="species-topic-links" aria-label="Guies per tipus i temporada">
             <Link href="/bolets-comestibles"><CookingPot size={18} /><span><strong>Bolets comestibles</strong><small>Espècies, confusions i condicions</small></span><ArrowUpRight size={16} /></Link>
             <Link href="/bolets-verinosos"><ShieldAlert size={18} /><span><strong>Bolets verinosos</strong><small>Identificació i riscos</small></span><ArrowUpRight size={16} /></Link>
+            <Link href="/bolets-i-confusions"><ScanLine size={18} /><span><strong>Bolets i confusions</strong><small>Cada comestible amb els seus dobles tòxics</small></span><ArrowUpRight size={16} /></Link>
             <Link href="/temporada"><CalendarDays size={18} /><span><strong>Bolets per mesos</strong><small>Calendari mensual per espècie</small></span><ArrowUpRight size={16} /></Link>
             {seasonGuides.map((guide) => {
               const SeasonIcon = seasonGuideIcons[guide.id];

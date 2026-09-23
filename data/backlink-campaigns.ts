@@ -158,6 +158,12 @@ const FIXED_CAMPAIGNS = [
     topicTerms: ["fals rossinyol", "rossinyol", "diferències", "identificació", "bolets"],
   }),
   campaign({
+    id: "lookalike-guide", shortLabel: "Confusions", targetPath: "/bolets-i-confusions", targetTitle: "Bolets típics de Catalunya i amb què es confonen",
+    fallbackQueries: ["bolets que es confonen comestibles tòxics Catalunya"],
+    resourceSummary: "una guia dels bolets comestibles més buscats amb els dobles tòxics de cadascun i el mètode per distingir-los",
+    topicTerms: ["confusions", "bolets", "tòxics", "comestibles", "identificació"],
+  }),
+  campaign({
     id: "foraging-rules", shortLabel: "Normativa", targetPath: "/normativa-bolets", targetTitle: "Normativa per collir bolets a Catalunya",
     fallbackQueries: ["normativa collir bolets Catalunya parcs naturals"],
     resourceSummary: "una síntesi pràctica de normativa i bones pràctiques amb enllaços a les fonts oficials",

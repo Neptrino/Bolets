@@ -1,0 +1,91 @@
+/* /bolets-i-confusions: typical species and their risky lookalikes. The pair
+   cards reuse .poisonous-comparison-grid and .poisonous-photo-pair from
+   guide-readings.css; the risk labels come from comparison-guides.css. */
+.lookalike-group { margin: 56px 0; scroll-margin-top: 100px; }
+.lookalike-group [id^="confon-"],
+.lookalike-pair { scroll-margin-top: 100px; }
+.lookalike-pair h3 { margin: 0 0 16px; font-size: var(--text-xl); }
+.lookalike-pair .poisonous-photo-pair figcaption em { color: var(--muted); }
+.lookalike-pair .comparison-risk-label { justify-self: start; max-width: 100%; line-height: 1.25; white-space: normal; }
+.lookalike-checks { display: grid; gap: 8px; margin: 0 0 16px; padding-left: 20px; line-height: 1.6; list-style: disc; }
+.lookalike-checks li { margin: 0; padding: 0; }
+.lookalike-harmless { margin-top: 16px; color: var(--muted); }
+.lookalike-pair .comparison-risk-label.excellent_edible,
+.lookalike-pair .comparison-risk-label.edible,
+.lookalike-pair .comparison-risk-label.edible_with_conditions {
+  border-color: color-mix(in srgb, var(--forest-panel) 25%, transparent);
+  color: var(--forest-panel);
+}
+.lookalike-pair-text > :first-child { margin-top: 16px; }
+@media (min-width: 761px) {
+  .lookalike-pair:only-child {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    align-items: start;
+  }
+  .lookalike-pair:only-child h3 { grid-column: 1 / -1; }
+  .lookalike-pair:only-child .lookalike-pair-text > :first-child { margin-top: 0; }
+}
+.catalogue-list .lookalike-scientific { display: block; margin-top: 2px; color: var(--muted); font-size: var(--text-xs); font-style: italic; }
+.lookalike-row-now > * { background: color-mix(in srgb, var(--clay) 6%, transparent); }
+.lookalike-now { margin-left: 8px; padding: 0 8px; background: var(--clay); color: var(--surface); font-size: var(--text-xs); font-weight: 800; line-height: 1.6; }
+.catalogue-list td a { color: var(--forest-panel); font-weight: 700; }
+.catalogue-list td a:hover { color: var(--clay); }
+.lookalike-row-link { display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; }
+.lookalike-pair:target { outline: 2px solid var(--clay); outline-offset: 4px; }
+
+/* Field method: the shared .step-cards with a links line per step. */
+.lookalike-steps .lookalike-step-pairs { color: var(--muted); font-size: var(--text-xs); }
+.lookalike-step-pairs a { color: var(--forest-panel); font-weight: 700; }
+.lookalike-step-pairs a:hover { color: var(--clay); }
+
+/* Calendar table: stacks into one card per pair on phones instead of scrolling sideways. */
+@media (max-width: 760px) {
+  .catalogue-list table.lookalike-calendar { min-width: 0; }
+  .lookalike-calendar thead { display: none; }
+  .lookalike-calendar,
+  .lookalike-calendar tbody,
+  .lookalike-calendar tr { display: block; }
+  .lookalike-calendar tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 12px;
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .lookalike-calendar tbody tr:last-child { border-bottom: 0; }
+  .catalogue-list .lookalike-calendar th,
+  .catalogue-list .lookalike-calendar td { display: block; padding: 0; border: 0; }
+  .lookalike-calendar tbody th { grid-column: 1 / -1; }
+  .lookalike-calendar td:nth-of-type(1)::before { content: "Vigila"; color: var(--muted); font-size: var(--text-xs); }
+  .lookalike-calendar td:nth-of-type(1)::before { display: block; }
+  .lookalike-row-now { background: color-mix(in srgb, var(--clay) 6%, transparent); }
+  .lookalike-row-now > * { background: none; }
+  .lookalike-calendar td:nth-of-type(2) { align-self: start; }
+  .lookalike-calendar td:nth-of-type(3) { grid-column: 1 / -1; }
+  .lookalike-calendar td:nth-of-type(3)::before { content: "Coincideixen: "; color: var(--muted); }
+  .lookalike-calendar td:nth-of-type(4) { grid-column: 1 / -1; }
+}
+.lookalike-method .text-link { white-space: nowrap; }
+
+/* Quick jump to each species section, right under the page title. */
+.lookalike-jump { display: grid; gap: 12px; margin: 0 0 24px; }
+.lookalike-jump ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.lookalike-jump a {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 16px 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--forest-panel);
+  font-weight: 750;
+  text-decoration: none;
+}
+.lookalike-jump a:hover,
+.lookalike-jump a:focus-visible { border-color: var(--clay); color: var(--clay); }
+.lookalike-jump .species-icon { width: 32px; height: 32px; object-fit: contain; }
+.lookalike-related { margin-top: 24px; }

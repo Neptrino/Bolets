@@ -3,7 +3,15 @@
 import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+// Pair pages now embed the comparator, whose species selectors use the router.
+vi.mock("next/navigation", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("next/navigation")>()),
+  useRouter: () => ({ push: vi.fn() }),
+  usePathname: () => "/compare/cep-vs-cep-estiu",
+  useSearchParams: () => new URLSearchParams(),
+}));
 import HomePage, { metadata as homeMetadata } from "@/app/page";
 import ComparisonLandingPage from "@/app/compare/[slug]/page";
 import { generateMetadata as generateSpeciesMetadata } from "@/app/bolets/[slug]/page";
@@ -100,7 +108,9 @@ describe("SEO query ownership", () => {
     expect(html).toContain("Guia principal: Cep");
     expect(html).toContain('href="/bolets/cep-d-estiu"');
     expect(html).toContain("Guia principal: Cep d’estiu");
-    expect(html).toContain("Obrir el comparador complet");
+    // The pair page is the comparator: no separate "open the comparator" hop.
+    expect(html).toContain("Selecciona l’espècie dreta");
+    expect(html).not.toContain("Obrir el comparador complet");
   });
 
   it("links the permanent season overview from the simplified footer", () => {
@@ -113,7 +123,7 @@ describe("SEO query ownership", () => {
   it("keeps the coordinated release URL-neutral", () => {
     const entries = buildSitemap();
 
-    expect(entries).toHaveLength(218);
+    expect(entries).toHaveLength(220);
     expect(entries.some(({ url }) => url.endsWith("/noms-de-bolets-catala-castella"))).toBe(true);
     expect(new Set(entries.map(({ url }) => url)).size).toBe(entries.length);
   });

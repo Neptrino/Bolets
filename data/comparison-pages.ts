@@ -462,6 +462,33 @@ export const comparisonPages: ComparisonPage[] = [
     confusionRisk: "El bolet de greix conté giromitrina, una toxina que pot ser mortal i que ni l’assecat ni la cocció eliminen de manera fiable. Cap exemplar cerebriforme no s’ha de consumir, per molt tradicional que hagi estat en altres llocs.",
   },
   {
+    slug: "apagallums-vs-palometa-metzinosa",
+    leftSpeciesId: "macrolepiota-procera",
+    rightSpeciesId: "lepiota-brunneoincarnata",
+    title: "Apagallums vs. palometa metzinosa: confusió mortal",
+    shortTitle: "Apagallums vs. palometa metzinosa",
+    metaDescription: "Compareu l’apagallums i la palometa metzinosa mortal: mida, peu, anell, escates del barret, hàbitat i per què cap lepiota petita és segura.",
+    searchTerms: ["apagallums vs lepiota", "lepiota mortal", "apagallums confusions"],
+    introduction: "L’apagallums i la palometa metzinosa són para-sols escatosos amb làmines blanques i lliures de la mateixa família. La mida i el peu els separen en exemplars típics, però la palometa conté amatoxines i un exemplar petit o incomplet no s’ha de validar mai com a apagallums.",
+    decisiveDifference: "L’apagallums és gran, de 10 a 35 cm d’alçada, amb un peu llarg amb dibuix de pell de serp i un anell doble i mòbil; la palometa metzinosa té un barret de 2 a 5 cm, escates bru vinós i un anell fràgil que pot desaparèixer.",
+    diagnosticTraits: [
+      { label: "Mida", left: "Gran: de 10 a 35 cm d’alçada, silueta d’ombrel·la.", right: "Petita: barret de 2 a 5 cm." },
+      { label: "Barret", left: "Escates brunes sobre fons clar i umbó central.", right: "Disc bru vinós i escates concèntriques sobre fons crema o rosat." },
+      { label: "Peu", left: "Molt alt, amb dibuix de pell de serp en ziga-zaga.", right: "Prim; per sota de l’anell, fibres o escates brunes sobre fons rosat o vinós." },
+      { label: "Anell", left: "Doble i mòbil: es pot fer córrer amunt i avall.", right: "Fràgil i fugaç; pot haver desaparegut." },
+      { label: "Làmines", left: "Blanques i lliures del peu.", right: "Blanques o crema, lliures i denses: no distingeixen les dues espècies." },
+    ],
+    fieldChecks: [
+      "Mesureu-lo: un para-sol petit, de pocs centímetres, no és un apagallums, per semblant que sigui.",
+      "Busqueu l’anell doble i proveu si llisca pel peu; un anell fix, fràgil o absent descarta l’apagallums.",
+      "Mireu el peu sota l’anell: pell de serp en un peu alt apunta a apagallums; escates brunes sobre fons rosat o vinós, a palometa.",
+      "No us refieu de l’olor ni del color de la carn: a la palometa no són criteris segurs.",
+      "No culliu exemplars joves ni tancats: en aquesta fase la mida encara no ajuda.",
+    ],
+    habitatAndSeason: "Tots dos surten a finals d’estiu i a la tardor en llocs oberts: l’apagallums en clarianes, prats i vores de bosc; la palometa en gespes, parcs i clarianes. Poden coincidir al mateix prat la mateixa setmana, de manera que ni el lloc ni el mes no els separen.",
+    confusionRisk: "La palometa metzinosa conté amatoxines, les mateixes toxines de la farinera borda, i pot provocar una insuficiència hepàtica mortal. Els primers símptomes poden trigar hores. La regla pràctica: cap lepiota petita al cistell, i davant de qualsevol ingestió sospitosa, truqueu al 061.",
+  },
+  {
     slug: "carlet-vs-carner-bord",
     leftSpeciesId: "hygrophorus-russula",
     rightSpeciesId: "entoloma-sinuatum",
@@ -495,4 +522,18 @@ export function comparisonPagesForSpecies(speciesId: string) {
   return comparisonPages.filter((page) => (
     page.leftSpeciesId === speciesId || page.rightSpeciesId === speciesId
   ));
+}
+
+/** The published page for a pair, in either order. */
+export function comparisonPageForPair(firstSpeciesId: string, secondSpeciesId: string) {
+  return comparisonPages.find((page) => (
+    (page.leftSpeciesId === firstSpeciesId && page.rightSpeciesId === secondSpeciesId)
+    || (page.leftSpeciesId === secondSpeciesId && page.rightSpeciesId === firstSpeciesId)
+  ));
+}
+
+/** Where to compare two species: the pair's page when it has one, otherwise the open comparator. */
+export function comparisonHref(leftSpeciesId: string, rightSpeciesId: string) {
+  const page = comparisonPageForPair(leftSpeciesId, rightSpeciesId);
+  return page ? `/compare/${page.slug}` : `/compare?left=${leftSpeciesId}&right=${rightSpeciesId}`;
 }

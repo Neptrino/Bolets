@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, Images, ShieldAlert } from "lucide-react";
+import { ArrowUpRight, Images, ScanLine, ShieldAlert } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { PoisonousComparisons } from "@/components/poisonous-comparisons";
@@ -79,6 +79,7 @@ export default function PoisonousMushroomsPage() {
           </ol>
         </div>
         <nav className="species-topic-links seasonal-guide-topic-links" aria-label="Guies relacionades amb els bolets tòxics">
+          <Link href="/bolets-i-confusions"><ScanLine size={18} aria-hidden="true" /><span><strong>Bolets típics i confusions</strong><small>Cada comestible amb els seus dobles tòxics</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/parts-dun-bolet"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Parts d’un bolet</strong><small>Anell, volva, làmines i porus amb nom propi</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/bolets/infografia"><Images size={18} aria-hidden="true" /><span><strong>Infografia de bolets</strong><small>Tòxics i comestibles en un sol pòster</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
         </nav>

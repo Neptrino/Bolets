@@ -800,8 +800,3 @@
   font-size: var(--text-lg);
   line-height: 1.45;
 }
-.comparison-facts h2 {
-  margin-bottom: 20px;
-  font-size: var(--display-sm);
-  letter-spacing: -0.03em;
-}

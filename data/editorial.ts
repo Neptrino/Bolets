@@ -22,7 +22,7 @@ export const LOCAL_GUIDES_UPDATED_AT = "2026-09-23";
 export const SPECIES_PAGES_UPDATED_AT = "2026-09-23";
 export const ZONE_PAGES_UPDATED_AT = "2026-09-23";
 export const PLACE_PAGES_UPDATED_AT = "2026-09-15";
-export const COMPARISON_PAGES_UPDATED_AT = "2026-09-02";
+export const COMPARISON_PAGES_UPDATED_AT = "2026-09-23";
 export const MAP_PAGES_UPDATED_AT = "2026-08-31";
 
 const sectionUpdatedAt: Record<string, string> = {
@@ -225,8 +225,9 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "species:ramaria-formosa": { publishedAt: "2026-09-02", updatedAt: "2026-09-19" },
   "species:lactifluus-rugatus": { publishedAt: "2026-09-02", updatedAt: "2026-09-19" },
   "species:leccinellum-lepidum": { publishedAt: "2026-09-02", updatedAt: "2026-09-19" },
-  "compare:rovello-vs-rovello-de-cabra": { publishedAt: "2026-09-02", updatedAt: "2026-09-02" },
-  "compare:moixero-vs-inocibe-patouillard": { updatedAt: "2026-09-18" },
+  "compare:rovello-vs-rovello-de-cabra": { publishedAt: "2026-09-02", updatedAt: "2026-09-23" },
+  "compare:apagallums-vs-palometa-metzinosa": { publishedAt: "2026-09-23", updatedAt: "2026-09-23" },
+  "compare:moixero-vs-inocibe-patouillard": { updatedAt: "2026-09-23" },
   "zones-rovellons": {
     updatedAt: "2026-09-23",
   },
@@ -251,6 +252,10 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   },
   "bolets-de-soca": {
     publishedAt: "2026-08-27",
+    updatedAt: "2026-09-23",
+  },
+  "bolets-i-confusions": {
+    publishedAt: "2026-09-23",
     updatedAt: "2026-09-23",
   },
   "fals-rossinyol": {
@@ -364,7 +369,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   home: { updatedAt: "2026-09-23" },
   "bolets-infografia": { updatedAt: "2026-09-14" },
   troballes: { updatedAt: "2026-09-19" },
-  compare: { updatedAt: "2026-09-02" },
+  compare: { updatedAt: "2026-09-23" },
   joc: { updatedAt: "2026-09-23" },
   metode: { updatedAt: "2026-09-14" },
   "col-labora": { updatedAt: "2026-09-02" },
@@ -414,6 +419,7 @@ export const publicEditorialItems = [
   "normativa-bolets",
   "bolets-de-soca",
   "fals-rossinyol",
+  "bolets-i-confusions",
   "preguntes-frequents-bolets",
   "zones-rovellons",
   "zones-ceps",

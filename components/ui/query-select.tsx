@@ -30,6 +30,8 @@ export type QuerySelectProps = {
   items: QuerySelectItem[];
   parameter?: string;
   routeByValue?: Record<string, string>;
+  /** Complete destination per value, used as-is instead of editing the current query. */
+  hrefByValue?: Record<string, string>;
   fallbackPath?: string;
   variant?: "compact" | "comparison" | "map";
   className?: string;
@@ -124,6 +126,7 @@ function QuerySelectControl({
   items,
   parameter = "species",
   routeByValue,
+  hrefByValue,
   fallbackPath,
   variant = "compact",
   className,
@@ -139,6 +142,12 @@ function QuerySelectControl({
 
   const selectValue = (nextItem: QuerySelectItem) => {
     if (nextItem.value === value) return;
+    const href = hrefByValue?.[nextItem.value];
+    if (href) {
+      if (analyticsEvent) queueUmamiEvent(analyticsEvent);
+      startTransition(() => router.push(href, { scroll: false }));
+      return;
+    }
     const next = new URLSearchParams(searchParams.toString());
     const targetPath = routeByValue?.[nextItem.value];
     if (targetPath) next.delete(parameter);

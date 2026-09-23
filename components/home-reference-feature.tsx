@@ -16,7 +16,7 @@ export function HomeReferenceFeature({ speciesCount, seasonGuide, children }: {
   const links: HomeReferenceLink[] = [
     { href: "/zones/ceps", label: "Ceps", note: "Quatre tipus, quan surten i on trobar-ne", icon: TreePine },
     { href: "/zones/rovellons", label: "Rovellons", note: "Rovelló i pinetell, temporada i zones", icon: Sprout },
-    { href: "/compare", label: "Comparador d’espècies", note: "Distingeix les confusions habituals", icon: Scale },
+    { href: "/bolets-i-confusions", label: "Bolets i confusions", note: "Distingeix els comestibles dels seus dobles", icon: Scale },
     { href: "/noms-de-bolets-catala-castella", label: "Noms en català i castellà", note: "El nom que has sentit a casa", icon: Languages },
     { href: seasonGuide.path, label: seasonGuide.cardTitle, note: `Espècies actives ${seasonGuide.rangeSentence}`, icon: seasonIcons[seasonGuide.id] },
     { href: "/temporada", label: "Calendari de temporada", note: "Quan surt cada espècie", icon: CalendarDays },

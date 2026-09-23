@@ -397,6 +397,7 @@
   display: none;
 }
 .compare-profile-card {
+  align-self: stretch;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--bark) 10%, transparent);
   border-radius: var(--radius-lg);
@@ -590,19 +591,6 @@
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-}
-.compare-matrix-intro {
-  margin: 0 2px 20px;
-}
-.compare-matrix-intro .eyebrow {
-  margin-bottom: 8px;
-}
-.compare-matrix-intro h2 {
-  margin: 0;
-  color: var(--ink);
-  font-size: var(--display-sm);
-  line-height: 0.98;
-  letter-spacing: -0.025em;
 }
 .compare-matrix-table {
   position: relative;
@@ -822,12 +810,6 @@
   }
   .compare-matrix {
     margin-top: 44px;
-  }
-  .compare-matrix-intro {
-    margin-bottom: 16px;
-  }
-  .compare-matrix-intro h2 {
-    font-size: var(--text-3xl);
   }
   .compare-season-summary {
     align-items: flex-start;
