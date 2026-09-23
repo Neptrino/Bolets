@@ -39,7 +39,6 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(
     page.locator(".hero").getByRole("link", { name: "Guia d’espècies" }),
   ).toHaveAttribute("href", "/bolets");
-  await expect(page.locator(".hero .home-showcase-trigger")).toHaveCount(0);
   await expect(page.locator(".featured-grid .card-season")).toHaveCount(0);
 
   await page.goto("/guies");

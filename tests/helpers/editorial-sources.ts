@@ -66,7 +66,7 @@ const STATIC_PAGES: Record<string, ContentSource[]> = {
     file("components/home-findings-feature.tsx"),
     file("components/home-map-feature.tsx"),
     file("components/home-reference-feature.tsx"),
-    file("components/home-showcase-video.tsx"),
+    file("src/lib/home-app-schema.ts"),
   ],
   bolets: [file("app/bolets/page.tsx"), file("components/species-directory.tsx"), file("src/lib/catalogue-list.ts")],
   "noms-de-bolets-catala-castella": [

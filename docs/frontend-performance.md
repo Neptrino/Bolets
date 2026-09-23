@@ -51,7 +51,7 @@ the bytes in flight before first paint: the async JavaScript chunks, the CSS,
 the preloaded font and the hero. On a fast lab connection the browser also
 starts lazy images up to ~3000 px below the fold before that paint, which put
 the featured species photos on the hero's critical path. The homepage sections
-below the fold (`.home-reference`, `.home-showcase-section`, `.home-findings`,
+below the fold (`.home-reference`, `.home-findings`,
 `.home-editorial-note`) and the footer use `content-visibility: auto` with a
 `contain-intrinsic-size` estimate: their layout and paint are skipped until the
 reader nears them, their lazy images no longer download ahead of the hero
@@ -83,9 +83,7 @@ See the [AVIF measurement receipt](archive/avif-performance-2026-09-13.md).
 
 Keep normal public-page analytics after hydration so performance recording
 remains useful. The optional heatmap recorder loads through `lazyOnload`; the
-existing privacy guard must run before it. The homepage video uses an optimized
-poster and `preload="none"`, retaining native controls before hydration and when
-JavaScript is disabled. A single play action must still start playback.
+existing privacy guard must run before it.
 
 Finding synchronization checks the local outbox before initializing the auth
 client. Empty/offline outboxes do not load that SDK. Resumable-upload code loads
@@ -250,7 +248,7 @@ browser contexts and device/network settings. Record transfer sizes as well as
 paint and long-task timings. Local PerformanceObserver totals are not Lighthouse
 scores or Lighthouse's exact Total Blocking Time measurement window.
 
-Exercise native/no-JavaScript video playback, keyboard and pointer navigation,
+Exercise keyboard and pointer navigation,
 partial map coverage, species changes, viewport restoration and the timeline
 buffer. Check affected stylesheet owners on direct loads and after navigation.
 Use Google PageSpeed Insights again after deployment; its CrUX field data covers

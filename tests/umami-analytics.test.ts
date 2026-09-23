@@ -227,10 +227,8 @@ describe("Umami analytics", () => {
     expect(bootstrap).toContain('"finding-draft-saved"');
     expect(bootstrap).toContain('"infographic-downloaded"');
     expect(bootstrap).toContain('"infographic-shared"');
-    expect(bootstrap).toContain('"homepage-video-play"');
     expect(bootstrap).toContain('"map-cell-click"');
     expect(bootstrap).toContain('"map-change-species"');
-    expect(bootstrap).toContain('"homepage-video-complete"');
     expect(bootstrap).toContain('"homepage-map-cta-click"');
     expect(bootstrap).toContain('"map-geolocation-success"');
     expect(bootstrap).toContain('"map-timeline-used"');
@@ -241,10 +239,8 @@ describe("Umami analytics", () => {
     expect(bootstrap).toContain('"Finding sync completion"');
     expect(bootstrap).toContain('"Infographic downloaded"');
     expect(bootstrap).toContain('"Infographic shared"');
-    expect(bootstrap).toContain('"Homepage video play"');
     expect(bootstrap).toContain('"Map cell click"');
     expect(bootstrap).toContain('"Map species change"');
-    expect(bootstrap).toContain('"Homepage video complete"');
     expect(bootstrap).toContain('"Homepage map CTA click"');
     expect(bootstrap).toContain('"Map geolocation success"');
     expect(bootstrap).toContain('"Map timeline used"');
@@ -259,14 +255,10 @@ describe("Umami analytics", () => {
       findingForm.indexOf("await saveOutboxFinding"),
     );
     expect(accessForm).toContain("queueUmamiEvent(UMAMI_EVENTS.signupStarted)");
-    expect(readFileSync("components/home-showcase-video.tsx", "utf8"))
-      .toContain("queueUmamiEvent(UMAMI_EVENTS.homepageVideoPlay)");
     expect(readFileSync("components/map-explorer.tsx", "utf8"))
       .toContain("queueUmamiEvent(UMAMI_EVENTS.mapCellClick)");
     expect(readFileSync("app/map/map-page-content.tsx", "utf8"))
       .toContain("analyticsEvent={UMAMI_EVENTS.mapChangeSpecies}");
-    expect(readFileSync("components/home-showcase-video.tsx", "utf8"))
-      .toContain("queueUmamiEvent(UMAMI_EVENTS.homepageVideoComplete)");
     expect(readFileSync("app/page.tsx", "utf8"))
       .toContain("analyticsEvent={UMAMI_EVENTS.homepageMapCtaClick}");
     const mapExplorer = readFileSync("components/map-explorer.tsx", "utf8");

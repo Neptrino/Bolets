@@ -5,8 +5,6 @@ export const UMAMI_EVENTS = {
   findingAdded: "finding-added",
   infographicDownloaded: "infographic-downloaded",
   infographicShared: "infographic-shared",
-  homepageVideoPlay: "homepage-video-play",
-  homepageVideoComplete: "homepage-video-complete",
   homepageMapCtaClick: "homepage-map-cta-click",
   homepageMapSectionClick: "homepage-map-section-click",
   avuiMapOpen: "avui-map-open",

@@ -2,14 +2,15 @@ import { IntentLink as Link } from "@/components/intent-link";
 import type { Metadata } from "next";
 import { ArrowDown, ArrowUpRight, BookOpenText, CalendarDays, Map, Sparkles } from "lucide-react";
 import { SpeciesCard } from "@/components/species-card";
+import { JsonLd } from "@/components/json-ld";
 import { HomeFindingsFeature } from "@/components/home-findings-feature";
 import { HomeMapFeature } from "@/components/home-map-feature";
 import { HomeEditorialNote, HomeReferenceFeature } from "@/components/home-reference-feature";
-import { HomeShowcaseVideo } from "@/components/home-showcase-video";
 import { StaticMediaImage } from "@/components/static-media-image";
 import { UmamiEventLink } from "@/components/umami-event-link";
 import { getFeaturedSeasonalSpecies } from "@/data/species";
 import { catalogueSpecies } from "@/data/catalogue";
+import { homeAppJsonLd } from "@/src/lib/home-app-schema";
 import { seasonGuideForMonth } from "@/src/lib/season-guides";
 import { monthInTimeZone } from "@/src/lib/seasonality";
 import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
@@ -27,6 +28,7 @@ export default function HomePage() {
   const currentSeasonGuide = seasonGuideForMonth(monthInTimeZone());
   return (
     <>
+      <JsonLd data={homeAppJsonLd()} />
       <section className="hero">
         <div className="hero-media" aria-hidden="true">
           <StaticMediaImage
@@ -54,7 +56,6 @@ export default function HomePage() {
       <HomeReferenceFeature speciesCount={catalogueSpecies.length} seasonGuide={currentSeasonGuide}>
         <div className="species-grid featured-grid">{featuredSpecies.map((species, index) => <SpeciesCard key={species.speciesId} species={species} index={index} />)}</div>
       </HomeReferenceFeature>
-      <HomeShowcaseVideo />
       <HomeFindingsFeature />
       <HomeEditorialNote />
     </>

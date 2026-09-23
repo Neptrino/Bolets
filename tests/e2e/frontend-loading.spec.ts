@@ -2,24 +2,19 @@ import { expect, test } from "@playwright/test";
 
 test.use({ serviceWorkers: "block" });
 
-test("home defers destination assets and video media until intent", async ({ page }) => {
+test("home defers destination assets until intent", async ({ page }) => {
   const prefetched: string[] = [];
-  const media: string[] = [];
   page.on("request", (request) => {
     const url = new URL(request.url());
     if (url.searchParams.has("_rsc")) prefetched.push(url.pathname);
-    if (/home-showcase\.(mp4|webm)/.test(url.pathname)) media.push(url.pathname);
   });
   await page.goto("/");
-  await expect(page.locator(".home-showcase-cover")).toBeAttached();
+  await expect(page.locator(".home-findings")).toBeAttached();
   // Allow Next's viewport prefetch queue to run before checking idle behavior.
   await page.waitForTimeout(1500);
   expect(prefetched).not.toContain("/joc");
   expect(prefetched).not.toContain("/bolets-avui");
   expect(prefetched).not.toContain("/map");
-  expect(media).toEqual([]);
-  await expect(page.locator(".home-showcase-player video")).toHaveAttribute("preload", "none");
-  await expect(page.locator(".home-showcase-player video")).toHaveAttribute("poster", /\/media\/optimized\/.*\.w640\.webp$/);
   await page.locator('.primary-nav a[href="/bolets-avui"]').focus();
   await expect.poll(() => prefetched.includes("/bolets-avui")).toBe(true);
   await page.locator('.primary-nav a[href="/bolets-avui"]').click();

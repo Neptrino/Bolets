@@ -218,10 +218,6 @@ configure_goal_reports() {
     "infographic-shared" \
     "The infographic was successfully sent through the browser share sheet."
   ensure_goal_report \
-    "Homepage video play" \
-    "homepage-video-play" \
-    "The homepage showcase video started playing."
-  ensure_goal_report \
     "Map cell click" \
     "map-cell-click" \
     "A prediction cell on the main map was selected."
@@ -229,10 +225,6 @@ configure_goal_reports() {
     "Map species change" \
     "map-change-species" \
     "The species displayed on the main map was changed."
-  ensure_goal_report \
-    "Homepage video complete" \
-    "homepage-video-complete" \
-    "The homepage showcase video reached its end."
   ensure_goal_report \
     "Homepage map CTA click" \
     "homepage-map-cta-click" \
