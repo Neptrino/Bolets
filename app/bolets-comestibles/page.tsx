@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, CircleAlert, CookingPot, Images, Snowflake, Trees, TriangleAlert } from "lucide-react";
+import { ArrowUpRight, CalendarDays, CircleAlert, CookingPot, Images, ScanLine, Snowflake, Trees, TriangleAlert } from "lucide-react";
 import { FaqSection } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
@@ -61,7 +61,16 @@ export default function EdibleMushroomsPage() {
       <PageHeader
         eyebrow={<><CookingPot size={15} /> Guia de comestibilitat</>}
         title={<>Bolets comestibles<br /><PageTitleAccent>de Catalunya.</PageTitleAccent></>}
-        description="Una guia visual de ceps, rovellons, rossinyols i altres espècies del país. Cada fitxa separa valor culinari, identificació, hàbitat i temporada."
+        description={(
+          <>
+            Una guia visual de ceps, rovellons, rossinyols i altres espècies del país. Cada fitxa separa valor culinari, identificació, hàbitat i temporada.
+            <span className="intent-header-cta">
+              <Link href="/bolets-i-confusions" className="button">
+                <ScanLine size={18} aria-hidden="true" /> Bolets típics i confusions <ArrowUpRight size={17} aria-hidden="true" />
+              </Link>
+            </span>
+          </>
+        )}
         layout="split"
         tone="forest"
       />
@@ -74,16 +83,11 @@ export default function EdibleMushroomsPage() {
           title="Com triar entre els tipus de bolets comestibles"
           titleId="edible-reading-title"
         />
-        <div className="card intent-reading-grid">
+        <div className="card intent-reading-grid intent-reading-grid-single">
           <div>
-            <p>Els bolets comestibles de Catalunya no formen un grup uniforme. Algunes espècies tenen un valor culinari alt; d’altres només es consideren comestibles amb condicions concretes de cocció, preparació o quantitat. Cada fitxa explica aquesta diferència i assenyala les confusions rellevants.</p>
+            <p>Els bolets comestibles de Catalunya no formen un grup uniforme. Algunes espècies tenen un valor culinari alt; d’altres només es consideren comestibles amb condicions concretes de cocció, preparació o quantitat. Cada fitxa explica aquesta diferència, i la guia de <Link href="/bolets-i-confusions">bolets típics i confusions</Link> posa cada comestible al costat dels seus dobles tòxics.</p>
             <p>Tria primer una espècie que encaixi amb el bosc i la temporada. Després consulta els <Link href="/bolets-avui">bolets avui a Catalunya</Link> i el <Link href="/map">mapa de bolets de Catalunya</Link>. Cap d’aquests passos substitueix una identificació experta de l’exemplar complet.</p>
           </div>
-          <ol>
-            <li>Revisa el nivell de comestibilitat i totes les condicions de consum.</li>
-            <li>Compara barret, himeni, peu, base, hàbitat i temporada.</li>
-            <li>Descarta els semblants tòxics abans de collir o cuinar.</li>
-          </ol>
         </div>
         <nav className="species-topic-links seasonal-guide-topic-links" aria-label="Guies relacionades amb els bolets comestibles">
           <Link href="/zones/ceps"><CookingPot size={18} aria-hidden="true" /><span><strong>Ceps de Catalunya</strong><small>Tipus, diferències, hàbitat i temporada</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>

@@ -1,11 +1,33 @@
-/* /bolets-i-confusions: typical species and their risky lookalikes. The pair
-   cards reuse .poisonous-comparison-grid and .poisonous-photo-pair from
-   guide-readings.css; the risk labels come from comparison-guides.css. */
+/* /bolets-i-confusions: typical species and their risky lookalikes. The risk
+   labels come from comparison-guides.css. */
+.lookalike-pair-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+.lookalike-pair {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.lookalike-pair p { line-height: 1.65; }
+.lookalike-photo-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.lookalike-photo-pair figure { margin: 0; min-width: 0; }
+.lookalike-photo-pair figure > div { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--radius-sm); }
+.lookalike-photo-pair img { object-fit: cover; }
+.lookalike-photo-pair figcaption { display: grid; gap: 4px; margin-top: 8px; font-size: var(--text-xs); }
+.lookalike-photo-pair figcaption strong { font-size: var(--text-base); }
+.lookalike-photo-pair figcaption a { color: var(--muted); overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .lookalike-pair-grid { grid-template-columns: 1fr; }
+}
 .lookalike-group { margin: 56px 0; scroll-margin-top: 100px; }
 .lookalike-group [id^="confon-"],
 .lookalike-pair { scroll-margin-top: 100px; }
 .lookalike-pair h3 { margin: 0 0 16px; font-size: var(--text-xl); }
-.lookalike-pair .poisonous-photo-pair figcaption em { color: var(--muted); }
+.lookalike-photo-pair figcaption em { color: var(--muted); }
 .lookalike-pair .comparison-risk-label { justify-self: start; max-width: 100%; line-height: 1.25; white-space: normal; }
 .lookalike-checks { display: grid; gap: 8px; margin: 0 0 16px; padding-left: 20px; line-height: 1.6; list-style: disc; }
 .lookalike-checks li { margin: 0; padding: 0; }

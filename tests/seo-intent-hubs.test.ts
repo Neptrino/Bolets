@@ -27,13 +27,8 @@ describe("edible and poisonous search-intent hubs", () => {
     expect(html).toContain("Bolets tòxics, verinosos i no comestibles");
     expect(html).toContain("“No comestible” és més ampli");
     expect(html).toContain('href="/bolets"');
-    for (const href of [
-      "/compare/ou-de-reig-vs-reig-bord",
-      "/compare/rossinyol-vs-bolet-olivera",
-      "/compare/cep-vs-matagent",
-    ]) {
-      expect(html).toContain(`href="${href}"`);
-    }
+    // Pair comparisons live in the lookalike guide, not repeated here.
+    expect(html).toContain('href="/bolets-i-confusions"');
     expect(poisonousMetadata.alternates?.canonical).toBe("/bolets-verinosos");
     expect(poisonousMetadata.description?.length).toBeLessThanOrEqual(155);
     expect(getEditorialMetadata("bolets-verinosos").updatedAt >= "2026-09-06").toBe(true);

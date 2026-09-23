@@ -67,7 +67,7 @@ function PairCard({ pair }: { pair: LookalikePair }) {
   return (
     <article className="lookalike-pair" id={lookalikePairAnchor(page)}>
       <h3>{edible.identity.commonName} o {lowerFirst(lookalike.identity.commonName)}?</h3>
-      <div className="poisonous-photo-pair">
+      <div className="lookalike-photo-pair">
         <PairPhoto species={edible} />
         <PairPhoto species={lookalike} />
       </div>
@@ -240,7 +240,7 @@ export default function LookalikeGuidePage() {
               description={group.species.identity.shortDescription}
               actions={<Link className="text-link" href={speciesPath(group.species)}>Fitxa {speciesArticle(name).ofSpecies} <ArrowUpRight size={16} aria-hidden="true" /></Link>}
             />
-            <div className="poisonous-comparison-grid">
+            <div className="lookalike-pair-grid">
               {group.risky.map((pair) => <PairCard key={pair.page.slug} pair={pair} />)}
             </div>
             {group.harmless.length > 0 && (
@@ -275,7 +275,7 @@ export default function LookalikeGuidePage() {
             titleId="lookalike-other-title"
             description="Confondre-les no és perillós, però separar-les ajuda a llegir els trets que sí que importen en les confusions de risc."
           />
-          <div className="poisonous-comparison-grid">
+          <div className="lookalike-pair-grid">
             {otherHarmlessPairs.map((pair) => <PairCard key={pair.page.slug} pair={pair} />)}
           </div>
         </section>

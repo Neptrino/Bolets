@@ -30,8 +30,6 @@ export type QuerySelectProps = {
   items: QuerySelectItem[];
   parameter?: string;
   routeByValue?: Record<string, string>;
-  /** Complete destination per value, used as-is instead of editing the current query. */
-  hrefByValue?: Record<string, string>;
   fallbackPath?: string;
   variant?: "compact" | "comparison" | "map";
   className?: string;
@@ -126,7 +124,6 @@ function QuerySelectControl({
   items,
   parameter = "species",
   routeByValue,
-  hrefByValue,
   fallbackPath,
   variant = "compact",
   className,
@@ -142,12 +139,6 @@ function QuerySelectControl({
 
   const selectValue = (nextItem: QuerySelectItem) => {
     if (nextItem.value === value) return;
-    const href = hrefByValue?.[nextItem.value];
-    if (href) {
-      if (analyticsEvent) queueUmamiEvent(analyticsEvent);
-      startTransition(() => router.push(href, { scroll: false }));
-      return;
-    }
     const next = new URLSearchParams(searchParams.toString());
     const targetPath = routeByValue?.[nextItem.value];
     if (targetPath) next.delete(parameter);
@@ -168,6 +159,47 @@ function QuerySelectControl({
       variant={variant}
       className={className}
       portalContainer={portalContainer}
+      disabled={isPending}
+      aria-label={ariaLabel}
+    />
+  );
+}
+
+/**
+ * A selector whose options each lead to a complete URL. It never reads the
+ * current query string, so statically prerendered pages can use it without a
+ * Suspense boundary (useSearchParams would force client-side rendering).
+ */
+export function HrefSelect({
+  value,
+  items,
+  hrefByValue,
+  variant = "compact",
+  className,
+  "aria-label": ariaLabel = "Selecciona una opció",
+}: {
+  value: string;
+  items: QuerySelectItem[];
+  hrefByValue: Record<string, string>;
+  variant?: "compact" | "comparison" | "map";
+  className?: string;
+  "aria-label"?: string;
+}) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const selectedItem = items.find((item) => item.value === value) ?? null;
+
+  return (
+    <SearchSelect
+      value={selectedItem}
+      items={items}
+      onValueChange={(nextItem) => {
+        const href = hrefByValue[nextItem.value];
+        if (nextItem.value === value || !href) return;
+        startTransition(() => router.push(href, { scroll: false }));
+      }}
+      variant={variant}
+      className={className}
       disabled={isPending}
       aria-label={ariaLabel}
     />

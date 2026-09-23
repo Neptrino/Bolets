@@ -114,7 +114,6 @@ const STATIC_PAGES: Record<string, ContentSource[]> = {
   ],
   "bolets-verinosos": [
     file("app/bolets-verinosos/page.tsx"),
-    file("components/poisonous-comparisons.tsx"),
     file("src/lib/species-collections.ts"),
   ],
   temporada: [

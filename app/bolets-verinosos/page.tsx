@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ArrowUpRight, Images, ScanLine, ShieldAlert } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
-import { PoisonousComparisons } from "@/components/poisonous-comparisons";
 import { SpeciesCollection } from "@/components/species-collection";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { EditorialAttribution } from "@/components/editorial-attribution";
@@ -54,7 +53,16 @@ export default function PoisonousMushroomsPage() {
       <PageHeader
         eyebrow={<><ShieldAlert size={15} /> Identificació i risc</>}
         title={<>Bolets verinosos<br /><PageTitleAccent>de Catalunya.</PageTitleAccent></>}
-        description="Espècies tòxiques presents al nostre entorn, des de bolets que causen trastorns digestius fins a confusions potencialment mortals."
+        description={(
+          <>
+            Espècies tòxiques presents al nostre entorn, des de bolets que causen trastorns digestius fins a confusions potencialment mortals.
+            <span className="intent-header-cta">
+              <Link href="/bolets-i-confusions" className="button">
+                <ScanLine size={18} aria-hidden="true" /> Bolets típics i confusions <ArrowUpRight size={17} aria-hidden="true" />
+              </Link>
+            </span>
+          </>
+        )}
         layout="split"
         tone="danger"
       />
@@ -67,25 +75,18 @@ export default function PoisonousMushroomsPage() {
           title="Bolets tòxics, verinosos i no comestibles"
           titleId="poisonous-reading-title"
         />
-        <div className="card intent-reading-grid">
+        <div className="card intent-reading-grid intent-reading-grid-single">
           <div>
             <p>“Tòxic” i “verinós” descriuen espècies que poden causar una intoxicació. “No comestible” és més ampli: també inclou bolets que es desaconsellen per l’amargor, la textura, la preparació exigent o el risc de confusió. Aquesta pàgina prioritza les espècies tòxiques; el <Link href="/bolets">catàleg complet</Link> també recull les altres categories.</p>
-            <p>Una fotografia, el color o el lloc on creix no basten per decidir que un bolet és segur. Contrasta l’exemplar complet amb la fitxa, revisa els semblants i, davant de qualsevol dubte, demana una identificació experta.</p>
+            <p>Una fotografia, el color o el lloc on creix no basten per decidir que un bolet és segur. Contrasta l’exemplar complet amb la fitxa, revisa <Link href="/bolets-i-confusions">amb quins comestibles es confon</Link> i, davant de qualsevol dubte, demana una identificació experta.</p>
           </div>
-          <ol>
-            <li>Observa un exemplar complet, inclosa la base del peu.</li>
-            <li>Compara làmines, porus, anell, volva, olor i canvi de color.</li>
-            <li>Obre la fitxa de les espècies semblants abans de prendre cap decisió.</li>
-          </ol>
         </div>
         <nav className="species-topic-links seasonal-guide-topic-links" aria-label="Guies relacionades amb els bolets tòxics">
-          <Link href="/bolets-i-confusions"><ScanLine size={18} aria-hidden="true" /><span><strong>Bolets típics i confusions</strong><small>Cada comestible amb els seus dobles tòxics</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/parts-dun-bolet"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Parts d’un bolet</strong><small>Anell, volva, làmines i porus amb nom propi</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/bolets/infografia"><Images size={18} aria-hidden="true" /><span><strong>Infografia de bolets</strong><small>Tòxics i comestibles en un sol pòster</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
         </nav>
       </section>
 
-      <PoisonousComparisons />
 
       <section className="intent-species-section" aria-labelledby="toxic-cards-title">
         <SectionHeader

@@ -14,7 +14,7 @@ import { CulinaryRating } from "@/components/culinary-rating";
 import { MediaImage } from "@/components/media-image";
 import { SectionHeader } from "@/components/page-layout";
 import { SeasonIndicator } from "@/components/season-indicator";
-import { QuerySelect } from "@/components/ui/query-select";
+import { HrefSelect } from "@/components/ui/query-select";
 import { speciesSelectItems } from "@/data/species";
 import { comparisonHref } from "@/data/comparison-pages";
 import { speciesPath } from "@/src/lib/seo";
@@ -83,9 +83,8 @@ function ComparisonProfileCard({
     <article className={`compare-profile-card compare-profile-card-${side}`}>
       <div className="compare-profile-control">
         <span><b>{sideLetter}</b>Espècie</span>
-        <QuerySelect
+        <HrefSelect
           value={species.speciesId}
-          parameter={side}
           items={speciesSelectItems}
           hrefByValue={hrefByValue}
           variant="comparison"

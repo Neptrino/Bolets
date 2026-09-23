@@ -90,13 +90,15 @@ test("camagroc's photo explanation follows the selected photograph and enlarged 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
-test("poisonous comparisons show paired reference photos, credits and working comparison links", async ({ page }) => {
+test("lookalike pairs show paired reference photos, credits and working comparison links", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/bolets-verinosos");
-  await expect(page.locator(".poisonous-comparison-grid article")).toHaveCount(6);
-  await expect(page.locator(".poisonous-photo-pair figure")).toHaveCount(12);
-  expect(await page.locator(".poisonous-photo-pair figcaption a").count()).toBeGreaterThan(0);
-  await page.getByRole("heading", { name: "Fredolic vs. fredolic metzinós" }).getByRole("link").click();
+  await page.getByRole("link", { name: "Bolets típics i confusions" }).first().click();
+  await expect(page).toHaveURL(/\/bolets-i-confusions$/);
+  await expect(page.locator(".lookalike-pair-grid article").first()).toBeVisible();
+  expect(await page.locator(".lookalike-photo-pair figcaption a").count()).toBeGreaterThan(0);
+  await page.getByRole("link", { name: /Comparació completa: Fredolic vs\. fredolic metzinós/ }).click();
   await expect(page).toHaveURL(/\/compare\/fredolic-vs-fredolic-metzinos$/);
   await expect(page.locator("h1")).toContainText("Fredolic");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
