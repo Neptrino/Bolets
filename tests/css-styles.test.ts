@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { BASELINE_PATH, countHardcodedColours } from "@/scripts/hardcoded-colours.mjs";
 
 const minimumFontSize = 12;
 
@@ -42,6 +43,28 @@ describe("shared styles", () => {
     });
 
     expect(violations).toEqual([]);
+  });
+
+  it("never adds hardcoded colours outside the design tokens", () => {
+    const baseline: Record<string, number> = JSON.parse(
+      readFileSync(join(process.cwd(), BASELINE_PATH), "utf8"),
+    );
+    const current: Record<string, number> = countHardcodedColours();
+    const files = new Set([...Object.keys(baseline), ...Object.keys(current)]);
+    const added: string[] = [];
+    const removed: string[] = [];
+    for (const file of files) {
+      const allowed = baseline[file] ?? 0;
+      const found = current[file] ?? 0;
+      if (found > allowed) added.push(`${file}: ${found} colours, baseline ${allowed}`);
+      if (found < allowed) removed.push(`${file}: ${found} colours, baseline ${allowed}`);
+    }
+
+    // Use app/styles/tokens.css variables instead of hex, rgb() or hsl().
+    expect(added).toEqual([]);
+    // Colours were removed: lock the gain in with
+    // `node scripts/hardcoded-colours.mjs --write`.
+    expect(removed).toEqual([]);
   });
 
   it("keeps the species profile on shared palette tokens", () => {
