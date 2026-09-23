@@ -26,17 +26,6 @@
   font-size: var(--text-base);
   line-height: 1.55;
 }
-.conditions-panel-expanded .condition-window-note {
-  gap: 12px;
-  margin-top: 24px;
-  padding: 16px 16px;
-  font-size: var(--text-base);
-  line-height: 1.6;
-}
-.conditions-panel-expanded .condition-window-note svg {
-  width: 18px;
-  height: 18px;
-}
 .conditions-panel-expanded .condition-list {
   margin-top: 16px;
 }
@@ -224,9 +213,6 @@
   .conditions-panel-expanded .suitability-score strong {
     font-size: var(--display-md);
   }
-  .conditions-panel-expanded .condition-window-note {
-    font-size: var(--text-base);
-  }
   .conditions-panel-expanded .condition-list article {
     min-height: 0;
     padding: 20px;
@@ -306,15 +292,6 @@
   .condition-list {
     grid-template-columns: repeat(2, 1fr);
   }
-  .home-map-callout .page-width {
-    grid-template-columns: 1fr;
-  }
-  .home-map-callout-action {
-    justify-self: start;
-  }
-  .home-map-callout-art {
-    display: none;
-  }
   .specimen-panel {
     min-height: 190px;
   }
@@ -366,12 +343,6 @@
     justify-items: start;
     gap: 16px;
   }
-  .home-intro {
-    padding: 76px 0;
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-  .home-intro h2,
   .section-topline h2 {
     font-size: var(--display-md);
   }
@@ -383,9 +354,6 @@
   }
   .species-grid {
     grid-template-columns: 1fr;
-  }
-  .home-map-callout {
-    padding: 68px 0;
   }
   .directory-controls {
     display: grid;

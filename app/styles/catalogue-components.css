@@ -183,49 +183,6 @@
   color: var(--gold);
   text-decoration-color: currentColor;
 }
-.compact-species-page .section-kicker {
-  display: grid;
-  align-content: start;
-  gap: 12px;
-  color: var(--moss);
-  font-family: var(--font-nunito-sans), sans-serif;
-  font-size: var(--text-base);
-  font-weight: 400;
-  line-height: normal;
-}
-.compact-species-page .section-kicker span {
-  color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 800;
-}
-.compact-species-page .fact-label {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--forest-450);
-  font-size: var(--text-xs);
-  font-weight: 800;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-}
-.compact-species-page .fact-label svg {
-  flex: 0 0 auto;
-  color: var(--gold);
-}
-.rainfall-uncertainty,
-.soil-evidence {
-  margin: 16px 0 0;
-  padding: 12px 12px;
-  border: 0;
-  border-left: 3px solid var(--sand-400);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  background: color-mix(in srgb, var(--surface-warm) 60%, transparent);
-  color: var(--muted);
-  font-size: var(--text-base);
-  font-style: italic;
-  line-height: 1.5;
-}
-.compact-species-page .habitat-map-explainer,
 .compact-species-page .region-map-habitat {
   border-radius: var(--radius-md);
 }

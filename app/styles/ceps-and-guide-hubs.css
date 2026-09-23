@@ -59,22 +59,6 @@
   margin-top: auto;
   padding-top: 24px;
 }
-.location-current-feature {
-  margin-bottom: 16px;
-  background: var(--surface);
-  color: var(--forest-panel);
-}
-.location-current-feature > span,
-.location-current-feature > strong,
-.location-current-feature:hover > strong {
-  color: var(--gold);
-}
-.location-current-feature h2 {
-  color: var(--forest-panel);
-}
-.location-current-feature p {
-  color: var(--forest-650);
-}
 .prediction-zone-note {
   margin: 20px 0 0;
   color: var(--muted);
@@ -142,9 +126,6 @@
   color: var(--apricot);
   font-size: var(--text-base);
   white-space: nowrap;
-}
-.guides-directory .location-place-grid {
-  margin-top: 32px;
 }
 .guide-browser {
   margin-top: 32px;

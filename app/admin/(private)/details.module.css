@@ -388,7 +388,6 @@
 }
 
 @media (max-width: 560px) {
-  .detailNav { margin-top: -20px; }
   .detailCard { padding: 16px; }
   .facts { grid-template-columns: 1fr; }
   .metricGrid { grid-template-columns: 1fr; }

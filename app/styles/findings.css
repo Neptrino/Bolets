@@ -414,7 +414,7 @@
   .finding-community-stats > div:first-child { border-top: 0; }
   .finding-community-species { padding: 24px 20px; }
   .finding-community-species nav, .finding-community-limits { grid-template-columns: 1fr; }
-  .findings-map-shell, .findings-region-map { min-height: 430px; border-radius: var(--radius-md); }
+  .findings-region-map { min-height: 430px; border-radius: var(--radius-md); }
   .findings-region-map { height: 430px; }
   .finding-library-toolbar { grid-template-columns: 1fr; }
   .finding-personal-row { grid-template-columns: minmax(0, 1fr) auto; }

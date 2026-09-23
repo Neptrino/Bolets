@@ -160,19 +160,6 @@
 }
 
 /* Subsections */
-.compact-species-page .profile-subsection {
-  margin-top: 32px;
-}
-.compact-species-page .profile-subsection h3 {
-  margin: 0 0 12px;
-  color: var(--profile-heading);
-  font-size: var(--text-2xl);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-}
-.compact-species-page .profile-subsection .eyebrow {
-  margin-bottom: 8px;
-}
 
 /* Warning line above the lookalikes */
 .compact-species-page .profile-warning {
@@ -486,14 +473,6 @@
 }
 
 /* Map block: the explainer and the guide list stay cards */
-.compact-species-page .distribution-section .habitat-map-explainer {
-  border: 1px solid var(--profile-line);
-  border-radius: var(--radius-md);
-  background: var(--surface);
-}
-.compact-species-page .distribution-section .habitat-map-explainer > p {
-  color: var(--ink);
-}
 .compact-species-page .distribution-section .species-local-guides {
   border-color: var(--profile-line);
   background: var(--surface);
@@ -582,9 +561,6 @@
   }
   .compact-species-page .profile-lookalikes {
     grid-template-columns: minmax(0, 1fr);
-  }
-  .compact-species-page .profile-subsection {
-    margin-top: 24px;
   }
 }
 

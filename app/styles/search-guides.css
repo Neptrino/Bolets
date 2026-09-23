@@ -222,45 +222,6 @@
   margin-top: 0;
 }
 
-.current-search-intro {
-  display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(16rem, .75fr);
-  gap: 2rem;
-  align-items: start;
-  margin: 0 0 2.5rem;
-  padding: 1.5rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--surface-muted) 60%, transparent);
-}
-.current-search-intro h2 {
-  margin: 0.25rem 0 0.5rem;
-  color: var(--forest-panel);
-  font-size: var(--text-xl);
-}
-.current-search-intro p:last-child {
-  margin: 0;
-  color: var(--muted);
-  font-size: var(--text-base);
-  line-height: 1.65;
-}
-.current-search-intro nav {
-  display: grid;
-  gap: 0.5rem;
-}
-.current-search-intro nav a {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: space-between;
-  padding: 0.75rem 0.75rem;
-  border-bottom: 1px solid var(--line);
-  color: var(--bark);
-  font-size: var(--text-base);
-  font-weight: 800;
-  text-decoration: none;
-}
-.current-search-intro nav a:hover { color: var(--clay); }
-
 .species-name-section { margin-bottom: 4rem; }
 .species-name-glossary { margin-top: 1.5rem; }
 .species-name-search {
@@ -348,7 +309,6 @@
   .season-year > a:nth-child(-n + 6) {
     border-bottom: 1px solid var(--line);
   }
-  .current-search-intro { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 680px) {

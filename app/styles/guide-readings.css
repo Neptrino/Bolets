@@ -41,9 +41,6 @@
   padding-left: 24px;
 }
 .ceps-other-guides a { color: var(--clay); }
-.place-species-comparison { margin: 32px 0 48px; }
-.place-species-comparison h2 { font-size: var(--text-2xl); color: var(--forest-panel); }
-.place-species-comparison p,
 .species-search-summary p { line-height: 1.65; }
 .species-search-summary > div > p:not(.eyebrow) { margin: 0 0 16px; }
 .species-search-summary nav { margin: 24px 0 0; }

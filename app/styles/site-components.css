@@ -69,15 +69,6 @@
   box-shadow:
     0 0 0 18px transparent, 0 0 0 19px color-mix(in srgb, var(--paper) 15%, transparent);
 }
-.warning-callout {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  background: var(--danger-surface);
-  color: var(--moss);
-}
-.warning-callout svg {
-  grid-row: span 2;
-}
 .similar-list {
   display: grid;
 }

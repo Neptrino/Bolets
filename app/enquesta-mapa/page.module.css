@@ -108,59 +108,6 @@
   background: var(--surface);
 }
 
-.supportGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
-  gap: 40px;
-  margin-top: 24px;
-}
-
-.supportCopy p,
-.supportClose {
-  margin: 0;
-  font-size: var(--text-base);
-  line-height: 1.7;
-}
-
-.supportCopy p + p {
-  margin-top: 16px;
-}
-
-.pillars {
-  display: grid;
-  gap: 16px;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.pillars li {
-  display: grid;
-  gap: 4px;
-  padding: 16px 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: var(--surface-warm);
-}
-
-.pillars strong {
-  color: var(--forest-panel);
-  font-size: var(--text-sm);
-}
-
-.pillars span {
-  color: var(--muted);
-  font-size: var(--text-xs);
-  line-height: 1.5;
-}
-
-.supportClose {
-  max-width: 960px;
-  margin-top: 28px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
-}
-
 .community {
   padding: 32px;
   border: 1px solid var(--line);
@@ -235,8 +182,7 @@
     padding: 24px;
   }
 
-  .communityGrid,
-.supportGrid {
+  .communityGrid {
     grid-template-columns: 1fr;
     gap: 24px;
   }

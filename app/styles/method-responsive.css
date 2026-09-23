@@ -22,12 +22,6 @@
   .method-equation-main {
     min-height: 135px;
   }
-  .method-equation-score {
-    font-size: var(--display-lg);
-  }
-  .method-equation-fraction {
-    font-size: var(--text-xl);
-  }
   .method-scroll {
     display: none;
   }
@@ -190,12 +184,6 @@
   .method-equation-main > svg {
     width: 20px;
   }
-  .method-equation-score {
-    font-size: var(--display-lg);
-  }
-  .method-equation-fraction {
-    font-size: var(--text-lg);
-  }
   .method-equation-legend {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -239,17 +227,6 @@
   }
   .method-subscore-heading h3 {
     font-size: var(--text-2xl);
-  }
-  .method-season-scale {
-    grid-template-columns: 1fr;
-  }
-  .method-season-scale span {
-    grid-template-columns: 7px 1fr auto;
-    align-items: center;
-  }
-  .method-season-scale i {
-    width: 7px;
-    height: 20px;
   }
   .method-stress {
     gap: 28px;

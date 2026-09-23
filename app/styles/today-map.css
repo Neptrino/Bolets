@@ -52,10 +52,6 @@
 .current-map-footer .prediction-map-legend strong,
 .current-map-footer .prediction-map-legend li { font-size: var(--text-xs); }
 .current-map-footer .prediction-map-legend ol { gap: 0.5rem 1rem; }
-.current-map-footer .prediction-map-legend-gradient { display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: center; width: 100%; }
-.current-map-footer .prediction-gradient-scale { display: grid; gap: 0.25rem; min-width: 0; width: 100%; }
-.current-map-footer .prediction-gradient-scale > i { display: block; width: 100%; height: .75rem; border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent); border-radius: var(--radius-pill); box-shadow: inset 0 1px 1px color-mix(in srgb, var(--white) 30%, transparent); }
-.current-map-footer .prediction-gradient-scale > span { display: flex; justify-content: space-between; gap: 1rem; color: var(--forest-450); font-size: var(--text-xs); }
 
 .current-instagram {
   display: grid;
@@ -111,7 +107,6 @@
   .current-map-frame { height: 31rem; min-height: 0; }
   .current-map-overview .map-data-state { max-width: calc(100% - 5.5rem); }
   .current-map-overview .map-cell-visibility { top: 8.5rem; }
-  .current-map-footer .prediction-map-legend-gradient { grid-template-columns: minmax(0, 1fr); }
   .current-instagram { grid-template-columns: auto minmax(0, 1fr); padding: 1rem; }
   .current-instagram-link { grid-column: 1 / -1; justify-self: stretch; }
 }

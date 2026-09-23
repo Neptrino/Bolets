@@ -370,27 +370,10 @@ h3 {
   text-transform: uppercase;
   color: color-mix(in srgb, var(--paper) 60%, transparent);
 }
-.home-intro {
-  padding: 124px 0 64px;
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 80px;
-}
-.home-intro h2,
 .section-topline h2 {
   font-size: var(--display-md);
   line-height: 0.98;
   margin: 0;
-}
-.home-intro > p {
-  align-self: end;
-  color: var(--forest-550);
-  font-size: var(--text-base);
-  line-height: 1.75;
-  margin: 0;
-}
-.home-cards {
-  padding-bottom: 132px;
 }
 .section-topline {
   display: flex;
@@ -491,57 +474,9 @@ h3 {
   background: var(--danger-surface);
   color: var(--danger-ink);
 }
-.home-map-callout {
-  position: relative;
-  min-height: 480px;
-  display: flex;
-  align-items: center;
-  padding: 72px 0;
-  background: var(--forest-900);
-  color: var(--surface);
-  overflow: hidden;
-}
-.home-map-callout .page-width {
-  display: grid;
-  grid-template-columns: minmax(0, 500px) minmax(160px, 260px);
-  align-items: center;
-  gap: 48px;
-  justify-content: start;
-}
-.hero-copy,
-.home-map-callout-copy {
+.hero-copy {
   position: relative;
   z-index: 2;
-}
-.home-map-callout-action {
-  position: relative;
-  z-index: 2;
-  align-self: center;
-  justify-self: end;
-}
-.home-map-callout-action .button {
-  gap: 12px;
-  padding: 16px 28px;
-  font-size: var(--text-base);
-}
-.home-map-callout-art {
-  position: absolute;
-  inset: 0 0 0 auto;
-  width: 59%;
-  overflow: hidden;
-  isolation: isolate;
-}
-.home-map-callout-art img {
-  object-fit: cover;
-  object-position: 58% center;
-}
-.home-map-callout h2 {
-  font-size: var(--display-md);
-  line-height: 0.93;
-  margin: 0 0 20px;
-}
-.home-map-callout p {
-  line-height: 1.7;
 }
 .directory-shell {
   border-top: 1px solid var(--line);

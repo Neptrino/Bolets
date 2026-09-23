@@ -99,31 +99,16 @@
 .method-equation-main > svg {
   color: color-mix(in srgb, var(--paper) 60%, transparent);
 }
-.method-equation-score {
-  color: var(--apricot);
-  font: italic 76px/1 var(--font-nunito-sans), sans-serif;
-}
-.method-equation-fraction,
 .method-inline-fraction {
   display: inline-grid;
   text-align: center;
   vertical-align: middle;
 }
-.method-equation-fraction {
-  font: 31px/1.3 var(--font-nunito-sans), sans-serif;
-}
-.method-equation-fraction > span,
 .method-inline-fraction > span {
   padding-inline: 12px;
 }
-.method-equation-fraction > span:first-child,
 .method-inline-fraction > span:first-child {
   border-bottom: 1px solid currentColor;
-}
-.method-equation-fraction svg {
-  width: 26px;
-  height: 26px;
-  vertical-align: -4px;
 }
 .method-equation-legend {
   display: grid;
@@ -535,9 +520,6 @@
   margin: 0;
   color: var(--apricot);
   font-size: var(--text-2xl);
-}
-.method-inline-fraction-large {
-  color: var(--paper);
 }
 .method-score-equation > p {
   margin: 0;

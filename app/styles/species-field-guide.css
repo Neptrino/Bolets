@@ -1,18 +1,4 @@
 /* Species field guide: readable hierarchy and clearly grouped facts. */
-.warning-callout {
-  gap: 8px 12px;
-  margin-bottom: 24px;
-  padding: 20px 20px;
-  border-left: 3px solid var(--gold);
-}
-.warning-callout strong {
-  font-size: var(--text-base);
-  line-height: 1.35;
-}
-.warning-callout span {
-  font-size: var(--text-base);
-  line-height: 1.45;
-}
 .similar-list {
   gap: 12px;
 }
@@ -156,27 +142,6 @@
   font-size: var(--text-base);
   font-weight: 700;
 }
-.score-calculation-expression {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 8px;
-  align-items: baseline;
-  margin: 16px 0 8px;
-  color: var(--paper);
-  font-family: var(--font-nunito-sans), sans-serif;
-  font-size: var(--text-base);
-  font-variant-numeric: tabular-nums;
-  font-weight: 800;
-  line-height: 1.25;
-}
-.score-calculation-expression b {
-  color: var(--apricot);
-}
-.score-calculation-expression sup {
-  margin-left: 2px;
-  color: var(--line);
-  font-size: var(--text-xs);
-}
 .score-calculation > li > small {
   color: var(--line);
   font-size: var(--text-xs);
@@ -314,25 +279,6 @@
   min-width: 2px;
   height: 100%;
   border-radius: inherit;
-}
-.condition-window-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin: 20px 0 0;
-  padding: 16px 16px;
-  border: 1px solid color-mix(in srgb, var(--apricot) 20%, transparent);
-  color: var(--line);
-  font-size: var(--text-base);
-  line-height: 1.55;
-}
-.condition-window-note svg {
-  flex: 0 0 auto;
-  margin-top: 2px;
-  color: var(--apricot);
-}
-.condition-window-note strong {
-  color: var(--paper);
 }
 .condition-list {
   grid-template-columns: repeat(6, minmax(0, 1fr));

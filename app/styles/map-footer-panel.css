@@ -327,14 +327,6 @@
 .map-detail-panel .conditions-panel-expanded .factor-bar-meter {
   background: color-mix(in srgb, var(--bark) 10%, transparent);
 }
-.map-detail-panel .conditions-panel-expanded .condition-window-note {
-  border-color: color-mix(in srgb, var(--gold) 20%, transparent);
-  background: color-mix(in srgb, var(--warning-surface) 30%, transparent);
-  color: var(--forest-550);
-}
-.map-detail-panel .conditions-panel-expanded .condition-window-note strong {
-  color: var(--forest-panel);
-}
 .map-detail-panel .conditions-panel-expanded .score-calculation {
   border-color: color-mix(in srgb, var(--bark) 15%, transparent);
   background: color-mix(in srgb, var(--bark) 10%, transparent);

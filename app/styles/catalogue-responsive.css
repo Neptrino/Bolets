@@ -12,19 +12,6 @@
   .compact-species-page .species-aside {
     display: none;
   }
-  .compact-species-page .section-kicker {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-  .content-subsection {
-    margin-top: 16px;
-    padding-top: 16px;
-  }
-  .content-subsection .subsection-title {
-    margin-bottom: 12px;
-    font-size: var(--text-xl);
-  }
   .ecology-section .season-calendar {
     padding: 12px 8px;
   }
@@ -147,9 +134,6 @@
   }
   .compact-species-page .content-section {
     display: block;
-  }
-  .compact-species-page .section-kicker {
-    display: none;
   }
   .compact-species-page .content-section h2 {
     font-size: var(--text-3xl);

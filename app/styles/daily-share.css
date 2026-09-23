@@ -89,14 +89,6 @@
 .daily-share-compact-card p { margin: 8px 0 0; color: var(--muted); font-size: var(--text-base); }
 .daily-share-compact-card a { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 8px; color: var(--forest-panel); font-size: var(--text-base); font-weight: 800; text-decoration: none; }
 .daily-share-compact-card a:hover { color: var(--clay); }
-.daily-share-single { padding-bottom: 112px; }
-.daily-share-single-card { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--forest-panel); box-shadow: var(--shadow-lg); }
-.daily-share-single-card img { display: block; width: 100%; height: auto; }
-.daily-share-single-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
-.daily-share-single-actions a { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 8px 16px; border: 1px solid var(--line); border-radius: var(--radius-pill); color: var(--forest-panel); font-size: var(--text-base); font-weight: 800; text-decoration: none; }
-.daily-share-single-actions a:last-child { border-color: var(--forest-panel); background: var(--forest-panel); color: var(--on-dark); }
-.daily-share-single-actions a:hover { border-color: var(--clay); color: var(--clay); }
-.daily-share-single-actions a:last-child:hover { background: var(--clay); color: var(--on-dark); }
 @media (max-width: 700px) {
   .daily-share-intro { margin-bottom: 52px; }
   .daily-share-grid-heading { grid-template-columns: 1fr; gap: 20px; }

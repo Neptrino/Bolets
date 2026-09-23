@@ -135,29 +135,6 @@
   border-bottom: 1px solid color-mix(in srgb, var(--moss) 15%, transparent);
   font-size: var(--text-base);
 }
-.method-season-scale {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
-  margin-top: 24px;
-}
-.method-season-scale span {
-  display: grid;
-  gap: 4px;
-  color: var(--sand-600);
-  font-size: var(--text-xs);
-}
-.method-season-scale i {
-  height: 5px;
-  background: var(--data-grey-300);
-}
-.method-season-scale span:nth-child(2) i { background: var(--data-sand-200); }
-.method-season-scale span:nth-child(3) i { background: var(--apricot); }
-.method-season-scale span:nth-child(4) i { background: var(--pumpkin); }
-.method-season-scale span:nth-child(5) i { background: var(--data-clay-600); }
-.method-season-scale b {
-  font: 18px var(--font-nunito-sans), sans-serif;
-}
 .method-band-dark .eyebrow {
   color: var(--apricot);
 }
