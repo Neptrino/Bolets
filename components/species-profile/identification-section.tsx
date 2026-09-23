@@ -33,15 +33,20 @@ import type { CatalogueSpecies } from "@/src/lib/types";
 
 export function SpeciesIdentificationSection({
   species,
+  lookalikeNote,
+  identificationProse,
 }: {
   species: CatalogueSpecies;
+  /** Hand-written identification lead, shown before the trait tiles. */
+  identificationProse?: readonly string[];
+  /** Hand-written note on the lookalike question the species is searched with. */
+  lookalikeNote?: { heading: string; text: string };
 }) {
   const hasToxicLookalike = species.similarSpecies.some(
     (item) => item.warning || item.edibility.includes("toxic"),
   );
   const speciesComparisons = comparisonPagesForSpecies(species.speciesId);
   const guideHref = lookalikeGuideHref(species.speciesId);
-  const spanishNames = getSpanishSpeciesNames(species.speciesId);
   const headings = speciesHeadings(species.identity.commonName);
   const morphology = species.morphology;
   const territoryGuide = territoryGuideForSpecies(species.speciesId);
@@ -61,6 +66,11 @@ export function SpeciesIdentificationSection({
         </p>
       </div>
       <div className="profile-panel-body">
+      {identificationProse && (
+        <div className="profile-prose">
+          {identificationProse.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </div>
+      )}
       <ProfileFacts
         label="Trets d’identificació"
         items={[
@@ -88,6 +98,12 @@ export function SpeciesIdentificationSection({
           <ShieldAlert size={18} aria-hidden="true" />
           <strong>Atenció: hi ha confusions possibles amb espècies tòxiques.</strong>
           <span>Verifica tots els trets abans de consumir-ne cap exemplar.</span>
+        </div>
+      )}
+      {lookalikeNote && (
+        <div className="profile-lookalike-note">
+          <h3>{lookalikeNote.heading}</h3>
+          <p>{lookalikeNote.text}</p>
         </div>
       )}
       <div className="profile-lookalikes">
@@ -163,6 +179,14 @@ export function SpeciesIdentificationSection({
       </nav>}
 </ProfileSection>
 
+</>
+  );
+}
+
+export function SpeciesNamesSection({ species }: { species: CatalogueSpecies }) {
+  const spanishNames = getSpanishSpeciesNames(species.speciesId);
+  const headings = speciesHeadings(species.identity.commonName);
+  return (
     <ProfileSection species={species} id="noms" eyebrow="Noms" title={headings.names}>
       <ProfileFacts
         label="Noms de l’espècie"
@@ -176,6 +200,5 @@ export function SpeciesIdentificationSection({
         <Link href="/noms-de-bolets-catala-castella" className="text-link">Consultar el glossari complet <ArrowUpRight size={15} aria-hidden="true" /></Link>
       </p>
     </ProfileSection>
-</>
   );
 }

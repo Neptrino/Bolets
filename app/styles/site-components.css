@@ -168,7 +168,6 @@
   margin-top: 4px;
   color: var(--forest-650);
   font-size: var(--text-base);
-  text-transform: capitalize;
 }
 .habitat-map-link svg {
   grid-column: 2;

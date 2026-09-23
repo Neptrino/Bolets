@@ -252,7 +252,7 @@ export const culinaryProfiles: Record<string, CulinaryProfile> = {
     bestUses: ["Guisats", "Arrossos", "Saltats", "Escabetx"],
     preparation: ["Retireu la cutícula si és amarga.", "Netegeu-lo sense deixar-lo en remull.", "Cuineu-lo completament."],
     preservation: ["Cuinat i congelat", "Escabetx refrigerat"],
-    cautions: ["Diferencieu-lo del fals carlet, Entoloma sinuatum, que és tòxic."],
+    cautions: ["Diferencieu-lo del carner bord (Entoloma sinuatum), que és tòxic."],
   }),
   "morchella-esculenta": culinary({
     rating: 3,
@@ -361,7 +361,7 @@ export const culinaryProfiles: Record<string, CulinaryProfile> = {
   "amanita-phalloides": safety({
     ratingRationale: "Zero estrelles: és una espècie mortal i no té cap ús culinari segur.",
     summary: "La farinera borda conté amatoxines; cuinar-la, assecar-la o congelar-la no la fa segura.",
-    cautions: ["No la manipuleu juntament amb bolets destinats al consum. Davant una ingestió sospitosa o símptomes, truqueu immediatament al 112."],
+    cautions: ["No la manipuleu juntament amb bolets destinats al consum. Davant una ingestió sospitosa, truqueu immediatament al 061 Salut Respon; si apareixen símptomes, aneu de seguida a un centre sanitari."],
   }),
   "rubroboletus-satanas": safety({
     ratingRationale: "Zero estrelles: és tòxic i pot provocar una intoxicació gastrointestinal important.",

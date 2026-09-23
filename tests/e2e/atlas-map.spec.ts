@@ -404,7 +404,7 @@ test("keeps prediction out of the camasec species guide", async ({ page }) => {
   await page.goto("/bolets/camasec");
 
   await expect(
-    page.getByRole("heading", { name: "On podria créixer a Catalunya" }),
+    page.getByRole("heading", { name: "Mapa d’hàbitat del camasec a Catalunya" }),
   ).toBeVisible();
   await expect(page.getByText("Fora de temporada", { exact: true })).toHaveCount(0);
   await expect(

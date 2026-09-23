@@ -104,7 +104,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   expect(expandedSpeciesHeight).toBeLessThan(7500);
   await expect(page.getByText("Després de ploure", { exact: true })).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "On podria créixer el cep a Catalunya" }),
+    page.getByRole("heading", { name: "Mapa d’hàbitat del cep a Catalunya" }),
   ).toBeVisible();
   await expect(page.getByText(/És un mapa dels terrenys on l’espècie podria créixer/)).toBeVisible();
   await page.locator("#distribució").scrollIntoViewIfNeeded();
@@ -117,7 +117,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(page.getByText("Hàbitat potencial", { exact: true })).toHaveCount(0);
   await expect(page.getByText(/no confirma que hi hagi bolets/i)).toBeVisible();
   await expect(
-    page.getByRole("link", { name: /Obrir el mapa interactiu/i }),
+    page.getByRole("link", { name: /Mapa del cep avui/i }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Veure el mapa a pantalla completa" }),

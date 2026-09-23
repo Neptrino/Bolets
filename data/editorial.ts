@@ -19,7 +19,7 @@ export const EDITORIAL_LAUNCH_DATE = "2026-08-13";
 // the constant to bump). Per-item overrides below date content changes to a
 // single page; the later of the two wins.
 export const LOCAL_GUIDES_UPDATED_AT = "2026-09-23";
-export const SPECIES_PAGES_UPDATED_AT = "2026-09-23";
+export const SPECIES_PAGES_UPDATED_AT = "2026-09-24";
 export const ZONE_PAGES_UPDATED_AT = "2026-09-23";
 export const PLACE_PAGES_UPDATED_AT = "2026-09-15";
 export const COMPARISON_PAGES_UPDATED_AT = "2026-09-23";
@@ -322,7 +322,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "species:ramaria-aurea": { updatedAt: "2026-09-19" },
   "species:amanita-pantherina": { updatedAt: "2026-09-19" },
   "species:amanita-muscaria": { updatedAt: "2026-09-19" },
-  "species:craterellus-lutescens": { updatedAt: "2026-09-19" },
+  "species:craterellus-lutescens": { updatedAt: "2026-09-24" },
   "species:boletus-edulis": { updatedAt: "2026-09-19" },
   "species:boletus-pinophilus": { updatedAt: "2026-09-19" },
   "species:boletus-aereus": { updatedAt: "2026-09-19" },
@@ -342,8 +342,8 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
   "species:lactarius-deliciosus": { updatedAt: "2026-09-19" },
   "species:lactarius-sanguifluus": { updatedAt: "2026-09-19" },
   "species:macrolepiota-procera": { updatedAt: "2026-09-20" },
-  "species:tricholoma-terreum": { updatedAt: "2026-09-19" },
-  "species:hygrophorus-latitabundus": { updatedAt: "2026-09-19" },
+  "species:tricholoma-terreum": { updatedAt: "2026-09-24" },
+  "species:hygrophorus-latitabundus": { updatedAt: "2026-09-24" },
   "species:hygrophorus-russula": { updatedAt: "2026-09-19" },
   "species:amanita-caesarea": { updatedAt: "2026-09-19" },
   "species:craterellus-cornucopioides": { updatedAt: "2026-09-19" },

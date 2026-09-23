@@ -18,12 +18,12 @@ import { UMAMI_EVENTS } from "@/src/lib/umami-goals";
 /* Potential habitat and territorial guides, separate from seasonal conditions.
    The map frames the whole of Catalonia and never asks for the visitor's
    location: it shows where the species could grow, not where the reader is.
-   The region only picks the territory the interactive-map link opens. */
+   A region the visitor brought from the map (?region=) sends the map link back to it. */
 export function SpeciesDistributionSection({
   region,
   species,
 }: {
-  region: RegionId;
+  region?: RegionId;
   species: SpeciesProfile;
 }) {
   const habitat = species.ecologicalConfig.habitat;
@@ -51,8 +51,8 @@ export function SpeciesDistributionSection({
       className="habitat-map-link"
       analyticsEvent={UMAMI_EVENTS.speciesMapOpen}
     >
-      <span>{regionLabels[region]}</span>
-      <strong>Obrir el mapa interactiu</strong>
+      {region && <span>{regionLabels[region]}</span>}
+      <strong>{species.predictionMode === "habitat_only" ? headings.habitatMapLink : headings.mapLink}</strong>
       <ArrowUpRight size={16} aria-hidden="true" />
     </UmamiEventLink>
   </div>

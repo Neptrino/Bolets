@@ -26,6 +26,7 @@ Use this index for current guidance and open plans. Dated research and completed
 | [Product roadmap](product-planning-journey-plan-2026-09-06.md) | Reference discovery committed; later releases remain proposed |
 | [Recipe content plan](recipe-cms-and-content-plan-2026-09-03.md) | Proposed architecture; later candidate research is linked from the plan |
 | [SEO operations](seo-launch-operations.md) | Release checks and measurement; account baseline is explicitly dated |
+| [Species page depth rollout](species-depth-test-2026-09.md) | Running since 24 September 2026; top-20 species with hand-written text against the untreated rest, checkpoints 12 and 26 October |
 | [Map discovery plan](map-discovery-plan.md) | Proposed homepage/map clarity release, followed by Avui and local-guide journey improvements |
 | [Annual map price survey — closed](archive/map-price-survey-2026-09.md) | Closed experiment; historical privacy and measurement record |
 | [Map discovery — 14 September](archive/map-discovery-2026-09-14.md) | Indexed-map diagnosis, query/device baseline and local navigation/freshness corrections |

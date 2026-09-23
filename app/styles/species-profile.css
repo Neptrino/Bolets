@@ -688,6 +688,28 @@
 .compact-species-page .profile-panel-body > .profile-links {
   padding-bottom: 16px;
 }
+
+/* Hand-written prose that opens the identification, ecology and cuisine panels */
+.compact-species-page .profile-prose {
+  padding: 16px 20px 20px;
+}
+.compact-species-page .profile-lookalike-note {
+  margin: 0 0 16px;
+}
+.compact-species-page .profile-lookalike-note h3 {
+  margin: 0 0 8px;
+  font-size: var(--text-lg);
+}
+.compact-species-page .profile-lookalike-note p {
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.6;
+}
+.compact-species-page .profile-prose > p {
+  margin: 0 0 12px;
+  color: var(--ink);
+  line-height: 1.6;
+}
 .compact-species-page .profile-panel-body .profile-more {
   margin-top: 0;
   border-bottom: 0;
@@ -732,6 +754,9 @@
   }
   .compact-species-page .profile-panel-body > .profile-lede {
     padding: 16px 16px 12px;
+  }
+  .compact-species-page .profile-prose {
+    padding-inline: 16px;
   }
   .compact-species-page .profile-panel-body .season-calendar {
     padding-inline: 16px;
@@ -854,9 +879,32 @@
   background: transparent;
 }
 .compact-species-page .profile-section .profile-panel-body .profile-facts > div {
-  padding: 16px 0;
+  position: relative;
+  padding: 12px 0 12px 36px;
   border-bottom: 1px solid var(--profile-line);
   background: transparent;
+}
+/* Compact facts: the icon hangs in the left gutter so the label and value stack tightly */
+.compact-species-page .profile-section .profile-panel-body .profile-fact-icon {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  width: 24px;
+  height: 24px;
+}
+.compact-species-page .profile-section .profile-panel-body .profile-fact-icon svg {
+  width: 14px;
+  height: 14px;
+}
+.compact-species-page .profile-section .profile-panel-body .profile-facts dt {
+  font-size: var(--text-sm);
+}
+.compact-species-page .profile-section .profile-panel-body .profile-facts dd {
+  margin: 2px 0 0;
+  line-height: 1.5;
+}
+.compact-species-page .profile-section .profile-panel-body > .profile-prose {
+  padding: 16px 0 4px;
 }
 .compact-species-page .profile-section .profile-panel-body > .profile-lede,
 .compact-species-page .profile-section .profile-panel-body .season-calendar {

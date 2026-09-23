@@ -19,7 +19,9 @@ describe("species headings", () => {
     expect(cep.identify).toBe("Com reconèixer el cep");
     expect(cep.cuisine).toBe("El cep a la cuina");
     expect(cep.ecology).toBe("On i quan creix el cep");
-    expect(cep.map).toBe("On podria créixer el cep a Catalunya");
+    expect(cep.map).toBe("Mapa d’hàbitat del cep a Catalunya");
+    expect(cep.mapLink).toBe("Mapa del cep avui");
+    expect(speciesHeadings("Ou de reig").habitatMapLink).toBe("Mapa d’hàbitat de l’ou de reig");
     expect(cep.names).toBe("Noms del cep en català i castellà");
     expect(speciesHeadings("Apagallums").edible).toBe("Es pot menjar l’apagallums?");
     expect(speciesHeadings("Apagallums").cuisine).toBe("L’apagallums a la cuina");

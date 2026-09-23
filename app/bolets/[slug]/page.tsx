@@ -14,7 +14,7 @@ import { SpeciesDistributionSection } from "@/components/species-profile/distrib
 import { SpeciesEcologySection } from "@/components/species-profile/ecology-section";
 import { SpeciesFaqSection } from "@/components/species-profile/faq-section";
 import { SpeciesFieldCardSection } from "@/components/species-profile/field-card-section";
-import { SpeciesIdentificationSection } from "@/components/species-profile/identification-section";
+import { SpeciesIdentificationSection, SpeciesNamesSection } from "@/components/species-profile/identification-section";
 import { SpeciesSectionTracker } from "@/components/species-profile/section-tracker";
 import { SpeciesHero } from "@/components/species-hero";
 import { UmamiEventLink } from "@/components/umami-event-link";
@@ -26,6 +26,7 @@ import {
 import { getSpecies } from "@/data/species";
 import { speciesSlugForId } from "@/data/species-slugs";
 import { speciesSameAs } from "@/data/species-identifiers";
+import { getSpeciesEditorialProse } from "@/data/species-editorial-prose";
 import { getSpanishSpeciesNames } from "@/data/species-common-names";
 import { editorialArticleFields, getEditorialMetadata, officialSafetySource } from "@/data/editorial";
 import { isRegionId } from "@/data/regions";
@@ -150,11 +151,9 @@ export default async function SpeciesPage({
   const query = await searchParams;
   const species = catalogueEntry;
   const scoredSpecies = getSpecies(species.speciesId);
-  const region: RegionId | null = scoredSpecies
-    ? isRegionId(query.region)
-      ? query.region
-      : scoredSpecies.ecologicalConfig.regions[0] ?? "prepirineus"
-    : null;
+  // Only a region the visitor brought from the map (?region=) steers the map links back to it;
+  // without one the map opens on its own default view instead of an arbitrary species region.
+  const region: RegionId | undefined = isRegionId(query.region) ? query.region : undefined;
   const habitats = "scope" in species
     ? species.ecology.habitats
     : species.ecologicalConfig.habitat.forestTypes;
@@ -175,6 +174,7 @@ export default async function SpeciesPage({
   const primaryLookalike = species.similarSpecies.find((item) => item.warning || item.edibility.includes("toxic"))
     ?? species.similarSpecies[0];
   const visibleSections = speciesProfileSections(species);
+  const editorialProse = getSpeciesEditorialProse(species.speciesId);
 
   return (
     <section
@@ -238,7 +238,7 @@ export default async function SpeciesPage({
               {section.label}
             </a>
           ))}
-          {scoredSpecies && region && (
+          {scoredSpecies && (
             <UmamiEventLink
               href={speciesMapHref(scoredSpecies.speciesId, {
                 region,
@@ -254,10 +254,11 @@ export default async function SpeciesPage({
         </SpeciesContents>
 
         <div className="species-main">
-          <SpeciesIdentificationSection species={species} />
-          <SpeciesCulinarySection species={species} />
-          <SpeciesEcologySection species={species} />
-          {scoredSpecies && region && <SpeciesDistributionSection region={region} species={scoredSpecies} />}
+          <SpeciesIdentificationSection species={species} identificationProse={editorialProse?.identification} lookalikeNote={editorialProse?.lookalikes} />
+          <SpeciesEcologySection species={species} prose={editorialProse} />
+          {scoredSpecies && <SpeciesDistributionSection region={region} species={scoredSpecies} />}
+          <SpeciesCulinarySection species={species} prose={editorialProse?.cuisine} />
+          <SpeciesNamesSection species={species} />
           <SpeciesFaqSection species={species} faqs={faqs} />
           <SpeciesFieldCardSection species={species} />
           <ProfileSection species={species} id="fonts" eyebrow="Referències" title="Fonts i autoria">

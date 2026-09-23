@@ -19,8 +19,11 @@ function preservationGuideHref(speciesId: string) {
 
 export function SpeciesCulinarySection({
   species,
+  prose,
 }: {
   species: CatalogueSpecies;
+  /** Hand-written cooking, keeping or safety text: replaces the one-line summary on edible species and follows the safety verdict on toxic ones. */
+  prose?: readonly string[];
 }) {
   const hasToxicLookalike = species.similarSpecies.some(
     (item) => item.warning || item.edibility.includes("toxic"),
@@ -49,7 +52,12 @@ export function SpeciesCulinarySection({
     <div className="profile-panel-body">
     {profile.kind === "culinary" ? (
       <>
-        <p className="profile-lede">{profile.summary}</p>
+        {/* The hand-written text covers the one-line summary in more detail, so it replaces it. */}
+        {prose ? (
+          <div className="profile-prose">
+            {prose.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          </div>
+        ) : <p className="profile-lede">{profile.summary}</p>}
         <ProfileFacts
           label="Perfil culinari"
           items={[
@@ -62,7 +70,14 @@ export function SpeciesCulinarySection({
         />
       </>
     ) : (
-      <p className="profile-lede"><strong>Sense usos culinaris recomanats.</strong> {profile.summary}</p>
+      <>
+        <p className="profile-lede"><strong>Sense usos culinaris recomanats.</strong> {profile.summary}</p>
+        {prose && (
+          <div className="profile-prose">
+            {prose.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          </div>
+        )}
+      </>
     )}
     </div>
     </div>

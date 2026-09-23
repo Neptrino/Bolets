@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, Ban, Clock3, CloudRain, Compass, Droplets, Layers3, Mountain, Sun, ThermometerSun, Trees, Wind } from "lucide-react";
 import { SeasonCalendar } from "@/components/season-calendar";
 import { ProfileFacts } from "@/components/species-profile/profile-facts";
+import type { SpeciesEditorialProse } from "@/data/species-editorial-prose";
 import {
   altitudeCalendarSentence,
   altitudeCalendarShift,
@@ -25,8 +26,11 @@ function lowerFirst(value: string) {
 
 export function SpeciesEcologySection({
   species,
+  prose,
 }: {
   species: CatalogueSpecies;
+  /** Hand-written territory prose; its searched heading, when present, replaces the generic one. */
+  prose?: SpeciesEditorialProse;
 }) {
   const headings = speciesHeadings(species.identity.commonName);
   const seasonLinks = (
@@ -73,9 +77,14 @@ export function SpeciesEcologySection({
   const calendarShiftSentence = calendarShift ? altitudeCalendarSentence(calendarShift) : null;
 
   return (
-<ProfileSection species={species} id="ecologia" className="ecology-section" eyebrow="Perfil ecològic" title={headings.ecology}>
+<ProfileSection species={species} id="ecologia" className="ecology-section" eyebrow="Perfil ecològic" title={prose?.ecologyHeading ?? headings.ecology}>
     <div className="profile-panel">
       <div className="profile-panel-body">
+    {prose && (
+      <div className="profile-prose">
+        {prose.ecology.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+      </div>
+    )}
     <ProfileFacts
       label="Condicions ecològiques principals"
       items={[

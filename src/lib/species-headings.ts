@@ -32,21 +32,25 @@ export function speciesHeadings(name: string) {
     cuisine: sentenceCase(`${withArticle} a la cuina`),
     edible: `Es pot menjar ${withArticle}?`,
     ecology: `On i quan creix ${withArticle}`,
-    map: `On podria créixer ${withArticle} a Catalunya`,
+    map: `Mapa d’hàbitat ${ofSpecies} a Catalunya`,
+    mapLink: `Mapa ${ofSpecies} avui`,
+    habitatMapLink: `Mapa d’hàbitat ${ofSpecies}`,
     fieldCard: `Targeta de camp ${ofSpecies}`,
   };
 }
 
 
-/** One ordered list owns both the contents menu and visible section numbers. */
+/** One ordered list owns both the contents menu and visible section numbers. The order follows
+    an outing: what it is and what it can be mistaken for, then when and where it grows, then
+    the kitchen; names, questions and the field card close the page as reference. */
 export function speciesProfileSections(species: CatalogueSpecies) {
   return [
     { id: "identificació", label: "Com reconèixer-lo" },
     { id: "confusions", label: "Possibles confusions" },
-    { id: "noms", label: "Noms" },
-    { id: "cuina", label: species.culinaryProfile.kind === "culinary" ? "A la cuina" : "Es pot menjar?" },
     { id: "ecologia", label: "On i quan creix" },
-    ...("scope" in species ? [] : [{ id: "distribució", label: "On podria créixer" }]),
+    ...("scope" in species ? [] : [{ id: "distribució", label: "Mapa d’hàbitat" }]),
+    { id: "cuina", label: species.culinaryProfile.kind === "culinary" ? "A la cuina" : "Es pot menjar?" },
+    { id: "noms", label: "Noms" },
     { id: "preguntes", label: "Preguntes freqüents" },
     { id: "targeta-de-camp", label: "Targeta de camp" },
     { id: "fonts", label: "Fonts i autoria" },

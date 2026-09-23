@@ -169,6 +169,7 @@ export function editorialSourcesFor(contentId: string): EditorialSourceSet {
           optionalBlock("data/species-media.ts", `"${key}":`),
           optionalBlock("data/species-gallery-media.ts", `"${key}":`),
           optionalBlock("data/culinary-profiles.ts", `"${key}":`),
+          optionalBlock("data/species-editorial-prose.ts", `"${key}":`),
           optionalBlock("data/species-common-names.ts", `"${key}":`, "line"),
           lineOf("data/species-slugs.ts", `"${key}":`),
         ],
