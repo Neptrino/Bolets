@@ -7,6 +7,14 @@ function scoreTone(score: number) {
   return score === 0 ? "#756f64" : getSuitabilityBand(score).color;
 }
 
+/** PNG data URIs of the drawn species icons, by species id: ImageResponse cannot decode the published WebPs. */
+export type DailyShareSpeciesIcons = Partial<Record<string, string>>;
+
+function SpeciesDrawing({ src, size }: { src: string; size: number }) {
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={src} width={size} height={size} alt="" style={{ width: size, height: size, objectFit: "contain" }} />;
+}
+
 const shareDate = new Intl.DateTimeFormat("ca-ES", {
   day: "numeric",
   month: "short",
@@ -38,8 +46,9 @@ function PredictionScale({ score, isStory }: { score: number | null; isStory: bo
   );
 }
 
-function PortraitShareCard({ card, format, homeHeroUrl, isPreview }: { card: DailyShareCard; format: InstagramFormat; homeHeroUrl: string; isPreview: boolean }) {
+function PortraitShareCard({ card, format, homeHeroUrl, isPreview, speciesIcons }: { card: DailyShareCard; format: InstagramFormat; homeHeroUrl: string; isPreview: boolean; speciesIcons: DailyShareSpeciesIcons }) {
   const reading = card.readings[0];
+  const readingIcon = reading ? speciesIcons[reading.speciesId] : undefined;
   const isStory = format === "story";
   const hasNoFavourableConditions = card.readings.length > 0 && card.readings.every((candidate) => candidate.score === 0);
   const score = reading?.score ?? null;
@@ -93,10 +102,13 @@ function PortraitShareCard({ card, format, homeHeroUrl, isPreview }: { card: Dai
                 <div style={{ display: "flex", color: "#173021", fontSize: isStory ? 41 : 32, lineHeight: 1.04, fontWeight: 800, letterSpacing: "-0.035em", marginTop: 13 }}>Sense condicions favorables</div>
               </div>
             ) : reading ? (
-              <div style={{ display: "flex", width: "100%", flexDirection: "column", alignItems: "flex-start" }}>
-                <div style={{ display: "flex", color: band?.color, fontSize: isStory ? 25 : 22, fontWeight: 900, letterSpacing: "0.1em", textTransform: "uppercase" }}>{band?.label}</div>
-                <div style={{ display: "flex", color: "#173021", fontSize: isStory ? 49 : 38, lineHeight: 1, fontWeight: 800, letterSpacing: "-0.04em", marginTop: 13 }}>{reading.speciesName}</div>
-                <div style={{ display: "flex", width: "100%", color: "#706f67", fontSize: isStory ? 28 : 24, lineHeight: 1.25, marginTop: 15 }}>{card.scope === "overview" ? reading.regionName : "Lectura més alta publicada a la zona"}</div>
+              <div style={{ display: "flex", width: "100%", alignItems: "center", gap: isStory ? 24 : 18 }}>
+                <div style={{ display: "flex", flex: 1, minWidth: 0, flexDirection: "column", alignItems: "flex-start" }}>
+                  <div style={{ display: "flex", color: band?.color, fontSize: isStory ? 25 : 22, fontWeight: 900, letterSpacing: "0.1em", textTransform: "uppercase" }}>{band?.label}</div>
+                  <div style={{ display: "flex", color: "#173021", fontSize: isStory ? 49 : 38, lineHeight: 1, fontWeight: 800, letterSpacing: "-0.04em", marginTop: 13 }}>{reading.speciesName}</div>
+                  <div style={{ display: "flex", width: "100%", color: "#706f67", fontSize: isStory ? 28 : 24, lineHeight: 1.25, marginTop: 15 }}>{card.scope === "overview" ? reading.regionName : "Lectura més alta publicada a la zona"}</div>
+                </div>
+                {readingIcon ? <SpeciesDrawing src={readingIcon} size={isStory ? 132 : 104} /> : null}
               </div>
             ) : (
               <div style={{ display: "flex", width: "100%", flexDirection: "column", alignItems: "flex-start" }}>
@@ -144,7 +156,7 @@ function PortraitShareCard({ card, format, homeHeroUrl, isPreview }: { card: Dai
   );
 }
 
-function OverviewPortraitShareCard({ card, format, homeHeroUrl, isPreview }: { card: DailyShareCard; format: InstagramFormat; homeHeroUrl: string; isPreview: boolean }) {
+function OverviewPortraitShareCard({ card, format, homeHeroUrl, isPreview, speciesIcons }: { card: DailyShareCard; format: InstagramFormat; homeHeroUrl: string; isPreview: boolean; speciesIcons: DailyShareSpeciesIcons }) {
   const isStory = format === "story";
   const readings = card.readings.slice(0, 3);
   const observedLabel = card.observedAt ? shareDate.format(new Date(card.observedAt)) : "Avui";
@@ -191,10 +203,16 @@ function OverviewPortraitShareCard({ card, format, homeHeroUrl, isPreview }: { c
         <div style={{ display: "flex", width: "100%", flexDirection: "column", gap: isStory ? 18 : 12, marginTop: isStory ? 28 : 20 }}>
           {readings.map((reading, index) => {
             const band = getSuitabilityBand(reading.score);
+            const icon = speciesIcons[reading.speciesId];
             return (
               <div key={`${reading.regionName}-${reading.speciesId}`} style={{ display: "flex", width: "100%", minHeight: isStory ? 165 : 122, overflow: "hidden", border: "1px solid #d4c8ab", borderRadius: isStory ? 24 : 18, background: "#fffaf0", boxShadow: "0 10px 24px rgba(44,55,39,0.07)" }}>
                 <div style={{ display: "flex", width: isStory ? 90 : 68, flexShrink: 0, alignItems: "center", justifyContent: "center", background: "#173021", color: "#fff7e8", fontSize: isStory ? 32 : 26, fontWeight: 900 }}>0{index + 1}</div>
-                <div style={{ display: "flex", flex: 1, minWidth: 0, flexDirection: "column", justifyContent: "center", padding: isStory ? "22px 28px" : "16px 22px" }}>
+                {icon ? (
+                  <div style={{ display: "flex", flexShrink: 0, alignItems: "center", justifyContent: "center", paddingLeft: isStory ? 20 : 14 }}>
+                    <SpeciesDrawing src={icon} size={isStory ? 116 : 88} />
+                  </div>
+                ) : null}
+                <div style={{ display: "flex", flex: 1, minWidth: 0, flexDirection: "column", justifyContent: "center", padding: isStory ? `22px 28px 22px ${icon ? 18 : 28}px` : `16px 22px 16px ${icon ? 14 : 22}px` }}>
                   <div style={{ display: "flex", color: "#173021", fontSize: isStory ? 34 : 28, lineHeight: 1, fontWeight: 900, letterSpacing: "-0.035em" }}>{reading.regionName}</div>
                   <div style={{ display: "flex", color: "#706f67", fontSize: isStory ? 25 : 22, marginTop: 8 }}>{reading.speciesName}</div>
                   <div style={{ display: "flex", color: scoreTone(reading.score), fontSize: isStory ? 23 : 20, fontWeight: 800, marginTop: 8 }}>{Math.round(reading.positiveCellShare * 100)}% positives · {Math.round(reading.score20CellShare * 100)}% amb 20+</div>
@@ -236,11 +254,11 @@ function OverviewPortraitShareCard({ card, format, homeHeroUrl, isPreview }: { c
 }
 
 /** Restore the photo-led daily summary; unavailable readings remain withheld. */
-export function InstagramDailyCard({ card: input, format, homeHeroUrl }: { card: DailyShareCard; format: InstagramFormat; homeHeroUrl: string }) {
+export function InstagramDailyCard({ card: input, format, homeHeroUrl, speciesIcons = {} }: { card: DailyShareCard; format: InstagramFormat; homeHeroUrl: string; speciesIcons?: DailyShareSpeciesIcons }) {
   const card = input.available && input.observedAt ? input : { ...input, readings: [] };
   const isPreview = card.isPreview === true;
   const hasPositiveReading = card.readings.some(reading => reading.score > 0);
   return card.scope === "overview" && hasPositiveReading
-    ? <OverviewPortraitShareCard card={card} format={format} homeHeroUrl={homeHeroUrl} isPreview={isPreview} />
-    : <PortraitShareCard card={card} format={format} homeHeroUrl={homeHeroUrl} isPreview={isPreview} />;
+    ? <OverviewPortraitShareCard card={card} format={format} homeHeroUrl={homeHeroUrl} isPreview={isPreview} speciesIcons={speciesIcons} />
+    : <PortraitShareCard card={card} format={format} homeHeroUrl={homeHeroUrl} isPreview={isPreview} speciesIcons={speciesIcons} />;
 }

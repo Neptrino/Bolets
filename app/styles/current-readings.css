@@ -12,17 +12,24 @@
 .current-board-heading h2 { margin: 0; font-size: var(--display-sm); letter-spacing: -.035em; }
 .current-board-heading > div:last-child > p:first-child { margin: 0; color: var(--forest-550); line-height: 1.6; }
 .current-board-columns,
-.current-overview-card { display: grid; grid-template-columns: 3.7rem minmax(11rem, 1.4fr) minmax(12rem, 1fr) minmax(7.2rem, auto); gap: 1.25rem; align-items: center; }
+.current-overview-card { display: grid; grid-template-columns: 4.5rem minmax(11rem, 1.4fr) minmax(12rem, 1fr) minmax(7.2rem, auto); gap: 1.25rem; align-items: center; }
 .current-board-columns { padding: 0 1rem 0.75rem; color: var(--forest-550); }
+/* Positions are right-aligned numbers, so the gap to the species icon is the column gap, not leftover column width. */
+.current-board-columns span:first-child,
 .current-board-columns span:last-child { text-align: right; }
 .current-overview-grid { margin: 0; padding: 0; border-top: 1px solid color-mix(in srgb, var(--forest-panel) 20%, transparent); list-style: none; }
 .current-overview-card { min-height: 6.6rem; padding: 1rem; border-bottom: 1px solid color-mix(in srgb, var(--forest-panel) 20%, transparent); background: color-mix(in srgb, var(--surface-muted) 30%, transparent); }
 .current-overview-card:hover { background: color-mix(in srgb, var(--surface-muted) 60%, transparent); }
 .current-overview-card.is-insufficient,
 .current-overview-card.is-unavailable { color: var(--forest-550); }
-.current-row-rank { color: var(--gold); font-family: var(--font-nunito-sans), sans-serif; font-size: var(--text-xl); font-style: italic; }
+.current-row-rank { color: var(--gold); text-align: right; font-family: var(--font-nunito-sans), sans-serif; font-size: var(--text-xl); font-style: italic; }
 .current-overview-card.is-insufficient .current-row-rank,
 .current-overview-card.is-unavailable .current-row-rank { color: var(--stone); }
+/* The drawn icon carries the species at a glance: the same zone often appears on several rows. */
+.current-overview-card-heading { display: flex; gap: 0.75rem; align-items: center; min-width: 0; }
+.current-overview-card-heading .species-icon { flex: none; width: 44px; height: 44px; object-fit: contain; }
+.current-overview-card.is-insufficient .species-icon,
+.current-overview-card.is-unavailable .species-icon { opacity: 0.55; }
 .current-overview-card-heading h3 { margin: 0; color: var(--forest-panel); font-size: var(--text-lg); }
 .current-row-species { display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; align-items: center; margin: 0.5rem 0 0; line-height: 1.35; }
 .current-row-species-link { display: inline-flex; gap: 0.25rem; align-items: center; color: var(--forest-panel); font-size: var(--text-base); font-weight: 850; text-decoration-color: color-mix(in srgb, var(--gold) 50%, transparent); text-decoration-thickness: 1px; text-underline-offset: 3px; }

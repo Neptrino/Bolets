@@ -15,6 +15,7 @@ import { InstagramMark } from "@/components/instagram-mark";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent } from "@/components/page-layout";
 import { PredictionMapLegend } from "@/components/prediction-map-legend";
+import { SpeciesIcon } from "@/components/species-icon";
 import { LazyCurrentMap } from "@/components/lazy-current-map";
 import { editorialArticleFields } from "@/data/editorial";
 import { regionSelectItems } from "@/data/regions";
@@ -226,8 +227,11 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
                 >
                   <span className="current-row-rank" aria-label={rank ? `Posició ${rank}` : "Sense posició"}>{rank ? String(rank).padStart(2, "0") : "—"}</span>
                   <div className="current-overview-card-heading">
-                    <h3>{isArea ? <Link href={item.path} className="current-row-species-link">{locationName}<ArrowUpRight size={13} /></Link> : locationName}</h3>
-                    <p className="current-row-species"><Link href={speciesPath(item)} className="current-row-species-link">{item.speciesName}<ArrowUpRight size={13} /></Link><span>{locationLabel} · {monthlyActivityLabel(item.seasonalActivity)}</span></p>
+                    <SpeciesIcon speciesId={item.speciesId} size={44} />
+                    <div>
+                      <h3>{isArea ? <Link href={item.path} className="current-row-species-link">{locationName}<ArrowUpRight size={13} /></Link> : locationName}</h3>
+                      <p className="current-row-species"><Link href={speciesPath(item)} className="current-row-species-link">{item.speciesName}<ArrowUpRight size={13} /></Link><span>{locationLabel} · {monthlyActivityLabel(item.seasonalActivity)}</span></p>
+                    </div>
                   </div>
                   {isAvailable && summary && score !== null && score !== undefined ? (
                     <div className="current-score" aria-label={`Millor sector de ${gridSizeKm} km: ${score} sobre 100, ${opportunityLabel(score)}`}>
