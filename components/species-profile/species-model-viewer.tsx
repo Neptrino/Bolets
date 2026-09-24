@@ -77,7 +77,7 @@ export function SpeciesModelViewer({ model, label }: { model: Species3dModel; la
               alt: label,
               "camera-controls": true,
               "auto-rotate": true,
-              "auto-rotate-delay": 3000,
+              "auto-rotate-delay": 0,
               "rotation-per-second": "18deg",
               "interaction-prompt": "none",
               "touch-action": "pan-y",
