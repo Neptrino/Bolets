@@ -85,7 +85,7 @@ const STATIC_PAGES: Record<string, ContentSource[]> = {
     file("src/lib/catalogue-infographic.ts"),
     file("src/lib/infographic-media.ts"),
   ],
-  "bolets-avui": [file("app/bolets-avui/page.tsx"), file("components/weekend-outlook.tsx"), file("src/lib/current-overview-copy.ts"), file("src/lib/current-overview-page.ts"), file("src/lib/weekend-outlook.ts")],
+  "bolets-avui": [file("app/bolets-avui/page.tsx"), file("components/weekend-outlook.tsx"), file("src/lib/current-overview-copy.ts"), file("src/lib/current-overview-page.ts"), file("src/lib/overview-trend.ts"), file("src/lib/weekend-outlook.ts")],
   "quan-surten-els-bolets-despres-de-ploure": [
     file("app/quan-surten-els-bolets-despres-de-ploure/page.tsx"),
     file("src/lib/rain-response-summary.ts"),

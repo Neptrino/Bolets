@@ -38,9 +38,9 @@ import {
 import { speciesMapHref } from "@/src/lib/species-map-pages";
 import { territorialMapPath } from "@/src/lib/territorial-map";
 import { weekendWindow } from "@/src/lib/week-window";
-import { loadOverview, overviewLocationName, overviewMapPath } from "@/src/lib/current-overview-page";
+import { loadOverview, loadOverviewTrendSentence, overviewLocationName, overviewMapPath } from "@/src/lib/current-overview-page";
 import { WeekendOutlook, WeekendOutlookLoading } from "@/components/weekend-outlook";
-import { currentSearchReadings, overviewReadingExplanation } from "@/src/lib/current-overview-copy";
+import { currentSearchReadings, overviewOverallReading, overviewReadingExplanation } from "@/src/lib/current-overview-copy";
 
 const overviewTitle = "On trobar bolets avui i aquesta setmana";
 const overviewDescription = metaDescription(
@@ -129,6 +129,9 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
   const topLocations = searchReadings.map((item) =>
     `${overviewLocationName(item)} (${item.speciesName.toLocaleLowerCase("ca")})`,
   );
+  const overallReading = overviewOverallReading(items);
+  // The trend reads real map frames, so a local simulation leaves it out.
+  const trend = section === "answer" && !simulated ? await loadOverviewTrendSentence() : null;
   const availableCount = items.filter((item) => item.status === "available" && item.summary).length;
   const editorialFields = editorialArticleFields("bolets-avui");
   const editorialModifiedAt = new Date(`${editorialFields.dateModified}T00:00:00+02:00`);
@@ -184,6 +187,8 @@ async function CurrentOverview({ simulate = false, section }: { simulate?: boole
             Amb les lectures més recents, <strong>{catalanList(topLocations)}</strong> encapçalen
             la comparació de territoris per preparar una sortida avui o aquesta setmana.
             Són condicions ambientals favorables; no confirmen que hi hagi bolets.
+            {overallReading && <> {overallReading}</>}
+            {trend && <> {trend}</>}
           </> : availableCount > 0
             ? "Cap de les lectures disponibles mostra sectors favorables ara mateix."
             : "Falten lectures recents i completes per comparar els territoris. Torna-ho a provar més tard."}

@@ -298,7 +298,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-24",
   },
   "bolets-avui": {
-    updatedAt: "2026-09-18",
+    updatedAt: "2026-09-24",
   },
   "species:chroogomphus-rutilus": { updatedAt: "2026-09-19" },
   "species:craterellus-tubaeformis": { updatedAt: "2026-09-19" },

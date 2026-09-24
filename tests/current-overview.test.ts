@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { buildSitemap } from "@/app/sitemap";
 import { getSpecies, speciesProfiles } from "@/data/species";
-import { currentSearchReadings, overviewExtent, overviewLimitingFactor, overviewReadingExplanation } from "@/src/lib/current-overview-copy";
+import { currentSearchReadings, overviewExtent, overviewLimitingFactor, overviewOverallReading, overviewReadingExplanation } from "@/src/lib/current-overview-copy";
 import {
   CURRENT_OVERVIEW_CONCURRENCY,
   DAILY_OVERVIEW_REVALIDATE_SECONDS,
@@ -455,6 +455,27 @@ describe("current search interpretation", () => {
     expect(overviewReadingExplanation(item)).toBeNull();
     expect(overviewReadingExplanation({ ...reading("ports"), summary: null })).toBeNull();
     expect(overviewReadingExplanation({ ...reading("ports"), status: "unavailable" })).toBeNull();
+  });
+
+  it("reads Catalonia as a whole from each zone's best reading", () => {
+    expect(overviewOverallReading([reading("pirineus"), reading("pirineus", "Camagroc"), reading("montseny"), reading("ports")]))
+      .toBe("En conjunt, a la majoria de zones que seguim les condicions són altes, i el que més les frena és l’aigua.");
+    const scored = (regionId: RegionId, score: number) => ({ ...reading(regionId), summary: summary(regionId, { bestCellScore: score }) });
+    expect(overviewOverallReading([scored("pirineus", 70), scored("montseny", 30), scored("ports", 25), scored("emporda", 10)]))
+      .toBe("En conjunt, a moltes de les zones que seguim les condicions són baixes, i el que més les frena és l’aigua.");
+    const frosty = scored("pirineus", 0);
+    frosty.summary.result.components.find((component) => component.id === "extremes")!.score = 10;
+    frosty.summary.result.components.find((component) => component.id === "extremes")!.state = "unfavourable";
+    expect(overviewOverallReading([frosty, { ...frosty }, { ...frosty }].map((item, index) => ({ ...item, regionId: (["pirineus", "montseny", "ports"] as RegionId[])[index]! }))))
+      .toBe("En conjunt, a la majoria de zones que seguim encara no hi ha condicions favorables, i el que més les frena són les gelades o la calor recents.");
+  });
+
+  it("prefers the local zones, skips unpublishable readings and needs three zones to generalise", () => {
+    const local = (areaSlug: string, score: number) => ({ ...reading("pirineus"), areaSlug, summary: summary("pirineus", { bestCellScore: score }) });
+    const stale = reading("montseny"); stale.summary.snapshot.stale = true;
+    expect(overviewOverallReading([local("ripolles", 45), local("bergueda", 42), local("garrotxa", 12), reading("ports"), stale]))
+      .toBe("En conjunt, a la majoria de zones que seguim les condicions són mitjanes, i el que més les frena és l’aigua.");
+    expect(overviewOverallReading([reading("pirineus"), reading("montseny"), stale])).toBeNull();
   });
 
   it("does not invent a favourable factor when none is supported", () => {

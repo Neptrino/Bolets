@@ -117,6 +117,11 @@ function within(bounds: SpatialBounds, [longitude, latitude]: [number, number]) 
     latitude >= bounds.south && latitude <= bounds.north;
 }
 
+/** A cell belongs to a territory when its centre falls inside the hub bounds, the same rule the area summaries use. */
+export function isCellInHub(cell: GlobalPredictionMapCell, hub: Pick<WeekendOutlookHub, "bounds">) {
+  return within(hub.bounds, cellCentre(cell));
+}
+
 const catalanCollator = new Intl.Collator("ca", { sensitivity: "base" });
 
 /**
@@ -137,7 +142,7 @@ export function summariseWeekendOutlook(
   });
   return hubs.flatMap((hub) => {
     const scored = uniqueCells.filter((cell) =>
-      typeof cell.score === "number" && within(hub.bounds, cellCentre(cell)));
+      typeof cell.score === "number" && isCellInHub(cell, hub));
     if (scored.length < WEEKEND_OUTLOOK_MIN_CELLS) return [];
     const best = scored
       .filter((cell) => cell.topSpeciesId !== null && (cell.score ?? 0) > 0)
