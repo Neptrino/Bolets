@@ -10,6 +10,7 @@ export default defineConfig([
     ".vercel/**",
     "node_modules/**",
     "public/maplibre/**",
+    "public/models/draco/**",
     "coverage/**",
     "artifacts/**",
     "output/**",
