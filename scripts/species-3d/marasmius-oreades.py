@@ -137,10 +137,28 @@ def _specimen(tag, seed, h0, cap_rel, tip, stem_r, count, depth, lobe_amp, loc, 
     base = g.mix(g.math("MULTIPLY", dry, g.remap(g.v, 0.1, um * 0.6)), base, "#d9b98a")
     base = g.mix(0.25, base, g.noise(14 / rmax * 0.02, 4, 0.6), "OVERLAY")
     base = g.mix(0.12, base, g.noise(240, 3), "OVERLAY")
+    # Darker umbo, fine mottling and a faint radial fibrillose texture.
+    umbo = g.remap(g.radial(), 0.14 * rmax, 0.32 * rmax, 1.0, 0.0)
+    base = g.mix(g.math("MULTIPLY", umbo, 0.55), base, "#7c4b24")
+    mottle = g.remap(g.noise(0.35 / rmax * 60, 4, 0.6, distortion=0.8), 0.45, 0.62)
+    base = g.mix(g.math("MULTIPLY", mottle, 0.22), base, "#8e5c30")
+    ang = g.nt.nodes.new("ShaderNodeMath")
+    ang.operation = "ARCTAN2"
+    sepo = g.nt.nodes.new("ShaderNodeSeparateXYZ")
+    g.link(g.obj, sepo.inputs[0])
+    g.link(sepo.outputs["Y"], ang.inputs[0])
+    g.link(sepo.outputs["X"], ang.inputs[1])
+    jitter = g.math("MULTIPLY", g.noise(0.35 / rmax * 12, 2), 0.25)
+    fibr = g.math("SINE", g.math("MULTIPLY", g.math("ADD", ang.outputs[0], jitter), 260.0))
+    fibr = g.math("MULTIPLY", g.remap(fibr, -1.0, 1.0), g.remap(g.v, um * 0.3, um * 0.8))
+    fibr = g.math("MULTIPLY", fibr, g.remap(g.noise(0.35 / rmax * 25, 3), 0.35, 0.65))
+    base = g.mix(g.math("MULTIPLY", fibr, 0.12), base, "#865429")
     under = g.remap(g.v, um + 0.002, um + 0.014)
     colour = g.mix(under, base, "#e2cc9f")
     roughness = g.lerp(under, g.remap(g.noise(30, 2), 0.3, 0.7, 0.6, 0.72), 0.82)
-    g.finish(colour, roughness, g.noise(260, 3), 0.25, 0.0003)
+    height = g.math("ADD", g.math("MULTIPLY", g.noise(260, 3), 0.6), g.math("MULTIPLY", fibr, 0.35))
+    height = g.math("ADD", height, g.math("MULTIPLY", g.noise(900, 2), 0.2))
+    g.finish(colour, roughness, height, 0.3, 0.0003)
     cap.data.materials.append(m)
     cap["tex"] = 1024
 
@@ -191,16 +209,16 @@ def build():
     # Convex with a broad umbo: margin below the stem apex, concave hymenium.
     objs += _specimen(
         "b", Vector((6.1, 2.7, 3.9)), 0.047,
-        [(0.000, 0.0094), (0.0028, 0.0092), (0.0048, 0.0082), (0.0068, 0.0068), (0.0100, 0.0052), (0.0128, 0.0026),
-         (0.0142, -0.0002), (0.0151, -0.0030), (0.0147, -0.0041), (0.0138, -0.0036),
+        [(0.000, 0.0092), (0.0026, 0.0090), (0.0042, 0.0080), (0.0056, 0.0066), (0.0078, 0.0060), (0.0105, 0.0050),
+         (0.0128, 0.0033), (0.0144, 0.0008), (0.0152, -0.0016), (0.0148, -0.0029), (0.0139, -0.0028),
          (0.011, -0.0017), (0.008, 0.0002), (0.0052, 0.0014), (0.0026, 0.0021), (0.0010, 0.0023)],
-        8, 0.0019, 22, 0.0034, 0.025, (-0.030, -0.012, 0.0), (math.radians(6), math.radians(-9), 1.2), 0.3)
+        9, 0.0019, 22, 0.0034, 0.025, (-0.030, -0.012, 0.0), (math.radians(6), math.radians(-9), 1.2), 0.3)
     # Young: bell-shaped, margin still curved in against the gills.
     objs += _specimen(
         "c", Vector((3.4, 8.8, 5.2)), 0.030,
-        [(0.000, 0.0108), (0.0028, 0.0103), (0.0052, 0.0086), (0.0072, 0.0060), (0.0087, 0.0030),
-         (0.0094, -0.0002), (0.0093, -0.0024), (0.0087, -0.0031), (0.0080, -0.0026),
+        [(0.000, 0.0122), (0.0020, 0.0119), (0.0034, 0.0108), (0.0046, 0.0099), (0.0061, 0.0088), (0.0075, 0.0065),
+         (0.0086, 0.0033), (0.0093, -0.0002), (0.0092, -0.0024), (0.0087, -0.0031), (0.0080, -0.0026),
          (0.0065, -0.0010), (0.0048, 0.0004), (0.0030, 0.0013), (0.0010, 0.0017)],
-        7, 0.0016, 18, 0.0026, 0.015, (0.026, -0.020, 0.0), (math.radians(-7), math.radians(-5), 4.0), 5.5)
+        9, 0.0016, 18, 0.0026, 0.015, (0.026, -0.020, 0.0), (math.radians(-7), math.radians(-5), 4.0), 5.5)
     views = {"hero": (-30, 20, 0.36, 0.036), "low": (20, 3, 0.34, 0.038), "under": (15, -22, 0.27, 0.05)}
     return objs, views

@@ -45,7 +45,7 @@ def _tt_gills(name, cap_profile, samples, j_start, cap_shape, stem_radius, count
             v = f / (samples - 1)
             n3 = Vector((nr * math.cos(th), nr * math.sin(th), nz))
             start = smooth(t0, t0 + 0.05, t) if t0 > 0 else 1.0
-            d = depth * start * (1 - smooth(0.88, 1.0, t)) * (0.7 + 0.3 * smooth(0.1, 0.5, t))
+            d = depth * start * (1 - smooth(0.78, 1.0, t)) * (0.7 + 0.3 * smooth(0.1, 0.5, t))
             # Emarginate: a notch rising towards the stem, then a short tooth.
             d *= 0.35 + 0.65 * smooth(0.02, 0.2, t)
             base = Vector(cap_shape(th, v, pr.x, pr.y))
@@ -132,38 +132,59 @@ def _cap_material(name, um, ug, seed_off):
     # Darker, denser felt at the centre; paler, silvery towards the margin.
     base = g.mix(g.math("MULTIPLY", centre, 0.9), base, "#2c2724")
     base = g.mix(g.remap(g.v, um * 0.6, um * 0.97, 0.0, 0.3), base, "#8e8780")
-    streak = g.remap(fib, 0.4, 0.68)
-    base = g.mix(g.math("MULTIPLY", streak, 0.4), base, "#3a3431")
-    base = g.mix(g.math("MULTIPLY", g.remap(fib2, 0.58, 0.75), 0.2), base, "#948e87")
-    # Tiny appressed squamules, most visible between centre and mid-cap.
-    sq = g.remap(scales_d, 0.0, 0.3, 1.0, 0.0)
-    sq_mask = g.math("MULTIPLY", g.remap(g.v, 0.0, um * 0.85, 1.0, 0.15), g.remap(g.noise(30, 2), 0.38, 0.52))
-    base = g.mix(g.math("MULTIPLY", sq, g.math("MULTIPLY", sq_mask, 0.7)), base, "#2e2926")
+    # Radial fibres only show in patches, so the pattern never reads as a
+    # regular sunburst.
+    patch = g.remap(g.noise(45, 4, 0.6, distortion=1.2), 0.42, 0.62)
+    streak = g.math("MULTIPLY", g.remap(fib, 0.42, 0.7), patch)
+    base = g.mix(g.math("MULTIPLY", streak, 0.45), base, "#3a3431")
+    base = g.mix(g.math("MULTIPLY", g.remap(fib2, 0.6, 0.76), 0.15), base, "#948e87")
+    # Tiny appressed squamules (object space, irregular sizes), dense at the
+    # centre and scattered towards the margin; darker felt clumps between.
+    sq_d = g.voronoi(700, rand=1.0, vec=g.vec_scale(g.obj, 1, 1, 0.6))
+    sq_size = g.remap(g.noise(90, 2), 0.3, 0.7, 0.12, 0.34)
+    sq = g.math("MULTIPLY", g.math("LESS_THAN", sq_d, sq_size), g.remap(g.noise(160, 2), 0.35, 0.6))
+    dens = g.remap(g.v, 0.0, um * 0.9, 1.0, 0.1)
+    sq_mask = g.math("MULTIPLY", dens, g.remap(g.noise(22, 3, distortion=0.8), 0.3, 0.55, 0.3, 1.0))
+    sq = g.math("MULTIPLY", sq, sq_mask)
+    base = g.mix(g.math("MULTIPLY", sq, 0.75), base, "#2a2522")
+    clump = g.math("MULTIPLY", g.remap(g.noise(120, 5, 0.7, distortion=1.5), 0.55, 0.72), dens)
+    base = g.mix(g.math("MULTIPLY", clump, 0.6), base, "#302a27")
+    old_sq = g.remap(scales_d, 0.0, 0.3, 1.0, 0.0)
+    base = g.mix(g.math("MULTIPLY", old_sq, g.math("MULTIPLY", sq_mask, 0.3)), base, "#2e2926")
     base = g.mix(0.2, base, g.noise(320, 3), "OVERLAY")
     # A thin pale rim, then the white flesh edge and the underside.
     base = g.mix(g.remap(g.v, um - 0.006, um + 0.002, 0.0, 0.6), base, "#a8a29b")
     under = g.remap(g.v, um + 0.001, ug + 0.006)
     colour = g.mix(under, base, "#c9c5bf")
     roughness = g.lerp(under, g.remap(g.noise(30, 2), 0.3, 0.7, 0.72, 0.84), 0.85)
-    height = g.math("ADD", g.math("ADD", g.math("MULTIPLY", streak, 0.4), g.math("MULTIPLY", sq, 0.35)), g.math("MULTIPLY", felt, 0.4))
-    g.finish(colour, roughness, height, 0.2, 0.0004)
+    height = g.math("ADD", g.math("ADD", g.math("MULTIPLY", streak, 0.35), g.math("MULTIPLY", sq, 0.6)), g.math("ADD", g.math("MULTIPLY", felt, 0.3), g.math("MULTIPLY", clump, 0.3)))
+    g.finish(colour, roughness, height, 0.3, 0.0004)
     return m
 
 
 def _stem_material(name, soil_from):
+    """Off-white with a faint grey tint, finely fibrillose lengthwise, with
+    greyish fibrils near the apex and soil at the base."""
     m = bpy.data.materials.new(name)
     g = Graph(m)
-    fibres = g.noise(160, 4, 0.55, vec=g.vec_scale(g.obj, 1, 1, 0.06))
-    colour = g.ramp(fibres, [(0.3, "#e0dfdb"), (0.55, "#ecebe8"), (0.75, "#f5f5f2")])
-    colour = g.mix(g.math("MULTIPLY", g.remap(fibres, 0.55, 0.8), 0.4), colour, "#aca79e")
-    colour = g.mix(0.15, colour, g.noise(300, 2), "OVERLAY")
-    # A faint greyish flush below the gills; soil and needle dirt at the base.
-    colour = g.mix(g.remap(g.v, 0.0, 0.12, 0.35, 0.0), colour, "#c9c5be")
+    long_vec = g.vec_scale(g.obj, 1, 1, 0.05)
+    fibres = g.noise(420, 4, 0.6, vec=long_vec, distortion=0.4)
+    coarse = g.noise(150, 3, 0.55, vec=g.vec_scale(g.obj, 1, 1, 0.08))
+    colour = g.ramp(g.noise(35, 3), [(0.3, "#c3c0ba"), (0.6, "#cdcac5"), (0.8, "#d6d3ce")])
+    colour = g.mix(g.math("MULTIPLY", g.remap(fibres, 0.5, 0.72), 0.55), colour, "#a8a49e")
+    colour = g.mix(g.math("MULTIPLY", g.remap(coarse, 0.55, 0.75), 0.35), colour, "#a9a5a0")
+    colour = g.mix(g.math("MULTIPLY", g.remap(fibres, 0.25, 0.4, 1.0, 0.0), 0.35), colour, "#e8e6e1")
+    # Greyish fibrils under the gills fading down the upper third.
+    top = g.remap(g.v, 0.0, 0.4, 1.0, 0.0)
+    grey = g.math("MULTIPLY", top, g.remap(g.noise(90, 4, 0.6, vec=g.vec_scale(g.obj, 1, 1, 0.12)), 0.42, 0.62))
+    colour = g.mix(g.math("MULTIPLY", grey, 0.85), colour, "#86817c")
     side = g.remap(g.noise(3, 1, vec=g.vec_scale(g.obj, 1, 1, 0)), 0.35, 0.65, 0.0, 0.12)
     band = g.remap(g.math("ADD", g.v, side), soil_from, soil_from + 0.14)
     soil = g.math("MULTIPLY", band, g.remap(g.noise(70, 5, 0.65), 0.36, 0.5))
     colour = g.mix(soil, colour, g.ramp(g.noise(30, 3), [(0.4, "#6b5a47"), (0.65, "#8f7d66")]))
-    g.finish(colour, 0.78, fibres, 0.45, 0.0004)
+    roughness = g.remap(fibres, 0.3, 0.7, 0.72, 0.84)
+    height = g.math("ADD", g.math("MULTIPLY", fibres, 0.7), g.math("MULTIPLY", coarse, 0.5))
+    g.finish(colour, roughness, height, 0.7, 0.0004)
     return m
 
 
@@ -195,11 +216,12 @@ def _specimen(tag, stage, R, apex, stem_r, base_r, seed, tilt, splits, gill_coun
         wave = 0.06 * math.sin(3 * th + seed.x) + 0.035 * math.sin(5 * th + seed.y) + 0.03 * noise.noise(Vector((math.cos(th), math.sin(th), 0)) * 2.5 + seed)
         split = 0.0
         for ang, k in splits:
-            da = math.atan2(math.sin(th - ang), math.cos(th - ang))
-            split += k * math.exp(-(da / 0.06) ** 2)
+            da = abs(math.atan2(math.sin(th - ang), math.cos(th - ang)))
+            split += k * max(0.0, 1 - da / 0.05) ** 1.4
         rim = smooth(um - 0.12, um, v) * (1 - smooth(um, um + 0.15, v))
-        r2 = r * (1 + (w + wave * rim) * edge - split * rim)
-        z2 = z + (w * 0.25 * R + wave * 0.12 * R * rim) * edge + split * 0.15 * R * rim
+        crack = smooth(um - 0.3, um, v) * (1 - smooth(um + 0.02, um + 0.2, v))
+        r2 = r * (1 + (w + wave * rim) * edge - split * crack)
+        z2 = z + (w * 0.25 * R + wave * 0.12 * R * rim) * edge + split * 0.25 * R * crack
         top = 1 - smooth(um - 0.05, um, v)
         z2 += noise.noise(p * (1.6 / R) + seed) * 0.02 * R * top
         # Tilt the cap about the stem apex so the joint stays closed.
@@ -216,7 +238,11 @@ def _specimen(tag, stage, R, apex, stem_r, base_r, seed, tilt, splits, gill_coun
 
     def stem_shape(th, v, r, z):
         p = Vector((math.cos(th), math.sin(th), z * (6 / apex))) + seed
-        r *= 1 + (noise.noise(p) * 0.05 + noise.noise(p * 3) * 0.015) * (1 - smooth(apex - 0.2 * R, apex, z))
+        dirn = Vector((math.cos(th), math.sin(th), 0))
+        uneven = (noise.noise(p) * 0.06 + noise.noise(p * 3) * 0.02
+                  + noise.noise(Vector((0, 0, z * (3 / apex))) + seed * 1.3) * 0.07
+                  + noise.noise(dirn * 9 + Vector((0, 0, z * (1.5 / apex))) + seed) * 0.012)
+        r *= 1 + uneven * (1 - smooth(apex - 0.2 * R, apex, z))
         k = (1 - min(max(z, 0), apex) / apex) ** 2  # the base wanders off-axis
         return (r * math.cos(th) + lean.x * k, r * math.sin(th) + lean.y * k, z)
 
@@ -248,13 +274,13 @@ def _place(objs, loc, rot):
 def build():
     r = math.radians
     a = _specimen("a", "mature", 0.029, 0.052, 0.0068, 0.0073, Vector((3.3, 8.1, 0.7)),
-                  (r(4), r(-3), 0), [(0.6, 0.09), (2.9, 0.06), (4.4, 0.08)], 46, 0.0042, 2048)
+                  (r(4), r(-3), 0), [(0.6, 0.16), (2.9, 0.11), (4.4, 0.14), (5.6, 0.07)], 46, 0.0042, 2048)
     b = _specimen("b", "middle", 0.020, 0.042, 0.0052, 0.0057, Vector((7.1, 2.4, 2.2)),
-                  (r(-3), r(5), 0), [(1.8, 0.06)], 40, 0.0032, 1024)
+                  (r(-3), r(5), 0), [(1.8, 0.07)], 40, 0.0032, 1024)
     c = _specimen("c", "young", 0.0135, 0.030, 0.0041, 0.0045, Vector((1.2, 5.6, 4.0)),
                   (r(2), r(2), 0), [], 34, 0.0024, 1024)
     _place(a, (0, 0, 0), (0, 0, 0))
-    _place(b, (0.042, 0.026, 0), (r(-7), r(12), r(40)))
-    _place(c, (-0.02, -0.034, 0), (r(10), r(-8), r(-20)))
-    views = {"hero": (-30, 24, 0.42, 0.03), "low": (25, 4, 0.42, 0.034), "under": (15, -22, 0.38, 0.04)}
+    _place(b, (0.056, -0.004, 0), (r(-4), r(11), r(40)))
+    _place(c, (-0.045, -0.014, 0), (r(6), r(-10), r(-20)))
+    views = {"hero": (-30, 24, 0.42, 0.03), "low": (25, 4, 0.42, 0.034), "under": (15, -22, 0.44, 0.04)}
     return a + b + c, views

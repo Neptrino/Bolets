@@ -18,9 +18,9 @@ PROFILE = [
     (0.0390, 0.0668), (0.0382, 0.0648),  # 9: blunt, slightly inrolled margin tip
     (0.0360, 0.0638), (0.0303, 0.0596), (0.0245, 0.0530), (0.0195, 0.0462),
     (0.0155, 0.0388), (0.0128, 0.0308), (0.0111, 0.0228), (0.0097, 0.0150),
-    (0.0085, 0.0080), (0.0075, 0.0025), (0.0063, -0.0010), (0.0038, -0.0030), (0.0000, -0.0035),
+    (0.0085, 0.0080), (0.0074, 0.0035), (0.0060, 0.0008), (0.0047, -0.0015), (0.0027, -0.0033), (0.0008, -0.0041),
 ]
-SAMPLES = 300
+SAMPLES = 380
 SEGMENTS = 768
 K_TIP = 9
 N_ROOTS = 21
@@ -94,17 +94,27 @@ def build():
             if d < w:
                 best = max(best, smooth(w, 0.0, d))
         h = h0 * best ** 0.7
-        # Cross-veins: low saddles joining neighbouring ridges here and there.
+        # Anastomoses: fine, low, oblique wrinkles that leave a ridge and
+        # often die out before reaching the next one.
         for (a, lid), (b, lid2) in zip(angs, angs[1:]):
             if a <= th <= b and (b - a) * r < 0.006:
                 gid = hash((lid, lid2)) % 9973
-                for q in range(2):
-                    if _rand(gid, 10 + q) < 0.6:
+                frac = (th - a) / (b - a) if b > a else 0.5
+                for q in range(3):
+                    if _rand(gid, 10 + q) < 0.5:
                         continue
-                    sv = 0.08 + 0.75 * _rand(gid, 20 + q)
+                    tilt = 0.05 * (_rand(gid, 30 + q) - 0.5)
+                    sv = 0.1 + 0.72 * _rand(gid, 20 + q) + tilt * (frac - 0.5)
+                    sv += 0.006 * noise.noise(Vector((frac * 3.0, gid * 0.37, q * 1.9)) + SEED)
                     ds = abs(s - sv)
-                    if ds < 0.03:
-                        h = max(h, h0 * 0.3 * smooth(0.03, 0.0, ds))
+                    wid = 0.009 + 0.004 * _rand(gid, 40 + q)
+                    if ds >= wid:
+                        continue
+                    reach = 0.45 + 0.6 * _rand(gid, 50 + q)
+                    f = frac if _rand(gid, 60 + q) < 0.5 else 1 - frac
+                    span = 1 - smooth(reach - 0.25, reach, f)
+                    hv = (0.12 + 0.08 * _rand(gid, 70 + q)) * span
+                    h = max(h, h0 * hv * smooth(wid, 0.0, ds))
                 break
         o = 1.0 - 0.22 * env * (1 - (h / h0 if h0 > 0 else 1)) ** 1.5
         return h, o
@@ -138,6 +148,20 @@ def build():
     body = revolve("body", PROFILE, SEGMENTS, SAMPLES, shape, True, True)
     body.rotation_euler = (math.radians(4), math.radians(-3), 0)
     mesh = body.data
+    # The pole fans share one UV row, which leaves their tangent space
+    # degenerate and bakes a dark, noisy normal disc at the stem base. Give
+    # each fan its own thin UV band so both poles shade like the surface.
+    e = 1.0 / (SAMPLES - 1)
+    first_pole = SAMPLES * SEGMENTS
+    uvl = mesh.uv_layers["UVMap"].data
+    for loop in mesh.loops:
+        uv = uvl[loop.index].uv
+        if loop.vertex_index == first_pole:
+            uv.y = 1.0
+        elif loop.vertex_index == first_pole + 1:
+            uv.y = 0.0
+        else:
+            uv.y = e + uv.y * (1 - 2 * e)
     attr = mesh.color_attributes.new(name="Col", type="BYTE_COLOR", domain="POINT")
     for k in range(len(mesh.vertices)):
         o = occl[k] if k < len(occl) else 1.0
@@ -149,21 +173,31 @@ def build():
     g = Graph(m)
     mottle = g.noise(24, 5, 0.6, distortion=0.3)
     top = g.ramp(mottle, [(0.3, "#eda814"), (0.5, "#f2b61e"), (0.7, "#f6c232")])
-    top = g.mix(g.remap(g.v, v_tip * 0.55, v_tip, 0.0, 0.35), top, "#eaa010")
+    # Fine irregular mottling: paler and deeper flecks under a felty bloom.
+    fleck = g.noise(95, 4, 0.6, distortion=0.9)
+    top = g.mix(g.remap(fleck, 0.52, 0.66, 0.0, 0.35), top, "#f8cc4c")
+    top = g.mix(g.remap(fleck, 0.44, 0.32, 0.0, 0.3), top, "#e59a14")
+    top = g.mix(g.remap(g.v, v_tip * 0.55, v_tip, 0.0, 0.42), top, "#ec9a22")
     top = g.mix(g.remap(g.v, 0.0, v_tip * 0.4, 0.2, 0.0), top, "#e49e1c")
     top = g.mix(0.15, top, g.noise(240, 3), "OVERLAY")
     fib = g.noise(70, 2, 0.5, vec=g.vec_scale(g.obj, 1, 1, 8))
     top = g.mix(0.06, top, fib, "OVERLAY")
+    felt = g.noise(900, 3, 0.7)
+    top = g.mix(0.12, top, felt, "OVERLAY")
     under = g.ramp(g.noise(40, 3), [(0.35, "#f4c236"), (0.65, "#f7cd4c")])
     stemc = g.ramp(g.noise(50, 4, vec=g.vec_scale(g.obj, 1, 1, 0.3)), [(0.35, "#f2c03c"), (0.65, "#f5c94e")])
-    stemc = g.mix(g.remap(g.v, v_end, 0.98, 0.0, 0.4), stemc, "#f3d57e")
+    stemc = g.mix(g.remap(g.v, v_end, 1.0, 0.0, 0.5), stemc, "#f4d98a")
     lower = g.mix(g.remap(g.v, v_end - 0.08, v_end + 0.02), under, stemc)
     colour = g.mix(g.remap(g.v, v_tip - 0.004, v_tip + 0.01), top, lower)
     side = g.remap(g.noise(3, 1, vec=g.vec_scale(g.obj, 1, 1, 0)), 0.35, 0.65, 0.0, 0.05)
-    soil = g.math("MULTIPLY", g.remap(g.math("ADD", g.v, side), 0.955, 0.985), g.remap(g.noise(70, 5, 0.65), 0.34, 0.5))
-    colour = g.mix(soil, colour, g.ramp(g.noise(30, 3), [(0.4, "#6e5538"), (0.65, "#9a8058")]))
-    roughness = g.remap(g.noise(30, 2), 0.3, 0.7, 0.62, 0.76)
+    # A light soil tint in patches at the base, never a dark cap.
+    soil = g.math("MULTIPLY", g.remap(g.math("ADD", g.v, side), 0.92, 0.975, 0.0, 0.25), g.remap(g.noise(60, 5, 0.65), 0.38, 0.55))
+    colour = g.mix(soil, colour, g.ramp(g.noise(30, 3), [(0.4, "#c8a870"), (0.65, "#dcc28c")]))
+    colour = g.mix(g.remap(g.v, 0.965, 0.995, 0.0, 0.85), colour, "#fbecc0")
+    is_top = g.remap(g.v, v_tip - 0.01, v_tip - 0.03)
+    roughness = g.lerp(is_top, g.remap(g.noise(30, 2), 0.3, 0.7, 0.62, 0.74), g.remap(felt, 0.3, 0.7, 0.72, 0.86))
     height = g.math("ADD", g.math("MULTIPLY", g.noise(180, 4), 0.4), g.math("MULTIPLY", fib, 0.3))
+    height = g.math("ADD", height, g.math("MULTIPLY", is_top, g.math("MULTIPLY", felt, 0.6)))
     g.finish(colour, roughness, height, 0.3, 0.0004)
     body.data.materials.append(m)
     body.data.materials[0].use_backface_culling = True

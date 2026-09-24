@@ -631,7 +631,7 @@ def ou_de_reig():
     ug = arc_fraction(cap_profile, 7)  # gills run out to the thin margin
     gill = gills("gills", cap_profile, samples, int(round(ug * (samples - 1))), cap_shape, stem_shape,
                  stem_radius, 120, 0.0052, seed, decurrent=0, free_gap=0.0012, stains=False,
-                 margin_taper=0.9, edge_occlusion=0.92)
+                 margin_taper=0.9, edge_occlusion=0.97)
 
     # Ring: a skirt hanging from high on the stem, with soft folds and a torn edge.
     ring_profile = [(0.0124, 0.1175), (0.0148, 0.1166), (0.0166, 0.1135), (0.0176, 0.1085),
@@ -689,7 +689,9 @@ def ou_de_reig():
     stri_mask = g.remap(g.v, um * 0.78, um * 0.95)
     stri = g.math("MULTIPLY", g.remap(stri, -1.0, 1.0), stri_mask)
     base = g.mix(g.math("MULTIPLY", stri, 0.35), base, "#b8481a")
-    under = g.remap(g.v, um + 0.002, um + 0.012)
+    # The cuticle stays orange round the margin until the gills begin; a pale
+    # strip before them read as an olive line in shade.
+    under = g.remap(g.v, ug - 0.001, ug + 0.004)
     colour = g.mix(under, base, "#f3df92")
     roughness = g.lerp(under, g.remap(g.noise(25, 2), 0.3, 0.7, 0.42, 0.55), 0.78)
     height = g.math("ADD", stri, g.math("MULTIPLY", g.noise(160, 3), 0.25))

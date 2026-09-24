@@ -69,10 +69,54 @@ def build():
         (0.0440, 0.2638), (0.0280, 0.2664), (0.0165, 0.2678), (0.0110, 0.2690),
         (0.0060, 0.2700),
     ]
-    samples = 170
+    samples = 230
     CT, ST = math.cos(math.radians(5)), math.sin(math.radians(5))
     CT2, ST2 = math.cos(math.radians(3)), math.sin(math.radians(3))
     um = arc_fraction(cap_profile, 11)  # margin tip
+
+    rec = []  # per-vertex scale attributes, filled while the cap is revolved
+    recording = [False]
+    core_n = lambda d: 0.028 + 0.005 * noise.noise(d * 4 + seed)
+
+    def layer(c, s_, r, A, K, B, off):
+        q = Vector((c * A * K, s_ * A * K, r * B * K)) + off
+        q += Vector((noise.noise(q * 0.35), noise.noise(q * 0.35 + Vector((5, 1, 3))), noise.noise(q * 0.35 + Vector((2, 7, 1))))) * 0.35
+        # Ragged, torn flake edges.
+        q += Vector((noise.noise(q * 1.6), noise.noise(q * 1.6 + Vector((3, 9, 4))), noise.noise(q * 1.6 + Vector((8, 2, 6))))) * 0.12
+        d, pts = noise.voronoi(q, distance_metric="DISTANCE", exponent=2.5)
+        pc = pts[0] - off
+        return d[1] - d[0], pc.z / (B * K), (r * B * K + off.z - pts[0].z), pts[0]
+
+    def flake_field(th, r):
+        """Brown cuticle: continuous around the umbo, cracking outwards into
+        concentric, imbricate flakes that get smaller, paler and sparser
+        towards the margin. Returns (height m, cover, tone, raised lip)."""
+        c, s_ = math.cos(th), math.sin(th)
+        dirn = Vector((c, s_, 0))
+        core = core_n(dirn)
+        e, rc, rel, pid = layer(c, s_, r, 0.035, 68.0, 1.5, seed * 3)
+        r_in = 0.058 + 0.008 * noise.noise(dirn * 5 + seed * 2)
+        inner = rc < r_in
+        if inner:
+            t = smooth(core, r_in, rc)
+            gap = 0.004 + 0.09 * t * t
+            h0 = 0.0016 - 0.0005 * t
+            present = 1.0
+        else:
+            e, rc, rel, pid = layer(c, s_, r, 0.075, 125.0, 1.9, seed * 5)
+            t = smooth(r_in, 0.1, rc)
+            gap = 0.1 + 0.14 * t
+            h0 = 0.0011 - 0.0005 * t
+            rnd = noise.noise(pid * 1.7) * 0.5 + 0.5
+            present = smooth(0.1 + 0.35 * t, 0.16 + 0.35 * t, rnd)
+        cover = smooth(gap, gap + 0.07, e) * present
+        if r < core:
+            cover = max(cover, 1 - smooth(core - 0.004, core, r) * (1 - cover))
+        lift = max(-0.6, min(0.6, rel))  # outward side of the flake (lifted, shingle-like)
+        h = cover * h0 * (0.35 + 1.0 * (lift + 0.6) / 1.2)
+        tone = noise.noise(pid * 2.3 + seed) * 0.5 + 0.5
+        lip = cover * smooth(0.1, 0.55, lift) * (1 - smooth(gap + 0.07, gap + 0.2, e) * 0.5)
+        return h, cover, tone, lip, 0.0 if inner else t
 
     def cap_shape(th, v, r, z):
         p = Vector((r * math.cos(th), r * math.sin(th), z))
@@ -89,6 +133,14 @@ def build():
         z2 = z + (w * 0.02 + wave) * edge - 0.004 * edge * (0.5 + 0.5 * math.cos(th - 2.4)) - 0.0015 * abs(shag)
         top = 1 - smooth(um - 0.04, um, v)
         z2 += (noise.noise(p * 60 + seed) * 0.0009 + noise.noise(p * 160 + seed) * 0.0003) * top
+        if top > 0:
+            h, cover, tone, lip, outer = flake_field(th, r)
+            z2 += h * top
+            r2 += h * 0.3 * top
+        else:
+            cover = tone = lip = outer = 0.0
+        if recording[0]:
+            rec.append((cover * top, tone, lip * top, outer))
         # Tilt the whole cap a few degrees about the stem apex (not the ground),
         # so the stem stays sunk in the cap flesh.
         x, y = r2 * math.cos(th), r2 * math.sin(th)
@@ -115,7 +167,13 @@ def build():
         o = lean(z)
         return (r * math.cos(th) + o.x, r * math.sin(th) + o.y, z)
 
-    cap = revolve("cap", cap_profile, 288, samples, cap_shape, True, True)
+    recording[0] = True
+    cap = revolve("cap", cap_profile, 576, samples, cap_shape, True, True)
+    recording[0] = False
+    attr = cap.data.color_attributes.new(name="Flk", type="FLOAT_COLOR", domain="POINT")
+    rec += [(1.0, 0.5, 0.0, 0.0), (0.0, 0.5, 0.0, 0.0)]  # the two poles
+    for k, (a, b, c_, d_) in enumerate(rec[:len(attr.data)]):
+        attr.data[k].color = (a, b, c_, d_)
     stem = revolve("stem", stem_profile, 160, 160, stem_shape, False, False)
     sp = catmull(stem_profile, 400)
 
@@ -129,27 +187,37 @@ def build():
                  margin_taper=0.93, edge_occlusion=1.0)
 
     # ------------------------------------------------------------ ring
-    # A thick, double, movable ring: a cuff around the stem whose upper
-    # collar flares out and whose lower lip forms a second edge.
+    # A thick, double, movable ring sitting a little loose and tilted on the
+    # stem: an upper collar that flares out with a torn, drooping edge, and a
+    # lower cuff whose edge hangs unevenly.
     RZ = 0.196
     ring_profile = [
-        (0.0101, RZ + 0.0070), (0.0160, RZ + 0.0072), (0.0210, RZ + 0.0060), (0.0245, RZ + 0.0040),
-        (0.0251, RZ + 0.0027), (0.0233, RZ + 0.0024), (0.0192, RZ + 0.0031), (0.0156, RZ + 0.0021),
-        (0.0142, RZ + 0.0002), (0.0156, RZ - 0.0030), (0.0151, RZ - 0.0062), (0.0126, RZ - 0.0078),
-        (0.0101, RZ - 0.0072), (0.0098, RZ), (0.0101, RZ + 0.0070),
+        (0.0108, RZ + 0.0085), (0.0170, RZ + 0.0092), (0.0225, RZ + 0.0078), (0.0262, RZ + 0.0052),
+        (0.0268, RZ + 0.0034), (0.0248, RZ + 0.0027), (0.0200, RZ + 0.0035), (0.0165, RZ + 0.0021),
+        (0.0150, RZ + 0.0002), (0.0170, RZ - 0.0034), (0.0168, RZ - 0.0076), (0.0140, RZ - 0.0096),
+        (0.0108, RZ - 0.0090), (0.0105, RZ), (0.0108, RZ + 0.0085),
     ]
 
     def ring_shape(th, v, r, z):
         dirn = Vector((math.cos(th), math.sin(th), 0))
-        out = max(0.0, r - 0.0101)
-        fray = noise.noise(dirn * 7 + seed) * 0.13 + noise.noise(dirn * 30 + seed) * 0.06
-        r2 = 0.0101 + out * (1 + fray)
-        tilt = 0.0022 * math.cos(th - 0.8)
-        z2 = z + tilt + out * 0.12 * noise.noise(dirn * 5 + seed * 1.3)
-        o = lean(z)
-        return (r2 * math.cos(th) + o.x, r2 * math.sin(th) + o.y, z2)
+        out = max(0.0, r - 0.0108)
+        # Upper collar: torn notches and a sagging, wavy edge.
+        flare = smooth(0.004, 0.013, out) * smooth(RZ - 0.001, RZ + 0.002, z)
+        notch = max(0.0, noise.noise(dirn * 16 + seed)) ** 1.4 + 0.5 * max(0.0, noise.noise(dirn * 40 + seed * 2))
+        fray = noise.noise(dirn * 6 + seed) * 0.14 + noise.noise(dirn * 26 + seed) * 0.07
+        r2 = 0.0108 + out * (1 + fray - 0.45 * notch * flare)
+        z2 = z - flare * (0.0012 + 0.0022 * (noise.noise(dirn * 4 + seed * 1.3) * 0.5 + 0.5))
+        z2 += flare * 0.0012 * math.sin(11 * th + 2 * noise.noise(dirn * 3 + seed))
+        # Lower cuff: an uneven, hanging edge.
+        low = smooth(RZ - 0.002, RZ - 0.008, z) * smooth(0.001, 0.004, out)
+        z2 -= low * (0.0035 * (noise.noise(dirn * 5 + seed * 2.1) * 0.5 + 0.5) + 0.0018 * abs(noise.noise(dirn * 21 + seed)))
+        r2 += low * out * 0.3 * noise.noise(dirn * 9 + seed * 1.7)
+        # Loose on the stem: tilted and pushed to one side.
+        z2 += 0.0034 * math.cos(th - 0.8)
+        o = lean(z2)
+        return (r2 * math.cos(th) + o.x + 0.0009, r2 * math.sin(th) + o.y - 0.0005, z2)
 
-    ring = revolve("ring", ring_profile, 200, 90, ring_shape, False, False)
+    ring = revolve("ring", ring_profile, 288, 130, ring_shape, False, False)
 
     # ------------------------------------------------------------ materials
     # Cap: cream fibrous ground, a solid dark-brown umbo, brown scales that
@@ -163,36 +231,38 @@ def build():
     fibre = g.noise(6, 3, 0.5, vec=_warp(g, g.obj, 30, 0.02))
     ground = g.mix(0.25, ground, g.noise(420, 2), "OVERLAY")
     ground = g.mix(0.2, ground, fibre, "OVERLAY")
-    # Seamless polar coordinates: a circle for the angle, radius along z,
-    # squashed radially so the scales run concentrically.
     pv = _polar(g, 0.06, 2.0)
-    wv = _warp(g, pv, 45, 0.01)
-    d_in = g.voronoi(60, "DISTANCE_TO_EDGE", vec=wv, rand=0.9)
-    wv2 = _warp(g, pv, 110, 0.012)
-    d_out = g.voronoi(105, "F1", vec=wv2, rand=1.0)
-    s_in = g.remap(d_in, 0.015, 0.05)
-    # Discrete, irregular flakes with cream showing between them; smaller outwards.
-    s_out = g.remap(g.math("ADD", d_out, g.math("MULTIPLY", rn, 0.1)), 0.56, 0.4)
-    s_out = g.math("MULTIPLY", s_out, g.remap(g.math("SUBTRACT", g.noise(22, 3), g.math("MULTIPLY", rn, 0.1)), 0.2, 0.3))
-    scales = g.lerp(g.remap(rn, 0.2, 0.55), s_in, s_out)
-    fine = g.remap(g.voronoi(420, vec=wv, rand=1.0), 0.0, 0.2, 1.0, 0.0)
-    fine = g.math("MULTIPLY", fine, g.math("MULTIPLY", g.remap(rn, 0.3, 0.95), g.remap(g.noise(20, 2), 0.44, 0.56)))
-    scale_col = g.ramp(g.noise(30, 3), [(0.35, "#634630"), (0.6, "#77583c"), (0.8, "#8a6b4d")])
-    scale_col = g.mix(g.math("MULTIPLY", rn, 0.35), scale_col, "#9b7a55")
+    fa = g.nt.nodes.new("ShaderNodeAttribute")
+    fa.attribute_name = "Flk"
+    sep = g.nt.nodes.new("ShaderNodeSeparateColor")
+    g.link(fa.outputs["Color"], sep.inputs[0])
+    cover, tone, lip = sep.outputs[0], sep.outputs[1], sep.outputs[2]
+    outer = fa.outputs["Alpha"]
     # Radial, felty fibrils on the cream ground between the scales.
     fib = g.remap(g.noise(260, 4, 0.6, vec=g.vec_scale(pv, 1, 1, 0.08)), 0.42, 0.62, 0.0, 0.6)
     ground = g.mix(g.math("MULTIPLY", fib, g.remap(rn, 0.05, 0.6, 1.0, 0.5)), ground, "#b39c7b")
-    top = g.mix(g.math("MAXIMUM", scales, g.math("MULTIPLY", fine, 0.7)), ground, scale_col)
-    umbo = g.remap(g.math("ADD", rad, g.math("MULTIPLY", g.noise(60, 3), 0.012)), 0.019, 0.026, 1.0, 0.0)
-    top = g.mix(umbo, top, g.ramp(g.noise(80, 3), [(0.4, "#553a25"), (0.7, "#664630")]))
+    ground = g.mix(g.math("MULTIPLY", g.remap(rn, 0.45, 0.1), 0.75), ground, "#b79a74")
+    scale_col = g.ramp(g.math("ADD", g.math("MULTIPLY", tone, 0.6), g.math("MULTIPLY", g.noise(90, 3), 0.4)),
+                       [(0.3, "#5a3e28"), (0.55, "#6e4f35"), (0.8, "#836246")])
+    scale_col = g.mix(g.math("MULTIPLY", outer, 0.55), scale_col, "#9c7d5c")
+    # Fibrillose streaks on the flakes and a paler, lifted outer edge.
+    streak = g.noise(500, 3, 0.6, vec=g.vec_scale(pv, 1, 1, 0.15))
+    scale_col = g.mix(0.3, scale_col, streak, "OVERLAY")
+    scale_col = g.mix(g.math("MULTIPLY", lip, 0.55), scale_col, "#b39473")
+    fine = g.remap(g.voronoi(420, vec=pv, rand=1.0), 0.0, 0.2, 1.0, 0.0)
+    fine = g.math("MULTIPLY", fine, g.math("MULTIPLY", g.remap(rn, 0.4, 0.95), g.remap(g.noise(20, 2), 0.46, 0.56)))
+    scales = g.math("MAXIMUM", cover, g.math("MULTIPLY", fine, 0.6))
+    top = g.mix(scales, ground, scale_col)
+    umbo = g.remap(g.math("ADD", rad, g.math("MULTIPLY", g.noise(60, 3), 0.008)), 0.012, 0.018, 1.0, 0.0)
+    top = g.mix(umbo, top, g.ramp(g.noise(80, 3), [(0.4, "#4f3522"), (0.7, "#5f412b")]))
     # Paler, woolly fringe at the rim.
     top = g.mix(g.remap(g.v, um - 0.03, um - 0.004, 0.0, 0.8), top, "#efe6d2")
     under = g.remap(g.v, um + 0.002, um + 0.01)
     colour = g.mix(under, top, "#ece4d1")
     roughness = g.lerp(under, g.remap(scales, 0.0, 1.0, 0.8, 0.7), 0.85)
-    height = g.math("ADD", g.math("MULTIPLY", scales, 0.7), g.math("MULTIPLY", g.noise(250, 4), 0.3))
+    height = g.math("ADD", g.math("MULTIPLY", streak, 0.4), g.math("MULTIPLY", g.noise(250, 4), 0.3))
     height = g.math("ADD", height, g.math("MULTIPLY", fine, 0.3))
-    g.finish(colour, roughness, height, 1.2, 0.0009)
+    g.finish(colour, roughness, height, 0.6, 0.0005)
     cap.data.materials.append(m)
 
     # Gills: white-cream, a touch warmer at the free edge.
@@ -240,8 +310,8 @@ def build():
     g = Graph(m)
     _, _, z = _xyz(g)
     colour = g.ramp(g.noise(80, 3), [(0.35, "#e6ddcb"), (0.65, "#f2ecdf")])
-    lip = g.math("MAXIMUM", g.math("MULTIPLY", g.remap(z, RZ - 0.002, RZ - 0.006), g.remap(g.radial(), 0.0125, 0.0148)),
-                   g.math("MULTIPLY", g.remap(g.radial(), 0.021, 0.025), 0.6))
+    lip = g.math("MAXIMUM", g.math("MULTIPLY", g.remap(z, RZ - 0.003, RZ - 0.009), g.remap(g.radial(), 0.013, 0.0165)),
+                   g.math("MULTIPLY", g.remap(g.radial(), 0.022, 0.027), 0.6))
     lip = g.math("MULTIPLY", lip, g.remap(g.noise(40, 3), 0.35, 0.55))
     colour = g.mix(g.math("MULTIPLY", lip, 0.8), colour, "#8c6a48")
     g.finish(colour, 0.85, g.noise(300, 3), 0.3, 0.0003)

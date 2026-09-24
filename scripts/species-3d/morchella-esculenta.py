@@ -25,7 +25,8 @@ def build():
     ]
     samples = 340
     segments = 520
-    ub = arc_fraction(cap_profile, 9)  # where the lowest row of pits ends
+    ub = arc_fraction(cap_profile, 9)  # where the cap turns under towards the stem
+    uj = arc_fraction(cap_profile, 12)  # the cap–stem junction: pits run down to here
 
     zc, ea, eb = 0.074, 0.025, 0.040  # ovoid used for the pit direction
     pit_depth = []
@@ -72,7 +73,8 @@ def build():
         d = d * (0.8 + 0.25 * (noise.noise(p1 * 1.7 + seed) * 0.5 + 0.5))
         crest = 0.82 + 0.18 * (noise.noise(p * 140 + seed) * 0.5 + 0.5)  # uneven ridge heights
         floor = noise.noise(p * 260 + seed) * 0.12 * d  # small wrinkles inside the pits
-        fade = smooth(0.012, 0.05, v) * (1 - smooth(ub + 0.02, ub + 0.06, v))
+        # Shallower pits where the cap turns under, so they never cut through to the stem.
+        fade = smooth(0.012, 0.05, v) * (1 - smooth(uj - 0.045, uj - 0.01, v)) * (1 - 0.55 * smooth(ub, uj - 0.02, v))
         depth = (0.005 * (d + floor) + 0.0006 * (1 - crest)) * fade
         pit_depth.append(max(0.0, min(1.0, depth / 0.0052)))
         r2 = r * (1 + lump * shape_mask) * sq ** shape_mask
@@ -85,17 +87,20 @@ def build():
 
     stem_profile = [
         (0.0090, 0.0600), (0.0112, 0.0540), (0.0124, 0.0470), (0.0127, 0.0400),
-        (0.0128, 0.0320), (0.0140, 0.0230), (0.0156, 0.0140), (0.0168, 0.0070),
-        (0.0166, 0.0020), (0.0140, -0.0015), (0.0080, -0.0035), (0.0020, -0.0040),
+        (0.0130, 0.0320), (0.0145, 0.0230), (0.0166, 0.0140), (0.0182, 0.0070),
+        (0.0180, 0.0020), (0.0152, -0.0018), (0.0090, -0.0038), (0.0020, -0.0044),
     ]
 
     def stem_shape(th, v, r, z):
         dirn = Vector((math.cos(th), math.sin(th), 0))
-        low = 1 - smooth(0.004, 0.04, z)
-        # Furrows and folds at the swollen base, fading up the stem.
-        fold = (0.085 * math.sin(5 * th + 2.5 * noise.noise(dirn * 2 + Vector((0, 0, z * 30)) + seed))
-                + 0.05 * noise.noise(dirn * 4 + Vector((0, 0, z * 60)) + seed))
-        lumpy = noise.noise(dirn * 3 + Vector((0, 0, z * 40)) + seed * 1.3) * 0.05
+        low = 1 - smooth(0.002, 0.042, z)
+        # Deep, irregular furrows and folds at the swollen base, fading up the stem.
+        wob = 2.5 * noise.noise(dirn * 2 + Vector((0, 0, z * 30)) + seed)
+        fold = (0.10 * math.sin(5 * th + wob) + 0.05 * math.sin(9 * th + 1.7 * wob + 1.1)
+                + 0.08 * noise.noise(dirn * 4 + Vector((0, 0, z * 60)) + seed))
+        fold = -abs(fold) * 1.3 + 0.06  # sharp furrows between rounded folds
+        lumpy = (noise.noise(dirn * 3 + Vector((0, 0, z * 40)) + seed * 1.3) * 0.05
+                 + noise.noise(dirn * 6 + Vector((0, 0, z * 90)) + seed * 0.7) * 0.05 * low)
         grain = noise.noise(Vector((math.cos(th) * 60, math.sin(th) * 60, z * 900)) + seed) * 0.012
         top = 1 - smooth(0.044, 0.05, z)  # smooth where it sinks into the cap
         r2 = r * (1 + (fold * low + lumpy + grain) * top)
@@ -120,14 +125,12 @@ def build():
     at.attribute_name = "pit"
     pit = at.outputs["Fac"]
     tone = g.noise(18, 4, 0.6, distortion=0.4)
-    ridge = g.ramp(tone, [(0.35, "#d8b064"), (0.65, "#e6c47e")])
-    wall = g.ramp(tone, [(0.35, "#8f5a22"), (0.65, "#a06a2a")])
+    ridge = g.ramp(tone, [(0.3, "#cfb283"), (0.55, "#dbc095"), (0.8, "#e4cfa8")])
+    wall = g.ramp(tone, [(0.35, "#a06a2a"), (0.65, "#b07a34")])
     floor = g.ramp(g.noise(40, 3), [(0.35, "#4a2c10"), (0.65, "#5c3a18")])
-    colour = g.mix(g.remap(pit, 0.04, 0.4), ridge, wall)
-    colour = g.mix(g.remap(pit, 0.3, 0.9), colour, floor)
+    colour = g.mix(g.remap(pit, 0.03, 0.28), ridge, wall)
+    colour = g.mix(g.remap(pit, 0.25, 0.85), colour, floor)
     colour = g.mix(0.25, colour, g.noise(320, 3), "OVERLAY")
-    # A creamy tint low on the cap, where it merges with the stem.
-    colour = g.mix(g.remap(g.v, ub + 0.05, ub + 0.08, 0.0, 0.6), colour, "#d9c49a")
     roughness = g.remap(pit, 0.0, 1.0, 0.66, 0.8)
     height = g.math("ADD", g.math("MULTIPLY", g.noise(420, 3), 0.5), g.math("MULTIPLY", pit, -0.3))
     g.finish(colour, roughness, height, 0.25, 0.0004)
@@ -136,7 +139,7 @@ def build():
     # Stem: whitish cream, finely granular/scurfy, with soil at the foot.
     m = bpy.data.materials.new("stem-proc")
     g = Graph(m)
-    base = g.ramp(g.noise(45, 4), [(0.35, "#ddcca8"), (0.65, "#ebe0c6")])
+    base = g.ramp(g.noise(45, 4), [(0.35, "#e0d4b8"), (0.65, "#eee6d2")])
     gran_d = g.voronoi(900, rand=1.0)
     gran = g.remap(gran_d, 0.0, 0.35, 1.0, 0.0)
     base = g.mix(g.math("MULTIPLY", gran, 0.35), base, "#fbf7ee")
@@ -145,7 +148,7 @@ def build():
     base = g.mix(g.remap(g.v, 0.55, 0.85, 0.0, 0.45), base, "#d8c7a0")
     base = g.mix(0.2, base, g.noise(200, 2, vec=g.vec_scale(g.obj, 1, 1, 0.12)), "OVERLAY")
     side = g.remap(g.noise(3, 1, vec=g.vec_scale(g.obj, 1, 1, 0)), 0.35, 0.65, 0.0, 0.12)
-    soil = g.math("MULTIPLY", g.remap(g.math("ADD", g.v, side), 0.72, 0.9), g.remap(g.noise(70, 5, 0.65), 0.36, 0.5))
+    soil = g.math("MULTIPLY", g.remap(g.math("ADD", g.v, side), 0.6, 0.8), g.remap(g.noise(70, 5, 0.65), 0.34, 0.5))
     colour = g.mix(g.math("MULTIPLY", soil, 0.8), base, "#6e553a")
     height = g.math("ADD", gran, g.math("MULTIPLY", g.noise(300, 3), 0.4))
     g.finish(colour, 0.8, height, 0.35, 0.0004)
