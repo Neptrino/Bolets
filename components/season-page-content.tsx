@@ -5,6 +5,7 @@ import { ArrowUpRight, CalendarDays, CloudRain, Map } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader, PageShell, PageTitleAccent, SectionHeader } from "@/components/page-layout";
 import { SeasonGuideCards } from "@/components/season-guide-sections";
+import { SeasonTimelineStage } from "@/components/season-timeline-stage";
 import { SpeciesCollection } from "@/components/species-collection";
 import { toSpeciesCardProfile } from "@/src/lib/species-card-profile";
 import { AnnualSeasonCalendar } from "@/components/annual-season-calendar";
@@ -17,6 +18,7 @@ import {
 } from "@/src/lib/seasonality";
 import { absoluteUrl, speciesPath } from "@/src/lib/seo";
 import { seasonGuideForMonth } from "@/src/lib/season-guides";
+import { seasonTimeline } from "@/src/lib/season-timeline";
 import type { Month } from "@/src/lib/types";
 import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 import { Notice } from "@/components/notice";
@@ -91,15 +93,25 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
         actions={<a href="#calendari-anual" className="text-link">Veure el calendari anual ↓</a>}
       />
 
-      <section className="panel-dark season-now-panel">
-        <div className="season-now-number">{selectedMonth.shortLabel}</div>
-        <div>
-          <span>{overview ? "Lectura del mes actual" : "Lectura del mes seleccionat"}</span>
-          <h2>{overview ? `Bolets de temporada ${monthWithPreposition(month)}` : `Calendari de bolets ${monthWithPreposition(month)}`}</h2>
-          <p>{activeSpecies.length} espècies del catàleg tenen activitat estacional possible o superior aquest mes. El calendari descriu potencial: no confirma que estiguin fructificant avui.</p>
-        </div>
-        <Link href="/bolets-avui" className="button light-button">On trobar bolets avui <Map size={16} /></Link>
-      </section>
+      {overview ? (
+        // The overview plays the whole year; its month bars link to each month page.
+        <SeasonTimelineStage
+          timeline={seasonTimeline()}
+          initialMonth={month}
+          currentMonth={currentMonth}
+          footer={<Link href="/bolets-avui" className="button light-button">On trobar bolets avui <Map size={16} /></Link>}
+        />
+      ) : (
+        <section className="panel-dark season-now-panel">
+          <div className="season-now-number">{selectedMonth.shortLabel}</div>
+          <div>
+            <span>Lectura del mes seleccionat</span>
+            <h2>Calendari de bolets {monthWithPreposition(month)}</h2>
+            <p>{activeSpecies.length} espècies del catàleg tenen activitat estacional possible o superior aquest mes. El calendari descriu potencial: no confirma que estiguin fructificant avui.</p>
+          </div>
+          <Link href="/bolets-avui" className="button light-button">On trobar bolets avui <Map size={16} /></Link>
+        </section>
+      )}
 
       {!overview && leadingSpecies.length > 0 ? (
         <section className="notice season-search-answer" aria-labelledby="season-search-answer-title">
@@ -109,7 +121,7 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
         </section>
       ) : null}
 
-      <nav className="card season-year" aria-label="Calendari anual de la temporada de bolets">
+      {!overview ? <nav className="card season-year" aria-label="Calendari anual de la temporada de bolets">
         {/* Next 16 retains the overview canonical during a soft navigation to
             the dynamic month page. A document navigation keeps one canonical. */}
         {SEASON_MONTHS.map((item) => {
@@ -131,9 +143,13 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
             </a>
           );
         })}
-      </nav>
+      </nav> : null}
 
-      <SeasonGuideCards highlight={relatedSeasonGuide.id} className="season-overview-guides" />
+      <SeasonGuideCards
+        highlight={relatedSeasonGuide.id}
+        highlightLabel={month === currentMonth ? "Ara" : selectedMonth.label}
+        className="season-overview-guides"
+      />
 
       <AnnualSeasonCalendar currentMonth={currentMonth} selectedMonth={month} />
 
@@ -143,7 +159,7 @@ export function SeasonPageContent({ canonicalPath, month, overview = false }: Se
         {activeSpecies.filter((species) => cepSpeciesIds.some((id) => id === species.speciesId) || ["craterellus-lutescens", "tricholoma-terreum"].includes(species.speciesId)).map((species) => (
           <Link key={species.speciesId} href={speciesPath(species)}>{species.identity.commonName}: hàbitat i confusions <ArrowUpRight size={15} aria-hidden="true" /></Link>
         ))}
-        <Link href="/bolets/infografia">Infografia de bolets: el calendari de totes les espècies en un pòster <ArrowUpRight size={15} aria-hidden="true" /></Link>
+        <Link href="/bolets/infografia">Dibuixos de bolets en PDF, amb la temporada de cada espècie <ArrowUpRight size={15} aria-hidden="true" /></Link>
       </nav>
 
       <section className="intent-species-section" aria-labelledby="season-month-species-title">

@@ -138,11 +138,14 @@ export function SeasonSpeciesCollections({ guide, species, currentMonth, meta }:
     the season of the month being read. Season guides use `SeasonTabs` in the header instead. */
 export function SeasonGuideCards({
   highlight,
+  highlightLabel = "Ara",
   meta = "Per estacions",
   title = "Bolets de primavera, estiu, tardor i hivern",
   className,
 }: {
   highlight?: SeasonGuide["id"];
+  /** Badge on the highlighted card: “Ara” for the current season, or the month it contains. */
+  highlightLabel?: string;
   meta?: ReactNode;
   title?: string;
   className?: string;
@@ -153,14 +156,18 @@ export function SeasonGuideCards({
       <ul>
         {seasonGuides.map((guide) => (
           <li key={guide.id}>
-            <Link href={guide.path} className={guide.id === highlight ? "is-current" : undefined}>
+            <Link href={guide.path}>
               <span className="other-season-icons" aria-hidden="true">
                 {seasonProtagonists(guide, speciesForSeasonGuide(guide), 3).map(({ species: item }) => (
                   <SpeciesIcon key={item.speciesId} speciesId={item.speciesId} size={44} />
                 ))}
               </span>
               <strong>{guide.cardTitle}</strong>
-              <small>{guide.rangeLabel}{guide.id === highlight ? " · Ara" : ""}</small>
+              <small>
+                {guide.rangeLabel}
+                {/* A badge, not a selected state: every card is a link to its guide. */}
+                {guide.id === highlight ? <span className="pill other-season-badge">{highlightLabel}</span> : null}
+              </small>
               <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
           </li>
