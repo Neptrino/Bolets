@@ -27,6 +27,10 @@ export function speciesPath(species: Pick<SpeciesProfile, "speciesId">) {
   return `/bolets/${speciesSlugForId(species.speciesId)}`;
 }
 
+export function speciesModelPath(species: Pick<SpeciesProfile, "speciesId">) {
+  return `${speciesPath(species)}/3d`;
+}
+
 export function speciesFieldCardPath(species: Pick<SpeciesProfile, "speciesId">) {
   return `${speciesPath(species)}/targeta`;
 }

@@ -22,13 +22,14 @@ import {
 import { ProfileFacts } from "@/components/species-profile/profile-facts";
 import { comparisonPagesForSpecies } from "@/data/comparison-pages";
 import { getSpanishSpeciesNames } from "@/data/species-common-names";
+import { getSpecies3dModel } from "@/data/species-3d-models";
 import { getReferenceSpeciesByScientificName } from "@/data/reference-species";
 import { getSpeciesByScientificName } from "@/data/species";
 import { commonNameDisplayLabel } from "@/src/lib/common-name";
 import { lookalikeGuideHref } from "@/src/lib/lookalike-guide";
-import { speciesPath } from "@/src/lib/seo";
+import { speciesModelPath, speciesPath } from "@/src/lib/seo";
 import { territoryGuideForSpecies } from "@/src/lib/species-territory-guides";
-import { speciesHeadings } from "@/src/lib/species-headings";
+import { speciesArticle, speciesHeadings } from "@/src/lib/species-headings";
 import type { CatalogueSpecies } from "@/src/lib/types";
 
 export function SpeciesIdentificationSection({
@@ -50,6 +51,7 @@ export function SpeciesIdentificationSection({
   const headings = speciesHeadings(species.identity.commonName);
   const morphology = species.morphology;
   const territoryGuide = territoryGuideForSpecies(species.speciesId);
+  const model3d = getSpecies3dModel(species.speciesId);
 
   return (
 <>
@@ -85,6 +87,15 @@ export function SpeciesIdentificationSection({
       />
       </div>
     </div>
+
+    {model3d && <Link href={speciesModelPath(species)} className="species-model-link">
+      {/* eslint-disable-next-line @next/next/no-img-element -- still render served as-is beside its GLB */}
+      <img src={model3d.thumb} alt="" loading="lazy" decoding="async" />
+      <span>
+        <b>Mira {speciesArticle(species.identity.commonName).withArticle} en 3D <ArrowUpRight size={16} aria-hidden="true" /></b>
+        <small>Model il·lustratiu per girar-lo i veure’n el barret, l’himeni i el peu.</small>
+      </span>
+    </Link>}
 
     {territoryGuide && <p className="profile-links">
       <Link href={territoryGuide.path} className="text-link">
