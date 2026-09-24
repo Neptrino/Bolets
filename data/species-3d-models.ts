@@ -13,11 +13,27 @@ export interface Species3dModel {
   thumb: string;
 }
 
-const models: Record<string, Species3dModel> = {
-  "boletus-edulis": { src: "/models/species/boletus-edulis.glb", poster: "/models/species/boletus-edulis.webp", thumb: "/models/species/boletus-edulis-thumb.webp" },
-  "lactarius-sanguifluus": { src: "/models/species/lactarius-sanguifluus.glb", poster: "/models/species/lactarius-sanguifluus.webp", thumb: "/models/species/lactarius-sanguifluus-thumb.webp" },
-  "amanita-caesarea": { src: "/models/species/amanita-caesarea.glb", poster: "/models/species/amanita-caesarea.webp", thumb: "/models/species/amanita-caesarea-thumb.webp" },
-};
+function modelFiles(speciesId: string): Species3dModel {
+  const base = `/models/species/${speciesId}`;
+  return { src: `${base}.glb`, poster: `${base}.webp`, thumb: `${base}-thumb.webp` };
+}
+
+const models: Record<string, Species3dModel> = Object.fromEntries(
+  [
+    "boletus-edulis",
+    "lactarius-sanguifluus",
+    "amanita-caesarea",
+    "lactarius-deliciosus",
+    "cantharellus-cibarius",
+    "macrolepiota-procera",
+    "craterellus-lutescens",
+    "craterellus-cornucopioides",
+    "tricholoma-terreum",
+    "marasmius-oreades",
+    "calocybe-gambosa",
+    "morchella-esculenta",
+  ].map((speciesId) => [speciesId, modelFiles(speciesId)]),
+);
 
 export const species3dModelIds = Object.keys(models);
 

@@ -742,6 +742,22 @@ def ou_de_reig():
 
 SPECIES = {"boletus-edulis": cep, "lactarius-sanguifluus": rovello, "amanita-caesarea": ou_de_reig}
 
+# Further species live in scripts/species-3d/<species-id>.py, one file each,
+# so they can be written independently. Each file defines build() returning
+# (objects, views) and uses the helpers above; see scripts/species-3d/README.md.
+SCRIPT_PATH = os.path.abspath(sys.argv[sys.argv.index("-P") + 1]) if "-P" in sys.argv else os.path.abspath(__file__)
+SPECIES_DIR = os.path.join(os.path.dirname(SCRIPT_PATH), "species-3d")
+
+
+def species_builder(sid):
+    if sid in SPECIES:
+        return SPECIES[sid]
+    path = os.path.join(SPECIES_DIR, f"{sid}.py")
+    namespace = dict(globals())
+    with open(path) as source:
+        exec(compile(source.read(), path, "exec"), namespace)
+    return namespace["build"]
+
 
 
 # ---------------------------------------------------------------- bake + export
@@ -877,7 +893,7 @@ def main():
     sid, out_dir = argv[0], os.path.abspath(argv[1])
     os.makedirs(os.path.join(out_dir, "tex"), exist_ok=True)
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    objs, views = SPECIES[sid]()
+    objs, views = species_builder(sid)()
     setup_cycles(1)
     for o in objs:
         bake_object(o, out_dir)
