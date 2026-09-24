@@ -590,10 +590,12 @@ def ou_de_reig():
     seed = Vector((2.2, 6.1, 4.7))
 
     cap_profile = [
-        (0.000, 0.1580), (0.015, 0.1572), (0.030, 0.1536), (0.042, 0.1472),
-        (0.050, 0.1398), (0.0550, 0.1318), (0.0572, 0.1252), (0.0560, 0.1232),
-        (0.0510, 0.1242), (0.0400, 0.1264), (0.0300, 0.1286), (0.0200, 0.1306),
-        (0.0120, 0.1322), (0.0085, 0.1328),
+        # Convex cap: the margin drops well below the stem apex, so the
+        # hymenium is a concave bowl rather than a flat plate.
+        (0.000, 0.1580), (0.016, 0.1568), (0.031, 0.1520), (0.043, 0.1435),
+        (0.051, 0.1325), (0.0555, 0.1205), (0.0568, 0.1110), (0.0558, 0.1098),
+        (0.0510, 0.1135), (0.0440, 0.1205), (0.0360, 0.1265), (0.0270, 0.1305),
+        (0.0180, 0.1335), (0.0110, 0.1350), (0.0085, 0.1355),
     ]
     samples = 160
     um = arc_fraction(cap_profile, 6)  # margin tip
@@ -608,7 +610,7 @@ def ou_de_reig():
         return (r2 * math.cos(th), r2 * math.sin(th), z2)
 
     stem_profile = [
-        (0.0150, 0.1356), (0.0122, 0.1300), (0.0123, 0.1187), (0.0130, 0.0975),
+        (0.0160, 0.1420), (0.0122, 0.1300), (0.0123, 0.1187), (0.0130, 0.0975),
         (0.0141, 0.0700), (0.0152, 0.0425), (0.0164, 0.0160), (0.0168, 0.0070),
         (0.0146, 0.0015), (0.0070, -0.0005), (0.0020, -0.0008),
     ]
@@ -628,7 +630,7 @@ def ou_de_reig():
 
     ug = arc_fraction(cap_profile, 7)  # gills run out to the thin margin
     gill = gills("gills", cap_profile, samples, int(round(ug * (samples - 1))), cap_shape, stem_shape,
-                 stem_radius, 120, 0.0068, seed, decurrent=0, free_gap=0.0012, stains=False,
+                 stem_radius, 120, 0.0052, seed, decurrent=0, free_gap=0.0012, stains=False,
                  margin_taper=0.9, edge_occlusion=0.92)
 
     # Ring: a skirt hanging from high on the stem, with soft folds and a torn edge.
