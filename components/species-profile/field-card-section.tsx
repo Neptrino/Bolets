@@ -48,7 +48,7 @@ export function SpeciesFieldCardSection({
             />
             <p className="species-field-card-poster-link">
               Vols totes les espècies en una sola làmina?{" "}
-              <Link href="/bolets/infografia">Consulta la infografia del catàleg de bolets</Link>.
+              <Link href="/bolets/infografia">Consulta els dibuixos de tots els bolets en PDF</Link>.
             </p>
           </div>
         </div>

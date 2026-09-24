@@ -59,7 +59,7 @@ export default async function SpeciesIndexPage({ searchParams }: {
         title={<>Tipus de bolets<br />de Catalunya.</>}
         actions={
           <Link href="/bolets/infografia" className="button panel-dark catalogue-title-infographic-link">
-            <Images size={18} aria-hidden="true" /> Veure la infografia <ArrowUpRight size={16} aria-hidden="true" />
+            <Images size={18} aria-hidden="true" /> Dibuixos en PDF <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         }
         description={<>{counts.total} fitxes: {counts.edible} bolets comestibles, {counts.toxic} tòxics o mortals i {counts.other} no comestibles o no recomanats, amb fotografies, noms en català, castellà i científic, hàbitat, temporada i espècies semblants.</>}

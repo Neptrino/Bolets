@@ -25,7 +25,7 @@ export function CatalogueInfographic({ speciesCount }: { speciesCount: number })
         >
           <StaticMediaImage
             src={previewPath}
-            alt={`Infografia vertical “Bolets de Catalunya” amb ${speciesCount} espècies fotografiades i agrupades per comestibilitat; cada targeta mostra el nom català i científic, els millors mesos, l’hàbitat i l’altitud.`}
+            alt={`Infografia vertical “Bolets de Catalunya” amb els dibuixos de ${speciesCount} espècies agrupades per comestibilitat; cada targeta mostra el nom català i científic, la temporada mes a mes, l’hàbitat i l’altitud.`}
             width={3508}
             height={4961}
             sizes="(max-width: 900px) calc(100vw - 64px), 430px"
@@ -34,17 +34,16 @@ export function CatalogueInfographic({ speciesCount }: { speciesCount: number })
             <Expand size={15} /> Amplia
           </span>
         </a>
-        <figcaption>Infografia dels tipus de bolets de Catalunya: {speciesCount} espècies amb temporada, hàbitat i altitud · pòster A3</figcaption>
+        <figcaption>Dibuixos de {speciesCount} bolets de Catalunya amb temporada, hàbitat i altitud · pòster A3 en PDF</figcaption>
       </figure>
 
       <div className="catalogue-infographic-copy">
-        <p className="eyebrow"><Images size={16} aria-hidden="true" /> Catàleg visual de bolets</p>
+        <p className="eyebrow"><Images size={16} aria-hidden="true" /> Guia visual en PDF</p>
         <h2 id="catalogue-infographic-title">Tots els bolets de Catalunya, en un sol pòster.</h2>
         <p>
-          Una vista ràpida del catàleg per comparar fotografies, noms, temporada,
-          hàbitat i altitud dels bolets de Catalunya. Les espècies estan agrupades
-          per comestibilitat i el contingut es genera des de les mateixes dades
-          versionades de les fitxes.
+          Un dibuix per espècie amb el nom, la temporada, l’hàbitat i l’altitud,
+          agrupats per comestibilitat. El contingut surt de les mateixes dades
+          versionades de les fitxes; baixa’l en PDF per imprimir-lo en A3.
         </p>
 
         <ul className="catalogue-infographic-facts" aria-label="Contingut del pòster">
@@ -60,7 +59,7 @@ export function CatalogueInfographic({ speciesCount }: { speciesCount: number })
           <p>El pòster serveix per explorar el catàleg; no confirma la identificació ni la comestibilitat d’un exemplar.</p>
         </div>
         <a className="catalogue-infographic-credits" href={creditsPath}>
-          Crèdits i llicències de les fotografies
+          Crèdits de les il·lustracions
         </a>
       </div>
     </section>

@@ -94,7 +94,7 @@ export default function EdibleMushroomsPage() {
           <Link href="/zones/rovellons"><Trees size={18} aria-hidden="true" /><span><strong>Rovellons a Catalunya</strong><small>Tipus, diferències, hàbitat i temporada</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/temporada"><CalendarDays size={18} aria-hidden="true" /><span><strong>Bolets per temporada</strong><small>Calendari mensual de totes les espècies</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
           <Link href="/conservar-bolets"><Snowflake size={18} aria-hidden="true" /><span><strong>Com conservar els bolets</strong><small>Congelació, porcions i descongelació segura</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
-          <Link href="/bolets/infografia"><Images size={18} aria-hidden="true" /><span><strong>Infografia de bolets</strong><small>Totes les espècies en un pòster, per comestibilitat</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link href="/bolets/infografia"><Images size={18} aria-hidden="true" /><span><strong>Dibuixos de bolets en PDF</strong><small>Totes les espècies en un pòster, per comestibilitat</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
         </nav>
       </section>
 

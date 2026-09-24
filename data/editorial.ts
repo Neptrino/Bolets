@@ -263,7 +263,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-23",
   },
   "bolets": {
-    updatedAt: "2026-09-23",
+    updatedAt: "2026-09-24",
   },
   "noms-de-bolets-catala-castella": {
     publishedAt: "2026-09-03",
@@ -273,10 +273,10 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-08-31",
   },
   "bolets-comestibles": {
-    updatedAt: "2026-09-23",
+    updatedAt: "2026-09-24",
   },
   "bolets-verinosos": {
-    updatedAt: "2026-09-23",
+    updatedAt: "2026-09-24",
   },
   "mapa-pluja": {
     publishedAt: "2026-09-17",
@@ -295,7 +295,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-23",
   },
   "temporada": {
-    updatedAt: "2026-09-23",
+    updatedAt: "2026-09-24",
   },
   "bolets-avui": {
     updatedAt: "2026-09-18",
@@ -360,14 +360,14 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-23",
   },
   "parts-dun-bolet": {
-    updatedAt: "2026-09-23",
+    updatedAt: "2026-09-24",
   },
   "avis-legal": {
     publishedAt: "2026-08-17",
     updatedAt: "2026-09-16",
   },
   home: { updatedAt: "2026-09-23" },
-  "bolets-infografia": { updatedAt: "2026-09-14" },
+  "bolets-infografia": { updatedAt: "2026-09-24" },
   troballes: { updatedAt: "2026-09-19" },
   compare: { updatedAt: "2026-09-23" },
   joc: { updatedAt: "2026-09-23" },

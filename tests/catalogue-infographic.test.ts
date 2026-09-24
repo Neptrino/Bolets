@@ -28,17 +28,34 @@ describe("catalogue infographic text version", () => {
     }
   });
 
-  it("lists every poster species as a link, grouped like the sheet", () => {
+  it("lists every poster species as a short linked chip with its drawing, grouped like the sheet", () => {
     const html = renderToStaticMarkup(createElement(CatalogueInfographicSpecies, { speciesCount: catalogueSpecies.length }));
 
     expect(html).not.toContain("<table");
     expect(html).toContain("Excel·lents comestibles");
     expect(html).toContain("Molt tòxics");
     expect(html).toContain('style="background:#7d2730"');
+    expect(html).toContain('src="/media/illustrations/amanita-muscaria.webp"');
     for (const species of catalogueSpecies) {
       expect(html).toContain(`href="${speciesPath(species)}"`);
-      expect(html).toContain(`>${species.identity.commonName}</a>`);
+      expect(html).toContain(`<span>${species.identity.commonName}</span></a>`);
     }
+  });
+
+  it("leads with the searched «dibuix» and «pdf» phrasing and describes every drawing for image search", () => {
+    const html = renderToStaticMarkup(createElement(MushroomInfographicPage));
+
+    expect(metadata.title).toBe("Dibuixos de bolets de Catalunya: infografia en PDF");
+    expect(metadata.description).toContain("guia visual en PDF");
+    expect(html).toContain("Bolets de Catalunya<br/>en dibuix.");
+    // Authorship stays disclosed in the linked credits and the image credit text.
+    expect(html).toContain("Crèdits de les il·lustracions");
+    expect(html).toContain("il·lustració generada amb IA");
+    expect(html).toContain('alt="Dibuix del cep (Boletus edulis)"');
+    expect(html).toContain('alt="Dibuix de l’apagallums (Macrolepiota procera)"');
+    expect(html).toContain('aria-label="Cep"');
+    expect(html).toContain('href="/bolets"');
+    expect(html.match(/"@type":"ImageObject","name":"Dibuix /g)?.length).toBe(catalogueSpecies.length);
   });
 
   it("keeps the download, opens the poster from the image and shares the poster itself", () => {

@@ -162,7 +162,7 @@ export default function MushroomPartsGuidePage() {
           <Link href="/bolets">Consultar totes les fitxes <ArrowUpRight size={16} /></Link>
           <Link href="/bolets-comestibles">Veure bolets comestibles <ArrowUpRight size={16} /></Link>
           <Link href="/bolets-verinosos">Conèixer bolets verinosos <ArrowUpRight size={16} /></Link>
-          <Link href="/bolets/infografia">Veure la infografia de tots els bolets <ArrowUpRight size={16} /></Link>
+          <Link href="/bolets/infografia">Dibuixos de tots els bolets en PDF <ArrowUpRight size={16} /></Link>
         </nav>
       </section>
 

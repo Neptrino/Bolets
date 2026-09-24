@@ -131,9 +131,9 @@ describe("descriptive catalogue species", () => {
     const infographicPage = renderToStaticMarkup(createElement(MushroomInfographicPage));
     expect(infographicPage).toContain('id="infografia"');
     expect(infographicPage).toContain('/downloads/infografies/bolets-catalunya-infografia.png');
-    expect(infographicPage).toContain(`Infografia vertical “Bolets de Catalunya” amb ${catalogueSpecies.length} espècies fotografiades`);
+    expect(infographicPage).toContain(`Infografia vertical “Bolets de Catalunya” amb els dibuixos de ${catalogueSpecies.length} espècies`);
     expect(infographicPage).toContain('id="infografia-especies"');
-    expect(infographicPage).toContain(`Els ${catalogueSpecies.length} bolets de la infografia`);
+    expect(infographicPage).toContain(`Els ${catalogueSpecies.length} bolets dibuixats a la infografia`);
     expect(infographicPage).toContain(`href="${speciesPath(species)}"`);
     expect(infographicPage).toContain(`title="${species.identity.scientificName}"`);
     expect(sitemap().some(item => item.url.endsWith("/bolets/infografia"))).toBe(true);

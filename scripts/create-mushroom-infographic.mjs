@@ -4,35 +4,38 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { chromium } from "@playwright/test";
-import {
-  readMediaCredits,
-  readSpecies,
-} from "./lib/mushroom-infographic-data.mjs";
+import { readSpecies } from "./lib/mushroom-infographic-data.mjs";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(scriptDirectory, "..");
 const outputDirectory = path.join(projectRoot, "artifacts", "infographics");
 const siteMediaDirectory = path.join(projectRoot, "public", "media", "editorial");
 const siteDownloadDirectory = path.join(projectRoot, "public", "downloads", "infografies");
-const mediaDirectory = path.join(
-  projectRoot,
-  "public",
-  "media",
-  "wikimedia",
-);
+const illustrationDirectory = path.join(projectRoot, "public", "media", "illustrations");
 
 const width = 3508;
 const height = 4961;
 const margin = 138;
-const columns = 6;
+const columns = 8;
 const columnGap = 18;
 const cardWidth = (width - margin * 2 - columnGap * (columns - 1)) / columns;
-const cardHeight = 224;
-const cardImageWidth = 190;
+const cardHeight = 336;
+const cardArtHeight = 174;
+const cardPadding = 20;
 const rowGap = 18;
-const sectionHeaderHeight = 58;
-const sectionHeaderGap = 18;
-const sectionGap = 32;
+const sectionHeaderHeight = 64;
+const sectionHeaderGap = 20;
+const sectionGap = 34;
+const sectionsTop = 672;
+const footerTop = 4582;
+/** Species drawn large in the masthead, back to front: [speciesId, x, y, size]. */
+const mastheadCluster = [
+  ["cantharellus-cibarius", 1965, 272, 270],
+  ["amanita-phalloides", 3085, 250, 290],
+  ["amanita-caesarea", 2170, 196, 320],
+  ["amanita-muscaria", 2790, 186, 340],
+  ["boletus-edulis", 2430, 118, 400],
+];
 
 const groups = [
   {
@@ -122,30 +125,34 @@ function bestMonthsLabel(item) {
   return best.length > 0 ? best.map((month) => posterMonthLabels[month]).join(" · ") : "—";
 }
 
-const monthStripPitch = 12.5;
-const monthStripRadius = 4.3;
-const monthStripWidth = monthStripPitch * (monthOrder.length - 1) + monthStripRadius * 2;
+/** Month cells as on the species field cards: lettered squares, the season in warm tones. */
+const monthActivityFill = {
+  peak: "#c8462a",
+  good: "#ec8a4a",
+  moderate: "#f4c9a0",
+};
 
-/** Twelve month dots, the best months filled: a glance replaces the month names. */
-function monthStripSvg(x, y, months, colour) {
+function monthActivity(item) {
+  if (item.seasonality) return item.seasonality;
+  const described = monthsFromSeasonLabel(item.seasonLabel);
+  return Object.fromEntries(monthOrder.map((month) => [month, described.includes(month) ? "good" : "inactive"]));
+}
+
+function monthCellsSvg(x, y, cellsWidth, activity, cellHeight = 26) {
+  const gap = 3;
+  const cell = (cellsWidth - gap * (monthOrder.length - 1)) / monthOrder.length;
   return monthOrder.map((month, index) => {
-    const cx = x + monthStripRadius + index * monthStripPitch;
-    const active = months.includes(month);
+    const cx = x + index * (cell + gap);
+    const fill = monthActivityFill[activity[month]] ?? "#e7e1d3";
+    const textFill = activity[month] === "peak" || activity[month] === "good" ? "#fffaf0" : "#6f6a60";
     return `
-      <circle cx="${cx}" cy="${y}" r="${monthStripRadius}" fill="${active ? colour : "none"}" stroke="${active ? colour : "#c9bfa9"}" stroke-width="1.4"/>
-      <text x="${cx}" y="${y + 17}" text-anchor="middle" class="month-initial">${posterMonthLabels[month][0]}</text>`;
+      <rect x="${cx}" y="${y}" width="${cell}" height="${cellHeight}" rx="4" fill="${fill}"/>
+      <text x="${cx + cell / 2}" y="${y + cellHeight / 2 + 5.5}" text-anchor="middle" class="month-initial" style="fill:${textFill}">${posterMonthLabels[month][0]}</text>`;
   }).join("");
 }
 
 function mountainIconSvg(x, y, colour) {
   return `<path d="M${x} ${y + 14} L${x + 6.5} ${y + 2} L${x + 10.5} ${y + 9} L${x + 12.5} ${y + 6} L${x + 18} ${y + 14} Z" fill="${colour}"/>`;
-}
-
-function treeIconSvg(x, y, colour) {
-  return `
-    <path d="M${x + 7} ${y} L${x + 12.5} ${y + 6.5} H${x + 1.5} Z" fill="${colour}"/>
-    <path d="M${x + 7} ${y + 3.5} L${x + 14} ${y + 11} H${x} Z" fill="${colour}"/>
-    <rect x="${x + 5.6}" y="${y + 11}" width="2.8" height="4" fill="${colour}"/>`;
 }
 
 function compactLabel(value, maximumLength = 30) {
@@ -167,25 +174,42 @@ function escapeXml(value) {
 async function readImageDataUris(species) {
   const entries = await Promise.all(
     species.map(async ({ speciesId }) => {
-      const editorialImagePath = path.join(siteMediaDirectory, `${speciesId}.webp`);
-      const imagePath = fs.existsSync(editorialImagePath)
-        ? editorialImagePath
-        : path.join(mediaDirectory, `${speciesId}.webp`);
+      const imagePath = path.join(illustrationDirectory, `${speciesId}.webp`);
       if (!fs.existsSync(imagePath)) {
-        throw new Error(`Missing poster image: ${imagePath}`);
+        throw new Error(`Missing poster illustration: ${imagePath}`);
       }
       // librsvg, used by Sharp for the final poster render, does not decode
-      // embedded WebP reliably. JPEG keeps the SVG self-contained and portable.
-      // Cards are 190 px wide on the sheet, so 640 px sources keep the print
-      // sharp while holding the SVG and PDF to a reasonable size.
-      const jpeg = await sharp(imagePath)
-        .resize({ width: 640, withoutEnlargement: true })
-        .jpeg({ quality: 84, mozjpeg: true })
+      // embedded WebP reliably. PNG keeps the cut-out transparency.
+      const png = await sharp(imagePath)
+        .resize({ width: 400, withoutEnlargement: true })
+        .png({ compressionLevel: 9, palette: true, quality: 90 })
         .toBuffer();
-      return [speciesId, `data:image/jpeg;base64,${jpeg.toString("base64")}`];
+      return [speciesId, `data:image/png;base64,${png.toString("base64")}`];
     }),
   );
   return new Map(entries);
+}
+
+/** Heavy caps like the field-card titles; long names are condensed to fit, never cut. */
+function fittedText(x, y, value, className, fontSize, maxWidth, widthFactor) {
+  const estimated = value.length * fontSize * widthFactor;
+  const fit = estimated > maxWidth ? ` textLength="${maxWidth}" lengthAdjust="spacingAndGlyphs"` : "";
+  return `<text x="${x}" y="${y}" text-anchor="middle" class="${className}"${fit}>${escapeXml(value)}</text>`;
+}
+
+function forkIconSvg(x, y, colour) {
+  return `
+    <g fill="none" stroke="${colour}" stroke-width="3" stroke-linecap="round">
+      <path d="M${x + 4} ${y} V${y + 9} M${x + 9} ${y} V${y + 9} M${x + 14} ${y} V${y + 9} M${x + 4} ${y + 9} Q${x + 9} ${y + 14} ${x + 14} ${y + 9} M${x + 9} ${y + 12} V${y + 26}"/>
+      <path d="M${x + 24} ${y + 26} V${y} Q${x + 31} ${y + 6} ${x + 29} ${y + 15} H${x + 24}"/>
+    </g>`;
+}
+
+function warningIconSvg(x, y, colour) {
+  return `
+    <path d="M${x + 14} ${y} L${x + 28} ${y + 25} H${x} Z" fill="${colour}"/>
+    <rect x="${x + 12.5}" y="${y + 8}" width="3" height="9" rx="1.5" fill="#fffaf0"/>
+    <circle cx="${x + 14}" cy="${y + 21}" r="1.8" fill="#fffaf0"/>`;
 }
 
 function mushroomMark(x, y, scale = 1) {
@@ -199,47 +223,61 @@ function mushroomMark(x, y, scale = 1) {
 }
 
 function cardSvg(item, index, x, y, colour, images) {
-  const clipId = `clip-${item.speciesId}`;
   const image = images.get(item.speciesId);
-  if (!image) throw new Error(`Missing embedded image for ${item.speciesId}`);
-  const radius = 28;
+  if (!image) throw new Error(`Missing embedded illustration for ${item.speciesId}`);
+  const radius = 22;
   const number = String(index + 1).padStart(2, "0");
-  const habitatLabel = compactLabel(item.habitatTypes[0] ?? "Hàbitat divers", 27);
-  const altitudeLabel = item.altitude ? `${item.altitude[0]}–${item.altitude[1]} m` : null;
+  const centreX = x + cardWidth / 2;
+  const innerWidth = cardWidth - cardPadding * 2;
+  const altitudeLabel = item.altitude ? `${item.altitude[0]}–${item.altitude[1]} m` : "—";
+  // The habitat shares the line with the altitude: give it whatever width is left.
+  const habitatRoom = Math.floor((innerWidth - 26 - altitudeLabel.length * 10.5 - 18) / 9.4);
+  const habitatLabel = compactLabel(item.habitatTypes[0] ?? "Hàbitat divers", Math.min(30, habitatRoom));
   const seasonLabel = bestMonthsLabel(item);
-  const textX = x + cardImageWidth + 34;
+  const artSize = 160;
 
   return `
     <g aria-label="${escapeXml(`${item.commonName}, ${item.scientificName}`)}">
-      <rect x="${x}" y="${y + 7}" width="${cardWidth}" height="${cardHeight}" rx="${radius}" fill="#6a5e4c" opacity="0.12"/>
-      <rect x="${x}" y="${y}" width="${cardWidth}" height="${cardHeight}" rx="${radius}" fill="#fffaf0" stroke="#d9ceb6" stroke-width="2"/>
-      <defs>
-        <clipPath id="${clipId}">
-          <path d="M${x + radius},${y} H${x + cardImageWidth} V${y + cardHeight} H${x + radius} Q${x},${y + cardHeight} ${x},${y + cardHeight - radius} V${y + radius} Q${x},${y} ${x + radius},${y} Z"/>
-        </clipPath>
-      </defs>
-      <image href="${image}" x="${x}" y="${y}" width="${cardImageWidth}" height="${cardHeight}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})"/>
-      <rect x="${x + cardImageWidth}" y="${y}" width="9" height="${cardHeight}" fill="${colour}"/>
-      <circle cx="${x + 42}" cy="${y + 41}" r="25" fill="#fffaf0" opacity="0.96"/>
-      <text x="${x + 42}" y="${y + 49}" text-anchor="middle" class="number">${number}</text>
-      <g aria-label="${escapeXml(`Millors mesos: ${seasonLabel}`)}">${monthStripSvg(textX, y + 38, bestMonths(item), "#8a5d3f")}</g>
-      <text x="${textX}" y="${y + 101}" class="common-name">${escapeXml(item.commonName)}</text>
-      <text x="${textX}" y="${y + 135}" class="scientific-name">${escapeXml(item.scientificName)}</text>
-      ${treeIconSvg(textX, y + 156, "#4e574d")}
-      <text x="${textX + 21}" y="${y + 170}" class="card-habitat">${escapeXml(habitatLabel)}</text>
-      ${altitudeLabel ? `<g aria-label="${escapeXml(`Altitud ${altitudeLabel}`)}">${mountainIconSvg(textX, y + 185, "#8a5d3f")}<text x="${textX + 23}" y="${y + 200}" class="card-meta">${escapeXml(altitudeLabel)}</text></g>` : ""}
+      <rect x="${x}" y="${y + 6}" width="${cardWidth}" height="${cardHeight}" rx="${radius}" fill="#6a5e4c" opacity="0.1"/>
+      <rect x="${x}" y="${y}" width="${cardWidth}" height="${cardHeight}" rx="${radius}" fill="#fffaf0" stroke="#e3d8c2" stroke-width="2"/>
+      <rect x="${x + 10}" y="${y + 10}" width="${cardWidth - 20}" height="${cardArtHeight}" rx="${radius - 8}" fill="${colour}" fill-opacity="0.1"/>
+      <image href="${image}" x="${centreX - artSize / 2}" y="${y + 16}" width="${artSize}" height="${artSize}" preserveAspectRatio="xMidYMid meet"/>
+      <circle cx="${x + 38}" cy="${y + 38}" r="20" fill="${colour}"/>
+      <text x="${x + 38}" y="${y + 45}" text-anchor="middle" class="number">${number}</text>
+      ${fittedText(centreX, y + cardArtHeight + 48, item.commonName.toLocaleUpperCase("ca"), "common-name", 29, innerWidth, 0.68)}
+      ${fittedText(centreX, y + cardArtHeight + 76, item.scientificName, "scientific-name", 20, innerWidth, 0.5)}
+      <g aria-label="${escapeXml(`Temporada: ${seasonLabel}`)}">${monthCellsSvg(x + cardPadding, y + cardArtHeight + 92, innerWidth, monthActivity(item))}</g>
+      <g aria-label="${escapeXml(`Altitud ${altitudeLabel}`)}">${mountainIconSvg(x + cardPadding, y + cardArtHeight + 131, "#8a5d3f")}<text x="${x + cardPadding + 26}" y="${y + cardArtHeight + 145}" class="card-meta">${escapeXml(altitudeLabel)}</text></g>
+      <text x="${x + cardWidth - cardPadding}" y="${y + cardArtHeight + 145}" text-anchor="end" class="card-habitat">${escapeXml(habitatLabel)}</text>
     </g>`;
 }
 
-function sectionSvg(group, items, startIndex, y, images) {
+function sectionHeight(items) {
+  const rows = Math.ceil(items.length / columns);
+  return sectionHeaderHeight + sectionHeaderGap + rows * cardHeight + (rows - 1) * rowGap + sectionGap;
+}
+
+/**
+ * One edibility group on a full-width band: pale tints for the edible groups,
+ * a solid band for the most toxic, so danger reads from across a room.
+ */
+function sectionSvg(group, items, startIndex, y, images, bandBottom) {
   const rows = Math.ceil(items.length / columns);
   const right = width - margin;
+  const edible = ["excellent", "edible", "conditional"].includes(group.id);
+  const solid = group.id === "danger";
+  const badgeWidth = 104 + group.title.length * 23;
+  const badgeFill = solid ? "#fffaf0" : group.colour;
+  const badgeInk = solid ? group.colour : "#fffaf0";
+  const bandTop = y - 26;
   let markup = `
     <g>
-      <rect x="${margin}" y="${y + 11}" width="52" height="12" rx="6" fill="${group.colour}"/>
-      <text x="${margin + 72}" y="${y + 35}" class="section-title">${escapeXml(group.title)}</text>
-      <text x="${right}" y="${y + 35}" text-anchor="end" class="section-count">${items.length} ESPÈCIES</text>
-      <line x1="${margin}" y1="${y + sectionHeaderHeight}" x2="${right}" y2="${y + sectionHeaderHeight}" stroke="#d1c5aa" stroke-width="2"/>
+      <rect x="0" y="${bandTop}" width="${width}" height="${bandBottom - bandTop}" fill="${group.colour}"${solid ? "" : ` fill-opacity="0.09"`}/>
+      <rect x="${margin}" y="${y}" width="${badgeWidth}" height="54" rx="14" fill="${badgeFill}"/>
+      ${edible ? forkIconSvg(margin + 26, y + 14, badgeInk) : warningIconSvg(margin + 24, y + 14, badgeInk)}
+      <text x="${margin + 76}" y="${y + 38}" class="section-title" style="fill:${badgeInk}">${escapeXml(group.title)}</text>
+      <text x="${right}" y="${y + 38}" text-anchor="end" class="section-count"${solid ? ` style="fill:#fffaf0"` : ""}>${items.length} ESPÈCIES</text>
+      <line x1="${margin + badgeWidth + 24}" y1="${y + 27}" x2="${right - 230}" y2="${y + 27}" stroke="${solid ? "#fffaf0" : group.colour}" stroke-opacity="0.3" stroke-width="2"/>
     </g>`;
 
   const gridY = y + sectionHeaderHeight + sectionHeaderGap;
@@ -265,15 +303,7 @@ function sectionSvg(group, items, startIndex, y, images) {
     }
   }
 
-  return {
-    markup,
-    height:
-      sectionHeaderHeight +
-      sectionHeaderGap +
-      rows * cardHeight +
-      (rows - 1) * rowGap +
-      sectionGap,
-  };
+  return { markup, height: sectionHeight(items) };
 }
 
 function buildSvg(species, images) {
@@ -289,70 +319,68 @@ function buildSvg(species, images) {
     throw new Error(`Poster groups include ${accountedFor} of ${species.length} species`);
   }
 
-  let sectionY = 610;
+  let sectionY = sectionsTop;
   let globalIndex = 0;
   let sections = "";
 
-  for (const group of orderedGroups) {
-    const section = sectionSvg(group, group.items, globalIndex, sectionY, images);
+  for (const [groupIndex, group] of orderedGroups.entries()) {
+    // Bands meet edge to edge; the last one runs down to the footer.
+    const bandBottom = groupIndex === orderedGroups.length - 1
+      ? footerTop
+      : sectionY + sectionHeight(group.items) - 26;
+    const section = sectionSvg(group, group.items, globalIndex, sectionY, images, bandBottom);
     sections += section.markup;
     sectionY += section.height;
     globalIndex += group.items.length;
   }
 
-  if (sectionY > 4560) {
+  if (sectionY > footerTop - 20) {
     throw new Error(`Poster content overflows into the footer at y=${sectionY}`);
   }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="title description">
   <title id="title">Bolets de Catalunya — catàleg visual de ${species.length} espècies</title>
-  <desc id="description">Infografia de Bolets Atles amb fotografies, noms catalans i noms científics, agrupats per comestibilitat. No és una guia d’identificació.</desc>
+  <desc id="description">Infografia de Bolets Atles amb il·lustracions, noms catalans i noms científics, agrupats per comestibilitat. No és una guia d’identificació.</desc>
   <style>
     text { fill: #3b3b3b; font-family: "Avenir Next", Avenir, Arial, sans-serif; }
-    .eyebrow { font-size: 28px; font-weight: 800; letter-spacing: 7px; }
-    .title { font-size: 142px; font-weight: 900; letter-spacing: -6px; }
-    .subtitle { font-size: 34px; font-weight: 500; }
-    .section-title { font-size: 34px; font-weight: 900; letter-spacing: 1.4px; }
+    .eyebrow { fill: #f2a766; font-size: 28px; font-weight: 800; letter-spacing: 7px; }
+    .title { fill: #fbf6ea; font-size: 150px; font-weight: 900; letter-spacing: -6px; }
+    .subtitle { fill: #dfe5d6; font-size: 34px; font-weight: 500; }
+    .section-title { fill: #fffaf0; font-size: 32px; font-weight: 900; letter-spacing: 1.4px; }
     .section-count { fill: #706d66; font-size: 24px; font-weight: 800; letter-spacing: 2px; }
-    .number { fill: #3b3b3b; font-size: 22px; font-weight: 900; letter-spacing: 1px; }
-    .common-name { font-size: 27px; font-weight: 850; letter-spacing: -0.5px; }
-    .scientific-name { fill: #706d66; font-family: Georgia, "Times New Roman", serif; font-size: 19px; font-style: italic; }
-    .card-habitat { fill: #4e574d; font-size: 18px; font-weight: 750; }
-    .card-meta { fill: #8a5d3f; font-size: 16px; font-weight: 850; letter-spacing: 0.4px; }
-    .month-initial { fill: #8a5d3f; font-size: 8.5px; font-weight: 800; }
-    .legend { fill: #706d66; font-size: 21px; font-weight: 650; }
+    .number { fill: #fffaf0; font-size: 19px; font-weight: 900; letter-spacing: 0.5px; }
+    .common-name { fill: #1f1f1f; font-size: 29px; font-weight: 900; letter-spacing: -0.5px; }
+    .scientific-name { fill: #2f5f7a; font-size: 20px; font-weight: 700; font-style: italic; }
+    .card-habitat { fill: #4e574d; font-size: 17px; font-weight: 750; }
+    .card-meta { fill: #8a5d3f; font-size: 17px; font-weight: 850; letter-spacing: 0.3px; }
+    .month-initial { font-size: 14px; font-weight: 800; }
+    .legend { fill: #c7d0ba; font-size: 21px; font-weight: 650; }
     .footer-kicker { fill: #f2a766; font-size: 25px; font-weight: 900; letter-spacing: 3px; }
     .footer-copy { fill: #fff7e8; font-size: 26px; font-weight: 650; }
     .footer-meta { fill: #c7d0ba; font-size: 21px; font-weight: 550; }
   </style>
   <rect width="${width}" height="${height}" fill="#f2ebd5"/>
-  <g opacity="0.2" fill="none" stroke="#bd592a" stroke-width="3">
-    <path d="M-80 230 C460 35 750 480 1270 255 S2100 32 2440 280 3180 490 3630 235"/>
-    <path d="M-100 300 C430 105 820 540 1325 330 S2095 115 2510 348 3170 565 3620 330"/>
-    <path d="M-120 370 C410 180 880 610 1380 405 S2110 195 2580 420 3190 640 3620 410"/>
-  </g>
-  <circle cx="3210" cy="260" r="390" fill="#f28a2e" opacity="0.1"/>
-  <circle cx="3180" cy="235" r="270" fill="#bd592a" opacity="0.07"/>
+  <rect width="${width}" height="570" fill="#34483a"/>
+  <ellipse cx="2640" cy="548" rx="760" ry="34" fill="#26352b"/>
+  ${mastheadCluster.map(([speciesId, x, y, size]) => `<image href="${images.get(speciesId)}" x="${x}" y="${y}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid meet"/>`).join("")}
   ${mushroomMark(margin, 108, 1.28)}
   <text x="${margin + 150}" y="150" class="eyebrow">BOLETS ATLES · CATALUNYA</text>
   <text x="${margin}" y="342" class="title">BOLETS DE CATALUNYA</text>
-  <text x="${margin}" y="420" class="subtitle">${species.length} espècies · noms · millors mesos · hàbitat i altitud</text>
-  <g aria-label="Llegenda de les targetes" transform="translate(${width - margin - 560} 398)">
-    ${monthStripSvg(0, 12, ["oct", "nov"], "#8a5d3f")}
-    <text x="${monthStripWidth + 14}" y="19" class="legend">millors mesos</text>
-    ${mountainIconSvg(monthStripWidth + 172, 4, "#8a5d3f")}
-    <text x="${monthStripWidth + 198}" y="19" class="legend">altitud</text>
-    ${treeIconSvg(monthStripWidth + 300, 2, "#4e574d")}
-    <text x="${monthStripWidth + 322}" y="19" class="legend">hàbitat</text>
+  <text x="${margin}" y="410" class="subtitle">${species.length} espècies · noms · temporada · hàbitat i altitud</text>
+  <g aria-label="Llegenda de les targetes" transform="translate(${margin} 462)">
+    ${monthCellsSvg(0, 0, 300, { gen: "inactive", feb: "inactive", mar: "inactive", abr: "inactive", mai: "inactive", jun: "inactive", jul: "inactive", ago: "moderate", set: "good", oct: "peak", nov: "peak", des: "moderate" })}
+    <text x="316" y="20" class="legend">temporada (pic en vermell)</text>
+    ${mountainIconSvg(640, 5, "#f2a766")}
+    <text x="666" y="20" class="legend">altitud · hàbitat</text>
   </g>
-  <g transform="translate(${margin} 470)">
-    <rect x="0" y="0" width="${width - margin * 2}" height="72" rx="24" fill="#fff9ed" stroke="#d1c5aa" stroke-width="2"/>
-    <circle cx="39" cy="36" r="18" fill="#bd592a"/>
-    <text x="39" y="45" text-anchor="middle" style="fill:#fff9ed;font-size:26px;font-weight:900">!</text>
-    <text x="74" y="45" style="font-size:25px;font-weight:800;letter-spacing:0.5px">MAI IDENTIFIQUEU NI CONSUMIU UN BOLET NOMÉS A PARTIR D’UNA FOTOGRAFIA.</text>
+  <g transform="translate(0 570)">
+    <rect width="${width}" height="76" fill="#bd592a"/>
+    <circle cx="${margin + 22}" cy="38" r="20" fill="#fffaf0"/>
+    <text x="${margin + 22}" y="48" text-anchor="middle" style="fill:#bd592a;font-size:28px;font-weight:900">!</text>
+    <text x="${margin + 62}" y="48" style="fill:#fffaf0;font-size:27px;font-weight:850;letter-spacing:1px">MAI IDENTIFIQUEU NI CONSUMIU UN BOLET NOMÉS A PARTIR D’UNA FOTOGRAFIA O D’UNA IL·LUSTRACIÓ.</text>
   </g>
   ${sections}
-  <g transform="translate(0 4582)">
+  <g transform="translate(0 ${footerTop})">
     <rect width="${width}" height="379" fill="#3b3b3b"/>
     <rect width="${width}" height="12" fill="#f28a2e"/>
     ${mushroomMark(margin, 72, 0.92)}
@@ -361,37 +389,28 @@ function buildSvg(species, images) {
     <text x="${margin + 116}" y="199" class="footer-copy">amb una persona experta.</text>
     <text x="${width - margin}" y="108" text-anchor="end" class="footer-kicker">BOLETS.APP/BOLETS</text>
     <text x="${width - margin}" y="158" text-anchor="end" class="footer-meta">Fitxes, confusions, temporada i hàbitat</text>
-    <text x="${width - margin}" y="199" text-anchor="end" class="footer-meta">Fotografies: Wikimedia Commons</text>
+    <text x="${width - margin}" y="199" text-anchor="end" class="footer-meta">Il·lustracions: Bolets Atles, generades amb IA</text>
     <line x1="${margin}" y1="256" x2="${width - margin}" y2="256" stroke="#67645f" stroke-width="2"/>
     <text x="${margin}" y="307" class="footer-meta">Infografia generada a partir del catàleg versionat de Bolets Atles.</text>
-    <text x="${width - margin}" y="307" text-anchor="end" class="footer-meta">Autoria i llicències completes al document de crèdits adjunt.</text>
+    <text x="${width - margin}" y="307" text-anchor="end" class="footer-meta">Les il·lustracions no substitueixen la fitxa ni la comprovació experta.</text>
   </g>
 </svg>`;
 }
 
-function buildCredits(species, credits) {
-  const collator = new Intl.Collator("ca", { sensitivity: "base" });
-  const lines = [
-    "BOLETS DE CATALUNYA — CRÈDITS FOTOGRÀFICS",
+function buildCredits(species) {
+  return [
+    "BOLETS DE CATALUNYA — CRÈDITS DE LA INFOGRAFIA",
     "",
-    "Infografia: Bolets Atles · https://bolets.app/bolets",
-    "Les fotografies s'han retallat i redimensionat per a la composició del pòster.",
+    "Infografia: Bolets Atles · https://bolets.app/bolets/infografia",
+    `Espècies: ${species.length}, generades a partir del catàleg versionat de Bolets Atles.`,
     "",
-  ];
-
-  for (const item of [...species].sort((a, b) => collator.compare(a.commonName, b.commonName))) {
-    const credit = credits.get(item.speciesId);
-    if (!credit) {
-      throw new Error(`Missing media credit for ${item.speciesId}`);
-    }
-    lines.push(`${item.commonName} (${item.scientificName})`);
-    lines.push(`  Fotografia: ${credit.attribution}`);
-    lines.push(`  Llicència: ${credit.license}`);
-    lines.push(`  Font: ${credit.sourceUrl}`);
-    lines.push("");
-  }
-
-  return lines.join("\n");
+    "Il·lustracions: família d'icones pròpia de Bolets Atles, generada amb IA (Magnific, setembre de 2026)",
+    "a partir d'indicacions escrites per a cada espècie. Són esquemàtiques: no reprodueixen cap exemplar",
+    "concret i no serveixen per identificar un bolet.",
+    "",
+    "Temporada, hàbitat i altitud: fitxes de cada espècie a https://bolets.app/bolets.",
+    "",
+  ].join("\n");
 }
 
 /**
@@ -430,7 +449,6 @@ async function renderPdf(svg, pdfPath) {
 
 async function main() {
   const species = readSpecies(projectRoot);
-  const credits = readMediaCredits(projectRoot);
   const images = await readImageDataUris(species);
   const svg = buildSvg(species, images);
 
@@ -444,7 +462,7 @@ async function main() {
   const siteDownloadPath = path.join(siteDownloadDirectory, "bolets-catalunya-infografia.png");
   const sitePdfPath = path.join(siteDownloadDirectory, "bolets-catalunya-infografia.pdf");
   const siteCreditsPath = path.join(siteDownloadDirectory, "bolets-catalunya-infografia-credits.txt");
-  const creditText = buildCredits(species, credits);
+  const creditText = buildCredits(species);
 
   fs.writeFileSync(svgPath, svg);
   fs.writeFileSync(creditsPath, creditText);

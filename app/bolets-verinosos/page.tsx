@@ -83,7 +83,7 @@ export default function PoisonousMushroomsPage() {
         </div>
         <nav className="species-topic-links seasonal-guide-topic-links" aria-label="Guies relacionades amb els bolets tòxics">
           <Link href="/parts-dun-bolet"><ShieldAlert size={18} aria-hidden="true" /><span><strong>Parts d’un bolet</strong><small>Anell, volva, làmines i porus amb nom propi</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
-          <Link href="/bolets/infografia"><Images size={18} aria-hidden="true" /><span><strong>Infografia de bolets</strong><small>Tòxics i comestibles en un sol pòster</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link href="/bolets/infografia"><Images size={18} aria-hidden="true" /><span><strong>Dibuixos de bolets en PDF</strong><small>Tòxics i comestibles en un sol pòster</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
         </nav>
       </section>
 

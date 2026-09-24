@@ -51,7 +51,7 @@ export function SiteFooter() {
             <Link href="/compare">Comparador d’espècies</Link>
             <Link href="/bolets-i-confusions">Bolets i confusions</Link>
             <Link href="/parts-dun-bolet">Parts d’un bolet</Link>
-            <Link href="/bolets/infografia">Infografia de bolets</Link>
+            <Link href="/bolets/infografia">Dibuixos de bolets</Link>
             <Link href="/temporada">Temporada</Link>
             <Link href="/preguntes-frequents-bolets">Preguntes freqüents</Link>
           </div>
