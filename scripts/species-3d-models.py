@@ -335,7 +335,7 @@ def cep():
     return [cap, stem], views
 
 
-def gills(name, cap_profile, samples, j_start, cap_shape, stem_shape, stem_radius, count, depth, seed, decurrent=0.004, free_gap=None, stains=True):
+def gills(name, cap_profile, samples, j_start, cap_shape, stem_shape, stem_radius, count, depth, seed, decurrent=0.004, free_gap=None, stains=True, margin_taper=0.72, edge_occlusion=0.82):
     """Radial gill blades hanging under the cap.
 
     j_start indexes the resampled profile where the gills begin (inside the
@@ -396,7 +396,7 @@ def gills(name, cap_profile, samples, j_start, cap_shape, stem_shape, stem_radiu
             n3 = Vector((nr * math.cos(th), nr * math.sin(th), nz))
             if kind == "cap":
                 start = smooth(t0, t0 + 0.04, t) if t0 > 0 else 1.0
-                d = depth * start * (1 - smooth(0.72, 1.0, t)) * (0.55 + 0.45 * smooth(0.0, 0.3, t))
+                d = depth * start * (1 - smooth(margin_taper, 1.0, t)) * (0.55 + 0.45 * smooth(0.0, 0.3, t))
                 if free_gap is not None:
                     d *= smooth(0.0, 0.12, t)  # free gills round off before the stem
                 base = Vector(cap_shape(th, v, r, z))
@@ -413,7 +413,7 @@ def gills(name, cap_profile, samples, j_start, cap_shape, stem_shape, stem_radiu
                 row.append(len(verts))
                 verts.append(pos)
                 uvs.append((max(t, 0.0), e))
-                occl = 0.82 if e == 0 else 1.0
+                occl = edge_occlusion if e == 0 else 1.0
                 st = stain * (0.75 + 0.25 * e)
                 c = [tint * occl * (1 - st * 0.45), tint * occl * (1 - st * 0.9), tint * occl * (1 - st * 0.85)]
                 cols.append(c)
@@ -573,12 +573,14 @@ def rovello():
     return [cap, stem, gill], views
 
 
-def solidify(obj, thickness):
+def solidify(obj, thickness, rim=True):
+    """Give a membrane thickness. Very thin ones skip the rim: its collapsed
+    UVs sample a dark outline, and the gap is too narrow to see."""
     mod = obj.modifiers.new("solid", "SOLIDIFY")
     mod.thickness = thickness
     mod.offset = 0.0
     mod.use_even_offset = True
-    mod.use_rim = True
+    mod.use_rim = rim
 
 
 def ou_de_reig():
@@ -624,13 +626,14 @@ def ou_de_reig():
     def stem_radius(z):
         return min(sp, key=lambda p: abs(p.y - z)).x
 
-    ug = arc_fraction(cap_profile, 8)
+    ug = arc_fraction(cap_profile, 7)  # gills run out to the thin margin
     gill = gills("gills", cap_profile, samples, int(round(ug * (samples - 1))), cap_shape, stem_shape,
-                 stem_radius, 110, 0.0068, seed, decurrent=0, free_gap=0.0022, stains=False)
+                 stem_radius, 120, 0.0068, seed, decurrent=0, free_gap=0.0012, stains=False,
+                 margin_taper=0.9, edge_occlusion=0.92)
 
     # Ring: a skirt hanging from high on the stem, with soft folds and a torn edge.
-    ring_profile = [(0.0124, 0.1175), (0.0152, 0.1160), (0.0180, 0.1125), (0.0198, 0.1075),
-                    (0.0206, 0.1020), (0.0206, 0.0975), (0.0200, 0.0945)]
+    ring_profile = [(0.0124, 0.1175), (0.0148, 0.1166), (0.0166, 0.1135), (0.0176, 0.1085),
+                    (0.0180, 0.1030), (0.0179, 0.0980), (0.0175, 0.0935)]
 
     def ring_shape(th, v, r, z):
         dirn = Vector((math.cos(th), math.sin(th), 0))
@@ -644,7 +647,7 @@ def ou_de_reig():
         return (x + r2 * math.cos(th), y + r2 * math.sin(th), z2)
 
     ring = revolve("ring", ring_profile, 200, 30, ring_shape, False, False)
-    solidify(ring, 0.0007)
+    solidify(ring, 0.00035, rim=False)
 
     # Volva: tall, loose white sac with torn, pointed lobes around the stem base.
     volva_profile = [(0.0030, -0.0030), (0.0160, -0.0015), (0.0265, 0.0050), (0.0315, 0.0150),
@@ -684,8 +687,8 @@ def ou_de_reig():
     stri_mask = g.remap(g.v, um * 0.78, um * 0.95)
     stri = g.math("MULTIPLY", g.remap(stri, -1.0, 1.0), stri_mask)
     base = g.mix(g.math("MULTIPLY", stri, 0.35), base, "#b8481a")
-    under = g.remap(g.v, um + 0.004, um + 0.02)
-    colour = g.mix(under, base, "#e8c048")
+    under = g.remap(g.v, um + 0.002, um + 0.012)
+    colour = g.mix(under, base, "#f3df92")
     roughness = g.lerp(under, g.remap(g.noise(25, 2), 0.3, 0.7, 0.42, 0.55), 0.78)
     height = g.math("ADD", stri, g.math("MULTIPLY", g.noise(160, 3), 0.25))
     g.finish(colour, roughness, height, 0.5, 0.0005)
@@ -693,8 +696,8 @@ def ou_de_reig():
 
     m = bpy.data.materials.new("gills-proc")
     g = Graph(m)
-    col = g.ramp(g.uvx, [(0.0, "#e6c24a"), (0.5, "#f0ce55"), (1.0, "#f3d768")])
-    col = g.mix(g.remap(g.uvy, 0.7, 1.0, 0.0, 0.4), col, "#f8e79a")
+    col = g.ramp(g.uvx, [(0.0, "#efd571"), (0.5, "#f4df86"), (1.0, "#f6e39a")])
+    col = g.mix(g.remap(g.uvy, 0.7, 1.0, 0.0, 0.5), col, "#fbf0c4")
     g.finish(col, 0.75, g.noise(200, 2), 0.1, 0.0002)
     gill.data.materials.append(m)
 
@@ -710,7 +713,7 @@ def ou_de_reig():
 
     m = bpy.data.materials.new("ring-proc")
     g = Graph(m)
-    colour = g.ramp(g.noise(60, 3), [(0.4, "#eec34a"), (0.65, "#f6db78")])
+    colour = g.ramp(g.noise(60, 3), [(0.4, "#f1cf5e"), (0.65, "#f8e28e")])
     stri = g.noise(8, 2, vec=g.vec_scale(g.obj, 900, 900, 1))
     colour = g.mix(0.25, colour, stri, "OVERLAY")
     g.finish(colour, 0.72, stri, 0.2, 0.0003)

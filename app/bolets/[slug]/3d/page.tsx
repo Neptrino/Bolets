@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import { PageHeader, PageShell } from "@/components/page-layout";
+import { PageHeader, PageShell, SectionHeader } from "@/components/page-layout";
 import { SpeciesModelViewer } from "@/components/species-profile/species-model-viewer";
-import { getCatalogueSpeciesBySlug } from "@/data/catalogue";
+import { getCatalogueSpecies, getCatalogueSpeciesBySlug } from "@/data/catalogue";
 import { getSpecies3dModel, species3dModelIds } from "@/data/species-3d-models";
 import { speciesSlugForId } from "@/data/species-slugs";
 import { speciesModelPath, speciesPath } from "@/src/lib/seo";
@@ -43,6 +43,13 @@ export default async function SpeciesModelPage({ params }: { params: Promise<{ s
   const name = species.identity.commonName;
   const { ofSpecies } = speciesArticle(name);
   const profileHref = speciesPath(species);
+  const otherModels = species3dModelIds
+    .filter((id) => id !== species.speciesId)
+    .flatMap((id) => {
+      const other = getCatalogueSpecies(id);
+      const otherModel = getSpecies3dModel(id);
+      return other && otherModel ? [{ species: other, model: otherModel }] : [];
+    });
 
   return (
     <PageShell as="article" className="species-model-page">
@@ -69,6 +76,26 @@ export default async function SpeciesModelPage({ params }: { params: Promise<{ s
           </p>
         </aside>
       </div>
+
+      {otherModels.length > 0 && (
+        <nav className="species-model-others" aria-labelledby="altres-models">
+          <SectionHeader titleId="altres-models" title="Altres bolets en 3D" size="compact" />
+          <ul>
+            {otherModels.map(({ species: other, model: otherModel }) => (
+              <li key={other.speciesId}>
+                <Link href={speciesModelPath(other)} className="card">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- still render served as-is beside its GLB */}
+                  <img src={otherModel.thumb} alt="" loading="lazy" decoding="async" />
+                  <span>
+                    <b>{other.identity.commonName}</b>
+                    <i>{other.identity.scientificName}</i>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
     </PageShell>
   );
 }
