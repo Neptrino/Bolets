@@ -50,6 +50,25 @@ BUTTON_STEM = [
 TIP = 8
 
 
+def _clamp_gill_edge(gill, margin_z, lift=0.0004, r_min=0.0):
+    """Keep every gill's free edge above the margin tip at its own angle, so
+    no blade hangs below the rim as a comb. margin_z(th) is the z of the
+    margin tip along that radius; the blade shortens towards the flesh."""
+    vs = gill.data.vertices
+    for k in range(0, len(vs) - 1, 2):
+        top, bot = vs[k].co, vs[k + 1].co
+        if math.hypot(bot.x, bot.y) < r_min:
+            continue
+        zmin = margin_z(math.atan2(bot.y, bot.x)) + lift
+        if bot.z >= zmin:
+            continue
+        if top.z - 0.0001 <= zmin:
+            vs[k + 1].co = top.lerp(bot, 0.08)
+        else:
+            vs[k + 1].co = top.lerp(bot, (top.z - zmin) / (top.z - bot.z))
+    gill.data.update()
+
+
 def wrap(a):
     return (a + math.pi) % (2 * math.pi) - math.pi
 
@@ -114,12 +133,17 @@ def specimen(tag, cap_profile, stem_profile, seed, lobe_amp, wave, gill_count, g
     def stem_radius(z):
         return min(sp, key=lambda pt: abs(pt.y - z)).x
 
-    j_start = int(round(arc_fraction(cap_profile, TIP) * (samples - 1))) + 1
+    j_start = int(round(arc_fraction(cap_profile, TIP) * (samples - 1))) + 2
     # A tiny free gap rounds each gill off just before the stem: the notched
-    # (emarginate) attachment of the morphology.
+    # (emarginate) attachment of the morphology. The blades taper in over the
+    # outer 40 % and keep their free edge above the inrolled margin, so no
+    # comb shows below it; no fake occlusion, so the fine crowded gills read
+    # white rather than grey.
     gill = gills(f"gills{tag}", cap_profile, samples, j_start, cap_shape, stem_shape, stem_radius,
                  gill_count, gill_depth, seed, decurrent=0, free_gap=0.0004, stains=False,
-                 margin_taper=0.82, edge_occlusion=0.97)
+                 margin_taper=0.6, edge_occlusion=1.0)
+    v_tip, tip = arc_fraction(cap_profile, TIP), cap_profile[TIP]
+    _clamp_gill_edge(gill, lambda th: cap_shape(th, v_tip, tip[0], tip[1])[2], lift=0.0003, r_min=0.5 * radius)
 
     cap_material(cap, arc_fraction(cap_profile, TIP), lobe_amp > 0.05)
     gill_material(gill)
@@ -156,7 +180,7 @@ def cap_material(cap, um, mature):
 def gill_material(gill):
     m = bpy.data.materials.new(f"{gill.name}-proc")
     g = Graph(m)
-    col = g.ramp(g.uvx, [(0.0, "#f6f0e2"), (0.5, "#f8f3e8"), (1.0, "#faf6ee")])
+    col = g.ramp(g.uvx, [(0.0, "#f9f5ec"), (0.5, "#fbf8f1"), (1.0, "#fcfaf4")])
     col = g.mix(g.remap(g.uvy, 0.6, 1.0, 0.0, 0.4), col, "#fcfaf4")
     g.finish(col, 0.78, g.noise(200, 2), 0.08, 0.0002)
     gill.data.materials.append(m)
@@ -196,16 +220,16 @@ def place(objs, x, y, rz, tilt_x, tilt_y):
 
 def build():
     # Mature cap: lobed, wavy margin and the only (small, shallow) crack.
-    a = specimen("", MATURE_CAP, MATURE_STEM, Vector((4.1, 2.7, 9.3)), 0.08, 0.0032, 100, 0.0052,
+    a = specimen("", MATURE_CAP, MATURE_STEM, Vector((4.1, 2.7, 9.3)), 0.08, 0.0032, 100, 0.0042,
                  bosses=((0.012, -0.014, 0.012, 0.004), (-0.017, 0.012, 0.010, 0.0035), (0.022, 0.018, 0.009, -0.003),
                          (-0.006, -0.028, 0.008, -0.0025), (0.0, 0.0, 0.007, -0.002)),
                  split=(-1.65, 0.06), press=(-0.63, 0.05))
     # Mid-stage cap, pushed out of round where it leans on the big one.
-    b = specimen("-b", MID_CAP, MID_STEM, Vector((8.2, 5.5, 1.6)), 0.05, 0.002, 90, 0.0044,
+    b = specimen("-b", MID_CAP, MID_STEM, Vector((8.2, 5.5, 1.6)), 0.05, 0.002, 90, 0.0036,
                  bosses=((0.008, 0.01, 0.009, 0.003), (-0.012, -0.008, 0.007, -0.0025), (0.014, -0.012, 0.007, 0.002)),
                  press=(1.95, 0.07))
     # Closed button.
-    c = specimen("-c", BUTTON_CAP, BUTTON_STEM, Vector((1.4, 9.9, 6.2)), 0.035, 0.001, 72, 0.0032,
+    c = specimen("-c", BUTTON_CAP, BUTTON_STEM, Vector((1.4, 9.9, 6.2)), 0.035, 0.001, 72, 0.0027,
                  bosses=((0.006, -0.006, 0.008, 0.0025), (-0.008, 0.007, 0.006, -0.0015)))
     place(a, 0.0, 0.016, 0, -3, 2)
     place(b, 0.066, -0.026, 40, 5, 12)

@@ -5,6 +5,25 @@ the base, with faint chevron flecks and a soft, hanging yellow ring; a thick,
 close-fitting white sac-like volva torn into a few large lobes."""
 
 
+def _clamp_gill_edge(gill, margin_z, lift=0.0004, r_min=0.0):
+    """Keep every gill's free edge above the margin tip at its own angle, so
+    no blade hangs below the rim as a comb. margin_z(th) is the z of the
+    margin tip along that radius; the blade shortens towards the flesh."""
+    vs = gill.data.vertices
+    for k in range(0, len(vs) - 1, 2):
+        top, bot = vs[k].co, vs[k + 1].co
+        if math.hypot(bot.x, bot.y) < r_min:
+            continue
+        zmin = margin_z(math.atan2(bot.y, bot.x)) + lift
+        if bot.z >= zmin:
+            continue
+        if top.z - 0.0001 <= zmin:
+            vs[k + 1].co = top.lerp(bot, 0.08)
+        else:
+            vs[k + 1].co = top.lerp(bot, (top.z - zmin) / (top.z - bot.z))
+    gill.data.update()
+
+
 def build():
     seed = Vector((2.2, 6.1, 4.7))
 
@@ -52,10 +71,15 @@ def build():
     def stem_radius(z):
         return min(sp, key=lambda p: abs(p.y - z)).x
 
-    ug = arc_fraction(cap_profile, 7)  # gills run out to the thin margin
+    # The gills begin just inside the lowest point of the margin and taper
+    # in over its outer half, their free edge kept above the margin tip so
+    # no yellow teeth hang below the orange rim.
+    ug = 0.4 * arc_fraction(cap_profile, 7) + 0.6 * arc_fraction(cap_profile, 8)
     gill = gills("gills", cap_profile, samples, int(round(ug * (samples - 1))), cap_shape, stem_shape,
                  stem_radius, 130, 0.0085, seed, decurrent=0, free_gap=0.0012, stains=False,
-                 margin_taper=0.9, edge_occlusion=0.97)
+                 margin_taper=0.55, edge_occlusion=0.97)
+    tip = cap_profile[6]
+    _clamp_gill_edge(gill, lambda th: cap_shape(th, um, tip[0], tip[1])[2], lift=0.0003, r_min=0.02)
 
     # Ring: a thin, soft skirt hanging just below the gills, with irregular
     # folds, an uneven lower edge and one side that has collapsed.

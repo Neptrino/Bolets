@@ -11,10 +11,13 @@ down.
 from mathutils import Euler
 
 
-def _tt_gills(name, cap_profile, samples, j_start, cap_shape, stem_radius, count, depth, seed):
+def _tt_gills(name, cap_profile, samples, j_start, cap_shape, stem_radius, count, depth, seed, margin_z):
     """Emarginate gill blades: the free edge rises into a notch just before
     the stem, then the blade meets the stem with a short tooth. Adapted from
-    the generator's gills() helper (no stains, no decurrent run)."""
+    the generator's gills() helper (no stains, no decurrent run).
+
+    margin_z(th) is the height of the margin tip along each radius: the free
+    edge is kept just above it, so no blade hangs below the rim."""
     prof = catmull(cap_profile, samples)
     j_stem = samples - 1
     for j in range(j_start, samples):
@@ -29,9 +32,9 @@ def _tt_gills(name, cap_profile, samples, j_start, cap_shape, stem_radius, count
         ranks.append((base, 0.0))
         step = 2 * math.pi / count
         if rng[4 * k + 1] > 0.45:
-            # Two lamellulae: a longer one in the middle, a short one beside it.
+            # A longer lamellula; the short ones near the margin read as
+            # teeth, so they are left out.
             ranks.append((base + step * 0.5, 0.55 + 0.12 * rng[4 * k]))
-            ranks.append((base + step * (0.25 if rng[4 * k + 2] > 0.5 else 0.75), 0.8 + 0.06 * rng[4 * k + 3]))
         else:
             ranks.append((base + step * 0.5, 0.6 + 0.14 * rng[4 * k]))
     verts, faces, uvs, cols = [], [], [], []
@@ -50,14 +53,19 @@ def _tt_gills(name, cap_profile, samples, j_start, cap_shape, stem_radius, count
                 nr, nz = -nr, -nz
             v = f / (samples - 1)
             n3 = Vector((nr * math.cos(th), nr * math.sin(th), nz))
-            start = smooth(t0, t0 + 0.05, t) if t0 > 0 else 1.0
-            d = depth * start * (1 - smooth(0.78, 1.0, t)) * (0.7 + 0.3 * smooth(0.1, 0.5, t))
+            # Lamellulae start as a gentle wedge; every blade tapers to
+            # nothing over the outer half, inside the margin.
+            start = smooth(t0, t0 + 0.15, t) if t0 > 0 else 1.0
+            d = depth * start * (1 - smooth(0.5, 1.0, t)) * (0.7 + 0.3 * smooth(0.1, 0.5, t))
             # Emarginate: a notch rising towards the stem, then a short tooth.
             d *= (0.5 + 0.5 * smooth(0.0, 0.25, t)) * (1 - 0.8 * math.exp(-((t - 0.075) / 0.038) ** 2))
             # Both edges go through the cap's own deformation (tilt, waves,
             # splits), so blades stay straight and perpendicular to the flesh.
             top = Vector(cap_shape(th, v, pr.x - nr * 0.0005, pr.y - nz * 0.0005))
             bot = Vector(cap_shape(th, v, pr.x + nr * d, pr.y + nz * d))
+            zmin = margin_z(th) + 0.0003
+            if bot.z < zmin:
+                bot = top.lerp(bot, max(0.08, (top.z - zmin) / (top.z - bot.z)) if top.z > zmin + 0.0001 else 0.08)
             for e, pos in ((0, top), (1, bot)):
                 row.append(len(verts))
                 verts.append(pos)
@@ -155,7 +163,7 @@ def _cap_material(name, um, ug, seed_off):
     streak, clump = fibril, sq
     # A thin pale rim, then the white flesh edge and the underside.
     base = g.mix(g.remap(g.v, um - 0.004, um + 0.001, 0.0, 0.25), base, "#8a847d")
-    under = g.remap(g.v, um + 0.001, ug + 0.006)
+    under = g.remap(g.v, um + 0.001, ug)
     colour = g.mix(under, base, "#c4c0ba")
     roughness = g.lerp(under, g.remap(g.noise(30, 2), 0.3, 0.7, 0.72, 0.84), 0.85)
     height = g.math("ADD", g.math("ADD", g.math("MULTIPLY", streak, 0.6), g.math("MULTIPLY", sq, 0.5)), g.math("MULTIPLY", felt, 0.25))
@@ -206,7 +214,8 @@ def _specimen(tag, stage, R, apex, stem_r, base_r, seed, tilt, splits, gill_coun
     samples = 150
     tilt_e = Euler(tilt)
     um = arc_fraction(prof, tip)
-    ug = arc_fraction(prof, tip + 1)
+    # Gills begin just inside the lowest point of the margin.
+    ug = 0.5 * (arc_fraction(prof, tip + 1) + arc_fraction(prof, tip + 2))
 
     def cap_shape(th, v, r, z):
         p = Vector((r * math.cos(th), r * math.sin(th), z))
@@ -264,7 +273,7 @@ def _specimen(tag, stage, R, apex, stem_r, base_r, seed, tilt, splits, gill_coun
         return min(sp, key=lambda p: abs(p.y - z)).x
 
     gill = _tt_gills(f"gills-{tag}", prof, samples, int(round(ug * (samples - 1))), cap_shape, stem_radius,
-                     gill_count, gill_depth, seed)
+                     gill_count, gill_depth, seed, lambda th: cap_shape(th, um, prof[tip][0], prof[tip][1])[2])
     cap.data.materials.append(_cap_material(f"cap-{tag}-proc", um, ug, seed.x))
     stem.data.materials.append(_stem_material(f"stem-{tag}-proc", 0.9))
     gill.data.materials.append(_gill_material(f"gills-{tag}-proc"))

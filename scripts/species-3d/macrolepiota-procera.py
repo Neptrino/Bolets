@@ -8,6 +8,25 @@ import math
 from mathutils import Vector, noise
 
 
+def _clamp_gill_edge(gill, margin_z, lift=0.0004, r_min=0.0):
+    """Keep every gill's free edge above the margin tip at its own angle, so
+    no blade hangs below the rim as a comb. margin_z(th) is the z of the
+    margin tip along that radius; the blade shortens towards the flesh."""
+    vs = gill.data.vertices
+    for k in range(0, len(vs) - 1, 2):
+        top, bot = vs[k].co, vs[k + 1].co
+        if math.hypot(bot.x, bot.y) < r_min:
+            continue
+        zmin = margin_z(math.atan2(bot.y, bot.x)) + lift
+        if bot.z >= zmin:
+            continue
+        if top.z - 0.0001 <= zmin:
+            vs[k + 1].co = top.lerp(bot, 0.08)
+        else:
+            vs[k + 1].co = top.lerp(bot, (top.z - zmin) / (top.z - bot.z))
+    gill.data.update()
+
+
 def _xyz(g):
     sep = g.nt.nodes.new("ShaderNodeSeparateXYZ")
     g.link(g.obj, sep.inputs[0])
@@ -195,10 +214,14 @@ def build():
     # ------------------------------------------------------------ gills
     # Deep, crowded, free gills: they round off 4-5 mm short of the stem,
     # leaving a clear collar gap around the stem apex.
-    ug = arc_fraction(cap_profile, 13)
+    # They begin just inside the lowest point of the margin, taper in over
+    # the outer 40 % and keep their free edge above the margin tip, so no
+    # plate of gills shows below the shaggy fringe.
+    ug = 0.5 * (arc_fraction(cap_profile, 13) + arc_fraction(cap_profile, 14))
     gill = gills("gills", cap_profile, samples, int(round(ug * (samples - 1))), cap_shape, stem_shape,
                  stem_radius, 130, 0.016, seed, decurrent=0, free_gap=0.0048, stains=False,
-                 margin_taper=0.86, edge_occlusion=1.0)
+                 margin_taper=0.6, edge_occlusion=1.0)
+    _clamp_gill_edge(gill, lambda th: cap_shape(th, um, 0.1040, 0.2470)[2], r_min=0.04)
     # Crowded gills seen edge-on merge into a plain floor: vary each blade's
     # tone and shade its free edge a little so the lamellae read as fine lines.
     gcol = gill.data.color_attributes["Col"]
@@ -294,7 +317,9 @@ def build():
     top = g.mix(umbo, top, g.ramp(g.noise(80, 3), [(0.4, "#3a2517"), (0.7, "#4a3020")]))
     # Paler, woolly fringe at the rim.
     top = g.mix(g.remap(g.v, um - 0.03, um - 0.004, 0.0, 0.8), top, "#efe6d2")
-    under = g.remap(g.v, um + 0.002, um + 0.01)
+    # The underside strip before the gills is plain cream: no scales or
+    # dark cuticle bleed round the margin.
+    under = g.remap(g.v, um - 0.004, um + 0.001)
     colour = g.mix(under, top, "#ece4d1")
     roughness = g.lerp(under, g.remap(scales, 0.0, 1.0, 0.8, 0.7), 0.85)
     height = g.math("ADD", g.math("MULTIPLY", streak, 0.4), g.math("MULTIPLY", g.noise(250, 4), 0.3))

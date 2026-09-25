@@ -8,58 +8,85 @@ and turn finely velvety towards the base.
 """
 
 
-def _distant_gills(name, cap_profile, samples, j_start, cap_shape, stem_radius, count, depth, seed, free_gap, margin_taper, lam_start, thick=0.0002):
+def _distant_gills(name, cap_profile, samples, tip, cap_shape, stem_radius, count, depth, seed, free_gap, thick=0.0002, clear=0.0003):
     """Broad, distant, free gills: a variant of the shared gills() helper.
 
-    Every full gill runs from margin to stem; one lamellula sits in each gap,
-    reaching about halfway. Blades are broad near the margin and keep an even,
-    rounded edge; lamellulae taper in gently instead of starting as a wedge.
+    Blades are flat, vertical and radial in the cap's own frame, so seen from
+    below they run straight from stem to margin whatever the cap's tilt or
+    waviness. Each blade's free edge follows the cap underside (concave on a
+    convex cap, nearly flat on an expanded one) and is kept above the margin
+    of the same radius, so from the side the rim stays a clean edge and the
+    front of every gill tapers to nothing just inside it. Every full gill runs
+    from margin to stem, ending in a small gap (free to adnexed); one
+    lamellula sits in most gaps, two in some.
     """
     prof = catmull(cap_profile, samples)
+    j_tip = int(round(arc_fraction(cap_profile, tip) * (samples - 1)))
+    # The gills start just inwards of the lowest point of the margin; the
+    # rim-line limit below makes their fronts taper to nothing there.
+    j_low = min(range(j_tip, min(j_tip + 25, samples)), key=lambda j: prof[j].y)
+    j_front = j_low + 2
     j_stem = samples - 1
-    for j in range(j_start, samples):
+    for j in range(j_front, samples):
         if prof[j].x <= stem_radius(prof[j].y) + free_gap:
             j_stem = j
             break
     rng = [noise.noise(Vector((k * 0.913, 1.7, 0.3)) + seed) * 0.5 + 0.5 for k in range(count * 4)]
     ranks = []
     for k in range(count):
-        base = 2 * math.pi * k / count + 0.008 * noise.noise(Vector((k * 1.3, 0.2, 0.1)) + seed)
+        base = 2 * math.pi * k / count + 0.012 * noise.noise(Vector((k * 1.3, 0.2, 0.1)) + seed)
         ranks.append((base, 0.0))
-        ranks.append((base + math.pi / count, lam_start + 0.18 * rng[4 * k]))
+        if rng[4 * k + 1] > 0.72:
+            # Two lamellulae: a longer one and a short one beside it.
+            ranks.append((base + 0.36 * 2 * math.pi / count, 0.42 + 0.12 * rng[4 * k]))
+            ranks.append((base + 0.68 * 2 * math.pi / count, 0.66 + 0.1 * rng[4 * k + 2]))
+        elif rng[4 * k + 1] > 0.1:
+            ranks.append((base + math.pi / count, 0.4 + 0.16 * rng[4 * k]))
+
+    def rim_z(th):
+        # Lowest point of the margin along this radius.
+        return min(cap_shape(th, j / (samples - 1), prof[j].x, prof[j].y)[2]
+                   for j in range(max(j_tip - 6, 0), j_low + 3))
+
+    def smin(a, b, k=0.00025):
+        m = min(a, b)
+        return m - k * math.log(math.exp((m - a) / k) + math.exp((m - b) / k))
+
     verts, faces, uvs, cols = [], [], [], []
-    steps = 44
+    steps = 48
     for gi, (th, t0) in enumerate(ranks):
         tint = 0.96 + 0.04 * (noise.noise(Vector((gi * 0.21, 3.0, 0.0))) * 0.5 + 0.5)
+        floor = rim_z(th) + clear
+        side = Vector((-math.sin(th), math.cos(th), 0.0))
         row = []
         for s in range(steps):
+            # t: 0 at the stem end, 1 at the front just inside the margin.
             t = 1 - (1 - t0) * s / (steps - 1)
-            f = j_start + (1 - t) * (j_stem - j_start)
+            f = j_front + (1 - t) * (j_stem - j_front)
             j0 = min(int(f), samples - 2)
             pr = prof[j0].lerp(prof[j0 + 1], f - j0)
-            tan = (prof[min(j0 + 1, samples - 1)] - prof[max(j0 - 1, 0)]).normalized()
-            nr, nz = tan.y, -tan.x
-            if nz > 0:
-                nr, nz = -nr, -nz
             v = f / (samples - 1)
-            n3 = Vector((nr * math.cos(th), nr * math.sin(th), nz))
-            start = smooth(t0, t0 + 0.16, t) if t0 > 0 else 1.0
-            # Rounded (quarter-ellipse) front where the edge curves up to the margin.
-            e_m = min(1.0, (1 - t) / (1 - margin_taper))
-            front = math.sqrt(max(0.0, 1 - (1 - e_m) ** 2))
-            d = depth * start * front * (0.45 + 0.55 * smooth(0.0, 0.4, t)) * smooth(0.0, 0.1, t)
             base = Vector(cap_shape(th, v, pr.x, pr.y))
+            # Rounded (elliptical) ends: broad blades, a free rear end and a
+            # front that thins out to the cap flesh; lamellulae start softly.
+            front = math.sqrt(max(0.0, 1 - (1 - min(1.0, (1 - t) / 0.24)) ** 2))
+            rear = math.sqrt(max(0.0, 1 - (1 - min(1.0, t / 0.1)) ** 2)) * (0.55 + 0.45 * smooth(0.0, 0.5, t))
+            start = math.sqrt(max(0.0, 1 - (1 - min(1.0, (t - t0) / 0.14)) ** 2)) if t0 > 0 else 1.0
+            d = depth * front * rear * start
+            # Never below the margin: the free edge stays above the rim line.
+            d = max(0.0, smin(d, base.z - floor))
             # Thick blades with a blunt, rounded free edge: a five-point
-            # cross-section (flesh, side, edge, side, flesh) across the blade.
-            sink = base - n3 * 0.0004 * smooth(0.04, 0.3, 1 - t)
-            w = thick * (0.55 + 0.45 * min(1.0, d / max(depth * 0.3, 1e-6)))
+            # cross-section (flesh, side, edge, side, flesh), hanging straight
+            # down from a root sunk into the cap flesh.
+            sink = base + Vector((0, 0, 0.00035))
+            w = thick * (0.5 + 0.5 * min(1.0, d / max(depth * 0.35, 1e-6)))
             rr = min(w * 1.3, 0.45 * d)
-            side = Vector((-math.sin(th), math.cos(th), 0.0))
+            down = Vector((0, 0, -1))
             section = (
                 (0.0, sink + side * w),
-                (0.8, base + n3 * (d - rr) + side * w * 0.92),
-                (1.0, base + n3 * d),
-                (0.8, base + n3 * (d - rr) - side * w * 0.92),
+                (0.8, base + down * (d - rr) + side * w * 0.92),
+                (1.0, base + down * d),
+                (0.8, base + down * (d - rr) - side * w * 0.92),
                 (0.0, sink - side * w),
             )
             for e, pos in section:
@@ -73,7 +100,7 @@ def _distant_gills(name, cap_profile, samples, j_start, cap_shape, stem_radius, 
                 a0, b0 = row[5 * s + k], row[5 * s + 5 + k]
                 faces.append((a0, a0 + 1, b0 + 1, b0))
     # Wind every face so its normal points out of the blade: on the first
-    # full gill, the outer side (index 0 → 1) must face +side.
+    # full gill, the outer side (index 0 -> 1) must face +side.
     k0 = 5 * (steps // 2)
     p0, p1, p2 = verts[k0], verts[k0 + 1], verts[k0 + 5]
     th0 = ranks[0][0]
@@ -148,10 +175,8 @@ def _specimen(tag, seed, h0, cap_rel, tip, stem_r, count, depth, lobe_amp, loc, 
     def stem_radius(z):
         return min(sp, key=lambda p: abs(p.y - z)).x
 
-    ug = arc_fraction(cap_profile, tip) + 0.016
-    j_start = int(round(ug * (samples - 1)))
-    gill = _distant_gills(f"gills-{tag}", cap_profile, samples, j_start, cap_shape, stem_radius,
-                          count, depth, seed, free_gap=0.0009, margin_taper=0.72, lam_start=0.45, thick=thick)
+    gill = _distant_gills(f"gills-{tag}", cap_profile, samples, tip, cap_shape, stem_radius,
+                          count, depth, seed, free_gap=0.0009, thick=thick)
 
     # Cap: smooth, matte, suede-like. Darker honey-tan umbo, ochre-buff body
     # and a soft hygrophanous band drying to cream-buff over the outer quarter
@@ -219,24 +244,24 @@ def build():
         "a", Vector((1.3, 4.2, 0.7)), 0.060,
         [(0.000, 0.0078), (0.0035, 0.0076), (0.0065, 0.0068), (0.0090, 0.0057), (0.0120, 0.0050), (0.015, 0.0042),
          (0.0188, 0.0024), (0.0213, 0.0002), (0.0222, -0.0016), (0.0219, -0.0021),
-         (0.0208, -0.0013), (0.017, 0.0001), (0.013, 0.0010), (0.009, 0.0017), (0.005, 0.0022),
+         (0.0208, -0.0011), (0.017, 0.0008), (0.013, 0.0015), (0.009, 0.0020), (0.005, 0.0024),
          (0.0026, 0.0026), (0.0012, 0.0028)],
-        8, 0.0022, 24, 0.0042, 0.07, (0.004, 0.006, 0.0), (math.radians(-4), math.radians(5), 0.3), 2.4,
+        8, 0.0022, 24, 0.0048, 0.07, (0.004, 0.006, 0.0), (math.radians(-4), math.radians(5), 0.3), 2.4,
         wave=0.8, thick=0.00028)
     # Convex with a broad umbo: margin below the stem apex, concave hymenium.
     objs += _specimen(
         "b", Vector((6.1, 2.7, 3.9)), 0.047,
         [(0.000, 0.0092), (0.0026, 0.0090), (0.0042, 0.0080), (0.0056, 0.0066), (0.0078, 0.0060), (0.0105, 0.0050),
          (0.0128, 0.0033), (0.0144, 0.0008), (0.0152, -0.0016), (0.0148, -0.0023), (0.0138, -0.0019),
-         (0.011, -0.0008), (0.008, 0.0005), (0.0052, 0.0014), (0.0026, 0.0021), (0.0010, 0.0023)],
-        9, 0.0019, 22, 0.0034, 0.03, (-0.030, -0.012, 0.0), (math.radians(6), math.radians(-9), 1.2), 0.3,
+         (0.011, -0.0003), (0.008, 0.0007), (0.0052, 0.0014), (0.0026, 0.0021), (0.0010, 0.0023)],
+        9, 0.0019, 22, 0.0037, 0.03, (-0.030, -0.012, 0.0), (math.radians(6), math.radians(-9), 1.2), 0.3,
         wave=0.5, thick=0.00024)
     # Young: convex-campanulate with a small umbo, margin slightly incurved.
     objs += _specimen(
         "c", Vector((3.4, 8.8, 5.2)), 0.030,
         [(0.000, 0.0106), (0.0014, 0.0104), (0.0026, 0.0097), (0.0040, 0.0090), (0.0056, 0.0079), (0.0071, 0.0063),
          (0.0084, 0.0041), (0.0093, 0.0014), (0.0097, -0.0008), (0.0094, -0.0018), (0.0088, -0.0020),
-         (0.0078, -0.0013), (0.0064, -0.0004), (0.0048, 0.0005), (0.0030, 0.0011), (0.0010, 0.0014)],
+         (0.0078, -0.0009), (0.0064, -0.0002), (0.0048, 0.0005), (0.0030, 0.0011), (0.0010, 0.0014)],
         9, 0.0016, 18, 0.0026, 0.015, (0.026, -0.020, 0.0), (math.radians(-7), math.radians(-5), 4.0), 5.5,
         thick=0.0002)
     views = {"hero": (-30, 20, 0.36, 0.036), "low": (20, 3, 0.34, 0.038), "under": (15, -22, 0.27, 0.05)}

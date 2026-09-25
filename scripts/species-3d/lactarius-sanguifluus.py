@@ -1,7 +1,11 @@
-"""Lactarius sanguifluus (rovelló): convex, centrally depressed orange-buff cap
-with soft concentric zones, grey-green bruises and a thick inrolled margin;
-straight, crowded, slightly decurrent wine-pink gills with wine-red latex
-stains; short, buff-pink stem tapering to a rounded base, with vinous spots."""
+"""Lactarius sanguifluus (rovelló): convex, centrally depressed cap in a dull
+apricot-salmon with a wine-pink centre, faint zones of darker spots and a few
+small verdigris bruises at the margin, matte and a little frosted; a thick
+margin rolled down and inwards. Straight, continuous, crowded, slightly
+decurrent wine-pink gills with wine-red latex streaks and beads; a short,
+buff-pink stem with a few shallow wine-orange pits (scrobiculi) and a
+rounded, soiled base."""
+import random
 
 
 def _radial_fibres(g, across, along):
@@ -23,22 +27,180 @@ def _radial_fibres(g, across, along):
     return add.outputs[0]
 
 
+def _obj_z(g):
+    sep = g.nt.nodes.new("ShaderNodeSeparateXYZ")
+    g.link(g.obj, sep.inputs[0])
+    return sep.outputs["Z"]
+
+
+def _spot_mask(g, spots, soft=0.45, warp=None):
+    """Soft mask of round/oval spots [(x, y, z, radius, elongation)] in
+    object space (elongation stretches the spot vertically); `warp` (metres)
+    roughens their outlines."""
+    out = None
+    for x, y, z, rad, el in spots:
+        d = g.nt.nodes.new("ShaderNodeVectorMath")
+        d.operation = "DISTANCE"
+        g.link(g.vec_scale(g.obj, 1, 1, 1 / el), d.inputs[0])
+        d.inputs[1].default_value = (x, y, z / el)
+        dist = d.outputs["Value"] if warp is None else g.math("ADD", d.outputs["Value"], warp)
+        one = g.remap(dist, rad, rad * soft)
+        out = one if out is None else g.math("MAXIMUM", out, one)
+    return out
+
+
+def _blades(name, cap_profile, samples, j_start, cap_shape, stem_shape, stem_radius, count, depth, seed,
+            decurrent=0.003, lam=(0.5, 0.7), stains=None, stain_mul=(0.45, 0.9, 0.85),
+            margin_taper=0.8, edge_occlusion=0.9):
+    """Straight radial gill blades, as the shared gills() helper, but with
+    longer lamellulae (one per gap, reaching `lam` of the way in) and a
+    record of every blade's free edge so latex beads can sit on it."""
+    prof = catmull(cap_profile, samples)
+    j_stem = samples - 1
+    for j in range(j_start, samples):
+        if prof[j].x <= stem_radius(prof[j].y) - 0.0006:
+            j_stem = j
+            break
+
+    def path(t0):
+        pts = []
+        steps = 56
+        for s in range(steps):
+            t = 1 - (1 - t0) * s / (steps - 1)
+            f = j_start + (1 - t) * (j_stem - j_start)
+            j0 = min(int(f), samples - 2)
+            pr = prof[j0].lerp(prof[j0 + 1], f - j0)
+            tan = (prof[min(j0 + 1, samples - 1)] - prof[max(j0 - 1, 0)]).normalized()
+            nr, nz = tan.y, -tan.x
+            if nz > 0:
+                nr, nz = -nr, -nz
+            pts.append(("cap", t, pr.x, pr.y, nr, nz, f / (samples - 1)))
+        if t0 == 0 and decurrent > 0:
+            z0 = prof[j_stem].y
+            for s in range(1, 9):
+                z = z0 - decurrent * s / 8
+                pts.append(("stem", -s / 8, stem_radius(z), z, 1.0, 0.0, 0.0))
+        return pts
+
+    rng = random.Random(int(seed.x * 1000))
+    ranks = []
+    for k in range(count):
+        base = 2 * math.pi * k / count
+        ranks.append((base, 0.0))
+        ranks.append((base + math.pi / count * (1 + rng.uniform(-0.15, 0.15)), rng.uniform(*lam)))
+    verts, faces, uvs, cols = [], [], [], []
+    edges = []
+    for gi, (th0, t0) in enumerate(ranks):
+        tint = 0.96 + 0.04 * rng.random()
+        dj = 1 + rng.uniform(-0.08, 0.08)
+        row, edge = [], []
+        pts = path(t0)
+        for kind, t, r, z, nr, nz, v in pts:
+            th = th0
+            n3 = Vector((nr * math.cos(th), nr * math.sin(th), nz))
+            if kind == "cap":
+                start = smooth(t0, t0 + 0.05, t) if t0 > 0 else 1.0
+                d = depth * dj * start * (1 - smooth(margin_taper, 1.0, t)) * (0.55 + 0.45 * smooth(0.0, 0.2, t))
+                base = Vector(cap_shape(th, v, r, z))
+                top, bot = base - n3 * 0.0005, base + n3 * d
+            else:
+                d = depth * 0.55 * (1 + t) ** 2.5
+                top = Vector(stem_shape(th, 0.0, r - 0.0004, z))
+                bot = Vector(stem_shape(th, 0.0, r + d, z))
+            edge.append((t, bot, n3))
+            stain = stains(gi, th, t) if stains else 0.0
+            for e, pos in ((0, top), (1, bot)):
+                row.append(len(verts))
+                verts.append(pos)
+                uvs.append((max(t, 0.0), e))
+                # Ease the root shading off near the stem, where the crowded
+                # blades already shade each other.
+                occl = 1 - (1 - edge_occlusion) * smooth(0.0, 0.3, t) if e == 0 else 1.0
+                st = stain * (0.7 + 0.3 * e)
+                cols.append([tint * occl * (1 - st * k) for k in stain_mul])
+        edges.append((th0, t0, edge))
+        for s in range(len(pts) - 1):
+            a0, b0 = row[2 * s], row[2 * s + 2]
+            faces.append((a0, b0, b0 + 1, a0 + 1))
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata([tuple(v) for v in verts], [], faces)
+    uv = mesh.uv_layers.new(name="UVMap")
+    for poly in mesh.polygons:
+        for li in poly.loop_indices:
+            uv.data[li].uv = uvs[mesh.loops[li].vertex_index]
+    attr = mesh.color_attributes.new(name="Col", type="BYTE_COLOR", domain="POINT")
+    for k, c in enumerate(cols):
+        attr.data[k].color = (*c, 1.0)
+    mesh.validate()
+    mesh.shade_smooth()
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+    obj["tex"] = 512
+    return obj, edges
+
+
+def _beads(name, items):
+    """Small closed droplets [(centre, radius, vertical squash)], every face
+    wound so its normal points out of the drop."""
+    verts, faces, uvs = [], [], []
+    n_lon, n_lat = 12, 8
+    for c, rad, sq in items:
+        rows = []
+        for a in range(n_lat + 1):
+            ph = math.pi * a / n_lat
+            ring = []
+            for b in range(n_lon):
+                lo = 2 * math.pi * b / n_lon
+                ring.append(len(verts))
+                verts.append(c + Vector((rad * math.sin(ph) * math.cos(lo), rad * math.sin(ph) * math.sin(lo), rad * sq * math.cos(ph))))
+                uvs.append((b / n_lon, 1 - a / n_lat))
+            rows.append(ring)
+        for a in range(n_lat):
+            for b in range(n_lon):
+                n = (b + 1) % n_lon
+                f = [rows[a][b], rows[a][n], rows[a + 1][n], rows[a + 1][b]]
+                if a == 0:
+                    f = [rows[0][b], rows[1][n], rows[1][b]]
+                elif a == n_lat - 1:
+                    f = [rows[a][b], rows[a][n], rows[a + 1][b]]
+                p = [verts[i] for i in f]
+                nrm = (p[1] - p[0]).cross(p[2] - p[0])
+                mid = sum(p, Vector()) / len(p)
+                if nrm.dot(mid - c) < 0:
+                    f.reverse()
+                faces.append(f)
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata([tuple(v) for v in verts], [], faces)
+    uv = mesh.uv_layers.new(name="UVMap")
+    for poly in mesh.polygons:
+        for li in poly.loop_indices:
+            uv.data[li].uv = uvs[mesh.loops[li].vertex_index]
+    mesh.validate()
+    mesh.shade_smooth()
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+    obj["tex"] = 64
+    return obj
+
+
 def build():
     seed = Vector((5.3, 1.9, 8.4))
     lift = 0.009  # visible stem about 0.45 x cap diameter
 
-    # Convex with a shallow central depression; the thick margin rolls down
-    # and under instead of rising into a tray rim. The underside falls to the
-    # stem as a shallow inverted cone, so the gills run down to it.
+    # Convex with a shallow central depression. The flesh thins from about
+    # 12 mm in the centre to 5 mm near the rim, where the margin rolls down
+    # and back inwards so its rounded lip tucks under the gill ends.
     cap_profile = [(r, z + lift) for r, z in (
-        (0.000, 0.0492), (0.008, 0.0499), (0.016, 0.0522), (0.024, 0.0544),
-        (0.032, 0.0556), (0.0385, 0.0553), (0.0435, 0.0537), (0.0468, 0.0508),
-        (0.0478, 0.0474), (0.0463, 0.0450), (0.0432, 0.0443), (0.0380, 0.0441),
-        (0.0300, 0.0428), (0.0220, 0.0405), (0.0165, 0.0376), (0.0135, 0.0346), (0.0118, 0.0322),
+        (0.000, 0.0492), (0.008, 0.0499), (0.016, 0.0521), (0.024, 0.0540),
+        (0.031, 0.0547), (0.0370, 0.0540), (0.0420, 0.0520), (0.0452, 0.0493),
+        (0.0466, 0.0463), (0.0458, 0.0442), (0.0446, 0.0435), (0.0432, 0.0442),
+        (0.0400, 0.0453), (0.0350, 0.0455), (0.0290, 0.0440), (0.0220, 0.0412),
+        (0.0165, 0.0380), (0.0135, 0.0350), (0.0118, 0.0322),
     )]
-    samples = 150
-    um = arc_fraction(cap_profile, 8)  # inrolled margin tip
-    ug = arc_fraction(cap_profile, 10)  # gills start inside the inrolled rim
+    samples = 170
+    um = arc_fraction(cap_profile, 8)  # outermost point of the rolled lip
+    ul = arc_fraction(cap_profile, 10)  # underside of the roll
+    ug = arc_fraction(cap_profile, 11)  # gills start just inside the roll
 
     def cap_shape(th, v, r, z):
         p = Vector((r * math.cos(th), r * math.sin(th), z))
@@ -63,138 +225,237 @@ def build():
             z2 -= dep * math.exp(-(ex * ex + ey * ey) / rad ** 2) * top
         return (r2 * math.cos(th) + 0.0015, r2 * math.sin(th), z2)
 
-    # Slightly flared apex, tapering downwards to a rounded base.
+    # Short, stout stem, slightly bellied low down, narrowing a little to a
+    # rounded base sitting in the soil.
     stem_profile = [(r, z + (lift if z > 0.02 else lift * z / 0.02)) for r, z in (
-        (0.0180, 0.0400), (0.0150, 0.0362), (0.0138, 0.032), (0.0135, 0.028), (0.0133, 0.021),
-        (0.0126, 0.013), (0.0116, 0.0072), (0.0102, 0.0030), (0.0080, -0.0004),
-        (0.0052, -0.0024), (0.0022, -0.0034), (0.0006, -0.0036),
+        (0.0134, 0.0420), (0.0137, 0.0380), (0.0138, 0.034), (0.0140, 0.028), (0.0143, 0.021),
+        (0.0142, 0.013), (0.0136, 0.0080), (0.0124, 0.0042), (0.0106, 0.0012),
+        (0.0082, -0.0010), (0.0054, -0.0022), (0.0022, -0.0028),
     )]
+    sp = catmull(stem_profile, 240)
+
+    def stem_radius(z):
+        return min(sp, key=lambda p: abs(p.y - z)).x
+
+    # Scrobiculi: shallow depressions over the lower 70% of the stem
+    # (angle, height, radius, vertical elongation); a few merge into streaks.
+    rng = random.Random(11)
+    pit_spots = []
+    for k in range(10):
+        th = (k * 2.39996 + rng.uniform(-0.3, 0.3)) % (2 * math.pi)
+        z = rng.uniform(0.006, 0.029)
+        rad = rng.uniform(0.0017, 0.0034)
+        el = rng.choice((1.0, 1.25, 1.5, 1.8))
+        pit_spots.append((th, z, rad, el))
+    # One merging into a short vertical streak.
+    pit_spots += [(1.1, 0.013, 0.0016, 1.3), (1.2, 0.0095, 0.0012, 2.2)]
 
     def stem_shape(th, v, r, z):
         p = Vector((math.cos(th), math.sin(th), z * 25)) + seed
         # Irregular below and slightly oval; smooth where the flare sinks
         # into the cap so the joint stays closed.
         free = 1 - smooth(0.036, 0.044, z)
-        r *= 1 + (noise.noise(p) * 0.06 + noise.noise(p * 3) * 0.02 + 0.05 * math.cos(2 * th - 0.7)) * free
+        r *= 1 + (noise.noise(p) * 0.05 + noise.noise(p * 3) * 0.015 + 0.04 * math.cos(2 * th - 0.7)) * free
+        for pth, pz, prad, el in pit_spots:
+            dth = (th - pth + math.pi) % (2 * math.pi) - math.pi
+            d = math.sqrt((dth * 0.013) ** 2 + ((z - pz) / el) ** 2) / prad
+            if d < 1:
+                r -= 0.0005 * (1 - d * d) ** 2
         k = (1 - min(z, 0.046) / 0.046) ** 2
         return (r * math.cos(th) + 0.003 * k, r * math.sin(th) - 0.0015 * k, z)
 
     cap = revolve("cap", cap_profile, 256, samples, cap_shape, True, False)
-    stem = revolve("stem", stem_profile, 160, 80, stem_shape, True, True)
-    sp = catmull(stem_profile, 200)
-
-    def stem_radius(z):
-        best = min(sp, key=lambda p: abs(p.y - z))
-        return best.x
+    stem = revolve("stem", stem_profile, 200, 150, stem_shape, True, True)
+    # Keep the base pole off the texture's wrap edge, where bilinear filtering
+    # would pick up the whitish apex from the opposite border.
+    for d in stem.data.uv_layers[0].data:
+        d.uv.y = min(max(d.uv.y, 0.003), 0.997)
 
     j_start = int(round(ug * (samples - 1)))
 
+    # Wine-red latex: a damaged line crossing about 30 gill edges halfway
+    # out, a shorter second one, a few stains near the margin and sparse
+    # marks where the gills meet the stem (no continuous ring).
+    count = 150
+    lat_rng = random.Random(5)
+    rim_marks = {lat_rng.randrange(count * 2): lat_rng.uniform(0.84, 0.95) for _ in range(9)}
+    stem_marks = {lat_rng.randrange(count) * 2: lat_rng.uniform(0.05, 0.14) for _ in range(7)}
+
+    def damage(th, a0, a1, tc, amp):
+        dth = (th - a0 + math.pi) % (2 * math.pi) - math.pi
+        span = (a1 - a0) % (2 * math.pi)
+        if dth < 0 or dth > span:
+            return None
+        f = dth / span
+        return tc + amp * math.sin(f * math.pi * 1.3), smooth(0.0, 0.12, f) * smooth(1.0, 0.85, f)
+
+    # (start angle, end angle, position from stem to margin, bow); the first
+    # two cross about 30 and 15 gills, the rest are short broken smears.
+    lines = [(0.35, 1.05, 0.5, 0.05), (3.6, 3.95, 0.66, -0.03), (2.0, 2.12, 0.42, 0.01),
+             (5.0, 5.18, 0.78, 0.02), (1.5, 1.58, 0.3, 0.0), (4.4, 4.5, 0.55, 0.0)]
+
     def latex(gi, th, t):
-        """Wine-red latex: a broken ring of stains near the stem, a second
-        patchy one midway, and a few damaged edges at the margin."""
-        d = Vector((math.cos(th), math.sin(th), 0))
-        near = math.exp(-((t - 0.12) / 0.045) ** 2) * smooth(0.15, 0.35, noise.noise(d * 6 + seed))
-        mid = math.exp(-((t - 0.5) / 0.03) ** 2) * smooth(0.3, 0.48, noise.noise(d * 4 + seed * 1.3))
-        rim = smooth(0.93, 0.98, t) * smooth(0.48, 0.58, noise.noise(d * 9 + seed * 0.7))
-        return min(1.0, 0.85 * near + 0.8 * mid + 0.9 * rim)
+        s = 0.0
+        for a0, a1, tc, amp in lines:
+            hit = damage(th, a0, a1, tc, amp)
+            if hit:
+                tl, fade = hit
+                s = max(s, math.exp(-((t - tl) / 0.05) ** 2) * fade)
+        if gi in rim_marks:
+            s = max(s, math.exp(-((t - rim_marks[gi]) / 0.035) ** 2) * 0.85)
+        if gi in stem_marks:
+            s = max(s, math.exp(-((t - stem_marks[gi]) / 0.05) ** 2) * 0.8)
+        return min(1.0, s)
 
-    # The flared stem top swallows the gill ends, which reads as decurrent
-    # without the blade twisting where it would turn down the stem.
-    gill = gills("gills", cap_profile, samples, j_start, cap_shape, stem_shape, stem_radius, 150, 0.0030, seed,
-                 decurrent=0, stains=latex, edge_occlusion=0.93)
+    gill, edges = _blades("gills", cap_profile, samples, j_start, cap_shape, stem_shape, stem_radius, count, 0.0032,
+                          seed, decurrent=0.002, lam=(0.5, 0.7), stains=latex, stain_mul=(0.5, 0.88, 0.8),
+                          margin_taper=0.82, edge_occlusion=0.9)
 
-    # Cap: dull orange-buff with pinkish-vinaceous tones, soft concentric
-    # zones, fine radial fibrils, grey-green bruises towards the margin and
-    # a paler, frosted inrolled rim with a few wine-red latex marks.
+    # Raised latex beads with a wet highlight on the damaged edges and at a
+    # few junctions with the stem.
+    def edge_at(gi, t):
+        th0, t0, e = edges[gi]
+        best = min(e, key=lambda s: abs(s[0] - t))
+        return best[1], best[2]
+
+    bead_items = []
+    for a0, a1, tc, amp in lines:
+        n = 5 if a1 - a0 > 0.5 else 3 if a1 - a0 > 0.2 else 1
+        for i in range(n):
+            th = a0 + (a1 - a0) * (i + 0.5) / n
+            gi = int(round(th / (2 * math.pi) * count)) % count * 2
+            tl = damage(edges[gi][0], a0, a1, tc, amp)[0]
+            pos, n3 = edge_at(gi, tl)
+            rad = lat_rng.uniform(0.00045, 0.0008)
+            bead_items.append((pos + n3 * rad * 0.2, rad, 0.8))
+    for gi, tm in list(stem_marks.items())[:5]:
+        pos, n3 = edge_at(gi, tm)
+        rad = lat_rng.uniform(0.0004, 0.0007)
+        bead_items.append((pos + n3 * rad * 0.2, rad, 0.8))
+    beads = _beads("latex", bead_items)
+
+    # Cap: dull apricot-salmon with a wine-pink flush in the centre, faint
+    # concentric zones made of darker spots, radial fibrils, two or three
+    # grey-green patches on the outer third and over the margin, and a
+    # paler, felted, rolled lip; matte and a little frosted.
     m = bpy.data.materials.new("cap-proc")
     g = Graph(m)
+    rad = g.radial()
     big = g.noise(9, 3, 0.5, distortion=0.2)
-    top = g.ramp(big, [(0.35, "#c0662e"), (0.5, "#c9743a"), (0.65, "#d18345")])
-    top = g.mix(g.remap(g.v, 0.0, um * 0.5, 0.35, 0.0), top, "#a8502a")
-    top = g.mix(g.remap(g.noise(6, 2, distortion=0.3), 0.45, 0.65, 0.0, 0.4), top, "#b0584e")
-    wobble = g.math("MULTIPLY", g.noise(10, 3), 0.007)
-    zones = g.math("SINE", g.math("MULTIPLY", g.math("ADD", g.radial(), wobble), 760.0))
-    zones = g.remap(zones, 0.1, 1.0, 0.0, 0.28)
-    zones = g.math("MULTIPLY", zones, g.remap(g.noise(5, 2), 0.35, 0.6, 0.3, 1.0))
-    top = g.mix(zones, top, "#9a4626")
+    top = g.ramp(big, [(0.35, "#a86f49"), (0.5, "#b47b51"), (0.65, "#be885c")])
+    flush = g.math("MULTIPLY", g.remap(rad, 0.021, 0.004, 0.0, 0.75), g.remap(g.noise(7, 2), 0.35, 0.65, 0.6, 1.0))
+    top = g.mix(flush, top, "#a26763")
+    # Broad, soft verdigris-to-olive staining in the cuticle over the centre
+    # and one side (about a third of the cap), blending gradually into the
+    # apricot and darkest grey-green in the depression.
+    sd = g.nt.nodes.new("ShaderNodeVectorMath")
+    sd.operation = "DISTANCE"
+    g.link(g.vec_scale(g.obj, 1, 1, 0), sd.inputs[0])
+    sd.inputs[1].default_value = (0.011, -0.014, 0)
+    swarp = g.math("MULTIPLY", g.math("SUBTRACT", g.noise(22, 4, 0.6, distortion=0.5), 0.5), 0.034)
+    stain_zone = g.remap(g.math("ADD", sd.outputs["Value"], swarp), 0.043, 0.012)
+    stain_zone = g.math("MULTIPLY", stain_zone, g.remap(g.noise(45, 4, 0.6, distortion=0.3), 0.3, 0.7, 0.62, 0.95))
+    verdigris = g.ramp(g.noise(14, 3, 0.55), [(0.35, "#7a8660"), (0.55, "#828a60"), (0.72, "#8a8f60")])
+    deep = g.remap(g.math("ADD", g.radial(), g.math("MULTIPLY", g.noise(30, 2), 0.004)), 0.015, 0.004, 0.0, 0.6)
+    verdigris = g.mix(deep, verdigris, "#5c6446")
+    top = g.mix(stain_zone, top, verdigris)
+    wobble = g.math("MULTIPLY", g.noise(10, 3), 0.005)
+    ring = g.math("SINE", g.math("MULTIPLY", g.math("ADD", rad, wobble), 900.0))
+    ring = g.remap(ring, 0.55, 0.95)
+    ring = g.math("MULTIPLY", ring, g.math("MULTIPLY", g.remap(rad, 0.011, 0.017), g.remap(rad, 0.045, 0.039)))
+    ring = g.math("MULTIPLY", ring, g.remap(g.noise(5, 2), 0.35, 0.6, 0.35, 1.0))
+    dots = g.remap(g.voronoi(300, rand=1.0), 0.45, 0.15)
+    zones = g.math("MULTIPLY", ring, g.lerp(dots, 0.25, 1.0))
+    top = g.mix(g.math("MULTIPLY", zones, 0.6), top, "#8a513b")
     fib = g.noise(3, 3, 0.55, vec=_radial_fibres(g, 90.0, 60.0))
-    top = g.mix(0.2, top, fib, "OVERLAY")
-    top = g.mix(0.18, top, g.noise(300, 3), "OVERLAY")
-    # Grey-green bruising: patches near the margin and scattered small spots.
-    outer = g.remap(g.v, um * 0.45, um * 0.95)
-    patch = g.math("MULTIPLY", g.remap(g.noise(11, 3, 0.55, distortion=0.4), 0.46, 0.6, 0.0, 0.9), outer)
-    spots = g.math("MULTIPLY", g.remap(g.voronoi(70, rand=1.0), 0.0, 0.14, 1.0, 0.0),
-                   g.remap(g.noise(8, 2), 0.5, 0.58, 0.0, 0.8))
-    green = g.math("MAXIMUM", patch, spots)
-    top = g.mix(green, top, g.ramp(g.noise(60, 3), [(0.4, "#6f8670"), (0.7, "#8d9a7a")]))
-    speck = g.remap(g.voronoi(150), 0.0, 0.1, 1.0, 0.0)
-    speck = g.math("MULTIPLY", speck, g.remap(g.noise(9, 2), 0.46, 0.56, 0.0, 0.75))
-    top = g.mix(speck, top, "#7d4a33")
-    top = g.mix(g.remap(g.v, um - 0.07, um - 0.01, 0.0, 0.55), top, "#d9a070")
+    top = g.mix(0.16, top, fib, "OVERLAY")
+    top = g.mix(0.14, top, g.noise(300, 3), "OVERLAY")
+    # A few small, faint, soft-edged olive bruises at the margin.
+    warp = g.math("MULTIPLY", g.math("SUBTRACT", g.noise(90, 4, 0.7, distortion=0.8), 0.5), 0.007)
+    patches = None
+    for pth, pr, prad in ((0.6, 0.046, 0.0070), (1.05, 0.047, 0.0045), (2.4, 0.046, 0.0060), (4.5, 0.045, 0.0055)):
+        d = g.nt.nodes.new("ShaderNodeVectorMath")
+        d.operation = "DISTANCE"
+        g.link(g.vec_scale(g.obj, 1, 1, 0), d.inputs[0])
+        d.inputs[1].default_value = (pr * math.cos(pth) + 0.0015, pr * math.sin(pth), 0)
+        one = g.remap(g.math("ADD", d.outputs["Value"], warp), prad * 0.75, 0.0)
+        patches = one if patches is None else g.math("MAXIMUM", patches, one)
+    mottle = g.remap(g.noise(120, 4, 0.65, distortion=0.4), 0.3, 0.7, 0.3, 0.52)
+    green = g.math("MULTIPLY", patches, mottle)
+    top = g.mix(green, top, g.ramp(g.noise(70, 3), [(0.3, "#6e7a56"), (0.55, "#768258"), (0.8, "#7a8660")]))
+    # Paler, felted rolled lip (outer rim and the roll's underside).
+    lip = g.math("MULTIPLY", g.remap(g.v, um - 0.05, um - 0.01), g.remap(g.v, ug + 0.004, ug - 0.004))
+    lipcol = g.mix(0.3, "#c7a78d", g.noise(400, 3, 0.7), "OVERLAY")
+    top = g.mix(g.math("MULTIPLY", lip, g.lerp(green, 0.3, 0.0)), top, lipcol)
     stain = g.math("MULTIPLY", g.remap(g.voronoi(60, rand=1.0), 0.0, 0.12, 1.0, 0.0),
                    g.math("MULTIPLY", g.remap(g.noise(7, 2), 0.56, 0.6),
                           g.remap(g.math("ABSOLUTE", g.math("SUBTRACT", g.v, um)), 0.05, 0.0)))
-    top = g.mix(stain, top, "#862b33")
+    top = g.mix(stain, top, "#7a2630")
     under = g.remap(g.v, ug - 0.004, ug + 0.006)
-    colour = g.mix(under, top, "#bb8780")
-    roughness = g.lerp(under, g.remap(g.noise(30, 2), 0.3, 0.7, 0.7, 0.8), 0.8)
-    height = g.math("ADD", g.math("MULTIPLY", g.noise(200, 4), 0.35), g.math("MULTIPLY", zones, 0.4))
+    # Between the gills: the same wine-pink, so the crowded blades near the
+    # stem do not read as a dark ring.
+    colour = g.mix(under, top, "#d6a9b5")
+    roughness = g.lerp(under, g.remap(g.noise(30, 2), 0.3, 0.7, 0.68, 0.8), 0.8)
+    frost = g.noise(500, 2, 0.7)
+    height = g.math("ADD", g.math("MULTIPLY", g.noise(200, 4), 0.3), g.math("MULTIPLY", frost, 0.25))
+    height = g.math("ADD", height, g.math("MULTIPLY", zones, 0.2))
     g.finish(colour, roughness, height, 0.3, 0.0005)
     cap.data.materials.append(m)
 
-    # Gills: pale vinaceous pink, a little deeper towards the stem and paler
-    # along the free edge; the latex stains come from the vertex colour.
+    # Gills: wine-pink with a lilac cast, a little paler where they run down the
+    # stem and along the free edge; the latex comes from the vertex colour.
     m = bpy.data.materials.new("gills-proc")
     g = Graph(m)
-    col = g.ramp(g.uvx, [(0.0, "#e2a2aa"), (0.45, "#e9b0b3"), (1.0, "#eebdba")])
-    col = g.mix(g.remap(g.uvy, 0.6, 1.0, 0.0, 0.4), col, "#ecc4bd")
+    col = g.ramp(g.uvx, [(0.0, "#eaccce"), (0.12, "#e4bcc4"), (0.6, "#e2b8c2"), (1.0, "#e6bec4")])
+    col = g.mix(g.remap(g.uvy, 0.6, 1.0, 0.0, 0.3), col, "#f4dcdc")
     col = g.mix(0.1, col, g.noise(40, 2, vec=g.vec_scale(g.obj, 1, 1, 1)), "OVERLAY")
     g.finish(col, 0.75, g.noise(200, 2), 0.1, 0.0002)
     gill.data.materials.append(m)
 
-    # Stem: buff-cream with a pink flush, a whitish frosted apex, sparse
-    # wine-red spots and a little earth at the base.
+    # Latex beads: glossy wine red.
+    m = bpy.data.materials.new("latex-proc")
+    g = Graph(m)
+    g.finish(g.ramp(g.noise(300, 2), [(0.4, "#5a1620"), (0.6, "#6a1c28")]), 0.12, g.noise(100, 1), 0.0, 0.0001)
+    beads.data.materials.append(m)
+
+    # Stem: warm buff-pink, paler under the gills, with a few large,
+    # irregular, shallow wine-orange pits (darker rim, glossy floor) and a
+    # little soil on the rounded base.
     m = bpy.data.materials.new("stem-proc")
     g = Graph(m)
-    base = g.ramp(g.noise(40, 4), [(0.35, "#d8ac9c"), (0.65, "#e4c2b2")])
-    base = g.mix(g.remap(g.noise(9, 3, distortion=0.3), 0.45, 0.65, 0.0, 0.45), base, "#d19e97")
-    base = g.mix(0.25, base, g.noise(260, 2, vec=g.vec_scale(g.obj, 1, 1, 0.1)), "OVERLAY")
-    base = g.mix(g.remap(g.v, 0.2, 0.05, 0.0, 0.7), base, "#f1e2d8")
-    warp = g.nt.nodes.new("ShaderNodeVectorMath")
-    warp.operation = "ADD"
-    g.link(g.vec_scale(g.obj, 1, 1, 0.7), warp.inputs[0])
-    wn = g.nt.nodes.new("ShaderNodeTexNoise")
-    wn.inputs["Scale"].default_value = 120
-    wn.inputs["Detail"].default_value = 3
-    g.link(g.obj, wn.inputs["Vector"])
-    wsc = g.nt.nodes.new("ShaderNodeVectorMath")
-    wsc.operation = "SCALE"
-    wsc.inputs["Scale"].default_value = 0.005
-    g.link(wn.outputs["Color"], wsc.inputs[0])
-    g.link(wsc.outputs[0], warp.inputs[1])
-    # Irregular, roundish vinous blotches of varied size, with fine
-    # speckles gathering round them.
-    cells = g.voronoi(120, vec=warp.outputs[0], rand=1.0)
-    size = g.remap(g.noise(30, 2), 0.35, 0.65, 0.06, 0.25)
-    where = g.remap(g.noise(7, 2, vec=g.vec_scale(g.obj, 1, 1, 0.6)), 0.41, 0.53)
-    pits = g.math("MULTIPLY", g.remap(g.math("SUBTRACT", size, cells), -0.04, 0.05), where)
-    fine = g.math("MULTIPLY", g.remap(g.voronoi(420, vec=warp.outputs[0]), 0.0, 0.2, 1.0, 0.0),
-                  g.math("MULTIPLY", where, g.remap(g.noise(40, 2), 0.5, 0.6, 0.0, 0.8)))
-    pits = g.math("MAXIMUM", pits, fine)
-    pits = g.math("MULTIPLY", pits, g.remap(g.v, 0.12, 0.2))
-    base = g.mix(g.math("MULTIPLY", pits, 0.9), base, g.ramp(g.noise(80, 2), [(0.4, "#8f3a47"), (0.6, "#a4525e")]))
-    side = g.remap(g.noise(3, 1, vec=g.vec_scale(g.obj, 1, 1, 0)), 0.35, 0.65, 0.0, 0.06)
-    band = g.remap(g.math("ADD", g.v, side), 0.9, 0.99)
-    soil = g.math("MULTIPLY", band, g.remap(g.noise(90, 5, 0.65), 0.4, 0.52, 0.0, 0.4))
-    colour = g.mix(soil, base, g.ramp(g.noise(50, 3), [(0.4, "#a0826a"), (0.65, "#b49a80")]))
-    height = g.math("SUBTRACT", g.noise(200, 3), g.math("MULTIPLY", pits, 1.2))
-    g.finish(colour, 0.76, height, 0.4, 0.0006)
+    z = _obj_z(g)
+    base = g.ramp(g.noise(40, 4), [(0.35, "#d8a488"), (0.65, "#e2b498")])
+    base = g.mix(g.remap(g.noise(9, 3, distortion=0.3), 0.45, 0.65, 0.0, 0.45), base, "#d49a8a")
+    base = g.mix(0.2, base, g.noise(260, 2, vec=g.vec_scale(g.obj, 1, 1, 0.1)), "OVERLAY")
+    spots = []
+    for pth, pz, prad, el in pit_spots:
+        x, y, zz = stem_shape(pth, 0.0, stem_radius(pz), pz)
+        spots.append((x, y, zz, prad * 1.3, el))
+    ragged = g.math("MULTIPLY", g.math("SUBTRACT", g.noise(180, 4, 0.65, distortion=0.5), 0.5), 0.0035)
+    pit = _spot_mask(g, spots, 0.6, ragged)
+    core = _spot_mask(g, [(x, y, zz, r * 0.8, el) for x, y, zz, r, el in spots], 0.3, ragged)
+    pitcol = g.mix(core, "#96483f", g.ramp(g.noise(80, 2), [(0.4, "#a4524a"), (0.6, "#ae5c50")]))
+    # Fine vinaceous mottling round the pits on the lower stem.
+    halo = _spot_mask(g, [(x, y, zz, r * 1.6, el) for x, y, zz, r, el in spots], 0.4, ragged)
+    base = g.mix(g.math("MULTIPLY", halo, 0.4), base, "#c57e6c")
+    base = g.mix(pit, base, pitcol)
+    side = g.remap(g.noise(3, 1, vec=g.vec_scale(g.obj, 1, 1, 0)), 0.35, 0.65, 0.0, 0.002)
+    # Only a faint soil tint on the lowest few millimetres of the rounded foot.
+    band = g.remap(g.math("ADD", z, side), 0.004, -0.003)
+    soil = g.math("MULTIPLY", band, g.remap(g.noise(90, 5, 0.65), 0.35, 0.55, 0.15, 0.4))
+    colour = g.mix(soil, base, g.ramp(g.noise(50, 3), [(0.4, "#9c7c5e"), (0.65, "#b09070")]))
+    grains = g.math("MULTIPLY", g.remap(g.voronoi(260), 0.15, 0.0), g.remap(z, 0.002, -0.002, 0.0, 0.35))
+    colour = g.mix(grains, colour, "#3f3024")
+    roughness = g.math("MAXIMUM", g.lerp(core, 0.76, 0.35), g.math("MULTIPLY", soil, 0.95))
+    height = g.math("SUBTRACT", g.math("MULTIPLY", g.noise(200, 3), 0.4), g.math("MULTIPLY", pit, 0.3))
+    height = g.math("ADD", height, g.math("MULTIPLY", grains, 0.3))
+    g.finish(colour, roughness, height, 0.35, 0.0006)
     stem.data.materials.append(m)
 
-    for o in (cap, stem):
+    for o in (cap, stem, beads):
         o.data.materials[0].use_backface_culling = True
     # A slight lean for the whole specimen.
-    for o in (cap, stem, gill):
+    for o in (cap, stem, gill, beads):
         o.rotation_euler = (math.radians(3.5), math.radians(-2.5), 0)
     views = {"hero": (-30, 28, 0.42, 0.036), "low": (25, 4, 0.4, 0.038), "under": (15, -28, 0.3, 0.046)}
-    return [cap, stem, gill], views
+    return [cap, stem, gill, beads], views
