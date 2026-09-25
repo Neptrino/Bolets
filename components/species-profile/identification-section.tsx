@@ -20,6 +20,7 @@ import {
   MushroomStemIcon,
 } from "@/components/mushroom-anatomy-icons";
 import { ProfileFacts } from "@/components/species-profile/profile-facts";
+import { SpeciesModelLink } from "@/components/species-model-link";
 import { comparisonPagesForSpecies } from "@/data/comparison-pages";
 import { getSpanishSpeciesNames } from "@/data/species-common-names";
 import { getSpecies3dModel } from "@/data/species-3d-models";
@@ -88,14 +89,12 @@ export function SpeciesIdentificationSection({
       </div>
     </div>
 
-    {model3d && <Link href={speciesModelPath(species)} className="species-model-link">
-      {/* eslint-disable-next-line @next/next/no-img-element -- still render served as-is beside its GLB */}
-      <img src={model3d.thumb} alt="" loading="lazy" decoding="async" />
-      <span>
-        <b>Mira {speciesArticle(species.identity.commonName).withArticle} en 3D <ArrowUpRight size={16} aria-hidden="true" /></b>
-        <small>Model il·lustratiu per girar-lo i veure’n el barret, l’himeni i el peu.</small>
-      </span>
-    </Link>}
+    {model3d && <SpeciesModelLink
+      href={speciesModelPath(species)}
+      thumb={model3d.thumb}
+      title={`Mira ${speciesArticle(species.identity.commonName).withArticle} en 3D`}
+      description="Model il·lustratiu per girar-lo i veure’n el barret, l’himeni i el peu."
+    />}
 
     {territoryGuide && <p className="profile-links">
       <Link href={territoryGuide.path} className="text-link">
