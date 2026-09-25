@@ -28,6 +28,7 @@ Use this index for current guidance and open plans. Dated research and completed
 | [SEO operations](seo-launch-operations.md) | Release checks and measurement; account baseline is explicitly dated |
 | [Species page depth rollout](species-depth-test-2026-09.md) | Running since 24 September 2026; top-20 species with hand-written text against the untreated rest, checkpoints 12 and 26 October |
 | [Map discovery plan](map-discovery-plan.md) | Proposed homepage/map clarity release, followed by Avui and local-guide journey improvements |
+| [Photo identification plan](photo-identification-plan.md) | Proposed own-model photo identifier: options, GBIF photo counts, hardware measurements, staged process and open decisions |
 | [Annual map price survey — closed](archive/map-price-survey-2026-09.md) | Closed experiment; historical privacy and measurement record |
 | [Map discovery — 14 September](archive/map-discovery-2026-09-14.md) | Indexed-map diagnosis, query/device baseline and local navigation/freshness corrections |
 | [Map-search competitors — 14 September](archive/map-search-competitors-2026-09-14.md) | Dated ranking evidence, competitor presentation and proposed map-discovery improvements |

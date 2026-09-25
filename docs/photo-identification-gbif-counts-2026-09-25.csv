@@ -1,0 +1,63 @@
+species_id,common_name,scientific_name,edibility,gbif_taxon_key,open_cc0_ccby_world,cc_by_nc_world,open_cc0_ccby_europe,open_cc0_ccby_spain
+hygrophorus-latitabundus,Llenega,Hygrophorus latitabundus,edible,2538733,3,133,3,0
+lepiota-brunneoincarnata,Palometa metzinosa,Lepiota brunneoincarnata,dangerously_toxic,2535390,14,169,12,1
+lactifluus-rugatus,Lleterola roja,Lactifluus rugatus,edible,7487285,17,121,7,1
+leccinellum-lepidum,Cigró,Leccinellum lepidum,edible,11057661,27,652,25,2
+tuber-melanosporum,Tòfona negra,Tuber melanosporum,excellent_edible,5258468,35,53,15,2
+pleurotus-eryngii,Gírgola de panical,Pleurotus eryngii,excellent_edible,9075265,53,753,25,7
+lactarius-sanguifluus,Rovelló,Lactarius sanguifluus,excellent_edible,5248648,66,518,49,7
+hygrophorus-marzuolus,Marçot,Hygrophorus marzuolus,edible,7244099,72,332,41,2
+cortinarius-orellanus,Cortinari metzinós,Cortinarius orellanus,dangerously_toxic,2528684,100,65,93,0
+inocybe-erubescens,Inocibe de Patouillard,Inosperma erubescens,dangerously_toxic,10776858,102,261,95,0
+tricholoma-pardinum,Fredolic metzinós,Tricholoma pardinum,toxic,7242174,110,178,12,0
+boletus-aereus,Cep negre,Boletus aereus,excellent_edible,8733688,136,1208,124,8
+entoloma-sinuatum,Carner bord,Entoloma sinuatum,toxic,2539308,180,392,117,0
+rubroboletus-satanas,Matagent,Rubroboletus satanas,dangerously_toxic,7722553,201,796,154,1
+ramaria-aurea,Peu de rata daurat,Ramaria aurea,not_recommended,5238642,218,43,66,0
+hygrophorus-russula,Carlet,Hygrophorus russula,edible,2538807,224,744,32,1
+omphalotus-olearius,Bolet d’olivera,Omphalotus olearius,toxic,2538088,267,1278,138,11
+ramaria-formosa,Peu de rata bord,Ramaria formosa,toxic,5238663,320,178,89,0
+lactarius-chrysorrheus,Pinetell bord,Lactarius chrysorrheus,inedible,5248610,368,1720,196,4
+russula-virescens,Llora verda,Russula virescens,excellent_edible,2551423,380,2019,285,6
+amanita-caesarea,Ou de reig,Amanita caesarea,excellent_edible,5240269,380,924,122,9
+amanita-verna,Cogomassa,Amanita verna,dangerously_toxic,5240320,429,53,26,1
+cyclocybe-cylindracea,Pollancró,Cyclocybe cylindracea,excellent_edible,8138987,432,2271,355,70
+clitocybe-rivulosa,Candeleta de vorada,Collybia rivulosa,dangerously_toxic,2531052,435,633,259,0
+hygrophorus-eburneus,Llenega blanca,Hygrophorus eburneus,edible,9053531,488,1696,155,0
+tricholoma-portentosum,Fredolic gros,Tricholoma portentosum,edible,5241860,526,729,386,3
+boletus-pinophilus,Cep rogenc,Boletus pinophilus,excellent_edible,5954949,552,1299,491,3
+lycoperdon-utriforme,Pet de llop gros,Lycoperdon utriforme,not_recommended,5243236,573,1768,549,12
+cortinarius-rubellus,Cortinari mortal,Cortinarius rubellus,dangerously_toxic,2528663,785,763,769,0
+craterellus-lutescens,Camagroc,Craterellus lutescens,excellent_edible,8871787,830,960,583,18
+boletus-reticulatus,Cep d’estiu,Boletus reticulatus,excellent_edible,5954691,903,4722,866,18
+morchella-esculenta,Múrgola,Morchella esculenta,edible_with_conditions,2594602,989,2807,601,5
+chroogomphus-rutilus,Cama de perdiu,Chroogomphus rutilus,edible,2524996,993,1622,626,9
+russula-cyanoxantha,Llora aspra,Russula cyanoxantha,excellent_edible,2551542,1011,2871,679,6
+calocybe-gambosa,Moixernó,Calocybe gambosa,excellent_edible,8936224,1038,4723,1007,2
+amanita-virosa,Farinera pudent,Amanita virosa,dangerously_toxic,5240323,1067,1162,814,0
+tricholoma-terreum,Fredolic,Tricholoma terreum,edible_with_conditions,5241808,1285,3276,751,18
+lepista-nuda,Pimpinella morada,Lepista nuda,edible_with_conditions,5242048,1290,5483,882,3
+agaricus-campestris,Camperol,Agaricus campestris,edible,5243458,1444,3100,743,9
+suillus-granulatus,Molleric granellut,Suillus granulatus,edible_with_conditions,8146046,1475,4407,600,10
+tylopilus-felleus,Mataparent,Tylopilus felleus,inedible,2524910,1494,4724,947,0
+lactarius-torminosus,Rovelló de cabra,Lactarius torminosus,toxic,8122710,1547,2563,1220,1
+calvatia-gigantea,Pet de llop gegant,Calvatia gigantea,edible_with_conditions,2536058,1605,12097,791,1
+lactarius-deliciosus,Pinetell,Lactarius deliciosus,excellent_edible,5248629,1724,5453,794,46
+gyromitra-esculenta,Bolet de greix,Gyromitra esculenta,dangerously_toxic,5258510,1830,5655,1288,6
+amanita-pantherina,Pixacà,Amanita pantherina,dangerously_toxic,8961574,1836,9423,1438,28
+hydnum-repandum,Llengua de bou,Hydnum repandum,edible,2554716,1841,4380,1236,12
+suillus-luteus,Molleric de calceta,Suillus luteus,edible_with_conditions,7777157,2213,6295,1498,18
+marasmius-oreades,Camasec,Marasmius oreades,edible,2537250,2262,16968,1436,19
+craterellus-cornucopioides,Trompeta de la mort,Craterellus cornucopioides,excellent_edible,2554662,2490,7402,1017,9
+amanita-phalloides,Farinera borda,Amanita phalloides,dangerously_toxic,5240325,2498,15241,1180,15
+galerina-marginata,Galerina metzinosa,Galerina marginata,dangerously_toxic,8118872,2641,8012,1253,4
+paxillus-involutus,Paxil·le tòxic,Paxillus involutus,dangerously_toxic,5240002,2884,7702,2223,3
+craterellus-tubaeformis,Fals camagroc,Craterellus tubaeformis,edible,2554536,3050,6872,1885,5
+hygrophoropsis-aurantiaca,Fals rossinyol,Hygrophoropsis aurantiaca,not_recommended,2525710,3241,15598,2092,20
+cantharellus-cibarius,Rossinyol,Cantharellus cibarius,excellent_edible,5249504,3857,15412,3127,17
+macrolepiota-procera,Apagallums,Macrolepiota procera,edible,8914748,4074,29591,3734,74
+pleurotus-ostreatus,Gírgola,Pleurotus ostreatus,edible,2526530,4368,19913,2427,7
+boletus-edulis,Cep,Boletus edulis,excellent_edible,5954958,5362,23370,4150,21
+lycoperdon-perlatum,Pet de llop perlat,Lycoperdon perlatum,edible_with_conditions,5243258,5856,24151,3526,43
+coprinus-comatus,Bolet de tinta,Coprinus comatus,edible,7987658,9563,98406,6119,71
+amanita-muscaria,Reig bord,Amanita muscaria,toxic,8168319,20308,208568,11867,125
