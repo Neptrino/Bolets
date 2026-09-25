@@ -20,9 +20,9 @@ Render and export (about a minute):
 It writes `<out-dir>/<id>.glb` and three previews, `<id>-hero.png`,
 `<id>-low.png` and `<id>-under.png` (transparent PNGs; flatten on white to
 inspect). The previews use the same neutral tone mapping as the web viewer,
-so what you see is what the page shows. Study the existing species in the
-main script (`cep`, `rovello`, `ou_de_reig`) before starting; copy their
-patterns.
+so what you see is what the page shows. The `under` view is lit by an even neutral environment (like the web viewer), so a dark underside there is a real colour problem, not lighting. Study the existing species files in this folder
+(`boletus-edulis.py`, `lactarius-sanguifluus.py`, `amanita-caesarea.py`)
+before starting; copy their patterns.
 
 ## Helpers
 

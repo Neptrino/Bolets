@@ -1,111 +1,127 @@
 """Calocybe gambosa (moixernó): a small spring tuft of robust, fleshy, matte
-cream-white mushrooms. Convex to hemispheric caps with a strongly inrolled,
-irregularly lobed margin; very crowded, narrow white gills notched
-(emarginate) just before the stem; short, stout, compact white stems with
-no ring and no volva, soiled at the base."""
+cream-white mushrooms at three stages: a closed hemispherical button, a
+convex mid-stage cap and a mature, irregularly flattened cap with a wavy,
+lobed margin. Every margin is thinly inrolled; very crowded, fine white gills
+run out to it and are notched (emarginate) just before the stem; the stems
+are cylindrical and compact, cream down to a crust of soil, with no ring and
+no volva."""
 
-# Cap profiles (r, z) in metres for a specimen of scale 1, with the index of
-# the inrolled margin tip. The thick margin rolls under and inwards; the gill
-# surface then rises to the stem apex, so the hymenium is a concave bowl as a
-# convex cap requires.
-MATURE_CAP = [
-    (0.000, 0.0745), (0.015, 0.0736), (0.028, 0.0705), (0.038, 0.0652),
-    (0.0445, 0.0580), (0.0476, 0.0505), (0.0480, 0.0445), (0.0468, 0.0400),
-    (0.0442, 0.0376), (0.0412, 0.0378),
-    (0.0392, 0.0394),  # inrolled margin tip (index 10)
-    (0.0340, 0.0425), (0.0275, 0.0460), (0.0210, 0.0484), (0.0165, 0.0495), (0.0120, 0.0500),
+# Cap profiles (r, z) in metres, with the index of the inrolled margin tip.
+# The thin margin curls just under; the gill surface then rises to the stem
+# apex, so the hymenium is a concave bowl as a convex cap requires.
+MATURE_CAP = [  # 9.4 cm, convex-flattened: height ~1/3 of the diameter
+    (0.000, 0.0915), (0.015, 0.0905), (0.027, 0.0873), (0.036, 0.0822),
+    (0.042, 0.0760), (0.0458, 0.0692), (0.0472, 0.0638), (0.0467, 0.0606),
+    (0.0451, 0.0596),  # inrolled margin tip (index 8)
+    (0.0400, 0.0614), (0.0320, 0.0648), (0.0240, 0.0677), (0.0170, 0.0697), (0.0125, 0.0704), (0.0090, 0.0706),
 ]
-MATURE_TIP = 10
-MATURE_STEM = [
-    (0.0205, 0.0545), (0.0178, 0.0495), (0.0160, 0.0450), (0.0154, 0.0380),
-    (0.0157, 0.0280), (0.0168, 0.0170), (0.0180, 0.0080), (0.0172, 0.0025),
-    (0.0125, -0.0015), (0.0050, -0.0030), (0.0008, -0.0032),
+MATURE_STEM = [  # ~2.6 cm thick, very slightly thicker at the base
+    (0.0165, 0.0745), (0.0145, 0.0702), (0.0132, 0.0662), (0.0128, 0.0560),
+    (0.0130, 0.0420), (0.0136, 0.0280), (0.0143, 0.0150), (0.0145, 0.0070),
+    (0.0136, 0.0022), (0.0114, -0.0012), (0.0080, -0.0032), (0.0040, -0.0041), (0.0006, -0.0043),
+]
+# Lower the mature fruit body so its stem is ~0.65x the cap diameter.
+MATURE_CAP = [(r, z - 0.010) for r, z in MATURE_CAP]
+MATURE_STEM = [(r, z * 0.866 if z > 0 else z) for r, z in MATURE_STEM]
+
+MID_CAP = [  # 7.3 cm, convex with the margin still inrolled
+    (0.000, 0.0740), (0.012, 0.0732), (0.022, 0.0705), (0.030, 0.0655),
+    (0.0345, 0.0596), (0.0364, 0.0537), (0.0363, 0.0494), (0.0350, 0.0468),
+    (0.0328, 0.0460),  # inrolled margin tip (index 8)
+    (0.0285, 0.0478), (0.0225, 0.0504), (0.0165, 0.0524), (0.0118, 0.0533), (0.0082, 0.0536),
+]
+MID_STEM = [
+    (0.0130, 0.0565), (0.0112, 0.0530), (0.0103, 0.0500), (0.0100, 0.0420),
+    (0.0102, 0.0300), (0.0107, 0.0180), (0.0112, 0.0085), (0.0108, 0.0035),
+    (0.0092, 0.0000), (0.0066, -0.0024), (0.0032, -0.0035), (0.0005, -0.0037),
 ]
 
-YOUNG_CAP = [
-    (0.000, 0.0625), (0.012, 0.0617), (0.022, 0.0585), (0.0300, 0.0520),
-    (0.0348, 0.0438), (0.0362, 0.0365), (0.0356, 0.0318), (0.0336, 0.0290),
-    (0.0306, 0.0282),
-    (0.0282, 0.0296),  # inrolled margin tip (index 9)
-    (0.0240, 0.0335), (0.0190, 0.0366), (0.0150, 0.0383), (0.0105, 0.0392),
+BUTTON_CAP = [  # 5.4 cm, closed and hemispherical, margin curled well under
+    (0.000, 0.0520), (0.010, 0.0513), (0.018, 0.0488), (0.0235, 0.0445),
+    (0.0262, 0.0395), (0.0269, 0.0345), (0.0260, 0.0306), (0.0240, 0.0286),
+    (0.0216, 0.0285),  # inrolled margin tip (index 8)
+    (0.0185, 0.0299), (0.0145, 0.0316), (0.0110, 0.0327), (0.0080, 0.0332),
 ]
-YOUNG_TIP = 9
-YOUNG_STEM = [
-    (0.0170, 0.0430), (0.0142, 0.0388), (0.0128, 0.0350), (0.0125, 0.0280),
-    (0.0131, 0.0190), (0.0142, 0.0100), (0.0146, 0.0050), (0.0136, 0.0012),
-    (0.0095, -0.0015), (0.0035, -0.0025), (0.0006, -0.0027),
+BUTTON_STEM = [
+    (0.0098, 0.0350), (0.0084, 0.0322), (0.0078, 0.0296), (0.0077, 0.0240),
+    (0.0081, 0.0160), (0.0087, 0.0085), (0.0086, 0.0040), (0.0074, 0.0006),
+    (0.0052, -0.0018), (0.0024, -0.0029), (0.0004, -0.0031),
 ]
+TIP = 8
 
 
 def wrap(a):
     return (a + math.pi) % (2 * math.pi) - math.pi
 
 
-def specimen(tag, cap_profile, tip, stem_profile, scale, seed, lobe_amp, gill_count, gill_depth,
+def specimen(tag, cap_profile, stem_profile, seed, lobe_amp, wave, gill_count, gill_depth,
              bosses=(), split=None, press=None):
-    """bosses: (x, y, radius, height) bumps (negative height = dent) in unit-scale
-    metres; split: (angle, width) of a radial crack at the margin; press:
+    """bosses: (x, y, radius, height) bumps (negative height = dent) in metres;
+    split: (angle, width) of a small shallow crack at the margin; press:
     (angle, amount) where a neighbour has pushed the cap out of shape."""
-    cap_profile = [(r * scale, z * scale) for r, z in cap_profile]
-    stem_profile = [(r * scale, z * scale) for r, z in stem_profile]
     samples = 150
-    um = arc_fraction(cap_profile, tip - 1)  # outer edge of the curl
+    um = arc_fraction(cap_profile, TIP - 1)  # outer edge of the curl
+    radius = cap_profile[TIP - 3][0]
     stem_top = stem_profile[1][1]
     ph = [noise.noise(seed + Vector((k * 1.3, 0.2, 0.7))) * 3 for k in range(6)]
 
     def cap_shape(th, v, r, z):
-        p = Vector((r * math.cos(th), r * math.sin(th), z)) / scale
+        p = Vector((r * math.cos(th), r * math.sin(th), z))
         q = p * 15 + seed
-        edge = smooth(0.12, um, v) * smooth(0.012 * scale, 0.028 * scale, r)
-        w = noise.noise(q) * 0.1 + noise.noise(q * 2.4) * 0.035 + noise.noise(q * 5.3) * 0.009
+        edge = smooth(0.15, um, v) * smooth(0.25 * radius, 0.6 * radius, r)
+        w = noise.noise(q) * 0.07 + noise.noise(q * 2.4) * 0.025 + noise.noise(q * 5.3) * 0.006
         dirn = Vector((math.cos(th), math.sin(th), 0))
         lobes = lobe_amp * (math.sin(2 * th + ph[0]) * 0.8 + math.sin(3 * th + ph[1]) * 0.7
-                            + math.sin(4 * th + ph[4]) * 0.45 + math.sin(7 * th + ph[5]) * 0.25
-                            + math.sin(5 * th + ph[2]) * 0.35 + 1.2 * noise.noise(dirn * 2.5 + seed))
-        r2 = r * (1 + (w + lobes * 0.85) * edge)
-        # The thick margin rises and falls with the lobes, like the wavy rims in the photos.
-        z2 = z + (w * 0.016 + lobes * 0.034) * edge * scale - 0.003 * scale * edge * (0.5 + 0.5 * math.cos(th - ph[3]))
-        upper = 1 - smooth(um - 0.08, um, v)
-        # Lumpy, knobbly upper surface: broad bosses and hollows plus fine unevenness.
-        z2 += (noise.noise(p * 11 + seed * 0.7) * 0.0065 + noise.noise(p * 26 + seed) * 0.0035
-               + noise.noise(p * 70 + seed) * 0.0008) * upper * scale * smooth(0.0, 0.25, v)
+                            + math.sin(4 * th + ph[4]) * 0.35 + 1.1 * noise.noise(dirn * 2.2 + seed))
+        r2 = r * (1 + (w + lobes * 0.8) * edge)
+        # The margin undulates up and down in a few broad waves.
+        z2 = z + (w * 0.4 * radius + wave * (math.sin(3 * th + ph[2]) * 0.6 + noise.noise(dirn * 3 + seed * 1.7))) * edge
+        upper = 1 - smooth(um - 0.1, um - 0.02, v)
+        # Low, lumpy bosses and hollows over the top, plus fine unevenness.
+        z2 += (noise.noise(p * 13 + seed * 0.7) * 0.0068 + noise.noise(p * 30 + seed) * 0.0032
+               + noise.noise(p * 80 + seed) * 0.0004) * upper * smooth(0.0, 0.3, v)
         for cx, cy, rad, h in bosses:
             ex, ey = p.x - cx, p.y - cy
-            z2 += h * scale * math.exp(-(ex * ex + ey * ey) / rad ** 2) * upper
+            z2 += h * math.exp(-(ex * ex + ey * ey) / rad ** 2) * upper
         if press:
             d = wrap(th - press[0])
-            f = math.exp(-(d / 0.75) ** 2) * smooth(0.25, um, v)
+            f = math.exp(-(d / 0.7) ** 2) * smooth(0.3, um, v)
             r2 *= 1 - press[1] * f
-            z2 += press[1] * 0.12 * scale * f
+            z2 += press[1] * 0.1 * radius * f
         if split:
+            # Only the outer part of the flesh opens, leaving the gill field whole.
             d = abs(wrap(th - split[0]))
-            f = max(0.0, 1 - d / split[1]) ** 1.6 * smooth(um * 0.5, um * 0.95, v)
-            r2 *= 1 - 0.24 * f
-            z2 += 0.004 * scale * f
-        return (r2 * math.cos(th) + 0.002 * scale, r2 * math.sin(th), z2)
+            f = max(0.0, 1 - d / split[1]) ** 2 * smooth(um * 0.72, um * 0.97, v)
+            r2 *= 1 - 0.07 * f
+            z2 += 0.0015 * f
+        return (r2 * math.cos(th) + 0.0015, r2 * math.sin(th), z2)
 
     def stem_shape(th, v, r, z):
-        p = Vector((math.cos(th), math.sin(th), z / scale * 22)) + seed
+        p = Vector((math.cos(th), math.sin(th), z * 22)) + seed
         # Irregular below; smooth where the flare sinks into the cap flesh.
-        r *= 1 + (noise.noise(p) * 0.05 + noise.noise(p * 3) * 0.015) * (1 - smooth(stem_top - 0.008 * scale, stem_top, z))
+        r *= 1 + (noise.noise(p) * 0.04 + noise.noise(p * 3) * 0.012) * (1 - smooth(stem_top - 0.008, stem_top, z))
+        # A few soil granules cling to the rounded foot.
+        crust = 1 - smooth(-0.001, 0.004, z)
+        g = noise.noise(Vector((math.cos(th), math.sin(th), z * 40)) * 3 + seed * 3)
+        r += crust * max(0.0, g) * 0.0004
         k = (1 - min(z, stem_top) / stem_top) ** 2
-        return (r * math.cos(th) - 0.003 * scale * k, r * math.sin(th) + 0.0015 * scale * k, z)
+        return (r * math.cos(th) - 0.003 * k, r * math.sin(th) + 0.0015 * k, z)
 
     cap = revolve(f"cap{tag}", cap_profile, 256, samples, cap_shape, True, False)
-    stem = revolve(f"stem{tag}", stem_profile, 160, 90, stem_shape, True, True)
+    stem = revolve(f"stem{tag}", stem_profile, 160, 100, stem_shape, True, True)
     sp = catmull(stem_profile, 300)
 
     def stem_radius(z):
         return min(sp, key=lambda pt: abs(pt.y - z)).x
 
-    j_start = int(round(arc_fraction(cap_profile, tip) * (samples - 1))) + 2
+    j_start = int(round(arc_fraction(cap_profile, TIP) * (samples - 1))) + 1
     # A tiny free gap rounds each gill off just before the stem: the notched
     # (emarginate) attachment of the morphology.
     gill = gills(f"gills{tag}", cap_profile, samples, j_start, cap_shape, stem_shape, stem_radius,
-                 gill_count, gill_depth * scale, seed, decurrent=0, free_gap=0.0004 * scale, stains=False,
-                 margin_taper=0.85, edge_occlusion=0.94)
+                 gill_count, gill_depth, seed, decurrent=0, free_gap=0.0004, stains=False,
+                 margin_taper=0.82, edge_occlusion=0.97)
 
-    cap_material(cap, arc_fraction(cap_profile, tip), seed)
+    cap_material(cap, arc_fraction(cap_profile, TIP), lobe_amp > 0.05)
     gill_material(gill)
     stem_material(stem)
     for o in (cap, stem):
@@ -113,55 +129,62 @@ def specimen(tag, cap_profile, tip, stem_profile, scale, seed, lobe_amp, gill_co
     return [cap, stem, gill]
 
 
-def cap_material(cap, um, seed):
-    # Matte cream-white, a little more buff at the centre, fine mottling.
+def cap_material(cap, um, mature):
+    # Matte, dry cream-white with a felty micro-surface, a faintly warmer
+    # ivory-ochre centre on the mature cap, and a few sparse blemishes.
     m = bpy.data.materials.new(f"{cap.name}-proc")
     g = Graph(m)
-    big = g.noise(20, 5, 0.6, distortion=0.3)
-    top = g.ramp(big, [(0.3, "#e0d1b2"), (0.55, "#eae0ca"), (0.78, "#f1eadb")])
-    centre = g.remap(g.v, 0.0, um * 0.55, 1.0, 0.0)
-    top = g.mix(g.math("MULTIPLY", centre, 0.65), top, "#d0bd98")
-    warm = g.remap(g.noise(4, 2, 0.5, distortion=0.4), 0.48, 0.66, 0.0, 0.5)
-    top = g.mix(warm, top, "#d8c5a0")
-    blot = g.remap(g.noise(9, 3, 0.6, distortion=0.6), 0.48, 0.64, 0.0, 0.75)
-    top = g.mix(blot, top, "#d4c3a2")
-    top = g.mix(0.25, top, g.noise(240, 3), "OVERLAY")
-    silk = g.noise(60, 2, 0.5, vec=g.vec_scale(g.obj, 6, 6, 1))
-    top = g.mix(0.08, top, silk, "OVERLAY")
-    top = g.mix(g.remap(g.v, um - 0.07, um - 0.02, 0.0, 0.5), top, "#efe6d2")
-    under = g.remap(g.v, um + 0.004, um + 0.02)
-    colour = g.mix(under, top, "#f0e5cc")
-    roughness = g.remap(g.noise(30, 2), 0.3, 0.7, 0.72, 0.84)
-    height = g.math("ADD", g.math("MULTIPLY", g.noise(160, 4), 0.4), g.math("MULTIPLY", big, 0.3))
-    g.finish(colour, roughness, height, 0.55, 0.0006)
+    big = g.noise(14, 4, 0.55, distortion=0.3)
+    top = g.ramp(big, [(0.3, "#e6dcc4"), (0.55, "#eee6d4"), (0.78, "#f3eee2")])
+    centre = g.remap(g.v, 0.0, um * 0.5, 1.0, 0.0)
+    top = g.mix(g.math("MULTIPLY", centre, 0.55 if mature else 0.3), top, "#dac9a4")
+    blot = g.remap(g.noise(7, 3, 0.6, distortion=0.6), 0.52, 0.68, 0.0, 0.35)
+    top = g.mix(blot, top, "#ddd0b2")
+    felt = g.noise(700, 3, 0.6)
+    top = g.mix(0.12, top, felt, "OVERLAY")
+    spots = g.math("MULTIPLY", g.remap(g.voronoi(90, rand=1.0), 0.0, 0.05, 1.0, 0.0), g.remap(g.noise(6, 2), 0.6, 0.66))
+    top = g.mix(g.math("MULTIPLY", spots, 0.45), top, "#b49a72")
+    top = g.mix(g.remap(g.v, um - 0.05, um - 0.01, 0.0, 0.4), top, "#f4efe3")
+    under = g.remap(g.v, um + 0.002, um + 0.012)
+    colour = g.mix(under, top, "#f5efe1")
+    roughness = g.remap(g.noise(30, 2), 0.3, 0.7, 0.72, 0.8)
+    height = g.math("ADD", g.math("MULTIPLY", felt, 0.5), g.math("MULTIPLY", g.noise(160, 4), 0.3))
+    g.finish(colour, roughness, height, 0.55, 0.0004)
     cap.data.materials.append(m)
 
 
 def gill_material(gill):
     m = bpy.data.materials.new(f"{gill.name}-proc")
     g = Graph(m)
-    col = g.ramp(g.uvx, [(0.0, "#f2e8d2"), (0.5, "#f6eedc"), (1.0, "#f8f2e4")])
-    col = g.mix(g.remap(g.uvy, 0.6, 1.0, 0.0, 0.4), col, "#fbf7ec")
-    col = g.mix(0.1, col, g.noise(40, 2, vec=g.vec_scale(g.obj, 1, 1, 1)), "OVERLAY")
-    g.finish(col, 0.78, g.noise(200, 2), 0.1, 0.0002)
+    col = g.ramp(g.uvx, [(0.0, "#f6f0e2"), (0.5, "#f8f3e8"), (1.0, "#faf6ee")])
+    col = g.mix(g.remap(g.uvy, 0.6, 1.0, 0.0, 0.4), col, "#fcfaf4")
+    g.finish(col, 0.78, g.noise(200, 2), 0.08, 0.0002)
     gill.data.materials.append(m)
 
 
 def stem_material(stem):
-    # White, finely fibrillose, a little buff low down, soil at the base.
+    # Cream, finely fibrillose, down to a patchy crust of soil granules.
     m = bpy.data.materials.new(f"{stem.name}-proc")
     g = Graph(m)
-    base = g.ramp(g.noise(45, 4), [(0.35, "#e4dcc8"), (0.65, "#efe9dc")])
-    base = g.mix(g.remap(g.v, 0.45, 0.9, 0.0, 0.5), base, "#d8cbab")
-    fibres = g.noise(150, 3, 0.5, vec=g.vec_scale(g.obj, 1, 1, 0.08))
-    base = g.mix(0.25, base, fibres, "OVERLAY")
-    base = g.mix(0.2, base, g.noise(380, 2), "OVERLAY")
-    side = g.remap(g.noise(3, 1, vec=g.vec_scale(g.obj, 1, 1, 0)), 0.35, 0.65, 0.0, 0.14)
-    soil_band = g.remap(g.math("ADD", g.v, side), 0.8, 0.95)
-    soil = g.math("MULTIPLY", soil_band, g.remap(g.noise(55, 5, 0.65, distortion=0.5), 0.44, 0.56))
-    soil = g.math("MAXIMUM", soil, g.remap(g.v, 0.9, 0.95))
-    colour = g.mix(soil, base, g.ramp(g.noise(30, 3), [(0.4, "#6a5540"), (0.65, "#94806a")]))
-    g.finish(colour, 0.8, g.math("ADD", g.math("MULTIPLY", fibres, 0.5), soil), 0.3, 0.0005)
+    base = g.ramp(g.noise(45, 4), [(0.35, "#ebe3d1"), (0.65, "#f2ede1")])
+    fibres = g.noise(220, 4, 0.6, vec=g.vec_scale(g.obj, 1, 1, 0.06))
+    base = g.mix(0.3, base, fibres, "OVERLAY")
+    base = g.mix(0.15, base, g.noise(380, 2), "OVERLAY")
+    # Soil: only a faint, patchy tint on the rounded foot, a few specks above.
+    sep = g.nt.nodes.new("ShaderNodeSeparateXYZ")
+    g.link(g.obj, sep.inputs[0])
+    wob = g.math("MULTIPLY", g.noise(9, 2), 0.004)
+    band = g.remap(g.math("ADD", sep.outputs["Z"], wob), 0.006, -0.002)
+    grains = g.remap(g.voronoi(260, rand=1.0), 0.0, 0.3, 1.0, 0.0)
+    patch = g.remap(g.noise(40, 4, 0.6, distortion=0.6), 0.44, 0.56)
+    soil = g.math("MULTIPLY", band, g.math("MAXIMUM", g.math("MULTIPLY", patch, 0.55), g.math("MULTIPLY", grains, 0.4)))
+    specks = g.math("MULTIPLY", g.remap(g.voronoi(160), 0.0, 0.08, 1.0, 0.0), g.remap(g.noise(8, 2), 0.6, 0.64))
+    soil = g.math("MAXIMUM", soil, g.math("MULTIPLY", specks, g.math("MULTIPLY", g.remap(sep.outputs["Z"], 0.02, 0.004), 0.6)))
+    soil = g.math("MAXIMUM", soil, g.math("MULTIPLY", g.remap(g.v, 0.96, 1.0), 0.45))
+    dirt = g.ramp(g.noise(90, 3), [(0.3, "#8c7657"), (0.55, "#a08b6c"), (0.8, "#b8a687")])
+    colour = g.mix(soil, base, dirt)
+    height = g.math("ADD", g.math("MULTIPLY", fibres, 0.4), g.math("MULTIPLY", soil, grains))
+    g.finish(colour, g.lerp(soil, 0.74, 0.9), height, 0.5, 0.0006)
     stem.data.materials.append(m)
 
 
@@ -172,19 +195,20 @@ def place(objs, x, y, rz, tilt_x, tilt_y):
 
 
 def build():
-    # The big cap is split at the front margin and flattened where the young
-    # cap presses against it; the young cap is pushed out of round in turn.
-    a = specimen("", MATURE_CAP, MATURE_TIP, MATURE_STEM, 1.0, Vector((4.1, 2.7, 9.3)), 0.1, 180, 0.0045,
-                 bosses=((0.012, -0.016, 0.011, 0.0035), (-0.018, 0.012, 0.009, 0.003), (0.024, 0.018, 0.008, -0.003),
-                         (-0.006, -0.03, 0.007, -0.0025), (0.0, 0.004, 0.006, -0.002)),
-                 split=(-1.65, 0.09), press=(-0.59, 0.06))
-    b = specimen("-b", YOUNG_CAP, YOUNG_TIP, YOUNG_STEM, 0.9, Vector((8.2, 5.5, 1.6)), 0.075, 140, 0.0042,
-                 bosses=((0.008, 0.01, 0.009, 0.003), (-0.012, -0.008, 0.007, -0.0025)),
-                 press=(1.85, 0.14))
-    c = specimen("-c", YOUNG_CAP, YOUNG_TIP, YOUNG_STEM, 0.62, Vector((1.4, 9.9, 6.2)), 0.08, 96, 0.004,
-                 bosses=((0.006, -0.006, 0.008, 0.003),))
-    place(a, 0.004, 0.018, 0, -3, 2)
-    place(b, 0.062, -0.022, 40, 6, 14)
-    place(c, -0.046, -0.034, -70, 9, -12)
-    views = {"hero": (-30, 24, 0.6, 0.035), "low": (20, 4, 0.6, 0.035), "under": (20, -45, 0.46, 0.04)}
+    # Mature cap: lobed, wavy margin and the only (small, shallow) crack.
+    a = specimen("", MATURE_CAP, MATURE_STEM, Vector((4.1, 2.7, 9.3)), 0.08, 0.0032, 100, 0.0052,
+                 bosses=((0.012, -0.014, 0.012, 0.004), (-0.017, 0.012, 0.010, 0.0035), (0.022, 0.018, 0.009, -0.003),
+                         (-0.006, -0.028, 0.008, -0.0025), (0.0, 0.0, 0.007, -0.002)),
+                 split=(-1.65, 0.06), press=(-0.63, 0.05))
+    # Mid-stage cap, pushed out of round where it leans on the big one.
+    b = specimen("-b", MID_CAP, MID_STEM, Vector((8.2, 5.5, 1.6)), 0.05, 0.002, 90, 0.0044,
+                 bosses=((0.008, 0.01, 0.009, 0.003), (-0.012, -0.008, 0.007, -0.0025), (0.014, -0.012, 0.007, 0.002)),
+                 press=(1.95, 0.07))
+    # Closed button.
+    c = specimen("-c", BUTTON_CAP, BUTTON_STEM, Vector((1.4, 9.9, 6.2)), 0.035, 0.001, 72, 0.0032,
+                 bosses=((0.006, -0.006, 0.008, 0.0025), (-0.008, 0.007, 0.006, -0.0015)))
+    place(a, 0.0, 0.016, 0, -3, 2)
+    place(b, 0.066, -0.026, 40, 5, 12)
+    place(c, -0.044, -0.036, -70, 6, -8)
+    views = {"hero": (-30, 22, 0.62, 0.045), "low": (20, 4, 0.62, 0.045), "under": (20, -45, 0.5, 0.05)}
     return a + b + c, views

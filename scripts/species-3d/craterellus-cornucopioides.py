@@ -1,31 +1,35 @@
 """Craterellus cornucopioides (trompeta de la mort): a small group of deep,
-hollow, thin-fleshed trumpets. The outer (fertile) face is smooth to faintly
-wrinkled and ash-grey, paler down the tube; the inner face is dark brown-black
-and finely scaly; the flared margin is wavy, torn and rolled back.
+hollow, thin-fleshed trumpets. The outer (fertile) face is ash-grey with low
+lengthwise wrinkles, darker down the tube; the inner face is brown-black with
+flat, darker fibrillose scales; the thin margin is wavy, split in places and
+rolled outwards and back.
 
 Each trumpet is one closed surface of revolution whose profile climbs the
 outside of a thin sheet, turns over the rolled lip and runs back down the
-inside to a hollow bottom just above the base."""
+inside to a hollow bottom. The narrow feet sink into the litter and fuse
+where they touch; there is no shared pedestal."""
 
 
 def _trumpet_profile(height, mouth, base_r, wall_base, wall_rim, curl_r, curl_deg):
-    """(profile, lip_index): outside up, round the lip, inside down."""
+    """(profile, lip_index, midline): outside up, round the lip, inside down."""
     mid = []
-    z0 = 0.004
-    steps = 60
+    z_foot = -0.004
+    steps = 70
     for s in range(steps + 1):
         u = s / steps
-        z = z0 + (height - z0) * u
-        # The foot swells slightly where it fuses with its neighbours.
-        r = base_r * (1 + 0.45 * (1 - smooth(0.0, 0.16, u))) + (mouth - base_r) * (0.55 * u ** 1.4 + 0.45 * u ** 6)
-        mid.append(Vector((r, z)))
-    # Flare turning outwards and then rolling down over the margin.
+        z = z_foot + (height - z_foot) * u
+        # The foot narrows over the lower 40% into the litter; the funnel
+        # widens gradually over the upper half.
+        taper = 0.72 + 0.28 * smooth(0.0, 0.4, u)
+        flare = 0.18 * u ** 1.5 + 0.82 * max(0.0, (u - 0.38) / 0.62) ** 1.7
+        mid.append(Vector((base_r * taper + (mouth - base_r) * flare, z)))
+    # The margin turns outwards and rolls down and back.
     t = (mid[-1] - mid[-2]).normalized()
     ang = math.atan2(t.y, t.x)
     centre = mid[-1] + Vector((math.cos(ang - math.pi / 2), math.sin(ang - math.pi / 2))) * curl_r
     a0 = ang + math.pi / 2
-    for s in range(1, 13):
-        a = a0 - math.radians(curl_deg) * s / 12
+    for s in range(1, 15):
+        a = a0 - math.radians(curl_deg) * s / 14
         mid.append(centre + Vector((math.cos(a), math.sin(a))) * curl_r)
     n = len(mid)
     outer, inner = [], []
@@ -33,33 +37,37 @@ def _trumpet_profile(height, mouth, base_r, wall_base, wall_rim, curl_r, curl_de
         tan = (mid[min(k + 1, n - 1)] - mid[max(k - 1, 0)]).normalized()
         nrm = Vector((tan.y, -tan.x))  # outward for an upward-running midline
         f = k / (n - 1)
-        h = 0.5 * (wall_base + (wall_rim - wall_base) * f ** 0.6)
+        h = 0.5 * (wall_base + (wall_rim - wall_base) * f ** 0.7)
         outer.append(mid[k] + nrm * h)
         inner.append(mid[k] - nrm * h)
     tip_t = (mid[-1] - mid[-2]).normalized()
     hr = 0.5 * wall_rim
     lip = [mid[-1] + (outer[-1] - mid[-1]) * 0.7 + tip_t * hr * 0.7, mid[-1] + tip_t * hr,
            mid[-1] + (inner[-1] - mid[-1]) * 0.7 + tip_t * hr * 0.7]
-    ob = base_r * 1.45 + wall_base / 2
-    ib = base_r * 1.45 - wall_base / 2
-    profile = [(0.0, -0.0025), (ob * 0.55, -0.0022), (ob * 0.92, -0.0005), (ob, z0 * 0.6)]
+    ob = outer[0].x
+    # Hollow down to just above the ground; the buried foot is closed and round.
+    ib = inner[8].x
+    profile = [(0.0, z_foot - 0.0022), (ob * 0.6, z_foot - 0.0018), (ob * 0.92, z_foot - 0.0008)]
     profile += [(p.x, p.y) for p in outer]
     lip_index = len(profile) + 1
     profile += [(p.x, p.y) for p in lip]
-    profile += [(p.x, p.y) for p in reversed(inner)]
-    profile += [(ib * 0.9, z0 * 1.2), (ib * 0.6, z0 * 1.5), (0.0, z0 * 1.6)]
+    profile += [(p.x, p.y) for p in reversed(inner[8:])]
+    zb = inner[8].y
+    profile += [(ib * 0.75, zb - 0.0012), (ib * 0.35, zb - 0.0018), (0.0, zb - 0.0019)]
     return profile, lip_index, mid
 
 
 def _trumpet(name, seed, height, mouth, base_r, wall_base, wall_rim, curl_r, curl_deg,
-             lobes, tears, tilt, splay_dir=0.0, splay=0.0, samples=520, segments=220):
+             lobes, tears, tilt, tilt_dir, splay_dir=0.0, splay=0.0, squash=0.0, squash_dir=0.0,
+             samples=560, segments=240):
     profile, lip_index, mid = _trumpet_profile(height, mouth, base_r, wall_base, wall_rim, curl_r, curl_deg)
     vl = arc_fraction(profile, lip_index)
-    flare0 = base_r + (mouth - base_r) * 0.25
-    # Map every resampled profile point to its nearest point on the sheet's
-    # midline. All displacements are evaluated there, so the outer and inner
-    # faces of the same spot move together and the wall never self-intersects.
-    dense = catmull([(p.x, p.y) for p in mid], 1600)
+    flare0 = base_r + (mouth - base_r) * 0.2
+    # Every displacement is evaluated at the nearest point of the sheet's
+    # midline, so the outer and inner faces of the same spot move together.
+    # Displacements vary slowly compared with the wall thickness so the thin
+    # wall never folds through itself.
+    dense = catmull([(p.x, p.y) for p in mid], 1800)
     prof = catmull(profile, samples)
     anchor = [min(dense, key=lambda q: (q - pt).length_squared) for pt in prof]
     k_mouth = mouth / 0.027
@@ -70,40 +78,47 @@ def _trumpet(name, seed, height, mouth, base_r, wall_base, wall_rim, curl_r, cur
         dirn = Vector((math.cos(th), math.sin(th), 0.0))
         fl = smooth(flare0, mouth + curl_r, rm)
         uz = max(0.0, min(1.0, zm / height))
+        # Broad undulations of the margin.
         wave = sum(a * math.sin(k * th + ph) for k, a, ph in lobes)
-        wave += 0.35 * noise.noise(dirn * 2.5 + seed) + 0.12 * noise.noise(dirn * 7 + seed)
-        dr = rm * (0.16 * wave * fl + 0.05 * noise.noise(Vector((math.cos(th), math.sin(th), zm * 30)) + seed) * uz)
-        dz = 0.010 * wave * fl * k_mouth + tilt * mouth * math.cos(th - 0.9) * fl
-        # Splits: narrow sectors where the margin drops sharply into the flare.
-        for t0, w, d in tears:
+        wave += 0.3 * noise.noise(dirn * 2.5 + seed)
+        dr = rm * 0.16 * wave * fl
+        dz = 0.011 * wave * fl * k_mouth
+        # Finer crisping of the edge: smooth waves, not teeth.
+        crisp = math.sin(11 * th + 2.5 * noise.noise(dirn * 2 + seed * 0.4))
+        dz += 0.0016 * crisp * fl ** 3 * k_mouth
+        dz += 0.0022 * noise.noise(dirn * 6 + seed * 1.3) * fl ** 2 * k_mouth
+        dr += 0.0012 * noise.noise(dirn * 8 + seed * 2.7) * fl ** 2 * k_mouth
+        # Mouth tilted to one side, one side of the rim lower than the other.
+        dz += math.tan(tilt) * rm * math.cos(th - tilt_dir) * smooth(0.0, 0.7, uz)
+        # Splits: a few sectors where the margin drops away with smooth edges.
+        for t0, w, d, reach in tears:
             dth = abs(math.atan2(math.sin(th - t0), math.cos(th - t0)))
-            cut = 1 - smooth(w * 0.25, w, dth)
-            dz -= d * cut * fl ** 1.5
-            dr -= 0.25 * d * cut * fl ** 1.5
-        # Faint lengthwise wrinkles on the tube.
-        dr += 0.00022 * noise.noise(dirn * 9 + Vector((0, 0, zm * 9)) + seed) * smooth(0.15, 0.6, uz)
-        # Crumpled flare: irregular folds and puckers, strongest towards the margin.
-        q = Vector((rm * math.cos(th), rm * math.sin(th), zm)) * 150 + seed
-        q2 = q * 2.3
-        pk = fl ** 1.2
-        dz += (0.0026 * noise.noise(q) + 0.0009 * noise.noise(q2)) * pk * k_mouth
-        dr += (0.0018 * noise.noise(q + Vector((7.1, 2.3, 5.5))) + 0.0006 * noise.noise(q2 + Vector((1.3, 8.8, 0.4)))) * pk * k_mouth
-        pleat = math.sin(9 * th + 3.5 * noise.noise(dirn * 2 + Vector((0, 0, zm * 25)) + seed))
-        dz += 0.0022 * pleat * fl ** 2 * k_mouth
-        dz += 0.09 * mouth * noise.noise(dirn * 11 + seed * 1.3) * fl ** 2
-        # Ragged margin: small irregular nicks right at the edge.
-        rag = smooth(0.85, 1.0, fl)
-        dz -= 0.004 * k_mouth * max(0.0, noise.noise(dirn * 34 + seed * 2.1)) ** 1.5 * rag
-        # The margin folds down further in places, as in older fruitbodies.
-        dz -= 0.35 * mouth * max(0.0, noise.noise(dirn * 3.2 + seed * 0.7)) * fl ** 4
+            cut = (1 - smooth(w * 0.2, w, dth)) ** 1.5
+            depth_mask = smooth(1 - reach, 1.0, uz)
+            dz -= d * cut * depth_mask
+            dr -= 0.15 * d * cut * depth_mask
+        # The margin sags further in places, as in older fruitbodies.
+        dz -= 0.2 * mouth * max(0.0, noise.noise(dirn * 3.2 + seed * 0.7)) * fl ** 3
+        # Low lengthwise wrinkles and veins along the whole outer length:
+        # fast round the tube, slow along it, forking where the noise does.
+        q = Vector((rm * math.cos(th) * 520, rm * math.sin(th) * 520, zm * 45)) + seed
+        vein = noise.noise(q) + 0.45 * noise.noise(q * 2.1 + Vector((3.1, 0.4, 7.7)))
+        dr += 0.0009 * vein * smooth(0.03, 0.25, uz) * (1 - 0.85 * smooth(0.35, 1.0, fl))
         # A gentle bow in the tube.
         bend = 0.004 * (height / 0.085) * math.sin(math.pi * uz * 0.9)
-        # Clumped trumpets rise from a shared foot and curve outwards, the
-        # mouth turning to face away from the clump.
         off = splay * height * uz ** 1.8
-        dz -= 0.3 * splay * rm * math.cos(th - splay_dir) * fl
-        x = (r + dr) * math.cos(th) + bend + off * math.cos(splay_dir)
-        y = (r + dr) * math.sin(th) + 0.3 * bend + off * math.sin(splay_dir)
+        x = (r + dr) * math.cos(th)
+        y = (r + dr) * math.sin(th)
+        # A collapsed specimen: the funnel pressed flat into an oval.
+        if squash:
+            c, s_ = math.cos(squash_dir), math.sin(squash_dir)
+            a_ = x * c + y * s_
+            b_ = -x * s_ + y * c
+            a_ *= 1 - squash * smooth(0.2, 0.8, uz)
+            b_ *= 1 + 0.35 * squash * smooth(0.2, 0.8, uz)
+            x, y = a_ * c - b_ * s_, a_ * s_ + b_ * c
+        x += bend + off * math.cos(splay_dir)
+        y += 0.3 * bend + off * math.sin(splay_dir)
         return (x, y, z + dz)
 
     obj = revolve(name, profile, segments, samples, shape, True, True)
@@ -113,96 +128,79 @@ def _trumpet(name, seed, height, mouth, base_r, wall_base, wall_rim, curl_r, cur
 
     m = bpy.data.materials.new(f"{name}-proc")
     g = Graph(m)
-    inside = g.remap(g.v, vl - 0.004, vl + 0.004)
+    inside = g.remap(g.v, vl - 0.003, vl + 0.003)
     sep = g.nt.nodes.new("ShaderNodeSeparateXYZ")
     g.link(g.obj, sep.inputs[0])
     uz = g.math("DIVIDE", sep.outputs["Z"], height)
-    # Outside: ash-grey, paler and slightly brownish down the tube, with a
-    # patchy pale bloom and faint lengthwise wrinkles.
-    body = g.ramp(g.noise(30, 4, 0.6), [(0.35, "#46423e"), (0.65, "#544f4a")])
-    body = g.mix(g.remap(uz, 0.75, 0.15, 0.0, 0.7), body, "#6f6962")
-    bloom = g.remap(g.noise(14, 4, 0.6, distortion=0.5), 0.5, 0.66, 0.0, 0.35)
-    body = g.mix(bloom, body, "#8d8883")
-    streak = g.noise(60, 3, 0.55, vec=g.vec_scale(g.obj, 1, 1, 0.12))
-    body = g.mix(0.35, body, streak, "OVERLAY")
-    dstreak = g.noise(24, 4, 0.6, vec=g.vec_scale(g.obj, 1, 1, 0.1), distortion=0.4)
-    body = g.mix(g.remap(dstreak, 0.52, 0.68, 0.0, 0.55), body, "#3c3834")
-    body = g.mix(0.2, body, g.noise(350, 2), "OVERLAY")
-    dark_rim = g.remap(uz, 0.8, 1.0, 0.0, 0.45)
-    body = g.mix(dark_rim, body, "#38332f")
-    soil = g.math("MULTIPLY", g.remap(uz, 0.2, 0.04), g.remap(g.noise(70, 5, 0.65), 0.36, 0.52, 0.0, 0.85))
-    body = g.mix(soil, body, "#4b3a2b")
-    # Inside: dark brown-black, finely scaly and rough, a touch paler near the lip.
-    # Fine, irregular scaly roughness rather than regular dots.
-    scale_d = g.voronoi(900, vec=g.vec_scale(g.obj, 1, 1, 0.7), rand=1.0)
-    scales = g.math("MULTIPLY", g.remap(scale_d, 0.05, 0.35, 1.0, 0.0), g.remap(g.noise(60, 3), 0.4, 0.62, 0.2, 1.0))
-    inner = g.ramp(g.noise(40, 4, 0.6), [(0.35, "#2f2621"), (0.65, "#3d322a")])
-    inner = g.mix(g.math("MULTIPLY", scales, 0.35), inner, "#4b3e34")
-    inner = g.mix(g.remap(g.noise(35, 4, 0.6, distortion=0.4), 0.55, 0.7, 0.0, 0.4), inner, "#4e4036")
-    inner = g.mix(g.remap(uz, 0.75, 0.15, 0.0, 0.75), inner, "#1c1512")
-    # Scurfy: tiny paler flakes over the dark ground.
-    flakes = g.math("MULTIPLY", g.remap(g.voronoi(1500, rand=1.0), 0.0, 0.18, 1.0, 0.0), g.remap(g.noise(120, 3), 0.45, 0.6))
-    inner = g.mix(g.math("MULTIPLY", flakes, 0.5), inner, "#5b4c40")
-    inner = g.mix(0.25, inner, g.noise(300, 2), "OVERLAY")
+    # Outside: cool ash-grey, darker down the tube, with a pale powdery bloom
+    # on the upper flare and dark lengthwise veins.
+    veins = g.noise(260, 4, 0.6, vec=g.vec_scale(g.obj, 1, 1, 0.08), distortion=0.3)
+    body = g.ramp(g.noise(30, 4, 0.6), [(0.35, "#716c66"), (0.65, "#837d77")])
+    body = g.mix(g.remap(uz, 0.6, 0.05, 0.0, 0.8), body, "#4c4843")
+    bloom = g.math("MULTIPLY", g.remap(g.noise(16, 4, 0.6, distortion=0.5), 0.45, 0.65, 0.0, 0.6), g.remap(uz, 0.5, 0.9))
+    body = g.mix(bloom, body, "#a09b95")
+    body = g.mix(g.remap(veins, 0.5, 0.7, 0.0, 0.6), body, "#48443f")
+    body = g.mix(g.remap(veins, 0.3, 0.42, 0.3, 0.0), body, "#8e8983")
+    body = g.mix(0.18, body, g.noise(350, 2), "OVERLAY")
+    soil = g.math("MULTIPLY", g.remap(uz, 0.14, 0.0), g.remap(g.noise(70, 5, 0.65), 0.3, 0.5, 0.3, 0.95))
+    body = g.mix(soil, body, "#3f3026")
+    # Inside: brown-black with flat, darker, fibrillose scales, denser to the rim.
+    inner = g.ramp(g.noise(40, 4, 0.6), [(0.35, "#2e2826"), (0.65, "#3c3431")])
+    inner = g.mix(g.remap(g.noise(35, 4, 0.6, distortion=0.4), 0.55, 0.7, 0.0, 0.35), inner, "#3e342e")
+    fib = g.noise(260, 3, 0.6, vec=g.vec_scale(g.obj, 1, 1, 0.25), distortion=0.6)
+    # Torn, irregular flakes rather than round dots: warp the cell lattice
+    # and roughen each flake's edge with fine noise.
+    wn = g.nt.nodes.new("ShaderNodeTexNoise")
+    wn.inputs["Scale"].default_value = 260
+    wn.inputs["Detail"].default_value = 4
+    g.link(g.obj, wn.inputs["Vector"])
+    wsc = g.nt.nodes.new("ShaderNodeVectorMath")
+    wsc.operation = "SCALE"
+    wsc.inputs["Scale"].default_value = 0.004
+    g.link(wn.outputs["Color"], wsc.inputs[0])
+    warp = g.nt.nodes.new("ShaderNodeVectorMath")
+    warp.operation = "ADD"
+    g.link(g.vec_scale(g.obj, 1, 1, 0.2), warp.inputs[0])
+    g.link(wsc.outputs[0], warp.inputs[1])
+    scale_d = g.voronoi(480, vec=warp.outputs[0], rand=1.0)
+    scale_d = g.math("ADD", scale_d, g.math("MULTIPLY", g.math("SUBTRACT", g.noise(700, 4, 0.7), 0.5), 0.45))
+    density = g.remap(uz, 0.3, 0.95, 0.25, 0.95)
+    scales = g.math("MULTIPLY", g.remap(scale_d, 0.04, 0.42, 1.0, 0.0), g.remap(fib, 0.3, 0.62, 0.35, 1.0))
+    scales = g.math("MULTIPLY", scales, g.math("MULTIPLY", g.remap(g.noise(22, 2), 0.35, 0.6, 0.55, 1.0), density))
+    inner = g.mix(g.remap(uz, 0.7, 1.0, 0.0, 0.4), inner, "#3f3733")
+    inner = g.mix(g.remap(uz, 0.6, 0.1, 0.0, 0.7), inner, "#15110f")
+    inner = g.mix(g.math("MINIMUM", g.math("MULTIPLY", scales, 1.1), 0.55), inner, "#0e0b0a")
+    inner = g.mix(0.2, inner, fib, "OVERLAY")
     colour = g.mix(inside, body, inner)
-    roughness = g.lerp(inside, g.remap(g.noise(25, 2), 0.3, 0.7, 0.62, 0.74), 0.86)
-    h_out = g.math("ADD", g.math("MULTIPLY", streak, 0.6), g.math("MULTIPLY", g.noise(200, 3), 0.2))
-    h_in = g.math("ADD", g.math("MULTIPLY", g.math("ADD", scales, flakes), 1.4), g.math("MULTIPLY", g.noise(150, 4, 0.7), 0.6))
-    g.finish(colour, roughness, g.lerp(inside, h_out, h_in), 0.45, 0.0005)
+    roughness = g.lerp(inside, g.remap(g.noise(25, 2), 0.3, 0.7, 0.66, 0.8), 0.84)
+    h_out = g.math("ADD", g.math("MULTIPLY", veins, 1.2), g.math("MULTIPLY", g.noise(200, 3), 0.06))
+    h_in = g.math("ADD", g.math("MULTIPLY", scales, 0.45), g.math("MULTIPLY", fib, 0.3))
+    g.finish(colour, roughness, g.lerp(inside, h_out, h_in), 0.5, 0.0005)
     obj.data.materials.append(m)
     obj.data.materials[0].use_backface_culling = True
-    return obj
-
-
-def _base(seed, axis_angle):
-    """Low, lumpy fused base where the trumpets grow together from the litter."""
-    profile = [(0.0, 0.0055), (0.005, 0.0052), (0.0088, 0.0038), (0.0110, 0.0018),
-               (0.0114, 0.0002), (0.0098, -0.0016), (0.0050, -0.0026), (0.0, -0.0028)]
-
-    def shape(th, v, r, z):
-        dirn = Vector((math.cos(th), math.sin(th), 0.0))
-        along = math.cos(th - axis_angle)
-        r *= (0.86 + 0.34 * along * along) * (1 + 0.1 * noise.noise(dirn * 3 + seed) + 0.03 * noise.noise(dirn * 6 + seed))
-        z += 0.0015 * noise.noise(dirn * 4 + seed * 1.7) * smooth(0.0, 0.3, v)
-        return (r * math.cos(th), r * math.sin(th), z)
-
-    obj = revolve("base", profile, 160, 60, shape, True, True)
-    m = bpy.data.materials.new("base-proc")
-    g = Graph(m)
-    sep = g.nt.nodes.new("ShaderNodeSeparateXYZ")
-    g.link(g.obj, sep.inputs[0])
-    col = g.ramp(g.noise(60, 4, 0.6), [(0.35, "#5f5a54"), (0.65, "#6f6962")])
-    col = g.mix(0.3, col, g.noise(40, 3, 0.55, vec=g.vec_scale(g.obj, 1, 1, 0.15)), "OVERLAY")
-    soil = g.math("MAXIMUM", g.remap(sep.outputs["Z"], 0.009, 0.0, 0.2, 0.95),
-                  g.remap(g.noise(55, 5, 0.65), 0.45, 0.58, 0.0, 0.8))
-    soil = g.math("MULTIPLY", soil, g.remap(g.noise(90, 4, 0.6), 0.3, 0.5, 0.55, 1.0))
-    col = g.mix(soil, col, g.ramp(g.noise(30, 3), [(0.4, "#3e2f23"), (0.65, "#5a4634")]))
-    g.finish(col, 0.84, g.noise(180, 4, 0.6), 0.5, 0.0006)
-    obj.data.materials.append(m)
-    obj.data.materials[0].use_backface_culling = True
-    obj["tex"] = 512
     return obj
 
 
 def build():
-    big = _trumpet("trumpet-a", Vector((3.3, 1.1, 7.2)), 0.085, 0.027, 0.0046, 0.0017, 0.0011, 0.0045, 120,
-                   lobes=[(3, 0.35, 0.4), (5, 0.25, 2.0), (7, 0.12, 1.1)],
-                   tears=[(2.3, 0.10, 0.016), (4.6, 0.07, 0.010)], tilt=0.06,
-                   splay_dir=math.radians(125), splay=0.08)
-    mid = _trumpet("trumpet-b", Vector((8.1, 4.4, 2.6)), 0.064, 0.021, 0.0040, 0.0015, 0.0010, 0.0038, 100,
-                   lobes=[(2, 0.3, 1.3), (4, 0.3, 0.2), (6, 0.12, 2.5)], tears=[(5.2, 0.14, 0.010)], tilt=0.05,
-                   splay_dir=math.radians(30 - 40), splay=0.72)
-    small = _trumpet("trumpet-c", Vector((1.7, 9.5, 5.3)), 0.043, 0.0135, 0.0033, 0.0014, 0.0009, 0.003, 80,
-                     lobes=[(3, 0.3, 2.2), (5, 0.2, 0.7)], tears=[(0.8, 0.09, 0.006)], tilt=0.04,
-                     splay_dir=math.radians(215 + 70), splay=0.55,
-                     samples=420, segments=180)
-    # One clump: the bases stand close together and splay outwards.
-    for o, x, y, spin in ((big, 0.001, 0.001, 0.0), (mid, 0.0095, 0.005, 40.0), (small, -0.008, -0.006, -70.0)):
+    big = _trumpet("trumpet-a", Vector((3.3, 1.1, 7.2)), 0.088, 0.026, 0.0042, 0.0014, 0.0005, 0.0036, 145,
+                   lobes=[(3, 0.35, 0.4), (5, 0.2, 2.0), (2, 0.15, 1.1)],
+                   tears=[(2.3, 0.14, 0.012, 0.18), (4.6, 0.09, 0.007, 0.12)],
+                   tilt=math.radians(14), tilt_dir=2.6, splay_dir=math.radians(125), splay=0.08)
+    # This one carries a lengthwise split down one side.
+    mid = _trumpet("trumpet-b", Vector((8.1, 4.4, 2.6)), 0.066, 0.02, 0.0036, 0.0013, 0.0005, 0.003, 140,
+                   lobes=[(2, 0.3, 1.3), (4, 0.25, 0.2), (6, 0.1, 2.5)],
+                   tears=[(2.06, 0.24, 0.015, 0.35), (1.4, 0.1, 0.006, 0.12)],
+                   tilt=math.radians(18), tilt_dir=-0.4, splay_dir=math.radians(-10), splay=0.62)
+    # A small, collapsed trumpet pressed into an oval.
+    small = _trumpet("trumpet-c", Vector((1.7, 9.5, 5.3)), 0.046, 0.014, 0.0028, 0.0012, 0.00045, 0.0024, 110,
+                     lobes=[(3, 0.3, 2.2), (5, 0.2, 0.7)], tears=[(0.8, 0.12, 0.006, 0.15)],
+                     tilt=math.radians(12), tilt_dir=3.6, splay_dir=math.radians(285), splay=0.5,
+                     squash=0.4, squash_dir=0.6, samples=460, segments=200)
+    # One clump: the narrow feet touch and fuse in the litter, then splay out.
+    for o, x, y, spin in ((big, 0.0, 0.0, 0.0), (mid, 0.0056, 0.0024, 40.0), (small, -0.0046, -0.0032, -70.0)):
         o.location = (x, y, 0.0)
         o.rotation_euler = (0.0, 0.0, math.radians(spin))
-    base = _base(Vector((4.4, 2.2, 9.1)), math.radians(35))
-    base.location = (0.0005, 0.0, 0.0)
     for o in (mid, small):
         o["tex"] = 1024
     views = {"hero": (-25, 36, 0.46, 0.048), "low": (20, 4, 0.46, 0.045), "under": (10, -20, 0.42, 0.045)}
-    return [big, mid, small, base], views
+    return [big, mid, small], views

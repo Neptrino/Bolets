@@ -1,9 +1,9 @@
 """Cantharellus cibarius (rossinyol): one mature specimen.
 
 Egg-yolk yellow throughout; an irregular, wavy cap that is shallowly
-depressed in the centre, with a blunt, slightly inrolled margin; underneath,
+depressed in the centre, with a thin, wavy, slightly inrolled margin; underneath,
 thick, blunt, forking and cross-veined false gills (ridges, not blades) run
-far down a solid stem that tapers towards the base. There is no clean break
+far down a thick, nearly cylindrical stem with a blunt base. There is no clean break
 between cap and stem, so the whole body is one surface of revolution and the
 ridges are displaced out of that surface rather than hung under it.
 """
@@ -13,12 +13,14 @@ SEED = Vector((4.4, 2.6, 7.9))
 # One continuous profile: cap centre -> upper surface -> margin -> underside
 # (an inverted cone) -> stem -> base.
 PROFILE = [
-    (0.0000, 0.0655), (0.0070, 0.0662), (0.0140, 0.0683), (0.0210, 0.0712),
-    (0.0275, 0.0736), (0.0325, 0.0742), (0.0362, 0.0724), (0.0384, 0.0694),
-    (0.0390, 0.0668), (0.0382, 0.0648),  # 9: blunt, slightly inrolled margin tip
-    (0.0360, 0.0638), (0.0303, 0.0596), (0.0245, 0.0530), (0.0195, 0.0462),
-    (0.0155, 0.0388), (0.0128, 0.0308), (0.0111, 0.0228), (0.0097, 0.0150),
-    (0.0085, 0.0080), (0.0074, 0.0035), (0.0060, 0.0008), (0.0047, -0.0015), (0.0027, -0.0033), (0.0008, -0.0041),
+    (0.0000, 0.0640), (0.0060, 0.0645), (0.0120, 0.0660), (0.0180, 0.0680),
+    (0.0240, 0.0696), (0.0290, 0.0704), (0.0330, 0.0703), (0.0362, 0.0694),
+    (0.0384, 0.0678), (0.0396, 0.0657),  # 9: thin margin tip, curling down
+    (0.0391, 0.0645), (0.0375, 0.0648),  # 10-11: slight inroll, 1-2 mm of flesh
+    (0.0345, 0.0643), (0.0300, 0.0618), (0.0255, 0.0582), (0.0208, 0.0518),
+    (0.0170, 0.0448), (0.0145, 0.0370), (0.0129, 0.0292), (0.0121, 0.0214),
+    (0.0117, 0.0144), (0.0114, 0.0082), (0.0110, 0.0036), (0.0101, 0.0006),
+    (0.0084, -0.0016), (0.0055, -0.0029), (0.0020, -0.0034),
 ]
 SAMPLES = 380
 SEGMENTS = 768
@@ -92,7 +94,12 @@ def build():
         for a, lid in angs:
             d = abs(th - a) * r
             if d < w:
-                best = max(best, smooth(w, 0.0, d))
+                # Each ridge has its own height and dies out at its own depth
+                # down the stem instead of all stopping on one line.
+                rid = hash(lid) % 9973
+                e0 = 0.45 + 0.35 * _rand(rid, 91)
+                gain = (0.7 + 0.55 * _rand(rid, 90)) * (1 - smooth(e0, e0 + 0.3, s))
+                best = max(best, smooth(w, 0.0, d) * gain)
         h = h0 * best ** 0.7
         # Anastomoses: fine, low, oblique wrinkles that leave a ridge and
         # often die out before reaching the next one.
@@ -104,7 +111,7 @@ def build():
                     if _rand(gid, 10 + q) < 0.5:
                         continue
                     tilt = 0.05 * (_rand(gid, 30 + q) - 0.5)
-                    sv = 0.1 + 0.72 * _rand(gid, 20 + q) + tilt * (frac - 0.5)
+                    sv = 0.05 + 0.45 * _rand(gid, 20 + q) ** 1.4 + tilt * (frac - 0.5)
                     sv += 0.006 * noise.noise(Vector((frac * 3.0, gid * 0.37, q * 1.9)) + SEED)
                     ds = abs(s - sv)
                     wid = 0.009 + 0.004 * _rand(gid, 40 + q)
@@ -116,7 +123,7 @@ def build():
                     hv = (0.12 + 0.08 * _rand(gid, 70 + q)) * span
                     h = max(h, h0 * hv * smooth(wid, 0.0, ds))
                 break
-        o = 1.0 - 0.22 * env * (1 - (h / h0 if h0 > 0 else 1)) ** 1.5
+        o = 1.0 - 0.22 * env * max(0.0, 1 - (h / h0 if h0 > 0 else 1)) ** 1.5
         return h, o
 
     def shape(th, v, r, z):
@@ -127,23 +134,38 @@ def build():
         r1, z1 = r + n.x * h, z + n.y * h
         dirn = Vector((math.cos(th), math.sin(th), 0))
         # Wavy, lobed margin: strongest at the rim, fading to the stem and centre.
-        m = smooth(0.012, 0.037, r)
-        lobes = (0.055 * math.sin(3 * th + 0.4) + 0.035 * math.sin(5 * th + 2.3)
+        m = smooth(0.013, 0.039, r)
+        lobes = (0.045 * math.sin(3 * th + 0.4) + 0.03 * math.sin(5 * th + 2.3)
                  + 0.02 * math.sin(8 * th + 1.1) + 0.05 * noise.noise(dirn * 2.5 + SEED))
-        wave = (0.0038 * math.sin(4 * th + 1.7) + 0.002 * math.sin(7 * th + 0.2)
+        wave = (0.0024 * math.sin(4 * th + 1.7) + 0.0014 * math.sin(7 * th + 0.2)
                 + 0.0011 * math.sin(12 * th + 2.0 * noise.noise(dirn * 4 + SEED)) + 0.0006 * math.sin(19 * th + 0.9)
-                + 0.003 * noise.noise(dirn * 3.2 + SEED * 1.3))
+                + 0.002 * noise.noise(dirn * 3.2 + SEED * 1.3))
         rr = r1 * (1 + lobes * m ** 1.5 + 0.08 * m)
         zz = z1 + wave * m ** 2 - 0.004 * m * m * (0.5 + 0.5 * math.cos(th - 2.6))
+        # The thin edge curls down more on some sides than others.
+        curl = smooth(0.033, 0.0398, r) ** 2 * (0.55 + 0.45 * math.sin(2 * th + 1.0) + 0.3 * noise.noise(dirn * 2 + SEED * 0.7))
+        zz -= 0.0028 * max(curl, 0.0)
         top = 1 - smooth(v_tip - 0.07, v_tip - 0.02, v)
         p = Vector((r * math.cos(th), r * math.sin(th), z))
-        zz += (noise.noise(p * 55 + SEED) * 0.0016 + noise.noise(p * 140 + SEED) * 0.0004) * top * smooth(0.0, 0.01, r + 0.004)
+        # Smooth, matte top: only faint undulation inside, broad waves at the rim.
+        calm = 0.35 + 0.65 * smooth(0.022, 0.036, r)
+        zz += (noise.noise(p * 40 + SEED) * 0.0014 + noise.noise(p * 120 + SEED) * 0.0002) * top * calm
+        # The shallow funnel sits a little off-centre.
+        dx, dy = p.x - 0.0025, p.y + 0.0015
+        zz -= 0.003 * math.exp(-(dx * dx + dy * dy) / 0.011 ** 2) * top
+        # A few splits and notches of different depths in the thin margin.
+        rim = smooth(0.031, 0.0395, r)
+        for a0, dep, wd in ((0.9, 0.07, 0.05), (2.7, 0.035, 0.035), (4.3, 0.05, 0.06), (5.6, 0.025, 0.03)):
+            da = math.atan2(math.sin(th - a0), math.cos(th - a0))
+            rr_notch = dep * math.exp(-(da / wd) ** 2) * rim
+            rr *= 1 - rr_notch
         # Stem: slight lean, irregular below the cap.
         stem = 1 - smooth(0.014, 0.024, z)
         pz = Vector((math.cos(th), math.sin(th), z * 30)) + SEED
         rr *= 1 + noise.noise(pz) * 0.05 * stem * (1 if h == 0 else 0.4)
-        lean = 0.004 * (1 - min(max(z, 0.0), 0.03) / 0.03) ** 2
-        return (rr * math.cos(th) + 0.0015 - lean, rr * math.sin(th) + 0.0008 * m, zz)
+        # The stem curves gently (about 7 degrees) towards its base.
+        k = (1 - min(max(z, 0.0), 0.048) / 0.048) ** 1.6
+        return (rr * math.cos(th) + 0.0015 - 0.0055 * k, rr * math.sin(th) + 0.0008 * m + 0.0018 * k, zz)
 
     body = revolve("body", PROFILE, SEGMENTS, SAMPLES, shape, True, True)
     body.rotation_euler = (math.radians(4), math.radians(-3), 0)
@@ -163,9 +185,11 @@ def build():
         else:
             uv.y = e + uv.y * (1 - 2 * e)
     attr = mesh.color_attributes.new(name="Col", type="BYTE_COLOR", domain="POINT")
+    cols = []
     for k in range(len(mesh.vertices)):
         o = occl[k] if k < len(occl) else 1.0
-        attr.data[k].color = (o, o, o, 1.0)
+        cols += (o, o, o, 1.0)
+    attr.data.foreach_set("color", cols)
 
     # Material: egg-yolk yellow to apricot, a little deeper at the margin,
     # the ridges the same yellow, the stem paler towards the soiled base.
@@ -177,7 +201,7 @@ def build():
     fleck = g.noise(95, 4, 0.6, distortion=0.9)
     top = g.mix(g.remap(fleck, 0.52, 0.66, 0.0, 0.35), top, "#f8cc4c")
     top = g.mix(g.remap(fleck, 0.44, 0.32, 0.0, 0.3), top, "#e59a14")
-    top = g.mix(g.remap(g.v, v_tip * 0.55, v_tip, 0.0, 0.42), top, "#ec9a22")
+    top = g.mix(g.remap(g.v, v_tip * 0.4, v_tip, 0.0, 0.18), top, "#ec9a22")
     top = g.mix(g.remap(g.v, 0.0, v_tip * 0.4, 0.2, 0.0), top, "#e49e1c")
     top = g.mix(0.15, top, g.noise(240, 3), "OVERLAY")
     fib = g.noise(70, 2, 0.5, vec=g.vec_scale(g.obj, 1, 1, 8))
@@ -191,7 +215,7 @@ def build():
     colour = g.mix(g.remap(g.v, v_tip - 0.004, v_tip + 0.01), top, lower)
     side = g.remap(g.noise(3, 1, vec=g.vec_scale(g.obj, 1, 1, 0)), 0.35, 0.65, 0.0, 0.05)
     # A light soil tint in patches at the base, never a dark cap.
-    soil = g.math("MULTIPLY", g.remap(g.math("ADD", g.v, side), 0.92, 0.975, 0.0, 0.25), g.remap(g.noise(60, 5, 0.65), 0.38, 0.55))
+    soil = g.math("MULTIPLY", g.remap(g.math("ADD", g.v, side), 0.9, 0.975, 0.0, 0.35), g.remap(g.noise(60, 5, 0.65), 0.38, 0.55))
     colour = g.mix(soil, colour, g.ramp(g.noise(30, 3), [(0.4, "#c8a870"), (0.65, "#dcc28c")]))
     colour = g.mix(g.remap(g.v, 0.965, 0.995, 0.0, 0.85), colour, "#fbecc0")
     is_top = g.remap(g.v, v_tip - 0.01, v_tip - 0.03)

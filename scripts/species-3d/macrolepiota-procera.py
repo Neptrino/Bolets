@@ -54,29 +54,33 @@ def _polar(g, circle, radial):
 
 
 def build():
+    import time
+    t_start = time.time()
     seed = Vector((4.4, 2.6, 9.1))
-    STEM_TOP = 0.268
+    STEM_TOP = 0.2745
 
     # ------------------------------------------------------------ cap
     # Open parasol: a low boss (umbo) in the centre, a slight dip around it,
     # then a gently sloping plate to a thin margin. The underside rises gently
     # to the stem, so the hymenium is almost flat, as in an expanded cap.
+    # A distinct rounded umbo (~3 cm across, ~1.2 cm proud), thin flesh
+    # tapering to 1-2 mm at a slightly down-curved margin.
     cap_profile = [
-        (0.000, 0.2900), (0.006, 0.2893), (0.012, 0.2862), (0.017, 0.2832),
-        (0.024, 0.2822), (0.036, 0.2808), (0.052, 0.2770), (0.068, 0.2712),
-        (0.082, 0.2628), (0.093, 0.2558), (0.1005, 0.2500), (0.1028, 0.2466),
-        (0.1008, 0.2450), (0.0950, 0.2472), (0.0800, 0.2532), (0.0620, 0.2598),
-        (0.0440, 0.2638), (0.0280, 0.2664), (0.0165, 0.2678), (0.0110, 0.2690),
-        (0.0060, 0.2700),
+        (0.000, 0.3000), (0.006, 0.2990), (0.011, 0.2955), (0.015, 0.2900),
+        (0.019, 0.2858), (0.026, 0.2836), (0.040, 0.2812), (0.056, 0.2772),
+        (0.072, 0.2712), (0.086, 0.2632), (0.096, 0.2558), (0.1020, 0.2500),
+        (0.1040, 0.2470), (0.1026, 0.2462), (0.0980, 0.2525), (0.0880, 0.2598),
+        (0.0720, 0.2662), (0.0550, 0.2703), (0.0380, 0.2732), (0.0240, 0.2748),
+        (0.0150, 0.2757), (0.0100, 0.2764), (0.0060, 0.2770),
     ]
     samples = 230
     CT, ST = math.cos(math.radians(5)), math.sin(math.radians(5))
     CT2, ST2 = math.cos(math.radians(3)), math.sin(math.radians(3))
-    um = arc_fraction(cap_profile, 11)  # margin tip
+    um = arc_fraction(cap_profile, 12)  # margin tip
 
     rec = []  # per-vertex scale attributes, filled while the cap is revolved
     recording = [False]
-    core_n = lambda d: 0.028 + 0.005 * noise.noise(d * 4 + seed)
+    core_n = lambda d: 0.02 + 0.003 * noise.noise(d * 4 + seed)
 
     def layer(c, s_, r, A, K, B, off):
         q = Vector((c * A * K, s_ * A * K, r * B * K)) + off
@@ -95,20 +99,23 @@ def build():
         dirn = Vector((c, s_, 0))
         core = core_n(dirn)
         e, rc, rel, pid = layer(c, s_, r, 0.035, 68.0, 1.5, seed * 3)
-        r_in = 0.058 + 0.008 * noise.noise(dirn * 5 + seed * 2)
+        r_in = 0.047 + 0.009 * noise.noise(dirn * 5 + seed * 2)
         inner = rc < r_in
         if inner:
             t = smooth(core, r_in, rc)
-            gap = 0.004 + 0.09 * t * t
-            h0 = 0.0016 - 0.0005 * t
+            gap = 0.012 + 0.08 * t + 0.08 * t * t + 0.07 * max(0.0, noise.noise(pid * 3.1))
+            h0 = 0.0024 - 0.0007 * t
             present = 1.0
         else:
-            e, rc, rel, pid = layer(c, s_, r, 0.075, 125.0, 1.9, seed * 5)
+            e, rc, rel, pid = layer(c, s_, r, 0.075, 175.0, 1.9, seed * 5)
             t = smooth(r_in, 0.1, rc)
-            gap = 0.1 + 0.14 * t
-            h0 = 0.0011 - 0.0005 * t
+            gap = 0.08 + 0.12 * t
+            h0 = 0.0017 - 0.0006 * t
             rnd = noise.noise(pid * 1.7) * 0.5 + 0.5
-            present = smooth(0.1 + 0.35 * t, 0.16 + 0.35 * t, rnd)
+            present = smooth(0.03 + 0.17 * t, 0.1 + 0.17 * t, rnd)
+            # Scales break up in rough concentric rings.
+            ringy = math.sin(rc * 2 * math.pi / 0.013 + 3.0 * noise.noise(dirn * 4 + seed) + 2.0 * noise.noise(pid * 0.9))
+            present *= 0.5 + 0.5 * smooth(-0.6, 0.3, ringy)
         cover = smooth(gap, gap + 0.07, e) * present
         if r < core:
             cover = max(cover, 1 - smooth(core - 0.004, core, r) * (1 - cover))
@@ -130,6 +137,9 @@ def build():
         rim = smooth(um - 0.05, um, v) * (1 - smooth(um, um + 0.04, v))
         shag = (noise.noise(dirn * 60 + seed) * 0.5 + noise.noise(dirn * 150 + seed) * 0.35) * rim
         r2 = r * (1 + w * edge) + 0.0035 * shag
+        # A small radial tear in the margin.
+        dth = math.atan2(math.sin(th - 1.05), math.cos(th - 1.05))
+        r2 -= 0.009 * math.exp(-(dth / 0.035) ** 2) * smooth(0.075, 0.1, r) * (1 - smooth(um + 0.01, um + 0.05, v))
         z2 = z + (w * 0.02 + wave) * edge - 0.004 * edge * (0.5 + 0.5 * math.cos(th - 2.4)) - 0.0015 * abs(shag)
         top = 1 - smooth(um - 0.04, um, v)
         z2 += (noise.noise(p * 60 + seed) * 0.0009 + noise.noise(p * 160 + seed) * 0.0003) * top
@@ -158,8 +168,10 @@ def build():
     ]
 
     def lean(z):
-        k = (1 - min(max(z, 0.0), STEM_TOP) / STEM_TOP) ** 1.6
-        return Vector((0.010 * k, -0.004 * k, 0.0))
+        u = min(max(z, 0.0), STEM_TOP) / STEM_TOP
+        k = (1 - u) ** 1.6
+        bow = math.sin(math.pi * u) * 0.006  # a slight bow along the stem
+        return Vector((0.010 * k - bow, -0.004 * k + bow * 0.4, 0.0))
 
     def stem_shape(th, v, r, z):
         p = Vector((math.cos(th), math.sin(th), z * 14)) + seed
@@ -181,43 +193,68 @@ def build():
         return min(sp, key=lambda p: abs(p.y - z)).x
 
     # ------------------------------------------------------------ gills
-    ug = arc_fraction(cap_profile, 12)
+    # Deep, crowded, free gills: they round off 4-5 mm short of the stem,
+    # leaving a clear collar gap around the stem apex.
+    ug = arc_fraction(cap_profile, 13)
     gill = gills("gills", cap_profile, samples, int(round(ug * (samples - 1))), cap_shape, stem_shape,
-                 stem_radius, 170, 0.0085, seed, decurrent=0, free_gap=0.0035, stains=False,
-                 margin_taper=0.93, edge_occlusion=1.0)
+                 stem_radius, 130, 0.016, seed, decurrent=0, free_gap=0.0048, stains=False,
+                 margin_taper=0.86, edge_occlusion=1.0)
+    # Crowded gills seen edge-on merge into a plain floor: vary each blade's
+    # tone and shade its free edge a little so the lamellae read as fine lines.
+    gcol = gill.data.color_attributes["Col"]
+    per_blade = 88  # 44 path samples x (flesh, edge); no decurrent tail
+    for k, cv in enumerate(gcol.data):
+        blade, edge = k // per_blade, k % 2
+        f = 0.94 + 0.06 * (noise.noise(Vector((blade * 0.37, 0.5, 1.3)) + seed) * 0.5 + 0.5)
+        f *= 0.95 if edge else 1.0
+        c = cv.color
+        cv.color = (c[0] * f, c[1] * f, c[2] * f, 1.0)
 
     # ------------------------------------------------------------ ring
-    # A thick, double, movable ring sitting a little loose and tilted on the
-    # stem: an upper collar that flares out with a torn, drooping edge, and a
-    # lower cuff whose edge hangs unevenly.
-    RZ = 0.196
+    # A compact, thick, sleeve-like double ring (about 1 cm tall): a firm cuff
+    # with a rolled upper lip, a groove, and a thickened, frayed lower edge.
+    # It sits loose (1-2 mm clear of the stem) and slightly tilted.
+    RZ = 0.198
     ring_profile = [
-        (0.0108, RZ + 0.0085), (0.0170, RZ + 0.0092), (0.0225, RZ + 0.0078), (0.0262, RZ + 0.0052),
-        (0.0268, RZ + 0.0034), (0.0248, RZ + 0.0027), (0.0200, RZ + 0.0035), (0.0165, RZ + 0.0021),
-        (0.0150, RZ + 0.0002), (0.0170, RZ - 0.0034), (0.0168, RZ - 0.0076), (0.0140, RZ - 0.0096),
-        (0.0108, RZ - 0.0090), (0.0105, RZ), (0.0108, RZ + 0.0085),
+        (0.0110, RZ + 0.0058), (0.0130, RZ + 0.0066), (0.0152, RZ + 0.0065), (0.0161, RZ + 0.0055),
+        (0.0151, RZ + 0.0042), (0.0139, RZ + 0.0030), (0.0141, RZ + 0.0005), (0.0147, RZ - 0.0030),
+        (0.0156, RZ - 0.0052), (0.0148, RZ - 0.0067), (0.0126, RZ - 0.0066), (0.0112, RZ - 0.0052),
+        (0.0108, RZ), (0.0110, RZ + 0.0058),
     ]
 
     def ring_shape(th, v, r, z):
         dirn = Vector((math.cos(th), math.sin(th), 0))
-        out = max(0.0, r - 0.0108)
-        # Upper collar: torn notches and a sagging, wavy edge.
-        flare = smooth(0.004, 0.013, out) * smooth(RZ - 0.001, RZ + 0.002, z)
-        notch = max(0.0, noise.noise(dirn * 16 + seed)) ** 1.4 + 0.5 * max(0.0, noise.noise(dirn * 40 + seed * 2))
-        fray = noise.noise(dirn * 6 + seed) * 0.14 + noise.noise(dirn * 26 + seed) * 0.07
-        r2 = 0.0108 + out * (1 + fray - 0.45 * notch * flare)
-        z2 = z - flare * (0.0012 + 0.0022 * (noise.noise(dirn * 4 + seed * 1.3) * 0.5 + 0.5))
-        z2 += flare * 0.0012 * math.sin(11 * th + 2 * noise.noise(dirn * 3 + seed))
-        # Lower cuff: an uneven, hanging edge.
-        low = smooth(RZ - 0.002, RZ - 0.008, z) * smooth(0.001, 0.004, out)
-        z2 -= low * (0.0035 * (noise.noise(dirn * 5 + seed * 2.1) * 0.5 + 0.5) + 0.0018 * abs(noise.noise(dirn * 21 + seed)))
-        r2 += low * out * 0.3 * noise.noise(dirn * 9 + seed * 1.7)
-        # Loose on the stem: tilted and pushed to one side.
-        z2 += 0.0034 * math.cos(th - 0.8)
+        out = max(0.0, r - 0.0110)
+        r2 = 0.0110 + out * (1 + noise.noise(dirn * 5 + seed) * 0.12 + noise.noise(dirn * 17 + seed) * 0.05)
+        # Frayed lower edge: short torn teeth and an uneven hang.
+        low = smooth(RZ - 0.003, RZ - 0.0062, z) * smooth(0.0015, 0.004, out)
+        tooth = abs(noise.noise(dirn * 70 + seed)) + 0.5 * abs(noise.noise(dirn * 160 + seed * 2))
+        z2 = z - low * (0.0012 * (noise.noise(dirn * 6 + seed * 2.1) * 0.5 + 0.5) + 0.0016 * tooth)
+        r2 += low * 0.0006 * noise.noise(dirn * 40 + seed)
+        z2 += 0.0022 * math.cos(th - 0.8)  # tilted on the stem
         o = lean(z2)
-        return (r2 * math.cos(th) + o.x + 0.0009, r2 * math.sin(th) + o.y - 0.0005, z2)
+        return (r2 * math.cos(th) + o.x + 0.0006, r2 * math.sin(th) + o.y - 0.0004, z2)
 
-    ring = revolve("ring", ring_profile, 288, 130, ring_shape, False, False)
+    ring = revolve("ring", ring_profile, 360, 110, ring_shape, False, False)
+
+    # ------------------------------------------------------------ margin fringe
+    # Torn, cottony cuticle fibres hanging 2-5 mm past the margin.
+    fr_profile = [(0.1036, 0.2474), (0.1040, 0.2455), (0.1043, 0.2430)]
+
+    def fringe_shape(th, v, r, z):
+        dirn = Vector((math.cos(th), math.sin(th), 0))
+        n1 = abs(math.sin(th * 230 + 3 * noise.noise(dirn * 30 + seed)))
+        strand = n1 ** 3 * (0.5 + 0.5 * (noise.noise(dirn * 55 + seed * 1.9) * 0.5 + 0.5))
+        length = 0.0015 + 0.0035 * strand * smooth(-0.4, 0.3, noise.noise(dirn * 9 + seed))
+        zz = 0.2474 - length * v
+        # Follow the displaced cap margin: sample the cap surface at its tip.
+        x, y, zc = cap_shape(th, um, 0.1040, 0.2470)
+        rr = math.hypot(x, y)
+        k = (rr - 0.0004 + 0.0005 * v) / rr
+        return (x * k, y * k, zc - 0.0004 - (0.2474 - zz))
+
+    fringe = revolve("fringe", fr_profile, 1440, 8, fringe_shape, False, False)
+    fringe["tex"] = 512
 
     # ------------------------------------------------------------ materials
     # Cap: cream fibrous ground, a solid dark-brown umbo, brown scales that
@@ -227,7 +264,7 @@ def build():
     g = Graph(m)
     rad = g.radial()
     rn = g.remap(rad, 0.012, 0.095)  # 0 at the umbo, 1 at the margin
-    ground = g.ramp(g.noise(40, 4, 0.6), [(0.3, "#d2c0a0"), (0.55, "#ded0b4"), (0.8, "#e9dec7")])
+    ground = g.ramp(g.noise(40, 4, 0.6), [(0.3, "#c9baa0"), (0.55, "#d4c7b0"), (0.8, "#ded3bf")])
     fibre = g.noise(6, 3, 0.5, vec=_warp(g, g.obj, 30, 0.02))
     ground = g.mix(0.25, ground, g.noise(420, 2), "OVERLAY")
     ground = g.mix(0.2, ground, fibre, "OVERLAY")
@@ -241,20 +278,20 @@ def build():
     # Radial, felty fibrils on the cream ground between the scales.
     fib = g.remap(g.noise(260, 4, 0.6, vec=g.vec_scale(pv, 1, 1, 0.08)), 0.42, 0.62, 0.0, 0.6)
     ground = g.mix(g.math("MULTIPLY", fib, g.remap(rn, 0.05, 0.6, 1.0, 0.5)), ground, "#b39c7b")
-    ground = g.mix(g.math("MULTIPLY", g.remap(rn, 0.45, 0.1), 0.75), ground, "#b79a74")
+    ground = g.mix(g.math("MULTIPLY", g.remap(rn, 0.5, 0.1), 0.85), ground, "#9f7f5d")
     scale_col = g.ramp(g.math("ADD", g.math("MULTIPLY", tone, 0.6), g.math("MULTIPLY", g.noise(90, 3), 0.4)),
-                       [(0.3, "#5a3e28"), (0.55, "#6e4f35"), (0.8, "#836246")])
-    scale_col = g.mix(g.math("MULTIPLY", outer, 0.55), scale_col, "#9c7d5c")
+                       [(0.3, "#4a3322"), (0.55, "#5b412d"), (0.8, "#6e5139")])
+    scale_col = g.mix(g.math("MULTIPLY", outer, 0.4), scale_col, "#86664a")
     # Fibrillose streaks on the flakes and a paler, lifted outer edge.
     streak = g.noise(500, 3, 0.6, vec=g.vec_scale(pv, 1, 1, 0.15))
     scale_col = g.mix(0.3, scale_col, streak, "OVERLAY")
-    scale_col = g.mix(g.math("MULTIPLY", lip, 0.55), scale_col, "#b39473")
+    scale_col = g.mix(g.math("MULTIPLY", lip, 0.45), scale_col, "#9f7f5f")
     fine = g.remap(g.voronoi(420, vec=pv, rand=1.0), 0.0, 0.2, 1.0, 0.0)
-    fine = g.math("MULTIPLY", fine, g.math("MULTIPLY", g.remap(rn, 0.4, 0.95), g.remap(g.noise(20, 2), 0.46, 0.56)))
-    scales = g.math("MAXIMUM", cover, g.math("MULTIPLY", fine, 0.6))
+    fine = g.math("MULTIPLY", fine, g.math("MULTIPLY", g.remap(rn, 0.15, 0.5), g.remap(g.noise(20, 2), 0.4, 0.52)))
+    scales = g.math("MAXIMUM", cover, g.math("MULTIPLY", fine, 0.9))
     top = g.mix(scales, ground, scale_col)
-    umbo = g.remap(g.math("ADD", rad, g.math("MULTIPLY", g.noise(60, 3), 0.008)), 0.012, 0.018, 1.0, 0.0)
-    top = g.mix(umbo, top, g.ramp(g.noise(80, 3), [(0.4, "#4f3522"), (0.7, "#5f412b")]))
+    umbo = g.remap(g.math("ADD", rad, g.math("MULTIPLY", g.noise(60, 3), 0.006)), 0.016, 0.021, 1.0, 0.0)
+    top = g.mix(umbo, top, g.ramp(g.noise(80, 3), [(0.4, "#3a2517"), (0.7, "#4a3020")]))
     # Paler, woolly fringe at the rim.
     top = g.mix(g.remap(g.v, um - 0.03, um - 0.004, 0.0, 0.8), top, "#efe6d2")
     under = g.remap(g.v, um + 0.002, um + 0.01)
@@ -262,14 +299,14 @@ def build():
     roughness = g.lerp(under, g.remap(scales, 0.0, 1.0, 0.8, 0.7), 0.85)
     height = g.math("ADD", g.math("MULTIPLY", streak, 0.4), g.math("MULTIPLY", g.noise(250, 4), 0.3))
     height = g.math("ADD", height, g.math("MULTIPLY", fine, 0.3))
-    g.finish(colour, roughness, height, 0.6, 0.0005)
+    g.finish(colour, roughness, height, 0.8, 0.0005)
     cap.data.materials.append(m)
 
     # Gills: white-cream, a touch warmer at the free edge.
     m = bpy.data.materials.new("gills-proc")
     g = Graph(m)
-    col = g.ramp(g.uvx, [(0.0, "#f5efe1"), (0.5, "#faf5ea"), (1.0, "#fbf7ee")])
-    col = g.mix(g.remap(g.uvy, 0.75, 1.0, 0.0, 0.35), col, "#dccbb0")
+    col = g.ramp(g.uvx, [(0.0, "#fbf8f0"), (0.5, "#fdfbf5"), (1.0, "#fdfaf3")])
+    col = g.mix(g.remap(g.uvy, 0.8, 1.0, 0.0, 0.25), col, "#e6d8c0")
     g.finish(col, 0.78, g.noise(200, 2), 0.1, 0.0002)
     gill.data.materials.append(m)
 
@@ -278,24 +315,30 @@ def build():
     m = bpy.data.materials.new("stem-proc")
     g = Graph(m)
     _, _, z = _xyz(g)
-    ground = g.ramp(g.noise(50, 3), [(0.35, "#d6c5a6"), (0.65, "#e4d6bc")])
-    # Snakeskin: close zigzag bands of brown fibrils, broken up irregularly.
+    ground = g.ramp(g.noise(50, 3), [(0.35, "#b9a78b"), (0.65, "#c9b99d")])
+    # Snakeskin: dense, broken zigzag bands of brown fibrils, uneven in width
+    # and spacing, torn into horizontal patches (about half the surface).
     x, y, _ = _xyz(g)
     ang = g.math("ARCTAN2", y, x)
-    zig = g.math("MULTIPLY", g.math("SINE", g.math("MULTIPLY", ang, 7.0)), g.remap(g.noise(20, 2), 0.3, 0.7, 0.6, 1.6))
-    zz = g.math("ADD", g.math("MULTIPLY", z, 1150.0), zig)
-    zz = g.math("ADD", zz, g.math("MULTIPLY", g.noise(35, 3, vec=g.vec_scale(g.obj, 1, 1, 0.5)), 4.0))
-    bands = g.remap(g.math("SINE", zz), -0.25, 0.35)
-    broken = g.remap(g.noise(160, 3, vec=g.vec_scale(g.obj, 1, 1, 0.6)), 0.3, 0.44)
-    cracks = g.remap(g.voronoi(420, "DISTANCE_TO_EDGE", vec=g.vec_scale(g.obj, 1, 1, 0.6)), 0.03, 0.1)
-    flecks = g.math("MULTIPLY", g.remap(g.voronoi(700, vec=g.vec_scale(g.obj, 1, 1, 0.5)), 0.0, 0.25, 1.0, 0.0), 0.5)
+    zig = g.math("MULTIPLY", g.math("SINE", g.math("ADD", g.math("MULTIPLY", ang, 6.0),
+                 g.math("MULTIPLY", g.noise(8, 2), 5.0))), g.remap(g.noise(18, 2), 0.3, 0.7, 0.2, 1.4))
+    zz = g.math("ADD", g.math("MULTIPLY", z, 820.0), zig)
+    zz = g.math("ADD", zz, g.math("MULTIPLY", g.noise(30, 3, vec=g.vec_scale(g.obj, 1, 1, 0.5)), 7.0))
+    zz = g.math("ADD", zz, g.math("MULTIPLY", g.noise(110, 2), 2.0))
+    zz = g.math("ADD", zz, g.math("MULTIPLY", g.noise(5, 2, vec=g.vec_scale(g.obj, 1, 1, 1.5)), 16.0))
+    bands = g.remap(g.math("ADD", g.math("SINE", zz), g.remap(g.noise(12, 2), 0.3, 0.7, -0.3, 0.45)), -0.65, 0.1)
+    broken = g.remap(g.noise(120, 3, vec=g.vec_scale(g.obj, 1, 1, 0.4)), 0.3, 0.44)
+    cracks = g.remap(g.voronoi(260, "DISTANCE_TO_EDGE", vec=_warp(g, g.vec_scale(g.obj, 1, 1, 1.8), 200, 0.004)), 0.02, 0.09)
+    flecks = g.math("MULTIPLY", g.remap(g.voronoi(700, vec=g.vec_scale(g.obj, 1, 1, 0.5)), 0.0, 0.3, 1.0, 0.0), 0.6)
     snake = g.math("MAXIMUM", g.math("MULTIPLY", g.math("MULTIPLY", bands, broken), cracks), flecks)
-    below = g.remap(z, RZ - 0.004, RZ - 0.012)
-    above = g.math("MULTIPLY", g.remap(z, RZ + 0.01, RZ + 0.02), 0.35)
+    below = g.remap(z, RZ - 0.006, RZ - 0.014)
+    above = g.math("MULTIPLY", g.remap(z, RZ + 0.008, RZ + 0.018), 0.22)
     bulb = g.remap(g.math("ADD", z, g.math("MULTIPLY", g.noise(30, 2), 0.012)), 0.058, 0.032)
     snake = g.math("MULTIPLY", snake, g.math("MULTIPLY", g.math("MAXIMUM", below, above), g.math("SUBTRACT", 1.0, bulb)))
-    brown = g.ramp(g.noise(25, 3), [(0.35, "#6f563f"), (0.65, "#8c7258")])
+    brown = g.ramp(g.noise(25, 3), [(0.35, "#56402e"), (0.65, "#735a44")])
     colour = g.mix(snake, ground, brown)
+    # Above the ring: smoother, finely brownish.
+    colour = g.mix(g.math("MULTIPLY", g.remap(z, RZ + 0.008, RZ + 0.018), 0.35), colour, "#b39a7c")
     colour = g.mix(0.25, colour, g.noise(300, 2, vec=g.vec_scale(g.obj, 1, 1, 0.1)), "OVERLAY")
     colour = g.mix(g.math("MULTIPLY", bulb, 0.8), colour, "#efe8da")
     side = g.remap(g.noise(3, 1, vec=g.vec_scale(g.obj, 1, 1, 0)), 0.35, 0.65, 0.0, 0.006)
@@ -305,19 +348,28 @@ def build():
     g.finish(colour, g.remap(snake, 0.0, 1.0, 0.76, 0.84), height, 0.45, 0.0005)
     stem.data.materials.append(m)
 
-    # Ring: whitish, felty, the lower lip tinged brown at its edge.
+    # Ring: white on top, brownish underneath and on the frayed lower edge.
     m = bpy.data.materials.new("ring-proc")
     g = Graph(m)
     _, _, z = _xyz(g)
-    colour = g.ramp(g.noise(80, 3), [(0.35, "#e6ddcb"), (0.65, "#f2ecdf")])
-    lip = g.math("MAXIMUM", g.math("MULTIPLY", g.remap(z, RZ - 0.003, RZ - 0.009), g.remap(g.radial(), 0.013, 0.0165)),
-                   g.math("MULTIPLY", g.remap(g.radial(), 0.022, 0.027), 0.6))
-    lip = g.math("MULTIPLY", lip, g.remap(g.noise(40, 3), 0.35, 0.55))
-    colour = g.mix(g.math("MULTIPLY", lip, 0.8), colour, "#8c6a48")
+    colour = g.ramp(g.noise(80, 3), [(0.35, "#e9e3d6"), (0.65, "#f4f0e7")])
+    below = g.remap(g.math("ADD", z, g.math("MULTIPLY", g.noise(60, 3), 0.003)), RZ + 0.0035, RZ - 0.004)
+    colour = g.mix(g.math("MULTIPLY", below, 0.85), colour, g.ramp(g.noise(50, 3), [(0.4, "#8e7258"), (0.7, "#a88c6f")]))
+    colour = g.mix(0.2, colour, g.noise(400, 2, vec=g.vec_scale(g.obj, 1, 1, 0.2)), "OVERLAY")
     g.finish(colour, 0.85, g.noise(300, 3), 0.3, 0.0003)
     ring.data.materials.append(m)
+
+    # Fringe: cottony cream fibres, tinged brown at the tips.
+    m = bpy.data.materials.new("fringe-proc")
+    g = Graph(m)
+    colour = g.mix(g.remap(g.v, 0.3, 1.0, 0.0, 0.45), "#e4dac6", "#a88d6e")
+    g.finish(colour, 0.9, g.noise(300, 2), 0.2, 0.0002)
+    fringe.data.materials.append(m)
 
     for o in (cap, stem, ring):
         o.data.materials[0].use_backface_culling = True
     views = {"hero": (-30, 16, 1.25, 0.15), "low": (25, 3, 1.2, 0.15), "under": (15, -22, 0.62, 0.22)}
-    return [cap, stem, gill, ring], views
+    if os.environ.get("SPECIES3D_CLOSEUP"):  # scratch iteration only
+        views.update({"cap": (-30, 42, 0.5, 0.27), "ring": (40, 5, 0.2, 0.2), "up": (10, -65, 0.45, 0.27)})
+        print("BUILD SECONDS", round(time.time() - t_start, 1))
+    return [cap, stem, gill, ring, fringe], views
