@@ -18,6 +18,7 @@ Campaign captions, upload packs and proposed calendars below stay with their med
 
 | Folder | What it holds |
 | --- | --- |
+| `2026-09-24-bolets-3d/` | «Bolets en 3D» Reel (8 s) announcing the illustrative cep, rovelló and ou de reig models: the three turning in the site's own 3D viewer, an edited phone demo of `/bolets/cep/3d`, caption, alt text, manifest and `publication-receipt.json`. Published as a Reel on 24 September 2026 at 20:05 (Buffer post 6ab5663aae8c244592fc205e). Renderer in `../assets/templates/species-3d-reel/`. |
 | `2026-09-18-discovery-reels-v2/` | Revised three discovery Reels using downloaded footage and no logo/wordmark. Existing music retained pending soundtrack selection; local previews only. |
 | `2026-09-18-discovery-reels/` | Three 16-second discovery Reels: rain/planning, «Cinc minuts més» humour and species-first route planning; captions, provenance and preview gallery. Local drafts, not scheduled. |
 | `2026-09-12-new-posts/` | New 21-second map tutorial and two five-slide «Quin arbre?» quizzes: alzina/faig and avet/pi roig; captions, alt text, Story covers, source records and preview. Local drafts, not scheduled. |
