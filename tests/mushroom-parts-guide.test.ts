@@ -19,6 +19,12 @@ describe("mushroom parts guide", () => {
     expect(html).toContain('href="/bolets-verinosos"');
   });
 
+  it("links the visible parts to the illustrative 3D cep", () => {
+    expect(html).toContain('href="/bolets/cep/3d"');
+    expect(html).toContain("Gira un bolet en 3D");
+    expect(html).toContain("Model il·lustratiu del cep");
+  });
+
   it("uses a distinct custom icon for each guide concept", () => {
     for (const icon of [
       "cap",

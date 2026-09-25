@@ -360,7 +360,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     updatedAt: "2026-09-23",
   },
   "parts-dun-bolet": {
-    updatedAt: "2026-09-24",
+    updatedAt: "2026-09-25",
   },
   "avis-legal": {
     publishedAt: "2026-08-17",

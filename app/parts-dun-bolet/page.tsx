@@ -29,13 +29,18 @@ import {
   metaDescription,
   pageTitle,
   SITE_URL,
+  speciesModelPath,
 } from "@/src/lib/seo";
 import { breadcrumbSchema } from "@/src/lib/breadcrumb-schema";
 import { Notice } from "@/components/notice";
+import { SpeciesModelLink } from "@/components/species-model-link";
+import { getSpecies3dModel } from "@/data/species-3d-models";
 
 const canonicalPath = "/parts-dun-bolet";
 const title = pageTitle("Parts d’un bolet: guia d’identificació");
 const description = metaDescription("Aprèn les parts d’un bolet —barret, himeni, peu, anell, volva, espores i miceli— per descriure’l millor, sense identificar-lo només per un tret.");
+const modelSpecies = { speciesId: "boletus-edulis" };
+const model = getSpecies3dModel(modelSpecies.speciesId);
 
 export const metadata = articleMetadata(canonicalPath, title, description);
 
@@ -110,6 +115,12 @@ export default function MushroomPartsGuidePage() {
             <p>L’anell és una resta de vel al peu. La volva és una beina o copa a la base. Són trets importants en algunes confusions, així que cal observar la base sencera sense deixar-la enterrada.</p>
           </section>
         </div>
+        {model && <SpeciesModelLink
+          href={speciesModelPath(modelSpecies)}
+          thumb={model.thumb}
+          title="Gira un bolet en 3D"
+          description="Model il·lustratiu del cep per veure’n el barret, l’himeni i el peu des de tots els costats."
+        />}
       </section>
 
       <section className="seo-guide-section" aria-labelledby="less-visible-parts-title">

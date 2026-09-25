@@ -32,6 +32,7 @@ export const NON_CONTENT_COMMITS: readonly string[] = [
   "cf653bd", // Share one notice primitive for caveats and safety notes
   "a20bfad", // Render editorial notes with one Notice component
   "2d5cc65", // Keep catalogue filters when returning from a species page
+  "09a6fa9", // Share the 3D model link card
 ];
 
 const file = (name: string): ContentSource => ({ kind: "file", file: name });
