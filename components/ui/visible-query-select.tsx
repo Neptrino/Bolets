@@ -37,9 +37,9 @@ export function VisibleQuerySelect(props: QuerySelectProps) {
         <span className="species-select-icon" aria-hidden="true"><ChevronDown size={props.variant === "map" || props.variant === "comparison" ? 20 : 16} /></span>
       </div>
   );
+  // Mount the boundary only once visible: a boundary that already committed the
+  // placeholder would keep it hidden beside its fallback copy while suspending.
   return <div ref={boundary}>
-    <Suspense fallback={placeholder}>
-      {visible ? <QuerySelectControl {...props} /> : placeholder}
-    </Suspense>
+    {visible ? <Suspense fallback={placeholder}><QuerySelectControl {...props} /></Suspense> : placeholder}
   </div>;
 }

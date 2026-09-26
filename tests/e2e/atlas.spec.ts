@@ -37,7 +37,7 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
     page.locator(".hero").getByRole("link", { name: "Mapa de bolets" }),
   ).toHaveAttribute("href", "/map");
   await expect(
-    page.locator(".hero").getByRole("link", { name: "Guia d’espècies" }),
+    page.locator(".hero").getByRole("link", { name: "Explora les espècies" }),
   ).toHaveAttribute("href", "/bolets");
   await expect(page.locator(".featured-grid .card-season")).toHaveCount(0);
 
@@ -59,7 +59,8 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(
     rossinyolCard.locator('.card-season-month[aria-current="date"]'),
   ).toHaveCount(1);
-  await expect(page.getByRole("link", { name: /Cep rogenc/i })).toHaveCount(0);
+  // The search filters the cards; the server-rendered catalogue table keeps every species.
+  await expect(page.locator(".species-grid").getByRole("link", { name: /Cep rogenc/i })).toHaveCount(0);
 
   await page.goto("/bolets/cep");
   await expect(
@@ -68,8 +69,8 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await expect(page.locator(".species-hero .culinary-rating")).toHaveAccessibleName(
     "Valor culinari orientatiu: Excel·lent, 3 de 3 estrelles",
   );
-  await expect(page.locator(".profile-section-number")).toHaveText(["01", "02", "03", "04", "05", "06", "07", "08"]);
-  await expect(page.locator(".species-nav-number")).toHaveText(["01", "02", "03", "04", "05", "06", "07", "08"]);
+  await expect(page.locator(".profile-section-number")).toHaveText(["01", "02", "03", "04", "05", "06", "07", "08", "09"]);
+  await expect(page.locator(".species-nav-number")).toHaveText(["01", "02", "03", "04", "05", "06", "07", "08", "09"]);
   await expect(
     page.getByRole("heading", { name: "El cep a la cuina" }),
   ).toBeVisible();
@@ -101,8 +102,11 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   const expandedSpeciesHeight = await page.evaluate(
     () => document.documentElement.scrollHeight,
   );
-  expect(expandedSpeciesHeight).toBeLessThan(7500);
-  await expect(page.getByText("Després de ploure", { exact: true })).toBeVisible();
+  // Guards against runaway growth; the cep carries hand-written prose and nine sections (~9,000 px).
+  expect(expandedSpeciesHeight).toBeLessThan(10_000);
+  await expect(
+    page.getByLabel("Condicions ecològiques").getByText("Després de ploure", { exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Mapa d’hàbitat del cep a Catalunya" }),
   ).toBeVisible();
@@ -165,32 +169,34 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   await historyOpacity.fill("30");
   await expect(compatibilityCanvas).toHaveCSS("opacity", "0.4");
   await expect(historyCanvas).toHaveCSS("opacity", "0.3");
-  const geolocateControl = page.locator(
-    ".region-map-habitat .maplibregl-ctrl-geolocate",
-  );
+  // The species habitat map never locates the reader, so the fullscreen button
+  // is the last control above the opacity panel.
+  const lastMapControl = page
+    .locator(".region-map-habitat .maplibregl-ctrl-group")
+    .filter({ has: page.getByRole("button", { name: "Veure el mapa a pantalla completa" }) });
   const expandedOpacityPanel = page.locator(
     ".region-map-habitat .map-cell-visibility",
   );
   const habitatViewport = page.locator(
     ".region-map-habitat .region-map-viewport",
   );
-  const [expandedBounds, geolocateBounds, habitatViewportBounds] = await Promise.all([
+  const [expandedBounds, lastControlBounds, habitatViewportBounds] = await Promise.all([
     expandedOpacityPanel.boundingBox(),
-    geolocateControl.boundingBox(),
+    lastMapControl.boundingBox(),
     habitatViewport.boundingBox(),
   ]);
   expect(expandedBounds).not.toBeNull();
-  expect(geolocateBounds).not.toBeNull();
+  expect(lastControlBounds).not.toBeNull();
   expect(habitatViewportBounds).not.toBeNull();
   expect(
     Math.abs(
       expandedBounds!.x +
         expandedBounds!.width -
-        (geolocateBounds!.x + geolocateBounds!.width),
+        (lastControlBounds!.x + lastControlBounds!.width),
     ),
   ).toBeLessThanOrEqual(0.5);
   expect(
-    expandedBounds!.y - (geolocateBounds!.y + geolocateBounds!.height),
+    expandedBounds!.y - (lastControlBounds!.y + lastControlBounds!.height),
   ).toBe(10);
   expect(
     habitatViewportBounds!.y + habitatViewportBounds!.height -
@@ -206,19 +212,19 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
   const collapsedOpacityControl = page.getByRole("button", {
     name: "Mostra els controls del mapa",
   });
-  const [collapsedBounds, collapsedGeolocateBounds] = await Promise.all([
+  const [collapsedBounds, collapsedLastControlBounds] = await Promise.all([
     collapsedOpacityControl.boundingBox(),
-    geolocateControl.boundingBox(),
+    lastMapControl.boundingBox(),
   ]);
   expect(collapsedBounds).not.toBeNull();
-  expect(collapsedGeolocateBounds).not.toBeNull();
+  expect(collapsedLastControlBounds).not.toBeNull();
   expect(
-    Math.abs(collapsedBounds!.x - collapsedGeolocateBounds!.x),
+    Math.abs(collapsedBounds!.x - collapsedLastControlBounds!.x),
   ).toBeLessThanOrEqual(0.5);
-  expect(collapsedBounds!.width).toBe(collapsedGeolocateBounds!.width);
+  expect(collapsedBounds!.width).toBe(collapsedLastControlBounds!.width);
   expect(
     collapsedBounds!.y -
-      (collapsedGeolocateBounds!.y + collapsedGeolocateBounds!.height),
+      (collapsedLastControlBounds!.y + collapsedLastControlBounds!.height),
   ).toBe(10);
   await collapsedOpacityControl.click();
   await expect(compatibilityOpacity).toBeVisible();

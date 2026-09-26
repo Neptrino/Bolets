@@ -158,12 +158,16 @@
 .map-page-heading .map-page-title > p:last-child {
   margin-bottom: 0;
   color: var(--sand-600);
-  display: -webkit-box;
-  overflow: hidden;
   font-size: var(--text-xs);
   line-height: 1.4;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+}
+/* A clamped fragment of the lead explains nothing: the collapsed panel shows
+   only the title and the lead appears in full once the panel is opened. */
+.map-page-heading:not([open]) h1 {
+  margin-bottom: 0;
+}
+.map-page-heading:not([open]) .map-page-title > p:last-child {
+  display: none;
 }
 .map-page-panel-toggle {
   width: 38px;
@@ -683,17 +687,10 @@
     line-height: 1.08;
   }
   .map-page-heading:not([open]) h1 {
-    margin-bottom: 2px;
     font-size: var(--text-lg);
   }
   .map-page-heading .map-page-title > p:last-child {
-    font-size: var(--text-xs);
     line-height: 1.35;
-  }
-  .map-page-heading[open] .map-page-title > p:last-child {
-    display: block;
-    overflow: visible;
-    -webkit-line-clamp: unset;
   }
   .map-controls {
     position: static;

@@ -296,7 +296,7 @@ export function MapExplorer({
                 <div className="map-condition-headline">
                 {globalMode ? (
                   <strong><span className="map-best-option-label">Millor opció · </span>{selectedCell && topSpeciesId
-                    ? speciesName(topSpeciesId)
+                    ? <SectorSpeciesLink speciesId={topSpeciesId} region={region}>{speciesName(topSpeciesId)}</SectorSpeciesLink>
                     : regionalTopSpeciesName ?? "Espècie amb millors condicions"}</strong>
                 ) : null}
                 {!globalMode && selectedEffectiveHabitat !== undefined ? (
@@ -309,7 +309,7 @@ export function MapExplorer({
                   <ul className="map-alternative-species" aria-label="Altres espècies del sector">
                     {runnersUp.map((item) => (
                       <li key={item.speciesId}>
-                        <span>{speciesName(item.speciesId)}</span>
+                        <SectorSpeciesLink speciesId={item.speciesId} region={region}>{speciesName(item.speciesId)}</SectorSpeciesLink>
                         <span className="map-alternative-bar" aria-hidden="true">
                           <i style={{ width: `${item.score}%`, backgroundColor: getSuitabilityBand(item.score).color }} />
                         </span>
@@ -445,4 +445,22 @@ export function MapExplorer({
       )}
     </div>
   </>;
+}
+
+/** Opens the combined map's species reading as that species' own map; the
+ * shared map layout keeps the current centre and zoom across the change. */
+function SectorSpeciesLink({ speciesId, region, children }: {
+  speciesId: string;
+  region: RegionId;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      href={speciesMapHref(speciesId, { region })}
+      className="map-sector-species-link"
+      onClick={() => queueUmamiEvent(UMAMI_EVENTS.mapChangeSpecies)}
+    >
+      {children}
+    </Link>
+  );
 }

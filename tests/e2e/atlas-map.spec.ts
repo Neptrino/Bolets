@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 test.use({ serviceWorkers: "block" });
 
@@ -342,8 +342,8 @@ test("keeps only useful map controls on mobile", async ({ page }) => {
     };
   });
   expect(collapsedDrawerLayout.compactTitleVisible).toBe(true);
-  // The collapsed drawer must already explain the map: no panel expansion needed.
-  expect(collapsedDrawerLayout.compactCopyVisible).toBe(true);
+  // A clamped lead is unreadable, so the collapsed drawer shows only the title.
+  expect(collapsedDrawerLayout.compactCopyVisible).toBe(false);
   expect(collapsedDrawerLayout.controlsDoNotOverlap).toBe(true);
   await expect(page.getByRole("heading", { name: "Mapa del cep a Catalunya" })).toBeVisible();
   expect(collapsedDrawerLayout.toggleInsideDrawer).toBe(true);
@@ -476,7 +476,8 @@ test("keeps condition labels readable on narrow maps", async ({ page }) => {
   const expandedPickerWidth = await page.locator(".map-species-picker").evaluate(
     (picker) => picker.getBoundingClientRect().width,
   );
-  expect(expandedPickerWidth).toBeGreaterThanOrEqual(mobileMapLayout.viewportWidth - 24);
+  // Full width less the 12px control gutters and the panel's 1px + 3px accent borders.
+  expect(expandedPickerWidth).toBeGreaterThanOrEqual(mobileMapLayout.viewportWidth - 28);
 
   await page.getByRole("button", { name: "Detalls", exact: true }).click();
   await expect(page.getByRole("button", { name: "Tanca", exact: true })).toBeVisible();
@@ -495,11 +496,11 @@ test("keeps condition labels readable on narrow maps", async ({ page }) => {
   await expect(meteorologicalReadings).toBeVisible();
   await expect(meteorologicalReadings.locator("article").first()).toHaveCSS(
     "background-color",
-    "rgb(73, 66, 62)",
+    await tokenColor(page, "--ink"),
   );
   await expect(meteorologicalReadings.locator(".condition-stats dd").first()).toHaveCSS(
     "color",
-    "rgb(255, 245, 231)",
+    await tokenColor(page, "--on-dark"),
   );
   const readingHelp = meteorologicalReadings
     .getByRole("button", { name: /Informació de/ })
@@ -509,7 +510,7 @@ test("keeps condition labels readable on narrow maps", async ({ page }) => {
   expect(readingTooltipId).toBeTruthy();
   await expect(page.locator(`#${readingTooltipId} > span`)).toHaveCSS(
     "color",
-    "rgb(229, 216, 195)",
+    await tokenColor(page, "--paper"),
   );
   const detailOrder = await page.evaluate(() => ({
     barsTop: document.querySelector(".factor-chart")?.getBoundingClientRect().top ?? Infinity,
@@ -604,13 +605,9 @@ test("keeps condition labels readable on narrow maps", async ({ page }) => {
   await expect(mobileNav).not.toHaveAttribute("open", "");
 });
 
-test("starts a zone habitat map at its selected zone", async ({
-  context,
+test("frames the species habitat map on Catalonia and keeps the zone for the map link", async ({
   page,
 }) => {
-  const currentLocation = { longitude: 2.15, latitude: 41.39 };
-  await context.grantPermissions(["geolocation"]);
-  await context.setGeolocation(currentLocation);
   const habitatRequests: URL[] = [];
   await page.route("**/api/habitat?*", (route) => {
     habitatRequests.push(new URL(route.request().url()));
@@ -624,10 +621,11 @@ test("starts a zone habitat map at its selected zone", async ({
   });
 
   await page.goto("/bolets/cep?region=pirineus");
-  await page.locator("#distribució").scrollIntoViewIfNeeded();
+  const distribution = page.locator("#distribució");
+  await distribution.scrollIntoViewIfNeeded();
 
-  // Requests arrive as cache-aligned buckets, so the initial zone load is a
-  // batch of tiles whose union must cover the region.
+  // The habitat map shows where the species could grow across Catalonia, so
+  // its cache-aligned buckets cover the whole territory, not the chosen zone.
   await expect.poll(() => {
     const initial = habitatRequests.filter(
       (url) => url.searchParams.get("resolution") === "10000",
@@ -637,18 +635,12 @@ test("starts a zone habitat map at its selected zone", async ({
     const east = Math.max(...initial.map((url) => Number(url.searchParams.get("east"))));
     const south = Math.min(...initial.map((url) => Number(url.searchParams.get("south"))));
     const north = Math.max(...initial.map((url) => Number(url.searchParams.get("north"))));
-    return west <= 0.1 && east >= 2.72 && south <= 42.25 && north >= 42.92;
+    return west <= 0.2 && east >= 3.3 && south <= 40.6 && north >= 42.8;
   }, { timeout: 12_000 }).toBe(true);
-  const locationRequest = page.waitForRequest((request) => {
-    if (!request.url().includes("/api/habitat?")) return false;
-    const url = new URL(request.url());
-    return Number(url.searchParams.get("west")) < currentLocation.longitude &&
-      Number(url.searchParams.get("east")) > currentLocation.longitude &&
-      Number(url.searchParams.get("south")) < currentLocation.latitude &&
-      Number(url.searchParams.get("north")) > currentLocation.latitude;
-  });
-  await page.locator(".maplibregl-ctrl-geolocate").click();
-  await locationRequest;
+  // It never asks for the reader's location.
+  await expect(distribution.getByRole("button", { name: "Mostra la meva ubicació" })).toHaveCount(0);
+  // The zone only chooses which territory the interactive map opens.
+  await expect(distribution.locator(".habitat-map-link")).toHaveAttribute("href", /region=pirineus/);
 });
 
 test("starts a local guide habitat map at its local area", async ({ page }) => {
@@ -892,3 +884,15 @@ test("keeps ecologically excluded cells clickable after changing species", async
   });
   expect(chartFitsHost).toBe(true);
 });
+
+/** Resolves a palette token to the computed colour the browser paints. */
+function tokenColor(page: Page, token: string) {
+  return page.evaluate((name) => {
+    const probe = document.createElement("i");
+    probe.style.color = `var(${name})`;
+    document.body.append(probe);
+    const color = getComputedStyle(probe).color;
+    probe.remove();
+    return color;
+  }, token);
+}
