@@ -3,6 +3,7 @@ import { Coffee } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { InstagramMark } from "@/components/instagram-mark";
 import { InstallApp } from "@/components/install-app";
+import { ShopLink } from "@/components/shop-link";
 import { resolveSupportUrl } from "@/src/lib/support";
 
 export function SiteFooter() {
@@ -70,6 +71,7 @@ export function SiteFooter() {
             <Link href="/metode">Mètode del mapa</Link>
             <Link href="/equip-editorial">Equip editorial</Link>
             <Link href="/col-labora">Col·labora</Link>
+            <ShopLink placement="footer">Botiga</ShopLink>
             <Link href="/avis-legal">Avís legal</Link>
           </div>
         </nav>

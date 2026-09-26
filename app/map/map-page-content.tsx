@@ -3,6 +3,7 @@ import { ArrowUpRight, ChevronDown, Info, Trees } from "lucide-react";
 import { DataSourceCredits } from "@/components/editorial-attribution";
 import { JsonLd } from "@/components/json-ld";
 import { MapExplorer } from "@/components/map-explorer";
+import { MapShopCard } from "@/components/map-shop-note";
 import { PredictionMapLegend } from "@/components/prediction-map-legend";
 import { VisibleQuerySelect } from "@/components/ui/visible-query-select";
 import { coreEditorialSources, editorialArticleFields, environmentalSources } from "@/data/editorial";
@@ -237,6 +238,7 @@ export async function MapPageContent({ query, mapPage }: MapPageContentProps) {
             </nav>
           </aside>
           <nav className="map-page-guide-links" aria-label="Guies relacionades amb el mapa de bolets"><Link href="/bolets-avui">Resum de bolets avui <ArrowUpRight size={16} /></Link><Link href="/guies">Guies locals per territori <ArrowUpRight size={16} /></Link><Link href="/bolets">Consultar espècies <ArrowUpRight size={16} /></Link><Link href="/quan-surten-els-bolets-despres-de-ploure">Quan surten després de ploure <ArrowUpRight size={16} /></Link></nav>
+          <MapShopCard />
           <section className="map-page-seo-copy" aria-labelledby="map-search-guide-title">
             <p className="eyebrow">{pageName}</p>
             <h2 id="map-search-guide-title">{mapPage ? `Com interpretar el mapa ${mapPage.mapNoun}` : species ? "Com interpretar el mapa d’aquesta espècie" : "Un radar de bolets per orientar la sortida"}</h2>

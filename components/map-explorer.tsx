@@ -5,6 +5,7 @@ import { ArrowUpRight, CheckCircle2, Info, ListFilter, LoaderCircle, Map as MapI
 import Link from "next/link";
 import { ConditionComparison } from "@/components/condition-comparison";
 import { MapDetailAccessNotice } from "@/components/map-detail-access-notice";
+import { MapShopNote } from "@/components/map-shop-note";
 import {
   RegionMap,
   type PredictionCellDetailState,
@@ -325,6 +326,7 @@ export function MapExplorer({
                 <p>{viewportStatus.detail}</p>
               </div>
             ) : <p>{unavailableCopy}</p>}
+            {!selectedGridSizeM && !detailOpen ? <MapShopNote resolution={detailResolution} /> : null}
             <div className="map-footer-actions">
               <button
                 type="button"
@@ -427,6 +429,7 @@ export function MapExplorer({
               <span>{regionLabels[region]}</span>
             </div>
             <p>Terreny adequat · consulta la guia per interpretar aquesta vista.</p>
+            <MapShopNote resolution={detailResolution} />
             <div className="map-footer-actions">
               <button
                 type="button"

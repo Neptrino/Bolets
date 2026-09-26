@@ -21,7 +21,12 @@ test("explores the species atlas and comparison tools", async ({ page }) => {
     "Zones",
     "Joc",
     "Avui",
+    "Botiga",
   ]);
+  await expect(page.locator(".primary-nav a.primary-nav-shop")).toHaveAttribute(
+    "href",
+    "https://botiga.bolets.app/?utm_source=bolets.app&utm_medium=nav",
+  );
   const guidesNavLink = page.locator(".primary-nav").getByRole("link", {
     name: "Zones",
     exact: true,

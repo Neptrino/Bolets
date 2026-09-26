@@ -88,6 +88,11 @@ h3 {
 .primary-nav a:hover {
   color: var(--moss);
 }
+.primary-nav-shop {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
 .header-map-link,
 .header-account-link {
   align-items: center;

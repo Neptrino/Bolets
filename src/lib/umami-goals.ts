@@ -34,6 +34,13 @@ export const UMAMI_EVENTS = {
   appInstallStarted: "app-install-started",
   appInstallAccepted: "app-install-accepted",
   appInstalled: "app-installed",
+  shopBannerClick: "shop-banner-click",
+  shopBannerDismissed: "shop-banner-dismissed",
+  shopNavClick: "shop-nav-click",
+  shopMapCardClick: "shop-map-card-click",
+  shopMapInfoClick: "shop-map-info-click",
+  shopFooterClick: "shop-footer-click",
+  shopHomeClick: "shop-home-click",
 } as const;
 
 export const UMAMI_EVENT_NAMES = Object.values(UMAMI_EVENTS);

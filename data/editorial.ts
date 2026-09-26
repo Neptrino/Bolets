@@ -366,7 +366,7 @@ const metadataOverrides: Record<string, Partial<EditorialMetadata>> = {
     publishedAt: "2026-08-17",
     updatedAt: "2026-09-16",
   },
-  home: { updatedAt: "2026-09-23" },
+  home: { updatedAt: "2026-09-26" },
   "bolets-infografia": { updatedAt: "2026-09-24" },
   troballes: { updatedAt: "2026-09-19" },
   compare: { updatedAt: "2026-09-23" },

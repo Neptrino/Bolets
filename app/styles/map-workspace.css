@@ -544,6 +544,7 @@
 .map-score-reading,
 .map-condition-summary,
 .map-floating-card > p,
+.map-shop-note,
 .map-footer-actions {
     grid-column: 1 / -1;
     grid-row: auto;
@@ -787,6 +788,7 @@
   .map-score-reading,
   .map-condition-summary,
   .map-floating-card > p,
+  .map-shop-note,
   .map-footer-actions {
     grid-column: 1;
     grid-row: auto;

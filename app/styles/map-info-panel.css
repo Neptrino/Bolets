@@ -161,6 +161,39 @@ body:has(.map-page) .site-footer {
   display: none;
 }
 
+.map-shop-card {
+  display: flex;
+  grid-column: 1;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px 20px;
+  border: 1px solid color-mix(in srgb, var(--bark) 15%, transparent);
+  border-radius: var(--radius-md);
+  background: var(--surface-warm);
+}
+.map-shop-card > svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--clay);
+}
+.map-shop-card > div {
+  display: grid;
+  gap: 8px;
+}
+.map-shop-card h2 {
+  margin: 0;
+  font-size: var(--text-base);
+}
+.map-shop-card p {
+  margin: 0;
+  color: var(--forest-550);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+.map-shop-card .text-link {
+  justify-self: start;
+}
+
 @media (max-width: 900px) {
   .map-info-panel-content {
     grid-template-columns: minmax(0, 1fr);
@@ -170,7 +203,8 @@ body:has(.map-page) .site-footer {
   .map-info-panel .map-reading-guide,
   .map-info-panel .map-reading-guide-prediction,
   .map-info-panel .map-page-guide-links,
-  .map-info-panel .map-page-seo-copy {
+  .map-info-panel .map-page-seo-copy,
+  .map-info-panel .map-shop-card {
     grid-column: 1;
     grid-row: auto;
   }

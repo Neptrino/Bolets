@@ -3,8 +3,9 @@
 import { IntentLink as Link } from "@/components/intent-link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Map, Menu, UserRound, X } from "lucide-react";
+import { ArrowUpRight, Map, Menu, UserRound, X } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
+import { ShopLink } from "@/components/shop-link";
 
 const links = [
   { href: "/bolets", label: "Espècies", mobileLabel: "Espècies", activePrefixes: ["/bolets"], featured: false },
@@ -70,6 +71,7 @@ export function SiteHeader() {
       </Link>
       <nav className="primary-nav" aria-label="Navegació principal">
         {links.map((link) => <Link key={link.href} href={link.href} className={link.featured ? "primary-nav-today" : undefined} aria-current={isCurrentLink(link) ? "page" : undefined}>{link.label}</Link>)}
+        <ShopLink placement="nav" className="primary-nav-shop">Botiga <ArrowUpRight size={14} aria-hidden="true" /></ShopLink>
       </nav>
       <Link href="/map" className="pill header-map-link"><Map size={16} aria-hidden="true" /> <span>Mapa de bolets</span></Link>
       <Link
@@ -97,6 +99,7 @@ export function SiteHeader() {
         <nav id="mobile-navigation-panel" className="mobile-nav-panel" aria-label="Navegació mòbil">
           <Link href="/compte/bosc" className="mobile-nav-account" aria-current={accountIsCurrent ? "page" : undefined} onClick={closeMobileNav}><UserRound size={18} aria-hidden="true" /> El meu bosc</Link>
           {links.map((link) => <Link key={link.href} href={link.href} className={link.featured ? "primary-nav-today" : undefined} aria-current={isCurrentLink(link) ? "page" : undefined} onClick={closeMobileNav}>{link.mobileLabel}</Link>)}
+          <ShopLink placement="nav" className="primary-nav-shop">Botiga <ArrowUpRight size={16} aria-hidden="true" /></ShopLink>
         </nav>
       </details>
     </header>
